@@ -29,15 +29,18 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get CMV details from production data for the specified project and date range.
     /// </summary>
-    /// <param name="cmvDetailsRequest"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="filterUid"></param>
     /// <returns></returns>
     [Route("api/v1/cmv/details")]
-    [HttpPost]
-    public CompactionCmvDetailedResult PostCmvDetails([FromBody] CMVDetailsRequest cmvDetailsRequest)
+    [HttpGet]
+    public CompactionCmvDetailedResult GetCmvDetails(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation($"{nameof(PostCmvDetails)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(GetCmvDetails)}: {Request.QueryString}");
 
-      //var cmvDetailsRequest = CMVDetailsRequest.CreateCMVDetailsRequest(projectUid, null/* filter */, new[] { 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 });
+      var cmvDetailsRequest = CMVDetailsRequest.CreateCMVDetailsRequest(projectUid, null/* filter */, new[] { 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 });
       cmvDetailsRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
@@ -73,17 +76,22 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get cut-fill details from production data for the specified project and other parameters.
     /// </summary>
-    /// <param name="cutFillRequest"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="filterUid"></param>
+    /// <param name="cutfillDesignUid"></param>
     /// <returns></returns>
     [Route("api/v1/cutfill/details")]
-    [HttpPost]
-    public CompactionCutFillDetailedResult PostCutFillDetails([FromBody] CutFillDetailsRequest cutFillRequest)
+    [HttpGet]
+    public CompactionCutFillDetailedResult GetCutFillDetails(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid,
+      [FromQuery] Guid cutfillDesignUid)
     {
-      Log.LogInformation($"{nameof(PostCutFillDetails)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(GetCutFillDetails)}: {Request.QueryString}");
 
-      //var cutFillDesign = DesignDescriptor.CreateDesignDescriptor(-1, null, 0.0, cutfillDesignUid);
+      var cutFillDesign = DesignDescriptor.CreateDesignDescriptor(-1, null, 0.0, cutfillDesignUid);
 
-      //var cutFillRequest = CutFillDetailsRequest.CreateCutFillDetailsRequest(projectUid, new [] { 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2 }, null/* filter */, cutFillDesign);
+      var cutFillRequest = CutFillDetailsRequest.CreateCutFillDetailsRequest(projectUid, new [] { 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2 }, null/* filter */, cutFillDesign);
 
       cutFillRequest.Validate();
 

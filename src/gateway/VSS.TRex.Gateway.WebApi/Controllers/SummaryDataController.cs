@@ -33,15 +33,18 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get CMV summary from production data for the specified project and date range.
     /// </summary>
-    /// <param name="cmvSummaryRequest"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="filterUid"></param>
     /// <returns></returns>
     [Route("api/v1/cmv/summary")]
-    [HttpPost]
-    public CompactionCmvSummaryResult PostCmvSummary([FromBody] CMVSummaryRequest cmvSummaryRequest)
+    [HttpGet]
+    public CompactionCmvSummaryResult GetCmvSummary(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation($"{nameof(PostCmvSummary)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(GetCmvSummary)}: {Request.QueryString}");
 
-      //var cmvSummaryRequest = CMVSummaryRequest.CreateCMVSummaryRequest(projectUid, null/* filter */, 50, true, 120, 80);
+      var cmvSummaryRequest = CMVSummaryRequest.CreateCMVSummaryRequest(projectUid, null/* filter */, 50, true, 120, 80);
       cmvSummaryRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
