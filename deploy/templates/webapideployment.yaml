@@ -39,5 +39,4 @@ spec:
         
       initContainers: 
       - name: init-filterdb 
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:{{ .Values.image.tag }}
-        command: ['sh', '-c', 'until nslookup filterdb; do echo waiting for filterdb; sleep 2; done;']
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:{{ .Values.image.tag }}      
