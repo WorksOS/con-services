@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace VSS.MasterData.Models.Models
 {
@@ -8,10 +9,24 @@ namespace VSS.MasterData.Models.Models
   public class ScheduleJobRequest
   {
     /// <summary>
+    /// Default constructor
+    /// </summary>
+    public ScheduleJobRequest()
+    {
+      Headers = new Dictionary<string, string>();
+    }
+
+    /// <summary>
     /// The URL to call to get the export data
     /// </summary>
     [JsonProperty(PropertyName = "url", Required = Required.Always)]
     public string Url { get; set; }
+
+    /// <summary>
+    /// Custom Headers to be used in the Scheduled job request
+    /// </summary>
+    [JsonProperty(PropertyName = "headers", Required = Required.Default)]
+    public Dictionary<string, string> Headers { get; set; }
 
     /// <summary>
     /// THe Http method to use. Default is GET.
@@ -20,7 +35,7 @@ namespace VSS.MasterData.Models.Models
     public string Method { get; set; }
 
     /// <summary>
-    /// Payload for POST requests
+    /// Payload for POST requests (Body content)
     /// </summary>
     [JsonProperty(PropertyName = "payload", Required = Required.Default)]
     public string Payload { get; set; }

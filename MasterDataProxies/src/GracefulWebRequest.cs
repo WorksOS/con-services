@@ -183,6 +183,7 @@ namespace VSS.MasterData.Proxies
             UTF8Encoding encoding = new UTF8Encoding();
             byte[] bytes = encoding.GetBytes(payloadData);
             await writeStream.WriteAsync(bytes, 0, bytes.Length);
+            request.ContentLength = bytes.Length;
           }
         }
         return request;
