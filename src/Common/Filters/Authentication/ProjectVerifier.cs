@@ -9,7 +9,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {
   /// <summary>
-  /// Validation filter attribute for the ProjectId.
+  /// Validation filter attribute for the Project identifier and isArchived state.
   /// </summary>
   public class ProjectVerifier : ActionFilterAttribute
   {
@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// <summary>
     /// Gets or sets whether the Filter will check for and reject archived Projects.
     /// </summary>
-    public bool AllowArchivedState { get; set; }
+    public bool AllowArchivedState { get; set; } = true;
 
     public override void OnActionExecuting(ActionExecutingContext actionContext)
     {
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
-            "Don't have write access to the selected project."));
+            "The project has been archived and this function is not allowed."));
       }
     }
   }

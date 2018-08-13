@@ -17,6 +17,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
   /// Controller for the CoordinateSystemFile resource.
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  [ProjectVerifier]
   public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
     private readonly IASNodeClient raptorClient;
@@ -34,13 +35,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// <summary>
     /// Posts a coordinate system (CS) definition file to a Raptor's data model/project.
     /// </summary>
-    /// <param name="request">The CS definition file structure.</param>
-    /// <returns>
-    /// Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
-    /// </returns>
-    /// <executor>CoordinateSystemExecutorPost</executor>
     [PostRequestVerifier]
-    [ProjectVerifier(AllowArchivedState = true)]
     [Route("api/v1/coordsystem")]
     [HttpPost]
     public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)
@@ -52,11 +47,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// <summary>
     /// Posts a coordinate system (CS) definition file to a Raptor for validation.
     /// </summary>
-    /// <param name="request">The CS definition file structure.</param>
-    /// <returns>
-    /// True for success and false for failure.
-    /// </returns>
-    /// <executor>CoordinateSystemExecutorPost</executor>
     [PostRequestVerifier]
     [Route("api/v1/coordsystem/validation")]
     [HttpPost]
@@ -69,18 +59,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// <summary>
     /// Gets a coordinate system (CS) definition assigned to a Raptor's data model/project.
     /// </summary>
-    /// <param name="projectId">The model/project identifier.</param>
-    /// <returns>
-    /// Returns JSON structure wtih operation result as coordinate system settings. {"Code":0,"Message":"User-friendly"}
-    /// List of codes:
-    ///     OK = 0,
-    ///     Incorrect Requested Data = -1,
-    ///     Validation Error = -2
-    ///     InternalProcessingError = -3;
-    ///     FailedToGetResults = -4;
-    /// </returns>
-    /// <executor>CoordinateSystemExecutorGet</executor>
-    [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/coordsystem")]
     [HttpGet]
     public CoordinateSystemSettings Get([FromRoute] long projectId)
@@ -94,18 +72,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// <summary>
     /// Gets a coordinate system (CS) definition assigned to a Raptor's data model/project with a unique identifier.
     /// </summary>
-    /// <param name="projectUid">The model/project unique identifier.</param>
-    /// <returns>
-    /// Returns JSON structure wtih operation result as coordinate system settings. {"Code":0,"Message":"User-friendly"}
-    /// List of codes:
-    ///     OK = 0,
-    ///     Incorrect Requested Data = -1,
-    ///     Validation Error = -2
-    ///     InternalProcessingError = -3;
-    ///     FailedToGetResults = -4;
-    /// </returns>
-    /// <executor>CoordinateSystemExecutorGet</executor>
-    [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/coordsystem")]
     [HttpGet]
     public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
@@ -120,14 +86,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// <summary>
     /// Posts a list of coordinates to a Raptor's data model/project for conversion.
     /// </summary>
-    /// <param name="request">Description of the coordinate conversion request.</param>
-    /// <returns>
-    /// Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
-    /// </returns>
-    /// <executor>CoordinateCoversionExecutor</executor>
-    /// 
     [PostRequestVerifier]
-    [ProjectVerifier]
     [Route("api/v1/coordinateconversion")]
     [HttpPost]
     public CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request)

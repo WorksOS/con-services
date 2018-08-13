@@ -19,23 +19,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// Controller for Surveyed Surfaces resource.
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+  [ProjectVerifier]
   public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
   {
-    /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
     private readonly IASNodeClient raptorClient;
-
-    /// <summary>
-    /// LoggerFactory factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">LoggerFactory</param>
     public SurveyedSurfaceController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
@@ -45,10 +37,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Posts a Surveyed Surface to Raptor.
     /// </summary>
-    /// <param name="request">Description of the Surveyed Surface request.</param>
-    /// <returns>Execution result.</returns>
     [PostRequestVerifier]
-    [ProjectVerifier(AllowArchivedState = true)]
     [Route("api/v1/surveyedsurfaces")]
     [HttpPost]
     public ContractExecutionResult Post([FromBody] SurveyedSurfaceRequest request)
@@ -60,10 +49,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Deletes a Surveyed Surface form Raptor's list of surveyed surfaces.
     /// </summary>
-    /// <param name="projectId">The model/project identifier.</param>
-    /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
     [Obsolete("This action method is obsolete and no longer used by 3DP application services. It may be in use by Trimble Business Center.")]
-    [ProjectVerifier(AllowArchivedState = true)]
     [HttpGet]
     [Route("api/v1/projects/{projectId}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] long projectId, [FromRoute] long surveyedSurfaceId)
@@ -82,15 +68,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Deletes a Surveyed Surface form Raptor's list of surveyed surfaces.
     /// </summary>
-    /// <param name="projectUid">The model/project unique identifier.</param>
-    /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
     [Obsolete("This action method is obsolete and no longer used by 3DP application services. It may be in use by Trimble Business Center.")]
-    [ProjectVerifier(AllowArchivedState = true)]
     [HttpGet]
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public async Task<ContractExecutionResult> GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
-      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       ProjectID projId = ProjectID.Create(projectId, projectUid);
       projId.Validate();
 
@@ -105,9 +88,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Gets a Surveyed Surface list from Raptor.
     /// </summary>
-    /// <param name="projectId">The model/project identifier.</param>
-    /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
-    [ProjectVerifier]
     [HttpGet]
     [Route("api/v1/projects/{projectId}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] long projectId)
@@ -121,14 +101,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Gets a Surveyed Surface list from Raptor.
     /// </summary>
-    /// <param name="projectUid">The model/project unique identifier.</param>
-    /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
-    [ProjectVerifier]
     [HttpGet]
     [Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
     public async Task<SurveyedSurfaceResult> Get([FromRoute] Guid projectUid)
     {
-      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       ProjectID request = ProjectID.Create(projectId, projectUid);
 
       request.Validate();
@@ -140,9 +117,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// exists, otherwise - adds a new Surveyed Surface to the list.
     /// </summary>
     /// <param name="request">Description of the Surveyed Surface request.</param>
-    /// <returns>Execution result.</returns>
     [PostRequestVerifier]
-    [ProjectVerifier(AllowArchivedState = true)]
     [Route("api/v1/surveyedsurfaces/post")]
     [HttpPost]
     public ContractExecutionResult PostPut([FromBody] SurveyedSurfaceRequest request)
@@ -155,9 +130,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Removes specified Design File from DesignProfiler cache.
     /// </summary>
     /// <param name="request">Descriptor of the Design File (filename).</param>
-    /// <returns>Execution result.</returns>
     [PostRequestVerifier]
-    [ProjectVerifier(AllowArchivedState = true)]
     [Route("api/v1/designcache/delete")]
     [HttpPost]
     public ContractExecutionResult PostDelete([FromBody] DesignNameRequest request)
