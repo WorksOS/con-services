@@ -99,7 +99,7 @@ namespace VSS.TRex.DesignProfiling.Tests
         {
             LoadTheDesign();
 
-            object Hint = null;
+            int Hint = -1;
 
             bool result = design.InterpolateHeight(ref Hint, probeX, probeY, 0, out double Z);
 
@@ -120,18 +120,21 @@ namespace VSS.TRex.DesignProfiling.Tests
             Assert.True(result, "Heights interpolation returned false");
         }
 
-        [Theory(Skip = "Performance Test")]
-        [InlineData(247500.0, 193350.0)]
+    // [Theory(Skip = "Performance Test")]
+    [Theory]
+    [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTestPerf(double probeX, double probeY)
         {
             LoadTheDesign();
 
             float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-            
+
+          DateTime _start = DateTime.Now;
             for (int i = 0; i < 10000; i++)
                 design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+          DateTime _end = DateTime.Now;
 
-            Assert.False(true, "Perf Test");
+          Assert.True(false, $"Perf Test: Duration for 10000 patch requests: {_end - _start}");
         }
 
         [Fact]
@@ -139,8 +142,8 @@ namespace VSS.TRex.DesignProfiling.Tests
         {
             LoadTheDesign();
 
-            Assert.True(design.Data.Triangles.Count > 0, "No triangles present in loaded TTM file.");
-            Assert.True(design.Data.Vertices.Count > 0, "No vertices present in loaded TTM file.");
+            Assert.True(design.Data.Triangles.Items.Length > 0, "No triangles present in loaded TTM file.");
+            Assert.True(design.Data.Vertices.Items.Length > 0, "No vertices present in loaded TTM file.");
         }
 
         [Fact]
@@ -150,5 +153,47 @@ namespace VSS.TRex.DesignProfiling.Tests
 
             Assert.NotNull(design.SubgridOverlayIndex());
         }
+
+    private void LoadTheGiantDesign()
+    {
+      lock (this)
+      {
+        if (design == null)
+        {
+          design = new TTMDesign(SubGridTree.DefaultCellSize);
+          design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+        }
+      }
     }
+
+    [Fact]
+    public void ScanAllElevationsOverGiantDesign()
+    {
+      DateTime _start = DateTime.Now;
+      LoadTheGiantDesign();
+      TimeSpan loadTime = DateTime.Now - _start;
+
+      float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+      int numPatches = 0;
+      _start = DateTime.Now;
+
+      design.SpatialIndexOptimised.ScanAllSubGrids(leaf =>
+      {
+        numPatches++;
+        double cellSize = leaf.Owner.CellSize;
+        leaf.CalculateWorldOrigin(out double originX, out double originY);
+
+        leaf.ForEach((x, y) => { design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTree.SubGridTreeDimension, 0); });
+
+        return true;
+      });
+
+      TimeSpan lookupTime = DateTime.Now - _start;
+
+      Assert.True(false, $"Perf Test: Duration for {numPatches} patch requests, load = {loadTime}, lookups = {lookupTime}");
+    }
+
+
+  }
 }

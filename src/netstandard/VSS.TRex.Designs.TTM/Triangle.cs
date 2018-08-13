@@ -47,10 +47,6 @@ namespace VSS.TRex.Designs.TTM
             Flags = 0;
         }
 
-//        public
-    //    property Vertex[Index: TTriangleSide]: TTriVertex read GetVertex write SetVertex;
-    //    property Neighbour[Index: TTriangleSide]: TTriangle read GetNeighbour write SetNeighbour;
-
     public bool Side1StaticFlag { get { return GetFlag(Consts.side1StaticFlagIndex); } set { SetFlag(Consts.side1StaticFlagIndex, value); } }
         public bool Side2StaticFlag { get { return GetFlag(Consts.side2StaticFlagIndex); } set { SetFlag(Consts.side2StaticFlagIndex, value); } }
         public bool Side3StaticFlag { get { return GetFlag(Consts.side3StaticFlagIndex); } set { SetFlag(Consts.side3StaticFlagIndex, value); } }
@@ -207,7 +203,7 @@ namespace VSS.TRex.Designs.TTM
             return (Vertices[0] == Vertices[1]) || (Vertices[1] == Vertices[2]) || (Vertices[2] == Vertices[0]);
         }
 
-        public void GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY)
+        private void GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY)
         {
             // NB: Not as performant as it could be. Revisit it this method is called often
             MinX = Vertices.Min(x => x.X);
