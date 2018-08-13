@@ -53,17 +53,17 @@ namespace WebApiTests
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       expectedResult.IsActivated = true;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult, true);
       filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
       expectedResult = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       expectedResult.IsActivated = true;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult, true);
 
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[1], expectedResult, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult, true);
 
-      var activatedFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var activatedFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.AreEqual(2, activatedFileList.ImportedFileDescriptors.Count);
     }
 
@@ -308,12 +308,12 @@ namespace WebApiTests
       Assert.AreEqual("Success", response.message.Value);
 
       //Confirm it's deactivated for this user
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.AreEqual(1, importFileList.ImportedFileDescriptors.Count, "Wrong number of imported files 1");
       Assert.IsFalse(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be deactivated for user 1");
 
       //and activated for another user
-      importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid, RestClientUtil.ANOTHER_JWT);
+      importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid, RestClientUtil.ANOTHER_JWT);
       Assert.AreEqual(1, importFileList.ImportedFileDescriptors.Count, "Wrong number of imported files 2");
       Assert.IsTrue(importFileList.ImportedFileDescriptors[0].IsActivated, "Should be activated for user 2");
     }

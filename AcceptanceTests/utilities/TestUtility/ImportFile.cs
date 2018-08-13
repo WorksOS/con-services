@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TestUtility.Model;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility
@@ -45,12 +46,26 @@ namespace TestUtility
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    /// <param name="uri"></param>
-    /// <param name="customerUid"></param>
-    public ImportedFileDescriptorListResult GetImportedFilesFromWebApi(string uri, Guid customerUid, string jwt = null)
+    public ImportedFileDescriptorListResult GetImportedFilesFromWebApiV4(string uri, Guid customerUid, string jwt = null)
+    {
+      return GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>(uri, customerUid, jwt);
+    }
+
+    /// <summary>
+    /// Gets a list of imported files for a project. The list includes files of all types.
+    /// </summary>
+    public ImmutableList<DesignDetailV2Result> GetImportedFilesFromWebApiV2(string uri, Guid customerUid, string jwt = null)
+    {
+      return GetImportedFilesFromWebApi<ImmutableList<DesignDetailV2Result>>(uri, customerUid, jwt);
+    }
+
+    /// <summary>
+    /// Gets a list of imported files for a project. The list includes files of all types.
+    /// </summary>
+    public T GetImportedFilesFromWebApi<T>(string uri, Guid customerUid, string jwt = null)
     {
       var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString(), jwt);
-      var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorListResult>(response);
+      var filesResult = JsonConvert.DeserializeObject<T>(response);
       return filesResult;
     }
 

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType;
 
 namespace WebApiTests
 {
@@ -56,6 +57,13 @@ namespace WebApiTests
 
       Assert.AreEqual(HttpStatusCode.OK, importFileV2Result.Code, "Not imported ok.");
       Assert.AreNotEqual(-1, importFileV2Result.Id, "LegacyFileID invalid.");
+
+      var importFileList = importFile.GetImportedFilesFromWebApiV2(ts.GetBaseUri() + $"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
+      Assert.IsTrue(importFileList.Count == 1, "Expected 1 imported files but got " + importFileList.Count);
+      var expectedResult =
+        new DesignDetailV2Result {id = importFileV2Result.Id, name = TestFile.TestAlignment1, fileType = (int)ImportedFileType.Alignment};
+      ts.CompareTheActualImportFileWithExpectedV2(importFileList[0], expectedResult, true);
+
     }
 
     [TestMethod]

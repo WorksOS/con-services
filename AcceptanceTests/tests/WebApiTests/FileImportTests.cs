@@ -42,7 +42,7 @@ namespace WebApiTests
       var expectedResults = importFile.expectedImportFileDescriptorsListResult;
       var uri = ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}";
 
-      var filesResult = importFile.GetImportedFilesFromWebApi(uri, customerUid);
+      var filesResult = importFile.GetImportedFilesFromWebApiV4(uri, customerUid);
       Assert.IsTrue(filesResult.ImportedFileDescriptors.Count == expectedResults.ImportedFileDescriptors.Count, " Expected number of fields does not match actual");
       CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
@@ -81,7 +81,7 @@ namespace WebApiTests
        "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
@@ -121,16 +121,16 @@ namespace WebApiTests
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment2} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
     }
 
     [TestMethod]
@@ -167,7 +167,7 @@ namespace WebApiTests
          "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
@@ -207,16 +207,16 @@ namespace WebApiTests
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface2} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
     }
 
     [TestMethod]
@@ -253,7 +253,7 @@ namespace WebApiTests
          "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | SurveyedUtc     | IsActivated | MinZoomLevel | MaxZoomLevel |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
@@ -293,16 +293,16 @@ namespace WebApiTests
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface2} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
     }
 
     [TestMethod]
@@ -342,14 +342,14 @@ namespace WebApiTests
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
       Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
       Assert.IsTrue(filesResult2.Message == "CreateImportedFileV4. The file has already been created.", "Expecting a message: CreateImportedFileV4.The file has already been created.");
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
     }
 
@@ -390,13 +390,13 @@ namespace WebApiTests
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
     }
 
 
@@ -437,14 +437,14 @@ namespace WebApiTests
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | true        | 15           | 19           |" }; // {startDateTime.AddDays(5)}|"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
       Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
       Assert.AreEqual(2, filesResult2.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 2 imported file History but got " + filesResult2.ImportedFileDescriptor.ImportedFileHistory.Count);
     }
 
@@ -528,13 +528,13 @@ namespace WebApiTests
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
-      ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
     }
 
 
@@ -576,12 +576,12 @@ namespace WebApiTests
       };
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
       importFile.importedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
 
       var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1, "DELETE");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+      var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 0, "Expected 0 imported files but got " + importFileList.ImportedFileDescriptors.Count);
     }
 
@@ -625,7 +625,7 @@ namespace WebApiTests
       };
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
       importFile.importedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "fk_ProjectUID", 1, new Guid(projectUid));
     }
@@ -669,7 +669,7 @@ namespace WebApiTests
        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "fk_ProjectUID", 1, new Guid(projectUid));
 
@@ -708,7 +708,7 @@ namespace WebApiTests
        "| EventType              | ProjectUid   | CustomerUid   | Name                   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 2            | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
     [TestMethod]
     public void TestImportdxfFileImperial()
@@ -744,7 +744,7 @@ namespace WebApiTests
        "| EventType              | ProjectUid   | CustomerUid   | Name                   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 1            | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
@@ -781,7 +781,7 @@ namespace WebApiTests
        "| EventType              | ProjectUid   | CustomerUid   | Name                   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 0            | 15           | 19           |"};
       var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
   }
 }
