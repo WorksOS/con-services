@@ -336,9 +336,11 @@ namespace VSS.MasterData.Repositories
     {
       var deletedCount = 0;
       var delete =
-         "DELETE FROM Filter " +
-        $"  WHERE fk_FilterTypeID = {(int)FilterType.Transient}" +
-        $"    AND LastActionedUTC < {deleteOlderThanUtc}";
+        "DELETE FROM Filter " +
+        "  WHERE ID > 0 " +
+        $"    AND fk_FilterTypeID = {(int)FilterType.Transient}" +
+        $"    AND LastActionedUTC < '{deleteOlderThanUtc}';";
+
       deletedCount = await ExecuteWithAsyncPolicy(delete);
       log.LogDebug("FilterRepository/DeleteTransientFilters: deleted {0} rows");
       return deletedCount;
