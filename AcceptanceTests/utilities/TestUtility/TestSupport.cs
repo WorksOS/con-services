@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using TestUtility.Model.WebApi;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -741,13 +742,24 @@ namespace TestUtility
         }
       }
     }
+   
+    public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
+    {
+      CompareTheActualImportFileWithExpected<ImportedFileDescriptor>(actualFile, expectedFile, ignoreZeros);
+    }
+
+    public void CompareTheActualImportFileWithExpectedV2(DesignDetailV2Result actualFile, DesignDetailV2Result expectedFile, bool ignoreZeros)
+    {
+      CompareTheActualImportFileWithExpected< DesignDetailV2Result>(actualFile, expectedFile, ignoreZeros);
+    }
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="expectedFile"></param>
     /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
     /// <param name="actualFile"></param>
-    public void CompareTheActualImportFileWithExpected(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
+    public void CompareTheActualImportFileWithExpected<T>(T actualFile, T expectedFile, bool ignoreZeros)
     {
       var oType = actualFile.GetType();
       foreach (var oProperty in oType.GetProperties())
@@ -765,12 +777,6 @@ namespace TestUtility
             continue;
           }
         }
-        //if (actualValue is DateTime)
-        //{
-          // The ExpectedValue is set using the .ToString("o") ISO formatting convention so we must 
-          // convert actualValue to UTC here to ensure we're comparing two UTC values.
-          //actualValue = ((DateTime)actualValue).ToUniversalTime();
-        //}
         if (!Equals(expectedValue, actualValue))
         {
           Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);

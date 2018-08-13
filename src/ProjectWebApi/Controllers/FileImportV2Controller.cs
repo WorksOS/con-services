@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -141,6 +144,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         $"UpsertImportedFileV2. Completed succesfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
       
       return response;
+    }
+
+    // GET: api/v2/importedfiles
+    /// <summary>
+    /// TBC Get imported files.
+    /// This is the same as V4 but TBC URL cannot be changed hence the V2 version.
+    /// </summary>
+    [Route("api/v2/projects/{projectId}/importedfiles/{id?}")]
+    [HttpGet]
+    public async Task<ImmutableList<DesignDetailV2Result>> GetImportedFilesV2([FromRoute] long projectId, [FromRoute] long? id = null)
+    {
+      log.LogInformation("GetImportedFilesV2");
+
+      var project = await GetProject(projectId);
+
+      var files = await ImportedFileRequestHelper.GetImportedFileList(project.ProjectUID, log, userId, projectRepo)
+        .ConfigureAwait(false);
+
+      var selected = id.HasValue ? files.Where(x => x.LegacyFileId == id.Value) : files;
+      return selected.Select(x => new DesignDetailV2Result{id = x.LegacyFileId, name = x.Name,  fileType = (int)x.ImportedFileType, insertUTC = x.ImportedUtc}).ToImmutableList();
+      
     }
   }
 }
