@@ -10,9 +10,6 @@ replicaCount: 1
 image:
   tag: latest
 
-consumerImage:
-  tag: latest
-
 resources:
   limits:
    cpu: 1000m
