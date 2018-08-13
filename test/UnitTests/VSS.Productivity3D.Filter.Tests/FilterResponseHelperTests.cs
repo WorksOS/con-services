@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -33,8 +33,6 @@ namespace VSS.Productivity3D.Filter.Tests
         }));
 
       mockedRaptorProxy = mockedRaptorProxySetup.Object;
-
-
     }
 
     [TestMethod]
@@ -175,7 +173,6 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.AreEqual(mockedEndTime, filterObj.EndUtc);
     }
 
-
     [TestMethod]
     [DataRow(DateRangeType.CurrentMonth, true)]
     [DataRow(DateRangeType.CurrentWeek, true)]
@@ -234,7 +231,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filter = new MasterData.Repositories.DBModels.Filter { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles" , ProjectUid = ProjectGuid.ToString() }, filter, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filter, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
       ValidateDates(filter.FilterJson, asAtDate);
     }
@@ -262,7 +259,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var filterDescriptor = new FilterDescriptor { FilterJson = $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null}}" };
 
-      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString()}, filterDescriptor, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
+      FilterJsonHelper.ParseFilterJson(new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUid = ProjectGuid.ToString() }, filterDescriptor, raptorProxy: mockedRaptorProxy, customHeaders: new Dictionary<string, string>());
 
       ValidateDates(filterDescriptor.FilterJson, asAtDate);
     }
