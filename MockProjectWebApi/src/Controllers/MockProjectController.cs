@@ -230,7 +230,16 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250"},
-      new ProjectData {LegacyProjectId = ConstantsUtil.LANDFILL_PROJECT_ID, ProjectUid = ConstantsUtil.LANDFILL_PROJECT_UID, ProjectType = ProjectType.LandFill}
+      new ProjectData {
+        LegacyProjectId = ConstantsUtil.LANDFILL_PROJECT_ID,
+        ProjectUid = ConstantsUtil.LANDFILL_PROJECT_UID,
+        ProjectType = ProjectType.LandFill
+      },
+      new ProjectData {
+        ProjectUid = "b7f4af55-2fdb-4878-b3d0-ce748d5dde08",
+        ProjectType = ProjectType.Standard,
+        IsArchived = true
+      }
     };
   }
 }
