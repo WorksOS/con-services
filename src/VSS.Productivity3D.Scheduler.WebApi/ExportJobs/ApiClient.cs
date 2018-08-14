@@ -42,6 +42,18 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
+        // Merge the Custom headers passed in with the http request, and the headers requested by the Schedule Job
+        foreach (var header in jobRequest.Headers)
+        {
+          if (!customHeaders.ContainsKey(header.Key))
+          {
+            customHeaders[header.Key] = header.Value;
+          }
+          else
+          {
+            log.LogDebug($"HTTP Header '{header.Key}' exists in both the web requests and job request headers, using web request value. Web Request Value: '${customHeaders[header.Key]}', Job Request Value: '${header.Value}'");
+          }
+        }
         //Stop retries in GracefulWebRequest
         result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, jobRequest.Payload, jobRequest.Timeout, 0);
         log.LogDebug("Result of send request: Stream Content={0}", result);
