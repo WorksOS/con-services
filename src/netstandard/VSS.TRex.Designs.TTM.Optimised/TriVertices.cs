@@ -34,22 +34,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
       Items = new XYZ[header.NumberOfVertices];
 
-/*      void ReadVertex(ref XYZ vertex)
-      {
-        if (readCoordinateFloats)
-        {
-          vertex.Y = reader.ReadSingle() + header.NorthingOffsetValue;
-          vertex.X = reader.ReadSingle() + header.EastingOffsetValue;
-        }
-        else
-        {
-          vertex.Y = reader.ReadDouble() + header.NorthingOffsetValue;
-          vertex.X = reader.ReadDouble() + header.EastingOffsetValue;
-        }
-
-        vertex.Z = readVertexValueFloats ? reader.ReadSingle() : reader.ReadDouble();
-      } */
-
       try
       {
         int loopLimit = header.NumberOfVertices;
@@ -76,10 +60,11 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
-        throw new Exception($"Failed to read vertices\n{E}");
+        throw new TTMFileReadException($"Failed to read vertices", E);
       }
     }
 
+    /**** Experimental code requiring unsafe code. Removed for now...
     /// <summary>
     /// Reads the collection of vertices usign the provided reader
     /// </summary>
@@ -164,5 +149,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
         throw new TTMFileReadException($"Failed to read vertices", E);
       }
     }
+    */
   }
 }

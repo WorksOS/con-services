@@ -841,12 +841,12 @@ namespace VSS.TRex.Designs
                   // Search the triangles in the leaf to locate the one to interpolate height from
                   for (int i = 0; i < triangleCount; i++)
                   {
-                    NumTINProbeLookups++;
+                    //NumTINProbeLookups++;
 
                     if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
                       continue; // No intersection, move to next triangle
 
-                    NumTINHeightRequests++;
+                    //NumTINHeightRequests++;
 
                     double Z = GetHeight(TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
