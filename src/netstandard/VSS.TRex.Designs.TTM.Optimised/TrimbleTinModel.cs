@@ -60,7 +60,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
         if (Header.FileMajorVersion != Consts.TTMMajorVersion
             || Header.FileMinorVersion != Consts.TTMMinorVersion)
         {
-          throw new Exception("Unable to read this version of Trimble TIN Model file.");
+          throw new TTMFileReadException("Unable to read this version of Trimble TIN Model file.");
         }
 
         // ModelName = (String)(InternalNameToANSIString(fHeader.DTMModelInternalName));
@@ -85,9 +85,13 @@ namespace VSS.TRex.Designs.TTM.Optimised
         reader.BaseStream.Position = Header.StartOffsetOfStartPoints;
         StartPoints.Read(reader, Header);
       }
+      catch (TTMFileReadException)
+      {
+        throw; // pass it on
+      }
       catch (Exception E)
       {
-        throw new Exception(LoadErrMsg + ": " + E.Message);
+        throw new TTMFileReadException($"Exception at TTM loading phase {LoadErrMsg}", E);
       }
     }
 

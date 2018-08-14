@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Designs.TTM.Optimised.Exceptions;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM.Optimised
@@ -160,7 +161,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
-        throw new Exception($"Failed to read vertices\n{E}");
+        throw new TTMFileReadException($"Failed to read vertices", E);
       }
     }
   }

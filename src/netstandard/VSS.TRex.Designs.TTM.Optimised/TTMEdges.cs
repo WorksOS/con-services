@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Designs.TTM.Optimised.Exceptions;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
@@ -36,7 +37,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
-        throw new Exception($"Failed to read edges\n{E}");
+        throw new TTMFileReadException($"Failed to read edges", E);
       }
     }
   }
