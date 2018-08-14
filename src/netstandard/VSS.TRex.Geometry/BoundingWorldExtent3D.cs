@@ -258,8 +258,6 @@ namespace VSS.TRex.Geometry
           MinZ = Extent.MinZ;
           MaxZ = Extent.MaxZ;
         }
-
-        ;
       }
       else
       {
