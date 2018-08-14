@@ -21,8 +21,9 @@ namespace VSS.TRex.Common
         data = bitmapStream.ToArray();
         bitmapStream.Close();
       }
+
       return data;
     }
   }
-  
+
 }
