@@ -59,7 +59,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddCors(options =>
       {
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-          .WithHeaders("*")
+          .AllowAnyHeader()
           .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
 
