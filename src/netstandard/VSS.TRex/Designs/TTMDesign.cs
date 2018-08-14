@@ -8,6 +8,7 @@ using System.Threading;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Utilities;
@@ -42,7 +43,7 @@ namespace VSS.TRex.Designs
     public struct TriangleArrayReference
         {
             public int TriangleArrayIndex;
-            public int Count;
+            public short Count;
         }
 
       public struct TriangleSubGridCellExtents
@@ -825,8 +826,8 @@ namespace VSS.TRex.Designs
                   triangleCellExtents[i] = triangleCellExtent;
                 }
 
-              // Iterate over all the cells in the grid using the triangle subgrid cell extents to filter
-              // triangles in the leaf that will be considered for point-in-triangle & elevation checks.
+                // Iterate over all the cells in the grid using the triangle subgrid cell extents to filter
+                // triangles in the leaf that will be considered for point-in-triangle & elevation checks.
                 SubGridUtilities.SubGridDimensionalIterator((x, y) =>    
                 {
                   double X = OriginXPlusHalfCellSize + CellSize * x;
@@ -899,8 +900,6 @@ namespace VSS.TRex.Designs
             }
         }
 
-      // public int TotalDuplicates = 0;
-
     /// <summary>
     /// Includes a triangle into the list of triangles that intersect the extent of a subgrid
     /// </summary>
@@ -936,6 +935,12 @@ namespace VSS.TRex.Designs
             }
         }
 
+      /// <summary>
+      /// Flag to enable detailed removal of duplicate triangle references in the subgrid spatial over and above the
+      /// last-triangle-duplicate check in the logic constructing the initial lists of triangle refences in each leaf.
+      /// </summary>
+      public bool EnableDuplicateRemoval = false;
+
         /// <summary>
         /// Build a spatial index for the triangles in the TIN surface by assigning each triangle to every subgrid it intersects with
         /// </summary>
@@ -962,6 +967,9 @@ namespace VSS.TRex.Designs
                                               AddTrianglePieceToSubgridIndex);
                     }
 
+
+                  if (EnableDuplicateRemoval)
+                  {
                     /////////////////////////////////////////////////
                     // Remove duplicate triangles added to the lists
                     /////////////////////////////////////////////////
@@ -976,7 +984,7 @@ namespace VSS.TRex.Designs
                       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                       {
                         List<int> triList = FSpatialIndex[leaf.OriginX + x, leaf.OriginY + y];
-                 
+
                         if (triList == null)
                           return;
 
@@ -1001,12 +1009,13 @@ namespace VSS.TRex.Designs
                         if (uniqueCount < triListCount)
                           triList.RemoveRange(uniqueCount, triListCount - uniqueCount);
                       });
-                 
+
                       return true;
                     });
-                 
+
                     Console.WriteLine($"Total duplicates encountered: {TotalDuplicates}");
-                 
+                    }
+
                     // Transform this subgrid tree into one where each on-the-ground subgrid is represented by an index and a number of triangles present in a
                     // a single list of triangles.
                  
@@ -1015,22 +1024,22 @@ namespace VSS.TRex.Designs
                     FSpatialIndex.ForEach(x => { numTriangleReferences += x?.Count ?? 0; return true; });
 
                     // Create the single array
-                    SpatialIndexOptimisedTriangles = new int[numTriangleReferences]; 
-
-                    // Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
-
-                    int copiedCount = 0;
-           
-                    TriangleArrayReference arrayReference = new TriangleArrayReference()
-                    {
-                      Count = 0,
-                      TriangleArrayIndex = 0
-                    };
+                    SpatialIndexOptimisedTriangles = new int[numTriangleReferences];
 
                     /////////////////////////////////////////////////
                     // Iterate across all leaf subgrids
                     /////////////////////////////////////////////////
-               
+
+                    // Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
+
+                    int copiedCount = 0;
+
+                    TriangleArrayReference arrayReference = new TriangleArrayReference()
+                    {
+                      Count = 0,
+                      TriangleArrayIndex = 0
+                    }; 
+
                     BoundingWorldExtent3D cellWorldExtent = new BoundingWorldExtent3D();                            
                
                     FSpatialIndex.ScanAllSubGrids(leaf =>
@@ -1055,7 +1064,7 @@ namespace VSS.TRex.Designs
                           double halfLeafCellSize = leafCellSize / 2;
                           double halfCellSizeMinusEpsilon = halfLeafCellSize - 0.0001;
 
-                          int trianglesCopiedToLeaf = 0;
+                          short trianglesCopiedToLeaf = 0;
 
                           FSpatialIndexOptimised.GetCellExtents(CellX, CellY, ref cellWorldExtent);
 
@@ -1135,7 +1144,7 @@ namespace VSS.TRex.Designs
                             if (!found)
                             {
                               // No cell in the subgrid intersects with the triangle - ignore it
-                              //continue;
+                              continue;
                             }
 
                             // This triangle is a candidate for beign probed, copy it into the array
@@ -1144,34 +1153,30 @@ namespace VSS.TRex.Designs
                           }
                           /// End: Determine the triangles that definitely cannot cover one or more cells in each subgrid
                           ///////////////////////////////////////////////////////////////////////////////////////////////
-                          
-                          // Copy triangles
-                          //Array.Copy(triList.ToArray(), 0, SpatialIndexOptimisedTriangles, copiedCount, triList.Count);
-
+                            
                           arrayReference.Count = trianglesCopiedToLeaf; 
-                          //arrayReference.Count = triList.Count; 
 
                           // Add new entry for optimised tree
                           FSpatialIndexOptimised[leaf.OriginX + x, leaf.OriginY + y] = arrayReference;
 
-                          // Keep track of how may have been copied
-                          //copiedCount += triList.Count;
-
-                          // Set copied count into the array reference for the next leaf so it captures the starting location
-                          // in the overall arrya for it
+                          // Set copied count into the array reference for the next leaf so it captures the starting location in the overall array for it
                           arrayReference.TriangleArrayIndex = copiedCount;
                         });
 
                         return true;
                     });
 
-                  Console.WriteLine($"Number of original triangle references: {SpatialIndexOptimisedTriangles.Length}");
+                  Console.WriteLine($"Number of vertices in model {VertexItems.Length}");
+                  Console.WriteLine($"Number of triangles in model {TriangleItems.Length}");
+                  Console.WriteLine($"Number of original triangle references in index: {SpatialIndexOptimisedTriangles.Length}");
                   Console.WriteLine($"Number of triangle references removed as unprobe-able: {SpatialIndexOptimisedTriangles.Length - copiedCount}");
 
                   // Finally, resize the master triangle reference array to remove the unused entries due to unprobe-able triangles
                   Array.Resize(ref SpatialIndexOptimisedTriangles, copiedCount);
+
+                  Console.WriteLine($"Final number of triangle references in index: {SpatialIndexOptimisedTriangles.Length}");
                 }
-                finally  
+                finally   
                 {
                     // Emit some logging indicating likely efficiency of index.
                     long sumTriangleReferences = 0;
@@ -1219,11 +1224,11 @@ namespace VSS.TRex.Designs
                 FMinHeight = Common.Consts.NullReal;
                 FMaxHeight = Common.Consts.NullReal;
 
-                // Build the subgrid tree based spatial index
-                ConstructSpatialIndex();
-
                 if (!LoadSubgridIndexFile(fileName + Consts.kDesignSubgridIndexFileExt))
                     return DesignLoadResult.UnableToLoadSubgridIndex;
+
+                if (!LoadSpatialIndexFile(fileName + Consts.kDesignSpatialIndexFileExt))
+                  return DesignLoadResult.UnableToLoadSubgridIndex;
 
                 Log.LogInformation($"Area: ({FData.Header.MinimumEasting}, {FData.Header.MinimumNorthing}) -> ({FData.Header.MaximumEasting}, {FData.Header.MaximumNorthing}): [{FData.Header.MaximumEasting - FData.Header.MinimumEasting} x {FData.Header.MaximumNorthing - FData.Header.MinimumNorthing}]");
 
@@ -1239,24 +1244,22 @@ namespace VSS.TRex.Designs
         /// <summary>
         /// Loads the subgrid existence map from a file
         /// </summary>
-        /// <param name="SubgridIndexFileName"></param>
+        /// <param name="fileName"></param>
         /// <returns></returns>
-        protected bool LoadSubgridIndex(string SubgridIndexFileName)
+        protected bool LoadSubgridIndex(string fileName)
         {
             try
             {
-                if (File.Exists(SubgridIndexFileName))
+                if (!File.Exists(fileName))
+                    return false;
+
+                using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(fileName)))
                 {
-                  using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(SubgridIndexFileName)))
-                  {
                     using (BinaryReader reader = new BinaryReader(ms))
                     {
                       return SubGridTreePersistor.Read(FSubgridIndex, reader);
                     }
-                  }
                 }
-
-                return false;
             }
             catch (Exception e)
             {
@@ -1266,16 +1269,92 @@ namespace VSS.TRex.Designs
             }
         }
 
+      /// <summary>
+      /// Writes the content of the level 5 (leaf) subgrid in the optimised TTM spatial index
+      /// </summary>
+      /// <param name="subGrid"></param>
+      /// <param name="writer"></param>
+      private void SerialiseOutOptimisedSpatialIndexSubGridCells(ISubGrid subGrid, BinaryWriter writer)
+      {
+        var leaf = (GenericLeafSubGrid<TriangleArrayReference>)subGrid;
+        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+        { 
+           writer.Write(leaf.Items[x, y].Count);
+           writer.Write(leaf.Items[x, y].TriangleArrayIndex);
+         });
+      }
+
+      /// <summary>
+      /// Writes the content of the level 5 (leaf) subgrid in the optimised TTM spatial index
+      /// </summary>
+      /// <param name="subGrid"></param>
+      /// <param name="reader"></param>
+      private void SerialiseInOptimisedSpatialIndexSubGridCells(ISubGrid subGrid, BinaryReader reader)
+      {
+        var leaf = (GenericLeafSubGrid<TriangleArrayReference>)subGrid;
+        TriangleArrayReference arrayReference = new TriangleArrayReference();
+
+        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+        {
+          arrayReference.Count = reader.ReadInt16();
+          arrayReference.TriangleArrayIndex = reader.ReadInt32();
+          leaf.Items[x, y] = arrayReference;
+        });
+    }
+
+    /// <summary>
+    /// Loads the subgrid existence map from a file
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    protected bool LoadSpatialIndex(string fileName)
+    {
+      long i;
+      long numTriangles;
+        try
+        {
+          if (!File.Exists(fileName))
+            return false;
+
+          using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(fileName)))
+            {
+              using (BinaryReader reader = new BinaryReader(ms))
+              {
+                byte majorVer = reader.ReadByte();
+                byte minorVer = reader.ReadByte();
+
+                if (majorVer != 1 || minorVer != 0)
+                  return false;
+
+                // Load the array of triangle references
+                numTriangles = reader.ReadInt64();
+                SpatialIndexOptimisedTriangles = new int[numTriangles];
+                for (i = 0; i < numTriangles; i++)
+                  SpatialIndexOptimisedTriangles[i] = reader.ReadInt32();
+
+                // Load the tree of references into the optimised triangle reference list
+                return SubGridTreePersistor.Read(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, reader, SerialiseInOptimisedSpatialIndexSubGridCells);
+              }
+            }
+        }
+        catch (Exception e)
+        {
+          Log.LogError($"Exception {e} in LoadSubgridIndex");
+
+          return false;
+        }
+      }
+
         /// <summary>
         /// Loads a subgrid existence map for the design from a file
         /// </summary>
-        /// <param name="SubgridIndexFileName"></param>
+        /// <param name="fileName"></param>
         /// <returns></returns>
-        protected bool LoadSubgridIndexFile(string SubgridIndexFileName)
+        protected bool LoadSubgridIndexFile(string fileName)
         {
-            Log.LogInformation($"Loading subgrid index file {SubgridIndexFileName}");
+            Log.LogInformation($"Loading subgrid index file {fileName}");
 
-            bool Result = LoadSubgridIndex(SubgridIndexFileName);
+            bool Result = LoadSubgridIndex(fileName);
 
             if (!Result)
             {
@@ -1283,29 +1362,59 @@ namespace VSS.TRex.Designs
 
                 if (Result)
                 {
-                    if (SaveSubgridIndex(SubgridIndexFileName))
-                        Log.LogInformation($"Saved constructed subgrid index file {SubgridIndexFileName}");
+                    if (SaveSubgridIndex(fileName))
+                        Log.LogInformation($"Saved constructed subgrid index file {fileName}");
                     else
-                        Log.LogError($"Unable to save subgrid index file {SubgridIndexFileName} - continuing with unsaved index");
+                        Log.LogError($"Unable to save subgrid index file {fileName} - continuing with unsaved index");
                 }
                 else
-                    Log.LogError($"Unable to create and save subgrid index file {SubgridIndexFileName}");
+                    Log.LogError($"Unable to create and save subgrid index file {fileName}");
             }
 
             return Result;
         }
 
-        /// <summary>
-        /// Daves a subgrid existence map for the design to a file
-        /// </summary>
-        /// <param name="SubgridIndexFileName"></param>
-        /// <returns></returns>
-        protected bool SaveSubgridIndex(string SubgridIndexFileName)
+    /// <summary>
+    /// Loads a subgrid spatial index for the design from a file
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    protected bool LoadSpatialIndexFile(string fileName)
+      {
+        Log.LogInformation($"Loading spatial index file {fileName}");
+
+        bool Result = LoadSpatialIndex(fileName);
+
+        if (!Result)
+        {
+          // Build the subgrid tree based spatial index
+          Result = ConstructSpatialIndex();
+
+          if (Result)
+          {
+            if (SaveSpatialIndex(fileName))
+              Log.LogInformation($"Saved constructed spatial index file {fileName}");
+            else
+              Log.LogError($"Unable to save spatial index file {fileName} - continuing with unsaved index");
+          }
+          else
+            Log.LogError($"Unable to create and save spatial index file {fileName}");
+        }
+
+        return Result;
+      }
+
+    /// <summary>
+    /// Saves a subgrid existence map for the design to a file
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    protected bool SaveSubgridIndex(string fileName)
         {
             try
             {
                 // Write the index out to a file
-                using (FileStream fs = new FileStream(SubgridIndexFileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                using (FileStream fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                 {
                     using (BinaryWriter writer = new BinaryWriter(fs))
                     {
@@ -1313,28 +1422,10 @@ namespace VSS.TRex.Designs
                     }
                 }
 
-                if (!File.Exists(SubgridIndexFileName))
+                if (!File.Exists(fileName))
                 {
                     Thread.Sleep(500); // Seems to be a Windows update problem hence introduce delay b4 checking again
                 }
-
-                /*
-                if (!File.Exists(SubgridIndexFileName))
-                {
-                    try
-                    {
-                        FSubgridIndexStream.SaveToFile(SubgridIndexFileName);
-                    }
-                    catch (Exception E)
-                    {
-                        // When this occurs the file does appear to be saved hence warning only
-
-                        // Readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, 'Note: The following exception is reported as informational and may not signal an operational issue', slmcMessage);
-                        //SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' in %s.SaveSubgridIndex', [E.Message, Self.ClassName]), slmcWarning);
-                    }
-                }
-                */
 
               return true;
             }
@@ -1346,15 +1437,57 @@ namespace VSS.TRex.Designs
             return false;
         }
 
+      /// <summary>
+      /// Daves a subgrid existence map for the design to a file
+      /// </summary>
+      /// <param name="fileName"></param>
+      /// <returns></returns>
+      protected bool SaveSpatialIndex(string fileName)
+      {
+        try
+        {
+          // Write the index out to a file
+          using (FileStream fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+          {
+            using (BinaryWriter writer = new BinaryWriter(fs))
+            {
+              writer.Write((byte)1); // Major version
+              writer.Write((byte)0); // Minor version
+
+              // write out the array of triangle references
+              writer.Write((long)SpatialIndexOptimisedTriangles.Length);
+              foreach (int triIndex in SpatialIndexOptimisedTriangles)
+                writer.Write((int)triIndex);
+
+              // Write out the subgrid tree of index references
+              SubGridTreePersistor.Write(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, writer, SerialiseOutOptimisedSpatialIndexSubGridCells);
+            }
+          }
+
+          if (!File.Exists(fileName))
+          {
+            Thread.Sleep(500); // Seems to be a Windows update problem hence introduce delay b4 checking again
+          }
+
+          return true;
+        }
+        catch (Exception e)
+        {
+          Log.LogError($"Exception {e} SaveSubgridIndex");
+        }
+
+        return false;
+      }
+
         /// <summary>
-        /// Determines if the bounds of a subgrid intersects a given triangle
-        /// </summary>
-        /// <param name="Extents"></param>
-        /// <param name="H1"></param>
-        /// <param name="H2"></param>
-        /// <param name="V"></param>
-        /// <returns></returns>
-        private bool SubGridIntersectsTriangle(BoundingWorldExtent3D Extents, XYZ H1, XYZ H2, XYZ V)
+    /// Determines if the bounds of a subgrid intersects a given triangle
+    /// </summary>
+    /// <param name="Extents"></param>
+    /// <param name="H1"></param>
+    /// <param name="H2"></param>
+    /// <param name="V"></param>
+    /// <returns></returns>
+    private bool SubGridIntersectsTriangle(BoundingWorldExtent3D Extents, XYZ H1, XYZ H2, XYZ V)
         {
             // If any of the triangle vertices are in the cell extents then 'yes'
             if (Extents.Includes(H1.X, H1.Y) || Extents.Includes(H2.X, H2.Y) || Extents.Includes(V.X, V.Y))

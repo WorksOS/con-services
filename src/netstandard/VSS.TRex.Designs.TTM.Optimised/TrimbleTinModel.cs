@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Designs.TTM.Optimised.Exceptions;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {

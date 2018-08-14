@@ -8,6 +8,6 @@
 
     public const string TTMFileIdentifier = "TNL TIN DTM FILE\0\0\0\0";
     public const string kDesignSubgridIndexFileExt = ".$DesignSubgridIndex$";
-
+    public const string kDesignSpatialIndexFileExt = ".$DesignSpatialIndex$";
   }
 }

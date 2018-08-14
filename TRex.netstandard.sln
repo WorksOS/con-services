@@ -85,6 +85,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamingPerfTest", "src\netstandard\SandBox\StreamingPerfTest\StreamingPerfTest.csproj", "{7776A913-9EF2-43F1-9F5A-603749DBF23F}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
