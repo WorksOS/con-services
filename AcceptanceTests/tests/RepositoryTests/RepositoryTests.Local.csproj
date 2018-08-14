@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.Local.csproj" />
   </ItemGroup>
 

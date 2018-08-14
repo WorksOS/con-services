@@ -6,21 +6,12 @@ services:
      - docker-compose.env
     depends_on:
       - schema
-      - filterschema
       - projectschema
       - db
   mockprojectwebapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
      - docker-compose.env      
-  filterschema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest   
-    env_file:
-     - docker-compose.env
-    environment:
-     - MYSQL_DATABASE_NAME=VSS-Productivity3D-Filter
-    depends_on:
-      - db 
   projectschema:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     env_file:

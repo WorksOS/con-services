@@ -5,6 +5,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.MySql;
 using Hangfire.Storage;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -43,7 +44,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// The log file name
     /// </summary>
-    public const string LOGGER_REPO_NAME = "Scheduler";
+    public const string LoggerRepoName = "Scheduler";
     private MySqlStorage _storage;
     private IServiceProvider _serviceProvider;
     IServiceCollection _serviceCollection;
@@ -53,19 +54,18 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
-      int webAPIStartupWaitMs = 45000;
-      Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
-
       // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
       //    the webapi seems to go ahead anyways..
+      int webAPIStartupWaitMs = 45000;
+      Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
       Thread.Sleep(webAPIStartupWaitMs);
 
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -88,7 +88,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddCommon<Startup>(SERVICE_TITLE);
 
       ConfigureHangfire(services);
@@ -105,6 +104,19 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
+        });
+      });
+
+      services.AddJaeger(SERVICE_TITLE);
+      services.AddOpenTracing();
 
       _serviceCollection = services;
     }
@@ -118,13 +130,16 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
-
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceProvider = _serviceCollection.BuildServiceProvider();
 
       app.UseCommon(SERVICE_TITLE);
+
+      if (Configuration["newrelic"] == "true")
+      {
+        app.UseMiddleware<NewRelicMiddleware>();
+      }
+
       app.UseFilterMiddleware<SchedulerAuthentication>();
       app.UseMvc();
 
@@ -148,7 +163,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
 
       var expectedJobCount = 0;
-      expectedJobCount += ConfigureFilterCleanupTask(log, expectedJobCount);
       expectedJobCount += ConfigureSyncSurveyedSurfacesTask(log, expectedJobCount);
       expectedJobCount += ConfigureSyncOtherFilesTask(log, expectedJobCount);
 
@@ -257,35 +271,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
         throw;
       }
-    }
-
-    /// <summary>
-    /// Configure filter cleanup task
-    /// </summary>
-    private int ConfigureFilterCleanupTask(ILogger<Startup> log, int expectedJobCount)
-    {
-      var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
-      var filterRepo = _serviceProvider.GetRequiredService<IFilterRepository>();
-
-      var filterCleanupTaskToRun = false;
-      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_FILTER_CLEANUP_TASK_RUN"), out filterCleanupTaskToRun))
-      {
-        filterCleanupTaskToRun = false;
-      }
-      log.LogDebug($"Scheduler.Startup: filterCleanupTaskToRun {filterCleanupTaskToRun}");
-      if (filterCleanupTaskToRun)
-      {
-        // stagger startup of 2nd task so the initial runs don't deadlock
-        if (expectedJobCount > 0)
-          Thread.Sleep(2000);
-
-        var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        var filterCleanupTask = new FilterCleanupTask(configStore, loggerFactory, filterRepo);
-        filterCleanupTask.AddTask();
-        return 1;
-      }
-      return 0;
     }
 
     /// <summary>

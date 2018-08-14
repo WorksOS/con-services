@@ -32,23 +32,20 @@ namespace SchedulerTestsImportedFileSync
     protected IFileRepository FileRepo;
     protected DateTime _earliestHistoricalDateTime;
     protected DateTime _defaultHistoricalDateTime;
+    private readonly string loggerRepoName = "UnitTestLogTest";
 
     protected void SetupDi()
     {
-      const string loggerRepoName = "UnitTestLogTest";
+      var serviceCollection = new ServiceCollection();
+
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      var serviceCollection = new ServiceCollection();
       serviceCollection.AddLogging();
-      serviceCollection
-        .AddSingleton(loggerFactory)
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();

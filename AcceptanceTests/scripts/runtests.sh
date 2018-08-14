@@ -12,20 +12,22 @@ sleep 120s
 # Run the component tests
 echo "Run the component tests"
 
-echo "Run SchedulerTestsFilterCleanup tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/SchedulerTestsFilterCleanupTestResults project=SchedulerTestsFilterCleanup messages=false
-echo "SchedulerTestsFilterCleanup tests finished"
-
 echo "Run SchedulerTestsImportedFileSync tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/SchedulerTestsImportedFileSyncResults project=SchedulerTestsImportedFileSync messages=false
+dotnet vstest SchedulerTestsImportedFileSync/SchedulerTestsImportedFileSync.dll --logger:trx
+cp TestResults/*.trx testresults/SchedulerTestsImportedFileSync.trx
+rm TestResults/*.trx
 echo "SchedulerTestsImportedFileSync tests finished"
 
 echo "Run Repository tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestResults project=RepositoryTests messages=false
+dotnet vstest RepositoryTests/RepositoryTests.dll --logger:trx
+cp TestResults/*.trx testresults/RepositoryTests.trx
+rm TestResults/*.trx
 echo "Repository tests finished"
 
 echo "Run WebApi tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/WebApiTestResults project=WebApiTests messages=false
+dotnet vstest WebApiTests/WebApiTests.dll --logger:trx
+cp TestResults/*.trx testresults/WebApiTests.trx
+rm TestResults/*.trx
 echo "WebApi tests finished"
 
 echo " "

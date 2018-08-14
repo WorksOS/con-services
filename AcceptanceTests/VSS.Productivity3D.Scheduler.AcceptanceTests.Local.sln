@@ -28,10 +28,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Loca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local", "..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj", "{B2C50D26-4267-40A2-9458-0742CDCCC193}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Common.Local", "..\src\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.Local.csproj", "{DF59C0EA-F8BF-4133-B498-85DF9C8A38D7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchedulerTestsFilterCleanup.Local", "tests\SchedulerTestsFilterCleanup\SchedulerTestsFilterCleanup.Local.csproj", "{6616499E-35DF-4B32-B809-1CCC5F301EEC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories.Local", "..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj", "{BAFA03F0-2C67-43C7-8065-A12DD463299D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask.Local", "..\..\MerinoSandbox\ITask\src\VSS.ITask.Local.csproj", "{CCB0EFF6-98C7-432E-948C-030D7DC17265}"
@@ -47,6 +43,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.Local", "..\..\MerinoSandbox\TCCFileAccess\src\VSS.TCCFileAccess.Local.csproj", "{ED6CF686-E08D-4702-842E-9A3C7D7E7B8F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiTests.Local", "tests\WebApiTests\WebApiTests.Local.csproj", "{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Common.Local", "..\src\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.Local.csproj", "{8EBA06EE-DD9B-4E17-8166-6F2855348327}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,14 +64,6 @@ Global
 		{B2C50D26-4267-40A2-9458-0742CDCCC193}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C50D26-4267-40A2-9458-0742CDCCC193}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2C50D26-4267-40A2-9458-0742CDCCC193}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF59C0EA-F8BF-4133-B498-85DF9C8A38D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF59C0EA-F8BF-4133-B498-85DF9C8A38D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF59C0EA-F8BF-4133-B498-85DF9C8A38D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF59C0EA-F8BF-4133-B498-85DF9C8A38D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6616499E-35DF-4B32-B809-1CCC5F301EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6616499E-35DF-4B32-B809-1CCC5F301EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6616499E-35DF-4B32-B809-1CCC5F301EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6616499E-35DF-4B32-B809-1CCC5F301EEC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BAFA03F0-2C67-43C7-8065-A12DD463299D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BAFA03F0-2C67-43C7-8065-A12DD463299D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAFA03F0-2C67-43C7-8065-A12DD463299D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -106,6 +96,10 @@ Global
 		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EBA06EE-DD9B-4E17-8166-6F2855348327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EBA06EE-DD9B-4E17-8166-6F2855348327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EBA06EE-DD9B-4E17-8166-6F2855348327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EBA06EE-DD9B-4E17-8166-6F2855348327}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,7 +107,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D16E1DAF-C5E9-4A86-84A2-6BDE7FBA44E5} = {07ECB0F2-14A8-4854-80A6-3B281DCA5413}
 		{CABF023E-D85E-4211-9453-8FD47D0370F8} = {1464640F-AEAE-4331-BC58-52898DF893B6}
-		{6616499E-35DF-4B32-B809-1CCC5F301EEC} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{EDA7BC32-5FA4-492A-BBB9-1248A5DAEAFA} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{2D8B5C1D-BAE6-43CE-87D1-3F9C13561FA3} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 	EndGlobalSection

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,26 +22,21 @@ namespace RepositoryTests
 
     private IServiceProvider _serviceProvider;
     private ILogger _log;
-
-
+    private readonly string loggerRepoName = "UnitTestLogTest";
 
 
     public void SetupDI()
     {
-      const string loggerRepoName = "UnitTestLogTest";
+      var serviceCollection = new ServiceCollection();
+
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      var serviceCollection = new ServiceCollection();
       serviceCollection.AddLogging();
-      serviceCollection
-        .AddSingleton(loggerFactory)
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IFilterRepository, FilterRepository>();
 

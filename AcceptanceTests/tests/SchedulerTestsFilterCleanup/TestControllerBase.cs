@@ -26,30 +26,27 @@ namespace SchedulerTestsFilterCleanup
     protected ILoggerFactory LoggerFactory;
     protected ILogger Log;
     protected IRaptorProxy RaptorProxy;
+    private readonly string loggerRepoName = "UnitTestLogTest";
+
 
     protected void SetupDi()
     {
-      const string loggerRepoName = "UnitTestLogTest";
+      var serviceCollection = new ServiceCollection();
+
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      var serviceCollection = new ServiceCollection();
       serviceCollection.AddLogging();
-      serviceCollection
-        .AddSingleton(loggerFactory)
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddSingleton<IOptions<MemoryCacheOptions>>(new MemoryCacheOptions())
         .AddTransient<IMemoryCache, MemoryCache>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddTransient<ISchedulerProxy, SchedulerProxy>();
-
-
+      
       ServiceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       this.LoggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
