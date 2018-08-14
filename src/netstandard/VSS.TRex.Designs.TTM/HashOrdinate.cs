@@ -1,18 +1,18 @@
 ﻿namespace VSS.TRex.Designs.TTM
 {
+  /// <summary>
+  /// Defines the basis for hashed coordinates used to index TriVertex instances
+  /// </summary>
+  public enum HashOrdinate
+  {
     /// <summary>
-    /// Defines the basis for hashed coordinates used to index TriVertex instances
+    /// The X ordinate is used for hashing
     /// </summary>
-    public enum HashOrdinate
-    {
-        /// <summary>
-        /// The X ordinate is used for hashing
-        /// </summary>
-        hoX,
+    hoX,
 
-        /// <summary>
-        /// The Y ordinate is used for hashing
-        /// </summary>
-        hoY
-    }
+    /// <summary>
+    /// The Y ordinate is used for hashing
+    /// </summary>
+    hoY
+  }
 }
