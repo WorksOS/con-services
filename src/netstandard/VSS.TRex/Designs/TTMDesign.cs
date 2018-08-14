@@ -69,8 +69,6 @@ namespace VSS.TRex.Designs
             int HCellIndexY, VCellIndexY;
             int Delta;
 
-            try
-            {
                 // H1 and H2 describe the horizontal portion of the triangle piece
                 // V describes the vertex above, or below the horizontal line
 
@@ -281,22 +279,16 @@ namespace VSS.TRex.Designs
                     //        SIGLogMessage.PublishNoODS(Self, Format('ProcessingCellYIndex (%d) out of range', [ProcessingCellYIndex]), slmcException);
                 }
                 while ((NumCellRowsToProcess > 0) && !SingleRowOnly); // or not InRange(ProcessingCellYIndex, 0, kSubGridTreeDimension - 1);
-            }
-            catch // (Exception E)
-            {
-                //SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' raised in TTTMDesign.AddTrianglePieceToSubgridIndex', [E.Message]), slmcException);
-                throw;
-            }
         }
 
-    /// <summary>
-    /// AddTrianglePieceToSubgridIndex_Extents is used to prevent very large numbers of bounding extent record allocations in the
-    /// AddTrianglePieceToSubgridIndex method. Note: This code is expected to be single threaded. Note: Do not use this
-    /// member in any other context
-    /// </summary>
-    private BoundingWorldExtent3D AddTrianglePieceToSubgridIndex_Extents = new BoundingWorldExtent3D();
-
-    private void AddTrianglePieceToSubgridIndex(SubGridTree index,
+        /// <summary>
+        /// AddTrianglePieceToSubgridIndex_Extents is used to prevent very large numbers of bounding extent record allocations in the
+        /// AddTrianglePieceToSubgridIndex method. Note: This code is expected to be single threaded. Note: Do not use this
+        /// member in any other context
+        /// </summary>
+        private BoundingWorldExtent3D AddTrianglePieceToSubgridIndex_Extents = new BoundingWorldExtent3D();
+      
+        private void AddTrianglePieceToSubgridIndex(SubGridTree index,
                                                     int sourceTriangle,
                                                     Func<SubGridTree, uint, uint, bool> leafSatisfied,
                                                     Action<SubGridTree, uint, uint, int> includeTriangleInLeaf,
@@ -307,8 +299,6 @@ namespace VSS.TRex.Designs
             bool LastRow = false;
             bool WasLastRow = false;
 
-            try
-            {
                 // H1 and H2 describe the horizontal portion of the triangle piece
                 // V describes the vertex above, or below the horizontal line
 
@@ -445,12 +435,6 @@ namespace VSS.TRex.Designs
                     LastRow = OverrideSubGridY == SubgridEndY; // H2X < H1X;
                 }
                 while (!WasLastRow && !SingleRowOnly);
-            }
-            catch // (Exception E)
-            {
-                throw;
-                //SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' raised in TTTMDesign.AddTrianglePieceToSubgridIndex', [E.Message]), slmcException);
-            }
         }
 
         private void ScanCellsOverTriangle(SubGridTree tree,
@@ -797,7 +781,7 @@ namespace VSS.TRex.Designs
                 for (int i = 0; i < triangleCount; i++)
                 {
                   // Get the triangle...
-                  Triangle tri = TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i] /*.TriangleIndex*/];
+                  Triangle tri = TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]];
 
                   // Get the real world bounding box for the triangle
                   // Note: As sampling occurs at cell centers shrink the effective bounding box for each triangle used
@@ -857,25 +841,14 @@ namespace VSS.TRex.Designs
                   // Search the triangles in the leaf to locate the one to interpolate height from
                   for (int i = 0; i < triangleCount; i++)
                   {
-                    //NumTINProbeLookups++;
-                    //triangleCellExtent = triangleCellExtents[i];
+                    NumTINProbeLookups++;
 
-                    // ###############################################################
-                    // ### This is the hottest line in this functionality...
-                    // Check that this triangle has an extent in the subgrid that intersects with the (x, y) point being queried
-                    //if (x < triangleCellExtent.MinX || x > triangleCellExtent.MaxX || y < triangleCellExtent.MinY || y > triangleCellExtent.MaxY)
                     if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
                       continue; // No intersection, move to next triangle
-                    // ###############################################################
 
-                    //NumTINHeightRequests++;
+                    NumTINHeightRequests++;
 
-                    // It does intersect, so perform the detailed point-in-triangle based height calculation
-                    //int triIndex = SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]; //.TriangleIndex;
-                    //double Z = GetHeight(TriangleItems[triIndex], X, Y);
-
-                    // Note: This line is 1 second faster compared to two lines above. Difference is the intermediary variable
-                    double Z = GetHeight(TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i] /*.TriangleIndex;*/], X, Y);
+                    double Z = GetHeight(TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
                     if (Z != Common.Consts.NullReal)
                     {
@@ -900,14 +873,14 @@ namespace VSS.TRex.Designs
             }
         }
 
-    /// <summary>
-    /// Includes a triangle into the list of triangles that intersect the extent of a subgrid
-    /// </summary>
-    /// <param name="tree"></param>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="triIndex"></param>
-    private void IncludeTriangleInSubGridTreeIndex(GenericSubGridTree<List<int>> tree, uint x, uint y, int triIndex)
+        /// <summary>
+        /// Includes a triangle into the list of triangles that intersect the extent of a subgrid
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="triIndex"></param>
+        private void IncludeTriangleInSubGridTreeIndex(GenericSubGridTree<List<int>> tree, uint x, uint y, int triIndex)
         {
             // Get subgrid from tree, creating the path and leaf if necessary
             GenericLeafSubGrid<List<int>> leaf = tree.ConstructPathToCell(x, y, SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid<List<int>>;
@@ -1028,10 +1001,9 @@ namespace VSS.TRex.Designs
 
                     /////////////////////////////////////////////////
                     // Iterate across all leaf subgrids
+                    //Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
                     /////////////////////////////////////////////////
-
-                    // Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
-
+                 
                     int copiedCount = 0;
 
                     TriangleArrayReference arrayReference = new TriangleArrayReference()
@@ -1309,8 +1281,6 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     protected bool LoadSpatialIndex(string fileName)
     {
-      long i;
-      long numTriangles;
         try
         {
           if (!File.Exists(fileName))
@@ -1327,9 +1297,9 @@ namespace VSS.TRex.Designs
                   return false;
 
                 // Load the array of triangle references
-                numTriangles = reader.ReadInt64();
+                long numTriangles = reader.ReadInt64();
                 SpatialIndexOptimisedTriangles = new int[numTriangles];
-                for (i = 0; i < numTriangles; i++)
+                for (long i = 0; i < numTriangles; i++)
                   SpatialIndexOptimisedTriangles[i] = reader.ReadInt32();
 
                 // Load the tree of references into the optimised triangle reference list
@@ -1374,12 +1344,12 @@ namespace VSS.TRex.Designs
             return Result;
         }
 
-    /// <summary>
-    /// Loads a subgrid spatial index for the design from a file
-    /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
-    protected bool LoadSpatialIndexFile(string fileName)
+      /// <summary>
+      /// Loads a subgrid spatial index for the design from a file
+      /// </summary>
+      /// <param name="fileName"></param>
+      /// <returns></returns>
+      protected bool LoadSpatialIndexFile(string fileName)
       {
         Log.LogInformation($"Loading spatial index file {fileName}");
 
@@ -1404,12 +1374,12 @@ namespace VSS.TRex.Designs
         return Result;
       }
 
-    /// <summary>
-    /// Saves a subgrid existence map for the design to a file
-    /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
-    protected bool SaveSubgridIndex(string fileName)
+      /// <summary>
+      /// Saves a subgrid existence map for the design to a file
+      /// </summary>
+      /// <param name="fileName"></param>
+      /// <returns></returns>
+      protected bool SaveSubgridIndex(string fileName)
         {
             try
             {

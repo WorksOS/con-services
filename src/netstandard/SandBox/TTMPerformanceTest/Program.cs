@@ -13,8 +13,8 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
         DateTime _start = DateTime.Now;
         TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
 
-        //design.LoadFromFile(@"C:\Temp\161006 Stripped less PRB & AS.ttm");
-        design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+        design.LoadFromFile(@"C:\Temp\161006 Stripped less PRB & AS.ttm");
+        //design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
         TimeSpan loadTime = DateTime.Now - _start;
 
         Console.WriteLine($"Perf Test: Duration for file load and index preparation = {loadTime}");
