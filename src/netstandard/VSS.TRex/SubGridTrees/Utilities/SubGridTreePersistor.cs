@@ -17,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="tree"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        static bool SerialiseOut(ISubGridTree tree, BinaryWriter writer)
+        static bool SerialiseOut(ISubGridTree tree, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
         {
             long SubgridCount = tree.CountLeafSubgridsInMemory();
 
@@ -32,7 +32,10 @@ namespace VSS.TRex.SubGridTrees.Utilities
                 writer.Write(subGrid.OriginX);
                 writer.Write(subGrid.OriginY);
 
-                subGrid.Write(writer, buffer);
+                if (subGridSerialiser != null)
+                  subGridSerialiser(subGrid, writer);
+                else
+                  subGrid.Write(writer, buffer);
 
                 return true; // keep scanning
             });
@@ -47,7 +50,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="tree"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        public static bool Write(ISubGridTree tree, BinaryWriter writer) => Write(tree, string.Empty, 0, writer);
+        public static bool Write(ISubGridTree tree, BinaryWriter writer) => Write(tree, string.Empty, 0, writer, null);
 
         /// <summary>
         /// Provides Write() semantics for a subgrid tree against a BinaryWriter
@@ -57,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="version"></param>
         /// <param name="writer"></param>
         /// <returns></returns>
-        public static bool Write(ISubGridTree tree, string header, int version, BinaryWriter writer)
+        public static bool Write(ISubGridTree tree, string header, int version, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
         {
             writer.Write(header);
             writer.Write(version);
@@ -66,7 +69,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
             long SizePosition = writer.BaseStream.Position;
             writer.Write((long) 0);
 
-            if (!SerialiseOut(tree, writer))
+            if (!SerialiseOut(tree, writer, subGridSerialiser))
                 return false;
 
             // Write the size of the stream in to the header
@@ -83,7 +86,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="tree"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        static bool SerialiseIn(ISubGridTree tree, BinaryReader reader)
+        static bool SerialiseIn(ISubGridTree tree, BinaryReader reader, Action<ISubGrid, BinaryReader> subGridSerialiser)
         {
             try
             {
@@ -103,7 +106,11 @@ namespace VSS.TRex.SubGridTrees.Utilities
 
                     // Create a node to hold the bits
                     ISubGrid SubGrid = tree.ConstructPathToCell(OriginX, OriginY, Types.SubGridPathConstructionType.CreateLeaf);
-                    SubGrid.Read(reader, buffer);
+
+                    if (subGridSerialiser != null)
+                      subGridSerialiser(SubGrid, reader);
+                    else 
+                      SubGrid.Read(reader, buffer);
                 }
 
                 return true;
@@ -125,7 +132,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="tree"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static bool Read(ISubGridTree tree, BinaryReader reader) => Read(tree, string.Empty, 0, reader);
+        public static bool Read(ISubGridTree tree, BinaryReader reader) => Read(tree, string.Empty, 0, reader, null);
 
         /// <summary>
         /// Provides Read() semantics for a subgrid tree against a BinaryReader
@@ -135,7 +142,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="version"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static bool Read(ISubGridTree tree, string header, int version, BinaryReader reader)
+        public static bool Read(ISubGridTree tree, string header, int version, BinaryReader reader, Action<ISubGrid, BinaryReader> subGridSerialiser)
         {
             try
             {
@@ -150,7 +157,7 @@ namespace VSS.TRex.SubGridTrees.Utilities
                     return false;
                 }
 
-                return SerialiseIn(tree, reader);
+                return SerialiseIn(tree, reader, subGridSerialiser);
             }
             catch
             {

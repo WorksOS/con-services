@@ -5,6 +5,7 @@
         Success, 
         UnknownFailure,
         NoAlignmentsFound,
-        UnableToLoadSubgridIndex
+        UnableToLoadSubgridIndex,
+        UnableToLoadSpatialIndex
     }
 }
