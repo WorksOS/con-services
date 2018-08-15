@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Net;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -33,6 +34,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void WhenIPOSTATagFileWithNameFromTheRepositoryExpectingBadRequestReturn(string paramName)
     {
       tagPoster.DoInvalidRequest(paramName);
+    }
+
+    [When(@"I POST a tag file with Code (.*) from the repository expecting unauthorized request return")]
+    public void WhenIPOSTATagFileWithCodeFromTheRepositoryExpectingUnauthorizedRequestReturn(int code)
+    {
+      tagPoster.DoInvalidRequest(code.ToString(), HttpStatusCode.Unauthorized);
     }
 
     [Then(@"the Tag Process Service response should contain Code (.*) and Message ""(.*)""")]

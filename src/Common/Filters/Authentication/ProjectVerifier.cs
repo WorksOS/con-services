@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Common.Exceptions;
@@ -33,20 +34,18 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
         if (request.GetType() != typeof(string))
         {
           projectIdentifier = request.GetType()
-                                  .GetProperty(PROJECT_ID, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
-                                  ?.GetValue(request);
+            .GetProperty(PROJECT_ID, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)?.GetValue(request);
 
           // Unlikely to reach here, the above check is for legacy APIs where the projectId (not projectUid) was likely to be in play.
           if (projectIdentifier == null)
           {
             projectIdentifier = request.GetType()
-                                    .GetProperty(PROJECT_UID, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
-                                    ?.GetValue(request);
+              .GetProperty(PROJECT_UID, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)?.GetValue(request);
           }
         }
       }
 
-      ProjectData projectDescriptor = null;
+      ProjectData projectDescriptor;
 
       if (actionContext.ActionArguments.ContainsKey(PROJECT_ID))
       {
@@ -55,11 +54,6 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       else if (actionContext.ActionArguments.ContainsKey(PROJECT_UID))
       {
         projectIdentifier = actionContext.ActionArguments[PROJECT_UID];
-      }
-
-      if (!(projectIdentifier is long || projectIdentifier is string))
-      {
-        return;
       }
 
       switch (projectIdentifier)
@@ -71,6 +65,11 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
         case string projectUid:
           projectDescriptor = ((RaptorPrincipal)actionContext.HttpContext.User).GetProject(projectUid).Result;
           break;
+        case Guid projectUid:
+          projectDescriptor = ((RaptorPrincipal)actionContext.HttpContext.User).GetProject(projectUid).Result;
+          break;
+        default:
+          return;
       }
 
       if (projectDescriptor != null && projectDescriptor.IsArchived && !AllowArchivedState)

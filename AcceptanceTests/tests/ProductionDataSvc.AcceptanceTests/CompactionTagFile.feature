@@ -10,6 +10,14 @@ Scenario Outline: TagFile - Bad Tag File
   | 2005 | "Failed to process tagfile with error: The TAG file was found to be corrupted on its pre-processing scan." |
   | 2008 | "Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Invalid."                    |
 
+Scenario Outline: TagFile - Archived Project
+  Given the Tag file service URI "/api/v2/tagfiles" and request repo "CompactionTagFileRequest.json"
+  When I POST a tag file with Code <Code> from the repository expecting unauthorized request return
+  Then the Tag Process Service response should contain Code <Code> and Message <Message>
+  Examples: 
+  | Code | Message                                                           |
+  | -5   | "The project has been archived and this function is not allowed." |
+
 Scenario Outline: TagFile - Bad Request
   Given the Tag file service URI "/api/v2/tagfiles" and request repo "CompactionTagFileRequest.json"
   When I POST a Tag file with name "<paramName>" from the repository expecting bad request return
