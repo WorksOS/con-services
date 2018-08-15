@@ -1,5 +1,5 @@
 ﻿Feature: CompactionTagFile
-	I should be able to POST tag files for compaction.
+  I should be able to POST tag files for compaction.
 
 Scenario Outline: TagFile - Bad Tag File
   Given the Tag file service URI "/api/v2/tagfiles" and request repo "CompactionTagFileRequest.json"
@@ -16,7 +16,7 @@ Scenario Outline: TagFile - Archived Project
   Then the Tag Process Service response should contain Code <Code> and Message <Message>
   Examples: 
   | Code | Message                                                           |
-  | -5   | "The project has been archived and this function is not allowed." |
+  | -1   | "The project has been archived and this function is not allowed." |
 
 Scenario Outline: TagFile - Bad Request
   Given the Tag file service URI "/api/v2/tagfiles" and request repo "CompactionTagFileRequest.json"
