@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,6 +30,7 @@ namespace VSS.Productivity3D.WebApi
     /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
 
+    private ILogger log;
     private IServiceCollection serviceCollection;
 
     /// <summary>
@@ -80,9 +83,11 @@ namespace VSS.Productivity3D.WebApi
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-
+      
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
+
+      log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(Startup));
 
       //Enable CORS before TID so OPTIONS works without authentication
       app.UseCommon(SERVICE_TITLE);
@@ -95,6 +100,7 @@ namespace VSS.Productivity3D.WebApi
         app.UseFilterMiddleware<NewRelicMiddleware>();
       }
 
+      app.UseRewriter(new RewriteOptions().Add(RewriteMalformedPath));
       app.UseResponseCaching();
       app.UseResponseCompression();
       app.UseMvc();
@@ -107,8 +113,6 @@ namespace VSS.Productivity3D.WebApi
     /// </summary>
     private void ConfigureRaptor(ServiceProvider serviceProvider)
     {
-      var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
-
       log.LogInformation("Testing Raptor configuration with sending config request");
 
       try
@@ -124,6 +128,31 @@ namespace VSS.Productivity3D.WebApi
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
       }
+    }
+
+    /// <summary>
+    /// Custom URL rewriter. Replaces all occurrences of // with /.
+    /// </summary>
+    /// <remarks>
+    /// This catch all is needed to work around errant behaviour in TBC where invalid path strings are sent to 3DP.
+    /// If that issue is addressed this rewrite could be removed.
+    /// Note: Custom rewriter is required as framework AddRewrite() method doesn't cater for our needs.
+    /// </remarks>
+    private void RewriteMalformedPath(RewriteContext context)
+    {
+      var request = context.HttpContext.Request;
+
+      var regex = new Regex(@"(?<!:)(\/\/+)");
+
+      if (!regex.IsMatch(request.Path.Value))
+      {
+        return;
+      }
+
+      var newPathString = regex.Replace(request.Path.Value, "/");
+
+      log.LogInformation($"Path rewritten to: '{newPathString}'");
+      request.Path = new PathString(newPathString);
     }
   }
 }
