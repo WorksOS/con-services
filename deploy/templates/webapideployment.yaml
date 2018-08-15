@@ -1,20 +1,20 @@
-{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
-{{- $configname := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $serviceName }}
+  name: {{ $name }}
   labels:
-    app: {{ $serviceName }}
+    app: {{ $name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ $serviceName }}
+      app: {{ $name }}
   template:
     metadata:
       labels:
-        app: {{ $serviceName }}
+        app: {{ $name }}
     spec:
       initContainers:
       - name: init-filterdb

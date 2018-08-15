@@ -1,11 +1,11 @@
-{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ $serviceName }}
+  name: {{ $name }}
 spec:
   selector:
-    app: {{ $serviceName }}
+    app: {{ $name }}
   ports:
   - protocol: TCP
     port: 80
