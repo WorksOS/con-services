@@ -125,6 +125,11 @@ namespace VSS.Productivity3D.Common.Interfaces
             TComputeICVolumesType volumetype, int dataPatchPage, int dataPatchSize, out MemoryStream Patch,
             out int numPatches);
 
+    TASNodeErrorStatus RequestDataPatchPageWithTime(long dataModelID, TASNodeRequestDescriptor requestDescr,
+      TICDisplayMode mode, TICFilterSettings filter1, TICFilterSettings filter2, TVLPDDesignDescriptor design,
+      TComputeICVolumesType volumetype, TSVOICOptions options, int dataPatchPage, int dataPatchSize, out MemoryStream Patch,
+      out int numPatches);
+
     TASNodeErrorStatus GetRenderedMapTileWithRepresentColor(long projectId, TASNodeRequestDescriptor requestDescr,
       TICDisplayMode mode, TColourPalettes palettes, TWGS84Point bl, TWGS84Point tr, bool coordsAreGrid,
       ushort width, ushort height, TICFilterSettings filter1, TICFilterSettings filter2, TSVOICOptions options,

@@ -9,14 +9,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// <summary>
     /// If true there are no non-null cells of information retruned by the query for this subgrid.
     /// </summary>
-    [ProtoMember(1, IsRequired = true)]
     [JsonProperty(PropertyName = "isNull")]
     protected bool IsNull { get; set; }
 
     /// <summary>
     /// The elevation origin referenced by all cell elevations in the binary representation of the patch subgrids. Values are expressed in meters.
     /// </summary>
-    [ProtoMember(2, IsRequired = true)]
+    [ProtoMember(1, IsRequired = true)]
     [JsonProperty(PropertyName = "elevationOrigin")]
     protected float ElevationOrigin { get; set; }
   }

@@ -44,18 +44,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
 
-        var raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.RequestDataPatchPageWithTime(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtDataPatches),
           RaptorConverters.convertDisplayMode(request.Mode),
-          RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
-          request.RenderColorValues,
           filter1,
           filter2,
-          RaptorConverters.convertOptions(null, request.LiftBuildSettings,
-                  request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.setSummaryDataLayersVisibility),
           RaptorConverters.DesignDescriptor(request.DesignDescriptor),
           volType,
+          RaptorConverters.convertOptions(null, request.LiftBuildSettings,
+            request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.setSummaryDataLayersVisibility),
           request.PatchNumber,
           request.PatchSize,
           out var patch,
@@ -64,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (raptorResult == TASNodeErrorStatus.asneOK)
         {
           result = patch != null
-            ? ConvertPatchResult(patch.ToArray())
+            ? ConvertPatchResult(patch.ToArray(), request.IncludeTimeOffsets)
             : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
         }
         else
@@ -86,63 +84,120 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
 
-    private PatchResult ConvertPatchResult(byte[] patch)
+    private PatchResult ConvertPatchResult(byte[] patch, bool includeTimeOffsets)
     {
       using (var ms = new MemoryStream(patch))
       {
-        var totalNumPatchesRequired = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        _ = StreamUtils.__Global.ReadBooleanFromStream(ms); // Discard valuesRenderedToColors flag, it's not needed for this response.
         var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
-        var subgrids = new PatchSubgridResultBase[numSubgridsInPatch];
+        var dataPatchSubgridCount = StreamUtils.__Global.ReadIntegerFromStream(ms);
+        double cellSize = StreamUtils.__Global.ReadDoubleFromStream(ms);
 
-        // From Raptor: 1 << ((FNumLevels * kSubGridIndexBitsPerLevel) -1)
-        const int indexOriginOffset = 1 << 29;
+        var subgrids = new PatchSubgridResultBase[dataPatchSubgridCount];
 
-        for (var i = 0; i < numSubgridsInPatch; i++)
+        for (var i = 0; i < dataPatchSubgridCount; i++)
         {
-          var worldOriginX = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
-          var worldOriginY = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
+          var subgridOriginX = StreamUtils.__Global.ReadDoubleFromStream(ms);
+          var subgridOriginY = StreamUtils.__Global.ReadDoubleFromStream(ms);
           var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
 
-          log.LogDebug($"Subgrid {i + 1} in patch has world origin of {worldOriginX}:{worldOriginY}. IsNull?:{isNull}");
+          log.LogDebug($"Subgrid {i + 1} in patch has world origin of {subgridOriginX}:{subgridOriginY}. IsNull?:{isNull}");
 
-          float elevationOrigin = 0;
-
-          // Protobuf is limited to single dimension arrays, so we cannot use the normal [32,32] layout type used by other patch executors.
-          PatchCellHeightResult[] cells = null;
-
-          if (!isNull)
+          if (isNull)
           {
-            elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
-
-            log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
-
-            const int arrayLength = 32 * 32;
-            cells = new PatchCellHeightResult[arrayLength];
-
-            for (var j = 0; j < arrayLength; j++)
-            {
-              var elevOffset = StreamUtils.__Global.ReadWordFromStream(ms);
-              
-              // Return raw elevation offset delta and the client will determine the elevation using the following equation:
-              // float elevation = elevOffset != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
-
-              // Increment all non-null values by 1. The consumer will subtract 1 from all non zero values to determine the true elevation offset.
-              // The goal is to return the smallest value possible, so we leverage the variant lenght feature of Protobuf to use the smallest number
-              // of bytes possible for each cell element.
-              ushort elevation = (ushort) (elevOffset != 0xffff ? elevOffset + 0x1 : 0x0);
-
-              cells[j] = PatchCellHeightResult.Create(elevation);
-            }
+            continue;
           }
 
-          subgrids[i] = PatchSubgridOriginProtobufResult.Create(worldOriginX, worldOriginY, isNull, elevationOrigin, cells);
+          float elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
+          byte elevationOffsetSizeInBytes = StreamUtils.__Global.ReadByteFromStream(ms);
+
+          uint timeOrigin = StreamUtils.__Global.ReadLongWordFromStream(ms); // UTC expressed as Unix time in seconds.
+          byte timeOffsetSizeInBytes = StreamUtils.__Global.ReadByteFromStream(ms);
+
+          log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
+
+          // Protobuf is limited to single dimension arrays so we cannot use the [32,32] layout used by other patch executors.
+          const int arrayLength = 32 * 32;
+          var cells = new PatchCellHeightResult[arrayLength];
+
+          for (var j = 0; j < arrayLength; j++)
+          {
+            ushort elevationOffsetDelta;
+            uint time = 0;
+
+            switch (elevationOffsetSizeInBytes)
+            {
+              // Return raw elevation offset delta and the client will determine the elevation using the following equation:
+              // float elevation = elevationOffsetDelta != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
+
+              // Also increment all non-null values by 1. The consumer will subtract 1 from all non zero values to determine the true elevation offset.
+              // These efforts are to further help the variant length operations that Protobuf applies to the byte stream.
+              case 1:
+                {
+                  uint elevationOffset = StreamUtils.__Global.ReadByteFromStream(ms);
+                  elevationOffsetDelta = (ushort)(elevationOffset != 0xff ? elevationOffset + 0x1 : 0x0);
+
+                  break;
+                }
+              case 2:
+                {
+                  uint elevationOffset = StreamUtils.__Global.ReadWordFromStream(ms);
+                  elevationOffsetDelta = (ushort)(elevationOffset != 0xffff ? elevationOffset + 0x1 : 0x0);
+
+                  break;
+                }
+              case 4:
+                {
+                  uint elevationOffset = StreamUtils.__Global.ReadLongWordFromStream(ms);
+                  elevationOffsetDelta = (ushort)(elevationOffset != 0xffffffff ? elevationOffset + 0x1 : 0x0);
+
+                  break;
+                }
+              default:
+                {
+                  throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                    $"Invalid elevation offset size, '{elevationOffsetSizeInBytes}'."));
+                }
+            }
+
+            switch (timeOffsetSizeInBytes)
+            {
+              case 1:
+                {
+                  var timeOffset = StreamUtils.__Global.ReadByteFromStream(ms);
+                  time = (uint)(timeOffset != 0xff ? timeOffset : 0x0);
+
+                  break;
+                }
+              case 2:
+                {
+                  var timeOffset = StreamUtils.__Global.ReadWordFromStream(ms);
+                  time = (uint)(timeOffset != 0xffff ? timeOffset : 0x0);
+
+                  break;
+                }
+              case 4:
+                {
+                  var timeOffset = StreamUtils.__Global.ReadLongWordFromStream(ms);
+                  time = timeOffset != 0xffffffff ? timeOffset : 0x0;
+
+                  break;
+                }
+              default:
+                {
+                  throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                    $"Invalid time offset size, '{timeOffsetSizeInBytes}'."));
+                }
+            }
+
+            cells[j] = PatchCellHeightResult.Create(elevationOffsetDelta, includeTimeOffsets ? time : uint.MaxValue);
+          }
+
+          subgrids[i] = PatchSubgridOriginProtobufResult.Create(subgridOriginX, subgridOriginY, elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, cells);
         }
 
         return PatchResult.Create(cellSize,
           numSubgridsInPatch,
-          totalNumPatchesRequired,
+          dataPatchSubgridCount,
           subgrids);
       }
     }

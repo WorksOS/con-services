@@ -61,10 +61,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       requestHandler.AddQueryParam("patchSize", patchSize.ToString());
     }
 
-    [Given(@"cellDownSample ""(.*)""")]
-    public void GivenCellDownSample(int cellDownSample)
+    [Given(@"includeTimeOffsets ""(.*)""")]
+    public void GivenCellDownSample(bool includeTimeOffsets)
     {
-      requestHandler.AddQueryParam("cellDownSample", cellDownSample.ToString());
+      requestHandler.AddQueryParam("includeTimeOffsets", includeTimeOffsets.ToString());
     }
 
     [Then(@"the result should match the ""(.*)"" result from the repository")]

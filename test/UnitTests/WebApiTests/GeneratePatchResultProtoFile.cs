@@ -10,6 +10,9 @@ namespace VSS.Productivity3D.WebApiTests
     [TestMethod]
     public void GenerateProtoFile()
     {
+      // After .proto file is created generate .cs client schema using:
+      // $ protogen --proto_path=C:\temp PatchResult.proto --csharp_out=C:\temp
+
       var fileString = Serializer.GetProto<PatchResult>();
     }
   }

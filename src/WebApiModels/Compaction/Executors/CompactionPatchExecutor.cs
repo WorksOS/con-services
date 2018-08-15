@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var totalNumPatchesRequired = StreamUtils.__Global.ReadIntegerFromStream(ms);
         var valuesRenderedToColors = StreamUtils.__Global.ReadBooleanFromStream(ms);
         var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
+        double cellSize = StreamUtils.__Global.ReadDoubleFromStream(ms);
         var subgrids = new PatchSubgridResultBase[numSubgridsInPatch];
 
         // From Raptor: 1 << ((FNumLevels * kSubGridIndexBitsPerLevel) -1)

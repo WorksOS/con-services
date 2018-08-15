@@ -121,6 +121,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     [Required]
     public int PatchSize { get; private set; }
 
+    [JsonProperty(PropertyName = "includeTimeOffsets")]
+    public bool IncludeTimeOffsets { get; private set; }
+
     /// <summary>
     /// Private constructor
     /// </summary>
@@ -146,7 +149,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       long filterId2,
       FilterLayerMethod filterLayerMethod,
       int patchNumber,
-      int patchSize
+      int patchSize,
+      bool includeTimeOffsets = false
       )
     {
       return new PatchRequest
@@ -166,7 +170,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
         FilterId2 = filterId2,
         FilterLayerMethod = filterLayerMethod,
         PatchNumber = patchNumber,
-        PatchSize = patchSize
+        PatchSize = patchSize,
+        IncludeTimeOffsets = includeTimeOffsets
       };
     }
 

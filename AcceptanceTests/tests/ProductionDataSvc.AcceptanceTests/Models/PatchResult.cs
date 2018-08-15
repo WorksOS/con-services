@@ -14,7 +14,18 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
-    public uint Elevation { get; set; }
+    public uint ElevationOffset { get; set; }
+
+    [global::ProtoBuf.ProtoMember(2)]
+    [global::System.ComponentModel.DefaultValue(0)]
+    public uint TimeOffset
+    {
+      get { return __pbn__TimeOffset ?? 0; }
+      set { __pbn__TimeOffset = value; }
+    }
+    public bool ShouldSerializeTimeOffset() => __pbn__TimeOffset != null;
+    public void ResetTimeOffset() => __pbn__TimeOffset = null;
+    private uint? __pbn__TimeOffset;
 
   }
 
@@ -47,13 +58,16 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
-    public double PatchOriginN { get; set; }
+    public double SubgridOriginX { get; set; }
 
     [global::ProtoBuf.ProtoMember(2, IsRequired = true)]
-    public double PatchOriginE { get; set; }
+    public double SubgridOriginY { get; set; }
 
     [global::ProtoBuf.ProtoMember(3)]
     public global::System.Collections.Generic.List<PatchCellHeightResult> Cells { get; } = new global::System.Collections.Generic.List<PatchCellHeightResult>();
+
+    [global::ProtoBuf.ProtoMember(4, IsRequired = true)]
+    public uint TimeOrigin { get; set; }
 
   }
 
@@ -65,9 +79,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
-    public bool IsNull { get; set; }
-
-    [global::ProtoBuf.ProtoMember(2, IsRequired = true)]
     public float ElevationOrigin { get; set; }
 
     [global::ProtoBuf.ProtoMember(10)]

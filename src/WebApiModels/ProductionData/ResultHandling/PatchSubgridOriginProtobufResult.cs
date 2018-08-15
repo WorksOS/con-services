@@ -6,25 +6,22 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
   /// <summary>
   /// A subgrid of information within a patch result
   /// </summary>
-  [ProtoContract (SkipConstructor = true)]
+  [ProtoContract(SkipConstructor = true)]
   public class PatchSubgridOriginProtobufResult : PatchSubgridResultBase
   {
-    private PatchSubgridOriginProtobufResult()
-    { }
-
     /// <summary>
     /// Gets the northing patch origin in meters, as a delta.
     /// </summary>
     [ProtoMember(1, IsRequired = true)]
-    [JsonProperty(PropertyName = "patchOriginN")]
-    public double PatchOriginN { get; private set; }
+    [JsonProperty(PropertyName = "worldOriginX")]
+    public double SubgridOriginX { get; private set; }
 
     /// <summary>
     /// Gets the easting patch origin in meters, as a delta.
     /// </summary>
     [ProtoMember(2, IsRequired = true)]
-    [JsonProperty(PropertyName = "patchOriginE")]
-    public double PatchOriginE { get; private set; }
+    [JsonProperty(PropertyName = "worldOriginY")]
+    public double SubgridOriginY { get; private set; }
 
     /// <summary>
     /// The grid of cells that make up this subgrid in the patch
@@ -41,16 +38,29 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     protected PatchCellHeightResult[] Cells { get; set; }
 
     /// <summary>
+    /// The elevation origin referenced by all cell elevations in the binary representation of the patch subgrids.
+    /// UTC expressed as Unix time in seconds.
+    /// </summary>
+    [ProtoMember(4, IsRequired = true)]
+    [JsonProperty(PropertyName = "timeOrigin")]
+    protected uint TimeOrigin { get; set; }
+
+    public bool ShouldSerializeTimeOrigin()
+    {
+      return TimeOrigin != uint.MaxValue;
+    }
+
+    /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchSubgridOriginProtobufResult Create(double patchOriginN, double patchOriginE, bool isNull, float elevationOrigin, PatchCellHeightResult[] cells)
+    public static PatchSubgridOriginProtobufResult Create(double subgridOriginX, double subgridOriginY, float elevationOrigin, uint timeOrigin, PatchCellHeightResult[] cells)
     {
       return new PatchSubgridOriginProtobufResult
       {
-        PatchOriginN = patchOriginN,
-        PatchOriginE = patchOriginE,
-        IsNull = isNull,
+        SubgridOriginX = subgridOriginX,
+        SubgridOriginY = subgridOriginY,
         ElevationOrigin = elevationOrigin,
+        TimeOrigin = timeOrigin,
         Cells = cells
       };
     }

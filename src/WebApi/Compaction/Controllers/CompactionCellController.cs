@@ -91,12 +91,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="patchId">Id of the requested patch</param>
     /// <param name="mode">Desired data (0 for elevation)</param>
     /// <param name="patchSize">Number of cell subgrids horizontally/vertically in a square patch (each subgrid has 32 cells)</param>
-    /// <param name="cellDownSample">Cell downsample factor (1 - cell size = 0.34, 2 - cell size = 0.68 etc.)</param>
+    /// <param name="includeTimeOffsets">If set, includes the time when the cell was recorded as a value expressed as Unix UTC time.</param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
     [ProjectVerifier]
     [Route("api/v2/patches")]
     [HttpGet]
-    public async Task<IActionResult> GetSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, int cellDownSample = 1)
+    public async Task<IActionResult> GetSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
     {
       Log.LogInformation($"GetSubGridPatches: {Request.QueryString}");
 
@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         false,
         VolumesType.None,
         VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
-        null, filter, filter?.Id ?? 0, null, 0, FilterLayerMethod.AutoMapReset, patchId, patchSize);
+        null, filter, filter?.Id ?? 0, null, 0, FilterLayerMethod.AutoMapReset, patchId, patchSize, includeTimeOffsets);
 
       patchRequest.Validate();
 

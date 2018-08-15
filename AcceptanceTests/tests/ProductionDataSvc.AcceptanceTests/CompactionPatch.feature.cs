@@ -82,7 +82,7 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void Patch_GoodRequest(string requestName, string projectUID, string filterUID, string patchId, string mode, string patchSize, string cellDownSample, string resultName, string httpCode, string[] exampleTags)
+        public virtual void Patch_GoodRequest(string requestName, string projectUID, string filterUID, string patchId, string mode, string patchSize, string includeTimeOffsets, string resultName, string httpCode, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Patch - Good Request", exampleTags);
 #line 4
@@ -102,13 +102,33 @@ this.ScenarioSetup(scenarioInfo);
 #line 11
     testRunner.And(string.Format("patchSize \"{0}\"", patchSize), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 12
-    testRunner.And(string.Format("cellDownSample \"{0}\"", cellDownSample), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("includeTimeOffsets \"{0}\"", includeTimeOffsets), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 13
     testRunner.When(string.Format("I request result with expected status result \"{0}\"", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 14
     testRunner.Then(string.Format("the result should match the \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Patch - Good Request: PatchesNoFilterNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPatch")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PatchesNoFilterNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PatchesNoFilterNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "false")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightNoFilterNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
+        public virtual void Patch_GoodRequest_PatchesNoFilterNoTime()
+        {
+#line 4
+this.Patch_GoodRequest("PatchesNoFilterNoTime", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1", "false", "HeightNoFilterNoTime", "200", ((string[])(null)));
+#line hidden
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -121,13 +141,13 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightNoFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
         public virtual void Patch_GoodRequest_PatchesNoFilter()
         {
 #line 4
-this.Patch_GoodRequest("PatchesNoFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1", "1", "HeightNoFilter", "200", ((string[])(null)));
+this.Patch_GoodRequest("PatchesNoFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1", "true", "HeightNoFilter", "200", ((string[])(null)));
 #line hidden
         }
         
@@ -141,13 +161,13 @@ this.Patch_GoodRequest("PatchesNoFilter", "ff91dd40-1569-4765-a2bc-014321f76ace"
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightAreaFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
         public virtual void Patch_GoodRequest_PatchesWithFilter()
         {
 #line 4
-this.Patch_GoodRequest("PatchesWithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "0", "0", "1", "1", "HeightAreaFilter", "200", ((string[])(null)));
+this.Patch_GoodRequest("PatchesWithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "0", "0", "1", "true", "HeightAreaFilter", "200", ((string[])(null)));
 #line hidden
         }
         
@@ -161,43 +181,64 @@ this.Patch_GoodRequest("PatchesWithFilter", "ff91dd40-1569-4765-a2bc-014321f76ac
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "Patch1WithFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
         public virtual void Patch_GoodRequest_Patch1WithFilter()
         {
 #line 4
-this.Patch_GoodRequest("Patch1WithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "1", "0", "1", "1", "Patch1WithFilter", "200", ((string[])(null)));
+this.Patch_GoodRequest("Patch1WithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "1", "0", "1", "true", "Patch1WithFilter", "200", ((string[])(null)));
 #line hidden
         }
         
-        public virtual void Patch_GoodRequestProtobuf(string requestName, string projectUID, string filterUID, string patchId, string mode, string patchSize, string cellDownSample, string resultName, string httpCode, string acceptHeader, string[] exampleTags)
+        public virtual void Patch_GoodRequestProtobuf(string requestName, string projectUID, string filterUID, string patchId, string mode, string patchSize, string includeTimeOffsets, string resultName, string httpCode, string acceptHeader, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Patch - Good Request Protobuf", exampleTags);
-#line 21
-this.ScenarioSetup(scenarioInfo);
 #line 22
-    testRunner.Given("the Compaction service URI \"/api/v2/patches\" for operation \"All\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 23
-    testRunner.And("the result file \"CompactionPatchResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.Given("the Compaction service URI \"/api/v2/patches\" for operation \"All\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 24
-    testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("the result file \"CompactionPatchResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 25
-    testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 26
-    testRunner.And(string.Format("patchId \"{0}\"", patchId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 27
-    testRunner.And(string.Format("mode \"{0}\"", mode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("patchId \"{0}\"", patchId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 28
-    testRunner.And(string.Format("patchSize \"{0}\"", patchSize), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("mode \"{0}\"", mode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 29
-    testRunner.And(string.Format("cellDownSample \"{0}\"", cellDownSample), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("patchSize \"{0}\"", patchSize), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 30
-    testRunner.When(string.Format("I request result with Accept header \"{0}\" and expected status result \"{1}\"", acceptHeader, httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.And(string.Format("includeTimeOffsets \"{0}\"", includeTimeOffsets), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 31
+    testRunner.When(string.Format("I request result with Accept header \"{0}\" and expected status result \"{1}\"", acceptHeader, httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 32
     testRunner.Then(string.Format("the deserialized result should match the \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Patch - Good Request Protobuf: PatchesNoFilterNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionPatch")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PatchesNoFilterNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PatchesNoFilterNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "false")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightNoFilterProtobufNoTime")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:AcceptHeader", "application/x-protobuf")]
+        public virtual void Patch_GoodRequestProtobuf_PatchesNoFilterNoTime()
+        {
+#line 22
+this.Patch_GoodRequestProtobuf("PatchesNoFilterNoTime", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1", "false", "HeightNoFilterProtobufNoTime", "200", "application/x-protobuf", ((string[])(null)));
+#line hidden
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -210,14 +251,14 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightNoFilterProtobuf")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:AcceptHeader", "application/x-protobuf")]
         public virtual void Patch_GoodRequestProtobuf_PatchesNoFilter()
         {
-#line 21
-this.Patch_GoodRequestProtobuf("PatchesNoFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1", "1", "HeightNoFilterProtobuf", "200", "application/x-protobuf", ((string[])(null)));
+#line 22
+this.Patch_GoodRequestProtobuf("PatchesNoFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1", "true", "HeightNoFilterProtobuf", "200", "application/x-protobuf", ((string[])(null)));
 #line hidden
         }
         
@@ -231,14 +272,14 @@ this.Patch_GoodRequestProtobuf("PatchesNoFilter", "ff91dd40-1569-4765-a2bc-01432
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "HeightAreaFilterProtobuf")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:AcceptHeader", "application/x-protobuf")]
         public virtual void Patch_GoodRequestProtobuf_PatchesWithFilter()
         {
-#line 21
-this.Patch_GoodRequestProtobuf("PatchesWithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "0", "0", "1", "1", "HeightAreaFilterProtobuf", "200", "application/x-protobuf", ((string[])(null)));
+#line 22
+this.Patch_GoodRequestProtobuf("PatchesWithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "0", "0", "1", "true", "HeightAreaFilterProtobuf", "200", "application/x-protobuf", ((string[])(null)));
 #line hidden
         }
         
@@ -252,41 +293,41 @@ this.Patch_GoodRequestProtobuf("PatchesWithFilter", "ff91dd40-1569-4765-a2bc-014
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "Patch1WithFilterProtobuf")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:AcceptHeader", "application/x-protobuf")]
         public virtual void Patch_GoodRequestProtobuf_Patch1WithFilter()
         {
-#line 21
-this.Patch_GoodRequestProtobuf("Patch1WithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "1", "0", "1", "1", "Patch1WithFilterProtobuf", "200", "application/x-protobuf", ((string[])(null)));
+#line 22
+this.Patch_GoodRequestProtobuf("Patch1WithFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "1", "0", "1", "true", "Patch1WithFilterProtobuf", "200", "application/x-protobuf", ((string[])(null)));
 #line hidden
         }
         
-        public virtual void Patch_BadRequest(string requestName, string projectUID, string filterUID, string patchId, string mode, string patchSize, string cellDownSample, string resultName, string httpCode, string[] exampleTags)
+        public virtual void Patch_BadRequest(string requestName, string projectUID, string filterUID, string patchId, string mode, string patchSize, string includeTimeOffsets, string resultName, string httpCode, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Patch - Bad Request", exampleTags);
-#line 38
-this.ScenarioSetup(scenarioInfo);
-#line 39
-    testRunner.Given("the Compaction service URI \"/api/v2/patches\" for operation \"All\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 40
-    testRunner.And("the result file \"CompactionPatchResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 41
-    testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.Given("the Compaction service URI \"/api/v2/patches\" for operation \"All\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 42
-    testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("the result file \"CompactionPatchResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 43
-    testRunner.And(string.Format("patchId \"{0}\"", patchId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 44
-    testRunner.And(string.Format("mode \"{0}\"", mode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("filterUid \"{0}\"", filterUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 45
-    testRunner.And(string.Format("patchSize \"{0}\"", patchSize), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("patchId \"{0}\"", patchId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 46
-    testRunner.And(string.Format("cellDownSample \"{0}\"", cellDownSample), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And(string.Format("mode \"{0}\"", mode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 47
-    testRunner.When(string.Format("I request result with expected status result \"{0}\"", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.And(string.Format("patchSize \"{0}\"", patchSize), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 48
+    testRunner.And(string.Format("includeTimeOffsets \"{0}\"", includeTimeOffsets), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 49
+    testRunner.When(string.Format("I request result with expected status result \"{0}\"", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 50
     testRunner.Then(string.Format("the result should match the \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -302,13 +343,13 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidProjectUid")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "401")]
         public virtual void Patch_BadRequest_NullProjectUid()
         {
-#line 38
-this.Patch_BadRequest("NullProjectUid", "", "", "0", "0", "1", "1", "InvalidProjectUid", "401", ((string[])(null)));
+#line 40
+this.Patch_BadRequest("NullProjectUid", "", "", "0", "0", "1", "true", "InvalidProjectUid", "401", ((string[])(null)));
 #line hidden
         }
         
@@ -322,13 +363,13 @@ this.Patch_BadRequest("NullProjectUid", "", "", "0", "0", "1", "1", "InvalidProj
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidProjectUid")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "401")]
         public virtual void Patch_BadRequest_InvalidProjectUid()
         {
-#line 38
-this.Patch_BadRequest("InvalidProjectUid", "00000000-0000-0000-0000-000000000000", "", "0", "0", "1", "1", "InvalidProjectUid", "401", ((string[])(null)));
+#line 40
+this.Patch_BadRequest("InvalidProjectUid", "00000000-0000-0000-0000-000000000000", "", "0", "0", "1", "true", "InvalidProjectUid", "401", ((string[])(null)));
 #line hidden
         }
         
@@ -342,13 +383,13 @@ this.Patch_BadRequest("InvalidProjectUid", "00000000-0000-0000-0000-000000000000
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "-1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidPatchSize")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "400")]
         public virtual void Patch_BadRequest_NegativePatchSize()
         {
-#line 38
-this.Patch_BadRequest("NegativePatchSize", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "-1", "1", "InvalidPatchSize", "400", ((string[])(null)));
+#line 40
+this.Patch_BadRequest("NegativePatchSize", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "-1", "true", "InvalidPatchSize", "400", ((string[])(null)));
 #line hidden
         }
         
@@ -362,13 +403,13 @@ this.Patch_BadRequest("NegativePatchSize", "ff91dd40-1569-4765-a2bc-014321f76ace
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1001")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidPatchSize")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "400")]
         public virtual void Patch_BadRequest_TooLargePatchSize()
         {
-#line 38
-this.Patch_BadRequest("TooLargePatchSize", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1001", "1", "InvalidPatchSize", "400", ((string[])(null)));
+#line 40
+this.Patch_BadRequest("TooLargePatchSize", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "0", "0", "1001", "true", "InvalidPatchSize", "400", ((string[])(null)));
 #line hidden
         }
         
@@ -382,13 +423,13 @@ this.Patch_BadRequest("TooLargePatchSize", "ff91dd40-1569-4765-a2bc-014321f76ace
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidPatchId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "400")]
         public virtual void Patch_BadRequest_NegativePatchId()
         {
-#line 38
-this.Patch_BadRequest("NegativePatchId", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "-1", "0", "1", "1", "InvalidPatchId", "400", ((string[])(null)));
+#line 40
+this.Patch_BadRequest("NegativePatchId", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "-1", "0", "1", "true", "InvalidPatchId", "400", ((string[])(null)));
 #line hidden
         }
         
@@ -402,13 +443,13 @@ this.Patch_BadRequest("NegativePatchId", "ff91dd40-1569-4765-a2bc-014321f76ace",
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchId", "1001")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CellDownSample", "1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidPatchId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "400")]
         public virtual void Patch_BadRequest_TooLargePatchId()
         {
-#line 38
-this.Patch_BadRequest("TooLargePatchId", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "1001", "0", "1", "1", "InvalidPatchId", "400", ((string[])(null)));
+#line 40
+this.Patch_BadRequest("TooLargePatchId", "ff91dd40-1569-4765-a2bc-014321f76ace", "", "1001", "0", "1", "true", "InvalidPatchId", "400", ((string[])(null)));
 #line hidden
         }
     }
