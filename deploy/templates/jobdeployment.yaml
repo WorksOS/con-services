@@ -1,4 +1,5 @@
 {{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 44 | trimSuffix "-" -}}
+{{- $configName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -18,6 +19,6 @@ spec:
             args: ["VSS.Productivity3D.Filter.Cleanup.dll"]
             envFrom:
             - configMapRef:
-                name: {{ $name }}
+                name: {{ $configName }}
             imagePullPolicy: Always
           restartPolicy: Never
