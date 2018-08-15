@@ -676,29 +676,12 @@ namespace VSS.TRex.Designs
 
     private double GetHeight(Triangle tri, double X, double Y)
     {
-      return XYZ.GetTriangleHeight(VertexItems[tri.Vertex0],
-        VertexItems[tri.Vertex1],
-        VertexItems[tri.Vertex2], X, Y);
+      return XYZ.GetTriangleHeight(VertexItems[tri.Vertex0], VertexItems[tri.Vertex1], VertexItems[tri.Vertex2], X, Y);
     }
 
-    //private long count = 0;
     private double GetHeight2(ref Triangle tri, double X, double Y)
     {
       return XYZ.GetTriangleHeightEx(ref VertexItems[tri.Vertex0], ref VertexItems[tri.Vertex1], ref VertexItems[tri.Vertex2], X, Y);
-
-      /*
-      count++;
-
-      double result1 = XYZ.GetTriangleHeight(VertexItems[tri.Vertex0], VertexItems[tri.Vertex1], VertexItems[tri.Vertex2], X, Y);
-      double result2 = XYZ.GetTriangleHeightEx(VertexItems[tri.Vertex0], VertexItems[tri.Vertex1], VertexItems[tri.Vertex2], X, Y);
-
-      if (result1 == Common.Consts.NullDouble ^ result2 == Common.Consts.NullDouble)
-      {
-        result1 = result2;
-      }
-
-      return result2
-      */
     }
 
     /// <summary>
