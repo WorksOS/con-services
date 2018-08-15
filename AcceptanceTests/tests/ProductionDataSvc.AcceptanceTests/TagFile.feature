@@ -31,9 +31,9 @@ Scenario Outline: TagFile - Bad Request
   | NullBoundary     | -1   |
   | FilenameTooLong  | -1   |
 
-Scenario Outline: TagFile - Unauthorized
-  When I POST a Tag file with name "<ParamName>" from the repository expecting Unauthorized return
+Scenario Outline: TagFile - Archived Project
+  When I POST a Tag file with name "<ParamName>" from the repository expecting bad request return
   Then the Tag Process Service response should contain Code <Code> and Message <Message>
   Examples: 
   | ParamName        | Code | Message                                                           |
-  | InvalidProjectId | -5   | "The project has been archived and this function is not allowed." |
+  | InvalidProjectId | -1   | "The project has been archived and this function is not allowed." |

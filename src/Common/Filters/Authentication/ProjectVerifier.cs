@@ -74,8 +74,8 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
 
       if (projectDescriptor != null && projectDescriptor.IsArchived && !AllowArchivedState)
       {
-        throw new ServiceException(HttpStatusCode.Unauthorized,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "The project has been archived and this function is not allowed."));
       }
     }

@@ -262,16 +262,16 @@ this.TagFile_BadRequest("FilenameTooLong", "-1", ((string[])(null)));
 #line hidden
         }
         
-        public virtual void TagFile_Unauthorized(string paramName, string code, string message, string[] exampleTags)
+        public virtual void TagFile_ArchivedProject(string paramName, string code, string message, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("TagFile - Unauthorized", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("TagFile - Archived Project", exampleTags);
 #line 34
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 35
-  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting Unauthorized retu" +
-                        "rn", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting bad request retur" +
+                        "n", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 36
   testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -279,16 +279,16 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Unauthorized: InvalidProjectId")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("TagFile - Archived Project: InvalidProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParamName", "InvalidProjectId")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"The project has been archived and this function is not allowed.\"")]
-        public virtual void TagFile_Unauthorized_InvalidProjectId()
+        public virtual void TagFile_ArchivedProject_InvalidProjectId()
         {
 #line 34
-this.TagFile_Unauthorized("InvalidProjectId", "-5", "\"The project has been archived and this function is not allowed.\"", ((string[])(null)));
+this.TagFile_ArchivedProject("InvalidProjectId", "-1", "\"The project has been archived and this function is not allowed.\"", ((string[])(null)));
 #line hidden
         }
     }
