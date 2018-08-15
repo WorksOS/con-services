@@ -12,7 +12,8 @@ import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
+    'x-visionlink-customeruid': '00000',
+    'authorization': 'dont care'
   })
 };
 
@@ -24,7 +25,7 @@ export class UploadDataService {
   constructor(
     private http: HttpClient,
     httpErrorHandler: HttpErrorHandler) {
-    this.handleError = httpErrorHandler.createHandleError('HeroesService');
+    this.handleError = httpErrorHandler.createHandleError('UploadDataService');
   }
 
   ///** GET heroes from the server */
