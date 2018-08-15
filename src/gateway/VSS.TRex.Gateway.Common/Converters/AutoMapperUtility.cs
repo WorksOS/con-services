@@ -95,7 +95,7 @@ namespace VSS.TRex.Gateway.Common.Converters
         return new CellSpatialFilter
         {
           CoordsAreGrid = src.PolygonGrid != null,
-          IsSpatial = true,
+          IsSpatial = fence != null,
           Fence = fence
         };
       }

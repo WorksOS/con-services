@@ -31,7 +31,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
             {
                 using (BinaryWriter writer = new BinaryWriter(ms))
                 {
-                    SubGridTreePersistor.Write(mask, Consts.EXISTENCE_MAP_HEADER, Consts.EXISTENCE_MAP_VERSION, writer);
+                    SubGridTreePersistor.Write(mask, Consts.EXISTENCE_MAP_HEADER, Consts.EXISTENCE_MAP_VERSION, writer, null);
 
                     ExistenceMapServer.Instance().SetExistenceMap(key, ms.ToArray());
                 }

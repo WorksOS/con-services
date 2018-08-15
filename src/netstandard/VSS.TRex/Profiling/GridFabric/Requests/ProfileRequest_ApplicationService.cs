@@ -1,7 +1,9 @@
-﻿using VSS.TRex.GridFabric.Requests;
+﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.ComputeFuncs;
 using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.Servers;
 
 namespace VSS.TRex.Profiling.GridFabric.Requests
 {
@@ -10,5 +12,8 @@ namespace VSS.TRex.Profiling.GridFabric.Requests
   /// </summary>
   public class ProfileRequest_ApplicationService : GenericASNodeRequest<ProfileRequestArgument_ApplicationService, ProfileRequestComputeFunc_ApplicationService, ProfileRequestResponse>
   {
+    public ProfileRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE_PROFILER)
+    {
+    }
   }
 }

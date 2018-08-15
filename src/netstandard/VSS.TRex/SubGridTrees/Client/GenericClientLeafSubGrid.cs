@@ -41,6 +41,18 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
+        /// Returns a direct copy of the cells content of this subgrid.
+        /// </summary>
+        /// <returns></returns>
+        public T[,] Clone2DArray()
+        {
+          T[,] result = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+          Array.Copy(Cells, 0, result, 0, SubGridTree.SubGridTreeDimension * SubGridTree.SubGridTreeDimension);
+       
+          return result;
+        }
+
+        /// <summary>
         /// Iterates over all the cells in the leaf subgrid calling functor on each of them.
         /// Both non-null and null values are presented to functor. If functor returns false
         /// the ForEach terminates and returns false.

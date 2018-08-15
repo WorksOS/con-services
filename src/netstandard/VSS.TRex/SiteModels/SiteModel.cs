@@ -531,7 +531,7 @@ namespace VSS.TRex.SiteModels
                 {
                     using (BinaryWriter writer = new BinaryWriter(MS))
                     {
-                        SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer);
+                        SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer, null);
                         StorageProxy.WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, MS);
                     }
                 }
@@ -562,7 +562,7 @@ namespace VSS.TRex.SiteModels
                 {
                     using (BinaryReader reader = new BinaryReader(MS))
                     {
-                        SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, reader);
+                        SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, reader, null);
                     }
                 }
                 finally

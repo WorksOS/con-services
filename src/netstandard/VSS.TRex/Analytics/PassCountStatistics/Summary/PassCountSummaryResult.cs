@@ -6,7 +6,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.Summary
   /// <summary>
   /// The result obtained from performing a Pass Count analytics request
   /// </summary>
-  public class PassCountSummaryCountResult : SummaryAnalyticsResult
+  public class PassCountSummaryResult : SummaryAnalyticsResult
   {
     /// <summary>
     /// Are the Pass Count target range values applying to all processed cells constant?

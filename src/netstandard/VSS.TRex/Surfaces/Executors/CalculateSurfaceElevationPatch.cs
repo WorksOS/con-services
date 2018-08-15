@@ -50,7 +50,7 @@ namespace VSS.TRex.Surfaces.Executors
       CalcResult = DesignProfilerRequestResult.UnknownError;
 
       DesignBase Design;
-      object Hint = null;
+      int Hint = -1;
 
       try
       {

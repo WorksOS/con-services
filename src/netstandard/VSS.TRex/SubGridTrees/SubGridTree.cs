@@ -294,15 +294,11 @@ namespace VSS.TRex.SubGridTrees
                                                                   uint IndexOriginOffset,
                                                                   out uint CellX, out uint CellY)
         {
-            // Calculate the cell index in a centered [0,0] origin basis
-            CellX = (uint)Math.Floor(X / CellSize);
-            CellY = (uint)Math.Floor(Y / CellSize);
-
-            // Convert the cell indexes into a bottom left [0,0] basis (ie: to grid cell
-            // indexes in the top right quadrant).
-
-            CellX += IndexOriginOffset;
-            CellY += IndexOriginOffset;
+          // Calculate the cell index in a centered [0,0] origin basis
+          // Convert the cell indexes into a bottom left [0,0] basis (ie: to grid cell
+          // indexes in the top right quadrant).
+            CellX = (uint)Math.Floor(X / CellSize) + IndexOriginOffset;
+            CellY = (uint)Math.Floor(Y / CellSize) + IndexOriginOffset;
         }
 
         /// <summary>
@@ -318,7 +314,7 @@ namespace VSS.TRex.SubGridTrees
         public bool CalculateIndexOfCellContainingPosition(double X, double Y,
                                                            out uint CellX, out uint CellY)
         {
-            if ((Math.Abs(X) > MaxOrdinate) || (Math.Abs(Y) > MaxOrdinate))
+            if (Math.Abs(X) > MaxOrdinate || Math.Abs(Y) > MaxOrdinate)
             {
                 CellX = uint.MaxValue;
                 CellY = uint.MaxValue;
@@ -668,7 +664,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// GetCellExtentsconputes the real world extents of the OTG cell identified
+        /// GetCellExtents computes the real world extents of the OTG cell identified
         /// by X and Y. X and Y are in the bottom left origin of the grid.
         /// The returned extents are translated to the centered origin of the real
         /// world coordinate system
@@ -684,11 +680,32 @@ namespace VSS.TRex.SubGridTrees
             return new BoundingWorldExtent3D(OriginX, OriginY, OriginX + CellSize, OriginY + CellSize);
         }
 
+      /// <summary>
+      /// GetCellExtents computes the real world extents of the OTG cell identified
+      /// by X and Y. X and Y are in the bottom left origin of the grid.
+      /// The returned extents are translated to the centered origin of the real
+      /// world coordinate system
+      /// </summary>
+      /// <param name="X"></param>
+      /// <param name="Y"></param>
+      /// <param name="extents"></param>
+      /// <returns></returns>
+      public void GetCellExtents(uint X, uint Y, ref BoundingWorldExtent3D extents)
+      {
+        double OriginX = (X - IndexOriginOffset) * CellSize;
+        double OriginY = (Y - IndexOriginOffset) * CellSize;
+
+        extents.MinX = OriginX;
+        extents.MinY = OriginY;
+        extents.MaxX = OriginX + CellSize;
+        extents.MaxY = OriginY + CellSize;
+      }
+
         /// <summary>
-        // CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
-        // it to the caller. The newly created subgrid is _not_ attached to this grid.
-        /// </summary>
-        /// <returns></returns>
-        public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubgrid(NumLevels) as ILeafSubGrid;
+    // CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
+    // it to the caller. The newly created subgrid is _not_ attached to this grid.
+    /// </summary>
+    /// <returns></returns>
+    public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubgrid(NumLevels) as ILeafSubGrid;
     }
 }

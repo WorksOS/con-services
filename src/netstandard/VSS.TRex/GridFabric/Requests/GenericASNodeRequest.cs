@@ -15,13 +15,17 @@ namespace VSS.TRex.GridFabric.Requests
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
         where TResponse : class, new()
     {
-        /// <summary>
-        /// Executes the generic request by instantiating the required ComputeFunc and sending it to 
-        /// the compute projection on the grid as defined by the GridName and Role parameters in this request
-        /// </summary>
-        /// <param name="arg"></param>
-        /// <returns></returns>
-        public override TResponse Execute(TArgument arg)
+      public GenericASNodeRequest(string gridName, string role) : base(gridName, role)
+      {
+      }
+
+    /// <summary>
+    /// Executes the generic request by instantiating the required ComputeFunc and sending it to 
+    /// the compute projection on the grid as defined by the GridName and Role parameters in this request
+    /// </summary>
+    /// <param name="arg"></param>
+    /// <returns></returns>
+    public override TResponse Execute(TArgument arg)
         {
             // Construct the function to be used
             TComputeFunc func = new TComputeFunc();
