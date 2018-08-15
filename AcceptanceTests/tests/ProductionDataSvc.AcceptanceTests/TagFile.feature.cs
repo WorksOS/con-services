@@ -284,13 +284,11 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParamName", "InvalidProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-5")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"Missing Project or project does not belong to specified customer or don\'t have a" +
-            "ccess to the project 0\"")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"The project has been archived and this function is not allowed.\"")]
         public virtual void TagFile_Unauthorized_InvalidProjectId()
         {
 #line 34
-this.TagFile_Unauthorized("InvalidProjectId", "-5", "\"Missing Project or project does not belong to specified customer or don\'t have a" +
-                    "ccess to the project 0\"", ((string[])(null)));
+this.TagFile_Unauthorized("InvalidProjectId", "-5", "\"The project has been archived and this function is not allowed.\"", ((string[])(null)));
 #line hidden
         }
     }
