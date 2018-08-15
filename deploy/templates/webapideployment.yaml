@@ -25,7 +25,7 @@ spec:
             name: {{ $configName }}
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:{{ .Values.image.tag }}
-        name: {{ $serviceName }}     
+        name: {{ $name }}     
         livenessProbe:
           httpGet:
             scheme: HTTP
