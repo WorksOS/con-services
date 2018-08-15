@@ -681,6 +681,26 @@ namespace VSS.TRex.Designs
         VertexItems[tri.Vertex2], X, Y);
     }
 
+    //private long count = 0;
+    private double GetHeight2(ref Triangle tri, double X, double Y)
+    {
+      return XYZ.GetTriangleHeightEx(ref VertexItems[tri.Vertex0], ref VertexItems[tri.Vertex1], ref VertexItems[tri.Vertex2], X, Y);
+
+      /*
+      count++;
+
+      double result1 = XYZ.GetTriangleHeight(VertexItems[tri.Vertex0], VertexItems[tri.Vertex1], VertexItems[tri.Vertex2], X, Y);
+      double result2 = XYZ.GetTriangleHeightEx(VertexItems[tri.Vertex0], VertexItems[tri.Vertex1], VertexItems[tri.Vertex2], X, Y);
+
+      if (result1 == Common.Consts.NullDouble ^ result2 == Common.Consts.NullDouble)
+      {
+        result1 = result2;
+      }
+
+      return result2
+      */
+    }
+
     /// <summary>
     /// Interpolates a single spot height fromn the design, using the optimised spatial index
     /// </summary>
@@ -839,10 +859,14 @@ namespace VSS.TRex.Designs
             // Check that this hint triangle has an extent in the subgrid that intersects with the (x, y) point being queried
             if (x >= triangleCellExtent.MinX && x <= triangleCellExtent.MaxX && y >= triangleCellExtent.MinY && y <= triangleCellExtent.MaxY)
             {
-              double Z = GetHeight(TriangleItems[SpatialIndexOptimisedTriangles[HintIndex]], X, Y);
+              //NumTINHeightRequests++;
+
+              double Z = GetHeight2(ref TriangleItems[SpatialIndexOptimisedTriangles[HintIndex]], X, Y);
 
               if (Z != Common.Consts.NullDouble)
               {
+                //NumNonNullProbeResults++;
+
                 Patch[x, y] = (float) (Z + Offset);
                 hasValues = true;
                 return; // Move to next cell
@@ -862,11 +886,12 @@ namespace VSS.TRex.Designs
 
             //NumTINHeightRequests++;
 
-            double Z = GetHeight(TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
+            double Z = GetHeight2(ref TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
             if (Z != Common.Consts.NullReal)
             {
               //NumNonNullProbeResults++;
+              
               HintIndex = i;
               hasValues = true;
               Patch[x, y] = (float) (Z + Offset);
@@ -1048,7 +1073,7 @@ namespace VSS.TRex.Designs
                 return;
 
               /////////////////////////////////////////////////////////////////////////////////////////////////
-              /// Start: Determine the triangles that definitely cannot cover one or more cells in each subgrid
+              // Start: Determine the triangles that definitely cannot cover one or more cells in each subgrid
 
               double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTree.SubGridTreeDimension;
               double halfLeafCellSize = leafCellSize / 2;
@@ -1141,7 +1166,7 @@ namespace VSS.TRex.Designs
                 trianglesCopiedToLeaf++;
                 SpatialIndexOptimisedTriangles[copiedCount++] = triList[i];
               }
-              /// End: Determine the triangles that definitely cannot cover one or more cells in each subgrid
+              // End: Determine the triangles that definitely cannot cover one or more cells in each subgrid
               ///////////////////////////////////////////////////////////////////////////////////////////////
 
               arrayReference.Count = trianglesCopiedToLeaf;
@@ -1314,7 +1339,9 @@ namespace VSS.TRex.Designs
         if (!File.Exists(fileName))
           return false;
 
-        using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(fileName)))
+        byte[] bytes = File.ReadAllBytes(fileName);
+
+        using (MemoryStream ms = new MemoryStream(bytes))
         {
           using (BinaryReader reader = new BinaryReader(ms))
           {
@@ -1327,8 +1354,19 @@ namespace VSS.TRex.Designs
             // Load the array of triangle references
             long numTriangles = reader.ReadInt64();
             SpatialIndexOptimisedTriangles = new int[numTriangles];
-            for (long i = 0; i < numTriangles; i++)
-              SpatialIndexOptimisedTriangles[i] = reader.ReadInt32();
+            int bufPos = (int)ms.Position;
+            for (int i = 0; i < numTriangles; i++)
+            {
+              // Binary reader version, replaced by faster version below
+              // SpatialIndexOptimisedTriangles[i] = reader.ReadInt32();
+
+              // The much faster direct version
+              SpatialIndexOptimisedTriangles[i] = bytes[bufPos] | bytes[bufPos + 1] << 8 | bytes[bufPos + 2] << 16 | bytes[bufPos + 3] << 24;
+              bufPos += 4;
+            }
+
+            // Reset stream position to start of serialised sub grid tree.
+            ms.Position = bufPos;
 
             // Load the tree of references into the optimised triangle reference list
             return SubGridTreePersistor.Read(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, reader, SerialiseInOptimisedSpatialIndexSubGridCells);
@@ -1455,7 +1493,7 @@ namespace VSS.TRex.Designs
             // write out the array of triangle references
             writer.Write((long) SpatialIndexOptimisedTriangles.Length);
             foreach (int triIndex in SpatialIndexOptimisedTriangles)
-              writer.Write((int) triIndex);
+              writer.Write(triIndex);
 
             // Write out the subgrid tree of index references
             SubGridTreePersistor.Write(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, writer, SerialiseOutOptimisedSpatialIndexSubGridCells);
@@ -1522,8 +1560,6 @@ namespace VSS.TRex.Designs
       {
         return true;
       }
-
-      ;
 
       // Otherwise 'no'
       return false;

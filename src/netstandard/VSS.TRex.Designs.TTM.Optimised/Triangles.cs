@@ -140,19 +140,17 @@ namespace VSS.TRex.Designs.TTM.Optimised
         int loopLimit = header.NumberOfTriangles;
         for (int i = 0; i < loopLimit; i++)
         {
-          int RecPos = bufPos;
-
           if (readInt16s)
           {
-            Items[i].Vertex0 = bytes[RecPos] | bytes[RecPos + 1] << 8;
-            Items[i].Vertex1 = bytes[RecPos + 2] | bytes[RecPos + 3] << 8;
-            Items[i].Vertex2 = bytes[RecPos + 4] | bytes[RecPos + 5] << 8;
+            Items[i].Vertex0 = (bytes[bufPos] | bytes[bufPos + 1] << 8) - 1;
+            Items[i].Vertex1 = (bytes[bufPos + 2] | bytes[bufPos + 3] << 8) - 1;
+            Items[i].Vertex2 = (bytes[bufPos + 4] | bytes[bufPos + 5] << 8) - 1;
           }
           else
           {
-            Items[i].Vertex0 = bytes[RecPos] | bytes[RecPos + 1] << 8 | bytes[RecPos + 2] << 16 | bytes[RecPos + 3] << 24;
-            Items[i].Vertex1 = bytes[RecPos + 4] | bytes[RecPos + 5] << 8 | bytes[RecPos + 6] << 16 | bytes[RecPos + 7] << 24;
-            Items[i].Vertex2 = bytes[RecPos + 8] | bytes[RecPos + 9] << 8 | bytes[RecPos + 10] << 16 | bytes[RecPos + 11] << 24;
+            Items[i].Vertex0 = (bytes[bufPos] | bytes[bufPos + 1] << 8 | bytes[bufPos + 2] << 16 | bytes[bufPos + 3] << 24) - 1;
+            Items[i].Vertex1 = (bytes[bufPos + 4] | bytes[bufPos + 5] << 8 | bytes[bufPos + 6] << 16 | bytes[bufPos + 7] << 24) - 1;
+            Items[i].Vertex2 = (bytes[bufPos + 8] | bytes[bufPos + 9] << 8 | bytes[bufPos + 10] << 16 | bytes[bufPos + 11] << 24) - 1;
           }
 
           // This loop does not need to be executed since the reader repositions the reading location after each serialise in

@@ -74,9 +74,9 @@ namespace VSS.TRex.Designs.TTM.Optimised
         //Vertices.Read(bytes, Header.StartOffsetOfVertices, Header);
 
         LoadErrMsg = "Error reading triangles";
-        reader.BaseStream.Position = Header.StartOffsetOfTriangles;
-        Triangles.Read(reader, Header);
-        //Triangles.Read(bytes, Header.StartOffsetOfTriangles, Header);
+        //reader.BaseStream.Position = Header.StartOffsetOfTriangles;
+        //Triangles.Read(reader, Header);
+        Triangles.Read(bytes, Header.StartOffsetOfTriangles, Header);
 
         LoadErrMsg = "Error reading edges";
         reader.BaseStream.Position = Header.StartOffsetOfEdgeList;
