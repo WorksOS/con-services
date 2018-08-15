@@ -376,6 +376,156 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
+    /// Calculate the height on a triangle given by three XYZ points at the location given by X & Y
+    /// </summary>
+    /// <param name="P1"></param>
+    /// <param name="P2"></param>
+    /// <param name="P3"></param>
+    /// <param name="X"></param>
+    /// <param name="Y"></param>
+    /// <returns></returns>
+    public static double GetTriangleHeightEx(ref XYZ P1, ref XYZ P2, ref XYZ P3, double X, double Y)
+    {
+      const double min_epsylon = -0.000000001; // Allow a nanometer tolerance on triangle edges...
+      const double max_epsylon = 1.000000001; // Allow a nanometer tolerance on triangle edges...
+
+      double Fraction;
+      bool GetInt1, GetInt2;
+      double Y1 = default, Z1 = default, Y2 = default, Z2 = default;
+
+      ////////////////////////////////////////////////////////////////////////////
+      // bool GetInt1 = GetYInt(ref P1, ref P2, X, out double Y1, out double Z1);
+      ////////////////////////////////////////////////////////////////////////////
+
+      if (Math.Abs(P1.X - P2.X) < 0.0000000001) // Consider them the same
+        GetInt1 = false;
+      else
+      {
+        Fraction = (X - P1.X) / (P2.X - P1.X);
+
+        if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+        {
+          Y1 = P1.Y + Fraction * (P2.Y - P1.Y);
+          Z1 = P1.Z + Fraction * (P2.Z - P1.Z);
+          GetInt1 = true;
+        }
+        else
+          GetInt1 = false;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      // bool GetInt2 = GetYInt(ref P2, ref P3, X, out double Y2, out double Z2);
+      ////////////////////////////////////////////////////////////////////////////
+
+      if (Math.Abs(P2.X - P3.X) < 0.0000000001) // Consider them the same
+        GetInt2 = false;
+      else
+      {
+        Fraction = (X - P2.X) / (P3.X - P2.X);
+
+        if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+        {
+          Y2 = P2.Y + Fraction * (P3.Y - P2.Y);
+          Z2 = P2.Z + Fraction * (P3.Z - P2.Z);
+          GetInt2 = true;
+        }
+        else
+          GetInt2 = false;
+      }
+
+      ///////////////////////////////////////////////////////////////////////////
+      // Note: In some cases we may actually work out that we have intersects
+      // with all three edges (yes, it can happen). Thus, if we fail to get a
+      // height interpolated from a pair of intersects, and we have the third
+      // intersect on hand, we'll give that one a go too...
+      if (GetInt1 && GetInt2)
+      {
+        double Result;
+
+        ////////////////////////////////////////////////////////////////////////
+        // double Result = GetInt(Y1, Z1, Y2, Z2, Y);
+        /////////////////////////////////////////////////////////////////////////
+        if (Math.Abs(Y1 - Y2) < 0.0000000001) // Consider them the same
+          Result = Consts.NullDouble;
+        else
+        {
+          Fraction = (Y - Y1) / (Y2 - Y1);
+          Result = Fraction >= min_epsylon && Fraction <= max_epsylon ? Z1 + Fraction * (Z2 - Z1) : Consts.NullDouble;
+        }
+        /////////////////////////////////////////////////////////////////////////
+
+        if (Result == Consts.NullDouble)
+        {
+          ////////////////////////////////////////////////////////////////////////////
+          // if (GetYInt(ref P1, ref P3, X, out double Y3, out double Z3))
+          //  return GetInt(Y1, Z1, Y3, Z3, Y);
+          ////////////////////////////////////////////////////////////////////////////
+          if (Math.Abs(P1.X - P3.X) > 0.0000000001) // Consider them not the same
+          {
+            Fraction = (X - P1.X) / (P3.X - P1.X);
+
+            if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+            {
+              double Y3 = P1.Y + Fraction * (P3.Y - P1.Y);
+              double Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
+
+              if (Math.Abs(Y1 - Y3) < 0.0000000001) // Consider them the same
+                return Consts.NullDouble;
+
+              Fraction = (Y - Y1) / (Y3 - Y1);
+              return Fraction >= min_epsylon && Fraction <= max_epsylon ? Z1 + Fraction * (Z3 - Z1) : Consts.NullDouble;
+            }
+          }
+          //////////////////////////////////////////////////////////////////////
+        }
+
+        return Result;
+      }
+
+      ////////////////////////////////////////////////////////////////////////////
+      //bool GetInt3 = (GetYInt(ref P1, ref P3, X, out double Y3, out double Z3))
+      ////////////////////////////////////////////////////////////////////////////
+      if (Math.Abs(P1.X - P3.X) < 0.0000000001) // Consider them not the same
+        return Consts.NullDouble;
+
+      Fraction = (X - P1.X) / (P3.X - P1.X);
+
+      if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+      {
+        double Y3 = P1.Y + Fraction * (P3.Y - P1.Y);
+        double Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
+
+        if (GetInt1)
+        {
+          //////////////////////////////////////////////////////////////////////
+          // return GetInt(Y1, Z1, Y3, Z3, Y);
+          //////////////////////////////////////////////////////////////////////
+          if (Math.Abs(Y1 - Y3) < 0.0000000001) // Consider them the same
+            return Consts.NullDouble;
+
+          Fraction = (Y - Y1) / (Y3 - Y1);
+          return Fraction >= min_epsylon && Fraction <= max_epsylon ? Z1 + Fraction * (Z3 - Z1) : Consts.NullDouble;
+          //////////////////////////////////////////////////////////////////////
+        }
+
+        if (GetInt2)
+        {
+          //////////////////////////////////////////////////////////////////////
+          // return GetInt(Y2, Z2, Y3, Z3, Y);
+          //////////////////////////////////////////////////////////////////////
+          if (Math.Abs(Y2 - Y3) < 0.0000000001) // Consider them the same
+            return Consts.NullDouble;
+
+          Fraction = (Y - Y2) / (Y3 - Y2);
+          return Fraction >= min_epsylon && Fraction <= max_epsylon ? Z2 + Fraction * (Z3 - Z2) : Consts.NullDouble;
+          //////////////////////////////////////////////////////////////////////
+        }
+      }
+
+      return Consts.NullDouble;
+    }
+
+    /// <summary>
     /// Determine if the given point (X, Y) is inside the triangle defined by three XYZ points
     /// </summary>
     /// <param name="P1"></param>
