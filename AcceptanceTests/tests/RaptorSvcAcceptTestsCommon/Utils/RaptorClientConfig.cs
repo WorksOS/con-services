@@ -16,22 +16,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     public static string ProdSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("PROD_SVC_BASE_URI"));
     public static string FileAccessSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI"));
 
-    public static string TestDataPath
-    {
-      get
-      {
-        const string testDataPath = "TEST_DATA_PATH";
-
-        var path = Environment.GetEnvironmentVariable(testDataPath);
-        if (path == null)
-        {
-          throw new ArgumentNullException(testDataPath);
-        }
-
-        return path;
-      }
-    }
-    
     private static string ConstructUri(string subDir)
     {
       return $"http://{Environment.GetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST")}{subDir}";

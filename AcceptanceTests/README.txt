@@ -16,9 +16,7 @@ Docker started successfully (Running in Detached mode)
   IP Address: 172.17.187.96
 
 
-Update AcceptanceTests\scripts\setEnvironmentVariables.ps1 to reflect this new ip address.
- 
-Copy environment variables from setEnvironmentVariables.ps1 and from an elevated powershell prompt paste these in.
+Update set-environment-variables.ps1 to reflect this new ip address.
  
 Open visual studio project and run tests (note VS should not be running when setting environment variables.
  

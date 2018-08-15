@@ -24,30 +24,40 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
     public HttpResponseMessage HttpResponseMessage { get; private set; }
 
+    private static readonly string TestDatapath;
+
+    static Getter()
+    {
+      TestDatapath = DirectoryAgent.TraverseParentDirectories("testdata");
+    }
+
     /// <summary>
-    /// Construct service GETTer.
+    /// Construct service GETter.
     /// </summary>
     /// <param name="uri">URI of the service</param>
     /// <param name="responseFile">Name (with full path) of the JSON file containing expected response contents.</param>
     public Getter(string uri, string responseFile = null)
     {
       ResponseRepo = null;
-
       Uri = uri;
       CurrentResponse = default(TResponse);
       CurrentServiceResponse = null;
       QueryString = new Dictionary<string, string>();
 
+      if (responseFile == null)
+      {
+        return;
+      }
+
       try
       {
-        if (responseFile != null)
+        var path = Path.Combine(TestDatapath, responseFile);
+
+        Console.WriteLine(path);
+        using (var file = File.OpenText(path))
         {
-          using (StreamReader file = File.OpenText(RaptorClientConfig.TestDataPath + responseFile))
-          {
-            JsonSerializer serializer = new JsonSerializer();
-            ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file,
-                typeof(Dictionary<string, TResponse>));
-          }
+          var serializer = new JsonSerializer();
+          ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file, typeof(Dictionary<string, TResponse>));
         }
       }
       catch (Exception e)
@@ -117,7 +127,8 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         Uri += BuildQueryString();
       }
 
-      CurrentServiceResponse = RaptorServicesClientUtil.DoHttpRequest(Uri, HttpMethod.Get.Method, RestClientConfig.JsonMediaType, null);
+      CurrentServiceResponse = RaptorServicesClientUtil.DoHttpRequest(Uri, HttpMethod.Get.ToString(),
+              RestClientConfig.JsonMediaType, null);
 
       if (CurrentServiceResponse == null)
       {
@@ -197,7 +208,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
     public void Send(string acceptHeader, string contentType, string content = null)
     {
-       var response = RaptorServicesClientUtil.SendHttpClientRequest(Uri, BuildQueryString(), HttpMethod.Get, acceptHeader, contentType, content).Result;
+      var response = RaptorServicesClientUtil.SendHttpClientRequest(Uri, BuildQueryString(), HttpMethod.Get, acceptHeader, contentType, content).Result;
       HttpResponseMessage = response;
     }
   }

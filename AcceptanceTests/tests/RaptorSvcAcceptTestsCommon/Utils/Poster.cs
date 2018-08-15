@@ -22,6 +22,13 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     public TResponse CurrentResponse { get; private set; }
     public ServiceResponse CurrentServiceResponse { get; private set; }
 
+    private static readonly string TestDatapath;
+
+    static Poster()
+    {
+      TestDatapath = DirectoryAgent.TraverseParentDirectories("testdata");
+    }
+
     public Poster(string uri, TRequest request)
     {
       RequestRepo = null;
@@ -53,7 +60,9 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       {
         if (requestFile != null)
         {
-          using (var file = File.OpenText(RaptorClientConfig.TestDataPath + requestFile))
+          var path = Path.Combine(TestDatapath, requestFile);
+
+          using (var file = File.OpenText(path))
           {
             var serializer = new JsonSerializer();
             RequestRepo = (Dictionary<string, TRequest>)serializer.Deserialize(file, typeof(Dictionary<string, TRequest>));
@@ -62,7 +71,9 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
         if (responseFile != null)
         {
-          using (var file = File.OpenText(RaptorClientConfig.TestDataPath + responseFile))
+          var path = Path.Combine(TestDatapath, responseFile);
+
+          using (var file = File.OpenText(path))
           {
             var serializer = new JsonSerializer();
             ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file, typeof(Dictionary<string, TResponse>));
@@ -96,16 +107,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     public TResponse DoValidRequest(TRequest request, HttpStatusCode expectedHttpCode = HttpStatusCode.OK)
     {
       CurrentRequest = request;
-      return DoRequest(null, expectedHttpCode);
-    }
-
-    /// <summary>
-    /// Do an HTTP POST request sending CurrentRequest - expecting success e.g. 200 OK.
-    /// </summary>
-    /// <param name="expectedHttpCode">Expected success response HttpStatusCode e.g. 200 OK.</param>
-    /// <returns></returns>
-    public TResponse DoValidRequest(HttpStatusCode expectedHttpCode)
-    {
       return DoRequest(null, expectedHttpCode);
     }
 

@@ -33,7 +33,6 @@ $global:ipAddress = docker inspect --format "{{ .NetworkSettings.Networks.nat.IP
 WaitForContainer
 
 # Set (session) environment variables
-$env:TEST_DATA_PATH="../../TestData/"
 $env:COMPACTION_SVC_BASE_URI=":80"
 $env:NOTIFICATION_SVC_BASE_URI=":80"
 $env:REPORT_SVC_BASE_URI=":80"

@@ -22,8 +22,7 @@ $acceptanceTestsEnvironmentVariables = @(
   @{key = "RAPTOR_WEBSERVICES_HOST"; value = "localhost"},
   @{key = "REPORT_SVC_BASE_URI"; value = ":5000"},
   @{key = "TAG_SVC_BASE_URI"; value = ":5000"},
-  @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
-  @{key = "TEST_DATA_PATH"; value = "../../../ProductionDataSvc.AcceptanceTests/TestData/"})
+  @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"})
 
 # Common TCC and AWS variables, will be set for any chosen $environment type.
 $tccAndAwsEnvironmentVariables = @(
