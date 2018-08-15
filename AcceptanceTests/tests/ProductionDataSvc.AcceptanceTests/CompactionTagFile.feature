@@ -12,7 +12,7 @@ Scenario Outline: TagFile - Bad Tag File
 
 Scenario Outline: TagFile - Archived Project
   Given the Tag file service URI "/api/v2/tagfiles" and request repo "CompactionTagFileRequest.json"
-  When I POST a tag file with Code <Code> from the repository expecting unauthorized request return
+  When I POST a tag file with Code <Code> from the repository expecting bad request return
   Then the Tag Process Service response should contain Code <Code> and Message <Message>
   Examples: 
   | Code | Message                                                           |

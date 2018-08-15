@@ -137,8 +137,7 @@ this.ScenarioSetup(scenarioInfo);
   testRunner.Given("the Tag file service URI \"/api/v2/tagfiles\" and request repo \"CompactionTagFileRe" +
                     "quest.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 15
-  testRunner.When(string.Format("I POST a tag file with Code {0} from the repository expecting unauthorized reques" +
-                        "t return", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When(string.Format("I POST a tag file with Code {0} from the repository expecting bad request return", code), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 16
   testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
