@@ -39,7 +39,7 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:
         - configMapRef:
-            name: {{ $configname }}
+            name: {{ $configName }}
         imagePullPolicy: Always
         ports:
         - containerPort: 80 
