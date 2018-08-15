@@ -391,7 +391,7 @@ namespace VSS.TRex.Geometry
 
       double Fraction;
       bool GetInt1 = false, GetInt2 = false;
-      double Y1 = default, Z1 = default, Y2 = default, Z2 = default, Y3, Z3;
+      double Y1 = 0, Z1 = 0, Y2 = 0, Z2 = 0, Y3, Z3;
 
       ////////////////////////////////////////////////////////////////////////////
       // bool GetInt1 = GetYInt(ref P1, ref P2, X, out double Y1, out double Z1);
