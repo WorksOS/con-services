@@ -390,16 +390,14 @@ namespace VSS.TRex.Geometry
       const double max_epsylon = 1.000000001; // Allow a nanometer tolerance on triangle edges...
 
       double Fraction;
-      bool GetInt1, GetInt2;
-      double Y1 = default, Z1 = default, Y2 = default, Z2 = default;
+      bool GetInt1 = false, GetInt2 = false;
+      double Y1 = default, Z1 = default, Y2 = default, Z2 = default, Y3, Z3;
 
       ////////////////////////////////////////////////////////////////////////////
       // bool GetInt1 = GetYInt(ref P1, ref P2, X, out double Y1, out double Z1);
       ////////////////////////////////////////////////////////////////////////////
 
-      if (Math.Abs(P1.X - P2.X) < 0.0000000001) // Consider them the same
-        GetInt1 = false;
-      else
+      if (Math.Abs(P1.X - P2.X) > 0.0000000001) // Consider them not the same
       {
         Fraction = (X - P1.X) / (P2.X - P1.X);
 
@@ -409,17 +407,13 @@ namespace VSS.TRex.Geometry
           Z1 = P1.Z + Fraction * (P2.Z - P1.Z);
           GetInt1 = true;
         }
-        else
-          GetInt1 = false;
       }
 
       ////////////////////////////////////////////////////////////////////////////
       // bool GetInt2 = GetYInt(ref P2, ref P3, X, out double Y2, out double Z2);
       ////////////////////////////////////////////////////////////////////////////
 
-      if (Math.Abs(P2.X - P3.X) < 0.0000000001) // Consider them the same
-        GetInt2 = false;
-      else
+      if (Math.Abs(P2.X - P3.X) > 0.0000000001) // Consider them not the same
       {
         Fraction = (X - P2.X) / (P3.X - P2.X);
 
@@ -429,8 +423,6 @@ namespace VSS.TRex.Geometry
           Z2 = P2.Z + Fraction * (P3.Z - P2.Z);
           GetInt2 = true;
         }
-        else
-          GetInt2 = false;
       }
 
       ///////////////////////////////////////////////////////////////////////////
@@ -466,14 +458,20 @@ namespace VSS.TRex.Geometry
 
             if (Fraction >= min_epsylon && Fraction <= max_epsylon)
             {
-              double Y3 = P1.Y + Fraction * (P3.Y - P1.Y);
-              double Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
+              Y3 = P1.Y + Fraction * (P3.Y - P1.Y);
 
               if (Math.Abs(Y1 - Y3) < 0.0000000001) // Consider them the same
                 return Consts.NullDouble;
 
-              Fraction = (Y - Y1) / (Y3 - Y1);
-              return Fraction >= min_epsylon && Fraction <= max_epsylon ? Z1 + Fraction * (Z3 - Z1) : Consts.NullDouble;
+              Fraction = (Y - Y1) / (Y3 - Y1);              
+
+              if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+              {
+                Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
+                return Z1 + Fraction * (Z3 - Z1);
+              }
+
+              return Consts.NullDouble;
             }
           }
           //////////////////////////////////////////////////////////////////////
@@ -492,8 +490,7 @@ namespace VSS.TRex.Geometry
 
       if (Fraction >= min_epsylon && Fraction <= max_epsylon)
       {
-        double Y3 = P1.Y + Fraction * (P3.Y - P1.Y);
-        double Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
+        Y3 = P1.Y + Fraction * (P3.Y - P1.Y);
 
         if (GetInt1)
         {
@@ -504,7 +501,14 @@ namespace VSS.TRex.Geometry
             return Consts.NullDouble;
 
           Fraction = (Y - Y1) / (Y3 - Y1);
-          return Fraction >= min_epsylon && Fraction <= max_epsylon ? Z1 + Fraction * (Z3 - Z1) : Consts.NullDouble;
+
+          if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+          {
+            Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
+            return Z1 + Fraction * (Z3 - Z1);
+          }
+
+          return Consts.NullDouble;
           //////////////////////////////////////////////////////////////////////
         }
 
@@ -517,7 +521,14 @@ namespace VSS.TRex.Geometry
             return Consts.NullDouble;
 
           Fraction = (Y - Y2) / (Y3 - Y2);
-          return Fraction >= min_epsylon && Fraction <= max_epsylon ? Z2 + Fraction * (Z3 - Z2) : Consts.NullDouble;
+
+          if (Fraction >= min_epsylon && Fraction <= max_epsylon)
+          {
+            Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
+            return Z2 + Fraction * (Z3 - Z2);
+          }
+
+          return Consts.NullDouble;
           //////////////////////////////////////////////////////////////////////
         }
       }
