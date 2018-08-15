@@ -40,7 +40,7 @@ _ReSharper*/
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
-[Dd]eploy/
+deploy/
 
 #NUNIT
 *.VisualState.xml
