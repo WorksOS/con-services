@@ -150,23 +150,23 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
             "Invalid coordinates type for export report"));
       }
 
-      if (outputType < OutputTypes.etPassCountLastPass || outputType > OutputTypes.etVedaAllPasses)
+      if (outputType < OutputTypes.PassCountLastPass || outputType > OutputTypes.VedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for export report"));
       }
 
-      if (exportType == ExportTypes.kPassCountExport && outputType != OutputTypes.etPassCountLastPass &&
-          outputType != OutputTypes.etPassCountAllPasses)
+      if (exportType == ExportTypes.PassCountExport && outputType != OutputTypes.PassCountLastPass &&
+          outputType != OutputTypes.PassCountAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for machine passes export report"));
       }
 
-      if (exportType == ExportTypes.kVedaExport && outputType != OutputTypes.etVedaFinalPass &&
-          outputType != OutputTypes.etVedaAllPasses)
+      if (exportType == ExportTypes.VedaExport && outputType != OutputTypes.VedaFinalPass &&
+          outputType != OutputTypes.VedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

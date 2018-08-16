@@ -2,9 +2,9 @@
 {
   public enum OutputTypes
   {
-    etPassCountLastPass,
-    etPassCountAllPasses,
-    etVedaFinalPass,
-    etVedaAllPasses
+    PassCountLastPass,
+    PassCountAllPasses,
+    VedaFinalPass,
+    VedaAllPasses
   }
 }

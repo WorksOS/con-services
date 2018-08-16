@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
 
-      if (exportType == ExportTypes.kSurfaceExport)
+      if (exportType == ExportTypes.SurfaceExport)
       {
         raptorClient.GetDataModelExtents(ProjectId,
           RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.SurveyedSurfaceExclusionList), out projectExtents);
@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         outputType,
         machineList,
-        exportType == ExportTypes.kSurfaceExport,
+        exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
         ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone));

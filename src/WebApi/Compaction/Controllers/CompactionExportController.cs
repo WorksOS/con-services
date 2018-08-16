@@ -174,11 +174,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           startEndDate.Item1,
           startEndDate.Item2,
           coordType,
-          ExportTypes.kVedaExport,
+          ExportTypes.VedaExport,
           fileName,
           false,
           true,
-          OutputTypes.etVedaAllPasses,
+          OutputTypes.VedaAllPasses,
           machineNames);
 
       exportRequest.Validate();
@@ -234,7 +234,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           startEndDate.Item1,
           startEndDate.Item2,
           (CoordType)coordType,
-          ExportTypes.kPassCountExport,
+          ExportTypes.PassCountExport,
           fileName,
           restrictOutput,
           rawDataOutput,
@@ -291,11 +291,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null, //startUtc,
           null, //endUtc,
           CoordType.Northeast,
-          ExportTypes.kSurfaceExport,
+          ExportTypes.SurfaceExport,
           fileName,
           false,
           false,
-          OutputTypes.etVedaAllPasses,
+          OutputTypes.VedaAllPasses,
           string.Empty,
           tolerance.Value);
 

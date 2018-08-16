@@ -2,8 +2,8 @@
 {
   public enum ExportTypes
   {
-    kSurfaceExport = 1,
-    kPassCountExport = 2,
-    kVedaExport = 3
+    SurfaceExport = 1,
+    PassCountExport = 2,
+    VedaExport = 3
   }
 }
