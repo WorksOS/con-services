@@ -1,6 +1,4 @@
-﻿using VSS.TRex.Interfaces;
-
-namespace VSS.TRex.Storage.Interfaces
+﻿namespace VSS.TRex.Storage.Interfaces
 {
     /// <summary>
     /// Defines the interface for the TRex storage proxy factory

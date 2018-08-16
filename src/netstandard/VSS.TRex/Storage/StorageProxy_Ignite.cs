@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
-using VSS.TRex.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Utilities;
 using VSS.TRex.Types;

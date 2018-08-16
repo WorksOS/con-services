@@ -1,6 +1,5 @@
 ﻿using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Iterators.Interfaces;
-using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {

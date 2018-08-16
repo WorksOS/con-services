@@ -3,7 +3,6 @@ using VSS.TRex.Cells;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Types;

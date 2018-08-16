@@ -3,7 +3,6 @@ using System.Collections;
 using System.Diagnostics;
 using VSS.TRex.Common;
 using VSS.TRex.SiteModels;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Utilities;
 

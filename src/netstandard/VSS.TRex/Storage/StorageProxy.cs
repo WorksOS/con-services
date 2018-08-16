@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.TRex.DI;
-using VSS.TRex.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Storage

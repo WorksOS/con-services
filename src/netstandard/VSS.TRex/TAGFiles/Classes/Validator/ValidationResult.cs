@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-
-namespace VSS.TRex.TAGFiles.Classes.Validator
+﻿namespace VSS.TRex.TAGFiles.Classes.Validator
 {
   /// <summary>
   /// Result of validation check

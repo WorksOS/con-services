@@ -1,5 +1,4 @@
 ﻿using Apache.Ignite.Core;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
 
