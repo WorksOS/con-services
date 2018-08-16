@@ -6,14 +6,14 @@ MYSQL_USERNAME: vssTagFileAuthUsr
 MYSQL_ROOT_PASSWORD: mRty94hER
 KAFKA_URI: 10.211.16.11
 KAFKA_PORT: "9092"
-KAFKA_GROUP_NAME: TagFileAuth todo???
-KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IProjectEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1,VSS.Interfaces.Events.MasterData.IAsset.V1,VSS.Interfaces.Events.MasterData.IDeviceEvent.V1
+KAFKA_GROUP_NAME: TagFileAuth-Consumer-Prod
+KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IProjectEvent.V2,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1,VSS.Interfaces.Events.MasterData.IAssetEvent.V1,VSS.Interfaces.Events.MasterData.IDeviceEvent.V1
 KAFKA_TOPIC_NAME_SUFFIX: 
-KAFKA_OFFSET: earliest
+KAFKA_OFFSET: latest
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const
 JAEGER_SERVICE_NAME: TagFileAuth Service
-NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
+NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7
 NEW_RELIC_APP_NAME: k8s-tagfileauth-service
 newrelic: "true"
