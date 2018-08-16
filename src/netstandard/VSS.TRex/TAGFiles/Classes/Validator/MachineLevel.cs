@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace VSS.TRex.TAGFiles.Classes.Validator
+﻿namespace VSS.TRex.TAGFiles.Classes.Validator
 {
     /// <summary>
     /// Enums for different licensing types

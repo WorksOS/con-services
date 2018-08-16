@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Cache.Affinity;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
