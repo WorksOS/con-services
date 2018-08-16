@@ -77,7 +77,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     // Commented out to favour BinaryReader style serialization
     //        void Read(BinaryFormatter formatter, Stream stream);
 
-    SubGridCellAddress OriginAsCellAddress();
+    ISubGridCellAddress OriginAsCellAddress();
 
     byte[] ToBytes();
     byte[] ToBytes(byte[] helperBuffer);

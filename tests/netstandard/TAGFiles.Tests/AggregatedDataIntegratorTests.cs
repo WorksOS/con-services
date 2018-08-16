@@ -1,17 +1,12 @@
 ﻿using VSS.TRex.TAGFiles.Classes.Integrator;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.TRex.Events;
-using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using Xunit;
 using VSS.TRex.SubGridTrees.Factories;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace TAGFiles.Tests
 {

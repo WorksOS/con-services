@@ -22,14 +22,17 @@
     <Compile Remove="Analytics\Foundation\GridFabric\Arguments\**" />
     <Compile Remove="Analytics\Foundation\GridFabric\Requests\**" />
     <Compile Remove="CoordinateSystems\GridFabric\Requests\**" />
+    <Compile Remove="Exports\Surfaces\Interfaces\**" />
     <Compile Remove="Profiling\Executors\Tasks\**" />
     <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Arguments\**" />
     <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Requests\**" />
     <EmbeddedResource Remove="CoordinateSystems\GridFabric\Requests\**" />
+    <EmbeddedResource Remove="Exports\Surfaces\Interfaces\**" />
     <EmbeddedResource Remove="Profiling\Executors\Tasks\**" />
     <None Remove="Analytics\Foundation\GridFabric\Arguments\**" />
     <None Remove="Analytics\Foundation\GridFabric\Requests\**" />
     <None Remove="CoordinateSystems\GridFabric\Requests\**" />
+    <None Remove="Exports\Surfaces\Interfaces\**" />
     <None Remove="Profiling\Executors\Tasks\**" />
   </ItemGroup>
 
@@ -47,15 +50,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
+    <ProjectReference Include="..\..\..\VSS.TRex.Compression\VSS.TRex.Compression.csproj" />
+    <ProjectReference Include="..\..\..\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
     <ProjectReference Include="..\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
     <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Exports\Surfaces\Interfaces\" />
   </ItemGroup>
 
 </Project>

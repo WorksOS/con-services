@@ -5,6 +5,7 @@ using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Utilities.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 
@@ -150,7 +151,7 @@ namespace VSS.TRex.Designs.Storage
         /// <param name="errorCode"></param>
         /// <returns></returns>
         public bool GetDesignHeights(Guid siteModelID,
-                                     SubGridCellAddress originCellAddress,
+                                     ISubGridCellAddress originCellAddress,
                                      double cellSize,
                                      out ClientHeightLeafSubGrid designHeights,
                                      out DesignProfilerRequestResult errorCode)
