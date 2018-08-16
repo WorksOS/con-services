@@ -1,0 +1,11 @@
+<h1>Grid Status</h1>
+
+<p>TREX GRID!</p>
+
+<!--<p>Current status: <strong>{{ status }}</strong></p>
+
+<button (click)="getStatus()">Get Status</button>-->
+
+<ul>
+  <li *ngFor="let grid of grids">{{ grid.name }} is {{ grid.IsActive ? "active" : "inactive" }}</li>
+</ul>

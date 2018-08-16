@@ -8,6 +8,8 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { UploadDataComponent } from './upload-data/upload-data.component';
 import { FileDropModule } from 'ngx-file-drop';
+import { GridStatusComponent } from './grid-status/grid-status.component';
+
 
 import { HttpErrorHandler } from './http-error-handler.service';
 import { MessageService } from './message.service';
@@ -17,7 +19,8 @@ import { MessageService } from './message.service';
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    UploadDataComponent
+    UploadDataComponent,
+    GridStatusComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -27,6 +30,7 @@ import { MessageService } from './message.service';
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'upload-data', component: UploadDataComponent },
+      { path: 'grid-status', component: GridStatusComponent }
     ])
   ],
   providers: [

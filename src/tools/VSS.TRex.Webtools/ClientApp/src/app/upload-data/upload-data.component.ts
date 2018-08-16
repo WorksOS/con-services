@@ -24,8 +24,6 @@ Component({
 export class UploadDataComponent {
 
   public files: UploadFile[] = [];
-
-
   public selectedProject: any;
   public existingFlowObject: any;
   public totalTagFilesSize: number;
@@ -39,8 +37,6 @@ export class UploadDataComponent {
   public selectedFiles: any;
   private fileCount: number = 0;
   public isFinishEnabled: boolean = false;
-
-  //private upload: any;
 
   constructor(private uploadDataService: UploadDataService) { }
   
