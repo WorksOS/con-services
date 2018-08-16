@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Schedule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Tests", "test\UnitTests\VSS.Productivity3D.Scheduler.Tests\VSS.Productivity3D.Scheduler.Tests.csproj", "{258A2C3D-AE74-4284-9907-3F96E3ECBBD2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Common", "src\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.csproj", "{8F340538-CD67-4A01-B0D8-6E4652B1EB71}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,10 +23,6 @@ Global
 		{258A2C3D-AE74-4284-9907-3F96E3ECBBD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{258A2C3D-AE74-4284-9907-3F96E3ECBBD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{258A2C3D-AE74-4284-9907-3F96E3ECBBD2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F340538-CD67-4A01-B0D8-6E4652B1EB71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F340538-CD67-4A01-B0D8-6E4652B1EB71}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F340538-CD67-4A01-B0D8-6E4652B1EB71}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F340538-CD67-4A01-B0D8-6E4652B1EB71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

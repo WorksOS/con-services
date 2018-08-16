@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.Common\VSS.Productivity3D.Scheduler.Common.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.WebApi\VSS.Productivity3D.Scheduler.WebApi.csproj" />
   </ItemGroup>
 

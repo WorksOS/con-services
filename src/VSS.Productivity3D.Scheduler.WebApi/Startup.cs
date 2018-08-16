@@ -21,12 +21,8 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.TCCFileAccess;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
-using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Scheduler.Common.Utilities;
-using VSS.Productivity3D.Scheduler.WebAPI;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 using VSS.Productivity3D.Scheduler.WebAPI.Middleware;
 
@@ -69,9 +65,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
-
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-    }
+      }
 
     /// <summary>
     /// Gets the configuration.
@@ -95,9 +89,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
-      services.AddTransient<IFileRepository, FileRepository>();
-      services.AddTransient<IFilterRepository, FilterRepository>();
-      services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
@@ -160,17 +151,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
         throw;
-      }
-
-      var expectedJobCount = 0;
-      expectedJobCount += ConfigureSyncSurveyedSurfacesTask(log, expectedJobCount);
-      expectedJobCount += ConfigureSyncOtherFilesTask(log, expectedJobCount);
-
-      var recurringJobsPost = JobStorage.Current.GetConnection().GetRecurringJobs();
-      if (recurringJobsPost.Count < expectedJobCount)
-      {
-        log.LogError($"Scheduler.Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");
-        throw new Exception("Scheduler.Configure: Incorrect # jobs");
       }
     }
 
@@ -271,76 +251,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
         throw;
       }
-    }
-
-    /// <summary>
-    /// Configure surveyed surface file sync task
-    /// </summary>
-    private int ConfigureSyncSurveyedSurfacesTask(ILogger<Startup> log, int expectedJobCount)
-    {
-      var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
-
-      var projectFileSyncSSTaskToRun = false;
-      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_SS_TASK_RUN"),
-        out projectFileSyncSSTaskToRun))
-      {
-        projectFileSyncSSTaskToRun = false;
-      }
-      log.LogDebug(
-        $"Scheduler.Startup: importedProjectFileTaskToRun (SurveyedSurface type only) {projectFileSyncSSTaskToRun}");
-      if (projectFileSyncSSTaskToRun)
-      {
-        // stagger startup of 2nd task so the initial runs don't deadlock
-        if (expectedJobCount > 0)
-          Thread.Sleep(2000);
-
-        var raptorProxy = _serviceProvider.GetRequiredService<IRaptorProxy>();
-        var tPaasProxy = _serviceProvider.GetRequiredService<ITPaasProxy>();
-        var impFileProxy = _serviceProvider.GetRequiredService<IImportedFileProxy>();
-        var fileRepo = _serviceProvider.GetRequiredService<IFileRepository>();
-        var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        var importedProjectFileSyncTask = new SurveyedSurfaceFileSyncTask(configStore, loggerFactory, raptorProxy,
-          tPaasProxy, impFileProxy, fileRepo);
-        importedProjectFileSyncTask.AddTask();
-        return 1;
-      }
-      return 0;
-    }
-
-    /// <summary>
-    /// Configure other imported file sync task
-    /// </summary>
-    private int ConfigureSyncOtherFilesTask(ILogger<Startup> log, int expectedJobCount)
-    {
-      var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
-
-      var projectFileSyncNonSSTaskToRun = false;
-      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_RUN"),
-        out projectFileSyncNonSSTaskToRun))
-      {
-        projectFileSyncNonSSTaskToRun = false;
-      }
-      log.LogDebug(
-        $"Scheduler.Startup: importedProjectFileTaskToRun (nonSurveyedSurface types only) {projectFileSyncNonSSTaskToRun}");
-      if (projectFileSyncNonSSTaskToRun)
-      {
-        // stagger startup of 2nd task so the initial runs don't deadlock
-        if (expectedJobCount > 0)
-          Thread.Sleep(2000);
-
-        var raptorProxy = _serviceProvider.GetRequiredService<IRaptorProxy>();
-        var tPaasProxy = _serviceProvider.GetRequiredService<ITPaasProxy>();
-        var impFileProxy = _serviceProvider.GetRequiredService<IImportedFileProxy>();
-        var fileRepo = _serviceProvider.GetRequiredService<IFileRepository>();
-        var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        var importedProjectFileSyncTask = new OtherImportedFileSyncTask(configStore, loggerFactory, raptorProxy,
-          tPaasProxy, impFileProxy, fileRepo);
-        importedProjectFileSyncTask.AddTask();
-        return 1;
-      }
-      return 0;
     }
 
     internal class HangfireAuthorizationFilter : IDashboardAuthorizationFilter

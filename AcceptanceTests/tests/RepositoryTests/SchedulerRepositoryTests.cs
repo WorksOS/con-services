@@ -27,7 +27,7 @@ namespace RepositoryTests
         "CreatedAt",
         "ExpireAt"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -41,7 +41,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -55,7 +55,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -67,7 +67,7 @@ namespace RepositoryTests
         "Resource",
         "CreatedAt"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -82,7 +82,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -96,7 +96,7 @@ namespace RepositoryTests
         "Name",
         "Value"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -111,7 +111,7 @@ namespace RepositoryTests
         "FetchedAt",
         "FetchToken"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -127,7 +127,7 @@ namespace RepositoryTests
         "CreatedAt",
         "Data"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -140,7 +140,7 @@ namespace RepositoryTests
         "Data",
         "LastHeartbeat"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -155,7 +155,7 @@ namespace RepositoryTests
         "Score",
         "ExpireAt"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -171,7 +171,7 @@ namespace RepositoryTests
         "CreatedAt",
         "Data"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
@@ -185,7 +185,7 @@ namespace RepositoryTests
         "Value",
         "ExpireAt"
       };
-      CheckSchema("", tableName, columnNames);
+      CheckSchema(tableName, columnNames);
     }
   }
 }
