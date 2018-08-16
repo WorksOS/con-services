@@ -1,8 +1,7 @@
-﻿using ASNodeDecls;
-using SVOICFilterSettings;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
+using ASNodeDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -10,7 +9,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -32,9 +31,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <summary>
     /// Processes the exports request by passing the request to Raptor and returning the result.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a ExportResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ContractExecutionResult result;
@@ -48,8 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               $"Conversion from {item.GetType()} to {typeof(ExportReport)} failed"));
         }
 
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
-          request.ProjectId);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
 
         bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,

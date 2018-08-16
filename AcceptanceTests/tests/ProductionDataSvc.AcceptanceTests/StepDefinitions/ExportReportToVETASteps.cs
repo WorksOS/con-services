@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.Net;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
-using System.Net;
-using System.Text;
-using RestAPICoreTestFramework.Utils.Common;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -15,10 +12,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   {
     private string url;
     private byte[] fileContents;
-
     private Getter<ExportReportResult> exportReportRequester;
-
-
+    
     [Given(@"the Export Report To VETA service URI ""(.*)"" and the result file ""(.*)""")]
     public void GivenTheExportReportToVETAServiceURIAndTheResultFile(string url, string resultFileName)
     {
@@ -29,7 +24,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"projectUid ""(.*)""")]
     public void GivenProjectUid(string projectUid)
     {
-      //this.projectUid = projectUid;
       exportReportRequester.QueryString.Add("ProjectUid", projectUid);
     }
 
@@ -43,6 +37,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenFileNameIs(string fileName)
     {
       exportReportRequester.QueryString.Add("fileName", fileName);
+    }
+
+    [Given(@"coordType is ""(.*)""")]
+    public void GivenCoordTypeIs(int coordType)
+    {
+      exportReportRequester.QueryString.Add("coordType", coordType.ToString());
     }
 
     [Given(@"filterUid ""(.*)""")]
@@ -59,8 +59,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         url += exportReportRequester.BuildQueryString();
       }
  
-      HttpWebResponse httpResponse = RaptorServicesClientUtil.DoHttpRequest(url,
-        "GET", "application/json", "application/zip", null);
+      var httpResponse = RaptorServicesClientUtil.DoHttpRequest(url, "GET", "application/json", "application/zip", null);
 
       fileContents = RaptorServicesClientUtil.GetStreamContentsFromResponse(httpResponse);
     }
@@ -86,15 +85,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the report result csv should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultCsvShouldMatchTheFromTheRepository(string resultName)
     {
-      string actualResult = Encoding.Default.GetString(Common.Decompress(fileContents));
+      System.IO.File.WriteAllBytes(@"C:\temp\result.zip", fileContents);
+      var actualResult = Encoding.Default.GetString(Common.Decompress(fileContents));
       var expectedResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.ResponseRepo[resultName].ExportData));
       var expSorted = Common.SortCsvFileIntoString(expectedResult.Substring(3));
       var actSorted = Common.SortCsvFileIntoString(actualResult.Substring(3));
 
       Assert.IsTrue(expSorted == actSorted, "Expected CSV file does not match actual");
     }
-
-
+    
     [Then(@"the report result should contain error code (.*) and error message ""(.*)""")]
     public void ThenTheReportResultShouldContainErrorCodeAndErrorMessage(int errorCode, string errorMessage)
     {
