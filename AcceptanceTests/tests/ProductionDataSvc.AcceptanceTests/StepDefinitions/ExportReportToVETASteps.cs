@@ -85,7 +85,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the report result csv should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultCsvShouldMatchTheFromTheRepository(string resultName)
     {
-      System.IO.File.WriteAllBytes(@"C:\temp\result.zip", fileContents);
       var actualResult = Encoding.Default.GetString(Common.Decompress(fileContents));
       var expectedResult = Encoding.Default.GetString(Common.Decompress(exportReportRequester.ResponseRepo[resultName].ExportData));
       var expSorted = Common.SortCsvFileIntoString(expectedResult.Substring(3));
