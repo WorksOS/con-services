@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
@@ -22,7 +23,7 @@ namespace VSS.TRex.Executors.Executors
         public string RadioType { get; set; } = string.Empty;
         public string RadioSerial { get; set; } = string.Empty;
 
-        public byte MachineType { get; set; } = CellPass.MachineTypeNull;
+        public byte MachineType { get; set; } = CellPassConsts.MachineTypeNull;
 
         public string MachineID { get; set; } = string.Empty;
         public string HardwareID { get; set; } = string.Empty;
@@ -42,7 +43,7 @@ namespace VSS.TRex.Executors.Executors
             RadioType = string.Empty;
             RadioSerial = string.Empty;
 
-            MachineType = CellPass.MachineTypeNull;
+            MachineType = CellPassConsts.MachineTypeNull;
 
             MachineID = string.Empty;
             HardwareID = string.Empty;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
@@ -703,7 +704,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       public byte SelectCCAValue(DateTime dateTime, PassType passType, MachineSide machineSide)
       {
-        byte myResult = CellPass.NullCCA;
+        byte myResult = CellPassConsts.NullCCA;
 
         switch (passType)
         {
@@ -732,7 +733,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             break;
         }
 
-        if (myResult == CellPass.NullCCA)
+        if (myResult == CellPassConsts.NullCCA)
              myResult = ICCCAValues.GetCCAValueAtDateTime(dateTime);
 
         return myResult;

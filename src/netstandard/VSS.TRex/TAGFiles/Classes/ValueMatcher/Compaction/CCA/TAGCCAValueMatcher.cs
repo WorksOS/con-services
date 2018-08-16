@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -16,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.CCA
 
         public override bool ProcessEmptyValue(TAGDictionaryItem valueType)
         {
-            valueSink.SetICCCAValue(CellPass.NullCCA);
+            valueSink.SetICCCAValue(CellPassConsts.NullCCA);
 
             return true;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Types;
@@ -84,21 +85,21 @@ namespace VSS.TRex.Filters
             switch (RequestedGridDataType)
             {
                 case GridDataType.CCV:
-                    return PassValue.CCV != CellPass.NullCCV;
+                    return PassValue.CCV != CellPassConsts.NullCCV;
                 case GridDataType.MDP:
-                    return PassValue.MDP != CellPass.NullMDP;
+                    return PassValue.MDP != CellPassConsts.NullMDP;
                 case GridDataType.RMV:
-                    return PassValue.RMV != CellPass.NullRMV;
+                    return PassValue.RMV != CellPassConsts.NullRMV;
                 case GridDataType.Frequency:
-                    return PassValue.Frequency != CellPass.NullFrequency;
+                    return PassValue.Frequency != CellPassConsts.NullFrequency;
                 case GridDataType.Amplitude:
-                    return PassValue.Amplitude != CellPass.NullAmplitude;
+                    return PassValue.Amplitude != CellPassConsts.NullAmplitude;
                 case GridDataType.Temperature: 
-                    return PassValue.MaterialTemperature != CellPass.NullMaterialTemperatureValue;
+                    return PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
                 case GridDataType.TemperatureDetail:
-                  return PassValue.MaterialTemperature != CellPass.NullMaterialTemperatureValue;
+                  return PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
                 case GridDataType.GPSMode:
-                    return PassValue.gpsMode != CellPass.NullGPSMode;
+                    return PassValue.gpsMode != CellPassConsts.NullGPSMode;
                 default:
                     return true;
             }

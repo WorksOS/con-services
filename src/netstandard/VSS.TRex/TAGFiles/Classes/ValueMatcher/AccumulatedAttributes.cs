@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
@@ -126,7 +127,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>
         public GPSMode GetGPSModeAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (GPSMode)value : CellPass.NullGPSMode;
+            return GetValueAtDateTime(dateTime, out object value) ? (GPSMode)value : CellPassConsts.NullGPSMode;
         }
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>
         public short GetCCVValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPass.NullCCV;
+            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPassConsts.NullCCV;
         }
 
         /// <summary>
@@ -146,7 +147,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>        
         public short GetRMVValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPass.NullRMV;
+            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPassConsts.NullRMV;
         }
 
         /// <summary>
@@ -156,7 +157,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>   
         public ushort GetFrequencyValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullFrequency;
+            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPassConsts.NullFrequency;
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>   
         public ushort GetAmplitudeValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullAmplitude;
+            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPassConsts.NullAmplitude;
         }
 
         /// <summary>
@@ -196,7 +197,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>
         public ushort GetMaterialTemperatureValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPass.NullMaterialTemperatureValue;
+            return GetValueAtDateTime(dateTime, out object value) ? (ushort)value : CellPassConsts.NullMaterialTemperatureValue;
         }
 
         /// <summary>
@@ -206,7 +207,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>
         public short GetMDPValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPass.NullMDP;
+            return GetValueAtDateTime(dateTime, out object value) ? (short)value : CellPassConsts.NullMDP;
         }
 
         /// <summary>
@@ -226,7 +227,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// <returns></returns>
         public byte GetCCAValueAtDateTime(DateTime dateTime)
         {
-            return GetValueAtDateTime(dateTime, out object value) ? (byte)value : CellPass.NullCCA;
+            return GetValueAtDateTime(dateTime, out object value) ? (byte)value : CellPassConsts.NullCCA;
         }
     }
 }

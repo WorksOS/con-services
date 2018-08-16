@@ -1,5 +1,6 @@
 ﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -61,7 +62,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var cellValue = SubGrid.Cells[east_col, north_row];
 
-      if (cellValue.MeasuredCMV == CellPass.NullCCV)
+      if (cellValue.MeasuredCMV == CellPassConsts.NullCCV)
         return Draw.Color.Empty;
 
       var decoupled = cellValue.IsDecoupled && ((CMVPalette) Palette).DisplayDecoupledColourInPVM;

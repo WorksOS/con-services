@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Events;
@@ -208,21 +209,21 @@ namespace VSS.TRex.Profiling
     {
       TargetPassCountRange PassCountTargetRange = new TargetPassCountRange();
 
-      ProfileCell.CellCCV = CellPass.NullCCV;
-      ProfileCell.CellTargetCCV = CellPass.NullCCV;
+      ProfileCell.CellCCV = CellPassConsts.NullCCV;
+      ProfileCell.CellTargetCCV = CellPassConsts.NullCCV;
 
-      ProfileCell.CellMDP = CellPass.NullMDP;
-      ProfileCell.CellTargetMDP = CellPass.NullMDP;
+      ProfileCell.CellMDP = CellPassConsts.NullMDP;
+      ProfileCell.CellTargetMDP = CellPassConsts.NullMDP;
 
-      ProfileCell.CellCCA = CellPass.NullCCA;
-      ProfileCell.CellTargetCCA = CellPass.NullCCA;
+      ProfileCell.CellCCA = CellPassConsts.NullCCA;
+      ProfileCell.CellTargetCCA = CellPassConsts.NullCCA;
 
-      ProfileCell.CellMaterialTemperature = CellPass.NullMaterialTemperatureValue;
-      ProfileCell.CellMaterialTemperatureWarnMin = CellPass.NullMaterialTemperatureValue;
-      ProfileCell.CellMaterialTemperatureWarnMax = CellPass.NullMaterialTemperatureValue;
+      ProfileCell.CellMaterialTemperature = CellPassConsts.NullMaterialTemperatureValue;
+      ProfileCell.CellMaterialTemperatureWarnMin = CellPassConsts.NullMaterialTemperatureValue;
+      ProfileCell.CellMaterialTemperatureWarnMax = CellPassConsts.NullMaterialTemperatureValue;
 
-      ProfileCell.CellPreviousMeasuredCCV = CellPass.NullCCV;
-      ProfileCell.CellPreviousMeasuredTargetCCV = CellPass.NullCCV;
+      ProfileCell.CellPreviousMeasuredCCV = CellPassConsts.NullCCV;
+      ProfileCell.CellPreviousMeasuredTargetCCV = CellPassConsts.NullCCV;
 
       ProfileCell.CellTopLayerThickness = Consts.NullHeight;
 
@@ -230,7 +231,7 @@ namespace VSS.TRex.Profiling
       PassCountTargetRange.SetMinMax(0, 0);
 
       ProfileCell.CellMaxSpeed = 0;
-      ProfileCell.CellMinSpeed = CellPass.NullMachineSpeed;
+      ProfileCell.CellMinSpeed = CellPassConsts.NullMachineSpeed;
 
       ProfileCell.TopLayerPassCountTargetRangeMin = ProfileCell.TopLayerPassCount;
       ProfileCell.TopLayerPassCountTargetRangeMax = ProfileCell.TopLayerPassCount;
@@ -310,8 +311,8 @@ namespace VSS.TRex.Profiling
               !Dummy_LiftBuildSettings.IncludeSuperseded)
             continue;
 
-          if (DataStillRequiredForCCV && ProfileCell.CellCCV == CellPass.NullCCV &&
-              ProfileCell.Layers[I].CCV != CellPass.NullCCV)
+          if (DataStillRequiredForCCV && ProfileCell.CellCCV == CellPassConsts.NullCCV &&
+              ProfileCell.Layers[I].CCV != CellPassConsts.NullCCV)
           {
             ProfileCell.CellCCV = ProfileCell.Layers[I].CCV;
             ProfileCell.CellCCVElev = ProfileCell.Layers[I].CCV_Elev;
@@ -340,7 +341,7 @@ namespace VSS.TRex.Profiling
 
             if (Dummy_LiftBuildSettings.OverrideMachineCCV)
               ProfileCell.CellTargetCCV = Dummy_LiftBuildSettings.OverridingMachineCCV;
-            else if (ProfileCell.Layers[I].TargetCCV == CellPass.NullCCV)
+            else if (ProfileCell.Layers[I].TargetCCV == CellPassConsts.NullCCV)
               ProfileCell.CellTargetCCV = GetTargetCCV(ProfileCell.Layers[I].CCV_MachineID, ProfileCell.Layers[I].CCV_Time);
             else
               ProfileCell.CellTargetCCV = ProfileCell.Layers[I].TargetCCV;
@@ -348,14 +349,14 @@ namespace VSS.TRex.Profiling
             DataStillRequiredForCCV = false;
           }
 
-          if (DataStillRequiredForMDP && ProfileCell.CellMDP == CellPass.NullMDP &&
-              ProfileCell.Layers[I].MDP != CellPass.NullMDP)
+          if (DataStillRequiredForMDP && ProfileCell.CellMDP == CellPassConsts.NullMDP &&
+              ProfileCell.Layers[I].MDP != CellPassConsts.NullMDP)
           {
             ProfileCell.CellMDP = ProfileCell.Layers[I].MDP;
             ProfileCell.CellMDPElev = ProfileCell.Layers[I].MDP_Elev;
             if (Dummy_LiftBuildSettings.OverrideMachineMDP)
               ProfileCell.CellTargetMDP = Dummy_LiftBuildSettings.OverridingMachineMDP;
-            else if (ProfileCell.Layers[I].TargetMDP == CellPass.NullMDP)
+            else if (ProfileCell.Layers[I].TargetMDP == CellPassConsts.NullMDP)
               ProfileCell.CellTargetMDP = GetTargetMDP(ProfileCell.Layers[I].MDP_MachineID, ProfileCell.Layers[I].MDP_Time);
             else
               ProfileCell.CellTargetMDP = ProfileCell.Layers[I].TargetMDP;
@@ -363,12 +364,12 @@ namespace VSS.TRex.Profiling
             DataStillRequiredForMDP = false;
           }
 
-          if (DataStillRequiredForCCA && ProfileCell.CellCCA == CellPass.NullCCA &&
-              ProfileCell.Layers[I].CCA != CellPass.NullCCA)
+          if (DataStillRequiredForCCA && ProfileCell.CellCCA == CellPassConsts.NullCCA &&
+              ProfileCell.Layers[I].CCA != CellPassConsts.NullCCA)
           {
             ProfileCell.CellCCA = ProfileCell.Layers[I].CCA;
             ProfileCell.CellCCAElev = ProfileCell.Layers[I].CCA_Elev;
-            if (ProfileCell.Layers[I].TargetCCA == CellPass.NullCCA)
+            if (ProfileCell.Layers[I].TargetCCA == CellPassConsts.NullCCA)
               ProfileCell.CellTargetCCA = GetTargetCCA(ProfileCell.Layers[I].CCA_MachineID, ProfileCell.Layers[I].CCA_Time);
             else
               ProfileCell.CellTargetCCA = ProfileCell.Layers[I].TargetCCA;
@@ -377,8 +378,8 @@ namespace VSS.TRex.Profiling
           }
 
           if (DataStillRequiredForTMP &&
-              ProfileCell.CellMaterialTemperature == CellPass.NullMaterialTemperatureValue &&
-              ProfileCell.Layers[I].MaterialTemperature != CellPass.NullMaterialTemperatureValue)
+              ProfileCell.CellMaterialTemperature == CellPassConsts.NullMaterialTemperatureValue &&
+              ProfileCell.Layers[I].MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
           {
             ProfileCell.CellMaterialTemperature = ProfileCell.Layers[I].MaterialTemperature;
             ProfileCell.CellMaterialTemperatureElev = ProfileCell.Layers[I].MaterialTemperature_Elev;
@@ -390,8 +391,8 @@ namespace VSS.TRex.Profiling
               ProfileCell.CellMaterialTemperatureWarnMax =
                 Dummy_LiftBuildSettings.OverridingTemperatureWarningLevels.Max;
             }
-            else if (ProfileCell.CellMaterialTemperatureWarnMin == CellPass.NullMaterialTemperatureValue &&
-                     ProfileCell.CellMaterialTemperatureWarnMax == CellPass.NullMaterialTemperatureValue)
+            else if (ProfileCell.CellMaterialTemperatureWarnMin == CellPassConsts.NullMaterialTemperatureValue &&
+                     ProfileCell.CellMaterialTemperatureWarnMax == CellPassConsts.NullMaterialTemperatureValue)
               GetMaterialTemperatureWarningLevelsTarget(ProfileCell.Layers[I].MaterialTemperature_MachineID,
                 ProfileCell.Layers[I].MaterialTemperature_Time,
                 out ProfileCell.CellMaterialTemperatureWarnMin, out ProfileCell.CellMaterialTemperatureWarnMax);

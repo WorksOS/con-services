@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Compression;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -140,7 +141,7 @@ namespace VSS.TRex.SubGridTrees.Server
             SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
                 DateTime time = cellPasses[col, row].Time;
-                FirstRealCellPassTime = time != Cells.CellPass.NullTime && time < FirstRealCellPassTime ? time : FirstRealCellPassTime;
+                FirstRealCellPassTime = time != CellPassConsts.NullTime && time < FirstRealCellPassTime ? time : FirstRealCellPassTime;
             });
 
             // For ease of management convert all the cell passes into a single list for the following operations
@@ -163,11 +164,11 @@ namespace VSS.TRex.SubGridTrees.Server
 
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.Time);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedHeight(x.Height)).ToArray(), 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffffffff, Cells.CellPass.NullCCV, true, ref EncodedFieldDescriptors.CCV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffffffff, Cells.CellPass.NullRMV, true, ref EncodedFieldDescriptors.RMV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffffffff, Cells.CellPass.NullMDP, true, ref EncodedFieldDescriptors.MDP);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, Cells.CellPass.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, Cells.CellPass.NullCCA, true, ref EncodedFieldDescriptors.CCA);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffffffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffffffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffffffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes
             EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);
@@ -287,7 +288,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public ushort ReadFrequency(int Col, int Row)
         {
-            return Cells.CellPass.NullFrequency;
+            return CellPassConsts.NullFrequency;
         }
 
         /// <summary>
@@ -298,7 +299,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public ushort ReadAmplitude(int Col, int Row)
         {
-            return Cells.CellPass.NullAmplitude;
+            return CellPassConsts.NullAmplitude;
         }
 
         /// <summary>
@@ -320,7 +321,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public byte ReadCCA(int Col, int Row)
         {
-            return Cells.CellPass.NullCCA;
+            return CellPassConsts.NullCCA;
         }
 
         /// <summary>
@@ -343,7 +344,7 @@ namespace VSS.TRex.SubGridTrees.Server
             CellPass Result = new CellPass()
             {
                 //MachineID = Cells.CellPass.NullMachineID // No machine IDs supported in latest cell pass data.
-                InternalSiteModelMachineIndex = Cells.CellPass.NullInternalSiteModelMachineIndex // No machine IDs supported in latest cell pass data.
+                InternalSiteModelMachineIndex = CellPassConsts.NullInternalSiteModelMachineIndex // No machine IDs supported in latest cell pass data.
             };
 
             long IntegerTime = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time);

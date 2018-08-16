@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
@@ -183,7 +184,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.GPSModes != null && (GPSMode)state.GPSModes.GetLatest() == CellPass.NullGPSMode, "Initial value incorrect");
+            Assert.True(state.GPSModes != null && (GPSMode)state.GPSModes.GetLatest() == CellPassConsts.NullGPSMode, "Initial value incorrect");
             state.SetGPSMode(GPSMode.Fixed);
             Assert.True(state.GPSModes.NumAttrs == 2 && (GPSMode)state.GPSModes.GetLatest() == GPSMode.Fixed, "Initial value incorrect");
         }
@@ -203,7 +204,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICCCVValues != null && (short)state.ICCCVValues.GetLatest() == CellPass.NullCCV, "Initial value incorrect");
+            Assert.True(state.ICCCVValues != null && (short)state.ICCCVValues.GetLatest() == CellPassConsts.NullCCV, "Initial value incorrect");
             state.SetICCCVValue(100);
             Assert.True(state.ICCCVValues.NumAttrs == 2 && (short)state.ICCCVValues.GetLatest() == 100, "Initial value incorrect");
         }
@@ -223,7 +224,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICFrequencys != null && (ushort)state.ICFrequencys.GetLatest() == CellPass.NullFrequency, "Initial value incorrect");
+            Assert.True(state.ICFrequencys != null && (ushort)state.ICFrequencys.GetLatest() == CellPassConsts.NullFrequency, "Initial value incorrect");
             state.SetICFrequency(100);
             Assert.True(state.ICFrequencys.NumAttrs == 2 && (ushort)state.ICFrequencys.GetLatest() == 100, "Initial value incorrect");
         }
@@ -233,7 +234,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICAmplitudes != null && (ushort)state.ICAmplitudes.GetLatest() == CellPass.NullAmplitude, "Initial value incorrect");
+            Assert.True(state.ICAmplitudes != null && (ushort)state.ICAmplitudes.GetLatest() == CellPassConsts.NullAmplitude, "Initial value incorrect");
             state.SetICAmplitude(100);
             Assert.True(state.ICAmplitudes.NumAttrs == 2 && (ushort)state.ICAmplitudes.GetLatest() == 100, "Initial value incorrect");
         }
@@ -243,7 +244,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICRMVValues != null && (short)state.ICRMVValues.GetLatest() == CellPass.NullRMV, "Initial value incorrect");
+            Assert.True(state.ICRMVValues != null && (short)state.ICRMVValues.GetLatest() == CellPassConsts.NullRMV, "Initial value incorrect");
             state.SetICRMVValue(100);
             Assert.True(state.ICRMVValues.NumAttrs == 2 && (short)state.ICRMVValues.GetLatest() == 100, "Initial value incorrect");
         }
@@ -263,7 +264,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.VolkelMeasureRanges != null && (int)state.VolkelMeasureRanges.GetLatest() == CellPass.NullVolkelMeasRange, "Initial value incorrect");
+            Assert.True(state.VolkelMeasureRanges != null && (int)state.VolkelMeasureRanges.GetLatest() == CellPassConsts.NullVolkelMeasRange, "Initial value incorrect");
             state.SetVolkelMeasRange(100);
             Assert.True(state.VolkelMeasureRanges.NumAttrs == 2 && (int)state.VolkelMeasureRanges.GetLatest() == 100, "Initial value incorrect");
         }
@@ -273,7 +274,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.VolkelMeasureUtilRanges != null && (int)state.VolkelMeasureUtilRanges.GetLatest() == CellPass.NullVolkelMeasUtilRange, "Initial value incorrect");
+            Assert.True(state.VolkelMeasureUtilRanges != null && (int)state.VolkelMeasureUtilRanges.GetLatest() == CellPassConsts.NullVolkelMeasUtilRange, "Initial value incorrect");
             state.SetVolkelMeasUtilRange(100);
             Assert.True(state.VolkelMeasureUtilRanges.NumAttrs == 2 && (int)state.VolkelMeasureUtilRanges.GetLatest() == 100, "Initial value incorrect");
         }
@@ -323,7 +324,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICMDPValues != null && (short)state.ICMDPValues.GetLatest() == CellPass.NullMDP, "Initial value incorrect");
+            Assert.True(state.ICMDPValues != null && (short)state.ICMDPValues.GetLatest() == CellPassConsts.NullMDP, "Initial value incorrect");
             state.SetICMDPValue(100);
             Assert.True(state.ICMDPValues.NumAttrs == 2 && (short)state.ICMDPValues.GetLatest() == 100, "Initial value incorrect");
         }
@@ -333,7 +334,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICRMVValues != null && (short)state.ICRMVValues.GetLatest() == CellPass.NullRMV, "Initial value incorrect");
+            Assert.True(state.ICRMVValues != null && (short)state.ICRMVValues.GetLatest() == CellPassConsts.NullRMV, "Initial value incorrect");
             state.SetICRMVValue(100);
             Assert.True(state.ICRMVValues.NumAttrs == 2 && (short)state.ICRMVValues.GetLatest() == 100, "Initial value incorrect");
         }
@@ -343,7 +344,7 @@ namespace VSS.TRex.Tests
         {
             TAGProcessorStateBase state = new TAGProcessorStateBase();
 
-            Assert.True(state.ICTemperatureValues != null && (ushort)state.ICTemperatureValues.GetLatest() == CellPass.NullMaterialTemperatureValue, "Initial value incorrect");
+            Assert.True(state.ICTemperatureValues != null && (ushort)state.ICTemperatureValues.GetLatest() == CellPassConsts.NullMaterialTemperatureValue, "Initial value incorrect");
             state.SetICTemperatureValue((ushort)100);
             Assert.True(state.ICTemperatureValues.NumAttrs == 2 && (ushort)state.ICTemperatureValues.GetLatest() == 100, "Initial value incorrect");
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -25,7 +26,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientMachineSpeedLeafSubGrid()
     {
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = CellPass.NullMachineSpeed);
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = CellPassConsts.NullMachineSpeed);
     }
 
     /// <summary>
@@ -46,7 +47,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="filteredValue"></param>
     /// <returns></returns>
-    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MachineSpeed == CellPass.NullMachineSpeed;
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MachineSpeed == CellPassConsts.NullMachineSpeed;
 
     /// <summary>
     /// Assign filtered height value from a filtered pass to a cell
@@ -71,13 +72,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPass.NullMachineSpeed;
+    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPassConsts.NullMachineSpeed;
 
     /// <summary>
     /// Provides a copy of the null value defined for cells in thie client leaf subgrid
     /// </summary>
     /// <returns></returns>
-    public override ushort NullCell() => CellPass.NullMachineSpeed;
+    public override ushort NullCell() => CellPassConsts.NullMachineSpeed;
 
     /// <summary>
     /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps

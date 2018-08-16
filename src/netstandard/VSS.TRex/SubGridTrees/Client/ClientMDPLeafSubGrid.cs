@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -67,7 +68,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="filteredValue"></param>
     /// <returns></returns>
-    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MDP == CellPass.NullMDP;
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.MDP == CellPassConsts.NullMDP;
 
     /// <summary>
     /// Assign filtered MDP value from a filtered pass to a cell
@@ -103,7 +104,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
         {
-          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].MDP != CellPass.NullMDP)
+          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].MDP != CellPassConsts.NullMDP)
           {
             highLayerIndex = i;
             break;
@@ -173,7 +174,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredMDP != CellPass.NullMDP;
+    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredMDP != CellPassConsts.NullMDP;
 
     /// <summary>
     /// Provides a copy of the null value defined for cells in thie client leaf subgrid

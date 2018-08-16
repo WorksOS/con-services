@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -18,7 +19,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.MDP
         {
             state.HaveSeenAnAbsoluteMDP = false;
 
-            valueSink.SetICMDPValue(CellPass.NullMDP);
+            valueSink.SetICMDPValue(CellPassConsts.NullMDP);
 
             return true;
         }

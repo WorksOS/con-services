@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -245,7 +246,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 switch (TypeToCheck)
                 {
                     case GridDataType.CCV:
-                        if (CellPasses[I].CCV != CellPass.NullCCV)
+                        if (CellPasses[I].CCV != CellPassConsts.NullCCV)
                         {
                             LatestData.CCV = CellPasses[I].CCV;
                             ValueFromLatestCellPass = I == LastPassIndex;
@@ -255,7 +256,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     case GridDataType.RMV:
-                        if (CellPasses[I].RMV != CellPass.NullRMV)
+                        if (CellPasses[I].RMV != CellPassConsts.NullRMV)
                         {
                             LatestData.RMV = CellPasses[I].RMV;
                             ValueFromLatestCellPass = I == LastPassIndex;
@@ -265,7 +266,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     case GridDataType.Frequency:
-                        if (CellPasses[I].Frequency != CellPass.NullFrequency)
+                        if (CellPasses[I].Frequency != CellPassConsts.NullFrequency)
                         {
                             LatestData.Frequency = CellPasses[I].Frequency;
                             ValueFromLatestCellPass = I == LastPassIndex;
@@ -275,7 +276,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     case GridDataType.Amplitude:
-                        if (CellPasses[I].Amplitude != CellPass.NullAmplitude)
+                        if (CellPasses[I].Amplitude != CellPassConsts.NullAmplitude)
                         {
                             LatestData.Amplitude = CellPasses[I].Amplitude;
                             ValueFromLatestCellPass = I == LastPassIndex;
@@ -290,7 +291,7 @@ namespace VSS.TRex.SubGridTrees.Server
                             LatestData.HalfPass = CellPasses[I].HalfPass;
                             LatestData.PassType = CellPasses[I].PassType;
 
-                            if (CellPasses[I].gpsMode != CellPass.NullGPSMode)
+                            if (CellPasses[I].gpsMode != CellPassConsts.NullGPSMode)
                             {
                                 LatestData.gpsMode = CellPasses[I].gpsMode;
                                 ValueFromLatestCellPass = I == LastPassIndex;
@@ -300,7 +301,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     case GridDataType.Temperature:
-                        if (CellPasses[I].MaterialTemperature != CellPass.NullMaterialTemperatureValue)
+                        if (CellPasses[I].MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
                         {
                             LatestData.MaterialTemperature = CellPasses[I].MaterialTemperature;
                             ValueFromLatestCellPass = I == LastPassIndex;
@@ -310,7 +311,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     case GridDataType.MDP:
-                        if (CellPasses[I].MDP != CellPass.NullMDP)
+                        if (CellPasses[I].MDP != CellPassConsts.NullMDP)
                         {
                             LatestData.MDP = CellPasses[I].MDP;
                             ValueFromLatestCellPass = I == LastPassIndex;
@@ -320,7 +321,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         break;
 
                     case GridDataType.CCA:
-                        if (CellPasses[I].CCA != CellPass.NullCCA)
+                        if (CellPasses[I].CCA != CellPassConsts.NullCCA)
                         {
                             LatestData.CCA = CellPasses[I].CCA;
                             ValueFromLatestCellPass = I == LastPassIndex;
@@ -358,7 +359,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 LatestData.Height = CellPasses[LastPassIndex].Height;
             }
 
-            if (CellPasses[LastPassIndex].RadioLatency != CellPass.NullRadioLatency)
+            if (CellPasses[LastPassIndex].RadioLatency != CellPassConsts.NullRadioLatency)
             {
                 LatestData.RadioLatency = CellPasses[LastPassIndex].RadioLatency;
             }

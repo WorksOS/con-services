@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Types;
 using Xunit;
 
@@ -13,10 +14,10 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       rec.Clear();
 
-      Assert.True(rec.MeasuredCMV == CellPass.NullCCV);
-      Assert.True(rec.TargetCMV == CellPass.NullCCV);
-      Assert.True(rec.PreviousMeasuredCMV == CellPass.NullCCV);
-      Assert.True(rec.PreviousTargetCMV == CellPass.NullCCV);
+      Assert.True(rec.MeasuredCMV == CellPassConsts.NullCCV);
+      Assert.True(rec.TargetCMV == CellPassConsts.NullCCV);
+      Assert.True(rec.PreviousMeasuredCMV == CellPassConsts.NullCCV);
+      Assert.True(rec.PreviousTargetCMV == CellPassConsts.NullCCV);
     }
   }
 }

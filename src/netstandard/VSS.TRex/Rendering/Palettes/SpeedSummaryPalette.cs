@@ -1,5 +1,6 @@
 ﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Palettes
@@ -16,7 +17,7 @@ namespace VSS.TRex.Rendering.Palettes
     }
     public Draw.Color ChooseColour(MachineSpeedExtendedRecord measuredSpeed, MachineSpeedExtendedRecord targetSpeed)
     {
-      if (targetSpeed.Max == CellPass.NullMachineSpeed)
+      if (targetSpeed.Max == CellPassConsts.NullMachineSpeed)
         return Draw.Color.Empty;
       else
       {

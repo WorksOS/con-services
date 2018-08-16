@@ -4,6 +4,7 @@ using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -28,10 +29,10 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 			Assert.True(aggregator.IsTargetValueConstant, "Invalid initial value for IsTargetValueConstant.");
 			Assert.True(!aggregator.MissingTargetValue, "Invalid initial value for MissingTargetValue.");
 			Assert.True(!aggregator.OverrideTemperatureWarningLevels, "Invalid initial value for OverrideTemperatureWarningLevels.");
-			Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == CellPass.NullMaterialTemperatureValue, "Invalid initial value for OverridingTemperatureWarningLevels.Max.");
-			Assert.True(aggregator.OverridingTemperatureWarningLevels.Min == CellPass.NullMaterialTemperatureValue, "Invalid initial value for OverridingTemperatureWarningLevels.Min.");
-			Assert.True(aggregator.LastTempRangeMax == CellPass.NullMaterialTemperatureValue, "Invalid initial value for LastTempRangeMax.");
-			Assert.True(aggregator.LastTempRangeMin == CellPass.NullMaterialTemperatureValue, "Invalid initial value for LastTempRangeMin.");
+			Assert.True(aggregator.OverridingTemperatureWarningLevels.Max == CellPassConsts.NullMaterialTemperatureValue, "Invalid initial value for OverridingTemperatureWarningLevels.Max.");
+			Assert.True(aggregator.OverridingTemperatureWarningLevels.Min == CellPassConsts.NullMaterialTemperatureValue, "Invalid initial value for OverridingTemperatureWarningLevels.Min.");
+			Assert.True(aggregator.LastTempRangeMax == CellPassConsts.NullMaterialTemperatureValue, "Invalid initial value for LastTempRangeMax.");
+			Assert.True(aggregator.LastTempRangeMin == CellPassConsts.NullMaterialTemperatureValue, "Invalid initial value for LastTempRangeMin.");
 		}
 
     [Fact]

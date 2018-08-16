@@ -3,6 +3,7 @@ using System.IO;
 using VSS.TRex;
 using System.Text;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -66,22 +67,22 @@ namespace VSS.TRex.Tests.Cells
             cp.Clear();
 
             Assert.True(
-                cp.Amplitude == CellPass.NullAmplitude &&
-                cp.CCA == CellPass.NullCCA &&
-                cp.CCV == CellPass.NullCCV &&
-                cp.Frequency == CellPass.NullFrequency &&
-                cp.gpsMode == CellPass.NullGPSMode &&
+                cp.Amplitude == CellPassConsts.NullAmplitude &&
+                cp.CCA == CellPassConsts.NullCCA &&
+                cp.CCV == CellPassConsts.NullCCV &&
+                cp.Frequency == CellPassConsts.NullFrequency &&
+                cp.gpsMode == CellPassConsts.NullGPSMode &&
                 cp.HalfPass == false &&
-                cp.Height == CellPass.NullHeight &&
+                cp.Height == CellPassConsts.NullHeight &&
                 //cp.MachineID == CellPass.NullMachineID &&
-                cp.InternalSiteModelMachineIndex == CellPass.NullInternalSiteModelMachineIndex &&
-                cp.MachineSpeed == CellPass.NullMachineSpeed &&
-                cp.MaterialTemperature == CellPass.NullMaterialTemperatureValue &&
-                cp.MDP == CellPass.NullMDP &&
+                cp.InternalSiteModelMachineIndex == CellPassConsts.NullInternalSiteModelMachineIndex &&
+                cp.MachineSpeed == CellPassConsts.NullMachineSpeed &&
+                cp.MaterialTemperature == CellPassConsts.NullMaterialTemperatureValue &&
+                cp.MDP == CellPassConsts.NullMDP &&
                 cp.PassType == PassType.Front &&
-                cp.RadioLatency == CellPass.NullRadioLatency &&
-                cp.RMV == CellPass.NullRMV &&
-                cp.Time == CellPass.NullTime,
+                cp.RadioLatency == CellPassConsts.NullRadioLatency &&
+                cp.RMV == CellPassConsts.NullRMV &&
+                cp.Time == CellPassConsts.NullTime,
                 "Newly created/cleared CellPass does not contain all null values");
         }
 
@@ -113,18 +114,18 @@ namespace VSS.TRex.Tests.Cells
         {
             CellPass cp = ATestCellPass();
 
-            Assert.False(cp.CCV == CellPass.NullCCV ||
-                           cp.RMV == CellPass.NullRMV ||
-                           cp.Frequency == CellPass.NullFrequency ||
-                           cp.Amplitude == CellPass.NullAmplitude,
+            Assert.False(cp.CCV == CellPassConsts.NullCCV ||
+                           cp.RMV == CellPassConsts.NullRMV ||
+                           cp.Frequency == CellPassConsts.NullFrequency ||
+                           cp.Amplitude == CellPassConsts.NullAmplitude,
                            "One or more fields for vibe state off are already null, compromising the test");
 
             cp.SetFieldsForVibeStateOff();
 
-            Assert.True(cp.CCV == CellPass.NullCCV &&
-                          cp.RMV == CellPass.NullRMV &&
-                          cp.Frequency == CellPass.NullFrequency &&
-                          cp.Amplitude == CellPass.NullAmplitude, 
+            Assert.True(cp.CCV == CellPassConsts.NullCCV &&
+                          cp.RMV == CellPassConsts.NullRMV &&
+                          cp.Frequency == CellPassConsts.NullFrequency &&
+                          cp.Amplitude == CellPassConsts.NullAmplitude, 
                           "Appropriate fields for vibe state off are not null");
         }
 

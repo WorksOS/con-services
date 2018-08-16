@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Types
@@ -118,10 +119,10 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public void Clear()
     {
-      MeasuredCMV = CellPass.NullCCV;
-      TargetCMV = CellPass.NullCCV;
-      PreviousMeasuredCMV = CellPass.NullCCV;
-      PreviousTargetCMV = CellPass.NullCCV;
+      MeasuredCMV = CellPassConsts.NullCCV;
+      TargetCMV = CellPassConsts.NullCCV;
+      PreviousMeasuredCMV = CellPassConsts.NullCCV;
+      PreviousTargetCMV = CellPassConsts.NullCCV;
     }
 
     /// <summary>

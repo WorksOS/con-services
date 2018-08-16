@@ -1,5 +1,6 @@
 ﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -52,7 +53,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var value = SubGrid.Cells[east_col, north_row];
 
-      return value.Max == CellPass.NullMachineSpeed ? Draw.Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value, machineSpeedTarget);
+      return value.Max == CellPassConsts.NullMachineSpeed ? Draw.Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value, machineSpeedTarget);
     }
 
   }

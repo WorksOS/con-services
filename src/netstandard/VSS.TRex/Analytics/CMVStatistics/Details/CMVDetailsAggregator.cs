@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -27,7 +28,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.Details
       for (int i = 0; i < DetailsDataValues.Length; i++)
       {
         var startTransitionValue = DetailsDataValues[i];
-        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPass.NullCCV;
+        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPassConsts.NullCCV;
 
         if (cmvValue >= startTransitionValue && cmvValue < endTransitionValue)
         {
@@ -54,7 +55,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.Details
       {
         var cmvValue = SubGrid.Cells[I, J];
 
-        if (cmvValue.MeasuredCMV != CellPass.NullCCV) // Is there a measured value to test?..
+        if (cmvValue.MeasuredCMV != CellPassConsts.NullCCV) // Is there a measured value to test?..
           IncrementCountOfTransition(cmvValue.MeasuredCMV);
       });
     }

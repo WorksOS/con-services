@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -23,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
                 return false;
             }
 
-            valueSink.ICTempWarningLevelMinValue = (ushort)(value * CellPass.MaterialTempValueRatio);
+            valueSink.ICTempWarningLevelMinValue = (ushort)(value * CellPassConsts.MaterialTempValueRatio);
 
             return true;
         }

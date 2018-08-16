@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.Types
 {
@@ -20,7 +20,7 @@ namespace VSS.TRex.Types
 
         public static GPSAccuracyAndTolerance Null()
         {
-            return new GPSAccuracyAndTolerance(GPSAccuracy.Unknown, CellPass.NullGPSTolerance);
+            return new GPSAccuracyAndTolerance(GPSAccuracy.Unknown, CellPassConsts.NullGPSTolerance);
         }
     }
 }
