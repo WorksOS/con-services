@@ -29,6 +29,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Tests", "tests\netstandard\VSS.TRex.Tests\VSS.TRex.Tests.csproj", "{4E32CCC0-47C1-4CC1-AD8E-14A9FD5C1ED0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TAGFiles.Tests", "tests\netstandard\TAGFiles.Tests\TAGFiles.Tests.csproj", "{56FB1D16-1B1E-428A-B9AA-CF486A5917E0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6477B849-C909-42E8-BD81-05C5C5D3D485} = {6477B849-C909-42E8-BD81-05C5C5D3D485}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Common", "tests\netstandard\Tests.Common\Tests.Common.csproj", "{00400CF0-8011-4B1E-8AC6-2A752A79F527}"
 EndProject
@@ -44,6 +47,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Service.Deployer", "src\tools\VSS.TRex.Service.Deployer\VSS.TRex.Service.Deployer.csproj", "{AB3CB0AF-41DE-4106-AF08-BEEA60CB120D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "interfaces", "interfaces", "{64D5B700-7799-4D1D-84DD-E0DCF51006B2}"
+	ProjectSection(SolutionItems) = preProject
+		src\netstandard\VSS.TRex.Common\CellPasses\CellPassConsts.cs = src\netstandard\VSS.TRex.Common\CellPasses\CellPassConsts.cs
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Rendering.Abstractions", "src\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj", "{3FF74FE8-C1B2-4A78-B685-99FABCD4989B}"
 EndProject
@@ -94,6 +100,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Cells", "VSS.TRex.
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Compression", "VSS.TRex.Compression\VSS.TRex.Compression.csproj", "{DEC84E6C-A507-4A22-A2D4-0357A2AB21C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.SubGridTrees.Interfaces", "VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj", "{D89FB81D-A308-404E-BB1D-94A48F52DE76}"
 EndProject
 Global
 	GlobalSection(Performance) = preSolution
@@ -322,6 +330,14 @@ Global
 		{DEC84E6C-A507-4A22-A2D4-0357A2AB21C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DEC84E6C-A507-4A22-A2D4-0357A2AB21C4}.Release|x64.ActiveCfg = Release|Any CPU
 		{DEC84E6C-A507-4A22-A2D4-0357A2AB21C4}.Release|x64.Build.0 = Release|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Debug|x64.Build.0 = Debug|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Release|x64.ActiveCfg = Release|Any CPU
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -358,9 +374,13 @@ Global
 		{7776A913-9EF2-43F1-9F5A-603749DBF23F} = {490C354B-AE0E-42E0-996C-58F8DAE470D5}
 		{6477B849-C909-42E8-BD81-05C5C5D3D485} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{DEC84E6C-A507-4A22-A2D4-0357A2AB21C4} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
+		{D89FB81D-A308-404E-BB1D-94A48F52DE76} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

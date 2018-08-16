@@ -145,21 +145,32 @@ namespace VSS.TRex.SubGridTrees
             return !AnyNonNullItems;
         }
 
-        /// <summary>
-        /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
-        /// as single parameter (ISubGrid) reference to that subgrid. 
-        /// Child subgrid references in this subgrid that are null are not presented to functor.
-        /// </summary>
-        /// <param name="functor"></param>
-        /// <param name="minSubGridCellX"></param>
-        /// <param name="minSubGridCellY"></param>
-        /// <param name="maxSubGridCellX"></param>
-        /// <param name="maxSubGridCellY"></param>
-        public void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor,
-            byte minSubGridCellX = 0,
-            byte minSubGridCellY = 0,
-            byte maxSubGridCellX = SubGridTree.SubGridTreeDimensionMinus1,
-            byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1)
+      /// <summary>
+      /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
+      /// as single parameter (ISubGrid) reference to that subgrid. 
+      /// Child subgrid references in this subgrid that are null are not presented to functor.
+      /// </summary>
+      /// <param name="functor"></param>
+      public void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor)
+      {
+        ForEachSubGrid(functor, 0, 0, SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1);
+      }
+
+    /// <summary>
+    /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
+    /// as single parameter (ISubGrid) reference to that subgrid. 
+    /// Child subgrid references in this subgrid that are null are not presented to functor.
+    /// </summary>
+    /// <param name="functor"></param>
+    /// <param name="minSubGridCellX"></param>
+    /// <param name="minSubGridCellY"></param>
+    /// <param name="maxSubGridCellX"></param>
+    /// <param name="maxSubGridCellY"></param>
+    public void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor,
+            byte minSubGridCellX,
+            byte minSubGridCellY,
+            byte maxSubGridCellX,
+            byte maxSubGridCellY)
         {
             if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTree.SubGridTreeDimension)
@@ -173,19 +184,29 @@ namespace VSS.TRex.SubGridTrees
                            minSubGridCellX, minSubGridCellY, maxSubGridCellX, maxSubGridCellY);
         }
 
-        /// <summary>
-        /// <param name="functor"></param>
-        /// </summary>
-        /// <param name="functor"></param>
-        /// <param name="minSubGridCellX"></param>
-        /// <param name="minSubGridCellY"></param>
-        /// <param name="maxSubGridCellX"></param>
-        /// <param name="maxSubGridCellY"></param>
-        public void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor,
-            byte minSubGridCellX = 0, 
-            byte minSubGridCellY = 0, 
-            byte maxSubGridCellX = SubGridTree.SubGridTreeDimensionMinus1, 
-            byte maxSubGridCellY = SubGridTree.SubGridTreeDimensionMinus1)
+    /// <summary>
+    /// Iterate over every child subgrid that is present within this subgrid. Each subgrid is presented to functor
+    /// as single parameter (ISubGrid) reference to that subgrid. 
+    /// Child subgrid references in this subgrid that are null are not presented to functor.
+    /// </summary>
+    /// <param name="functor"></param>
+    public void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor)
+      {
+        ForEachSubGrid(functor, 0, 0, SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1);
+      }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="functor"></param>
+    /// <param name="minSubGridCellX"></param>
+    /// <param name="minSubGridCellY"></param>
+    /// <param name="maxSubGridCellX"></param>
+    /// <param name="maxSubGridCellY"></param>
+    public void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor,
+            byte minSubGridCellX, 
+            byte minSubGridCellY, 
+            byte maxSubGridCellX, 
+            byte maxSubGridCellY)
         {
             if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTree.SubGridTreeDimension)

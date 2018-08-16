@@ -412,7 +412,7 @@ namespace VSS.TRex.SubGridTrees
         /// Converts the subgrid origin cell location into a SubGridAddress identifying this subgrid
         /// </summary>
         /// <returns></returns>
-        public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
+        public ISubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
 
         public byte[] ToBytes()
         {
