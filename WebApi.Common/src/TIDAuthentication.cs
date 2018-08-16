@@ -148,7 +148,7 @@ namespace VSS.WebApi.Common
         log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
           userEmail);
         //Set calling context Principal
-        context.User = CreatePrincipal(userUid, customerUid, customerName, userEmail, isApplicationContext, customHeaders);
+        context.User = CreatePrincipal(userUid, customerUid, customerName, userEmail, isApplicationContext, applicationName, customHeaders);
       }
 
       await this._next.Invoke(context);
@@ -177,6 +177,15 @@ namespace VSS.WebApi.Common
       bool isApplicationContext, IDictionary<string, string> contextHeaders)
     {
       return new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext);
+    }
+
+    /// <summary>
+    /// Creates a TID principal. Override in a service to create custom service principals.
+    /// </summary>
+    public virtual TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, string userEmail,
+      bool isApplicationContext, string tpaasApplicationName, IDictionary<string, string> contextHeaders)
+    {
+      return new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext,tpaasApplicationName);
     }
 
     private async Task SetResult(string message, HttpContext context)
