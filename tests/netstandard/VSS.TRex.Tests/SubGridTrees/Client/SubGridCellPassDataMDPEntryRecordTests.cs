@@ -1,5 +1,6 @@
 ﻿
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Types;
 using Xunit;
 
@@ -14,8 +15,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       rec.Clear();
 
-      Assert.True(rec.MeasuredMDP == CellPass.NullMDP);
-      Assert.True(rec.TargetMDP == CellPass.NullMDP);
+      Assert.True(rec.MeasuredMDP == CellPassConsts.NullMDP);
+      Assert.True(rec.TargetMDP == CellPassConsts.NullMDP);
     }
   }
 }

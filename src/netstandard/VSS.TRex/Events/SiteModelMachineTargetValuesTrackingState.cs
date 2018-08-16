@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 
@@ -87,23 +88,23 @@ namespace VSS.TRex.Events
     public void Initialise(FilteredValuePopulationControl populationControl)
     {
       TrackingUseMachineRMVThreshold = false;
-      TrackingOverrideRMVJumpThreshold = CellPass.NullRMV;
+      TrackingOverrideRMVJumpThreshold = CellPassConsts.NullRMV;
 
       if (populationControl.WantsTargetCCVValues)
       {
-        TargetCCV = CellPass.NullCCV;
+        TargetCCV = CellPassConsts.NullCCV;
         TargetCCV_Tracking.Initialise();
       }
 
       if (populationControl.WantsTargetMDPValues)
       {
-        TargetMDP = CellPass.NullMDP;
+        TargetMDP = CellPassConsts.NullMDP;
         TargetMDP_Tracking.Initialise();
       }
 
       if (populationControl.WantsTargetCCAValues)
       {
-        TargetCCA = CellPass.NullCCA;
+        TargetCCA = CellPassConsts.NullCCA;
         TargetCCA_Tracking.Initialise();
       }
 
@@ -115,7 +116,7 @@ namespace VSS.TRex.Events
 
       if (populationControl.WantsTargetLiftThicknessValues)
       {
-        TargetLiftThickness = CellPass.NullHeight;
+        TargetLiftThickness = CellPassConsts.NullHeight;
         TargetLiftThickness_Tracking.Initialise();
       }
 
@@ -177,7 +178,7 @@ namespace VSS.TRex.Events
 
       if (populationControl.WantsEventMachineCompactionRMVJumpThreshold)
       {
-        EventMachineRMVThreshold = CellPass.NullRMV;
+        EventMachineRMVThreshold = CellPassConsts.NullRMV;
         EventMachineRMVThreshold_Tracking.Initialise();
       }
 
@@ -189,7 +190,7 @@ namespace VSS.TRex.Events
 
       if (populationControl.WantsEventGPSAccuracyValues)
       {
-        GPSAccuracyAndTolerance = new GPSAccuracyAndTolerance(GPSAccuracy.Unknown, CellPass.NullGPSTolerance);
+        GPSAccuracyAndTolerance = new GPSAccuracyAndTolerance(GPSAccuracy.Unknown, CellPassConsts.NullGPSTolerance);
         GPSAccuracyState_Tracking.Initialise();
       }
 
@@ -201,19 +202,19 @@ namespace VSS.TRex.Events
 
       if (populationControl.WantsTempWarningLevelMinValues)
       {
-        TempWarningLevelMin = CellPass.NullMaterialTemperatureValue;
+        TempWarningLevelMin = CellPassConsts.NullMaterialTemperatureValue;
         TempWarningLevelMin_Tracking.Initialise();
       }
 
       if (populationControl.WantsTempWarningLevelMaxValues)
       {
-        TempWarningLevelMax = CellPass.NullMaterialTemperatureValue;
+        TempWarningLevelMax = CellPassConsts.NullMaterialTemperatureValue;
         TempWarningLevelMax_Tracking.Initialise();
       }
 
       if (populationControl.WantsLayerIDValues)
       {
-        EventLayerID = CellPass.NullLayerID;
+        EventLayerID = CellPassConsts.NullLayerID;
         EventLayerID_Tracking.Initialise();
       }
     }

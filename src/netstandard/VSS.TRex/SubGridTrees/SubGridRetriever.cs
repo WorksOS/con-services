@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -383,22 +384,22 @@ namespace VSS.TRex.SubGridTrees
           switch (_GridDataType)
           {
             case GridDataType.CCV:
-              if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
+              if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPassConsts.NullCCV)
                 continue;
               break;
 
             case GridDataType.RMV:
-              if (_GlobalLatestCells.ReadRMV(StripeIndex, J) == CellPass.NullRMV)
+              if (_GlobalLatestCells.ReadRMV(StripeIndex, J) == CellPassConsts.NullRMV)
                 continue;
               break;
 
             case GridDataType.Frequency:
-              if (_GlobalLatestCells.ReadFrequency(StripeIndex, J) == CellPass.NullFrequency)
+              if (_GlobalLatestCells.ReadFrequency(StripeIndex, J) == CellPassConsts.NullFrequency)
                 continue;
               break;
 
             case GridDataType.Amplitude:
-              if (_GlobalLatestCells.ReadAmplitude(StripeIndex, J) == CellPass.NullAmplitude)
+              if (_GlobalLatestCells.ReadAmplitude(StripeIndex, J) == CellPassConsts.NullAmplitude)
                 continue;
               break;
 
@@ -408,32 +409,32 @@ namespace VSS.TRex.SubGridTrees
               break;
 
             case GridDataType.MDP:
-              if (_GlobalLatestCells.ReadMDP(StripeIndex, J) == CellPass.NullMDP)
+              if (_GlobalLatestCells.ReadMDP(StripeIndex, J) == CellPassConsts.NullMDP)
                 continue;
               break;
 
             case GridDataType.CCA:
-              if (_GlobalLatestCells.ReadCCA(StripeIndex, J) == CellPass.NullCCA)
+              if (_GlobalLatestCells.ReadCCA(StripeIndex, J) == CellPassConsts.NullCCA)
                 continue;
               break;
 
             case GridDataType.Temperature:
-              if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
+              if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPassConsts.NullMaterialTemperatureValue)
                 continue;
               break;
 
             case GridDataType.TemperatureDetail:
-              if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemperatureValue)
+              if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPassConsts.NullMaterialTemperatureValue)
                 continue;
               break;
 
             case GridDataType.CCVPercentChange:
-              if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
+              if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPassConsts.NullCCV)
                 continue;
               break;
 
             case GridDataType.CCVPercentChangeIgnoredTopNullValue:
-              if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
+              if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPassConsts.NullCCV)
                 continue;
               break;
           }

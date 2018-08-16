@@ -1,5 +1,6 @@
 ﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -45,7 +46,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       ushort value = SubGrid.Cells[east_col, north_row].MeasuredTemperature;
 
-      return value == CellPass.NullMaterialTemperatureValue ? Draw.Color.Empty : Palette.ChooseColour(value);
+      return value == CellPassConsts.NullMaterialTemperatureValue ? Draw.Color.Empty : Palette.ChooseColour(value);
     }
   }
 }

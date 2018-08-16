@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -55,7 +56,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredPassCount != CellPass.NullPassCountValue;
+    public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredPassCount != CellPassConsts.NullPassCountValue;
 
     /// <summary>
     /// Sets all cell Pass Counts to null and clears the first pass and sureyed surface pass maps

@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -21,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Vibratory
         {
             state.HaveSeenAnAbsoluteRMV = false;
 
-            valueSink.SetICRMVValue(CellPass.NullRMV);
+            valueSink.SetICRMVValue(CellPassConsts.NullRMV);
 
             return true;
         }

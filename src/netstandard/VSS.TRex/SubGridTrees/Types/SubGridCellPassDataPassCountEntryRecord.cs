@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.SubGridTrees.Types
 {
@@ -34,8 +35,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public void Clear()
     {
-      MeasuredPassCount = CellPass.NullPassCountValue;
-      TargetPassCount = CellPass.NullPassCountValue;
+      MeasuredPassCount = CellPassConsts.NullPassCountValue;
+      TargetPassCount = CellPassConsts.NullPassCountValue;
     }
 
     /// <summary>

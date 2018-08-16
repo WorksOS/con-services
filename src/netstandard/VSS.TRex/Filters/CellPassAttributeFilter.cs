@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events;
 using VSS.TRex.Machines;
 using VSS.TRex.SubGridTrees.Client;
@@ -77,7 +78,7 @@ namespace VSS.TRex.Filters
     public bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
     public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
-    public ushort GPSTolerance { get; set; } = CellPass.NullGPSTolerance;
+    public ushort GPSTolerance { get; set; } = CellPassConsts.NullGPSTolerance;
 
     public bool GPSAccuracyIsInclusive { get; set; }
 
@@ -590,8 +591,8 @@ namespace VSS.TRex.Filters
     public void ClearTemperatureRange()
     {
       HasTemperatureRangeFilter = false;
-      MaterialTemperatureMin = CellPass.NullMaterialTemperatureValue;
-      MaterialTemperatureMax = CellPass.NullMaterialTemperatureValue;
+      MaterialTemperatureMin = CellPassConsts.NullMaterialTemperatureValue;
+      MaterialTemperatureMax = CellPassConsts.NullMaterialTemperatureValue;
     }
 
     public void ClearPassCountRange()
@@ -964,7 +965,7 @@ end
           return false;
 
         if (HasGPSToleranceFilter &&
-            !(GPSAccuracyAndToleranceValue.GPSTolerance != CellPass.NullGPSTolerance &&
+            !(GPSAccuracyAndToleranceValue.GPSTolerance != CellPassConsts.NullGPSTolerance &&
               ((!GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance < GPSTolerance) ||
                (GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance >= GPSTolerance))))
           return false;
@@ -1115,7 +1116,7 @@ Exit;
 
       if (HasGPSToleranceFilter)
       {
-        if (!((PassValue.EventValues.GPSTolerance != CellPass.NullGPSTolerance) &&
+        if (!((PassValue.EventValues.GPSTolerance != CellPassConsts.NullGPSTolerance) &&
               ((GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance >= GPSTolerance) ||
                (!GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance < GPSTolerance))))
           return false;
@@ -1163,7 +1164,7 @@ Exit;
     public bool FilterPassUsingTemepratureRange(ref CellPass PassValue)
     {
       Debug.Assert(HasTemperatureRangeFilter, "Temperature range filter being used without the temperature range data being initialised");
-      return (PassValue.MaterialTemperature != CellPass.NullMaterialTemperatureValue) &&
+      return (PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
              Range.InRange(PassValue.MaterialTemperature, MaterialTemperatureMin, MaterialTemperatureMax);
     }
 
@@ -1283,7 +1284,7 @@ Exit;
 
       if (HasGPSToleranceFilter)
       {
-        if (!(PassValue.EventValues.GPSTolerance != CellPass.NullGPSTolerance &&
+        if (!(PassValue.EventValues.GPSTolerance != CellPassConsts.NullGPSTolerance &&
               ((GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance >= GPSTolerance) ||
                (!GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance < GPSTolerance))))
           return false;

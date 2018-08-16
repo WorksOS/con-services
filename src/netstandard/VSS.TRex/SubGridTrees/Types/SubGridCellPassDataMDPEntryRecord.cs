@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Types
@@ -97,8 +98,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public void Clear()
     {
-      MeasuredMDP = CellPass.NullMDP;
-      TargetMDP = CellPass.NullMDP;
+      MeasuredMDP = CellPassConsts.NullMDP;
+      TargetMDP = CellPassConsts.NullMDP;
     }
 
     /// <summary>

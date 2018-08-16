@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Types;
 using Xunit;
 
@@ -13,9 +14,9 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       rec.Clear();
 
-      Assert.True(rec.MeasuredTemperature == CellPass.NullMaterialTemperatureValue);
-      Assert.True(rec.TemperatureLevels.Min == CellPass.NullMaterialTemperatureValue);
-      Assert.True(rec.TemperatureLevels.Max == CellPass.NullMaterialTemperatureValue);
+      Assert.True(rec.MeasuredTemperature == CellPassConsts.NullMaterialTemperatureValue);
+      Assert.True(rec.TemperatureLevels.Min == CellPassConsts.NullMaterialTemperatureValue);
+      Assert.True(rec.TemperatureLevels.Max == CellPassConsts.NullMaterialTemperatureValue);
     }
   }
 }

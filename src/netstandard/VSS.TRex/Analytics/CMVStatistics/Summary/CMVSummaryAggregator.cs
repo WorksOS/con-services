@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -31,7 +32,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
     /// <summary>
     /// Holds last known good target CMV value.
     /// </summary>
-    public short LastTargetCMV { get; private set; } = CellPass.NullCCV;
+    public short LastTargetCMV { get; private set; } = CellPassConsts.NullCCV;
 
 
     /// <summary>
@@ -39,7 +40,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
     /// </summary>
     public CMVSummaryAggregator()
     {
-      OverridingMachineCMV = CellPass.NullCCV;
+      OverridingMachineCMV = CellPassConsts.NullCCV;
       CMVPercentageRange.Clear();
     }
 
@@ -50,13 +51,13 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
       if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // if we need to check for a difference
       {
         // compare grouped results to determine if target varies
-        if (aggregator.LastTargetCMV != CellPass.NullCCV && LastTargetCMV != CellPass.NullCCV) // if data valid
+        if (aggregator.LastTargetCMV != CellPassConsts.NullCCV && LastTargetCMV != CellPassConsts.NullCCV) // if data valid
         {
           if (LastTargetCMV != aggregator.LastTargetCMV) // compare
             IsTargetValueConstant = false;
         }
 
-        if (aggregator.LastTargetCMV != CellPass.NullCCV) // if data valid
+        if (aggregator.LastTargetCMV != CellPassConsts.NullCCV) // if data valid
           LastTargetCMV = aggregator.LastTargetCMV; // set value
       }
     }
@@ -74,13 +75,13 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
       if (!(subGrids[0][0] is ClientCMVLeafSubGrid SubGrid))
         return;
 
-      var currentTargetCMV = CellPass.NullCCV;
+      var currentTargetCMV = CellPassConsts.NullCCV;
 
       SubGridUtilities.SubGridDimensionalIterator((I, J) =>
       {
         var cmvValue = SubGrid.Cells[I, J];
 
-        if (cmvValue.MeasuredCMV != CellPass.NullCCV) // Is there a measured value to test?..
+        if (cmvValue.MeasuredCMV != CellPassConsts.NullCCV) // Is there a measured value to test?..
         {
           if (OverrideMachineCMV) // Are we overriding target values?..
           {
@@ -92,17 +93,17 @@ namespace VSS.TRex.Analytics.CMVStatistics.Summary
           else
           {
             // Using the machine target values test if target varies...
-            if (IsTargetValueConstant && cmvValue.TargetCMV != CellPass.NullCCV && LastTargetCMV != CellPass.NullCCV) // Values a re all good to test...
+            if (IsTargetValueConstant && cmvValue.TargetCMV != CellPassConsts.NullCCV && LastTargetCMV != CellPassConsts.NullCCV) // Values a re all good to test...
               IsTargetValueConstant = LastTargetCMV == cmvValue.TargetCMV; // Check to see if target value varies...
 
-            if (LastTargetCMV != cmvValue.TargetCMV && cmvValue.TargetCMV != CellPass.NullCCV)
+            if (LastTargetCMV != cmvValue.TargetCMV && cmvValue.TargetCMV != CellPassConsts.NullCCV)
               LastTargetCMV = cmvValue.TargetCMV; // LastTargetCMV holds last good value...
 
             if (currentTargetCMV != cmvValue.TargetCMV) // Set current target value...
               currentTargetCMV = cmvValue.TargetCMV;
           }
 
-          if (currentTargetCMV != CellPass.NullCCV) // If target is not null then do statistics...
+          if (currentTargetCMV != CellPassConsts.NullCCV) // If target is not null then do statistics...
           { 
             var cmvRangeMin = Math.Round(LastTargetCMV * CMVPercentageRange.Min / 100);
             var cmvRangeMax = Math.Round(LastTargetCMV * CMVPercentageRange.Max / 100);

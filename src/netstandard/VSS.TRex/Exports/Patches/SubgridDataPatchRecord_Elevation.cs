@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -41,17 +42,17 @@ namespace VSS.TRex.Exports.Patches
       }
 
       // Determine the minimum non-null elevation in the subgrid
-      float MinElevation = CellPass.NullHeight;
+      float MinElevation = CellPassConsts.NullHeight;
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         float value = elevations[x, y];
 
-        if (value != CellPass.NullHeight)
+        if (value != CellPassConsts.NullHeight)
           MinElevation = value;
       });
 
-      if (MinElevation == CellPass.NullHeight)
+      if (MinElevation == CellPassConsts.NullHeight)
         return;
 
       // Set the appropriate values into the result
@@ -63,7 +64,7 @@ namespace VSS.TRex.Exports.Patches
       {
         float value = elevations[x, y];
 
-        Data[x, y] = (value == CellPass.NullHeight)
+        Data[x, y] = (value == CellPassConsts.NullHeight)
           ? ushort.MaxValue
           : (ushort)Math.Floor((value - MinElevation) * 1000 + 0.0005);
       });

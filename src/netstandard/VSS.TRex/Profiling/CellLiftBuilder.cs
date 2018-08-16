@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling.Interfaces;
@@ -156,15 +157,15 @@ namespace VSS.TRex.Profiling
     /// </summary>
     private void InitLastValueVars()
     {
-      LastPassCCV = CellPass.NullCCV;
-      LastPassMDP = CellPass.NullMDP;
-      LastPassCCA = CellPass.NullCCA;
-      LastPassRMV = CellPass.NullRMV;
-      LastPassRadioLatency = CellPass.NullRadioLatency;
-      LastPassFrequency = CellPass.NullFrequency;
-      LastPassAmplitude = CellPass.NullAmplitude;
-      LastPassMaterialTemperature = CellPass.NullMaterialTemperatureValue;
-      LastPassMachineSpeed = CellPass.NullMachineSpeed;
+      LastPassCCV = CellPassConsts.NullCCV;
+      LastPassMDP = CellPassConsts.NullMDP;
+      LastPassCCA = CellPassConsts.NullCCA;
+      LastPassRMV = CellPassConsts.NullRMV;
+      LastPassRadioLatency = CellPassConsts.NullRadioLatency;
+      LastPassFrequency = CellPassConsts.NullFrequency;
+      LastPassAmplitude = CellPassConsts.NullAmplitude;
+      LastPassMaterialTemperature = CellPassConsts.NullMaterialTemperatureValue;
+      LastPassMachineSpeed = CellPassConsts.NullMachineSpeed;
       LastPassCCVIdx = 0;
     }
 
@@ -197,7 +198,7 @@ namespace VSS.TRex.Profiling
     /// <param name="lift"></param>
     private void CheckProfileCellLiftCompaction(ProfileLayer lift)
     {
-      if (lift.CCV == CellPass.NullCCV && lift.MDP == CellPass.NullMDP && lift.CCA == CellPass.NullCCA)
+      if (lift.CCV == CellPassConsts.NullCCV && lift.MDP == CellPassConsts.NullMDP && lift.CCA == CellPassConsts.NullCCA)
         return;
 
       Cell.CheckLiftCompaction(lift, /* todo LiftBuildSettings,*/ ProfileTypeRequired);
@@ -510,7 +511,7 @@ namespace VSS.TRex.Profiling
       if (!Cell.FilteredPassFlags[CurrentPassIndex])
         return;
 
-      if (CurrentPass.FilteredPass.CCV != CellPass.NullCCV)
+      if (CurrentPass.FilteredPass.CCV != CellPassConsts.NullCCV)
       {
         LastPassCCV = CurrentPass.FilteredPass.CCV;
         LastPassCCVTime = CurrentPass.FilteredPass.Time;
@@ -519,7 +520,7 @@ namespace VSS.TRex.Profiling
         LastPassCCVIdx = CurrentPassIndex;
       }
 
-      if (CurrentPass.FilteredPass.MDP != CellPass.NullMDP)
+      if (CurrentPass.FilteredPass.MDP != CellPassConsts.NullMDP)
       {
         LastPassMDP = CurrentPass.FilteredPass.MDP;
         LastPassMDPTime = CurrentPass.FilteredPass.Time;
@@ -527,7 +528,7 @@ namespace VSS.TRex.Profiling
         LastPassMDPElev = CurrentPass.FilteredPass.Height;
       }
 
-      if (CurrentPass.FilteredPass.CCA != CellPass.NullCCA)
+      if (CurrentPass.FilteredPass.CCA != CellPassConsts.NullCCA)
       {
         LastPassCCA = CurrentPass.FilteredPass.CCA;
         LastPassCCATime = CurrentPass.FilteredPass.Time;
@@ -535,7 +536,7 @@ namespace VSS.TRex.Profiling
         LastPassCCAElev = CurrentPass.FilteredPass.Height;
       }
 
-      if (CurrentPass.FilteredPass.MaterialTemperature != CellPass.NullMaterialTemperatureValue)
+      if (CurrentPass.FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
       {
         LastPassMaterialTemperature = CurrentPass.FilteredPass.MaterialTemperature;
         LastPassMaterialTemperature_Time = CurrentPass.FilteredPass.Time;
@@ -543,19 +544,19 @@ namespace VSS.TRex.Profiling
         LastPassMaterialTemperature_Elev = CurrentPass.FilteredPass.Height;
       }
 
-      if (CurrentPass.FilteredPass.RadioLatency != CellPass.NullRadioLatency)
+      if (CurrentPass.FilteredPass.RadioLatency != CellPassConsts.NullRadioLatency)
         LastPassRadioLatency = CurrentPass.FilteredPass.RadioLatency;
 
-      if (CurrentPass.FilteredPass.RMV != CellPass.NullRMV)
+      if (CurrentPass.FilteredPass.RMV != CellPassConsts.NullRMV)
         LastPassRMV = CurrentPass.FilteredPass.RMV;
 
-      if (CurrentPass.FilteredPass.Frequency != CellPass.NullFrequency)
+      if (CurrentPass.FilteredPass.Frequency != CellPassConsts.NullFrequency)
         LastPassFrequency = CurrentPass.FilteredPass.Frequency;
 
-      if (CurrentPass.FilteredPass.Amplitude != CellPass.NullAmplitude)
+      if (CurrentPass.FilteredPass.Amplitude != CellPassConsts.NullAmplitude)
         LastPassAmplitude = CurrentPass.FilteredPass.Amplitude;
 
-      if (CurrentPass.FilteredPass.MachineSpeed != CellPass.NullMachineSpeed)
+      if (CurrentPass.FilteredPass.MachineSpeed != CellPassConsts.NullMachineSpeed)
         LastPassMachineSpeed = CurrentPass.FilteredPass.MachineSpeed;
 
       if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.MapReset ||
@@ -1169,7 +1170,7 @@ namespace VSS.TRex.Profiling
           AssignmentContext.PreviousFilteredValue.FilteredPassData.Clear();
 
           //Reinitialize speed values to search for min&max speed
-          Cell.CellMinSpeed = CellPass.NullMachineSpeed;
+          Cell.CellMinSpeed = CellPassConsts.NullMachineSpeed;
           Cell.CellMaxSpeed = 0;
 
           // Calculate the superceded and layer thickness information for the computed layers

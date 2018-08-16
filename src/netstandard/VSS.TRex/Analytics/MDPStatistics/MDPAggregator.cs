@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
@@ -31,14 +32,14 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// <summary>
     /// Holds last known good target MDP value.
     /// </summary>
-    public short LastTargetMDP { get; private set; } = CellPass.NullMDP;
+    public short LastTargetMDP { get; private set; } = CellPassConsts.NullMDP;
 
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
     public MDPAggregator()
     {
-      OverridingMachineMDP = CellPass.NullMDP;
+      OverridingMachineMDP = CellPassConsts.NullMDP;
       MDPPercentageRange.Clear();
     }
 
@@ -49,13 +50,13 @@ namespace VSS.TRex.Analytics.MDPStatistics
       if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // if we need to check for a difference
       {
         // compare grouped results to determine if target varies
-        if (aggregator.LastTargetMDP != CellPass.NullMDP && LastTargetMDP != CellPass.NullMDP) // if data valid
+        if (aggregator.LastTargetMDP != CellPassConsts.NullMDP && LastTargetMDP != CellPassConsts.NullMDP) // if data valid
         {
           if (LastTargetMDP != aggregator.LastTargetMDP) // compare
             IsTargetValueConstant = false;
         }
 
-        if (aggregator.LastTargetMDP != CellPass.NullMDP) // if data valid
+        if (aggregator.LastTargetMDP != CellPassConsts.NullMDP) // if data valid
           LastTargetMDP = aggregator.LastTargetMDP; // set value
       }
     }
@@ -73,13 +74,13 @@ namespace VSS.TRex.Analytics.MDPStatistics
       if (!(subGrids[0][0] is ClientMDPLeafSubGrid SubGrid))
         return;
 
-      var currentTargetMDP = CellPass.NullMDP;
+      var currentTargetMDP = CellPassConsts.NullMDP;
 
       SubGridUtilities.SubGridDimensionalIterator((I, J) =>
       {
         var mdpValue = SubGrid.Cells[I, J];
 
-        if (mdpValue.MeasuredMDP != CellPass.NullMDP) // Is there a measured value to test?..
+        if (mdpValue.MeasuredMDP != CellPassConsts.NullMDP) // Is there a measured value to test?..
         {
           if (OverrideMachineMDP) // Are we overriding target values?..
           {
@@ -91,17 +92,17 @@ namespace VSS.TRex.Analytics.MDPStatistics
           else
           {
             // Using the machine target values test if target varies...
-            if (IsTargetValueConstant && mdpValue.TargetMDP != CellPass.NullMDP && LastTargetMDP != CellPass.NullMDP) // Values a re all good to test...
+            if (IsTargetValueConstant && mdpValue.TargetMDP != CellPassConsts.NullMDP && LastTargetMDP != CellPassConsts.NullMDP) // Values a re all good to test...
               IsTargetValueConstant = LastTargetMDP == mdpValue.TargetMDP; // Check to see if target value varies...
 
-            if (LastTargetMDP != mdpValue.TargetMDP && mdpValue.TargetMDP != CellPass.NullMDP)
+            if (LastTargetMDP != mdpValue.TargetMDP && mdpValue.TargetMDP != CellPassConsts.NullMDP)
               LastTargetMDP = mdpValue.TargetMDP; // LastTargetMDP holds last good value...
 
             if (currentTargetMDP != mdpValue.TargetMDP) // Set current target value...
               currentTargetMDP = mdpValue.TargetMDP;
           }
 
-          if (currentTargetMDP != CellPass.NullMDP) // If target is not null then do statistics...
+          if (currentTargetMDP != CellPassConsts.NullMDP) // If target is not null then do statistics...
           {
             var mdpRangeMin = Math.Round(LastTargetMDP * MDPPercentageRange.Min / 100);
             var mdpRangeMax = Math.Round(LastTargetMDP * MDPPercentageRange.Max / 100);

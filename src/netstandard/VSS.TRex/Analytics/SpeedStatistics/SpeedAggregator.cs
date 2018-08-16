@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -43,7 +44,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 			SubGridUtilities.SubGridDimensionalIterator((I, J) =>
 		  {
 			  var SpeedRangeValue = SubGrid.Cells[I, J];
-			  if (SpeedRangeValue.Max != CellPass.NullMachineSpeed) // is there a value to test
+			  if (SpeedRangeValue.Max != CellPassConsts.NullMachineSpeed) // is there a value to test
 			  {
 				  SummaryCellsScanned++;
 				  if (SpeedRangeValue.Max > TargetMachineSpeed.Max)

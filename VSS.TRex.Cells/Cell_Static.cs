@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.Cells
 {
@@ -42,7 +43,7 @@ namespace VSS.TRex.Cells
         /// A reference to the total list of cell passes the passes for this cell is stored within is passed into this method
         /// </summary>
         /// <returns></returns>
-        public float TopMostHeight(CellPass[] Passes) => IsEmpty ? CellPass.NullHeight : Passes[CellPassOffset + PassCount].Height;
+        public float TopMostHeight(CellPass[] Passes) => IsEmpty ? CellPassConsts.NullHeight : Passes[CellPassOffset + PassCount].Height;
 
         /// <summary>
         /// LocateTime attempts to locate an entry in the passes list that has

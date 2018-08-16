@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Executors.Executors;
 using VSS.TRex.TAGFiles.Types;
 using Xunit;
@@ -19,7 +20,7 @@ namespace TAGFiles.Tests
                 preScan.SeedLongitude == null &&
                 preScan.RadioType == string.Empty &&
                 preScan.RadioSerial == string.Empty &&
-                preScan.MachineType == CellPass.MachineTypeNull &&
+                preScan.MachineType == CellPassConsts.MachineTypeNull &&
                 preScan.MachineID == string.Empty &&
                 preScan.HardwareID == string.Empty,
                 "TAGFilePreScan not constructed as expected");

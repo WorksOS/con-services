@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -88,7 +89,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="filteredValue"></param>
     /// <returns></returns>
     public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) =>
-      _gridDataType != GridDataType.CCVPercentChange && IgnoresNullValueForLastCMV && filteredValue.FilteredPass.CCV == CellPass.NullCCV;
+      _gridDataType != GridDataType.CCVPercentChange && IgnoresNullValueForLastCMV && filteredValue.FilteredPass.CCV == CellPassConsts.NullCCV;
 
     /// <summary>
     /// Assign filtered CMV value from a filtered pass to a cell
@@ -128,7 +129,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
         {
-          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].CCV != CellPass.NullCCV)
+          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].CCV != CellPassConsts.NullCCV)
           {
             highLayerIndex = i;
             break;
@@ -183,7 +184,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    public override bool CellHasValue(byte cellX, byte cellY) => _gridDataType == GridDataType.CCVPercentChange || Cells[cellX, cellY].MeasuredCMV != CellPass.NullCCV;
+    public override bool CellHasValue(byte cellX, byte cellY) => _gridDataType == GridDataType.CCVPercentChange || Cells[cellX, cellY].MeasuredCMV != CellPassConsts.NullCCV;
 
     /// <summary>
     /// Provides a copy of the null value defined for cells in thie client leaf subgrid

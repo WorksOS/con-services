@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Types;
 
@@ -21,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher.Compaction.Temperature
         {
             state.HaveSeenAnAbsoluteTemperature = false;
 
-            valueSink.SetICTemperatureValue(CellPass.NullMaterialTemperatureValue);
+            valueSink.SetICTemperatureValue(CellPassConsts.NullMaterialTemperatureValue);
 
             return true;
         }

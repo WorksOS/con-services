@@ -2,6 +2,7 @@
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.Profiling
 {
@@ -123,29 +124,29 @@ namespace VSS.TRex.Profiling
       MachineID = -1;
       LastLayerPassTime = DateTime.MinValue;
 
-      CCV = CellPass.NullCCV;
-      TargetCCV = CellPass.NullCCV;
-      MDP = CellPass.NullMDP;
-      TargetMDP = CellPass.NullMDP;
-      CCA = CellPass.NullCCA;
-      TargetCCA = CellPass.NullCCA;
+      CCV = CellPassConsts.NullCCV;
+      TargetCCV = CellPassConsts.NullCCV;
+      MDP = CellPassConsts.NullMDP;
+      TargetMDP = CellPassConsts.NullMDP;
+      CCA = CellPassConsts.NullCCA;
+      TargetCCA = CellPassConsts.NullCCA;
 
-      RadioLatency = CellPass.NullRadioLatency;
-      Height = CellPass.NullHeight;
+      RadioLatency = CellPassConsts.NullRadioLatency;
+      Height = CellPassConsts.NullHeight;
       TargetPassCount = 0;
 
-      RMV = CellPass.NullRMV;
+      RMV = CellPassConsts.NullRMV;
 
-      Thickness = CellPass.NullHeight;
-      TargetThickness = CellPass.NullHeight;
+      Thickness = CellPassConsts.NullHeight;
+      TargetThickness = CellPassConsts.NullHeight;
 
-      MaterialTemperature = CellPass.NullMaterialTemperatureValue;
-      MaterialTemperature_Elev = CellPass.NullHeight;
+      MaterialTemperature = CellPassConsts.NullMaterialTemperatureValue;
+      MaterialTemperature_Elev = CellPassConsts.NullHeight;
 
-      MinimumPassHeight = CellPass.NullHeight;
-      MaximumPassHeight = CellPass.NullHeight;
-      FirstPassHeight = CellPass.NullHeight;
-      LastPassHeight = CellPass.NullHeight;
+      MinimumPassHeight = CellPassConsts.NullHeight;
+      MaximumPassHeight = CellPassConsts.NullHeight;
+      FirstPassHeight = CellPassConsts.NullHeight;
+      LastPassHeight = CellPassConsts.NullHeight;
     }
 
     /// <summary>

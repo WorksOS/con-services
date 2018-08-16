@@ -1,5 +1,6 @@
 ﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -40,7 +41,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       float value = SubGrid.Cells[east_col, north_row];
 
-      return value == CellPass.NullHeight ? Draw.Color.Empty : Palette.ChooseColour(value);
+      return value == CellPassConsts.NullHeight ? Draw.Color.Empty : Palette.ChooseColour(value);
     }
   }
 }

@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -27,8 +28,8 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
       Assert.True(aggregator.IsTargetValueConstant, "Invalid initial value for IsTargetValueConstant.");
       Assert.True(!aggregator.MissingTargetValue, "Invalid initial value for MissingTargetValue.");
       Assert.True(!aggregator.OverrideMachineMDP, "Invalid initial value for OverrideTemperatureWarningLevels.");
-      Assert.True(aggregator.OverridingMachineMDP == CellPass.NullMDP, "Invalid initial value for OverridingMachineMDP.");
-      Assert.True(aggregator.LastTargetMDP == CellPass.NullMDP, "Invalid initial value for LastTargetMDP.");
+      Assert.True(aggregator.OverridingMachineMDP == CellPassConsts.NullMDP, "Invalid initial value for OverridingMachineMDP.");
+      Assert.True(aggregator.LastTargetMDP == CellPassConsts.NullMDP, "Invalid initial value for LastTargetMDP.");
     }
 
     [Fact]

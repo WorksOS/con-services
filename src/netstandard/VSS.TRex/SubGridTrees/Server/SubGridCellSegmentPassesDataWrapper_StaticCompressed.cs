@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Compression;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
@@ -646,16 +647,16 @@ namespace VSS.TRex.SubGridTrees.Server
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.InternalSiteModelMachineIndex).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.MachineIDIndex);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedTime(x.Time, FirstRealCellPassTime)).ToArray(), 0xffffffff, 0, false, ref EncodedFieldDescriptors.Time);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedHeight(x.Height)).ToArray(), 0xffffffff, 0x7fffffff, true, ref EncodedFieldDescriptors.Height);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffffffff, CellPass.NullCCV, true, ref EncodedFieldDescriptors.CCV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffffffff, CellPass.NullRMV, true, ref EncodedFieldDescriptors.RMV);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffffffff, CellPass.NullMDP, true, ref EncodedFieldDescriptors.MDP);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, CellPass.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.GPSModeStore).ToArray(), 0xff, (int)CellPass.NullGPSMode, true, ref EncodedFieldDescriptors.GPSModeStore);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MachineSpeed).ToArray(), 0xffffffff, CellPass.NullMachineSpeed, true, ref EncodedFieldDescriptors.MachineSpeed);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RadioLatency).ToArray(), 0xffffffff, CellPass.NullRadioLatency, true, ref EncodedFieldDescriptors.RadioLatency);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.Frequency).ToArray(), 0xffffffff, CellPass.NullFrequency, true, ref EncodedFieldDescriptors.Frequency);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.Amplitude).ToArray(), 0xffffffff, CellPass.NullAmplitude, true, ref EncodedFieldDescriptors.Amplitude);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, CellPass.NullCCA, true, ref EncodedFieldDescriptors.CCA);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCV).ToArray(), 0xffffffff, CellPassConsts.NullCCV, true, ref EncodedFieldDescriptors.CCV);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffffffff, CellPassConsts.NullRMV, true, ref EncodedFieldDescriptors.RMV);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffffffff, CellPassConsts.NullMDP, true, ref EncodedFieldDescriptors.MDP);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, CellPassConsts.NullMaterialTemperatureValue, true, ref EncodedFieldDescriptors.MaterialTemperature);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.GPSModeStore).ToArray(), 0xff, (int)CellPassConsts.NullGPSMode, true, ref EncodedFieldDescriptors.GPSModeStore);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MachineSpeed).ToArray(), 0xffffffff, CellPassConsts.NullMachineSpeed, true, ref EncodedFieldDescriptors.MachineSpeed);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RadioLatency).ToArray(), 0xffffffff, CellPassConsts.NullRadioLatency, true, ref EncodedFieldDescriptors.RadioLatency);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.Frequency).ToArray(), 0xffffffff, CellPassConsts.NullFrequency, true, ref EncodedFieldDescriptors.Frequency);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.Amplitude).ToArray(), 0xffffffff, CellPassConsts.NullAmplitude, true, ref EncodedFieldDescriptors.Amplitude);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.CCA).ToArray(), 0xff, CellPassConsts.NullCCA, true, ref EncodedFieldDescriptors.CCA);
 
             // Calculate the offset bit locations for the cell pass attributes
             EncodedFieldDescriptors.CalculateTotalOffsetBits(out NumBitsPerCellPass);

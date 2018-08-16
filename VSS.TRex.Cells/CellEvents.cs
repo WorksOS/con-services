@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Cells
@@ -100,16 +101,16 @@ namespace VSS.TRex.Cells
             EventAutoVibrationState = AutoVibrationState.Unknown;
             EventFlags = 0;
             EventMachineGear = MachineGear.Neutral;
-            EventMachineRMVThreshold = CellPass.NullRMV;
+            EventMachineRMVThreshold = CellPassConsts.NullRMV;
             EventMachineAutomatics = MachineAutomaticsMode.Unknown;
             EventMinElevMapping = false;
             EventInAvoidZoneState = 0;
 
-            MapReset_PriorDate = CellPass.NullTime;
+            MapReset_PriorDate = CellPassConsts.NullTime;
             MapReset_DesignNameID = NoDesignNameID;
 
             GPSAccuracy = GPSAccuracy.Unknown;
-            GPSTolerance = CellPass.NullGPSTolerance;
+            GPSTolerance = CellPassConsts.NullGPSTolerance;
             PositioningTechnology = PositioningTech.Unknown;
 
             LayerID = NullLayerID;

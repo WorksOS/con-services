@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
 using VSS.TRex.TAGFiles.Types;
@@ -37,28 +38,28 @@ namespace VSS.TRex.TAGFiles.Classes.States
         //        private string _HardwareID = "";
         //        private uint _Sequence = 0;
 
-        private short _ICCCVTargetValue = CellPass.NullCCV;
-        private short _ICMDPTargetValue = CellPass.NullMDP;
-        private byte _ICCCATargetValue = CellPass.NullCCA;
+        private short _ICCCVTargetValue = CellPassConsts.NullCCV;
+        private short _ICMDPTargetValue = CellPassConsts.NullMDP;
+        private byte _ICCCATargetValue = CellPassConsts.NullCCA;
         private ushort _ICPassTargetValue;
-        private ushort _ICLayerIDValue = CellPass.NullLayerID;
+        private ushort _ICLayerIDValue = CellPassConsts.NullLayerID;
 
-        private MachineGear _ICGear = CellPass.NullMachineGear;
+        private MachineGear _ICGear = CellPassConsts.NullMachineGear;
         private byte _ICMode = ICModeFlags.ICUnknownInvalidMC024SensorFlag;
-        private byte _ICSonic3D = CellPass.Null3DSonic;
+        private byte _ICSonic3D = CellPassConsts.Null3DSonic;
 
         private CompactionSensorType _ICSensorType = CompactionSensorType.NoSensor;
-        private ushort _ICTempWarningLevelMinValue = CellPass.NullMaterialTemperatureValue;
-        private ushort _ICTempWarningLevelMaxValue = CellPass.NullMaterialTemperatureValue;
+        private ushort _ICTempWarningLevelMinValue = CellPassConsts.NullMaterialTemperatureValue;
+        private ushort _ICTempWarningLevelMaxValue = CellPassConsts.NullMaterialTemperatureValue;
 
-        private short _RMVJumpThreshold = CellPass.NullRMV;
+        private short _RMVJumpThreshold = CellPassConsts.NullRMV;
 
         // Proofing runs declarations...
         private string _StartProofing = "";    // Proofing run name...
         private DateTime _StartProofingDataTime = DateTime.MinValue;
 
         // Declarations for processing state information
-        private float _ICTargetLiftThickness = CellPass.NullOverridingTargetLiftThicknessValue;
+        private float _ICTargetLiftThickness = CellPassConsts.NullOverridingTargetLiftThicknessValue;
 
         // FApplicationVersion is the version of the application reported in the
         // TAG file returned by the machine.
@@ -78,7 +79,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
         // control states and sets the value of this accordingly.
         MachineAutomaticsMode _AutomaticsMode = MachineAutomaticsMode.Unknown;
 
-        private byte _UTMZone = CellPass.NullUTMZone;
+        private byte _UTMZone = CellPassConsts.NullUTMZone;
         private CoordinateSystemType _CSType = CoordinateSystemType.NoCoordSystem;
 
         private bool _ResearchData;
@@ -122,11 +123,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
         protected /*virtual*/ void InitialiseAttributeAccumulators()
         {
             ICMachineSpeedValues.Add(DateTime.MinValue, Consts.NullDouble);
-            ICCCVValues.Add(DateTime.MinValue, CellPass.NullCCV);
-            ICRMVValues.Add(DateTime.MinValue, CellPass.NullRMV);
-            ICFrequencys.Add(DateTime.MinValue, CellPass.NullFrequency);
-            ICAmplitudes.Add(DateTime.MinValue, CellPass.NullAmplitude);
-            GPSModes.Add(DateTime.MinValue, CellPass.NullGPSMode);
+            ICCCVValues.Add(DateTime.MinValue, CellPassConsts.NullCCV);
+            ICRMVValues.Add(DateTime.MinValue, CellPassConsts.NullRMV);
+            ICFrequencys.Add(DateTime.MinValue, CellPassConsts.NullFrequency);
+            ICAmplitudes.Add(DateTime.MinValue, CellPassConsts.NullAmplitude);
+            GPSModes.Add(DateTime.MinValue, CellPassConsts.NullGPSMode);
 
             // We will assume that the absence of an OnGround flag in the tag file shall
             // default to true wrt to the processing of the file.
@@ -134,15 +135,15 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
             AgeOfCorrections.Add(DateTime.MinValue, (byte)0);
 
-            VolkelMeasureRanges.Add(DateTime.MinValue, CellPass.NullVolkelMeasRange);
-            VolkelMeasureUtilRanges.Add(DateTime.MinValue, CellPass.NullVolkelMeasUtilRange);
-            ICMDPValues.Add(DateTime.MinValue, CellPass.NullMDP);
-            ICTemperatureValues.Add(DateTime.MinValue, CellPass.NullMaterialTemperatureValue);
-            ICCCAValues.Add(DateTime.MinValue, CellPass.NullCCA);
-            ICCCALeftFrontValues.Add(DateTime.MinValue, CellPass.NullCCA);
-            ICCCARightFrontValues.Add(DateTime.MinValue, CellPass.NullCCA);
-            ICCCALeftRearValues.Add(DateTime.MinValue, CellPass.NullCCA);
-            ICCCALeftRearValues.Add(DateTime.MinValue, CellPass.NullCCA);
+            VolkelMeasureRanges.Add(DateTime.MinValue, CellPassConsts.NullVolkelMeasRange);
+            VolkelMeasureUtilRanges.Add(DateTime.MinValue, CellPassConsts.NullVolkelMeasUtilRange);
+            ICMDPValues.Add(DateTime.MinValue, CellPassConsts.NullMDP);
+            ICTemperatureValues.Add(DateTime.MinValue, CellPassConsts.NullMaterialTemperatureValue);
+            ICCCAValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
+            ICCCALeftFrontValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
+            ICCCARightFrontValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
+            ICCCALeftRearValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
+            ICCCALeftRearValues.Add(DateTime.MinValue, CellPassConsts.NullCCA);
         }
 
     protected virtual void DiscardAllButLatestAttributeAccumulatorValues()
@@ -392,11 +393,11 @@ namespace VSS.TRex.TAGFiles.Classes.States
         public byte InAvoidZone { get; set; }
 
         public GPSAccuracy GPSAccuracy { get; set; } = GPSAccuracy.Unknown;
-        public ushort GPSAccuracyErrorLimit { get; set; } = CellPass.NullGPSTolerance;
+        public ushort GPSAccuracyErrorLimit { get; set; } = CellPassConsts.NullGPSTolerance;
 
         public MachineDirection MachineDirection { get { return GetMachineDirection(); } set { SetMachineDirection(value); } }
 
-        public byte MachineType { get; set; } = CellPass.MachineTypeNull;
+        public byte MachineType { get; set; } = CellPassConsts.MachineTypeNull;
 
         public DateTime UserTimeOffset { get; set; } = DateTime.MinValue;
 

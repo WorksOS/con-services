@@ -1,5 +1,6 @@
 ﻿using Draw = System.Drawing;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -56,7 +57,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var cellValue = SubGrid.Cells[east_col, north_row];
 
-      if (cellValue.MeasuredMDP == CellPass.NullMDP)
+      if (cellValue.MeasuredMDP == CellPassConsts.NullMDP)
         return Draw.Color.Empty;
 
       var targetMDPValue = cellValue.TargetMDP;

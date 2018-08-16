@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.Cells
 {
@@ -40,7 +41,7 @@ namespace VSS.TRex.Cells
         /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are no passes a null height is returned.
         /// </summary>
         /// <returns></returns>
-        public float TopMostHeight => IsEmpty ? CellPass.NullHeight : Passes.Last().Height;
+        public float TopMostHeight => IsEmpty ? CellPassConsts.NullHeight : Passes.Last().Height;
 
         /// <summary>
         /// Allocate or resize an array of passes to a new size

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;
 
@@ -105,16 +106,16 @@ namespace VSS.TRex.Profiling
       CellFirstCompositeElev = Consts.NullHeight;
       DesignElev = Consts.NullHeight;
 
-      CellMaterialTemperature = CellPass.NullMaterialTemperatureValue;
+      CellMaterialTemperature = CellPassConsts.NullMaterialTemperatureValue;
       CellMaterialTemperatureElev = Consts.NullHeight;
 
       AttributeExistenceFlags = ProfileCellAttributeExistenceFlags.None;
 
       CellMaxSpeed = 0;
-      CellMinSpeed = CellPass.NullMachineSpeed;
+      CellMinSpeed = CellPassConsts.NullMachineSpeed;
 
-      CellPreviousMeasuredCCV = CellPass.NullCCV;
-      CellPreviousMeasuredTargetCCV = CellPass.NullCCV;
+      CellPreviousMeasuredCCV = CellPassConsts.NullCCV;
+      CellPreviousMeasuredTargetCCV = CellPassConsts.NullCCV;
     }
 
     /// <summary>
@@ -332,16 +333,16 @@ namespace VSS.TRex.Profiling
 
       short ATargetCCV = Dummy_LiftBuildSettings.OverrideMachineCCV
         ? Dummy_LiftBuildSettings.OverridingMachineCCV
-        : CellPass.NullCCV;
+        : CellPassConsts.NullCCV;
       short ATargetMDP = Dummy_LiftBuildSettings.OverrideMachineMDP
         ? Dummy_LiftBuildSettings.OverridingMachineMDP
-        : CellPass.NullMDP;
+        : CellPassConsts.NullMDP;
 
       for (int I = layer.EndCellPassIdx; I >= layer.StartCellPassIdx; I--)
       {
-        if (Passes.FilteredPassData[I].FilteredPass.CCV == CellPass.NullCCV &&
-            Passes.FilteredPassData[I].FilteredPass.MDP == CellPass.NullMDP &&
-            Passes.FilteredPassData[I].FilteredPass.CCA == CellPass.NullCCA)
+        if (Passes.FilteredPassData[I].FilteredPass.CCV == CellPassConsts.NullCCV &&
+            Passes.FilteredPassData[I].FilteredPass.MDP == CellPassConsts.NullMDP &&
+            Passes.FilteredPassData[I].FilteredPass.CCA == CellPassConsts.NullCCA)
           continue;
 
         if (!FilteredPassFlags[I])
@@ -351,12 +352,12 @@ namespace VSS.TRex.Profiling
 
         if (IsCCV || (gridDataType == GridDataType.All))
         {
-          if (Passes.FilteredPassData[I].FilteredPass.CCV != CellPass.NullCCV)
+          if (Passes.FilteredPassData[I].FilteredPass.CCV != CellPassConsts.NullCCV)
           {
             if (!Dummy_LiftBuildSettings.OverrideMachineCCV)
               ATargetCCV = Passes.FilteredPassData[I].TargetValues.TargetCCV;
 
-            if (ATargetCCV == CellPass.NullCCV)
+            if (ATargetCCV == CellPassConsts.NullCCV)
               continue;
 
             if (Passes.FilteredPassData[I].FilteredPass.CCV < ATargetCCV * Dummy_LiftBuildSettings.CCVRange.Min / 100)
@@ -369,12 +370,12 @@ namespace VSS.TRex.Profiling
 
         if (IsMDP || (gridDataType == GridDataType.All))
         {
-          if (Passes.FilteredPassData[I].FilteredPass.MDP != CellPass.NullMDP)
+          if (Passes.FilteredPassData[I].FilteredPass.MDP != CellPassConsts.NullMDP)
           {
             if (!Dummy_LiftBuildSettings.OverrideMachineMDP)
               ATargetMDP = Passes.FilteredPassData[I].TargetValues.TargetMDP;
 
-            if (ATargetMDP == CellPass.NullMDP)
+            if (ATargetMDP == CellPassConsts.NullMDP)
               continue;
 
             if (Passes.FilteredPassData[I].FilteredPass.MDP < ATargetMDP * Dummy_LiftBuildSettings.MDPRange.Min / 100)
@@ -389,10 +390,10 @@ namespace VSS.TRex.Profiling
         // Also compaction logic is different to above compaction types
         if (IsCCA || (gridDataType == GridDataType.All))
         {
-          if (Passes.FilteredPassData[I].TargetValues.TargetCCA == CellPass.NullCCA)
+          if (Passes.FilteredPassData[I].TargetValues.TargetCCA == CellPassConsts.NullCCA)
             continue;
 
-          if (Passes.FilteredPassData[I].FilteredPass.CCA != CellPass.NullCCA)
+          if (Passes.FilteredPassData[I].FilteredPass.CCA != CellPassConsts.NullCCA)
           {
             ValidCCAPasses++; // Last valid CCA pass is the most important to state
             if ((Passes.FilteredPassData[I].FilteredPass.CCA / 2) >= Passes.FilteredPassData[I].TargetValues.TargetCCA

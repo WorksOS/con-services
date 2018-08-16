@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.Cells
 {
@@ -63,12 +64,12 @@ namespace VSS.TRex.Cells
         /// </summary>
         public void Clear()
         {
-            TargetCCV = CellPass.NullCCV;
-            TargetMDP = CellPass.NullMDP;
+            TargetCCV = CellPassConsts.NullCCV;
+            TargetMDP = CellPassConsts.NullMDP;
             TargetLiftThickness = NullOverridingTargetLiftThicknessValue;
             TargetPassCount = NullPassCountTarget;
-            TempWarningLevelMin = CellPass.NullMaterialTemperatureValue;
-            TempWarningLevelMax = CellPass.NullMaterialTemperatureValue;
+            TempWarningLevelMin = CellPassConsts.NullMaterialTemperatureValue;
+            TempWarningLevelMax = CellPassConsts.NullMaterialTemperatureValue;
             TargetCCA = NullCCATarget;
         }
 
