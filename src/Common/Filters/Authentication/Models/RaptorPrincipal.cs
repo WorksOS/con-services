@@ -20,9 +20,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     private readonly IDictionary<string, string> authNContext;
 
     //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
-    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication,
+    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication, string tpaasApplicationName,
       IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders) 
-      : base(identity, customerUid, customerName, userEmail, isApplication)
+      : base(identity, customerUid, customerName, userEmail, isApplication, tpaasApplicationName)
     {
       this.projectProxy = projectProxy;
       authNContext = contextHeaders;

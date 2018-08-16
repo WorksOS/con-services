@@ -46,6 +46,7 @@ namespace VSS.Productivity3D.Common.Filters
       string customerName = string.Empty;
       string projectUid = string.Empty;
       string origin = string.Empty;
+      string tpaasApplication = string.Empty;
 
 
       if (context.User is RaptorPrincipal principal)
@@ -54,6 +55,7 @@ namespace VSS.Productivity3D.Common.Filters
         customerUid = principal.CustomerUid;
         userEmail = principal.UserEmail;
         customerName = principal.CustomerName;
+        tpaasApplication = principal.TpaasApplicationName;
       }
 
       if (context.Request.Query.ContainsKey("projectuid"))
@@ -69,6 +71,7 @@ namespace VSS.Productivity3D.Common.Filters
       var eventAttributes = new Dictionary<string, object>
       {
         {"endpoint", context.Request.Path.ToString()},
+        {"tpaasApplication", tpaasApplication },
         {"cacheUsed", cacheUsed.ToString()},
         {"cacheAge", (float) Convert.ToDouble(cacheAge)},
         {"userUid", name},

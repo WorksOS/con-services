@@ -63,11 +63,11 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// Create 3dpm principal
     /// </summary>
     public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, 
-      string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders)
+      string userEmail, bool isApplicationContext, string tpaasApplicationName, IDictionary<string, string> contextHeaders)
     {
       //Delegate customer->project association resolution to the principal object for now as it has execution context and can invalidate cache if required
       // note that userUid may actually be the ApplicationId if isApplicationContext
-      return new RaptorPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, projectListProxy, contextHeaders);
+      return new RaptorPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName, projectListProxy, contextHeaders);
     }
 
   }
