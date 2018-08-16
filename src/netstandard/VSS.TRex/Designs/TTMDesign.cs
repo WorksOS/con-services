@@ -750,6 +750,13 @@ namespace VSS.TRex.Designs
       MaxY = 255
     };
 
+    private static float[,] kNullPatch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+    static TTMDesign()
+    {
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => kNullPatch[x, y] = Common.Consts.NullHeight);
+    }
+
     /// <summary>
     /// Interpolates heights from the design for all the cells in a subgrid
     /// </summary>
@@ -759,14 +766,9 @@ namespace VSS.TRex.Designs
     /// <param name="CellSize"></param>
     /// <param name="Offset"></param>
     /// <returns></returns>
-    public override bool InterpolateHeights(float[,] Patch,
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset)
+    public override bool InterpolateHeights(float[,] Patch, double OriginX, double OriginY, double CellSize, double Offset)
     {
-      int HintIndex = -1;
       bool hasValues = false;
-      TriangleArrayReference arrayReference;
       TriangleSubGridCellExtents triangleCellExtent = new TriangleSubGridCellExtents();
 
       try
@@ -779,14 +781,11 @@ namespace VSS.TRex.Designs
         // Search in the subgrid triangle list for this subgrid from the spatial index
         // All cells in this subgrid will be contained in the same triangle list from the spatial index
         FSpatialIndexOptimised.CalculateIndexOfCellContainingPosition(OriginXPlusHalfCellSize, OriginYPlusHalfCellSize, out uint CellX, out uint CellY);
-        arrayReference = FSpatialIndexOptimised[CellX, CellY];
+        TriangleArrayReference arrayReference = FSpatialIndexOptimised[CellX, CellY];
         int triangleCount = arrayReference.Count;
 
-        if (triangleCount == 0)
-        {
-          // There are no triangles that can satisfy the query (leaf cell is empty)
+        if (triangleCount == 0) // There are no triangles that can satisfy the query (leaf cell is empty)
           return false;
-        }
 
         double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTree.SubGridTreeDimension;
         BoundingWorldExtent3D cellWorldExtent = FSpatialIndexOptimised.GetCellExtents(CellX, CellY);
@@ -827,64 +826,46 @@ namespace VSS.TRex.Designs
           triangleCellExtents[i] = triangleCellExtent;
         }
 
+        // Initialise Patch to null height values
+        Array.Copy(kNullPatch, 0, Patch, 0, SubGridTree.SubGridTreeDimension * SubGridTree.SubGridTreeDimension);
+
         // Iterate over all the cells in the grid using the triangle subgrid cell extents to filter
         // triangles in the leaf that will be considered for point-in-triangle & elevation checks.
-        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+
+        double X = OriginXPlusHalfCellSize;
+        for (int x = 0; x < SubGridTree.SubGridTreeDimension; x++)
         {
-          double X = OriginXPlusHalfCellSize + CellSize * x;
-          double Y = OriginYPlusHalfCellSize + CellSize * y;
-
-          // If there is a hint, check it out
-          if (HintIndex != -1)
+          double Y = OriginYPlusHalfCellSize;
+          for (int y = 0; y < SubGridTree.SubGridTreeDimension; y++)
           {
-            triangleCellExtent = triangleCellExtents[HintIndex];
-
-            // Check that this hint triangle has an extent in the subgrid that intersects with the (x, y) point being queried
-            if (x >= triangleCellExtent.MinX && x <= triangleCellExtent.MaxX && y >= triangleCellExtent.MinY && y <= triangleCellExtent.MaxY)
+            // Search the triangles in the leaf to locate the one to interpolate height from
+            for (int i = 0; i < triangleCount; i++)
             {
+              //NumTINProbeLookups++;
+
+              if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
+                continue; // No intersection, move to next triangle
+
               //NumTINHeightRequests++;
 
-              double Z = GetHeight2(ref TriangleItems[SpatialIndexOptimisedTriangles[HintIndex]], X, Y);
+              double Z = GetHeight2(ref TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
-              if (Z != Common.Consts.NullDouble)
+              if (Z != Common.Consts.NullReal)
               {
                 //NumNonNullProbeResults++;
 
-                Patch[x, y] = (float) (Z + Offset);
                 hasValues = true;
-                return; // Move to next cell
+                Patch[x, y] = (float) (Z + Offset);
+
+                break; // No more triangles need to be examined for this cell
               }
-
-              HintIndex = -1;
             }
+
+            Y += CellSize;
           }
 
-          // Search the triangles in the leaf to locate the one to interpolate height from
-          for (int i = 0; i < triangleCount; i++)
-          {
-            //NumTINProbeLookups++;
-
-            if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
-              continue; // No intersection, move to next triangle
-
-            //NumTINHeightRequests++;
-
-            double Z = GetHeight2(ref TriangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
-
-            if (Z != Common.Consts.NullReal)
-            {
-              //NumNonNullProbeResults++;
-              
-              HintIndex = i;
-              hasValues = true;
-              Patch[x, y] = (float) (Z + Offset);
-
-              return; // No more triangles needs to be examined for this cell
-            }
-          }
-
-          Patch[x, y] = Common.Consts.NullHeight;
-        });
+          X += CellSize;
+        }
 
         return hasValues;
       }
