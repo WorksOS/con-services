@@ -1,6 +1,4 @@
-﻿using VSS.TRex.Interfaces;
-using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
+﻿using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {

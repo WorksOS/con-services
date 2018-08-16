@@ -7,7 +7,6 @@ using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;

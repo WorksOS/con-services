@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Storage;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage.Interfaces
