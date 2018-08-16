@@ -4,12 +4,20 @@ using VSS.TRex.Designs;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace VSS.TRex.DesignProfiling.Tests
 {
   public class TTMDesignTests : IClassFixture<DILoggingFixture>
   {
-        private static TTMDesign design;
+    private readonly ITestOutputHelper output;
+
+    public TTMDesignTests(ITestOutputHelper output)
+    {
+      this.output = output;
+    }
+
+    private static TTMDesign design;
 
         private void LoadTheDesign()
         {
@@ -120,9 +128,8 @@ namespace VSS.TRex.DesignProfiling.Tests
             Assert.True(result, "Heights interpolation returned false");
         }
 
-    // [Theory(Skip = "Performance Test")]
-    [Theory]
-    [InlineData(247500.0, 193350.0)]
+        [Theory]
+        [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTestPerf(double probeX, double probeY)
         {
             LoadTheDesign();
@@ -134,7 +141,8 @@ namespace VSS.TRex.DesignProfiling.Tests
                 design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
           DateTime _end = DateTime.Now;
 
-          Assert.True(false, $"Perf Test: Duration for 10000 patch requests: {_end - _start}");
+          output.WriteLine( $"Perf Test: Duration for 10000 patch requests: {_end - _start}");
+          Assert.True(true);
         }
 
         [Fact]
@@ -191,9 +199,8 @@ namespace VSS.TRex.DesignProfiling.Tests
 
       TimeSpan lookupTime = DateTime.Now - _start;
 
-      Assert.True(false, $"Perf Test: Duration for {numPatches} patch requests, load = {loadTime}, lookups = {lookupTime}");
+      output.WriteLine($"Perf Test: Duration for {numPatches} patch requests, load = {loadTime}, lookups = {lookupTime}");
+      Assert.True(true);
     }
-
-
   }
 }
