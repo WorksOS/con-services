@@ -1,9 +1,9 @@
-﻿using ASNode.ExportProductionDataCSV.RPC;
+﻿using System;
+using System.Net;
+using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
 using Newtonsoft.Json;
-using System;
-using System.Net;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -11,41 +11,18 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
-  public enum ExportTypes
-  {
-    kSurfaceExport = 1,
-    kPassCountExport = 2,
-    kVedaExport = 3
-  }
-
-  public enum CoordTypes
-  {
-    ptNORTHEAST=0,
-    ptLATLONG=1
-  }
-
-  public enum OutputTypes
-  {
-    etPassCountLastPass,
-    etPassCountAllPasses,
-    etVedaFinalPass,
-    etVedaAllPasses
-  }
-
   /// <summary>
   /// The representation of a pass counts request
   /// </summary>
   public class ExportReport : ProjectID, IValidatable
   {
-
     /// <summary>
     /// An identifier from the caller. 
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
     public Guid? callId { get; protected set; }
-
 
     [JsonProperty(PropertyName = "exportType", Required = Required.Default)]
     public ExportTypes exportType { get; protected set; }
@@ -63,7 +40,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
     public FilterResult filter { get; protected set; }
 
-
     /// <summary>
     /// The filter ID to used in the request.
     /// May be null.
@@ -77,24 +53,17 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
     public LiftBuildSettings liftBuildSettings { get; protected set; }
 
-
     [JsonProperty(PropertyName = "timeStampRequired", Required = Required.Default)]
     public bool timeStampRequired { get; protected set; }
-
 
     [JsonProperty(PropertyName = "cellSizeRequired", Required = Required.Default)]
     public bool cellSizeRequired { get; protected set; }
 
-    
     [JsonProperty(PropertyName = "rawData", Required = Required.Default)]
     public bool rawData { get; protected set; }
 
-
     [JsonProperty(PropertyName = "restrictSize", Required = Required.Default)]
     public bool restrictSize { get; protected set; }
-
- //   [JsonProperty(PropertyName = "zipFile", Required = Required.Default)]
-//    public bool zipFile { get; protected set; }
 
     [JsonProperty(PropertyName = "tolerance", Required = Required.Default)]
     public double tolerance { get; protected set; }
@@ -112,7 +81,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public TMachine[] machineList { get; protected set; }
 
     [JsonProperty(PropertyName = "coordType", Required = Required.Default)]
-    public CoordTypes coordType { get; protected set; }
+    public CoordType coordType { get; protected set; }
 
     [JsonProperty(PropertyName = "outputType", Required = Required.Default)]
     public OutputTypes outputType { get; protected set; }
@@ -128,50 +97,45 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
 
     public TTranslation[] translations { get; private set; }
 
-    public TASNodeUserPreferences userPrefs { get; private set; } 
-
-
-
+    public TASNodeUserPreferences userPrefs { get; private set; }
 
     protected ExportReport()
     { }
 
     /// <summary>
-    /// Create instance of CreatePassCountsRequest
+    /// Static constructor.
     /// </summary>
-    public static ExportReport CreateExportReportRequest(long projectId, LiftBuildSettings liftBuildSettings,
-                                                         FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordTypes coordtype,
-        DateTime DateFromUTC, DateTime DateToUTC, bool ZipFile, double Tolerance, bool TimeStampRequired,
-        bool RestrictSize, bool RawData, T3DBoundingWorldExtent PrjExtents, bool PrecheckOnly, OutputTypes OutpuType,
+    public static ExportReport CreateExportReportRequest(long projectId, LiftBuildSettings liftBuildSettings, FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordType coordtype,
+        DateTime DateFromUTC, DateTime DateToUTC, bool ZipFile, double Tolerance, bool TimeStampRequired, bool RestrictSize, bool RawData, T3DBoundingWorldExtent PrjExtents, bool PrecheckOnly, OutputTypes OutpuType,
         TMachine[] MachineList, bool IncludeSrvSurface, string FileName, ExportTypes ExportType, TASNodeUserPreferences UserPrefs)
     {
       return new ExportReport
-             {
-                 ProjectId = projectId,
-                 liftBuildSettings = liftBuildSettings,
-                 filter = filter,
-                 filterID = filterID,
-                 callId = callid,
-                 cellSizeRequired = cellSizeRq,
-                 callerId = callerID,
-                 coordType = coordtype,
-                 dateFromUTC = DateFromUTC,
-                 dateToUTC = DateToUTC,
-                 exportType = ExportType,
-                 filename = FileName,
-                 includeSurveydSurface = IncludeSrvSurface,
-                 machineList = MachineList,
-                 outputType = OutpuType,
-                 precheckonly = PrecheckOnly,
-                 projectExtents = PrjExtents,
-                 rawData = RawData,
-                 restrictSize = RestrictSize,
-                 timeStampRequired = TimeStampRequired,
-                 tolerance = Tolerance,
-                 userPrefs = UserPrefs
-             };
+      {
+        ProjectId = projectId,
+        liftBuildSettings = liftBuildSettings,
+        filter = filter,
+        filterID = filterID,
+        callId = callid,
+        cellSizeRequired = cellSizeRq,
+        callerId = callerID,
+        coordType = coordtype,
+        dateFromUTC = DateFromUTC,
+        dateToUTC = DateToUTC,
+        exportType = ExportType,
+        filename = FileName,
+        includeSurveydSurface = IncludeSrvSurface,
+        machineList = MachineList,
+        outputType = OutpuType,
+        precheckonly = PrecheckOnly,
+        projectExtents = PrjExtents,
+        rawData = RawData,
+        restrictSize = RestrictSize,
+        timeStampRequired = TimeStampRequired,
+        tolerance = Tolerance,
+        userPrefs = UserPrefs
+      };
     }
-    
+
     /// <summary>
     /// Validates all properties
     /// </summary>
@@ -179,30 +143,30 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     {
       base.Validate();
 
-      if (coordType != CoordTypes.ptNORTHEAST && coordType != CoordTypes.ptLATLONG)
+      if (coordType != CoordType.Northeast && coordType != CoordType.LatLon)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid coordinates type for export report"));
       }
 
-      if (outputType < OutputTypes.etPassCountLastPass || outputType > OutputTypes.etVedaAllPasses)
+      if (outputType < OutputTypes.PassCountLastPass || outputType > OutputTypes.VedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for export report"));
       }
 
-      if (exportType == ExportTypes.kPassCountExport && outputType != OutputTypes.etPassCountLastPass &&
-          outputType != OutputTypes.etPassCountAllPasses)
+      if (exportType == ExportTypes.PassCountExport && outputType != OutputTypes.PassCountLastPass &&
+          outputType != OutputTypes.PassCountAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for machine passes export report"));
       }
 
-      if (exportType == ExportTypes.kVedaExport && outputType != OutputTypes.etVedaFinalPass &&
-          outputType != OutputTypes.etVedaAllPasses)
+      if (exportType == ExportTypes.VedaExport && outputType != OutputTypes.VedaFinalPass &&
+          outputType != OutputTypes.VedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -251,8 +215,8 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
           Preferences.DefaultThousandsSeparator,
           Preferences.DefaultDecimalSeparator,
           0.0,
-          (int) LanguageEnum.enUS,
-          (int) UnitsTypeEnum.Metric,
+          (int)LanguageEnum.enUS,
+          (int)UnitsTypeEnum.Metric,
           Preferences.DefaultDateTimeFormat,
           Preferences.DefaultNumberFormat,
           Preferences.DefaultTemperatureUnit,
@@ -265,7 +229,6 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing export file name"));
       }
-
     }
   }
 }

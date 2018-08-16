@@ -1,19 +1,17 @@
-﻿using ASNode.ExportProductionDataCSV.RPC;
+﻿using System;
+using System.Linq;
+using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 using VLPDDecls;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -33,14 +31,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     public ExportRequestHelper()
     { }
 
-    public ExportRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore,
-      IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
+    public ExportRequestHelper(ILoggerFactory logger, IConfigurationStore configurationStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager)
     {
-      this.Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
-      this.ConfigurationStore = configurationStore;
-      this.FileListProxy = fileListProxy;
-      this.SettingsManager = settingsManager;
+      Log = logger.CreateLogger<ProductionDataProfileRequestHelper>();
+      ConfigurationStore = configurationStore;
+      FileListProxy = fileListProxy;
+      SettingsManager = settingsManager;
     }
+
     public ExportRequestHelper SetRaptorClient(IASNodeClient raptorClient)
     {
       this.raptorClient = raptorClient;
@@ -49,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
     public ExportRequestHelper SetUserPreferences(UserPreferenceData userPrefs)
     {
-      this.userPreferences = userPrefs;
+      userPreferences = userPrefs;
       return this;
     }
 
@@ -62,11 +60,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <summary>
     /// Creates an instance of the ProfileProductionDataRequest class and populate it with data needed for a design profile.   
     /// </summary>
-    /// <returns>An instance of the ProfileProductionDataRequest class.</returns>
     public ExportReport CreateExportRequest(
       DateTime? startUtc,
       DateTime? endUtc,
-      CoordTypes coordType,
+      CoordType coordType,
       ExportTypes exportType,
       string fileName,
       bool restrictSize,
@@ -75,19 +72,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       string machineNames,
       double tolerance = 0.0)
     {
-      var liftSettings = this.SettingsManager.CompactionLiftBuildSettings(this.ProjectSettings);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
 
-      if (exportType == ExportTypes.kSurfaceExport)
+      if (exportType == ExportTypes.SurfaceExport)
       {
-        this.raptorClient.GetDataModelExtents(this.ProjectId,
-          RaptorConverters.convertSurveyedSurfaceExlusionList(this.Filter?.SurveyedSurfaceExclusionList), out projectExtents);
+        raptorClient.GetDataModelExtents(ProjectId,
+          RaptorConverters.convertSurveyedSurfaceExlusionList(Filter?.SurveyedSurfaceExclusionList), out projectExtents);
       }
       else
       {
-        TMachineDetail[] machineDetails = this.raptorClient.GetMachineIDs(this.ProjectId);
+        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(ProjectId);
 
         if (machineDetails != null)
         {
@@ -107,9 +104,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       }
 
       return ExportReport.CreateExportReportRequest(
-        this.ProjectId,
+        ProjectId,
         liftSettings,
-        this.Filter,
+        Filter,
         -1,
         null,
         false,
@@ -126,10 +123,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         false,
         outputType,
         machineList,
-        exportType == ExportTypes.kSurfaceExport,
+        exportType == ExportTypes.SurfaceExport,
         fileName,
         exportType,
-        ConvertUserPreferences(this.userPreferences, this.projectDescriptor.ProjectTimeZone));
+        ConvertUserPreferences(userPreferences, projectDescriptor.ProjectTimeZone));
     }
 
     private static string StripInvalidCharacters(string str)
@@ -161,9 +158,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       double projectTimeZoneOffset = projectTimeZone?.GetUtcOffset(DateTime.Now).TotalHours ?? 0;
 
       var languageIndex = Array.FindIndex(LanguageLocales.LanguageLocaleStrings, s => s.Equals(userPref.Language, StringComparison.OrdinalIgnoreCase));
-      //If not found set to en-US
+      
       if (languageIndex == -1)
-        languageIndex = 1;
+      {
+        languageIndex = (int)LanguageEnum.enUS;
+      }
 
       return ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
         timezone,
