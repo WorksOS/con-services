@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Cells;
-using VSS.TRex.Common;
+﻿using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.Types;

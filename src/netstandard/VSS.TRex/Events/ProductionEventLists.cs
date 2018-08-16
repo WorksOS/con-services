@@ -2,7 +2,6 @@
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;

@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.TRex.Filters;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 
