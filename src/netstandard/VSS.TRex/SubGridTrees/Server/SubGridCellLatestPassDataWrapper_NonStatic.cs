@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// The array of 32x32 cells containing a cell pass representing the latest known values for a variety of cell attributes
         /// </summary>
-        public CellPass[,] PassData = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+        public CellPass[,] PassData = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
         /// Implement the last pass indexer from the interface.

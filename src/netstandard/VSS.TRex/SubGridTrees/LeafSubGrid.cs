@@ -27,9 +27,9 @@ namespace VSS.TRex.SubGridTrees
 
         public override bool IsEmpty()
         {
-            for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
                     if (CellHasValue(I, J))
                         return false;

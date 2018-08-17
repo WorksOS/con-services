@@ -42,8 +42,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_ServerSubGridTreeLeaf_Clear()
         {
             // Add a cell pass and check the CellHasValue flags the cell as having a value
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();
@@ -64,15 +64,15 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_ServerSubGridTreeLeaf()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             Assert.True(leaf.Cells == null &&
                 leaf.Directory != null &&
                 leaf.Dirty == false &&
                 leaf.LeafEndTime == DateTime.MinValue &&
                 leaf.LeafStartTime == DateTime.MaxValue &&
-                leaf.Level == SubGridTree.SubGridTreeLevels &&
+                leaf.Level == SubGridTreeConsts.SubGridTreeLevels &&
                 leaf.IsLeafSubGrid() == true,
                 "Leaf not initialised as expected");
         }
@@ -80,8 +80,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_AddPass()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();
@@ -111,8 +111,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_CreateDefaultSegment()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             Assert.True(0 == leaf.Directory.SegmentDirectory.Count);
 
@@ -128,8 +128,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_AllocateFullPassStacks()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();
@@ -140,7 +140,7 @@ namespace VSS.TRex.Tests.SubGridTrees
                 leaf.Dirty == false &&
                 leaf.LeafEndTime == DateTime.MinValue &&
                 leaf.LeafStartTime == DateTime.MaxValue &&
-                leaf.Level == SubGridTree.SubGridTreeLevels &&
+                leaf.Level == SubGridTreeConsts.SubGridTreeLevels &&
                 leaf.IsLeafSubGrid() == true,
                 "Leaf not initialised as expected after AllocateFullPassStacks");
         }
@@ -148,8 +148,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_AllocateLatestPassGrid()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();
@@ -163,8 +163,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_AllocateLeafFullPassStacks()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafFullPassStacks();
 
@@ -174,8 +174,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_AllocateLeafLatestPassGrid()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafLatestPassGrid();
 
@@ -186,8 +186,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_ServerSubGridTreeLeaf_CellHasValue()
         {
             // Add a cell pass and check the CellHasValue flags the cell as having a value
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();
@@ -211,8 +211,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_ServerSubGridTreeLeaf_ComputeLatestPassInformation()
         {
-            ServerSubGridTree tree = new ServerSubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels);
+            ServerSubGridTree tree = new ServerSubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             leaf.AllocateLeafFullPassStacks();
             leaf.CreateDefaultSegment();

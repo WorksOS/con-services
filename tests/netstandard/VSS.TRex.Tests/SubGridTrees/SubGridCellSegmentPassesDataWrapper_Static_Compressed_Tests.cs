@@ -49,7 +49,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_NoMachineIDSet_Test()
         {
-            CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
+            CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
 
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new[] { TestCellPass() });

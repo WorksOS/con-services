@@ -221,7 +221,7 @@ namespace VSS.TRex.Pipelines
       // Retrieve the existence map for the datamodel
       OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask()
       {
-        CellSize = SubGridTree.SubGridTreeDimension * SiteModel.Grid.CellSize
+        CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize
       };
 
       if (RequireSurveyedSurfaceInformation)
@@ -293,7 +293,7 @@ namespace VSS.TRex.Pipelines
           return false;
         }
 
-        DesignSubgridOverlayMap.CellSize = SubGridTree.SubGridTreeDimension * SiteModel.Grid.CellSize;
+        DesignSubgridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize;
       }
 
       ConfigurePipeline();

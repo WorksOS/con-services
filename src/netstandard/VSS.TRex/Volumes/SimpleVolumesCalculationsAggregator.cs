@@ -185,11 +185,11 @@ namespace VSS.TRex.Volumes
             // Uncomment when StandardVolumeProcessing becomes... not constant
             // if (StandardVolumeProcessing)
             {
-                CellsScanned += SubGridTree.SubGridTreeCellsPerSubgrid;
+                CellsScanned += SubGridTreeConsts.SubGridTreeCellsPerSubgrid;
 
-                for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+                for (int I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
                 {
-                    for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                    for (int J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                     {
                         float TopZ;
                         float BaseZ = BaseScanSubGrid.Cells[I, J];

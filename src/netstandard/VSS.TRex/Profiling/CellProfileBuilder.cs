@@ -172,7 +172,7 @@ namespace VSS.TRex.Profiling
       };
 
       if (DesignElevations != null)
-        ProfileCell.DesignElev = DesignElevations.Cells[OTGX & SubGridTree.SubGridLocalKeyMask, OTGY & SubGridTree.SubGridLocalKeyMask];
+        ProfileCell.DesignElev = DesignElevations.Cells[OTGX & SubGridTreeConsts.SubGridLocalKeyMask, OTGY & SubGridTreeConsts.SubGridLocalKeyMask];
       else
         ProfileCell.DesignElev = Consts.NullHeight;
 
@@ -255,7 +255,7 @@ namespace VSS.TRex.Profiling
         SiteModel.Grid.CalculateIndexOfCellContainingPosition(VtHzIntercepts.Items[i].MidPointX,
           VtHzIntercepts.Items[i].MidPointY, out OTGCellX, out OTGCellY);
 
-        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTree.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTree.SubGridIndexBitsPerLevel);
+        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin))
         {
@@ -286,7 +286,7 @@ namespace VSS.TRex.Profiling
           }
         }
 
-        if (FilterMask.BitSet(OTGCellX & SubGridTree.SubGridLocalKeyMask, OTGCellY & SubGridTree.SubGridLocalKeyMask))
+        if (FilterMask.BitSet(OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask))
           AddCellPassesDataToList(OTGCellX, OTGCellY, VtHzIntercepts.Items[i].ProfileItemIndex, VtHzIntercepts.Items[i].InterceptLength);
       }
 

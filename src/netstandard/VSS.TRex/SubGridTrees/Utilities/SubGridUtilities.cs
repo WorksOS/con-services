@@ -25,11 +25,11 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="SubGridY"></param>
         public static void GetOTGLeafSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY)
         {
-            SubGridX = (byte)(CellX & SubGridTree.SubGridLocalKeyMask);
-            SubGridY = (byte)(CellY & SubGridTree.SubGridLocalKeyMask);
+            SubGridX = (byte)(CellX & SubGridTreeConsts.SubGridLocalKeyMask);
+            SubGridY = (byte)(CellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
-            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTree.SubGridTreeDimension) &
-            //         (SubGridY >=0) && (SubGridY < SubGridTree.SubGridTreeDimension),
+            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTreeConsts.SubGridTreeDimension) &
+            //         (SubGridY >=0) && (SubGridY < SubGridTreeConsts.SubGridTreeDimension),
             //         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this subgrid");
         }
 

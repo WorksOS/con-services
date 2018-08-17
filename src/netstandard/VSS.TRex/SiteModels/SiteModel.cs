@@ -325,7 +325,7 @@ namespace VSS.TRex.SiteModels
             if (SiteModelGridCellSize < 0.001)
             {
                 Log.LogError($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
-                SiteModelGridCellSize = SubGridTree.DefaultCellSize; // VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
+                SiteModelGridCellSize = SubGridTreeConsts.DefaultCellSize; // VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
             }
             Grid.CellSize = SiteModelGridCellSize;
 

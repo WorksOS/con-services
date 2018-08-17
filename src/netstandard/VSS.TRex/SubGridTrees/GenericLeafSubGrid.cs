@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGridTrees
     /// <typeparam name="T"></typeparam>
     public class GenericLeafSubGrid<T> : SubGrid, ILeafSubGrid
     {
-        public T[,] Items = new T[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+        public T[,] Items = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
         /// Default no-arg constructor
@@ -45,9 +45,9 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool ForEach(Func<T, bool> functor)
         {
-            for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
                     if (!functor(Items[I, J]))
                         return false;

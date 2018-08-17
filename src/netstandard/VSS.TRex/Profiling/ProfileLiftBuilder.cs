@@ -433,8 +433,8 @@ namespace VSS.TRex.Profiling
       ProfileCell.SetFirstLastHighestLowestElevations(PassFilter.HasElevationTypeFilter, PassFilter.ElevationType);
 
 // are coords set right?
-      uint CellX = ProfileCell.OTGCellX & SubGridTree.SubGridLocalKeyMask;
-      uint CellY = ProfileCell.OTGCellY & SubGridTree.SubGridLocalKeyMask;
+      uint CellX = ProfileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+      uint CellY = ProfileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
       bool HaveCompositeSurfaceForCell = CompositeHeightsGrid?.ProdDataMap.BitSet(CellX, CellY) ?? false;
       
       if (HaveCompositeSurfaceForCell)
@@ -512,8 +512,8 @@ namespace VSS.TRex.Profiling
 
             // get subgrid setup iterator and set cell address
             // get sugbrid origin for cell address
-            SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTree.SubGridIndexBitsPerLevel,
-              ProfileCell.OTGCellY >> SubGridTree.SubGridIndexBitsPerLevel);
+            SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+              ProfileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
             if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin)) // if we have a new subgrid to fetch
             {
@@ -590,8 +590,8 @@ namespace VSS.TRex.Profiling
 
               // get cell address relative to subgrid and SetCellCoordinatesInSubgrid
               cellPassIterator.SetCellCoordinatesInSubgrid(
-                (byte) (ProfileCells[I].OTGCellX & SubGridTree.SubGridLocalKeyMask),
-                (byte) (ProfileCells[I].OTGCellY & SubGridTree.SubGridLocalKeyMask));
+                (byte) (ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
+                (byte) (ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
               PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
 
               if (CellLiftBuilder.Build(ProfileCell, /*todo Dummy_LiftBuildSettings, */ null, null, cellPassIterator, false))

@@ -58,8 +58,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <param name="CellY"></param>
         private void SubgridHasChanged(uint CellX, uint CellY)
         {
-            WorkingModelUpdateMap.SetCell(CellX >> SubGridTree.SubGridIndexBitsPerLevel,
-                                          CellY >> SubGridTree.SubGridIndexBitsPerLevel, true);
+            WorkingModelUpdateMap.SetCell(CellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                          CellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel, true);
         }
 
         /*
@@ -371,7 +371,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                             WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
                             {
-                                CellSize = SubGridTree.SubGridTreeDimension * SiteModelFromDM.Grid.CellSize,
+                                CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModelFromDM.Grid.CellSize,
                                 ID = SiteModelFromDM.ID
                             };
 

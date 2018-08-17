@@ -286,9 +286,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
 
                 clientGrid.CellSize = siteModel.Grid.CellSize;
-                clientGrid.SetAbsoluteLevel(SubGridTree.SubGridTreeLevels);
-                clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~((int)SubGridTree.SubGridLocalKeyMask)),
-                                                     (uint)(address.Y & ~((int)SubGridTree.SubGridLocalKeyMask)));
+                clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
+                clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~((int)SubGridTreeConsts.SubGridLocalKeyMask)),
+                                                     (uint)(address.Y & ~((int)SubGridTreeConsts.SubGridLocalKeyMask)));
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 requestor.CellOverrideMask.Fill();
@@ -432,7 +432,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),
-                                           SubGridTree.SubGridTreeLevels,
+                                           SubGridTreeConsts.SubGridTreeLevels,
                                            int.MaxValue, // MaxCellPasses
                                            AreaControlSet,
                                            new FilteredValuePopulationControl(),

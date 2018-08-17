@@ -11,7 +11,7 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
       public static void ScanAllElevationsOverGiantDesign()
       {
         DateTime _start = DateTime.Now;
-        TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
+        TTMDesign design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
        
         //design.LoadFromFile(@"C:\Temp\141020 Finish Surface.ttm"); // 0.5 Mb
         design.LoadFromFile(@"C:\Temp\161006 Stripped less PRB & AS.ttm");  //600Mb
@@ -22,7 +22,7 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
 
         TimeSpan bestTime = TimeSpan.MaxValue;
 
-        float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];  
+        float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];  
 
         for (int i = 0; i < 100; i++)
         {
@@ -39,7 +39,7 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
 
             leaf.ForEach((x, y) =>
             {
-              if (design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTree.SubGridTreeDimension, 0))
+              if (design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTreeConsts.SubGridTreeDimension, 0))
                 numPatches++;
             });
 

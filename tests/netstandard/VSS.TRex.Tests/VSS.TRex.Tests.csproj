@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\..\src\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\..\..\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj" />
     <ProjectReference Include="..\..\..\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
   </ItemGroup>
 

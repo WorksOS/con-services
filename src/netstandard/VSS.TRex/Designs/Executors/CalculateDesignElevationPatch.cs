@@ -38,17 +38,17 @@ namespace VSS.TRex.Designs.Executors
             {
                 // Check to see if this subgrid has any design surface underlying it
                 // from which to calculate an elevation patch. If not, don't bother...
-                if (!Design.HasElevationDataForSubGridPatch(Args.OriginX >> SubGridTree.SubGridIndexBitsPerLevel,
-                                                            Args.OriginY >> SubGridTree.SubGridIndexBitsPerLevel))
+                if (!Design.HasElevationDataForSubGridPatch(Args.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                                            Args.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
                 {
                     CalcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
                     return null;
                 }
 
-                ClientHeightLeafSubGrid Result = new ClientHeightLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, Args.CellSize, SubGridTree.DefaultIndexOriginOffset);
+                ClientHeightLeafSubGrid Result = new ClientHeightLeafSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels, Args.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset);
 
-                Result.SetAbsoluteOriginPosition((uint)(Args.OriginX & ~SubGridTree.SubGridLocalKeyMask),
-                                                 (uint)(Args.OriginY & ~SubGridTree.SubGridLocalKeyMask));
+                Result.SetAbsoluteOriginPosition((uint)(Args.OriginX & ~SubGridTreeConsts.SubGridLocalKeyMask),
+                                                 (uint)(Args.OriginY & ~SubGridTreeConsts.SubGridLocalKeyMask));
                 Result.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
 // Exclusive serialisation of the Design is not required in the Ignite POC
@@ -89,7 +89,7 @@ namespace VSS.TRex.Designs.Executors
                 try
                 {
                     /* Test code to force all subgrids to have 0 elevations from a design
-                    ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTree.DefaultIndexOriginOffset);
+                    ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTreeConsts.DefaultIndexOriginOffset);
                     test.SetToZeroHeight();
                     return test;
                     */

@@ -101,9 +101,9 @@ namespace VSS.TRex.SubGridTrees.Client
             typeMap[(int) gridDataType], // IClientLeafSubGrid type
             null, // Subgrid tree owner
             null, // Subgrid parent
-            SubGridTree.SubGridTreeLevels, // Level, default to standard tree levels
-            SubGridTree.DefaultCellSize, // Cell Size
-            SubGridTree.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
+            SubGridTreeConsts.SubGridTreeLevels, // Level, default to standard tree levels
+            SubGridTreeConsts.DefaultCellSize, // Cell Size
+            SubGridTreeConsts.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
           );
       }
 

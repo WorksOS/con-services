@@ -575,14 +575,14 @@ namespace VSS.TRex.SubGridTrees
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
             // For now, it is safe to assume all subgrids containing on-the-ground cells have kSubGridTreeLevels levels
-            CellX = subGridAddress.X << ((SubGridTree.SubGridTreeLevels - TreeLevel) * SubGridTree.SubGridIndexBitsPerLevel);
-            CellY = subGridAddress.Y << ((SubGridTree.SubGridTreeLevels - TreeLevel) * SubGridTree.SubGridIndexBitsPerLevel);
+            CellX = subGridAddress.X << ((SubGridTreeConsts.SubGridTreeLevels - TreeLevel) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
+            CellY = subGridAddress.Y << ((SubGridTreeConsts.SubGridTreeLevels - TreeLevel) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
             // if VLPDSvcLocations.Debug_ExtremeLogSwitchB then
             //    SIGLogMessage.PublishNoODS(Nil, 'About to call RetrieveSubGrid()', slmcDebug);
 
-            ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTree.SubGridLocalKeyMask),
-                                                 (uint)(subGridAddress.Y & ~SubGridTree.SubGridLocalKeyMask));
+            ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
+                                                 (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
             ClientGrid.SetAbsoluteLevel(TreeLevel);
 
             if (ProdDataRequested)

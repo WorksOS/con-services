@@ -243,18 +243,18 @@ namespace VSS.TRex.SubGridTrees.Server
             int PerColBitFieldLocation = (int)Col * EncodedColPassCountsBits;
             int PerColFirstCellPassIndex = (int)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
 
-            int PerCellBitFieldLocation = (int)(FirstPerCellPassIndexOffset + ((Col * SubGridTree.SubGridTreeDimension) + Row) * PassCountEncodedFieldDescriptor.RequiredBits);
+            int PerCellBitFieldLocation = (int)(FirstPerCellPassIndexOffset + ((Col * SubGridTreeConsts.SubGridTreeDimension) + Row) * PassCountEncodedFieldDescriptor.RequiredBits);
             int PerCellFirstCellPassIndexOffset = (int)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits);
 
             Result.FirstCellPass = PerColFirstCellPassIndex + PerCellFirstCellPassIndexOffset;
 
-            if (Row < SubGridTree.SubGridTreeDimensionMinus1)
+            if (Row < SubGridTreeConsts.SubGridTreeDimensionMinus1)
             {
                 Result.PassCount = (int)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits) - PerCellFirstCellPassIndexOffset;
             }
             else
             {
-                if (Col < SubGridTree.SubGridTreeDimensionMinus1)
+                if (Col < SubGridTreeConsts.SubGridTreeDimensionMinus1)
                 {
                     int NextPerColFirstCellPassIndex = (int)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
                     Result.PassCount = NextPerColFirstCellPassIndex - Result.FirstCellPass;
@@ -481,8 +481,8 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="cellPasses"></param>
         private void PerformEncodingStaticCompressedCache(CellPass[,][] cellPasses)
         {
-            int[] ColFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension];
-            int[,] PerCellColRelativeFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            int[] ColFirstCellPassIndexes = new int[SubGridTreeConsts.SubGridTreeDimension];
+            int[,] PerCellColRelativeFirstCellPassIndexes = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
             int cellPassIndex;
             int testValue;
             bool observedANullValue;
@@ -507,11 +507,11 @@ namespace VSS.TRex.SubGridTrees.Server
             // Construct the first cell pass index map for the segment
             // First calculate the values of the first cell pass index for each column in the segment
             ColFirstCellPassIndexes[0] = 0;
-            for (int Col = 0; Col < SubGridTree.SubGridTreeDimensionMinus1; Col++)
+            for (int Col = 0; Col < SubGridTreeConsts.SubGridTreeDimensionMinus1; Col++)
             {
                 ColFirstCellPassIndexes[Col + 1] = ColFirstCellPassIndexes[Col];
 
-                for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+                for (int Row = 0; Row < SubGridTreeConsts.SubGridTreeDimension; Row++)
                 {
                     if (cellPasses[Col, Row] != null)
                     {
@@ -522,11 +522,11 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Next modify the cell passes array to hold first cell pass indices relative to the
             // 'per column' first cell pass indices
-            for (int Col = 0; Col < SubGridTree.SubGridTreeDimension; Col++)
+            for (int Col = 0; Col < SubGridTreeConsts.SubGridTreeDimension; Col++)
             {
                 PerCellColRelativeFirstCellPassIndexes[Col, 0] = 0;
 
-                for (int Row = 1; Row < SubGridTree.SubGridTreeDimension; Row++)
+                for (int Row = 1; Row < SubGridTreeConsts.SubGridTreeDimension; Row++)
                 {
                     PerCellColRelativeFirstCellPassIndexes[Col, Row] = PerCellColRelativeFirstCellPassIndexes[Col, Row - 1] + (cellPasses[Col, Row - 1] == null ? 0 : cellPasses[Col, Row - 1].Length);
                 }
@@ -540,7 +540,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             PassCountEncodedFieldDescriptor.CalculateRequiredBitFieldSize();
             EncodedColPassCountsBits = PassCountEncodedFieldDescriptor.RequiredBits;
-            FirstPerCellPassIndexOffset = SubGridTree.SubGridTreeDimension * EncodedColPassCountsBits;
+            FirstPerCellPassIndexOffset = SubGridTreeConsts.SubGridTreeDimension * EncodedColPassCountsBits;
 
             // Compute the value range and number of bits required to store the cell first cell passes indices
             PassCountEncodedFieldDescriptor.Init();
@@ -664,8 +664,8 @@ namespace VSS.TRex.SubGridTrees.Server
             // Create the bit field arrays to contain the segment call pass index & count plus passes.
             BitFieldArrayRecordsDescriptor[] recordDescriptors = new [] 
             {
-                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTree.SubGridTreeDimension, BitsPerRecord = EncodedColPassCountsBits },
-                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTree.SubGridTreeCellsPerSubgrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }
+                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTreeConsts.SubGridTreeDimension, BitsPerRecord = EncodedColPassCountsBits },
+                new BitFieldArrayRecordsDescriptor { NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubgrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }
             };
 
             BF_PassCounts.Initialise(recordDescriptors);

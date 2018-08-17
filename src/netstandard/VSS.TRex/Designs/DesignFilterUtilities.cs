@@ -36,7 +36,7 @@ namespace VSS.TRex.Designs
                 if (DesignExistanceMap != null)
                     overallExistenceMap.SetOp_OR(DesignExistanceMap);
 
-              DesignExistanceMap.CellSize = SubGridTree.SubGridTreeDimension * siteModel.Grid.CellSize;
+              DesignExistanceMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModel.Grid.CellSize;
             }
 
       return true;

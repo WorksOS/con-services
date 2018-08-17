@@ -113,8 +113,8 @@ namespace VSS.TRex.Surfaces.Executors
               try
               {
                 if (!Design.HasElevationDataForSubGridPatch(
-                  Args.OTGCellBottomLeftX >> SubGridTree.SubGridIndexBitsPerLevel,
-                  Args.OTGCellBottomLeftY >> SubGridTree.SubGridIndexBitsPerLevel))
+                  Args.OTGCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                  Args.OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
                   continue;
 
                 long AsAtDate = ThisSurveyedSurface.AsAtDate.ToBinary();

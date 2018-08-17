@@ -13,7 +13,7 @@ namespace VSS.TRex.Tests.Compression
             // Simulate a subgrid containing the same non-null elevation in every cell, expressed as a single vector
             int value = AttributeValueModifiers.ModifiedHeight(12345.678F);
 
-            int[] values = Enumerable.Range(0, SubGridTree.SubGridTreeCellsPerSubgrid).Select(x => value).ToArray();
+            int[] values = Enumerable.Range(0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid).Select(x => value).ToArray();
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 

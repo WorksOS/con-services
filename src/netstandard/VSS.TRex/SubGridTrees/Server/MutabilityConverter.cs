@@ -81,7 +81,7 @@ namespace VSS.TRex.SubGridTrees.Server
             try
             {
                 // create a leaf to contain the mutable directory (and ensure the global latest cells is the mutable variety)
-                IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels)
+                IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels)
                 {
                     Directory =
                     {

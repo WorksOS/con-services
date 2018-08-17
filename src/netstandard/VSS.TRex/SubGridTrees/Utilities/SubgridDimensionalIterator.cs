@@ -11,9 +11,9 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <param name="functor"></param>
         public static void SubGridDimensionalIterator(Action<uint, uint> functor)
         {
-            for (uint I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (uint J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                for (uint J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
                     functor(I, J);
                 }

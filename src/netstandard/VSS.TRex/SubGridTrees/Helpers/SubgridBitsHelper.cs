@@ -8,9 +8,9 @@
     {
         /// <summary>
         /// The number of elements in the Bits array. Defined as:
-        /// (SubgridTree.SubGridTreeDimension * SubgridTree.SubGridTreeDimension * 8) / 2 unsigned ints
+        /// (SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension * 8) / 2 unsigned ints
         /// </summary>
-        public const int BitsArrayLength = SubGridTree.SubGridTreeDimension;
+        public const int BitsArrayLength = SubGridTreeConsts.SubGridTreeDimension;
 
         /// <summary>
         /// The number of bytes occupied by the elements in a Bits array

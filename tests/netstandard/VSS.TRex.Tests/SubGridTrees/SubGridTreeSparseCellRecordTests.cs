@@ -14,9 +14,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridTreeSparseCellRecord_Creation()
         {
             ISubGrid leafSubgrid = null;
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             SubgridTreeSparseCellRecord sparseCell = new SubgridTreeSparseCellRecord(15, 15, leafSubgrid);
 

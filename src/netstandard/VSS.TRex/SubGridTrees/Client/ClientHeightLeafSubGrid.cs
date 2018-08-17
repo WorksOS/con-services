@@ -59,7 +59,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Assign(heightAndTimeResults);
 
-      Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
 
       SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
     }
@@ -72,7 +72,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Assign(heightLeaf);
 
-      Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
 
       SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
     }
@@ -213,8 +213,8 @@ namespace VSS.TRex.SubGridTrees.Client
       FirstPassMap.Write(writer, buffer);
       SurveyedSurfaceMap.Write(writer, buffer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
     }
 
     /// <summary>
@@ -231,8 +231,8 @@ namespace VSS.TRex.SubGridTrees.Client
       FirstPassMap.Read(reader, buffer);
       SurveyedSurfaceMap.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(float));
+      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
+      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
     }
 
     /// <summary>

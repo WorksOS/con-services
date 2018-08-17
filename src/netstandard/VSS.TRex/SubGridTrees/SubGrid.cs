@@ -123,12 +123,12 @@ namespace VSS.TRex.SubGridTrees
         /// The number of on-the-ground cells that the span of this subgrid covers along each axis
         /// </summary>
         /// <returns></returns>
-        public uint AxialCellCoverageByThisSubgrid() => (uint)SubGridTree.SubGridTreeDimension << ((Owner.NumLevels - Level) * SubGridTree.SubGridIndexBitsPerLevel);
+        public uint AxialCellCoverageByThisSubgrid() => (uint)SubGridTreeConsts.SubGridTreeDimension << ((Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         /// <summary>
         /// The number of on-the-ground cells that the span of a child subgrid of this subgrid covers along each axis
         /// </summary>
-        public uint AxialCellCoverageByChildSubgrid() => AxialCellCoverageByThisSubgrid() >> SubGridTree.SubGridIndexBitsPerLevel;
+        public uint AxialCellCoverageByChildSubgrid() => AxialCellCoverageByThisSubgrid() >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         /// <summary>
         /// Sets the origin position of this subgrid to the supplied X and Y values within the cells of the parent subgrid. 
@@ -143,7 +143,7 @@ namespace VSS.TRex.SubGridTrees
                throw new ArgumentException("Cannot set origin position without parent");
             }
 
-            if (CellX >= SubGridTree.SubGridTreeDimension || CellY >= SubGridTree.SubGridTreeDimension)
+            if (CellX >= SubGridTreeConsts.SubGridTreeDimension || CellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
                 throw new ArgumentException("Cell X, Y location is not in the valid cell address range for the subgrid");
             }
@@ -185,12 +185,12 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="SubGridY"></param>
         public void GetSubGridCellIndex(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY)
         {
-            int SHRValue = (Owner.NumLevels - Level) * SubGridTree.SubGridIndexBitsPerLevel;
-            SubGridX = (byte)((CellX >> SHRValue) & SubGridTree.SubGridLocalKeyMask);
-            SubGridY = (byte)((CellY >> SHRValue) & SubGridTree.SubGridLocalKeyMask);
+            int SHRValue = (Owner.NumLevels - Level) * SubGridTreeConsts.SubGridIndexBitsPerLevel;
+            SubGridX = (byte)((CellX >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
+            SubGridY = (byte)((CellY >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
 
-            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTree.SubGridTreeDimension) &
-            //         (SubGridY >=0) && (SubGridY < SubGridTree.SubGridTreeDimension),
+            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTreeConsts.SubGridTreeDimension) &
+            //         (SubGridY >=0) && (SubGridY < SubGridTreeConsts.SubGridTreeDimension),
             //         "GetSubGridCellIndex given cell address out of bounds for this subgrid");
         }
 
@@ -207,11 +207,11 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="SubGridY"></param>
         public void GetOTGLeafSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY)
         {
-            SubGridX = (byte)(CellX & SubGridTree.SubGridLocalKeyMask);
-            SubGridY = (byte)(CellY & SubGridTree.SubGridLocalKeyMask);
+            SubGridX = (byte)(CellX & SubGridTreeConsts.SubGridLocalKeyMask);
+            SubGridY = (byte)(CellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
-            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTree.SubGridTreeDimension) &
-            //         (SubGridY >=0) && (SubGridY < SubGridTree.SubGridTreeDimension),
+            //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTreeConsts.SubGridTreeDimension) &
+            //         (SubGridY >=0) && (SubGridY < SubGridTreeConsts.SubGridTreeDimension),
             //         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this subgrid");
         }
 
@@ -336,9 +336,9 @@ namespace VSS.TRex.SubGridTrees
         {
             int result = 0;
 
-            for (int I = 0; I < SubGridTree.SubGridTreeCellsPerSubgrid; I++)
+            for (int I = 0; I < SubGridTreeConsts.SubGridTreeCellsPerSubgrid; I++)
             {
-                if (CellHasValue((byte)(I / SubGridTree.SubGridTreeDimension), (byte)(I % SubGridTree.SubGridTreeDimension)))
+                if (CellHasValue((byte)(I / SubGridTreeConsts.SubGridTreeDimension), (byte)(I % SubGridTreeConsts.SubGridTreeDimension)))
                 {
                     result++;
                 }

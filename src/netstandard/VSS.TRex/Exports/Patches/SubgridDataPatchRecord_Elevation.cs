@@ -56,7 +56,7 @@ namespace VSS.TRex.Exports.Patches
         return;
 
       // Set the appropriate values into the result
-      Data = new ushort[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+      Data = new ushort[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
       IsNull = false;
       ElevationOrigin = MinElevation;
 

@@ -101,7 +101,7 @@ namespace VSS.TRex.Designs
       double HalfCellSize = CellSize / 2;
       double HalfMinorCellSize = HalfCellSize - 0.001;
 
-      double PatchSize = SubGridTree.SubGridTreeDimension * CellSize;
+      double PatchSize = SubGridTreeConsts.SubGridTreeDimension * CellSize;
       double TopEdge = OriginY + PatchSize;
       double RightEdge = OriginX + PatchSize;
 
@@ -125,7 +125,7 @@ namespace VSS.TRex.Designs
 
       int PatchOriginCellIndexX = (int) Math.Floor(OriginXPlusHalfCell / CellSize);
       int PatchOriginCellIndexY = (int) Math.Floor(OriginYPlusHalfCell / CellSize);
-      int PatchCellLimitIndexX = PatchOriginCellIndexX + SubGridTree.SubGridTreeDimension - 1;
+      int PatchCellLimitIndexX = PatchOriginCellIndexX + SubGridTreeConsts.SubGridTreeDimension - 1;
 
       // Work out 'Y' range and step direction of the triangle piece.
       double YRange = VY - H1Y;
@@ -191,19 +191,19 @@ namespace VSS.TRex.Designs
       }
       else
       {
-        if (HCellPatchIndex >= SubGridTree.SubGridTreeDimension)
+        if (HCellPatchIndex >= SubGridTreeConsts.SubGridTreeDimension)
         {
           if (YStep == 1) // There's nothing more to be done here
           {
             return;
           }
 
-          Delta = (HCellPatchIndex - SubGridTree.SubGridTreeDimension) + 1;
+          Delta = (HCellPatchIndex - SubGridTreeConsts.SubGridTreeDimension) + 1;
           H1X = H1X + Delta * H1SlopeTimesCellSize;
           H2X = H2X - Delta * H2SlopeTimesCellSize;
 
           NumCellRowsToProcess -= Delta;
-          ProcessingCellYIndex = SubGridTree.SubGridTreeDimension - 1;
+          ProcessingCellYIndex = SubGridTreeConsts.SubGridTreeDimension - 1;
         }
       }
 
@@ -217,14 +217,14 @@ namespace VSS.TRex.Designs
 
         NumCellRowsToProcess -= -VCellPatchIndex;
       }
-      else if (VCellPatchIndex >= SubGridTree.SubGridTreeDimension)
+      else if (VCellPatchIndex >= SubGridTreeConsts.SubGridTreeDimension)
       {
         if (YStep == -1)
         {
           return; // Nothing more to do here
         }
 
-        NumCellRowsToProcess -= ((VCellPatchIndex - SubGridTree.SubGridTreeDimension) + 1);
+        NumCellRowsToProcess -= ((VCellPatchIndex - SubGridTreeConsts.SubGridTreeDimension) + 1);
       }
 
       if (NumCellRowsToProcess == 0)
@@ -530,7 +530,7 @@ namespace VSS.TRex.Designs
       double CellSize,
       DesignDescriptor DesignDescriptor)
     {
-      float[,] Heights = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+      float[,] Heights = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
       if (InterpolateHeights(Heights, OriginX, OriginY, CellSize, DesignDescriptor.Offset))
       {
@@ -617,11 +617,11 @@ namespace VSS.TRex.Designs
       // subgrid that intersects at least one triangle in the TTM.
       FSubgridIndex = new SubGridTreeSubGridExistenceBitMask
       {
-        CellSize = SubGridTree.SubGridTreeDimension * ACellSize
+        CellSize = SubGridTreeConsts.SubGridTreeDimension * ACellSize
       };
 
       // Create the optimised subgrid tree spatial index that minmises the number of allocations in the final result.
-      FSpatialIndexOptimised = new GenericSubGridTree<TriangleArrayReference>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * ACellSize);
+      FSpatialIndexOptimised = new GenericSubGridTree<TriangleArrayReference>(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * ACellSize);
     }
 
     /// <summary>
@@ -750,7 +750,7 @@ namespace VSS.TRex.Designs
       MaxY = 255
     };
 
-    private static float[,] kNullPatch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+    private static float[,] kNullPatch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     static TTMDesign()
     {
@@ -787,7 +787,7 @@ namespace VSS.TRex.Designs
         if (triangleCount == 0) // There are no triangles that can satisfy the query (leaf cell is empty)
           return false;
 
-        double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTree.SubGridTreeDimension;
+        double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTreeConsts.SubGridTreeDimension;
         BoundingWorldExtent3D cellWorldExtent = FSpatialIndexOptimised.GetCellExtents(CellX, CellY);
 
         // Create the array of triangle cell exents in the subgrid
@@ -818,25 +818,25 @@ namespace VSS.TRex.Designs
           int maxCellX = (int) Math.Floor((TriangleWorldExtent_MaxX - cellWorldExtent.MinX) / leafCellSize);
           int maxCellY = (int) Math.Floor((TriangleWorldExtent_MaxY - cellWorldExtent.MinY) / leafCellSize);
 
-          triangleCellExtent.MinX = (byte) (minCellX <= 0 ? 0 : minCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellX);
-          triangleCellExtent.MinY = (byte) (minCellY <= 0 ? 0 : minCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellY);
-          triangleCellExtent.MaxX = (byte) (maxCellX <= 0 ? 0 : maxCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellX);
-          triangleCellExtent.MaxY = (byte) (maxCellY <= 0 ? 0 : maxCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellY);
+          triangleCellExtent.MinX = (byte) (minCellX <= 0 ? 0 : minCellX >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : minCellX);
+          triangleCellExtent.MinY = (byte) (minCellY <= 0 ? 0 : minCellY >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : minCellY);
+          triangleCellExtent.MaxX = (byte) (maxCellX <= 0 ? 0 : maxCellX >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : maxCellX);
+          triangleCellExtent.MaxY = (byte) (maxCellY <= 0 ? 0 : maxCellY >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : maxCellY);
 
           triangleCellExtents[i] = triangleCellExtent;
         }
 
         // Initialise Patch to null height values
-        Array.Copy(kNullPatch, 0, Patch, 0, SubGridTree.SubGridTreeDimension * SubGridTree.SubGridTreeDimension);
+        Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension);
 
         // Iterate over all the cells in the grid using the triangle subgrid cell extents to filter
         // triangles in the leaf that will be considered for point-in-triangle & elevation checks.
 
         double X = OriginXPlusHalfCellSize;
-        for (int x = 0; x < SubGridTree.SubGridTreeDimension; x++)
+        for (int x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
         {
           double Y = OriginYPlusHalfCellSize;
-          for (int y = 0; y < SubGridTree.SubGridTreeDimension; y++)
+          for (int y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
           {
             // Search the triangles in the leaf to locate the one to interpolate height from
             for (int i = 0; i < triangleCount; i++)
@@ -927,7 +927,7 @@ namespace VSS.TRex.Designs
       // determine which subgrids in the index intersect it and add it to those subgrids
       try
       {
-        var FSpatialIndex = new GenericSubGridTree<List<int>>(SubGridTree.SubGridTreeLevels - 1, SubGridTree.SubGridTreeDimension * FCellSize);
+        var FSpatialIndex = new GenericSubGridTree<List<int>>(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * FCellSize);
 
         Log.LogInformation($"In: Constructing subgrid index for design containing {FData.Triangles.Items.Length} triangles");
         try
@@ -1039,7 +1039,7 @@ namespace VSS.TRex.Designs
               /////////////////////////////////////////////////////////////////////////////////////////////////
               // Start: Determine the triangles that definitely cannot cover one or more cells in each subgrid
 
-              double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTree.SubGridTreeDimension;
+              double leafCellSize = FSpatialIndexOptimised.CellSize / SubGridTreeConsts.SubGridTreeDimension;
               double halfLeafCellSize = leafCellSize / 2;
               double halfCellSizeMinusEpsilon = halfLeafCellSize - 0.0001;
 
@@ -1083,17 +1083,17 @@ namespace VSS.TRex.Designs
                 }
 
                 // Check if there is an intersection between the triangle cell bounds and the leaf cell bounds
-                if (minCellX > SubGridTree.SubGridTreeDimensionMinus1 || minCellY > SubGridTree.SubGridTreeDimensionMinus1 || maxCellX < 0 || maxCellY < 0)
+                if (minCellX > SubGridTreeConsts.SubGridTreeDimensionMinus1 || minCellY > SubGridTreeConsts.SubGridTreeDimensionMinus1 || maxCellX < 0 || maxCellY < 0)
                 {
                   // There is no bounding box intersection, ignore it
                   continue;
                 }
 
                 // Transform the cell bounds by clamping them to the bounds of this subgrid
-                minCellX = minCellX <= 0 ? 0 : minCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellX;
-                minCellY = minCellY <= 0 ? 0 : minCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : minCellY;
-                maxCellX = maxCellX <= 0 ? 0 : maxCellX >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellX;
-                maxCellY = maxCellY <= 0 ? 0 : maxCellY >= SubGridTree.SubGridTreeDimensionMinus1 ? SubGridTree.SubGridTreeDimensionMinus1 : maxCellY;
+                minCellX = minCellX <= 0 ? 0 : minCellX >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : minCellX;
+                minCellY = minCellY <= 0 ? 0 : minCellY >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : minCellY;
+                maxCellX = maxCellX <= 0 ? 0 : maxCellX >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : maxCellX;
+                maxCellY = maxCellY <= 0 ? 0 : maxCellY >= SubGridTreeConsts.SubGridTreeDimensionMinus1 ? SubGridTreeConsts.SubGridTreeDimensionMinus1 : maxCellY;
 
                 // Check all the cells in the subgrid covered by this bounding box to check if at least one cell will actively probe this triangle
 

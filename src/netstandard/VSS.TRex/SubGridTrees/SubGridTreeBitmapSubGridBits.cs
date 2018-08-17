@@ -26,19 +26,19 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// The code used in serialised bit masks to indicate the number of set bits is in the range 
-        /// 1..SubgridTree.CellsPerSubgrid and so are explicitly written
+        /// 1..SubGridTreeConsts.CellsPerSubgrid and so are explicitly written
         /// </summary>
         private const byte Serialisation_ArbitraryBitsSet = 2;
 
         /// <summary>
         /// Represents the individual bit in the bits representing left most cell in a row for the TSubGridBitMap leaf cell.
         /// </summary>
-        private const uint SubGridBitMapHighBitMask = (uint)1 << (SubGridTree.SubGridTreeDimensionMinus1);
+        private const uint SubGridBitMapHighBitMask = (uint)1 << (SubGridTreeConsts.SubGridTreeDimensionMinus1);
 
         /// <summary>
         /// The number obtained when summed values of bit rows when all bits in each bit row are set
         /// </summary>
-        public const long SumBitRowsFullCount = (((long)1 << SubGridTree.SubGridTreeDimension) - 1) * SubGridTree.SubGridTreeDimension;
+        public const long SumBitRowsFullCount = (((long)1 << SubGridTreeConsts.SubGridTreeDimension) - 1) * SubGridTreeConsts.SubGridTreeDimension;
 
         /// <summary>
         /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
@@ -48,7 +48,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The number of byte occupied by the Bits array
         /// </summary>
-        private const int BytesOccupiedByBits = SubGridTree.SubGridTreeDimension * sizeof(uint);
+        private const int BytesOccupiedByBits = SubGridTreeConsts.SubGridTreeDimension * sizeof(uint);
 
         /// <summary>
         /// Default indexer for bit values in the mask
@@ -164,7 +164,7 @@ namespace VSS.TRex.SubGridTrees
         {
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] & b.Bits[i];
 
             return result;
@@ -177,7 +177,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public void AndWith(SubGridTreeBitmapSubGridBits other)
         {
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 Bits[i] &= other.Bits[i];
         }
 
@@ -189,7 +189,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="b"></param>
         public void SetAndOf(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 Bits[i] = a.Bits[i] & b.Bits[i];
         }
 
@@ -204,7 +204,7 @@ namespace VSS.TRex.SubGridTrees
         {
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] | b.Bits[i];
 
             return result;
@@ -217,7 +217,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public void OrWith(SubGridTreeBitmapSubGridBits other)
         {
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 Bits[i] |= other.Bits[i];
         }
 
@@ -229,7 +229,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="b"></param>
         public void SetOrOf(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
         {
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 Bits[i] = a.Bits[i] | b.Bits[i];
         }
 
@@ -244,7 +244,7 @@ namespace VSS.TRex.SubGridTrees
         {
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] ^ b.Bits[i];
 
             return result;
@@ -257,7 +257,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public void XorWith(SubGridTreeBitmapSubGridBits other)
         {
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 Bits[i] ^= other.Bits[i];
         }
 
@@ -271,7 +271,7 @@ namespace VSS.TRex.SubGridTrees
         {
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = a.Bits[i] ^ (a.Bits[i] & b.Bits[i]);
 
             return result;
@@ -287,7 +287,7 @@ namespace VSS.TRex.SubGridTrees
         {
             SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result.Bits[i] = ~bits.Bits[i];
 
             return result;
@@ -329,9 +329,9 @@ namespace VSS.TRex.SubGridTrees
             BoundingIntegerExtent2D result = new BoundingIntegerExtent2D();
             result.SetInverted();
 
-            for (int Y = 0; Y < SubGridTree.SubGridTreeDimension; Y++)
+            for (int Y = 0; Y < SubGridTreeConsts.SubGridTreeDimension; Y++)
                 if (Bits[Y] != 0)
-                    for (int X = 0; X < SubGridTree.SubGridTreeDimension; X++)
+                    for (int X = 0; X < SubGridTreeConsts.SubGridTreeDimension; X++)
                         if (BitSet(X, Y))
                             result.Include(X, Y);
 
@@ -344,7 +344,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool IsEmpty()
         {
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 if (Bits[i] != 0)
                     return false;
 
@@ -357,7 +357,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool IsFull()
         {
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 if (Bits[i] != 0xFFFFFFFF)
                     return false;
 
@@ -372,7 +372,7 @@ namespace VSS.TRex.SubGridTrees
         {
             long result = 0;
 
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 result += Bits[i];
 
             return result;
@@ -516,14 +516,14 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="functor"></param>
         public void ForEachSetBit(Action<int, int> functor)
         {
-            for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            for (int Row = 0; Row < SubGridTreeConsts.SubGridTreeDimension; Row++)
             {
                 uint RowBits = Bits[Row];
 
                 if (RowBits == 0)
                     continue;
 
-                for (int Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                for (int Column = 0; Column < SubGridTreeConsts.SubGridTreeDimension; Column++)
                 {
                     if ((RowBits & (SubGridBitMapHighBitMask >> Column)) != 0)
                         functor(Column, Row);
@@ -539,14 +539,14 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="functor"></param>
         public void ForEachSetBit(Func<int, int, bool> functor)
         {
-            for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            for (int Row = 0; Row < SubGridTreeConsts.SubGridTreeDimension; Row++)
             {
                 uint RowBits = Bits[Row];
 
                 if (RowBits == 0)
                     continue;
 
-                for (int Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                for (int Column = 0; Column < SubGridTreeConsts.SubGridTreeDimension; Column++)
                 {
                     if ((RowBits & (SubGridBitMapHighBitMask >> Column)) != 0)
                         if (!functor(Column, Row))
@@ -562,14 +562,14 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="functor"></param>
         public void ForEachClearBit(Action<int, int> functor)
         {
-            for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            for (byte Row = 0; Row < SubGridTreeConsts.SubGridTreeDimension; Row++)
             {
                 uint RowBits = Bits[Row];
 
                 if (RowBits == 0xFFFFFFFF)
                     continue;
 
-                for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                for (byte Column = 0; Column < SubGridTreeConsts.SubGridTreeDimension; Column++)
                 {
                     if ((RowBits & (SubGridBitMapHighBitMask >> Column)) == 0)
                         functor(Column, Row);
@@ -584,9 +584,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="functor"></param>
         public void ForEach(Action<byte, byte> functor)
         {
-            for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            for (byte Row = 0; Row < SubGridTreeConsts.SubGridTreeDimension; Row++)
             {
-                for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                for (byte Column = 0; Column < SubGridTreeConsts.SubGridTreeDimension; Column++)
                     functor(Column, Row);
             }
         }
@@ -598,11 +598,11 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="functor"></param>
         public void ForEach(Func<byte, byte, bool> functor)
         {
-            for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            for (byte Row = 0; Row < SubGridTreeConsts.SubGridTreeDimension; Row++)
             {
                 uint RowBits = Bits[Row];
 
-                for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                for (byte Column = 0; Column < SubGridTreeConsts.SubGridTreeDimension; Column++)
                 {
                     if (functor(Column, Row))
                         RowBits |= (SubGridBitMapHighBitMask >> Column);
@@ -622,11 +622,11 @@ namespace VSS.TRex.SubGridTrees
         public string RowToString(int Row)
         {
             // Initialise a string builder with appropriate number of spaces
-            StringBuilder sb = new StringBuilder(new string(' ', 2 * SubGridTree.SubGridTreeDimension));
+            StringBuilder sb = new StringBuilder(new string(' ', 2 * SubGridTreeConsts.SubGridTreeDimension));
 
             // Set each alternate space in the string with a 0 or 1 for each bit
             uint RowBits = Bits[Row];
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
                 sb[2 * i + 1] = ((RowBits & (SubGridBitMapHighBitMask >> i)) != 0) ? '1' : '0';
 
             return sb.ToString();

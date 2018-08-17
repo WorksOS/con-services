@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.NotNull(factory);
 
             // Create a tree for the factory to create subgrids for
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, factory);
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, factory);
 
             Assert.NotNull(tree);
         }
@@ -30,7 +30,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ISubGridFactory factory = new SubGridFactory<NodeSubGrid, LeafSubGrid>();
 
             // Create a tree for the factory to create subgrids for
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, factory);
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, factory);
 
             // Create subgrids for each layer, ensure layers
             // Ask the factory to create node for an invalid tree level

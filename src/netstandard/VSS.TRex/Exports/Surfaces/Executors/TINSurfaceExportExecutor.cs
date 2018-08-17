@@ -90,7 +90,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       });
 
       if (ComputedGridExtent.IsValidPlanExtent)
-        ComputedGridExtent.Offset(-(int)SubGridTree.DefaultIndexOriginOffset, -(int)SubGridTree.DefaultIndexOriginOffset);
+        ComputedGridExtent.Offset(-(int)SubGridTreeConsts.DefaultIndexOriginOffset, -(int)SubGridTreeConsts.DefaultIndexOriginOffset);
 
       // Convert the grid rectangle to a world rectangle, padding out the 3D bound by a small margin to avoid edge effects in calcualations
       BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D

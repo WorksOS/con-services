@@ -248,15 +248,15 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       TestX = x + GridOriginOffsetX;
       TestY = y + GridOriginOffsetY;
 
-      int SubGridX = TestX % SubGridTree.SubGridTreeDimension;
-      int SubGridY = TestY % SubGridTree.SubGridTreeDimension;
+      int SubGridX = TestX % SubGridTreeConsts.SubGridTreeDimension;
+      int SubGridY = TestY % SubGridTreeConsts.SubGridTreeDimension;
 
       // Get the initial ExistanceBitMask from the bitmask cache
       if (spotElevationOnly)
         CacheSubgrid = (GenericLeafSubGrid<float>)DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
       else
       {
-        CacheSubgridIndex = TestX / SubGridTree.SubGridTreeDimension - Elevations_MinXTriangleScanRange / SubGridTree.SubGridTreeDimension;
+        CacheSubgridIndex = TestX / SubGridTreeConsts.SubGridTreeDimension - Elevations_MinXTriangleScanRange / SubGridTreeConsts.SubGridTreeDimension;
         GetCacheElevationMap();
       }
 
@@ -265,7 +265,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       {
         if (CacheSubgrid == null)
         {
-          int NumValuesFromThisSubgrid = SubGridTree.SubGridTreeDimension - SubGridX;
+          int NumValuesFromThisSubgrid = SubGridTreeConsts.SubGridTreeDimension - SubGridX;
           if (numElevationsToScan < NumValuesFromThisSubgrid)
             NumValuesFromThisSubgrid = numElevationsToScan;
 
@@ -299,9 +299,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         }
 
         // Get next subgrid if necessary
-        if (SubGridX == SubGridTree.SubGridTreeDimension && numElevationsToScan > 0 && !spotElevationOnly)
+        if (SubGridX == SubGridTreeConsts.SubGridTreeDimension && numElevationsToScan > 0 && !spotElevationOnly)
         {
-          TestX += SubGridTree.SubGridTreeDimension;
+          TestX += SubGridTreeConsts.SubGridTreeDimension;
           CacheSubgridIndex++;
           GetCacheElevationMap();
           SubGridX = 0;
@@ -338,11 +338,11 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       double dz = Zplane.a;
       _x = startx;
 
-      int BitMaskIndexX = _x & SubGridTree.SubGridLocalKeyMask;
-      int BitMaskIndexY = _x & SubGridTree.SubGridLocalKeyMask;
+      int BitMaskIndexX = _x & SubGridTreeConsts.SubGridLocalKeyMask;
+      int BitMaskIndexY = _x & SubGridTreeConsts.SubGridLocalKeyMask;
 
       // Get the initial ExistanceBitMask from the bitmask cache
-      BitMaskCacheSubgridIndex = startx / SubGridTree.SubGridTreeDimension - InUse_MinXTriangleScanRange / SubGridTree.SubGridTreeDimension;
+      BitMaskCacheSubgridIndex = startx / SubGridTreeConsts.SubGridTreeDimension - InUse_MinXTriangleScanRange / SubGridTreeConsts.SubGridTreeDimension;
       GetInUseExistanceMap();
 
       YOrdinateIsASeedVertexRow = _y % YSeedIntervalStep == 0;
@@ -379,7 +379,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         _x++;
 
         BitMaskIndexX++;
-        if (BitMaskIndexX == SubGridTree.SubGridTreeDimension && I != NumElevationsToScan - 1)
+        if (BitMaskIndexX == SubGridTreeConsts.SubGridTreeDimension && I != NumElevationsToScan - 1)
         {
           BitMaskCacheSubgridIndex++;
           GetInUseExistanceMap();
@@ -401,14 +401,14 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       void InitCacheIndices()
       {
         TriangleScanInvocationNumber++;
-        CachedInUseMaps_SubgridRow = (starty + GridOriginOffsetY) / SubGridTree.SubGridTreeDimension;
+        CachedInUseMaps_SubgridRow = (starty + GridOriginOffsetY) / SubGridTreeConsts.SubGridTreeDimension;
       }
 
       void UpdateCacheIndices(int y)
       {
-        if (CachedInUseMaps_SubgridRow != (y + GridOriginOffsetY) / SubGridTree.SubGridTreeDimension)
+        if (CachedInUseMaps_SubgridRow != (y + GridOriginOffsetY) / SubGridTreeConsts.SubGridTreeDimension)
         {
-          CachedInUseMaps_SubgridRow = (y + GridOriginOffsetY) / SubGridTree.SubGridTreeDimension;
+          CachedInUseMaps_SubgridRow = (y + GridOriginOffsetY) / SubGridTreeConsts.SubGridTreeDimension;
           TriangleScanInvocationNumber++;
         }
       }

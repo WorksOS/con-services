@@ -42,7 +42,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public LeafSubGridBase() : base(null, null, SubGridTree.SubGridTreeLevels)
+        public LeafSubGridBase() : base(null, null, SubGridTreeConsts.SubGridTreeLevels)
         {
 
         }

@@ -107,7 +107,7 @@ namespace VSS.TRex.SubGridTrees
     /// The sub grid factory is created from the standard NodeSubGrid class, and the base generic leaf subgrid
     /// derived from T. Note: This is only suitable if the default(T) value is appropriate for the cell null value.
     /// </summary>
-    public GenericSubGridTree() : base(SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<T>>())
+    public GenericSubGridTree() : base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<T>>())
     {
     }
 

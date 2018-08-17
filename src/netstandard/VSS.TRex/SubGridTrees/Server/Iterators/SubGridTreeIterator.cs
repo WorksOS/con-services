@@ -50,16 +50,16 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             }
 
             XIdx++;
-            if (XIdx == SubGridTree.SubGridTreeDimension)
+            if (XIdx == SubGridTreeConsts.SubGridTreeDimension)
             {
                 YIdx++;
                 XIdx = 0;
             }
 
-            return YIdx < SubGridTree.SubGridTreeDimension;
+            return YIdx < SubGridTreeConsts.SubGridTreeDimension;
         }
 
-        public bool AtLastCell() => (XIdx >= SubGridTree.SubGridTreeDimensionMinus1) && (YIdx >= SubGridTree.SubGridTreeDimensionMinus1);
+        public bool AtLastCell() => (XIdx >= SubGridTreeConsts.SubGridTreeDimensionMinus1) && (YIdx >= SubGridTreeConsts.SubGridTreeDimensionMinus1);
     }
 
     public class SubGridEnumerator
@@ -90,7 +90,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         // IterationState records the progress of the iteration by recording the path through
         // the subgrid tree which marks the progress of the iteration
-        SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTree.SubGridTreeLevels];
+        SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTreeConsts.SubGridTreeLevels];
 
         private IStorageProxy StorageProxy; //IStorageProxy[] SpatialStorageProxy = null;
 
@@ -144,7 +144,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         protected void InitialiseIterator()
         {
-            for (int I = 1; I < SubGridTree.SubGridTreeLevels; I++)
+            for (int I = 1; I < SubGridTreeConsts.SubGridTreeLevels; I++)
             {
                 iterationState[I].Initialise();
             }
@@ -201,7 +201,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             // Scan the levels in the iteration state until we find the lowest one we are up to
             // (This is identified by a null subgrid reference.
 
-            while (LevelIdx < SubGridTree.SubGridTreeLevels && iterationState[LevelIdx].SubGrid != null)
+            while (LevelIdx < SubGridTreeConsts.SubGridTreeLevels && iterationState[LevelIdx].SubGrid != null)
             {
                 LevelIdx++;
             }
@@ -214,7 +214,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             {
                 while (iterationState[LevelIdx].NextCell()) // do
                 {
-                    if (LevelIdx == SubGridTree.SubGridTreeLevels - 1)
+                    if (LevelIdx == SubGridTreeConsts.SubGridTreeLevels - 1)
                     {
                         // It's a leaf subgrid we are looking for - check the existance map
                         if (SubGridsInServerDiskStore)
@@ -225,15 +225,15 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             }
                             else
                             {
-                                uint CellX = (uint)(iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTree.SubGridTreeDimension);
-                                uint CellY = (uint)(iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTree.SubGridTreeDimension);
+                                uint CellX = (uint)(iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTreeConsts.SubGridTreeDimension);
+                                uint CellY = (uint)(iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTreeConsts.SubGridTreeDimension);
 
                                 SubGrid = SubGridUtilities.LocateSubGridContaining
                                            (StorageProxy,
                                             iterationState[LevelIdx].SubGrid.Owner as ServerSubGridTree,
                                             //null, //FDataStoreCache,
                                             CellX, CellY,
-                                            SubGridTree.SubGridTreeLevels,
+                                            SubGridTreeConsts.SubGridTreeLevels,
                                             -1 /*FLockToken*/, false, false);
                             }
                         }

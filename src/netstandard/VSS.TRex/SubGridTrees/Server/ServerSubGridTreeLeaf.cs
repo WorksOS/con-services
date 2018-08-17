@@ -895,9 +895,9 @@ namespace VSS.TRex.SubGridTrees.Server
             UpdateStartEndTimeRange(Source.LeafStartTime);
             UpdateStartEndTimeRange(Source.LeafEndTime);
 
-            for (uint I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (uint J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                for (uint J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
                     // Perform the physical integration of the new cell passes into the target subgrid
                     uint StartIndex = 0;
