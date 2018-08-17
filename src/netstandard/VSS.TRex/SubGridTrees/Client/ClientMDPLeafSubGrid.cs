@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using VSS.TRex.Cells;
+﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {

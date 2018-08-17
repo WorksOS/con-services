@@ -6,7 +6,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {

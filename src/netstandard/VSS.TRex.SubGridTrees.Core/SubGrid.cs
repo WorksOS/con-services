@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees
 {

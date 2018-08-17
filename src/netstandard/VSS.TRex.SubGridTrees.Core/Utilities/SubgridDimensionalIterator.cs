@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.SubGridTrees.Utilities
+namespace VSS.TRex.SubGridTrees.Core.Utilities
 {
     public static partial class SubGridUtilities
     {

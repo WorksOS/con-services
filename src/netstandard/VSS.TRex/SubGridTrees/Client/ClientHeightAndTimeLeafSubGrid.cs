@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
