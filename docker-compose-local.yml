@@ -22,7 +22,7 @@ services:
     env_file:
      - docker-compose-local.env
     environment:
-     - MYSQL_SERVER_NAME=db
+     - MYSQL_SERVER_NAME_VSPDB=db
      - MYSQL_DATABASE_NAME=VSS-Productivity3D-Scheduler
      - MYSQL_PORT=3306
      - MYSQL_USERNAME=root
