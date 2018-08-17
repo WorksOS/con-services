@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
     private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
       ? VelociraptorConstants.NO_PROJECT_ID
-      : await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      : await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid.Value);
 
     /// <summary>
     /// Default constructor.

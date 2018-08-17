@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
@@ -18,10 +19,16 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
   {
     private readonly IProjectListProxy projectProxy;
     private readonly IDictionary<string, string> authNContext;
+    private static readonly ConcurrentDictionary<Guid, long> legacyProjectIdsCache;
+
+    static RaptorPrincipal()
+    {
+      legacyProjectIdsCache = new ConcurrentDictionary<Guid, long>();
+    }
 
     //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
     public RaptorPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication, string tpaasApplicationName,
-      IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders) 
+      IProjectListProxy projectProxy, IDictionary<string, string> contextHeaders)
       : base(identity, customerUid, customerName, userEmail, isApplication, tpaasApplicationName)
     {
       this.projectProxy = projectProxy;
@@ -34,7 +41,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     public async Task<ProjectData> GetProject(long projectId)
     {
       var projectDescr = await projectProxy.GetProjectForCustomer(CustomerUid, projectId, authNContext);
-      if (projectDescr != null) return projectDescr;
+      if (projectDescr != null)
+      {
+        return projectDescr;
+      }
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
@@ -61,11 +71,16 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     public async Task<ProjectData> GetProject(string projectUid)
     {
       if (string.IsNullOrEmpty(projectUid))
+      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
+      }
 
       var projectDescr = await projectProxy.GetProjectForCustomer(CustomerUid, projectUid, authNContext);
-      if (projectDescr != null) return projectDescr;
+      if (projectDescr != null)
+      {
+        return projectDescr;
+      }
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
         new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
@@ -75,17 +90,20 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Gets the legacy Project Id (long) from a ProjectUid (Guid).
     /// </summary>
-    public async Task<long> GetLegacyProjectId(Guid? projectUid)
+    public async Task<long> GetLegacyProjectId(Guid projectUid)
     {
-      if (!(this is RaptorPrincipal _))
+      if (legacyProjectIdsCache.TryGetValue(projectUid, out var legacyId))
       {
-        throw new ArgumentException("Incorrect request context principal.");
+        return legacyId;
       }
 
       var project = await GetProject(projectUid);
       var projectId = project.LegacyProjectId;
+
       if (projectId > 0)
       {
+        legacyProjectIdsCache.TryAdd(projectUid, projectId);
+
         return projectId;
       }
 
