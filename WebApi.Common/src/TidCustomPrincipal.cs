@@ -15,13 +15,19 @@ namespace VSS.WebApi.Common
     /// <param name="customerName">The customer name</param>
     /// <param name="userName">The user email address or application name</param>
     /// <param name="isApplication">if set to <c>true</c> [is application].</param>
-    public TIDCustomPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userName, bool isApplication = false) : base(identity)
+    public TIDCustomPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userName, bool isApplication = false, string tpaasApplicationName = "") : base(identity)
     {
       CustomerUid = customerUid;
       CustomerName = customerName;
       UserEmail = userName;
       IsApplication = isApplication;
+      TpaasApplicationName = tpaasApplicationName;
     }
+
+    /// <summary>
+    /// Get TPaas Application name
+    /// </summary>
+    public string TpaasApplicationName { get; private set; }
 
     /// <summary>
     /// Gets the customer uid.
