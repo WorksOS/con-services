@@ -153,7 +153,7 @@ namespace VSS.TRex.SubGridTrees
       /// <param name="functor"></param>
       public void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor)
       {
-        ForEachSubGrid(functor, 0, 0, SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1);
+        ForEachSubGrid(functor, 0, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1, SubGridTreeConsts.SubGridTreeDimensionMinus1);
       }
 
     /// <summary>
@@ -172,8 +172,8 @@ namespace VSS.TRex.SubGridTrees
             byte maxSubGridCellX,
             byte maxSubGridCellY)
         {
-            if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
-                minSubGridCellY >= SubGridTree.SubGridTreeDimension)
+            if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
+                minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
                 throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range", 
                                              "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
@@ -192,7 +192,7 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="functor"></param>
     public void ForEachSubGrid(Func<byte, byte, ISubGrid, SubGridProcessNodeSubGridResult> functor)
       {
-        ForEachSubGrid(functor, 0, 0, SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1);
+        ForEachSubGrid(functor, 0, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1, SubGridTreeConsts.SubGridTreeDimensionMinus1);
       }
 
     /// <summary>
@@ -208,8 +208,8 @@ namespace VSS.TRex.SubGridTrees
             byte maxSubGridCellX, 
             byte maxSubGridCellY)
         {
-            if (minSubGridCellX >= SubGridTree.SubGridTreeDimension ||
-                minSubGridCellY >= SubGridTree.SubGridTreeDimension)
+            if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
+                minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
                 throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range",
                                              "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
@@ -334,7 +334,7 @@ namespace VSS.TRex.SubGridTrees
                 {
                     // Create the full array of subgrid references now the number of subgrids is too large to 
                     // fit into the sparcity constraint
-                    Cells = new ISubGrid[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+                    Cells = new ISubGrid[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
                     for (int I = 0; I < SparseCellCount; I++)
                     {

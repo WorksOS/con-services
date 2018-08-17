@@ -59,7 +59,7 @@ namespace VSS.TRex.Filters
 
         public void InitialiseProbePositions()
         {
-            ProbePositions = new ProbePoint[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            ProbePositions = new ProbePoint[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
         }
     }
 }

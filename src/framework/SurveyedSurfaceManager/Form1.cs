@@ -61,7 +61,7 @@ namespace SurveyedSurfaceManager
             try
             {
                 // Load the file and extract its extents
-                TTMDesign TTM = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
                 string fileName = Path.Combine(new string[] { txtFilePath.Text, txtFileName.Text });
                 DesignLoadResult result = TTM.LoadFromFile(fileName);
                 if (result != DesignLoadResult.Success)
@@ -292,7 +292,7 @@ namespace SurveyedSurfaceManager
             try
             {
                 // Load the file and extract its extents
-                TTMDesign TTM = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
                 TTM.LoadFromFile(Path.Combine(new [] { txtFilePath.Text, txtFileName.Text }));
 
                 BoundingWorldExtent3D extents = new BoundingWorldExtent3D();

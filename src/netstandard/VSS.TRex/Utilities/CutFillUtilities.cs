@@ -4,7 +4,7 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.Utilities
 {

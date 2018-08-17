@@ -493,10 +493,10 @@ namespace VSS.TRex.Rendering.Executors
         // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
 
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-          RotatedTileBoundingExtents.MinY, SiteModel.Grid.CellSize, SubGridTree.DefaultIndexOriginOffset,
+          RotatedTileBoundingExtents.MinY, SiteModel.Grid.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
           out uint CellExtents_MinX, out uint CellExtents_MinY);
         SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-          RotatedTileBoundingExtents.MaxY, SiteModel.Grid.CellSize, SubGridTree.DefaultIndexOriginOffset,
+          RotatedTileBoundingExtents.MaxY, SiteModel.Grid.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
           out uint CellExtents_MaxX, out uint CellExtents_MaxY);
 
         BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int) CellExtents_MinX, (int) CellExtents_MinY, (int) CellExtents_MaxX, (int) CellExtents_MaxY);

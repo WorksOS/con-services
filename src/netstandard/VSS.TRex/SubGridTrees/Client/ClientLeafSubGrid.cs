@@ -180,8 +180,8 @@ namespace VSS.TRex.SubGridTrees.Client
             double WOy = (OriginY - IndexOriginOffset) * CellSize;
 
             return new BoundingWorldExtent3D(WOx, WOy,
-                                             WOx + SubGridTree.SubGridTreeDimension * CellSize,
-                                             WOy + SubGridTree.SubGridTreeDimension * CellSize);
+                                             WOx + SubGridTreeConsts.SubGridTreeDimension * CellSize,
+                                             WOy + SubGridTreeConsts.SubGridTreeDimension * CellSize);
         }
 
         /// <summary>

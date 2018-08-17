@@ -1,10 +1,8 @@
 ﻿using System;
-using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.Exports.Patches
 {
@@ -56,7 +54,7 @@ namespace VSS.TRex.Exports.Patches
         return;
 
       // Set the appropriate values into the result
-      Data = new ushort[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+      Data = new ushort[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
       IsNull = false;
       ElevationOrigin = MinElevation;
 

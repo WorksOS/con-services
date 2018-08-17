@@ -14,7 +14,7 @@ namespace VSS.TRex.SubGridTrees.Server
         private SiteModel SiteModelReference { get; set; }
 
         public ServerSubGridTree(SiteModel siteModel) :
-            base(SubGridTreeLevels, DefaultCellSize,
+            base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
                 new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
         {
             // FSerialisedStream := Nil;
@@ -46,7 +46,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Work out the cell address of the origin cell in the appropriate leaf
             // subgrid. We use this cell position to derive the name of the file
             // containing the leaf subgrid data
-            return SegmentInfo.FileName(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridLocalKeyMask)));
+            return SegmentInfo.FileName(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask)));
         }
 
         public bool LoadLeafSubGridSegment(IStorageProxy storageProxy,
@@ -175,7 +175,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Work out the cell address of the origin cell in the appropriate leaf
             // subgrid. We use this cell position to derive the name of the file
             // containing the leaf subgrid data
-            return ServerSubGridTreeLeaf.FileNameFromOriginPosition(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridLocalKeyMask)));
+            return ServerSubGridTreeLeaf.FileNameFromOriginPosition(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask)));
         }
     }
 }

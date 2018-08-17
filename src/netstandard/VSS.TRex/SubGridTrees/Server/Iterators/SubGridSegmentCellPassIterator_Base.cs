@@ -149,8 +149,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // cell passes are being iterated over. The coordinates should be in the 0..DimensionSize-1 range
         public void SetCellCoordinatesInSubgrid(byte _cellX, byte _cellY)
         {
-            Debug.Assert(Range.InRange(_cellX, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1) &&
-                         Range.InRange(_cellY, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1),
+            Debug.Assert(Range.InRange(_cellX, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
+                         Range.InRange(_cellY, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1),
                 "Cell coordinates out of range in SetCellCoordinatesInSubgrid");
 
             cellX = _cellX;
@@ -207,8 +207,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             if (SegmentIterator.CurrentSubGridSegment == null)
                 return false; // No more cells to process
 
-            Debug.Assert(Range.InRange(cellX, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1) &&
-                         Range.InRange(cellY, (byte) 0, SubGridTree.SubGridTreeDimensionMinus1),
+            Debug.Assert(Range.InRange(cellX, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
+                         Range.InRange(cellY, (byte) 0, SubGridTreeConsts.SubGridTreeDimensionMinus1),
                 "Cell coordinates out of range in GetNextCellPass");
 
             do

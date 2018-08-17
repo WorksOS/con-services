@@ -364,7 +364,7 @@ namespace VSS.TRex.SubGridTrees
                                     icdtMachineSpeedTarget,
                                     icdtCCVPercentChangeIgnoredTopNullValue]); */
 
-        for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+        for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
         {
           // If there is an overriding seive bitmask (from WMS rendering) then
           // check if this cell is contained in the seive, otherwise ignore it.
@@ -750,7 +750,7 @@ namespace VSS.TRex.SubGridTrees
       if (StepX < 2 && StepY < 2)
         return false;
 
-      if (StepX >= SubGridTree.SubGridTreeDimension && StepY >= SubGridTree.SubGridTreeDimension)
+      if (StepX >= SubGridTreeConsts.SubGridTreeDimension && StepY >= SubGridTreeConsts.SubGridTreeDimension)
         Log.LogDebug($"Skip value of {StepX}/{StepY} chosen for {SubGrid.Moniker()}");
 
       SeiveBitmask.Clear();
@@ -769,7 +769,7 @@ namespace VSS.TRex.SubGridTrees
       while (north_row < 0)
         north_row += StepY;
 
-      while (north_row < SubGridTree.SubGridTreeDimension)
+      while (north_row < SubGridTreeConsts.SubGridTreeDimension)
       {
         Temp = SubGridWorldOriginX / StepXIncrement;
 
@@ -779,7 +779,7 @@ namespace VSS.TRex.SubGridTrees
         while (east_col < 0)
           east_col += StepX;
 
-        while (east_col < SubGridTree.SubGridTreeDimension)
+        while (east_col < SubGridTreeConsts.SubGridTreeDimension)
         {
           SeiveBitmask.SetBit(east_col, north_row);
           east_col += StepX;
@@ -867,8 +867,8 @@ namespace VSS.TRex.SubGridTrees
           int east_col = (int) Math.Floor((CurrentEast - SubgridMinX) / _CellSize);
           int north_row = (int) Math.Floor((CurrentNorth - SubgridMinY) / _CellSize);
 
-          if (Range.InRange(east_col, 0, SubGridTree.SubGridTreeDimensionMinus1) &&
-              Range.InRange(north_row, 0, SubGridTree.SubGridTreeDimensionMinus1))
+          if (Range.InRange(east_col, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
+              Range.InRange(north_row, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1))
           {
             SeiveBitmask.SetBit(east_col, north_row);
             AssignmentContext.ProbePositions[east_col, north_row]
@@ -903,8 +903,8 @@ namespace VSS.TRex.SubGridTrees
       // Calculate the world coordinate location of the origin (bottom left corner)
       // and limits (top right corner) of this subgrid
       SubGrid.CalculateWorldOrigin(out double SubGridWorldOriginX, out double SubGridWorldOriginY);
-      double SubGridWorldLimitX = SubGridWorldOriginX + (SubGridTree.SubGridTreeDimension * _CellSize);
-      double SubGridWorldLimitY = SubGridWorldOriginY + (SubGridTree.SubGridTreeDimension * _CellSize);
+      double SubGridWorldLimitX = SubGridWorldOriginX + (SubGridTreeConsts.SubGridTreeDimension * _CellSize);
+      double SubGridWorldLimitY = SubGridWorldOriginY + (SubGridTreeConsts.SubGridTreeDimension * _CellSize);
 
       // Take into account the effect of having to have a grid probe position at
       // the 'first point' defined in AreaControlSet
@@ -1081,7 +1081,7 @@ namespace VSS.TRex.SubGridTrees
             */
 
             // Iterate over the stripes in the subgrid processing each one in turn.
-            for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
               RetrieveSubGridStripe(I);
 
             /* TODO if VLPDSvcLocations.Debug_ExtremeLogSwitchC then

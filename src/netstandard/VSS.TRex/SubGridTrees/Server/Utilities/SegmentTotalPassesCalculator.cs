@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
 {

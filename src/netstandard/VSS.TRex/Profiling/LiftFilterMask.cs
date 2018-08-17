@@ -30,14 +30,14 @@ namespace VSS.TRex.Profiling
       for (int CellIdx = fromProfileCellIndex; CellIdx < profileCells.Count; CellIdx++)
       {
         SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(
-          profileCells[CellIdx].OTGCellX >> SubGridTree.SubGridIndexBitsPerLevel,
-          profileCells[CellIdx].OTGCellY >> SubGridTree.SubGridIndexBitsPerLevel);
+          profileCells[CellIdx].OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+          profileCells[CellIdx].OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         if (!currentSubGridOrigin.Equals(ThisSubgridOrigin))
           break;
 
-        byte CellX = (byte)(profileCells[CellIdx].OTGCellX & SubGridTree.SubGridLocalKeyMask);
-        byte CellY = (byte)(profileCells[CellIdx].OTGCellY & SubGridTree.SubGridLocalKeyMask);
+        byte CellX = (byte)(profileCells[CellIdx].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask);
+        byte CellY = (byte)(profileCells[CellIdx].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
         if (cellFilter.HasSpatialOrPostionalFilters)
         {

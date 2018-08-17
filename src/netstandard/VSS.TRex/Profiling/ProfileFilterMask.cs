@@ -37,13 +37,13 @@ namespace VSS.TRex.Profiling
         SubGridTree.CalculateIndexOfCellContainingPosition(Intercepts.Items[InterceptIdx].MidPointX,
           Intercepts.Items[InterceptIdx].MidPointY, out uint OTGCellX, out uint OTGCellY);
 
-        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTrees.SubGridTree.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTrees.SubGridTree.SubGridIndexBitsPerLevel);
+        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTrees.SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         if (!currentSubGridOrigin.Equals(ThisSubgridOrigin))
           break;
 
-        uint CellX = OTGCellX & SubGridTrees.SubGridTree.SubGridLocalKeyMask;
-          uint CellY = OTGCellY & SubGridTrees.SubGridTree.SubGridLocalKeyMask;
+        uint CellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+          uint CellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
 
           if (cellFilter_HasSpatialOrPostionalFilters)
           {

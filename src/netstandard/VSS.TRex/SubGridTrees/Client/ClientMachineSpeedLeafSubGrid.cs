@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -174,8 +173,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       FirstPassMap.Write(writer, buffer);
 
-      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+      Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
 
       //SubGridUtilities.SubGridDimensionalIterator((x, y) => writer.Write(Cells[x, y]));
     }
@@ -193,8 +192,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       FirstPassMap.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
-      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
+      Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
 
       //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
     }

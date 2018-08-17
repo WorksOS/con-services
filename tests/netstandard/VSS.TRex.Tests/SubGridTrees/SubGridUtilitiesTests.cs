@@ -1,10 +1,6 @@
-﻿using System;
-using System.IO;
-using VSS.TRex.SubGridTrees.Utilities;
-using VSS.TRex.Types;
-using System.Text;
+﻿using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using Xunit;
-using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
@@ -17,7 +13,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             int counter = 0;
 
             SubGridUtilities.SubGridDimensionalIterator((x, y) => counter++);
-            Assert.Equal(SubGridTree.SubGridTreeCellsPerSubgrid, counter);
+            Assert.Equal(SubGridTreeConsts.SubGridTreeCellsPerSubgrid, counter);
         }
     }
 }

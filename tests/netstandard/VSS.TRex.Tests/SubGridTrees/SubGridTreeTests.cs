@@ -15,11 +15,11 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridTree_Creation()
         {
             // Create a tree with the default number of levels (representing cells at the on-the-ground level)
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());           
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());           
             Assert.NotNull(tree);
 
             // Create a tree with one fewer than the default number of levels (representing cells which are subgrids at the on-the-ground level
-            ISubGridTree tree2 = new SubGridTree(SubGridTree.SubGridTreeLevels - 1, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree2 = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels - 1, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
             Assert.NotNull(tree);
         }
 
@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridTree_Clear()
         {
             // Create a tree with the default number of levels (representing cells at the on-the-ground level)
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             int count;
             
@@ -99,7 +99,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ISubGridTree invalid = null;
             try
             {
-                invalid = new SubGridTree(SubGridTree.SubGridTreeLevels, 0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+                invalid = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
                 Assert.True(false,"SubGridTree permitted creation with invalid subgrid tree cell size");
             }
             catch (Exception e)
@@ -109,7 +109,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             try
             {
-                invalid = new SubGridTree(SubGridTree.SubGridTreeLevels, 10000000, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+                invalid = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 10000000, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
                 Assert.True(false,"SubGridTree permitted creation with invalid subgrid tree cell size");
             }
             catch (Exception e)
@@ -125,7 +125,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ISubGridTree invalid = null;
             try
             {
-                invalid = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, null);
+                invalid = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, null);
                 Assert.True(false,"SubGridTree permitted creation with invalid subgrid tree cell size");
             }
             catch (Exception e)
@@ -155,7 +155,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_FullGridExtent()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             BoundingWorldExtent3D extent = tree.FullGridExtent();
 
@@ -172,7 +172,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_FullCellExtent()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             BoundingIntegerExtent2D extent = tree.FullCellExtent();
 
@@ -187,7 +187,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_ConstructPathToCell_CreateLeaf()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Add a leaf node with ConstructPathToCell with leaf creation path type (in the bottom left corner 
             // of the cell address space and verify a new leaf subgrid came back)
@@ -202,7 +202,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_ConstructPathToCell_ReturnExistingLeafOnly()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Add a leaf node with ConstructPathToCell with leaf creation path type (in the bottom left corner 
             // of the cell address space and verify a new leaf subgrid came back)
@@ -221,7 +221,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_ConstructPathToCell_CreatePathToLeaf()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Add a node subgrid with ConstructPathToCell with CreatePathToLeaf creation path type (in the bottom left corner 
             // of the cell address space and verify a new node subgrid came back)
@@ -234,7 +234,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_CountLeafSubgridsInMemory()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             Assert.Equal(0, tree.CountLeafSubgridsInMemory());
 
@@ -247,7 +247,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_CalculateIndexOfCellContainingPosition()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             uint CellX, CellY;
 
@@ -284,7 +284,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_GetCellCenterPosition()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
             double cx, cy;
 
             // Get a cell at the origin of the world coordinate system and test its center location given a 1m cell size
@@ -297,7 +297,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_GetCellOriginPosition()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
             double cx, cy;
 
             // Get a cell at the origin of the world coordinate system and test its origin location given a 1m cell size
@@ -310,7 +310,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_GetCellExtents()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Get a cell at the origin of the world coordinate system and test its extents given a 1m cell size
             BoundingWorldExtent3D extent = tree.GetCellExtents(tree.IndexOriginOffset, tree.IndexOriginOffset);
@@ -323,7 +323,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTree_CreateUnattachedLeaf()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Ask for an unattached leaf subgrid and verify it checks out
             ILeafSubGrid leaf = tree.CreateUnattachedLeaf();

@@ -5,7 +5,7 @@ using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Server
@@ -49,7 +49,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             CellPasses = new CellPass[totalPassCount];
 
-            PassData = new Cell_Static[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            PassData = new Cell_Static[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             // Shift all the cell pass information into the private arrays, setting the cell pass offsets for 
             // each cell to reference the correct set of cell passes in the collated array.
@@ -80,7 +80,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             CellPasses = new CellPass[totalPassCount];
 
-            PassData = new Cell_Static[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            PassData = new Cell_Static[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             // Shift all the cell pass information into the private arrays, setting the cell pass offsets for 
             // each cell to reference the correct set of cell passes in the collated array.
@@ -141,7 +141,7 @@ namespace VSS.TRex.SubGridTrees.Server
             int TotalPasses = reader.ReadInt32();
             int MaxPassCount = reader.ReadInt32();
 
-            int[,] PassCounts = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            int[,] PassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
 

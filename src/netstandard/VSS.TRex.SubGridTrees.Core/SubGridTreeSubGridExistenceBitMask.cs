@@ -16,7 +16,7 @@
         /// <summary>
         /// Default no-arg constructor that creates a subgrid tree one level shallower than the default, and with a correspondingly larger cell size
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask() : base(SubGridTreeLevels - 1, DefaultCellSize * SubGridTreeDimension)
+        public SubGridTreeSubGridExistenceBitMask() : base(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.SubGridTreeDimension)
         {
         }
     }

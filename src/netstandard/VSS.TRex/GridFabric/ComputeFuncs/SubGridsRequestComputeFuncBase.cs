@@ -15,14 +15,14 @@ using VSS.TRex.GridFabric.Types;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {
@@ -147,9 +147,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 Subgrid1 = (ClientHeightAndTimeLeafSubGrid)SubgridResultArray[0];
                 Subgrid2 = (ClientHeightAndTimeLeafSubGrid)SubgridResultArray[1];
 
-                // Merge the first two results then swap the second and third items so later processing
-                // uses the correct two result, and the the third is correctly recycled
-                // Subgrid1 is 'latest @ first filter', subgrid 2 is earliest @ second filter
+          // Merge the first two results then swap the second and third items so later processing
+          // uses the correct two result, and the the third is correctly recycled
+          // Subgrid1 is 'latest @ first filter', subgrid 2 is earliest @ second filter
                 SubGridUtilities.SubGridDimensionalIterator((I, J) =>
                 {
                   // Check if there is a non null candidate in the earlier @ second filter
@@ -286,9 +286,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
 
                 clientGrid.CellSize = siteModel.Grid.CellSize;
-                clientGrid.SetAbsoluteLevel(SubGridTree.SubGridTreeLevels);
-                clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~((int)SubGridTree.SubGridLocalKeyMask)),
-                                                     (uint)(address.Y & ~((int)SubGridTree.SubGridLocalKeyMask)));
+                clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
+                clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~((int)SubGridTreeConsts.SubGridLocalKeyMask)),
+                                                     (uint)(address.Y & ~((int)SubGridTreeConsts.SubGridLocalKeyMask)));
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 requestor.CellOverrideMask.Fill();
@@ -432,7 +432,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),
-                                           SubGridTree.SubGridTreeLevels,
+                                           SubGridTreeConsts.SubGridTreeLevels,
                                            int.MaxValue, // MaxCellPasses
                                            AreaControlSet,
                                            new FilteredValuePopulationControl(),

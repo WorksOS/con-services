@@ -18,8 +18,8 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Constructor that defaults levels, cell size and subgrid factory 
         /// </summary>
-        public SubGridTreeBitMask() : base(SubGridTreeLevels, 
-                                           DefaultCellSize, 
+        public SubGridTreeBitMask() : base(SubGridTreeConsts.SubGridTreeLevels,
+                                           SubGridTreeConsts.DefaultCellSize, 
                                            new SubGridFactory<SubGridTreeNodeBitmapSubGrid, SubGridTreeLeafBitmapSubGrid>())
         {          
         }
@@ -352,8 +352,8 @@ namespace VSS.TRex.SubGridTrees
                 {
                     (leaf as SubGridTreeLeafBitmapSubGrid).Bits.ForEachSetBit((x, y) =>
                     {
-                        address.X = (uint)(leaf.OriginX + x) << SubGridIndexBitsPerLevel;
-                        address.Y = (uint)(leaf.OriginY + y) << SubGridIndexBitsPerLevel;
+                        address.X = (uint)(leaf.OriginX + x) << SubGridTreeConsts.SubGridIndexBitsPerLevel;
+                        address.Y = (uint)(leaf.OriginY + y) << SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
                         functor(address);
                     });

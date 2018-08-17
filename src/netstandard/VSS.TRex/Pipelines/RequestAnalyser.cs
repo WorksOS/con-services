@@ -177,15 +177,15 @@ namespace VSS.TRex.Pipelines
           SubGridTreeLeafBitmapSubGrid;
 
       byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
-      double OTGCellSize = SubGrid.Owner.CellSize / SubGridTree.SubGridTreeDimension;
+      double OTGCellSize = SubGrid.Owner.CellSize / SubGridTreeConsts.SubGridTreeDimension;
       SubGridTreeLeafBitmapSubGrid CastSubGrid = (SubGridTreeLeafBitmapSubGrid) SubGrid;
 
       if (ScanningFullWorldExtent)
       {
         ScanMinXb = 0;
         ScanMinYb = 0;
-        ScanMaxXb = SubGridTree.SubGridTreeDimensionMinus1;
-        ScanMaxYb = SubGridTree.SubGridTreeDimensionMinus1;
+        ScanMaxXb = SubGridTreeConsts.SubGridTreeDimensionMinus1;
+        ScanMaxYb = SubGridTreeConsts.SubGridTreeDimensionMinus1;
       }
       else
       {
@@ -208,8 +208,8 @@ namespace VSS.TRex.Pipelines
 
         ScanMinX = Math.Max(CastSubGrid.OriginX, ScanMinX);
         ScanMinY = Math.Max(CastSubGrid.OriginY, ScanMinY);
-        ScanMaxX = Math.Min(ScanMaxX, CastSubGrid.OriginX + SubGridTree.SubGridTreeDimensionMinus1);
-        ScanMaxY = Math.Min(ScanMaxY, CastSubGrid.OriginY + SubGridTree.SubGridTreeDimensionMinus1);
+        ScanMaxX = Math.Min(ScanMaxX, CastSubGrid.OriginX + SubGridTreeConsts.SubGridTreeDimensionMinus1);
+        ScanMaxY = Math.Min(ScanMaxY, CastSubGrid.OriginY + SubGridTreeConsts.SubGridTreeDimensionMinus1);
 
         SubGrid.GetSubGridCellIndex(ScanMinX, ScanMinY, out ScanMinXb, out ScanMinYb);
         SubGrid.GetSubGridCellIndex(ScanMaxX, ScanMaxY, out ScanMaxXb, out ScanMaxYb);
@@ -286,8 +286,8 @@ namespace VSS.TRex.Pipelines
               // Add the leaf subgrid identitied by the address below, along with the production data and surveyed surface
               // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
               // SubGridCellAddress NewSubGridAddress =
-              // new SubGridCellAddress((CastSubGrid.OriginX + I) << SubGridTree.SubGridIndexBitsPerLevel,
-              //                        (CastSubGrid.OriginY + J) << SubGridTree.SubGridIndexBitsPerLevel,
+              // new SubGridCellAddress((CastSubGrid.OriginX + I) << SubGridTreeConsts.SubGridIndexBitsPerLevel,
+              //                        (CastSubGrid.OriginY + J) << SubGridTreeConsts.SubGridIndexBitsPerLevel,
               //                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
               //                        Owner.IncludeSurveyedSurfaceInformation);
 

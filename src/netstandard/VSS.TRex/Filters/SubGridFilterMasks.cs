@@ -39,8 +39,8 @@ namespace VSS.TRex.Filters
 
             // Attempt to satisfy the calculation below on the basis of the subgrid wholly resising in the overide and filter spatial restrictions
             if (SpatialFilter.Fence.IncludesExtent(new BoundingWorldExtent3D(OX, OY,
-                                                                             OX + cellSize * SubGridTree.SubGridTreeDimension,
-                                                                             OY + cellSize * SubGridTree.SubGridTreeDimension)))
+                                                                             OX + cellSize * SubGridTreeConsts.SubGridTreeDimension,
+                                                                             OY + cellSize * SubGridTreeConsts.SubGridTreeDimension)))
             {
                 // The extent of the subgrid is wholly contained in the filter, therefore there is no need to iterate though all the cells
                 // individually...
@@ -50,12 +50,12 @@ namespace VSS.TRex.Filters
                 // ... unless there is an override spatial cell restriction that does not enclose the extent of the subgrid
                 if (AHasOverrideSpatialCellRestriction &&
                     !AOverrideSpatialCellRestriction.Encloses(new BoundingIntegerExtent2D((int)originX, (int)originY,
-                                                                                          (int)originX + SubGridTree.SubGridTreeDimension,
-                                                                                          (int)originY + SubGridTree.SubGridTreeDimension)))
+                                                                                          (int)originX + SubGridTreeConsts.SubGridTreeDimension,
+                                                                                          (int)originY + SubGridTreeConsts.SubGridTreeDimension)))
                 {
-                    for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+                    for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
                     {
-                        for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                        for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                         {
                             if (!AOverrideSpatialCellRestriction.Includes(originX + I, originY + J))
                                 FilterMask.ClearBit(I, J);
@@ -73,12 +73,12 @@ namespace VSS.TRex.Filters
                 // Construct the filter mask based on the spatial and location (square/circle/polygonal) filtering
                 double CX = OX;
 
-                for (byte I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+                for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
                 {
                     uint OriginXPlusI = originX + I;
                     double CY = OY; // Set to the first row in the column about to be processed
 
-                    for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                    for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                     {
                         if (AHasOverrideSpatialCellRestriction && !AOverrideSpatialCellRestriction.Includes((int)OriginXPlusI, (int)(originY + J)))
                         {

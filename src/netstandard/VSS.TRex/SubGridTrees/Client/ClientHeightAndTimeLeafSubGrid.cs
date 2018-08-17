@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -21,12 +21,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Time values for the heights stored in the height and time structure. Times are expressed as the binary DateTime format to promote efficient copying of arrays
     /// </summary>
-    public long[,] Times = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+    public long[,] Times = new long[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     /// <summary>
     /// An array containing the content of null times for all the cell in the subgrid
     /// </summary>
-    public static long[,] nullTimes = new long[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+    public static long[,] nullTimes = new long[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     /// <summary>
     /// Initialise the null cell values for the client subgrid
@@ -72,7 +72,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Clear();
 
-      Array.Copy(nullTimes, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid);
+      Array.Copy(nullTimes, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
     }
 
     /// <summary>
@@ -84,8 +84,8 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
-      Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
-      writer.Write(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+      Buffer.BlockCopy(Times, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
+      writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
     }
 
     /// <summary>
@@ -97,8 +97,8 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      reader.Read(buffer, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
-      Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTree.SubGridTreeCellsPerSubgrid * sizeof(long));
+      reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
+      Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
     }
   }
 }

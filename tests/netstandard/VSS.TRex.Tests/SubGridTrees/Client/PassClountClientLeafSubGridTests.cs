@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;

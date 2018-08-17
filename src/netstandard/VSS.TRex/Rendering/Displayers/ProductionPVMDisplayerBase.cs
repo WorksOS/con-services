@@ -109,7 +109,7 @@ namespace VSS.TRex.Rendering.Displayers
                 CurrentNorth += StepYIncrement;
             }
 
-            while (north_row < SubGridTree.SubGridTreeDimension)
+            while (north_row < SubGridTreeConsts.SubGridTreeDimension)
             {
                 Temp = SubGridWorldOriginX / StepXIncrement;
                 CurrentEast = (Math.Truncate(Temp) * StepXIncrement) + StepXIncrementOverTwo;
@@ -126,7 +126,7 @@ namespace VSS.TRex.Rendering.Displayers
                     DoStartRowScan();
                 }
 
-                while (east_col < SubGridTree.SubGridTreeDimension)
+                while (east_col < SubGridTreeConsts.SubGridTreeDimension)
                 {
                     if (DrawCellStrips)
                     {

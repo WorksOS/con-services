@@ -164,8 +164,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
                 // in the sitemodel. Note this by including it within the SiteModel existance map
 
-                SiteModel.ExistanceMap.SetCell(TargetSubGrid.OriginX >> SubGridTree.SubGridIndexBitsPerLevel,
-                                               TargetSubGrid.OriginY >> SubGridTree.SubGridIndexBitsPerLevel,
+                SiteModel.ExistanceMap.SetCell(TargetSubGrid.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                               TargetSubGrid.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
                                                true);
             }
             else

@@ -4,7 +4,7 @@ using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Server
@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Server
     [Serializable]
     public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
-        public Cell_NonStatic[,] PassData = new Cell_NonStatic[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+        public Cell_NonStatic[,] PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         public SubGridCellSegmentPassesDataWrapper_NonStatic()
         {
@@ -65,7 +65,7 @@ namespace VSS.TRex.SubGridTrees.Server
             int TotalPasses = reader.ReadInt32();
             int MaxPassCount = reader.ReadInt32();
 
-            int[,] PassCounts = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            int[,] PassCounts = new int[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
             int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
 
@@ -244,14 +244,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void SetState(CellPass[,][] cellPasses)
         {
-           PassData = new Cell_NonStatic[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+           PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
            SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Passes = cellPasses[x, y]);
         }
 
         public CellPass[,][] GetState()
         {
-            CellPass[,][] result = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
+            CellPass[,][] result = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
 
             SubGridUtilities.SubGridDimensionalIterator((x, y) => result[x, y] = PassData[x, y].Passes);
 

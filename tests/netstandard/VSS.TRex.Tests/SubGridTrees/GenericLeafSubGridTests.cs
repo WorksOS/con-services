@@ -31,8 +31,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_GenericLeafSubGridTests_Read_BinaryReader()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<double>>());
-            GenericLeafSubGrid<double> subgrid = new GenericLeafSubGrid<double>(tree, null, SubGridTree.SubGridTreeLevels);
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<double>>());
+            GenericLeafSubGrid<double> subgrid = new GenericLeafSubGrid<double>(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             // This is not implemented and should throw an exception. Override to implement...
             try
@@ -49,8 +49,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_GenericLeafSubGridTests_Write_BinaryWriter()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<double>>());
-            GenericLeafSubGrid<double> subgrid = new GenericLeafSubGrid<double>(tree, null, SubGridTree.SubGridTreeLevels);
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<double>>());
+            GenericLeafSubGrid<double> subgrid = new GenericLeafSubGrid<double>(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             // This is not implemented and should throw an exception. Override to implement...
             try

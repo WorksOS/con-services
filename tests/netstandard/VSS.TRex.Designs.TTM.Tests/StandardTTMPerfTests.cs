@@ -5,7 +5,6 @@ namespace VSS.TRex.Designs.TTM.Tests
 {
     public class StandardTTMPerfTests
     {
-      [Fact]
       [Fact(Skip = "File too big to add to source control")]
       public void Test_TINLoad()
       {

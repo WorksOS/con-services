@@ -11,13 +11,14 @@ namespace VSS.TRex.SubGridTrees.Utilities
     /// </summary>
     public static class SubGridTreePersistor
     {
-        /// <summary>
-        /// Serialises all the subgrids in the tree out to the writer
-        /// </summary>
-        /// <param name="tree"></param>
-        /// <param name="writer"></param>
-        /// <returns></returns>
-        static bool SerialiseOut(ISubGridTree tree, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
+      /// <summary>
+      /// Serialises all the subgrids in the tree out to the writer
+      /// </summary>
+      /// <param name="tree"></param>
+      /// <param name="writer"></param>
+      /// <param name="subGridSerialiser"></param>
+      /// <returns></returns>
+      static bool SerialiseOut(ISubGridTree tree, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
         {
             long SubgridCount = tree.CountLeafSubgridsInMemory();
 
@@ -52,15 +53,16 @@ namespace VSS.TRex.SubGridTrees.Utilities
         /// <returns></returns>
         public static bool Write(ISubGridTree tree, BinaryWriter writer) => Write(tree, string.Empty, 0, writer, null);
 
-        /// <summary>
-        /// Provides Write() semantics for a subgrid tree against a BinaryWriter
-        /// </summary>
-        /// <param name="tree"></param>
-        /// <param name="header"></param>
-        /// <param name="version"></param>
-        /// <param name="writer"></param>
-        /// <returns></returns>
-        public static bool Write(ISubGridTree tree, string header, int version, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
+      /// <summary>
+      /// Provides Write() semantics for a subgrid tree against a BinaryWriter
+      /// </summary>
+      /// <param name="tree"></param>
+      /// <param name="header"></param>
+      /// <param name="version"></param>
+      /// <param name="writer"></param>
+      /// <param name="subGridSerialiser"></param>
+      /// <returns></returns>
+      public static bool Write(ISubGridTree tree, string header, int version, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
         {
             writer.Write(header);
             writer.Write(version);

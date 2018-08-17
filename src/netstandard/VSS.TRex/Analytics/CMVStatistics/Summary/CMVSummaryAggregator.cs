@@ -1,10 +1,9 @@
 ﻿using System;
 using VSS.TRex.Analytics.Foundation.Aggregators;
-using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.CMVStatistics.Summary

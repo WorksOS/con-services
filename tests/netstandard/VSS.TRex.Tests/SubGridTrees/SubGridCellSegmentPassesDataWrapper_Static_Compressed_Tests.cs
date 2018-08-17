@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
-using VSS.TRex;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -49,7 +48,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_NoMachineIDSet_Test()
         {
-            CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
+            CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
 
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new[] { TestCellPass() });

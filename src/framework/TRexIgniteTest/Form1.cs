@@ -966,18 +966,18 @@ namespace TRexIgniteTest
 			// Tests the time taken to perform 10,000 full TTM patch requests for a test design, both locally, and by accessing a 
 			// remote DesignElevation service
 
-			TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
+			TTMDesign design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
 			design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
 			const int numPatches = 10000;
 
-			float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+			float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
 
 			for (int i = 0; i < numPatches; i++)
 			{
-					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTreeConsts.DefaultCellSize, 0);
 			}
 
 			MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
@@ -988,7 +988,7 @@ namespace TRexIgniteTest
 
 			for (int i = 0; i < numPatches; i++)
 			{
-					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTreeConsts.DefaultCellSize, 0);
 			}
 
 			MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");

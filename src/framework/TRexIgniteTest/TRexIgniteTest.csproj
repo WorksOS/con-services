@@ -159,6 +159,14 @@
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj">
+      <Project>{c423088f-2b76-49f9-b601-666980a4c1c7}</Project>
+      <Name>VSS.TRex.SubGridTrees.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj">
+      <Project>{2da02751-d54e-4eb6-8e13-a4310aefba11}</Project>
+      <Name>VSS.TRex.SubGridTrees.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>VSS.TRex</Name>

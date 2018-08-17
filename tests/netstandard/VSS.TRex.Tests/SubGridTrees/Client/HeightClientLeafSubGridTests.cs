@@ -3,7 +3,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -52,11 +52,11 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [Fact]
     public void Test_HeightClientLeafSubGridTests_SetToZero()
     {
-      ClientHeightLeafSubGrid subgrid = new ClientHeightLeafSubGrid(null, null, SubGridTree.SubGridTreeLevels, 1, SubGridTree.DefaultIndexOriginOffset);
+      ClientHeightLeafSubGrid subgrid = new ClientHeightLeafSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels, 1, SubGridTreeConsts.DefaultIndexOriginOffset);
 
       subgrid.SetToZeroHeight();
 
-      Assert.Equal((uint) subgrid.CountNonNullCells(), SubGridTree.CellsPerSubgrid);
+      Assert.Equal((uint) subgrid.CountNonNullCells(), SubGridTreeConsts.CellsPerSubgrid);
 
       int NumEqualZero = 0;
       ClientHeightLeafSubGrid.ForEachStatic((x, y) =>
@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
         if (subgrid.Cells[x, y] == 0.0) NumEqualZero++;
       });
 
-      Assert.Equal((uint) NumEqualZero, SubGridTree.CellsPerSubgrid);
+      Assert.Equal((uint) NumEqualZero, SubGridTreeConsts.CellsPerSubgrid);
     }
   }
 }

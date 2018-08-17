@@ -6,12 +6,11 @@ using System.Text;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server
@@ -895,9 +894,9 @@ namespace VSS.TRex.SubGridTrees.Server
             UpdateStartEndTimeRange(Source.LeafStartTime);
             UpdateStartEndTimeRange(Source.LeafEndTime);
 
-            for (uint I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            for (uint I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (uint J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                for (uint J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
                     // Perform the physical integration of the new cell passes into the target subgrid
                     uint StartIndex = 0;

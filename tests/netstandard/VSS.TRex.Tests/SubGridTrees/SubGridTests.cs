@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             ISubGrid subgrid = null;
 
             // Try creating a new base subgrid instance directly, supplying 
-            subgrid = new SubGrid(new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>()), null, SubGridTree.SubGridTreeLevels);
+            subgrid = new SubGrid(new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>()), null, SubGridTreeConsts.SubGridTreeLevels);
             Assert.NotNull(subgrid);
         }
 
@@ -24,16 +24,16 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGrid_LeafSubgridProperties()
         {
             ISubGrid leafSubgrid = null;
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Create a new base subgrid leaf instance directly
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             Assert.True(leafSubgrid.IsLeafSubGrid());
 
             Assert.False(leafSubgrid.Dirty);
-            Assert.Equal(leafSubgrid.Level, SubGridTree.SubGridTreeLevels);
-            Assert.Equal(leafSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTree.SubGridTreeDimension);
+            Assert.Equal(leafSubgrid.Level, SubGridTreeConsts.SubGridTreeLevels);
+            Assert.Equal(leafSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTreeConsts.SubGridTreeDimension);
 
             Assert.Equal((uint)0, leafSubgrid.OriginX);
             Assert.Equal((uint)0, leafSubgrid.OriginY);
@@ -48,21 +48,21 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGrid_NodeSubgridProperties()
         {
             ISubGrid nodeSubgrid = null;
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Create a new base subgrid node instance directly
-            nodeSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels - 1);
+            nodeSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
             Assert.False(nodeSubgrid.IsLeafSubGrid());
 
             Assert.False(nodeSubgrid.Dirty);
-            Assert.Equal(nodeSubgrid.Level, SubGridTree.SubGridTreeLevels - 1);
+            Assert.Equal(nodeSubgrid.Level, SubGridTreeConsts.SubGridTreeLevels - 1);
 
-            // A subgrid one level above a leaf subgrid covers sqr(SubGridTree.SubGridTreeDimension) cells in each dimension (X & Y)
-            Assert.Equal((int)nodeSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTree.SubGridTreeDimension * SubGridTree.SubGridTreeDimension);
+            // A subgrid one level above a leaf subgrid covers sqr(SubGridTreeConsts.SubGridTreeDimension) cells in each dimension (X & Y)
+            Assert.Equal((int)nodeSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension);
 
-            // A child subgrid of this parent shoudl ahve an axial coverage of SubGridTree.SubGridTreeDimension cells in each dimension (X & Y)
-            // (as there are SubGridTree.SubGridTreeDimension children cells in the X and Y dimensions
-            Assert.Equal(nodeSubgrid.AxialCellCoverageByChildSubgrid(), SubGridTree.SubGridTreeDimension);
+            // A child subgrid of this parent shoudl ahve an axial coverage of SubGridTreeConsts.SubGridTreeDimension cells in each dimension (X & Y)
+            // (as there are SubGridTreeConsts.SubGridTreeDimension children cells in the X and Y dimensions
+            Assert.Equal(nodeSubgrid.AxialCellCoverageByChildSubgrid(), SubGridTreeConsts.SubGridTreeDimension);
         }
 
         [Fact]
@@ -71,17 +71,17 @@ namespace VSS.TRex.Tests.SubGridTrees
             ISubGrid parentSubgrid = null;
             ISubGrid leafSubgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
-            parentSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels - 1);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            parentSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels - 1);
 
             leafSubgrid.Parent = parentSubgrid;
             leafSubgrid.SetOriginPosition(10, 10);
 
-            Assert.Equal((int)leafSubgrid.OriginX, 10 * SubGridTree.SubGridTreeDimension);
-            Assert.Equal((int)leafSubgrid.OriginY, 10 * SubGridTree.SubGridTreeDimension);
-            Assert.Equal(leafSubgrid.Moniker(), string.Format("{0}:{0}", 10 * SubGridTree.SubGridTreeDimension));
+            Assert.Equal((int)leafSubgrid.OriginX, 10 * SubGridTreeConsts.SubGridTreeDimension);
+            Assert.Equal((int)leafSubgrid.OriginY, 10 * SubGridTreeConsts.SubGridTreeDimension);
+            Assert.Equal(leafSubgrid.Moniker(), string.Format("{0}:{0}", 10 * SubGridTreeConsts.SubGridTreeDimension));
         }
 
         [Fact]
@@ -89,9 +89,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid subgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            subgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            subgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             // Check a call to the base GetSubGrid subgrid yields an exception
             try
@@ -110,9 +110,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid subgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            subgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            subgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             // Check a call to the base SetSubGrid subgrid yields an exception
             try
@@ -131,9 +131,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid subgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            subgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            subgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             // Check a call to the base SetSubGrid subgrid yields an exception
             try
@@ -152,9 +152,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid subgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            subgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            subgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             // Check a call to the base SetSubGrid subgrid yields an exception
             try
@@ -175,9 +175,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid leafSubgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             double WorldOriginX, WorldOriginY;
             leafSubgrid.CalculateWorldOrigin(out WorldOriginX, out WorldOriginY);
@@ -194,9 +194,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid leafSubgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             // GetSubGridCellIndex is a subgrid relative operation only, and depends only on the Owner to derive the difference
             // between the numer of levels in the overall tree, and the level in the tree at which this subgrid resides (in this
@@ -206,10 +206,10 @@ namespace VSS.TRex.Tests.SubGridTrees
             leafSubgrid.GetSubGridCellIndex(0, 0, out SubGridCellX, out SubGridCellY);
             Assert.True(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
 
-            leafSubgrid.GetSubGridCellIndex(SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1, out SubGridCellX, out SubGridCellY);
-            Assert.True(SubGridCellX == (SubGridTree.SubGridTreeDimensionMinus1) && SubGridCellY == (SubGridTree.SubGridTreeDimensionMinus1), "Subgrid cell indices incorrect");
+            leafSubgrid.GetSubGridCellIndex(SubGridTreeConsts.SubGridTreeDimensionMinus1, SubGridTreeConsts.SubGridTreeDimensionMinus1, out SubGridCellX, out SubGridCellY);
+            Assert.True(SubGridCellX == (SubGridTreeConsts.SubGridTreeDimensionMinus1) && SubGridCellY == (SubGridTreeConsts.SubGridTreeDimensionMinus1), "Subgrid cell indices incorrect");
 
-            leafSubgrid.GetSubGridCellIndex(SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension, out SubGridCellX, out SubGridCellY);
+            leafSubgrid.GetSubGridCellIndex(SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension, out SubGridCellX, out SubGridCellY);
             Assert.True(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
         }  
 
@@ -218,9 +218,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid leafSubgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             Assert.False(leafSubgrid.Dirty, "Leaf is Dirty after creation");
             leafSubgrid.Dirty = true;
@@ -234,9 +234,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid leafSubgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             Assert.False(leafSubgrid.IsEmpty(), "Base subgrid class identifying itself as empty");
         }
@@ -250,9 +250,9 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             ISubGrid leafSubgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-            leafSubgrid = new SubGrid(tree, null, SubGridTree.SubGridTreeLevels);
+            leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
             try
             {
@@ -270,7 +270,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid leafSubgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             // Create a leaf subgrid with it's cell origin (IndexOriginOffset, IndexOriginOffset) 
             // matching the real work coordaintge origin (0, 0)
@@ -297,7 +297,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid subgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             subgrid = new SubGrid(tree, null, 2); // create a node to be a chile of the root node
 
@@ -326,7 +326,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             ISubGrid subgrid = null;
 
-            SubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
             subgrid = new SubGrid(tree, null, 2); // create a node to be a chile of the root node
 
