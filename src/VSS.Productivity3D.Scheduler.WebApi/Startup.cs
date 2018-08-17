@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// The log file name
     /// </summary>
-    public const string LoggerRepoName = "Scheduler";
+    public const string LoggerRepoName = "WebApi";
     private MySqlStorage _storage;
     private IServiceProvider _serviceProvider;
     IServiceCollection _serviceCollection;
@@ -87,14 +87,13 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       ConfigureHangfire(services);
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
+      services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       services.AddOpenTracing(builder =>

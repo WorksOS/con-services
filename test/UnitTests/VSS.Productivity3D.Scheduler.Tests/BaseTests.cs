@@ -32,7 +32,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      serviceCollection.AddTransient<IRaptorProxy, RaptorProxy>();
       serviceCollection.AddTransient<ITPaasProxy, TPaasProxy>();
       serviceProvider = serviceCollection.BuildServiceProvider();
 

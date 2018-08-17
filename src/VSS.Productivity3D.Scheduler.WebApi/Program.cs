@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Net;
+using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,11 +26,9 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       var host = new WebHostBuilder()
         .UseKestrel()
-        .UseLibuv(opts =>
-        {
-          opts.ThreadCount = 32;
-        })
+        .UseLibuv(opts => { opts.ThreadCount = 32; })
         .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseIISIntegration()
         .UseConfiguration(kestrelConfig)
         .ConfigureLogging(builder =>
         {
@@ -41,9 +41,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         .UseStartup<Startup>()
         .Build();
 
+      ThreadPool.SetMaxThreads(1024, 2048);
+      ThreadPool.SetMinThreads(1024, 2048);
+
+      //Check how many requests we can execute
+      ServicePointManager.DefaultConnectionLimit = 128;
       host.Run();
     }
   }
-
-
 }
