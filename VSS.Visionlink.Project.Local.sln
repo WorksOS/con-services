@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask.Local", "..\Merin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj", "{DBDB61EE-4B15-4CB8-AF3F-BA08BE2DDF20}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models.Local", "..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj", "{AE6FC0E4-F616-436E-976A-6C7A937FFA47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{DBDB61EE-4B15-4CB8-AF3F-BA08BE2DDF20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBDB61EE-4B15-4CB8-AF3F-BA08BE2DDF20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBDB61EE-4B15-4CB8-AF3F-BA08BE2DDF20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE6FC0E4-F616-436E-976A-6C7A937FFA47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6FC0E4-F616-436E-976A-6C7A937FFA47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6FC0E4-F616-436E-976A-6C7A937FFA47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6FC0E4-F616-436E-976A-6C7A937FFA47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

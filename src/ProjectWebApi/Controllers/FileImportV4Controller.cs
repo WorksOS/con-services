@@ -13,12 +13,14 @@ using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -172,6 +174,62 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return new NoContentResult();
     }
 
+    /// <summary>
+    /// POST or PUT Request to upload a file using a background task
+    /// </summary>
+    /// <returns>Schedule Job Result with a Job ID</returns>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad request</response>
+    [Route("api/v4/importedfile/background")]
+    [HttpPost]
+    [HttpPut]
+    [FlowUpload(Extensions = new[]
+    {
+      "svl", "dxf", "ttm"
+    }, Size = 1000000000)]
+
+    public async Task<ScheduleJobResult> BackgroundUpload(
+      FlowFile file,
+      [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType importedFileType,
+      [FromQuery] DxfUnitsType dxfUnitsType,
+      [FromQuery] DateTime fileCreatedUtc,
+      [FromQuery] DateTime fileUpdatedUtc,
+      [FromQuery] DateTime? surveyedUtc,
+      [FromServices] ISchedulerProxy scheduler)
+    {
+      // We should be able to reset the position of the Body, as it'll already be read by the FlowFile process
+      // If we don't the Stream will be at the end.
+      if (Request.Body.CanSeek)
+      {
+        Request.Body.Position = 0;
+      }
+
+      var body = new StreamReader(Request.Body).ReadToEnd();
+      if (string.IsNullOrEmpty(body))
+      {
+        // This can happen when the Body is already read, ensure that Request.EnableRewind() is called before the Request is read
+        // Ideally in Startup.cs -> Configure()
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57);
+      }
+      
+      // Query String will be empty if no query string is passed in, if not it formattes the values correctly and includes the required '?'
+      var callbackUrl = $"{Request.Scheme}://{Request.Host}/internal/v4/importedfile{Request.QueryString}";
+
+      var request = new ScheduleJobRequest
+      {
+        Filename = file.flowFilename,
+        Method = Request.Method, // Can be either POST or PUT
+        Payload = body,
+        Url = callbackUrl,
+        Headers = {["Content-Type"] = Request.Headers["Content-Type"]}
+      };
+
+      var headers = Request.Headers.GetCustomHeaders(true);
+
+      return await scheduler.ScheduleBackgroundJob(request, headers);
+    }
+
     // POST: api/v4/importedfile
     /// <summary>
     /// Import a design file
@@ -190,6 +248,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
+    [Route("internal/v4/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
@@ -302,6 +361,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
+    [Route("internal/v4/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]

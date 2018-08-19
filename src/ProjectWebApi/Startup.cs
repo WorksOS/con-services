@@ -2,6 +2,7 @@ using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -90,6 +91,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<ICustomerRepository, CustomerRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
+      services.AddTransient<ISchedulerProxy, SchedulerProxy>();
 
       services.AddOpenTracing(builder =>
       {
@@ -138,6 +140,10 @@ namespace VSS.MasterData.Project.WebAPI
         app.UseMiddleware<NewRelicMiddleware>();
       }
       app.UseFilterMiddleware<ProjectAuthentication>();
+      // Because we use Flow Files, and Background tasks we sometimes need to reread the body of the request
+      // Without this, the Request Body Stream cannot set it's read position to 0.
+      // See https://stackoverflow.com/questions/31389781/read-request-body-twice
+      app.Use(next => context => { context.Request.EnableRewind(); return next(context); });
       app.UseMvc();
     }
   }

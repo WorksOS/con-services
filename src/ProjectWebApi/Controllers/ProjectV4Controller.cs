@@ -11,12 +11,15 @@ using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -128,6 +131,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("internal/v4/project")]
     [Route("api/v4/project")]
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
@@ -169,6 +173,40 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return result;
     }
 
+    /// <summary>
+    /// Create a scheduler job to create a project using internal urls 
+    /// </summary>
+    /// <param name="projectRequest">The project request model to be used</param>
+    /// <param name="scheduler">The scheduler used to queue the job</param>
+    /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
+    [Route("api/v4/project/background")]
+    [HttpPost]
+    public async Task<ScheduleJobResult> RequestCreateProjectBackgroundJob([FromBody] CreateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
+    {
+      if (projectRequest == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+      }
+
+      var callbackUrl = $"{Request.Scheme}://{Request.Host}/internal/v4/project";
+
+      var request = new ScheduleJobRequest
+      {
+        Filename = projectRequest.ProjectName + Guid.NewGuid(), // Make sure the filename is unique, it's not important what it's called as the scheduled job keeps a reference
+        Method = "POST",
+        Payload = JsonConvert.SerializeObject(projectRequest),
+        Url = callbackUrl,
+        Headers =
+        {
+          ["Content-Type"] = Request.Headers["Content-Type"]
+        }
+      };
+
+      var customHeaders = Request.Headers.GetCustomHeaders(true);
+
+      return await scheduler.ScheduleBackgroundJob(request, customHeaders);
+    }
+
     // PUT: api/v4/project
     /// <summary>
     /// Update Project
@@ -177,6 +215,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("internal/v4/project")]
     [Route("api/v4/project")]
     [HttpPut]
     public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
@@ -215,6 +254,45 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ConfigureAwait(false)));
     }
 
+    /// <summary>
+    /// Create a scheduler job to update an exisiting project in the bacground
+    /// </summary>
+    /// <param name="projectRequest">The project request model to be used in the update</param>
+    /// <param name="scheduler">The scheduler used to queue the job</param>
+    /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
+    [Route("api/v4/project/background")]
+    [HttpPut]
+    public async Task<ScheduleJobResult> RequestUpdteProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
+    {
+      if (projectRequest == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+      }
+
+      // do a quick validation to make sure the project acctually exists (this will also be run in the background task, but a quick response to the UI will be better if the project can't be updated)
+      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
+      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
+      // validation includes check that project must exist - otherwise there will be a null legacyID.
+      ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
+      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), log, serviceExceptionHandler, projectRepo);
+
+      var callbackUrl = $"{Request.Scheme}://{Request.Host}/internal/v4/project";
+      var request = new ScheduleJobRequest
+      {
+        Filename = projectRequest.ProjectName + Guid.NewGuid(), // Make sure the filename is unique, it's not important what it's called as the scheduled job keeps a reference
+        Method = "PUT",
+        Payload = JsonConvert.SerializeObject(projectRequest),
+        Url = callbackUrl,
+        Headers =
+        {
+          ["Content-Type"] = Request.Headers["Content-Type"]
+        }
+      };
+
+      var customHeaders = Request.Headers.GetCustomHeaders(true);
+
+      return await scheduler.ScheduleBackgroundJob(request, customHeaders);
+    }
 
     // DELETE: api/Project/
     /// <summary>
