@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.GridFabric.Affinity

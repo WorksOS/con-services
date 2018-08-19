@@ -21,8 +21,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines\VSS.TRex.Machines.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />

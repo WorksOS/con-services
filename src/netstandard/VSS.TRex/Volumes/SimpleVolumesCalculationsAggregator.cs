@@ -5,6 +5,8 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Requests.Interfaces;
@@ -42,7 +44,7 @@ namespace VSS.TRex.Volumes
         /// <summary>
         /// The design being used to compare heights derived from production data against to calculate per-cell volumes
         /// </summary>
-        public Design ActiveDesign { get; set; }
+        public IDesign ActiveDesign { get; set; }
 
         // References necessary for correct summarisation of aggregated state
 
@@ -156,7 +158,7 @@ namespace VSS.TRex.Volumes
         {
             // DesignHeights represents all the valid spot elevations for the cells in the
             // subgrid being processed
-            ClientHeightLeafSubGrid DesignHeights = null;
+            IClientHeightLeafSubGrid DesignHeights = null;
             DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
 
 //            double BelowToleranceToCheck, AboveToleranceToCheck;

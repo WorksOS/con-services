@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs;
+using VSS.TRex.DI;
 using VSS.TRex.Executors.Tasks.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -8,6 +9,7 @@ using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
+using VSS.TRex.Surfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 
@@ -209,8 +211,9 @@ namespace VSS.TRex.Pipelines
       }
 
       // Get the current production data existance map from the sitemodel
-      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.Instance().ImmutableStorageProxy);
-
+      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy);
+      //ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(SiteModels.SiteModels.Instance().ImmutableStorageProxy);
+      
       if (ProdDataExistenceMap == null)
       {
         Response.ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
@@ -227,12 +230,12 @@ namespace VSS.TRex.Pipelines
       if (RequireSurveyedSurfaceInformation)
       {
         // Obtain local reference to surveyed surfaces (lock free access)
-        SurveyedSurfaces LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
+        ISurveyedSurfaces LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
 
         // Construct two filtered survyed surface lists to act as a rolling pair used as arguments
         // to the ProcessSurveyedSurfacesForFilter method
-        SurveyedSurfaces FilterSurveyedSurfaces = new SurveyedSurfaces();
-        SurveyedSurfaces FilteredSurveyedSurfaces = new SurveyedSurfaces();
+        ISurveyedSurfaces FilterSurveyedSurfaces = new SurveyedSurfaces();
+        ISurveyedSurfaces FilteredSurveyedSurfaces = new SurveyedSurfaces();
 
         foreach (var filter in Filters.Filters)
         {

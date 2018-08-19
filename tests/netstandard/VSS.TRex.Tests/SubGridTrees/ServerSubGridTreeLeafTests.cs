@@ -2,9 +2,9 @@
 using System.Linq;
 using VSS.TRex.Cells;
 using VSS.TRex.Storage;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Factories;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Tests.TestFixtures;

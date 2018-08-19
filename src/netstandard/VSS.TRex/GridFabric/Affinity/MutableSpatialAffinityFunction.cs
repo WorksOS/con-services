@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.GridFabric.Models.Affinity;
 
 namespace VSS.TRex.GridFabric.Affinity
 {

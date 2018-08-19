@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-    [Serializable]
-    public class SiteModelDesignList : List<SiteModelDesign>
-    {
+  [Serializable]
+    public class SiteModelDesignList : List<ISiteModelDesign>, ISiteModelDesignList
+  {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
@@ -17,7 +18,7 @@ namespace VSS.TRex.SiteModels
         /// </summary>
         /// <param name="designName"></param>
         /// <returns></returns>
-        public SiteModelDesign this[string designName]
+        public ISiteModelDesign this[string designName]
         {
             get
             {
@@ -28,7 +29,7 @@ namespace VSS.TRex.SiteModels
 
         public int IndexOf(string designName) => FindIndex(x => x.Name == designName);
 
-        public SiteModelDesign CreateNew(string name, BoundingWorldExtent3D extents)
+        public ISiteModelDesign CreateNew(string name, BoundingWorldExtent3D extents)
         {
             int index = IndexOf(name);
 
@@ -38,7 +39,7 @@ namespace VSS.TRex.SiteModels
                 return this[index];
             }
 
-            SiteModelDesign design = new SiteModelDesign(name, extents);
+            ISiteModelDesign design = new SiteModelDesign(name, extents);
             Add(design);
 
             return design;

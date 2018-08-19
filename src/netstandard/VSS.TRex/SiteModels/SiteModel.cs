@@ -6,18 +6,22 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Caches;
-using VSS.TRex.Interfaces;
 using VSS.TRex.Machines;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Services.Surfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Surfaces;
+using VSS.TRex.Surfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
 
@@ -38,18 +42,18 @@ namespace VSS.TRex.SiteModels
 
         public Guid ID { get; set; } = Guid.Empty;
 
-        DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
+        public DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
 
         /// <summary>
         /// The grid data for this site model
         /// </summary>
         [NonSerialized]
-        private ServerSubGridTree grid;
+        private IServerSubGridTree grid;
 
         /// <summary>
         /// The grid data for this site model
         /// </summary>
-        public ServerSubGridTree Grid { get { return grid; } }
+        public IServerSubGridTree Grid { get { return grid; } }
 
         [NonSerialized]
         private SubGridTreeSubGridExistenceBitMask existanceMap;
@@ -95,8 +99,8 @@ namespace VSS.TRex.SiteModels
         // that record how the cofigured target CCV and pass count settings on each
         // machine has changed over time.
         [NonSerialized]
-        private /*EfficientMachinesTargetValuesList*/ MachinesProductionEventLists machinesTargetValues;
-        public /*EfficientMachinesTargetValuesList*/ MachinesProductionEventLists MachinesTargetValues
+        private /*EfficientMachinesTargetValuesList*/ IMachinesProductionEventLists machinesTargetValues;
+        public /*EfficientMachinesTargetValuesList*/ IMachinesProductionEventLists MachinesTargetValues
         {
           get => machinesTargetValues;
           set => machinesTargetValues = value;
@@ -109,13 +113,13 @@ namespace VSS.TRex.SiteModels
         /// Each site model designs records the name of the site model and the extents
         /// of the cell information that have been record for it.
         /// </summary>
-        public SiteModelDesignList SiteModelDesigns { get { return siteModelDesigns; } }
+        public ISiteModelDesignList SiteModelDesigns { get { return siteModelDesigns; } }
 
         private SurveyedSurfaces surveyedSurfaces = new SurveyedSurfaces();
 
         // This is a list of TTM descriptors which indicate designs
         // that can be used as a snapshot of an actual ground surface at a specific point in time
-        public SurveyedSurfaces SurveyedSurfaces
+        public ISurveyedSurfaces SurveyedSurfaces
         {
             get
             {
@@ -147,7 +151,7 @@ namespace VSS.TRex.SiteModels
         // appropriate machine, and may also reference a wireless machine looked
         // after by METScomms
 
-        public MachinesList Machines { get; set; }
+        public IMachinesList Machines { get; set; }
 
         public bool IgnoreInvalidPositions { get; set; } = true;
 
@@ -177,7 +181,7 @@ namespace VSS.TRex.SiteModels
 
             // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
-            grid = new ServerSubGridTree(this);
+            grid = new ServerSubGridTree(this.ID);
 
             existanceMap = new SubGridTreeSubGridExistenceBitMask();
 
@@ -221,7 +225,7 @@ namespace VSS.TRex.SiteModels
             //  {$ENDIF}
         }
 
-        public void Include(SiteModel Source)
+        public void Include(ISiteModel Source)
         {
             // Index: Integer;
 

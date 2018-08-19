@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Diagnostics;
 using VSS.TRex.Common;
-using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Arguments;
@@ -18,10 +17,13 @@ using VSS.TRex.SubGridTrees.Client;
 using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
-using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
@@ -75,7 +77,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// The list of address being constructed prior to summission to the processing engine
         /// </summary>
         [NonSerialized]
-        private SubGridCellAddress[] addresses;
+        private ISubGridCellAddress[] addresses;
 
         /// <summary>
         /// The number of subgrids currently present in the process pending list
@@ -93,7 +95,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
         /// </summary>
         [NonSerialized]
-        private Design CutFillDesign;
+        private IDesign CutFillDesign;
 
         [NonSerialized]
         private bool[] PrimaryPartitionMap; 
@@ -276,7 +278,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// <param name="address"></param>
         /// <param name="clientGrid"></param>
         private ServerRequestResult PerformSubgridRequest(SubGridRequestor requestor, 
-                                                          SubGridCellAddress address, 
+                                                          ISubGridCellAddress address, 
                                                           out IClientLeafSubGrid clientGrid)
         {
             try
@@ -292,7 +294,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 requestor.CellOverrideMask.Fill();
-                ServerRequestResult result = requestor.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
+                ServerRequestResult result = requestor.RequestSubGridInternal((SubGridCellAddress)address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
 
                 if (result != ServerRequestResult.NoError)
                     Log.LogInformation($"Request for subgrid {address} request failed with code {result}");
@@ -313,8 +315,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                         {
                             // The cut fill is defined between two production data derived height subgrids
                             // depending on volumetype work out height difference
-                            CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // 'base'
-                                                                   ClientArray[1]); // 'top'
+                            CutFillUtilities.ComputeCutFillSubgrid((IClientHeightLeafSubGrid)ClientArray[0], // 'base'
+                                                                   (IClientHeightLeafSubGrid)ClientArray[1]); // 'top'
                         }
                         else
                         {
@@ -399,7 +401,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// Adds a new address to the list of addresses being built and triggers processing of the list if it hits the critical size
         /// </summary>
         /// <param name="address"></param>
-        private void AddSubgridToAddressList(SubGridCellAddress address)
+        private void AddSubgridToAddressList(ISubGridCellAddress address)
         {
             addresses[listCount++] = address;
 
@@ -428,7 +430,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             // Construct the set of requestors to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
-                                           SiteModels.SiteModels.Instance().ImmutableStorageProxy,
+                                           DIContext.Obtain<ISiteModels>().ImmutableStorageProxy, //SiteModels.SiteModels.Instance().ImmutableStorageProxy,
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),
@@ -439,7 +441,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                            ProdDataMask)
                  ).ToArray();
 
-            addresses = new SubGridCellAddress[addressBucketSize];
+            addresses = new ISubGridCellAddress[addressBucketSize];
 
             // Obtain the primary partition map to allow this request to determine the elements it needs to process
             PrimaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;

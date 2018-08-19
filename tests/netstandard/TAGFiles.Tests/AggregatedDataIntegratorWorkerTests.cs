@@ -9,6 +9,7 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using Xunit;
 

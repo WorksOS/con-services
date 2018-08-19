@@ -2,7 +2,6 @@
 using VSS.TRex.Analytics.CMVStatistics.Details;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Types;
 using Xunit;

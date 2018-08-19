@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -11,6 +12,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
 using VSS.TRex.Surfaces.GridFabric.Requests;
+using VSS.TRex.Surfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees
@@ -27,7 +29,7 @@ namespace VSS.TRex.SubGridTrees
         private ISiteModel SiteModel;
 
         [NonSerialized]
-        private CombinedFilter Filter;
+        private ICombinedFilter Filter;
 
         [NonSerialized]
         private SurfaceElevationPatchRequest surfaceElevationPatchRequest;
@@ -84,7 +86,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public SubGridRequestor(ISiteModel sitemodel,
                                 IStorageProxy storageProxy,
-                                CombinedFilter filter,
+                                ICombinedFilter filter,
                                 bool hasOverrideSpatialCellRestriction,
                                 BoundingIntegerExtent2D overrideSpatialCellRestriction,
                                 byte treeLevel,
@@ -124,7 +126,7 @@ namespace VSS.TRex.SubGridTrees
             // Construct the appropriate list of surveyed surfaces
             // Obtain local reference to surveyed surface list. If it is replaced while processing the
             // list then the local reference will still be valid allowing lock free read access to the list.
-            SurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
+            ISurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
             FilteredSurveyedSurfaces = new SurveyedSurfaces();
 
             if (SurveyedSurfaceList?.Count > 0)
@@ -155,7 +157,7 @@ namespace VSS.TRex.SubGridTrees
         // InitialiseFilterContext performs any required filter initialisation and configuration
         // that is external to the filter prior to engaging in cell by cell processing of
         // this subgrid
-        private bool InitialiseFilterContext(CombinedFilter Filter)
+        private bool InitialiseFilterContext(ICombinedFilter Filter)
         {
             if (Filter == null)
                 return true;

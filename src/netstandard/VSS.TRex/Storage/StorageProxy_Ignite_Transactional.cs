@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
+using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Storage
 {

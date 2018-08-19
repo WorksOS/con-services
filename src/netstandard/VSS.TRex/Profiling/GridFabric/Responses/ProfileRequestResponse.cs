@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using VSS.TRex.GridFabric.Requests.Interfaces;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Profiling.Interfaces;
 
 namespace VSS.TRex.Profiling.GridFabric.Responses
 {
@@ -11,7 +10,7 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
   /// </summary>
     public class ProfileRequestResponse : SubGridsPipelinedReponseBase, IAggregateWith<ProfileRequestResponse>
     {
-      public List<ProfileCell> ProfileCells;
+      public List<IProfileCell> ProfileCells;
 
       /// <summary>
       /// Aggregates an other response with this response

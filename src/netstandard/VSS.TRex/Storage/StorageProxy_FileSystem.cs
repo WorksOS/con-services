@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage

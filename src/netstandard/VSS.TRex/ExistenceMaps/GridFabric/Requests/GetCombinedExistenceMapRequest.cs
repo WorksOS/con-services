@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests

@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
+using VSS.TRex.Surfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Surfaces.Executors
@@ -94,10 +96,10 @@ namespace VSS.TRex.Surfaces.Executors
             if (Args.ProcessingMap.IsEmpty())
               break;
 
-            SurveyedSurface ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
+            ISurveyedSurface ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
 
             // Lock & load the design
-            Design = DesignFiles.Designs.Lock(ThisSurveyedSurface.DesignDescriptor, Args.SiteModelID, Args.CellSize, out _);
+            Design = DesignFiles.Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor(), Args.SiteModelID, Args.CellSize, out _);
 
             if (Design == null)
             {
@@ -118,7 +120,7 @@ namespace VSS.TRex.Surfaces.Executors
                   continue;
 
                 long AsAtDate = ThisSurveyedSurface.AsAtDate.ToBinary();
-                double Offset = ThisSurveyedSurface.DesignDescriptor.Offset;
+                double Offset = ThisSurveyedSurface.Get_DesignDescriptor().Offset;
 
                 // Walk across the subgrid checking for a design elevation for each appropriate cell
                 // based on the processing bit mask passed in
@@ -196,7 +198,7 @@ namespace VSS.TRex.Surfaces.Executors
             }
             finally
             {
-              DesignFiles.Designs.UnLock(ThisSurveyedSurface.DesignDescriptor, Design);
+              DesignFiles.Designs.UnLock(ThisSurveyedSurface.Get_DesignDescriptor(), Design);
             }
           }
 

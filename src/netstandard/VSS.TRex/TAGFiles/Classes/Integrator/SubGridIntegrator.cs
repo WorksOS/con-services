@@ -7,7 +7,6 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
 
@@ -23,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// The subgrid tree from which information is being integarted
         /// </summary>
-        private ServerSubGridTree Source;
+        private IServerSubGridTree Source;
 
         /// <summary>
         /// Sitemodel representing the target sub grid tree
@@ -33,7 +32,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// The subgrid tree the receives the subgrid information from the source subgrid tree
         /// </summary>
-        private ServerSubGridTree Target;
+        private IServerSubGridTree Target;
 
         private IServerLeafSubGrid /*ISubGrid*/ SourceSubGrid;
         private IServerLeafSubGrid TargetSubGrid;
@@ -57,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <param name="siteModel">The sitemodel representing the target subgrid tree</param>
         /// <param name="target">The subgrid tree into which the data from the source subgrid tree is integrated</param>
         /// <param name="storageProxy">The storage proxy providing storage semantics for persisting integration results</param>
-        public SubGridIntegrator(ServerSubGridTree source, ISiteModel siteModel, ServerSubGridTree target, IStorageProxy storageProxy) : this()
+        public SubGridIntegrator(IServerSubGridTree source, ISiteModel siteModel, IServerSubGridTree target, IStorageProxy storageProxy) : this()
         {
             Source = source;
             SiteModel = siteModel;
@@ -293,7 +292,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             return true;
         }
 
-        public IServerLeafSubGrid LocateOrCreateAndLockSubgrid(ServerSubGridTree Grid,
+        public IServerLeafSubGrid LocateOrCreateAndLockSubgrid(IServerSubGridTree Grid,
                                                                uint CellX, uint CellY,
                                                                int LockToken)
         {

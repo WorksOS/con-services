@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.Surfaces.Interfaces;
 
 namespace VSS.TRex.Surfaces
 {
@@ -25,10 +27,10 @@ namespace VSS.TRex.Surfaces
         /// <param name="OverallExistenceMap"></param>
         /// <returns></returns>
         public static bool ProcessSurveyedSurfacesForFilter(Guid siteModelID,
-                                                            SurveyedSurfaces SurveyedSurfaces,
-                                                            CombinedFilter Filter,
-                                                            SurveyedSurfaces ComparisonList,
-                                                            SurveyedSurfaces FilteredSurveyedSurfaces,
+                                                            ISurveyedSurfaces SurveyedSurfaces,
+                                                            ICombinedFilter Filter,
+                                                            ISurveyedSurfaces ComparisonList,
+                                                            ISurveyedSurfaces FilteredSurveyedSurfaces,
                                                             SubGridTreeSubGridExistenceBitMask OverallExistenceMap)
         {
             if (SurveyedSurfaces == null)

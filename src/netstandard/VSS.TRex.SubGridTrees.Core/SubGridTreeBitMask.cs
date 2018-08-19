@@ -7,14 +7,14 @@ using VSS.TRex.SubGridTrees.Types;
 
 namespace VSS.TRex.SubGridTrees
 {
-    /// <summary>
+  /// <summary>
     /// SubGridTreeBitMask implements a subgrid tree whose sole contents is a single
     /// bit per cell in the leaf nodes. The intention of this SubGridTree descendant
     /// is for tasks such as tracking cells modified since last read, or cells present
     /// in a SubGridTree cache etc. It maintains both per cell and per leaf flags.
     /// </summary>
-    public class SubGridTreeBitMask : SubGridTree
-    {
+  public class SubGridTreeBitMask : SubGridTree, ISubGridTreeBitMask
+  {
         /// <summary>
         /// Constructor that defaults levels, cell size and subgrid factory 
         /// </summary>
@@ -236,7 +236,7 @@ namespace VSS.TRex.SubGridTrees
         /// contents of this instance, modifying the state of this subgrid bit mask tree to produce the result
         /// </summary>
         /// <param name="Source"></param>
-        public void SetOp_OR(SubGridTreeBitMask Source)
+        public void SetOp_OR(ISubGridTreeBitMask Source)
         {
             SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
 
@@ -266,7 +266,7 @@ namespace VSS.TRex.SubGridTrees
         /// contents of this instance, modifying the state of this subgrid bit mask tree to produce the result
         /// </summary>
         /// <param name="Source"></param>
-        public void SetOp_AND(SubGridTreeBitMask Source)
+        public void SetOp_AND(ISubGridTreeBitMask Source)
         {
             SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
 
@@ -344,9 +344,9 @@ namespace VSS.TRex.SubGridTrees
         /// from the level 5 (node) layer to the level 6 (leaf) layer
         /// </summary>
         /// <param name="functor"></param>
-        public void ScanAllSetBitsAsSubGridAddresses(Action<SubGridCellAddress> functor)
+        public void ScanAllSetBitsAsSubGridAddresses(Action<ISubGridCellAddress> functor)
         {
-            SubGridCellAddress address = new SubGridCellAddress();
+            ISubGridCellAddress address = new SubGridCellAddress();
 
             ScanAllSubGrids(leaf =>
                 {

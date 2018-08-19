@@ -1,6 +1,6 @@
-﻿using VSS.TRex.Designs.Storage;
-using VSS.TRex.Events;
-using VSS.TRex.Filters;
+﻿using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -24,9 +24,9 @@ namespace VSS.TRex.Profiling.Factories
     /// <returns></returns>
       public ICellLiftBuilder NewCellLiftBuilder(ISiteModel siteModel, 
         GridDataType gridDataType, 
-        FilteredValuePopulationControl populationControl, 
-        CellPassAttributeFilter passFilter, 
-        CellPassFastEventLookerUpper cellPassFastEventLookerUpper)
+        IFilteredValuePopulationControl populationControl, 
+        ICellPassAttributeFilter passFilter, 
+        ICellPassFastEventLookerUpper cellPassFastEventLookerUpper)
       {
          return new CellLiftBuilder(siteModel, gridDataType, populationControl, passFilter, cellPassFastEventLookerUpper);
       }
@@ -40,8 +40,8 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
     public ICellProfileBuilder NewCellProfileBuilder(ISiteModel siteModel, 
-        CellSpatialFilter cellFilter, 
-        Design cutFillDesign,
+        ICellSpatialFilter cellFilter, 
+        IDesign cutFillDesign,
         bool slicerToolUsed)
       {
         return new CellProfileBuilder(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
@@ -59,9 +59,9 @@ namespace VSS.TRex.Profiling.Factories
     /// <returns></returns>
       public IProfileLiftBuilder NewProfileLiftBuilder(ISiteModel siteModel,
         SubGridTreeBitMask pDExistenceMap,
-        CellPassAttributeFilter passFilter,
-        CellSpatialFilter cellFilter,
-        Design cellPassFilter_ElevationRangeDesign,
+        ICellPassAttributeFilter passFilter,
+        ICellSpatialFilter cellFilter,
+        IDesign cellPassFilter_ElevationRangeDesign,
         ICellLiftBuilder cellLiftBuilder)
       {
         return new ProfileLiftBuilder(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);

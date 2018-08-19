@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
+using VSS.TRex.Profiling;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -58,8 +59,8 @@ namespace VSS.TRex.SubGridTrees.Client
 		/// <param name="Context"></param>
 		public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
 		{
-			Cells[cellX, cellY].Min = Context.CellProfile.CellMinSpeed;
-		  Cells[cellX, cellY].Max = Context.CellProfile.CellMaxSpeed;
+			Cells[cellX, cellY].Min = ((ProfileCell)Context.CellProfile).CellMinSpeed;
+		  Cells[cellX, cellY].Max = ((ProfileCell)Context.CellProfile).CellMaxSpeed;
     }
 
 	  /// <summary>

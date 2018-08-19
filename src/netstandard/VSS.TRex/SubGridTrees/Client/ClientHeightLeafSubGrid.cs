@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using VSS.TRex.Common;
-using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -14,7 +14,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
   /// </summary>
   [Serializable]
-  public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>
+  public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>, IClientHeightLeafSubGrid
   {
     [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 

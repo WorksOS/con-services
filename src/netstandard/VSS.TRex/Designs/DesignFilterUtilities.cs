@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 
@@ -19,7 +20,7 @@ namespace VSS.TRex.Designs
         /// <param name="overallExistenceMap"></param>
         /// <returns></returns>
         public static bool ProcessDesignElevationsForFilter(ISiteModel siteModel, //Guid siteModelID,
-                                                            CombinedFilter filter,
+                                                            ICombinedFilter filter,
                                                             SubGridTreeSubGridExistenceBitMask overallExistenceMap)
         {
             if (filter == null)

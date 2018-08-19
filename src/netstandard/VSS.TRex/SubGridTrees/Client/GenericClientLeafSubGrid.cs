@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Client
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Filters

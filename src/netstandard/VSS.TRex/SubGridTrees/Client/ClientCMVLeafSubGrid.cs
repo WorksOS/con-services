@@ -1,7 +1,10 @@
 ﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Filters;
+using VSS.TRex.Events.Models;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Interfaces;
+//using VSS.TRex.Profiling;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -113,11 +116,13 @@ namespace VSS.TRex.SubGridTrees.Client
       int lowLayerIndex = -1;
       int highLayerIndex = -1;
 
+      IProfileLayers layers = ((IProfileCell) Context.CellProfile).Layers;
+
       if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
       {
-        for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
+        for (var i = layers.Count() - 1; i >= 0; i--)
         {
-          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0)
+          if ((layers[i].Status & LayerStatus.Superseded) == 0)
           {
             lowLayerIndex = highLayerIndex = i;
             break;
@@ -126,9 +131,9 @@ namespace VSS.TRex.SubGridTrees.Client
       }
       else
       {
-        for (var i = Context.CellProfile.Layers.Count() - 1; i >= 0; i--)
+        for (var i = layers.Count() - 1; i >= 0; i--)
         {
-          if ((Context.CellProfile.Layers[i].Status & LayerStatus.Superseded) == 0 && Context.CellProfile.Layers[i].CCV != CellPassConsts.NullCCV)
+          if ((layers[i].Status & LayerStatus.Superseded) == 0 && layers[i].CCV != CellPassConsts.NullCCV)
           {
             highLayerIndex = i;
             break;
@@ -142,7 +147,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         for (var i = lowLayerIndex; i <= highLayerIndex; i++)
         {
-          var layer = Context.CellProfile.Layers[i];
+          var layer = ((ProfileCell)Context.CellProfile).Layers[i];
 
           if (layer.FilteredPassCount == 0)
             continue;

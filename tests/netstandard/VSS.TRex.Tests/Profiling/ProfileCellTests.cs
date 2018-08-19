@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Profiling
@@ -106,7 +110,7 @@ namespace VSS.TRex.Tests.Profiling
       {
         ProfileCell cell = new ProfileCell();
 
-        ProfileLayer layer = cell.RequestNewLayer(out int RecycledIndex);
+        IProfileLayer layer = cell.RequestNewLayer(out int RecycledIndex);
         cell.Layers.Add(layer, RecycledIndex);
 
         Assert.True(layer != null, "RequestNewLayer did not return a new layer");

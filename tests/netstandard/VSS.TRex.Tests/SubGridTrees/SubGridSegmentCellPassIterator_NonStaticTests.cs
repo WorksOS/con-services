@@ -8,6 +8,7 @@ using Xunit;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {

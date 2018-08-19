@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
@@ -8,16 +9,18 @@ namespace VSS.TRex.SiteModels
     /// and the plan extents of the cell pass information stored within the sitemodel for that design.
     /// </summary>
     [Serializable]
-    public class SiteModelDesign : IEquatable<string>
-    {
+    public class SiteModelDesign : IEquatable<string>, ISiteModelDesign
+  {
         public string Name { get; }
 
       public BoundingWorldExtent3D Extents { get; set; } = new BoundingWorldExtent3D();
 
-        //FWorkingExtents is used as a working area for computing modified
-        //design extents by operations such as data deletion. It is not persisted
-        //in the design description
-      public BoundingWorldExtent3D WorkingExtents { get; set; } = new BoundingWorldExtent3D();
+    /// <summary>
+    ///WorkingExtents is used as a working area for computing modified
+    ///design extents by operations such as data deletion. It is not persisted
+    //in the design description
+    /// </summary>
+    public BoundingWorldExtent3D WorkingExtents { get; set; } = new BoundingWorldExtent3D();
 
         public SiteModelDesign()
         {

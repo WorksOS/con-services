@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Storage;
+﻿using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.GridFabric.Caches
 {

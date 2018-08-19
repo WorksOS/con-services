@@ -4,12 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Storage;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Services.Designs
@@ -235,7 +239,7 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Design Find(Guid SiteModelID, Guid DesignID) => FindDirect(SiteModelID, DesignID);
+        public IDesign Find(Guid SiteModelID, Guid DesignID) => FindDirect(SiteModelID, DesignID);
 
         /// <summary>
         /// Finds a given design in a site model
@@ -243,7 +247,7 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="DesignID"></param>
         /// <returns></returns>
-        public Design FindDirect(Guid SiteModelID, Guid DesignID)
+        public IDesign FindDirect(Guid SiteModelID, Guid DesignID)
         {
             try
             {

@@ -3,20 +3,21 @@ using System.IO;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Geometry;
-using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Utilities.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
 {
-    /// <summary>
+  /// <summary>
     /// Represents the information known about a design
     /// </summary>
     [Serializable]
-    public class Design : IEquatable<Design>, IBinaryReaderWriter
-    {
+    public class Design : IEquatable<IDesign>, IBinaryReaderWriter, IDesign
+  {
         /// <summary>
         /// Singleton request used by all designs. This request encapsulates the Ignite reference which
         /// is relatively slow to initialise when making many calls.
@@ -62,10 +63,13 @@ namespace VSS.TRex.Designs.Storage
       /// </summary>
       public DesignDescriptor DesignDescriptor;
 
+    // Public accessor method for design descriptor struct
+    public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
+
       /// <summary>
-      /// The rectangular bounding extents of the design in grid coordiantes
-      /// </summary>
-      private BoundingWorldExtent3D extents;
+    /// The rectangular bounding extents of the design in grid coordiantes
+    /// </summary>
+    private BoundingWorldExtent3D extents;
 
         /// <summary>
         /// No-arg constructor
@@ -118,7 +122,7 @@ namespace VSS.TRex.Designs.Storage
         /// Produces a deep clone of the design
         /// </summary>
         /// <returns></returns>
-        public Design Clone() => new Design(ID, DesignDescriptor, new BoundingWorldExtent3D(Extents));
+        public IDesign Clone() => new Design(ID, DesignDescriptor, new BoundingWorldExtent3D(Extents));
 
         /// <summary>
         /// ToString() for Design
@@ -134,10 +138,10 @@ namespace VSS.TRex.Designs.Storage
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(Design other)
+        public bool Equals(IDesign other)
         {
             return (ID == other.ID) &&
-                   DesignDescriptor.Equals(other.DesignDescriptor) &&
+                   DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
                    (Extents.Equals(other.Extents));
         }
 
@@ -153,7 +157,7 @@ namespace VSS.TRex.Designs.Storage
         public bool GetDesignHeights(Guid siteModelID,
                                      ISubGridCellAddress originCellAddress,
                                      double cellSize,
-                                     out ClientHeightLeafSubGrid designHeights,
+                                     out IClientHeightLeafSubGrid designHeights,
                                      out DesignProfilerRequestResult errorCode)
         {
             // Query the DesignProfiler service to get the patch of elevations calculated

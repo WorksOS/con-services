@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Storage;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Servers
 {

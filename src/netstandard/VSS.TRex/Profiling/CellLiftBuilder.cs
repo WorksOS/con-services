@@ -2,15 +2,15 @@
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Iterators.Interfaces;
-using VSS.TRex.SubGridTrees.Server.Iterators;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 
@@ -22,7 +22,7 @@ namespace VSS.TRex.Profiling
   public class CellLiftBuilder : ICellLiftBuilder
   {
     private int CurrentPassIndex;
-    private ProfileLayer CurrentLayer;
+    private IProfileLayer CurrentLayer;
     private int CurrentLayerRecycledIndex;
 
     private FilteredPassData CurrentPass;
@@ -108,9 +108,9 @@ namespace VSS.TRex.Profiling
     private ISiteModel SiteModel;
     private ProfileCell Cell;
     private GridDataType ProfileTypeRequired;
-    private FilteredValuePopulationControl PopulationControl;
-    private CellPassAttributeFilter PassFilter;
-    private CellPassFastEventLookerUpper CellPassFastEventLookerUpper;
+    private IFilteredValuePopulationControl PopulationControl;
+    private ICellPassAttributeFilter PassFilter;
+    private ICellPassFastEventLookerUpper CellPassFastEventLookerUpper;
     private ISubGridSegmentCellPassIterator CellPassIterator;
 
     /// <summary>
@@ -133,9 +133,9 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassFastEventLookerUpper"></param>
     public CellLiftBuilder(ISiteModel siteModel,
       GridDataType profileTypeRequired,
-      FilteredValuePopulationControl populationControl,
-      CellPassAttributeFilter passFilter,
-      CellPassFastEventLookerUpper cellPassFastEventLookerUpper
+      IFilteredValuePopulationControl populationControl,
+      ICellPassAttributeFilter passFilter,
+      ICellPassFastEventLookerUpper cellPassFastEventLookerUpper
     )
     {
       SiteModel = siteModel;
@@ -150,7 +150,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     /// <param name="forMachineID"></param>
     /// <returns></returns>
-    private ProductionEventLists GetTargetValues(short forMachineID) => SiteModel.Machines[forMachineID].TargetValueChanges;
+    private IProductionEventLists GetTargetValues(short forMachineID) => SiteModel.Machines[forMachineID].TargetValueChanges;
 
     /// <summary>
     ///  Intialises the 'last' trackming variables for a layer
@@ -912,7 +912,7 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassIterator"></param>
     /// <param name="returnIndividualFilteredValueSelection"></param>
     /// <returns></returns>
-    public bool Build(ProfileCell cell,
+    public bool Build(IProfileCell cell,
       // todo const LiftBuildSettings: TICLiftBuildSettings;
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext, 
@@ -930,8 +930,8 @@ namespace VSS.TRex.Profiling
         out CompactionSummaryInLiftBuildSettings,
         out WorkInProgressSummaryInLiftBuildSettings,
         out ThicknessInProgressInLiftBuildSettings);
-      Cell = cell;
-      cell.ClearLayers();
+      Cell = (ProfileCell)cell;
+      Cell.ClearLayers();
 
       // Initilise the full and half pass counters for the client to inspect after the call
       FilteredPassCountOfTopMostLayer = 0;
@@ -948,7 +948,7 @@ namespace VSS.TRex.Profiling
 
       if (cellPassIterator != null)
       {
-        cell.Passes.Clear();
+        Cell.Passes.Clear();
         NumCellPassesRemainingToFetch = cellPassIterator.MaxNumberOfPassesToReturn;
       }
 
@@ -960,8 +960,8 @@ namespace VSS.TRex.Profiling
         SetCellIterationParameters();
         if (CellPassFastEventLookerUpper != null)
         {
-          CellPassFastEventLookerUpper.PopulateFilteredValues(cell.Passes.FilteredPassData, 0,
-            cell.Passes.PassCount - 1, PopulationControl, false);
+          CellPassFastEventLookerUpper.PopulateFilteredValues(Cell.Passes.FilteredPassData, 0,
+            Cell.Passes.PassCount - 1, PopulationControl, false);
           FilteredValuePopulationComplete = true;
         }
         else

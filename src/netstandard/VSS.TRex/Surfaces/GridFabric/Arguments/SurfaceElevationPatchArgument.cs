@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.Surfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Surfaces.GridFabric.Arguments
@@ -41,7 +42,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
         /// The list of surveyed surfaces to be included in the calculation
         /// [Note: This is fairly inefficient, the receiver of the request should be able to access surveyed surfaces locally...]
         /// </summary>
-        public SurveyedSurfaces IncludedSurveyedSurfaces { get; set; }
+        public ISurveyedSurfaces IncludedSurveyedSurfaces { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
