@@ -124,7 +124,7 @@ node ('jenkinsslave-pod') {
 					sh "/bin/sh ./build/RunAcceptanceTests.sh"
 
 					step([$class: 'XUnitBuilder',
-							thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1']],
+							thresholds: [[$class: 'FailedThreshold', failureThreshold: '10', unstableThreshold: '11']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
 							
 					sh "ls -la AcceptanceTests/tests/"
