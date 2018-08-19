@@ -50,6 +50,8 @@ namespace RepositoryTests
     public void CheckSchema(string tableName, List<string> columnNames)
     {
       string connectionString = ConfigStore.GetConnectionString("VSPDB");
+      Console.WriteLine($"CheckSchema() connectionString: {connectionString}");
+
 
       using (var connection = new MySqlConnection(connectionString))
       {
@@ -60,7 +62,7 @@ namespace RepositoryTests
           //Check table exists
           var table = connection.Query(GetQuery(tableName, true)).FirstOrDefault();
 
-          Assert.IsNotNull(table, "Missing " + tableName + " table schema");
+          Assert.IsNotNull(table, $"Missing table schema: {tableName}, on connection: {connectionString}");
           Assert.AreEqual(tableName, table.TABLE_NAME, "Wrong table name");
 
           //Check table columns exist

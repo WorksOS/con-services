@@ -121,6 +121,7 @@ namespace WebApiTests
 
     private string GetScheduledJobId(string filterUid, string filename, int timeoutMillisecs= 300000)//5 mins
     {
+      Console.WriteLine($"ts.tsCfg.vetaExportUrl: **{ts.tsCfg.vetaExportUrl}**  ts.tsCfg.vetaExportUrltruncated: **{ts.tsCfg.vetaExportUrl.TrimEnd(new char[] { '\r', '\n' })}**");
       var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={filename}&filterUid={filterUid}";
       var request = new ScheduleJobRequest { Url = url, Filename = filename, Timeout= timeoutMillisecs };
       var requestJson = JsonConvert.SerializeObject(request);
