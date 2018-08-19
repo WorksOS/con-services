@@ -6,7 +6,6 @@ services:
      - docker-compose.env
     depends_on:
       - schema
-      - db
   mockprojectwebapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
@@ -15,12 +14,6 @@ services:
     build: ./database 
     env_file:
      - docker-compose.env
-    environment:
-     - MYSQL_SERVER_NAME_VSPDB=db
-     - MYSQL_DATABASE_NAME=VSS-Productivity3D-Scheduler
-     - MYSQL_PORT=3306
-     - MYSQL_USERNAME=root
-     - MYSQL_ROOT_PASSWORD=abc123
     depends_on:
      - db
   db:

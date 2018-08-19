@@ -10,4 +10,3 @@ if [ "$INF" ]; then
     echo Doing infinite loop
     exec /bin/bash -c "trap : TERM INT; sleep infinity & wait" ;
 fi  
-echo "<<< Finished creating the database and tables"
