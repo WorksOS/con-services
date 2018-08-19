@@ -50,11 +50,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
-      //// NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
-      ////    the webapi seems to go ahead anyways..
-      //int webAPIStartupWaitMs = 45000;
-      //Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
-      //Thread.Sleep(webAPIStartupWaitMs);
+      // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
+      //    the webapi seems to go ahead anyways..
+      int webAPIStartupWaitMs = 45000;
+      Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
+      Thread.Sleep(webAPIStartupWaitMs);
 
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
@@ -136,11 +136,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var log = loggerFactory.CreateLogger<Startup>();
 
       ConfigureHangfireUse(app, log);
+
+      // todo shouldn't need this as should be no recurring jobs anymore
       try
       {
         List<RecurringJobDto> recurringJobs = JobStorage.Current.GetConnection().GetRecurringJobs();
         log.LogDebug(
           $"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count}");
+        Console.WriteLine($"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count}");
         recurringJobs.ForEach(delegate(RecurringJobDto job)
         {
           RecurringJob.RemoveIfExists(job.Id);
@@ -149,6 +152,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       catch (Exception ex)
       {
         log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
+        Console.WriteLine($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
         throw;
       }
     }
@@ -232,6 +236,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds),
         };
         log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
+        Console.WriteLine($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
+
         app.UseHangfireDashboard(options: new DashboardOptions
         {
           Authorization = new[]
@@ -244,10 +250,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         int expirationManagerWaitMs = 2000;
         Thread.Sleep(expirationManagerWaitMs);
         log.LogDebug($"Scheduler.Startup: after expirationManagerWaitMs wait, proceed....");
+        Console.WriteLine($"Scheduler.Startup: after expirationManagerWaitMs wait, proceed....");
       }
       catch (Exception ex)
       {
         log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
+        Console.WriteLine($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
         throw;
       }
     }
