@@ -430,7 +430,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             // Construct the set of requestors to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
-                                           DIContext.Obtain<ISiteModels>().ImmutableStorageProxy, //SiteModels.SiteModels.Instance().ImmutableStorageProxy,
+                                           DIContext.Obtain<ISiteModels>().ImmutableStorageProxy,
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),

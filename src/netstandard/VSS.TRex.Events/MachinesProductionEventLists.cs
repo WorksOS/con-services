@@ -74,7 +74,6 @@ namespace VSS.TRex.Events
 
             
             if (temp.LoadEventsForMachine(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy))
-            //if (temp.LoadEventsForMachine(SiteModels.SiteModels.Instance().ImmutableStorageProxy))
             {
               // Everything is good, provide access to the loaded machine event lists.
               MachineIDMap[machineID] = temp;
