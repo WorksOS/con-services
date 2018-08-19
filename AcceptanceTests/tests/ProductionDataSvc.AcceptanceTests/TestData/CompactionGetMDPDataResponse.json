@@ -69,18 +69,7 @@
     "Message": "success"
   },
   "TemperatureFilter": {
-    "mdpSummaryData": {
-      "percentEqualsTarget": 79.3533176153587,
-      "percentGreaterThanTarget": 0.0,
-      "percentLessThanTarget": 20.646682384641295,
-      "totalAreaCoveredSqMeters": 1029.6492000000003,
-      "mdpTarget": {
-        "mdpMachineTarget": 150.0,
-        "targetVaries": false
-      },
-      "minMDPPercent": 80.0,
-      "maxMDPPercent": 130.0
-    },
+    "mdpSummaryData": null,
     "Code": 0,
     "Message": "success"
   },

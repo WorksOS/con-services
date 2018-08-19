@@ -102,16 +102,16 @@
   "TemperatureFilter_PercentChangeSummary": {
     "cmvChangeData": {
       "percents": [
-        2.8559602649006623,
-        11.506622516556291,
-        4.6564569536423841,
-        5.1945364238410594,
-        4.056291390728477,
-        3.80794701986755,
-        9.064569536423841,
-        58.857615894039739
+        3.089675960813866,
+        13.300678221552372,
+        6.3677467972871131,
+        4.7098718914845517,
+        4.257724189902035,
+        4.2954031650339113,
+        9.3067068575734737,
+        54.672192916352678
       ],
-      "totalAreaCoveredSqMeters": 558.57920000000013
+      "totalAreaCoveredSqMeters": 306.80240000000003
     },
     "Code": 0,
     "Message": "success"
@@ -220,10 +220,10 @@
   },
   "TemperatureFilter_Summary": {
     "cmvSummaryData": {
-      "percentEqualsTarget": 0.12620950778291964,
+      "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
-      "percentLessThanTarget": 99.873790492217083,
-      "totalAreaCoveredSqMeters": 549.56240000000014,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 304.02800000000008,
       "cmvTarget": {
         "cmvMachineTarget": 70.0,
         "targetVaries": false
