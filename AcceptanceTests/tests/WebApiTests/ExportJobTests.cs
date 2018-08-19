@@ -121,13 +121,15 @@ namespace WebApiTests
 
     private string GetScheduledJobId(string filterUid, string filename, int timeoutMillisecs= 300000)//5 mins
     {
-      Console.WriteLine($"ts.tsCfg.vetaExportUrl: **{ts.tsCfg.vetaExportUrl}**  ts.tsCfg.vetaExportUrltruncated: **{ts.tsCfg.vetaExportUrl.TrimEnd(new char[] { '\r', '\n' })}**");
       var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={filename}&filterUid={filterUid}";
       var request = new ScheduleJobRequest { Url = url, Filename = filename, Timeout= timeoutMillisecs };
       var requestJson = JsonConvert.SerializeObject(request);
+      Console.WriteLine($"GetScheduledJobId: requestJson: {JsonConvert.SerializeObject(requestJson)} mockUrl: {url}");
       var responseJson = ts.CallSchedulerWebApi("internal/v1/export", "POST", requestJson);
       var scheduleResult = JsonConvert.DeserializeObject<ScheduleJobResult>(responseJson,
         new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      Console.WriteLine($"GetScheduledJobId: responseJson: {responseJson} scheduleResult: {JsonConvert.SerializeObject(scheduleResult)}");
+
       Assert.IsNotNull(scheduleResult, "Should get a schedule job response");
       Assert.IsTrue(!string.IsNullOrEmpty(scheduleResult.JobId), "Should get a job id");
       return scheduleResult.JobId;

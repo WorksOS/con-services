@@ -43,8 +43,22 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     public ScheduleJobResult StartExport([FromBody] ScheduleJobRequest request)
     {
       log.LogInformation($"StartExport: {JsonConvert.SerializeObject(request)}");
-      var jobId = BackgroundJob.Enqueue(() => exportJob.GetExportData(
+      Console.WriteLine($"SchedulerWebAPI StartExport: {JsonConvert.SerializeObject(request)}");
+      string jobId;
+      try
+      {
+       jobId = BackgroundJob.Enqueue(() => exportJob.GetExportData(
         request, Request.Headers.GetCustomHeaders(true), null));
+
+
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"SchedulerWebAPI exception {JsonConvert.SerializeObject(e)} ");
+        throw;
+      }
+
+      Console.WriteLine($"SchedulerWebAPI after StartExport jobId: {jobId}");
       //Hangfire will substitute a PerformContext automatically
       return new ScheduleJobResult { JobId = jobId };
     }

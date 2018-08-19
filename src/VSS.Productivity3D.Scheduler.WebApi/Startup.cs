@@ -50,11 +50,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
-      // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
-      //    the webapi seems to go ahead anyways..
-      int webAPIStartupWaitMs = 45000;
-      Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
-      Thread.Sleep(webAPIStartupWaitMs);
+      //// NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
+      ////    the webapi seems to go ahead anyways..
+      //int webAPIStartupWaitMs = 45000;
+      //Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
+      //Thread.Sleep(webAPIStartupWaitMs);
 
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
