@@ -136,6 +136,14 @@
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj">
+      <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
+      <Name>VSS.TRex.DI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj">
+      <Project>{780e0712-9e35-4fed-b936-cb86cc02ab53}</Project>
+      <Name>VSS.TRex.SiteModels.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>VSS.TRex</Name>

@@ -39,7 +39,6 @@ using VSS.TRex.Exports.Patches;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Events;
 using VSS.TRex.GridFabric.Grids;
@@ -54,7 +53,6 @@ using VSS.TRex.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.Surfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Surfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
@@ -63,10 +61,13 @@ using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Volumes.Servers.Client;
-using VSS.TRex.SiteModels;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Exports.Servers.Client;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.Storage.Models;
 
 namespace TRexIgniteTest
 {
@@ -112,7 +113,7 @@ namespace TRexIgniteTest
 
 				try
 				{
-						CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter
+						ICellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter
 						{
 								ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
 								HasElevationTypeFilter = true,
@@ -120,7 +121,7 @@ namespace TRexIgniteTest
 								SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel)
 						};
 
-						CellSpatialFilter SpatialFilter = new CellSpatialFilter
+						ICellSpatialFilter SpatialFilter = new CellSpatialFilter
 						{
 								CoordsAreGrid = true,
 								IsSpatial = true,
@@ -304,7 +305,7 @@ namespace TRexIgniteTest
 
 						cmbDesigns.DisplayMember = "Text";
 						cmbDesigns.ValueMember = "Value";
-						cmbDesigns.DataSource = designs.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
+						cmbDesigns.DataSource = designs.Select(x => new { Text = x.Get_DesignDescriptor().FullPath, Value = x }).ToArray();
 				}
 
 				SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService(StorageMutability.Immutable);
@@ -319,7 +320,7 @@ namespace TRexIgniteTest
 
 						cmbSurveyedSurfaces.DisplayMember = "Text";
 						cmbSurveyedSurfaces.ValueMember = "Value";
-						cmbSurveyedSurfaces.DataSource = surveyedSurfaces.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
+						cmbSurveyedSurfaces.DataSource = surveyedSurfaces.Select(x => new { Text = x.Get_DesignDescriptor().FullPath, Value = x }).ToArray();
 				}
 		}
 
