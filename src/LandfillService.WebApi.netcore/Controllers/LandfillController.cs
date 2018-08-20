@@ -129,6 +129,8 @@ namespace LandfillService.WebApi.netcore.Controllers
       // Kick off missing volumes retrieval IF not already running
       // Check if there are missing volumes and indicate to the client
       var principal = HttpContext.User as TIDCustomPrincipal;
+      var jwt = HttpContext.Request.Headers["X-Jwt-Assertion"];
+      Log.LogDebug("X-Jwt-Assertion=" + jwt);
 
       IfProjectAuthorized(principal.Identity.Name, principal.CustomerUid, id);
       Log.LogDebug("GetEntriesForProject: user: " + principal.Identity.Name + " customer: " + principal.CustomerUid + " Project:" + id);
