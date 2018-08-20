@@ -15,10 +15,10 @@
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.35.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.38.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.10.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.*" />
     <!--Common does not directly depend on NameResolution however it wont build without it due to package downgrade issues-->
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>

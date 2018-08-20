@@ -96,6 +96,36 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [TestMethod]
+    [DataRow(-43.5, -200)]
+    [DataRow(-43.5, 200)]
+    [DataRow(-90.5, -100)]
+    [DataRow(90.5, 100)]
+    [DataRow(0.1, -1.99)]
+    [DataRow(-1.99, 0.99)]
+    public void ValidateCreateProjectV2Request_BoundaryInvalidLAtLong(double latitude, double longitude)
+    {
+      var invalidBoundaryLl = new List<TBCPoint>()
+      {
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(latitude, longitude),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
+      };
+
+      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+        "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
+      var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
+
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
+
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => ProjectDataValidator.Validate(createProjectEvent, projectRepo.Object, ServiceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2111", StringComparison.Ordinal), "Expected error number 2111");
+    }
+
+    [TestMethod]
     public void ValidateCreateProjectV2Request_CheckBusinessCentreFile()
     {
       var bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
