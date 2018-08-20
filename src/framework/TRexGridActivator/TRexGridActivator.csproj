@@ -140,9 +140,17 @@
       <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
       <Name>VSS.TRex.DI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
+      <Project>{0BF0BCD0-F93C-4A2E-BCB2-3D80B587E858}</Project>
+      <Name>VSS.TRex.GridFabric</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj">
       <Project>{4fb06a26-18a7-4080-aebf-5197aeaba6b6}</Project>
       <Name>VSS.TRex.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
+      <Project>{6C9C0264-67A6-4035-BBC2-6AB380A51C30}</Project>
+      <Name>VSS.TRex.Storage.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>

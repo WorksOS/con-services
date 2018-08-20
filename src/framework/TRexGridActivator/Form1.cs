@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers.Client;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Logging;
+using VSS.TRex.Servers.Client;
 
 namespace TRexGridActivator
 {

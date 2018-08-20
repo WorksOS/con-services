@@ -18,12 +18,8 @@ using VSS.TRex.Analytics.CMVStatistics.Summary;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
-using VSS.TRex.TAGFiles.Classes.Queues;
-using VSS.TRex.TAGFiles.GridFabric.Arguments;
-using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
-using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.Details;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
@@ -32,42 +28,47 @@ using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
-using VSS.TRex.Designs;
-using VSS.TRex.Designs.Storage;
 using VSS.TRex.Executors;
 using VSS.TRex.Exports.Patches;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Caches;
-using VSS.TRex.GridFabric.Events;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Queues;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Servers.Client;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.Servers.Client;
-using VSS.TRex.Servers;
-using VSS.TRex.Servers.Client;
-using VSS.TRex.Services.Designs;
-using VSS.TRex.Services.Surfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Surfaces;
-using VSS.TRex.TAGFiles.Classes;
-using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Volumes.Servers.Client;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.Storage;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Servers.Client;
+using VSS.TRex.Services.Designs;
+using VSS.TRex.Services.SurveyedSurfaces;
+using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.TAGFiles.Classes;
+using VSS.TRex.TAGFiles.Classes.Validator;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Requests;
+using VSS.TRex.TAGFiles.Models;
 
 namespace TRexIgniteTest
 {
@@ -295,7 +296,7 @@ namespace TRexIgniteTest
 
 		private void DoUpdateDesignsAndSurveyedSurfaces()
 		{
-				Designs designs = DesignsService.Instance().List(ID());
+				IDesigns designs = DesignsService.Instance().List(ID());
 
 				if (designs != null)
 				{
@@ -310,7 +311,7 @@ namespace TRexIgniteTest
 
 				SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService(StorageMutability.Immutable);
 				surveyedSurfacesService.Init(null);
-				SurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
+				ISurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
 
 				if (surveyedSurfaces != null)
 				{
