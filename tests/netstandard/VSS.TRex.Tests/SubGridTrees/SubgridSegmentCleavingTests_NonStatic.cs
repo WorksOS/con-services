@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Storage;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             for (int i = 0; i < 10; i++)
             {
-                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+              VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
                 {
                     subGrid.AddPass(x, y, new CellPass()
                     {
@@ -46,10 +47,10 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Create a subgrid to hold the segment
             IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
-            SubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
+            ISubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
 
-            // Check all cells have exactly 10 passes
-            SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      // Check all cells have exactly 10 passes
+          VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
                 Assert.True(segment.PassesData.PassCount(x, y) == 10,
                     $"Cell in segment at {x},{y} does not have 10 cell passes");
@@ -176,7 +177,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             // Create the subgrid with lots of cell passes
             IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
-            SubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
+            ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
 
             // Get the time range
             segment1.PassesData.CalculateTimeRange(out DateTime startSegmentTime, out DateTime endSegmentTime);
@@ -210,7 +211,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Create a subgrid to hold the segment
             IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
 
-            SubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
+            ISubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
 
             // Check cleacing is not permitted if the owning subgrid is not locked
             // Lock requirement currently removed
@@ -237,8 +238,8 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
 
             //Check the total number of passes across the two segments is 10240, and the maximum pass count is 5
-            SubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
-            SubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
+            ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
+            ISubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
 
             segment1.PassesData.CalculateTotalPasses(out uint totalPassCount1, out uint maximumPassCount1);
             segment2.PassesData.CalculateTotalPasses(out uint totalPassCount2, out uint maximumPassCount2);
@@ -286,8 +287,8 @@ namespace VSS.TRex.Tests.SubGridTrees
             }
 
             //Check the total number of passes across the two segments is 10240, and the maximum pass count is 5
-            SubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
-            SubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
+            ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];
+            ISubGridCellPassesDataSegment segment2 = subGrid.Cells.PassesData[1];
 
             segment1.PassesData.CalculateTotalPasses(out uint totalPassCount1, out uint maximumPassCount1);
             segment2.PassesData.CalculateTotalPasses(out uint totalPassCount2, out uint maximumPassCount2);

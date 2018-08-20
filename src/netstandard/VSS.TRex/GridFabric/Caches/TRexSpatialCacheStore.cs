@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core.Cache.Store;
 using System;
 using System.IO;
-using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Models.Affinity;
 
 namespace VSS.TRex.GridFabric.Caches
 {

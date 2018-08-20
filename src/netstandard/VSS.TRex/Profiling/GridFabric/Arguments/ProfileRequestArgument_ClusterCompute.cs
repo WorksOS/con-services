@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;

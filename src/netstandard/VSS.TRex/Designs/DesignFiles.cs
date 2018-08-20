@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs
 {

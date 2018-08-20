@@ -158,6 +158,42 @@
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj">
+      <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
+      <Name>VSS.TRex.DI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj">
+      <Project>{4fb06a26-18a7-4080-aebf-5197aeaba6b6}</Project>
+      <Name>VSS.TRex.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj">
+      <Project>{04f42031-2ede-4681-8c81-2da8dc0c583a}</Project>
+      <Name>VSS.TRex.Profiling.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj">
+      <Project>{a3f56f4f-2728-4fc8-aba6-23bcaa72c318}</Project>
+      <Name>VSS.TRex.Profiling.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj">
+      <Project>{78f19853-a3d3-4dcd-8ab5-f88650b83d3f}</Project>
+      <Name>VSS.TRex.Profiling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj">
+      <Project>{780e0712-9e35-4fed-b936-cb86cc02ab53}</Project>
+      <Name>VSS.TRex.SiteModels.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj">
+      <Project>{a614210e-b1a6-4e02-96fc-1ff78a86c5a9}</Project>
+      <Name>VSS.TRex.SiteModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj">
+      <Project>{06b93475-a235-4f5d-a226-48e4205f9ba1}</Project>
+      <Name>VSS.TRex.Storage.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
+      <Project>{6c9c0264-67a6-4035-bbc2-6ab380a51c30}</Project>
+      <Name>VSS.TRex.Storage.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>VSS.TRex</Name>

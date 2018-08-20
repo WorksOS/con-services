@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -246,7 +247,7 @@ namespace VSS.TRex.Pipelines
               if (filter == null)
                 continue;
 
-              CellSpatialFilter spatialFilter = filter.SpatialFilter;
+              ICellSpatialFilter spatialFilter = filter.SpatialFilter;
 
               if (spatialFilter.IsSpatial && spatialFilter.Fence != null && spatialFilter.Fence.NumVertices > 0)
               {

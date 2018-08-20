@@ -1,6 +1,8 @@
 ﻿using System;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -23,14 +25,14 @@ namespace VSS.TRex.Utilities
         /// <param name="ProfilerRequestResult"></param>
         /// <returns></returns>
         public static bool ComputeCutFillSubgrid(IClientLeafSubGrid SubGrid, 
-                                                 Design design,
+                                                 IDesign design,
                                                  Guid DataModelID,
                                                  out DesignProfilerRequestResult ProfilerRequestResult)
         {
             ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
 
             if (design.GetDesignHeights(DataModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize, 
-                                        out ClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult) == false)
+                                        out IClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult) == false)
             {
                 if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
                 {
@@ -40,7 +42,7 @@ namespace VSS.TRex.Utilities
                 }
             }
 
-            ComputeCutFillSubgrid(SubGrid, DesignElevations);
+            ComputeCutFillSubgrid((IClientHeightLeafSubGrid)SubGrid, DesignElevations);
 
             return true;
         }
@@ -50,12 +52,12 @@ namespace VSS.TRex.Utilities
         /// in the first subgrid with the resulting cut fill values
         /// </summary>
         /// <param name="SubGrid1"></param>
-        /// <param name="SubGrid2"></param>
-        public static void ComputeCutFillSubgrid(IClientLeafSubGrid SubGrid1,
-                                                 IClientLeafSubGrid SubGrid2)
+        /// <param name="subgrid2"></param>
+        public static void ComputeCutFillSubgrid(IClientHeightLeafSubGrid SubGrid1,
+                                                 IClientHeightLeafSubGrid subgrid2)
         {
             ClientHeightLeafSubGrid subgrid1 = SubGrid1 as ClientHeightLeafSubGrid;
-            ClientHeightLeafSubGrid subgrid2 = SubGrid2 as ClientHeightLeafSubGrid;
+            //ClientHeightLeafSubGrid subgrid2 = SubGrid2 as ClientHeightLeafSubGrid;
 
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {

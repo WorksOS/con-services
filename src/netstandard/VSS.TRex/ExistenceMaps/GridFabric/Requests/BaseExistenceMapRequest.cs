@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Models.Affinity;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {

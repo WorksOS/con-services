@@ -1,17 +1,15 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Resource;
+﻿using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Storage;
+using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 

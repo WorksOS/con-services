@@ -20,7 +20,7 @@ namespace TAGFiles.Tests
             SiteModel siteModel = new SiteModel("TestName", "TestDesc", Guid.NewGuid(), 1.0);
             VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
             ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
-            ServerSubGridTree tree = new ServerSubGridTree(siteModel);
+            ServerSubGridTree tree = new ServerSubGridTree(siteModel.ID);
             ProductionEventLists events = new ProductionEventLists(siteModel, machine.InternalSiteModelMachineIndex /* machine.ID*/);
 
             integrator.AddTaskToProcessList(siteModel, machine, tree, 0, events);

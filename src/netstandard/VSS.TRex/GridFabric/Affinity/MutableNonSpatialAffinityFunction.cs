@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.TAGFiles.Classes.Queues;
 
 namespace VSS.TRex.GridFabric.Affinity

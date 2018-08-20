@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;

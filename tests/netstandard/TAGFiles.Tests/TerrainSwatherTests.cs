@@ -5,6 +5,7 @@ using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Processors;
@@ -23,9 +24,9 @@ namespace TAGFiles.Tests
         {
             var siteModel = new SiteModel();
             var machine = new Machine();
-            var grid = new ServerSubGridTree(siteModel);
+            var grid = new ServerSubGridTree(siteModel.ID);
             var fence = new Fence();
-            var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
+            var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
@@ -41,8 +42,8 @@ namespace TAGFiles.Tests
         {
             var siteModel = new SiteModel();
             var machine = new VSS.TRex.Machines.Machine();
-            var grid = new ServerSubGridTree(siteModel);
-            var SiteModelGridAggregator = new ServerSubGridTree(siteModel);
+            var grid = new ServerSubGridTree(siteModel.ID);
+            var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, Machine.kNullInternalSiteModelMachineIndex);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 

@@ -6,6 +6,8 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
@@ -30,7 +32,7 @@ namespace VSS.TRex.SubGridTrees
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     // Local state populated by the retriever constructor
-    private CombinedFilter Filter;
+    private ICombinedFilter Filter;
     private ISiteModel SiteModel;
     private IStorageProxy StorageProxy;
     private bool CanUseGlobalLatestCells;
@@ -98,7 +100,7 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="pDExistenceMap"></param>
     public SubGridRetriever(ISiteModel sitemodel,
       IStorageProxy storageProxy,
-      CombinedFilter filter,
+      ICombinedFilter filter,
       bool hasOverrideSpatialCellRestriction,
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
       bool prepareGridForCacheStorageIfNoSeiving,
@@ -999,7 +1001,7 @@ namespace VSS.TRex.SubGridTrees
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
           // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
-          _SubGrid = SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0, false, false);
+          _SubGrid = Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0, false, false);
 
           /* TODO ???: if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)
           {

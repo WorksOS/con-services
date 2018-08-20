@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 

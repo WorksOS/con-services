@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Designs;
-using VSS.TRex.Designs.Storage;
-using VSS.TRex.Events;
-using VSS.TRex.Filters;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Iterators.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
 using VSS.TRex.Surfaces.GridFabric.Requests;
+using VSS.TRex.Surfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
@@ -64,9 +64,9 @@ namespace VSS.TRex.Profiling
     private SubGridTreeBitmapSubGridBits FilterMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     private ISiteModel SiteModel;
-    private CellPassAttributeFilter PassFilter;
+    private ICellPassAttributeFilter PassFilter;
 
-    private CellSpatialFilter CellFilter;
+    private ICellSpatialFilter CellFilter;
     private SubGridTreeBitMask PDExistenceMap;
 
     /// <summary>
@@ -77,7 +77,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// The set of surveyed surfaces that match the time constraints of the supplied filter.
     /// </summary>
-    private SurveyedSurfaces FilteredSurveyedSurfaces;
+    private ISurveyedSurfaces FilteredSurveyedSurfaces;
 
     /// <summary>
     /// The argument to be used when requesting composite elevation subgrids to support profiel analysis
@@ -89,7 +89,7 @@ namespace VSS.TRex.Profiling
     /// The design supplied as a result of an independent lookup outside the scope of this builder
     /// to find the design identified by the cellPassFilter.ElevationRangeDesignID
     /// </summary>
-    private Design CellPassFilter_ElevationRangeDesign;
+    private IDesign CellPassFilter_ElevationRangeDesign;
 
     /// <summary>
     /// Constructs a profile lift builder that analyses cells in a cell profile vector
@@ -102,9 +102,9 @@ namespace VSS.TRex.Profiling
     /// <param name="cellLiftBuilder"></param>
     public ProfileLiftBuilder(ISiteModel siteModel,
       SubGridTreeBitMask pDExistenceMap,
-      CellPassAttributeFilter passFilter,
-      CellSpatialFilter cellFilter,
-      Design cellPassFilter_ElevationRangeDesign,
+      ICellPassAttributeFilter passFilter,
+      ICellSpatialFilter cellFilter,
+      IDesign cellPassFilter_ElevationRangeDesign,
       ICellLiftBuilder cellLiftBuilder)
     {
       SiteModel = siteModel;
@@ -148,7 +148,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     /// <param name="forMachineID"></param>
     /// <returns></returns>
-    private ProductionEventLists GetTargetValues(short forMachineID) => SiteModel.Machines[forMachineID].TargetValueChanges;
+    private IProductionEventLists GetTargetValues(short forMachineID) => SiteModel.Machines[forMachineID].TargetValueChanges;
 
     /// <summary>
     /// Gets the material temperature warning limits for a machine at a given time
@@ -489,7 +489,7 @@ namespace VSS.TRex.Profiling
     /// <param name="ProfileCells"></param>
     /// <param name="cellPassIterator"></param>
     /// <returns></returns>
-    public bool Build(List<ProfileCell> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
+    public bool Build(List<IProfileCell> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
     {
       //{$IFDEF DEBUG}
       //SIGLogMessage.PublishNoODS(Self, Format('BuildLiftProfileFromInitialLayer: Processing %d cells', [FProfileCells.Count]), slmcDebug);
@@ -508,7 +508,7 @@ namespace VSS.TRex.Profiling
         {
           for (int I = 0; I < ProfileCells.Count; I++)
           {
-            ProfileCell = ProfileCells[I];
+            ProfileCell = (ProfileCell)ProfileCells[I];
 
             // get subgrid setup iterator and set cell address
             // get sugbrid origin for cell address

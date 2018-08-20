@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
 {
     [Serializable]
-    public class Designs : List<Design>, IBinaryReaderWriter
+    public class Designs : List<IDesign>, IBinaryReaderWriter
     {
         private const byte kMajorVersion = 1;
         private const byte kMinorVersion = 0;
@@ -80,11 +82,11 @@ namespace VSS.TRex.Designs.Storage
         /// <param name="ADesignDescriptor"></param>
         /// <param name="AExtents"></param>
         /// <returns></returns>
-        public Design AddDesignDetails(Guid ADesignID,
+        public IDesign AddDesignDetails(Guid ADesignID,
                                        DesignDescriptor ADesignDescriptor,
                                        BoundingWorldExtent3D AExtents)
         {
-            Design match = Find(x => x.ID == ADesignID);
+            IDesign match = Find(x => x.ID == ADesignID);
 
             if (match != null)
             {
@@ -104,18 +106,18 @@ namespace VSS.TRex.Designs.Storage
         /// <returns></returns>
         public bool RemoveDesign(Guid ADesignID)
         {
-            Design match = Find(x => x.ID == ADesignID);
+            IDesign match = Find(x => x.ID == ADesignID);
 
             return match != null && Remove(match);
         }
 
-        public Design Locate(Guid AID) => Find(x => x.ID == AID);
+        public IDesign Locate(Guid AID) => Find(x => x.ID == AID);
 
         public void Assign(Designs source)
         {
             Clear();
 
-            foreach (Design design in source)
+            foreach (IDesign design in source)
             {
                 Add(design.Clone());
             }

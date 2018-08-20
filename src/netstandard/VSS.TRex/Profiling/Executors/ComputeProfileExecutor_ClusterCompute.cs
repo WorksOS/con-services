@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Iterators.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
@@ -62,9 +62,10 @@ namespace VSS.TRex.Profiling.Executors
     /// Create and configure the segment iterator to be used
     /// </summary>
     /// <param name="passFilter"></param>
-    private void SetupForCellPassStackExamination(CellPassAttributeFilter passFilter)
-    {
-      SegmentIterator = new SubGridSegmentIterator(null, null, SiteModels.SiteModels.Instance().ImmutableStorageProxy); 
+    private void SetupForCellPassStackExamination(ICellPassAttributeFilter passFilter)
+    {      
+      SegmentIterator = new SubGridSegmentIterator(null, null, DIContext.Obtain<ISiteModels>().ImmutableStorageProxy);
+
       if (passFilter.ReturnEarliestFilteredCellPass ||
           (passFilter.HasElevationTypeFilter && passFilter.ElevationType == ElevationType.First))
         SegmentIterator.IterationDirection = IterationDirection.Forwards;
@@ -99,7 +100,7 @@ namespace VSS.TRex.Profiling.Executors
       try
       {
         ProfileRequestResponse Response = new ProfileRequestResponse();
-        List<ProfileCell> ProfileCells = new List<ProfileCell>(1000);
+        List<IProfileCell> ProfileCells = new List<IProfileCell>(1000);
 
         try
         {
@@ -126,8 +127,8 @@ namespace VSS.TRex.Profiling.Executors
             return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
           }
 
-          CellSpatialFilter CellFilter = Filters.Filters[0].SpatialFilter;
-          CellPassAttributeFilter PassFilter = Filters.Filters[0].AttributeFilter;
+          ICellSpatialFilter CellFilter = Filters.Filters[0].SpatialFilter;
+          ICellPassAttributeFilter PassFilter = Filters.Filters[0].AttributeFilter;
 
           FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, PassFilter);

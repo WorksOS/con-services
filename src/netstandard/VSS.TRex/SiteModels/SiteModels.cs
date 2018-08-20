@@ -1,9 +1,9 @@
 ﻿using System;
 using VSS.TRex.DI;
-using VSS.TRex.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels

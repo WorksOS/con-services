@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core.Cache;
 using System;
-using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Surfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 

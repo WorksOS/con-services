@@ -2,10 +2,12 @@
 using Apache.Ignite.Core.Services;
 using System;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.NodeFilters;
 using VSS.TRex.Storage;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Surfaces;
 
 namespace VSS.TRex.Services.Surfaces

@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Designs;
-using VSS.TRex.Designs.Storage;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Services.Designs
@@ -24,7 +25,7 @@ namespace VSS.TRex.Services.Designs
         /// <param name="SiteModelID"></param>
         /// <param name="designID"></param>
         /// <returns></returns>
-        Design Find(Guid SiteModelID, Guid designID);
+        IDesign Find(Guid SiteModelID, Guid designID);
 
         /// <summary>
         /// Request the list of designs from a site model

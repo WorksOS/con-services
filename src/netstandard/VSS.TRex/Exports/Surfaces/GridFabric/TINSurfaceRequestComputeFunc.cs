@@ -9,6 +9,7 @@ using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
 {
@@ -37,7 +38,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
       {
         // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
         // subgrid results to it.
-        arg.TRexNodeID = TRexNodeID.ThisNodeID(Storage.StorageMutability.Immutable);
+        arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
 
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 

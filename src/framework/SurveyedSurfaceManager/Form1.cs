@@ -2,12 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using VSS.TRex;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.Geometry;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.Surfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
 
@@ -157,7 +158,7 @@ namespace SurveyedSurfaceManager
         /// <param name="e"></param>
         private void button1_Click_1(object sender, EventArgs e)
         {
-            SurveyedSurfaceService = new SurveyedSurfaceService(VSS.TRex.Storage.StorageMutability.Immutable);
+            SurveyedSurfaceService = new SurveyedSurfaceService(StorageMutability.Immutable);
             SurveyedSurfaceService.Init(null);
         }
 

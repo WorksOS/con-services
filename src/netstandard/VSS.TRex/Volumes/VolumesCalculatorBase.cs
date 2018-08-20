@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.Filters;
@@ -12,6 +13,7 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
+using VSS.TRex.Surfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -101,20 +103,20 @@ namespace VSS.TRex.Volumes
         /// RefOriginal references a subset that may be used in the volumes calculations
         /// process. If set, it represents the original ground of the site
         /// </summary>
-        public Design RefOriginal { get; set; }
+        public IDesign RefOriginal { get; set; }
 
         /// <summary>
         /// RefDesign references a subset that may be used in the volumes calculations
         /// process. If set, it takes the place of the 'top' filter.
         /// </summary>
-        public Design RefDesign { get; set; }
+        public IDesign RefDesign { get; set; }
 
         /// <summary>
         /// ActiveDesign is the design surface being used as the comparison surface in the
         /// surface to production data volume calculations. It is assigned from the FRefOriginal
         /// and FRefDesign surfaces depending on the volumes reporting type and configuration.
         /// </summary>
-        public Design ActiveDesign { get; set; }
+        public IDesign ActiveDesign { get; set; }
 
         /// <summary>
         /// FromSelectionType and ToSelectionType describe how we mix the two filters
@@ -242,7 +244,7 @@ namespace VSS.TRex.Volumes
                 {
                     if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))
                     {
-                        if (ActiveDesign == null || ActiveDesign.DesignDescriptor.IsNull)
+                        if (ActiveDesign == null || ActiveDesign.Get_DesignDescriptor().IsNull)
                         {
                             Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
                             return RequestErrorStatus.NoDesignProvided;
@@ -258,7 +260,7 @@ namespace VSS.TRex.Volumes
 
                     // Work out the surveyed surfaces and coverage areas that need to be taken into account
 
-                    SurveyedSurfaces SurveyedSurface = SiteModel.SurveyedSurfaces;
+                    ISurveyedSurfaces SurveyedSurface = SiteModel.SurveyedSurfaces;
 
                     // See if we need to handle surveyed surface data for 'base'
                     // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here

@@ -14,8 +14,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        private ProductionEventLists /*EfficientProductionEventChanges*/ Source;
-        private ProductionEventLists /*EfficientProductionEventChanges*/ Target;
+        private IProductionEventLists /*EfficientProductionEventChanges*/ Source;
+        private IProductionEventLists /*EfficientProductionEventChanges*/ Target;
         private bool IntegratingIntoPersistentDataModel;
 
         public EventIntegrator()
@@ -142,8 +142,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             IntegrateList(source, target);
         }
 
-        public void IntegrateMachineEvents(ProductionEventLists /*EfficientProductionEventChanges*/ source,
-                                           ProductionEventLists /*EfficientProductionEventChanges*/ target,
+        public void IntegrateMachineEvents(IProductionEventLists /*EfficientProductionEventChanges*/ source,
+                                           IProductionEventLists /*EfficientProductionEventChanges*/ target,
                                            bool integratingIntoPersistentDataModel)
         {
             Source = source;

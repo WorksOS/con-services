@@ -1,6 +1,7 @@
-﻿using VSS.TRex.Designs.Storage;
+﻿using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -49,10 +50,10 @@ namespace VSS.TRex.Profiling
     public ProfilerBuilder(ISiteModel siteModel,
       SubGridTreeBitMask productionDataExistenceMap,
       GridDataType gridDataType,
-      CellPassAttributeFilter passFilter,
-      CellSpatialFilter cellFilter,
-      Design cutFillDesign,
-      Design cellPassFilter_ElevationRangeDesign,
+      ICellPassAttributeFilter passFilter,
+      ICellSpatialFilter cellFilter,
+      IDesign cutFillDesign,
+      IDesign cellPassFilter_ElevationRangeDesign,
       FilteredValuePopulationControl PopulationControl,
       CellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       bool slicerToolUsed = true)    

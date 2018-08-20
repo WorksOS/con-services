@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.Designs

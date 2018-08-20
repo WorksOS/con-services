@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 

@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 

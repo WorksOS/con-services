@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 
@@ -14,7 +15,7 @@ namespace VSS.TRex.Utilities
         /// <param name="Filter"></param>
         /// <param name="DataModelID"></param>
         /// <returns></returns>
-        public static RequestErrorStatus PrepareFilterForUse(CombinedFilter Filter, Guid DataModelID)
+        public static RequestErrorStatus PrepareFilterForUse(ICombinedFilter Filter, Guid DataModelID)
         {
             // XYZ[] NEECoords = null;
             XYZ[] LLHCoords; //: TCSConversionCoordinates;

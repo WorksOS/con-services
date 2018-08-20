@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -83,7 +86,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <returns></returns>
         public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
         {
-            ProductionEventLists /*EfficientProductionEventChanges*/ SiteModelMachineTargetValues = null;
+            IProductionEventLists /*EfficientProductionEventChanges*/ SiteModelMachineTargetValues = null;
 
             bool AnyMachineEvents = false;
             bool AnyCellPasses = false;
@@ -239,7 +242,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     // read from the datamodel file itself, then synchronously write it to the DataModel
                     // avoiding the use of the deferred persistor.
 
-                    Machine MachineFromDM;
+                    IMachine MachineFromDM;
 
                     lock (SiteModelFromDM)
                     {
@@ -328,7 +331,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                                     if (SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0)
                                     {
-                                        MachineFromDM.LastKnownLayerId = SiteModelMachineTargetValues.LayerIDStateEvents.Last().State;
+                                        MachineFromDM.LastKnownLayerId = SiteModelMachineTargetValues.LayerIDStateEvents.LastStateValue();
                                     }
                                     else
                                     {

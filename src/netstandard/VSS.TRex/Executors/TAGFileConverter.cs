@@ -94,7 +94,7 @@ namespace VSS.TRex.Executors.Executors
         Events = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
 
 
-        SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
+        SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
         if (SiteModel.Grid != null)
         {
           SiteModelGridAggregator.CellSize = SiteModel.Grid.CellSize;
