@@ -18,13 +18,13 @@ spec:
     spec:
       initContainers:
       - name: init-schedulerdb
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:{{ .Values.image.tag }}
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-db:{{ .Values.image.tag }}
         tty: true
         envFrom:
         - configMapRef:
             name: {{ $configName }}
       containers:
-      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:{{ .Values.image.tag }}
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi:{{ .Values.image.tag }}
         name: {{ $name }}     
         livenessProbe:
           httpGet:
