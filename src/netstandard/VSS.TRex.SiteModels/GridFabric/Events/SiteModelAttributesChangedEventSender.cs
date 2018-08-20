@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using System;
 
-namespace VSS.TRex.GridFabric.Events
+namespace VSS.TRex.SiteModels.GridFabric.Events
 {
     /// <summary>
     /// Responsible for sending a notification that the attributes of a site model have changed

@@ -6,7 +6,7 @@ using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 
-namespace VSS.TRex.GridFabric.Events
+namespace VSS.TRex.SiteModels.GridFabric.Events
 {
     public class SiteModelAttributesChangedEventListener : IMessageListener<SiteModelAttributesChangedEvent>, IDisposable
     {

@@ -8,7 +8,7 @@ using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
-namespace VSS.TRex.GridFabric.Listeners
+namespace VSS.TRex.SubGrids.GridFabric.Listeners
 {
     /// <summary>
     /// SubGridListener implements a listening post for subgrid results being sent by processing nodes back

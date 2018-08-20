@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.GridFabric.Events
+namespace VSS.TRex.SiteModels.GridFabric.Events
 {
     public class SiteModelAttributesChangedEvent
     {
