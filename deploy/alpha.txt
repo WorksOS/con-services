@@ -4,16 +4,16 @@ MYSQL_DATABASE_NAME: VSS-Productivity3D-Scheduler-Alpha
 MYSQL_PORT: "3306"
 MYSQL_USERNAME: Merino
 MYSQL_ROOT_PASSWORD: R58Kper%5
-IMPORTED_FILE_API_URL2=https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfile
+IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfile
 CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
-VETA_EXPORT_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0/export/veta
-LOG_MAX_CHAR=1000
-AWS_BUCKET_NAME=vss-exports-stg
-AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
-AWS_SECRET_KEY=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
-AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
-DOWNLOAD_FOLDER=C:/temp/
-MAX_FILE_SIZE=100000000
+VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0/export/veta
+LOG_MAX_CHAR: 1000
+AWS_BUCKET_NAME: vss-exports-stg
+AWS_ACCESS_KEY: AKIAIBGOEETXHMANDX7A
+AWS_SECRET_KEY: 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
+AWS_PRESIGNED_URL_EXPIRY: "7.00:00:00"
+DOWNLOAD_FOLDER: "C:/temp/"
+MAX_FILE_SIZE: "100000000"
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const
