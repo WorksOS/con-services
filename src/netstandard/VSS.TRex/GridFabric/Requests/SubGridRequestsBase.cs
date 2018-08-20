@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Executors.Tasks.Interfaces;
 using VSS.TRex.Filters;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.GridFabric.Requests
@@ -71,7 +71,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// The set of filters to be applied to the subgrids being processed
         /// </summary>
-        public FilterSet Filters { get; set; }
+        public IFilterSet Filters { get; set; }
 
         /// <summary>
         /// Denotes whether results of these requests should include any surveyed surfaces in the site model

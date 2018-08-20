@@ -9,9 +9,9 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Utilities;
 using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 

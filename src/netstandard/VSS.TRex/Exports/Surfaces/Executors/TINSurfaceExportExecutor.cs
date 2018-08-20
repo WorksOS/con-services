@@ -4,10 +4,10 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Exports.Surfaces.GridFabric;
-using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -39,7 +39,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     private string RequestingTRexNodeID { get; set; }
 
     private Guid DataModelID;
-    private FilterSet Filters;
+    private IFilterSet Filters;
     private double Tolerance;
 
     /// <summary>
@@ -56,7 +56,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// <param name="requestingTRexNodeId"></param>
     public TINSurfaceExportExecutor(Guid dataModelID,
       //AExternalDescriptor :TASNodeRequestDescriptor;
-      FilterSet filters,
+      IFilterSet filters,
       double tolerance,
       string requestingTRexNodeId
     )

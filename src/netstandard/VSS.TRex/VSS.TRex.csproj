@@ -21,15 +21,12 @@
   <ItemGroup>
     <Compile Remove="Analytics\Foundation\GridFabric\Arguments\**" />
     <Compile Remove="Analytics\Foundation\GridFabric\Requests\**" />
-    <Compile Remove="CoordinateSystems\GridFabric\Requests\**" />
     <Compile Remove="Exports\Surfaces\Interfaces\**" />
     <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Arguments\**" />
     <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Requests\**" />
-    <EmbeddedResource Remove="CoordinateSystems\GridFabric\Requests\**" />
     <EmbeddedResource Remove="Exports\Surfaces\Interfaces\**" />
     <None Remove="Analytics\Foundation\GridFabric\Arguments\**" />
     <None Remove="Analytics\Foundation\GridFabric\Requests\**" />
-    <None Remove="CoordinateSystems\GridFabric\Requests\**" />
     <None Remove="Exports\Surfaces\Interfaces\**" />
   </ItemGroup>
 
@@ -50,6 +47,9 @@
     <ProjectReference Include="..\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\VSS.TRex.Compression\VSS.TRex.Compression.csproj" />
+    <ProjectReference Include="..\VSS.TRex.CoordinateSystems.Interfaces\VSS.TRex.CoordinateSystems.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj" />
     <ProjectReference Include="..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
@@ -63,6 +63,7 @@
     <ProjectReference Include="..\VSS.TRex.Filters\VSS.TRex.Filters.csproj" />
     <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
     <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Machines\VSS.TRex.Machines.csproj" />
@@ -73,6 +74,7 @@
     <ProjectReference Include="..\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj" />
@@ -81,6 +83,8 @@
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
     <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
   </ItemGroup>
 
   <ItemGroup>

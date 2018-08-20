@@ -1,9 +1,8 @@
 ﻿using System;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Types;
+using VSS.TRex.GridFabric.Models;
 using VSS.TRex.RequestStatistics;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;

@@ -3,13 +3,13 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs;
 using VSS.TRex.DI;
 using VSS.TRex.Executors.Tasks.Interfaces;
-using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 
@@ -39,7 +39,7 @@ namespace VSS.TRex.Pipelines
     /// The set of filters to be executed for each subgrid examined in the request. Each filters will result in a computed
     /// subgrid variation for subsequent business logic in the pipeline task to operate on.
     /// </summary>
-    public FilterSet Filters;
+    public IFilterSet Filters;
 
     /// <summary>
     /// The spatial extents derived from the parameters when building the pipeline
@@ -139,7 +139,7 @@ namespace VSS.TRex.Pipelines
                              ISiteModel siteModel,
                              GridDataType gridDataType,
                              SubGridsPipelinedReponseBase response,
-                             FilterSet filters,
+                             IFilterSet filters,
                              Guid cutFillDesignID,
                              ITask task,
                              ISubGridPipelineBase pipeline,
@@ -233,8 +233,8 @@ namespace VSS.TRex.Pipelines
 
         // Construct two filtered survyed surface lists to act as a rolling pair used as arguments
         // to the ProcessSurveyedSurfacesForFilter method
-        ISurveyedSurfaces FilterSurveyedSurfaces = new SurveyedSurfaces();
-        ISurveyedSurfaces FilteredSurveyedSurfaces = new SurveyedSurfaces();
+        ISurveyedSurfaces FilterSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
+        ISurveyedSurfaces FilteredSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
 
         foreach (var filter in Filters.Filters)
         {

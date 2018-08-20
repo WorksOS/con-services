@@ -3,7 +3,7 @@ using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 
-namespace VSS.TRex.Surfaces.Interfaces
+namespace VSS.TRex.SurveyedSurfaces.Interfaces
 {
   public interface ISurveyedSurface
   {

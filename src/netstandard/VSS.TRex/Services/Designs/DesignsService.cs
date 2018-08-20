@@ -3,16 +3,12 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.Storage;
+using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Utilities.ExtensionMethods;
 

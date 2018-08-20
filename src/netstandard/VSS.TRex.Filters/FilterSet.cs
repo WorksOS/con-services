@@ -8,7 +8,7 @@ namespace VSS.TRex.Filters
   /// FilterSet represents a set of filters to be applied to each subgrid in a query within a single operation
   /// </summary>
   [Serializable]
-  public class FilterSet
+  public class FilterSet : IFilterSet
   {
     /// <summary>
     /// The list of combined attribute and spatial filters to be used

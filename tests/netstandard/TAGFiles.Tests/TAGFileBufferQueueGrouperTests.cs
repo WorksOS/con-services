@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;

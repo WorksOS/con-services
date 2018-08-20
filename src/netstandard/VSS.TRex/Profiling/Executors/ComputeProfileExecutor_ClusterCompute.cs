@@ -27,7 +27,7 @@ namespace VSS.TRex.Profiling.Executors
     private Guid ProjectID;
     private GridDataType ProfileTypeRequired;
     private XYZ[] NEECoords;
-    private FilterSet Filters;
+    private IFilterSet Filters;
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
@@ -46,7 +46,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="filters"></param>
     /// <param name="designDescriptor"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ComputeProfileExecutor_ClusterCompute(Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, FilterSet filters,
+    public ComputeProfileExecutor_ClusterCompute(Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
       DesignDescriptor designDescriptor, bool returnAllPassesAndLayers)

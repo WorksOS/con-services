@@ -2,11 +2,11 @@
 using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.TRex.Surfaces
+namespace VSS.TRex.SurveyedSurfaces
 {
     /// <summary>
     /// Defines all the state information describing a surveyed surface based on a design descriptor

@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.Executors.Tasks;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.GridFabric.Responses;
 
 namespace VSS.TRex.Pipelines
 {

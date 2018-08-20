@@ -16,7 +16,7 @@ namespace VSS.TRex.Machines
     [Serializable]
     public class Machine : IMachine
   {
-        /// <summary>
+    /// <summary>
         /// The telematics asset ID assigned to any John Doe machine
         /// </summary>
         //        public const long kJohnDoeAssetID = 0x7fffffffffffffff;
@@ -27,12 +27,6 @@ namespace VSS.TRex.Machines
         public Guid ID { get; set; }
 
         public short InternalSiteModelMachineIndex { get; set; }
-
-      /// <summary>
-      /// The internal machine ID representing a machine that has not yet
-      /// been assigned as actual machine ID within the data model
-      /// </summary>
-      public const short kNullInternalSiteModelMachineIndex = -1;
 
         public string Name { get; set; } = "";
 

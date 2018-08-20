@@ -6,14 +6,14 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
   public interface ISiteModel
   {
-    Guid ID { get; }
+    Guid ID { get; set; }
 
     DateTime LastModifiedDate { get; set; }
 

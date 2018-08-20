@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees

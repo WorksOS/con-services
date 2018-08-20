@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
 using VSS.TRex.Logging;
 using VSS.TRex.Machines;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes;
@@ -91,7 +92,7 @@ namespace VSS.TRex.Executors.Executors
         {
           TargetValueChanges = Events
         };
-        Events = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
+        Events = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
 
         SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
@@ -100,7 +101,7 @@ namespace VSS.TRex.Executors.Executors
           SiteModelGridAggregator.CellSize = SiteModel.Grid.CellSize;
         }
 
-        MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
+        MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
       }
 
       /// <summary>

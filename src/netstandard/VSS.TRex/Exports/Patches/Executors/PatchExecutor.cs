@@ -3,11 +3,12 @@ using System;
 using System.Reflection;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.Types;
@@ -35,7 +36,7 @@ namespace VSS.TRex.Exports.Patches.Executors
 
     private Guid DataModelID;
     private DisplayMode Mode;
-    private FilterSet Filters;
+    private IFilterSet Filters;
 
     private int DataPatchPageNumber;
     private int DataPatchPageSize;
@@ -63,7 +64,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     public PatchExecutor(Guid dataModelID,
       //AExternalDescriptor :TASNodeRequestDescriptor;
       DisplayMode mode,
-      FilterSet filters,
+      IFilterSet filters,
       Guid cutFillDesignID, //DesignDescriptor ACutFillDesign,
       //AReferenceVolumeType : TComputeICVolumesType;
       string requestingTRexNodeId,

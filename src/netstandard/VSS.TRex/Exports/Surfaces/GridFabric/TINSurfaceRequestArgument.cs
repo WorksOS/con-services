@@ -1,6 +1,5 @@
 ﻿using System;
-using VSS.TRex.Designs;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Models.Arguments;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
 {

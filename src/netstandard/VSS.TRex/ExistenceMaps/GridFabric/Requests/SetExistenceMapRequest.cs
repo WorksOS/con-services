@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.ExistenceMaps.Servers;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Surfaces.GridFabric.Arguments
@@ -68,7 +68,7 @@ namespace VSS.TRex.Surfaces.GridFabric.Arguments
                                              double cellSize,
                                              SurveyedSurfacePatchType surveyedSurfacePatchType,
                                              SubGridTreeBitmapSubGridBits processingMap,
-                                             SurveyedSurfaces includedSurveyedSurfaces)
+                                             ISurveyedSurfaces includedSurveyedSurfaces)
         {
             SiteModelID = siteModelID;
             OTGCellBottomLeftX = oTGCellBottomLeftX;
