@@ -138,17 +138,17 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       ConfigureHangfireUse(app, log);
 
       // shouldn't need this as this projects is no longer adding recurring jobs.
-      // However other projects may do, so I'll leave it, but not remove the jobs.
-      // Leaving this also verifies that we can call Hangfire.
+      // However clean up any from prior versions for a while.
+      // This also verifies that we can call Hangfire.
       try
       {
         List<RecurringJobDto> recurringJobs = JobStorage.Current.GetConnection().GetRecurringJobs();
         log.LogDebug(
           $"Scheduler.Configure: PreJobsetup count of existing recurring jobs: {recurringJobs.Count}");
-        //recurringJobs.ForEach(delegate(RecurringJobDto job)
-        //{
-        //  RecurringJob.RemoveIfExists(job.Id);
-        //});
+        recurringJobs.ForEach(delegate (RecurringJobDto job)
+        {
+          RecurringJob.RemoveIfExists(job.Id);
+        });
       }
       catch (Exception ex)
       {
