@@ -116,6 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       this.DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 108);
       this.DynamicAddwithOffset("UpsertProject Not allowed duplicate, active projectnames: {0}.", 109);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Duplicate GeofenceUids appear in the request body.", 110);
+      this.DynamicAddwithOffset("Invalid project boundary points.Latitudes should be -90 through 90 and Longitude -180 through 180. Points around 0,0 are invalid", 111);
     }
   }
 }

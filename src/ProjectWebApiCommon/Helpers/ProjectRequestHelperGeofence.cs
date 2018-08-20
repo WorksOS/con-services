@@ -38,6 +38,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 25);
         }
+
+        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidPointValue) == 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 111);
+        }
       }
     }
 
