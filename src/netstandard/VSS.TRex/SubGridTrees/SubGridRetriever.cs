@@ -18,7 +18,6 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
-using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 

@@ -39,6 +39,8 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Filters\VSS.TRex.Filters.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines\VSS.TRex.Machines.csproj" />
@@ -48,6 +50,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj" />

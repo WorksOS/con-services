@@ -71,7 +71,6 @@ namespace VSS.TRex.Events
             // Create a temp var for the events so consurrent requestors wont grab a reference to
             // an event lsit being loaded
             ProductionEventLists temp = new ProductionEventLists(Owner, machineID);
-
             
             if (temp.LoadEventsForMachine(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy))
             {

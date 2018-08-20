@@ -6,7 +6,6 @@ using VSS.TRex.Executors.Tasks;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Surfaces.Executors.Tasks

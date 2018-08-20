@@ -6,15 +6,15 @@ using System.Reflection;
 using System.Threading;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.Executors.Tasks.Interfaces;
-using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Models;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.GridFabric.Types;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Types;
+using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.Pipelines
 {
@@ -83,7 +83,7 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// The set of filters to be made available to the subgrid processing for this request
         /// </summary>
-        public FilterSet FilterSet { get; set; }
+        public IFilterSet FilterSet { get; set; }
 
         public int MaxNumberOfPassesToReturn = 0;
 

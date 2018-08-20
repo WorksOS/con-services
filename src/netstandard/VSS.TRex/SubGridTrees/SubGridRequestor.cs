@@ -9,10 +9,9 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Surfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
 using VSS.TRex.Surfaces.GridFabric.Requests;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees
@@ -75,7 +74,7 @@ namespace VSS.TRex.SubGridTrees
         private SubGridTreeBitmapSubGridBits ProcessingMap; // = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         [NonSerialized]
-        private SurveyedSurfaces FilteredSurveyedSurfaces;
+        private ISurveyedSurfaces FilteredSurveyedSurfaces;
 
         [NonSerialized]
         private bool ReturnEarliestFilteredCellPass;
@@ -127,7 +126,7 @@ namespace VSS.TRex.SubGridTrees
             // Obtain local reference to surveyed surface list. If it is replaced while processing the
             // list then the local reference will still be valid allowing lock free read access to the list.
             ISurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
-            FilteredSurveyedSurfaces = new SurveyedSurfaces();
+            FilteredSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
 
             if (SurveyedSurfaceList?.Count > 0)
             {

@@ -8,9 +8,6 @@ using System.Diagnostics;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.GridFabric.Types;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
@@ -21,10 +18,13 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
+using VSS.TRex.GridFabric.Models;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {

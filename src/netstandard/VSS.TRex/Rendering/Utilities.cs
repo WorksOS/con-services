@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -25,7 +26,7 @@ namespace VSS.TRex.Rendering
         /// </summary>
         /// <param name="filters"></param>
         /// <returns></returns>
-        public static bool FilterRequireSurveyedSurfaceInformation(FilterSet filters)
+        public static bool FilterRequireSurveyedSurfaceInformation(IFilterSet filters)
         {
             if (filters == null)
             {

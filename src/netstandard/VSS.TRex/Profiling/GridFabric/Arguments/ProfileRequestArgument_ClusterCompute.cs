@@ -1,7 +1,6 @@
-﻿using VSS.TRex.Designs;
-using VSS.TRex.Designs.Models;
+﻿using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.GridFabric.Arguments

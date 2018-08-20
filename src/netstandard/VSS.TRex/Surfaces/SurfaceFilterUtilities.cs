@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Surfaces
 {

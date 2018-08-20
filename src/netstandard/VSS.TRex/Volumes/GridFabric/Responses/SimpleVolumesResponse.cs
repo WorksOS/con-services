@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Requests.Interfaces;
-using VSS.TRex.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.GridFabric.Responses
 {

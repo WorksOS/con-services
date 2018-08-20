@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.Executors.Tasks.Interfaces;
-using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Types;
@@ -79,7 +79,7 @@ namespace VSS.TRex.Pipelines.Interfaces
         /// <summary>
         /// The set of filter the pipeline requestas are operating under
         /// </summary>
-        FilterSet FilterSet { get; set; }
+        IFilterSet FilterSet { get; set; }
 
         /// <summary>
         /// Map of all subgrids requiring infromation be requested from them

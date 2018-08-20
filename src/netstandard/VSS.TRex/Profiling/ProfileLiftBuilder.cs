@@ -16,10 +16,9 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Surfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
 using VSS.TRex.Surfaces.GridFabric.Requests;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
@@ -119,7 +118,7 @@ namespace VSS.TRex.Profiling
         // Filter out any surveyed surfaces which don't match current filter (if any)
         // - realistically, this is time filters we're thinking of here
 
-        FilteredSurveyedSurfaces = new SurveyedSurfaces();
+        FilteredSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
 
         SiteModel.SurveyedSurfaces?.FilterSurveyedSurfaceDetails(PassFilter.HasTimeFilter, PassFilter.StartTime,
           PassFilter.EndTime, PassFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,

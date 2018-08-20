@@ -5,10 +5,10 @@ using System.Linq;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.TRex.Surfaces
+namespace VSS.TRex.SurveyedSurfaces
 {
     [Serializable]
     public class SurveyedSurfaces : List<ISurveyedSurface>, IComparable<ISurveyedSurface>, IBinaryReaderWriter, ISurveyedSurfaces

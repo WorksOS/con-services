@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Models.Arguments;
 
 namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details
 {

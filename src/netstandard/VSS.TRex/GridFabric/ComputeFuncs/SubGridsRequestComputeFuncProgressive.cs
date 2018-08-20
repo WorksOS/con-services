@@ -6,12 +6,11 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.GridFabric.Types;
+using VSS.TRex.GridFabric.Models;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {

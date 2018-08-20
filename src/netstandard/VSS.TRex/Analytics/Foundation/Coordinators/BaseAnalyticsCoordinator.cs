@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Analytics.Foundation.Coordinators

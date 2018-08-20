@@ -3,17 +3,16 @@ using System;
 using System.Reflection;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.Designs.Storage;
 using VSS.TRex.Executors.Tasks;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
-using VSS.TRex.Surfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -160,8 +159,8 @@ namespace VSS.TRex.Volumes
 
         //        FEpochCount           : Integer;
 
-        SurveyedSurfaces FilteredBaseSurveyedSurfaces = new SurveyedSurfaces();
-        SurveyedSurfaces FilteredTopSurveyedSurfaces = new SurveyedSurfaces();
+        SurveyedSurfaces.SurveyedSurfaces FilteredBaseSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
+        SurveyedSurfaces.SurveyedSurfaces FilteredTopSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
 
         public Guid RequestDescriptor { get; set; } = Guid.Empty;
 
