@@ -4,4 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+  </ItemGroup>
+
 </Project>

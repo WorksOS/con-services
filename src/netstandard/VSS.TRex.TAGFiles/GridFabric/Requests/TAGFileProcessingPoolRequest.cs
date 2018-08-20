@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric.Requests
 {

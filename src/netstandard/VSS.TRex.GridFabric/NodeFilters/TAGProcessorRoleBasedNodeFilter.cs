@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric.NodeFilters
 {

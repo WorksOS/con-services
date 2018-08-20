@@ -2,13 +2,13 @@
 using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
-using VSS.TRex.Executors.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 

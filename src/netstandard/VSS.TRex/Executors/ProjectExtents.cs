@@ -1,7 +1,6 @@
 ﻿using System;
 using VSS.TRex.Geometry;
 using VSS.TRex.Servers.Client;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Executors

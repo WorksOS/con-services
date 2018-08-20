@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
-using VSS.TRex.Executors.Tasks;
 using VSS.TRex.Interfaces;
+using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Volumes.Executors.Tasks

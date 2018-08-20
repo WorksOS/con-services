@@ -1,7 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Cluster;
 using System.Collections.Generic;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric.NodeFilters
 {

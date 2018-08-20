@@ -1,6 +1,5 @@
-﻿using System;
+﻿using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.NodeFilters;
-using VSS.TRex.Servers;
 using VSS.TRex.Tests.MockedClasses.GridFabric;
 using Xunit;
 

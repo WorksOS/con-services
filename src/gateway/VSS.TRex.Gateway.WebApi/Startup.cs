@@ -10,13 +10,14 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Rendering.Servers.Client;
-using VSS.TRex.Servers;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Gateway.WebApi
 {

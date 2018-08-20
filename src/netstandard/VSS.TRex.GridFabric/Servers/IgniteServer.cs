@@ -2,9 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Servers

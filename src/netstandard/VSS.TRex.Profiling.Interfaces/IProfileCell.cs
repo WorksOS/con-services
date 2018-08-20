@@ -22,6 +22,9 @@
     /// </summary>
     double Station { get; set; }
 
+    ushort CellMaxSpeed { get; set; }
+    ushort CellMinSpeed { get; set; }
+
     /// <summary>
     /// A collection of layers constituting a profile through a cell.
     /// Depending on the context, the layers may be equivalent to the passes over a cell

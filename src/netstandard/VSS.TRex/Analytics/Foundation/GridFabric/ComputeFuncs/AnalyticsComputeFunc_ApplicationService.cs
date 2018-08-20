@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.GridFabric.Requests.Interfaces;
 
 namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
 {

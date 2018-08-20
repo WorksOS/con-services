@@ -73,8 +73,8 @@ namespace VSS.TRex.Profiling
     public ushort TopLayerPassCountTargetRangeMin;
     public ushort TopLayerPassCountTargetRangeMax;
 
-    public ushort CellMaxSpeed;
-    public ushort CellMinSpeed;
+    public ushort CellMaxSpeed { get; set; }
+    public ushort CellMinSpeed { get; set; }
 
     /// <summary>
     // Passes contains the entire list of passes that all the layers in the layer collection refer to

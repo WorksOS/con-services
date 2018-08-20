@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Servers.Compute
 {

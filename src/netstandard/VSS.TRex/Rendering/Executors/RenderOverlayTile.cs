@@ -2,6 +2,7 @@
 using System;
 using Draw = System.Drawing;
 using System.Reflection;
+using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models.Arguments;

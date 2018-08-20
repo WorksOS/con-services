@@ -1,4 +1,11 @@
-﻿namespace VSS.TRex.Profiling.Interfaces
+﻿using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.Types;
+
+namespace VSS.TRex.Profiling.Interfaces
 {
   public interface IProfilerBuilder
   {
@@ -16,5 +23,30 @@
     /// Buidler responsibler from building overall profile informationk from cell vector
     /// </summary>
     IProfileLiftBuilder ProfileLiftBuilder { get; set; }
+
+    /// <summary>
+    /// Configures a new profile builder that provides the three core builders used in profiling: construction of cell vector from profile line,
+    /// profile analysis orchestration and per cell layer/statistics calculation
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="productionDataExistenceMap"></param>
+    /// <param name="gridDataType"></param>
+    /// <param name="passFilter"></param>
+    /// <param name="cellFilter"></param>
+    /// <param name="cutFillDesign"></param>
+    /// <param name="cellPassFilter_ElevationRangeDesign"></param>
+    /// <param name="PopulationControl"></param>
+    /// <param name="CellPassFastEventLookerUpper"></param>
+    /// <param name="slicerToolUsed"></param>
+    void Configure(ISiteModel siteModel,
+      SubGridTreeBitMask productionDataExistenceMap,
+      GridDataType gridDataType,
+      ICellPassAttributeFilter passFilter,
+      ICellSpatialFilter cellFilter,
+      IDesign cutFillDesign,
+      IDesign cellPassFilter_ElevationRangeDesign,
+      IFilteredValuePopulationControl PopulationControl,
+      ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
+      bool slicerToolUsed = true);
   }
 }

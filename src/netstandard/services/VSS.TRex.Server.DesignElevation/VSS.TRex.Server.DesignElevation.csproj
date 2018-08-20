@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />

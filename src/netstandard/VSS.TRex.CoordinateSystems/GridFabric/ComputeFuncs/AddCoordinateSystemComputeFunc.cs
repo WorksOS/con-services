@@ -4,7 +4,7 @@ using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
 using VSS.TRex.CoordinateSystems.GridFabric.Responses;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.CoordinateSystems.GridFabric.ComputeFuncs
 {

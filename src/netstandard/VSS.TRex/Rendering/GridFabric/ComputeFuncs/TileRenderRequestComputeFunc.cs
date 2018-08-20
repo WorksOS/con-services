@@ -7,6 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Rendering.GridFabric.Arguments;
