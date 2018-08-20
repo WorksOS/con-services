@@ -137,22 +137,22 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       ConfigureHangfireUse(app, log);
 
-      // todo shouldn't need this as should be no recurring jobs anymore
+      // shouldn't need this as this projects is no longer adding recurring jobs.
+      // However other projects may do, so I'll leave it, but not remove the jobs.
+      // Leaving this also verifies that we can call Hangfire.
       try
       {
         List<RecurringJobDto> recurringJobs = JobStorage.Current.GetConnection().GetRecurringJobs();
         log.LogDebug(
-          $"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count}");
-        Console.WriteLine($"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count}");
-        recurringJobs.ForEach(delegate(RecurringJobDto job)
-        {
-          RecurringJob.RemoveIfExists(job.Id);
-        });
+          $"Scheduler.Configure: PreJobsetup count of existing recurring jobs: {recurringJobs.Count}");
+        //recurringJobs.ForEach(delegate(RecurringJobDto job)
+        //{
+        //  RecurringJob.RemoveIfExists(job.Id);
+        //});
       }
       catch (Exception ex)
       {
         log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
-        Console.WriteLine($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
         throw;
       }
     }
@@ -236,8 +236,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds),
         };
         log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
-        Console.WriteLine($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
-
+        
         app.UseHangfireDashboard(options: new DashboardOptions
         {
           Authorization = new[]
@@ -250,12 +249,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         int expirationManagerWaitMs = 2000;
         Thread.Sleep(expirationManagerWaitMs);
         log.LogDebug($"Scheduler.Startup: after expirationManagerWaitMs wait, proceed....");
-        Console.WriteLine($"Scheduler.Startup: after expirationManagerWaitMs wait, proceed....");
       }
       catch (Exception ex)
       {
         log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
-        Console.WriteLine($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
         throw;
       }
     }

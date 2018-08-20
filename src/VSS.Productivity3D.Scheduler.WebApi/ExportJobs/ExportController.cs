@@ -43,14 +43,11 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     public ScheduleJobResult StartExport([FromBody] ScheduleJobRequest request)
     {
       log.LogInformation($"StartExport: {JsonConvert.SerializeObject(request)}");
-      Console.WriteLine($"SchedulerWebAPI StartExport: {JsonConvert.SerializeObject(request)}");
       string jobId;
       try
       {
        jobId = BackgroundJob.Enqueue(() => exportJob.GetExportData(
         request, Request.Headers.GetCustomHeaders(true), null));
-
-
       }
       catch (Exception e)
       {

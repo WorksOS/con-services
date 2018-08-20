@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.MasterData.Models.Models;
 
@@ -51,8 +50,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     public async Task GetExportData(ScheduleJobRequest request, IDictionary<string, string> customHeaders,
       PerformContext context)
     {
-      Console.WriteLine($"SchedulerWebAPI GetExportData: request: {JsonConvert.SerializeObject(request)} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
-
       using (var data = await apiClient.SendRequest(request, customHeaders))
       {
         //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
@@ -60,7 +57,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         var stream = await data.ReadAsStreamAsync();
         var contentType = data.Headers.ContentType == null ? string.Empty : data.Headers.ContentType.MediaType;
         var path = GetS3Key(context.BackgroundJob.Id, request.Filename);
-        Console.WriteLine($"SchedulerWebAPI GetS3Key contentType: {contentType} path: {path}");
 
         if (string.IsNullOrEmpty(contentType))
         {
@@ -72,13 +68,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         // Transfer proxy will upload the file with a potentially different extension, matching the contenttype
         // So we may get a new path
         var newPath = transferProxy.Upload(stream, path, contentType);
-        Console.WriteLine($"SchedulerWebAPI after transferProxy.Upload. newPath: {newPath}");
-
+        
         // Set the results so the results can access the final url easily
         JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3KeyStateKey, newPath);
-        Console.WriteLine($"SchedulerWebAPI after firstsetJobParameter. S3KeyStateKey: {S3KeyStateKey}");
         JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, DownloadLinkStateKey, transferProxy.GeneratePreSignedUrl(newPath));
-        Console.WriteLine($"SchedulerWebAPI after 2ndsetJobParameter. DownloadLinkStateKey: {DownloadLinkStateKey}");
       }
     }
 

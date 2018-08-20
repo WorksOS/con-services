@@ -76,7 +76,7 @@ node ('jenkinsslave-pod') {
 		//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
         step([$class: 'XUnitBuilder',
                 thresholds: [
-					[$class: 'FailedThreshold', failureThreshold: '100', unstableThreshold: '111'],
+					[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
 					[$class: 'SkippedThreshold', unstableThreshold: '1']
 				],
                 tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
@@ -124,7 +124,7 @@ node ('jenkinsslave-pod') {
 					sh "/bin/sh ./build/RunAcceptanceTests.sh"
 
 					step([$class: 'XUnitBuilder',
-							thresholds: [[$class: 'FailedThreshold', failureThreshold: '100', unstableThreshold: '111']],
+							thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1']],
 							tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
 							
 					sh "ls -la AcceptanceTests/tests/"
@@ -138,7 +138,7 @@ node ('jenkinsslave-pod') {
 					}
 
 					//Dump log from webapi to buildlog
-					containerLog 'service-container'
+					//containerLog 'service-container'
 					
 					//Archive test logs
 					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
