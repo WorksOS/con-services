@@ -4,14 +4,13 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.DI;
-using VSS.TRex.Executors.Executors;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Classes.Integrator;
+using VSS.TRex.TAGFiles.Executors;
 using Xunit;
 
 namespace TAGFiles.Tests

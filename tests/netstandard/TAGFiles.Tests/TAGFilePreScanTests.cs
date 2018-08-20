@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.Executors.Executors;
+using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
 using Xunit;
 
