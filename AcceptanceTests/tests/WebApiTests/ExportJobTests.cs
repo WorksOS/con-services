@@ -143,9 +143,11 @@ namespace WebApiTests
       var timeout = DateTime.Now.AddSeconds(maxSeconds);
       while (!statusResult.Status.Equals(expectedStatus, StringComparison.OrdinalIgnoreCase) && DateTime.Now < timeout)
       {
+        Console.WriteLine($"WaitForExpectedStatus: calling getJobID: api/v1/export/{jobId}");
         var responseJson = ts.CallSchedulerWebApi($"api/v1/export/{jobId}", "GET");
         statusResult = JsonConvert.DeserializeObject<JobStatusResult>(responseJson,
           new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        Console.WriteLine($"WaitForExpectedStatus: responseJson {responseJson}");
 
         Assert.IsNotNull(statusResult, "Should get a job status response");
         Console.WriteLine($"Scheduled Job Status: {statusResult.Status}");

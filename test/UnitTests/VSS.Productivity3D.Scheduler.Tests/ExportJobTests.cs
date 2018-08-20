@@ -80,7 +80,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
     }
 
     [TestMethod]
-    [Ignore]
     [DataRow("Export Success")]
     public void CanGetUpdatedFilename(string message)
     {
@@ -115,7 +114,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
     }
 
     [TestMethod]
-    [Ignore]
     [ExpectedException(typeof (Exception))]//Assert.ThrowsException doesn't work so use this instead
     [DataRow("BadRequest {\"Code\":2002,\"Message\":\"Failed to get requested export data with error: No data for export\"}")]
     [DataRow("InternalServerError Some general exception message")]

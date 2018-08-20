@@ -51,7 +51,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     public async Task GetExportData(ScheduleJobRequest request, IDictionary<string, string> customHeaders,
       PerformContext context)
     {
-      Console.WriteLine($"SchedulerWebAPI GetExportData: {JsonConvert.SerializeObject(request)} customHeaders: {customHeaders} context: {JsonConvert.SerializeObject(context)}");
+      Console.WriteLine($"SchedulerWebAPI GetExportData: request: {JsonConvert.SerializeObject(request)} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+
       using (var data = await apiClient.SendRequest(request, customHeaders))
       {
         //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
