@@ -14,6 +14,7 @@ namespace VSS.MasterData.Models.UnitTests
     private readonly string _validBoundary;
     private readonly string _invalidBoundary_NotClosed;
     private readonly string _invalidBoundary_FewPoints;
+    private readonly string _invalidBoundary_InvalidPoints;
 
     private static string _customerUid;
 
@@ -22,6 +23,7 @@ namespace VSS.MasterData.Models.UnitTests
       _validBoundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
       _invalidBoundary_NotClosed = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965))";
       _invalidBoundary_FewPoints = "POLYGON((172.595831670724 -43.5427038560109))";
+      _invalidBoundary_InvalidPoints = "POLYGON((-272.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
     }
 
     [ClassInitialize]
@@ -66,6 +68,13 @@ namespace VSS.MasterData.Models.UnitTests
     {
       var result = GeofenceValidation.ValidateWKT(_invalidBoundary_FewPoints);
       Assert.AreEqual(GeofenceValidation.ValidationLessThan3Points, result, "Should be < 3 points");
+    }
+
+    [TestMethod]
+    public void ValidateGeofence_InvalidLongitude()
+    {
+      var result = GeofenceValidation.ValidateWKT(_invalidBoundary_InvalidPoints);
+      Assert.AreEqual(GeofenceValidation.ValidationInvalidPointValue, result, "Latitude or longitude value is wrong.");
     }
 
     [TestMethod]

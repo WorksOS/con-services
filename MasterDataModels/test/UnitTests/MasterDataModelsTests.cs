@@ -85,11 +85,13 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareFilters()
     {
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var designUid = Guid.NewGuid().ToString();
+
+      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -130,11 +132,12 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareFiltersMachineDirectionNulls()
     {
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var designUid = Guid.NewGuid().ToString();
+      var filter1 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, Guid.NewGuid().ToString(), "designName",
+      var filter2 = Filter.CreateFilter(DateTime.MinValue, DateTime.MaxValue, designUid, "designName",
         new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), null, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -160,11 +163,13 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareFiltersEqualWithNulls()
     {
-      var filter1 = Filter.CreateFilter(DateTime.MinValue, null, Guid.NewGuid().ToString(), "designName",
+      var designUid = Guid.NewGuid().ToString();
+
+      var filter1 = Filter.CreateFilter(DateTime.MinValue, null, designUid, "designName",
         new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash1 = filter1.GetHashCode();
-      var filter2 = Filter.CreateFilter(DateTime.MinValue, null, Guid.NewGuid().ToString(), "designName",
+      var filter2 = Filter.CreateFilter(DateTime.MinValue, null, designUid, "designName",
         new List<MachineDetails>() { MachineDetails.Create(1, "test", true) }, 15,
         ElevationType.Lowest, true, new List<WGSPoint>(), false, -1, null, "123");
       var hash2 = filter2.GetHashCode();
@@ -577,7 +582,7 @@ namespace VSS.MasterData.Models.UnitTests
     public void PassCountRangeFilter_MissingMax()
     {
       var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, 5);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, 5);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2073"), "wrong code for missing max pass count");
     }
@@ -586,7 +591,7 @@ namespace VSS.MasterData.Models.UnitTests
     public void PassCountRangeFilter_OutOfRange()
     {
       var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, 900, 1100);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, 900, 1100);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2077"), "wrong code for pass count out of range");
 
@@ -596,7 +601,7 @@ namespace VSS.MasterData.Models.UnitTests
     public void PassCountRangeFilter_InvalidRange()
     {
       var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, 25, 15);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, 25, 15);
       var ex = Assert.ThrowsException<ServiceException>(() => filter.Validate(this._serviceExceptionHandler));
       Assert.IsTrue(ex.GetContent.Contains(":2075"), "wrong code for invalid pass count range");
     }
