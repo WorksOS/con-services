@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -33,7 +34,7 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
     /// Create 3dpm filter principal
     /// </summary>
     public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName,
-      string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders)
+      string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "")
     {
       return new FilterPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, ProjectListProxy, contextHeaders);
     }
