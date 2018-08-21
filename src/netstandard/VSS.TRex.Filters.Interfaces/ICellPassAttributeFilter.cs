@@ -211,7 +211,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool FilterPass(ref CellPass PassValue);
     bool FilterPass(ref FilteredPassData PassValue);
     bool FilterPassUsingElevationRange(ref CellPass PassValue);
-    bool FilterPassUsingTemepratureRange(ref CellPass PassValue);
+    bool FilterPassUsingTemperatureRange(ref CellPass PassValue);
     bool FilterPassUsingTimeOnly(ref CellPass PassValue);
     bool FilterPass_MachineEvents(ref FilteredPassData PassValue);
     bool FilterPass_NoMachineEvents(CellPass PassValue);
