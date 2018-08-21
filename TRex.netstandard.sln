@@ -177,11 +177,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Pipelines.Interfac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.SubGrids", "src\netstandard\VSS.TRex.SubGrids\VSS.TRex.SubGrids.csproj", "{C651CEF5-1BD7-4893-8519-91FF5A9C0F13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Services.Designs", "src\netstandard\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj", "{065FC149-2982-4104-A4DC-C8E7C5A5D705}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Services.Designs", "src\netstandard\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj", "{065FC149-2982-4104-A4DC-C8E7C5A5D705}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Services.Designs.Interfaces", "src\netstandard\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj", "{8FCBA733-6342-4308-A568-0BB42430D1FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Services.Designs.Interfaces", "src\netstandard\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj", "{8FCBA733-6342-4308-A568-0BB42430D1FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.GridFabric.Interfaces", "src\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj", "{BB4278C3-A529-48C5-B01F-B8BCEF63FA89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.GridFabric.Interfaces", "src\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj", "{BB4278C3-A529-48C5-B01F-B8BCEF63FA89}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Rendering", "src\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj", "{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Analytics", "src\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj", "{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Volumes", "src\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj", "{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Exports", "src\netstandard\VSS.TRex.Exports\VSS.TRex.Exports.csproj", "{3245438D-CEC3-4B4E-B232-B56278D9B060}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -775,6 +783,38 @@ Global
 		{BB4278C3-A529-48C5-B01F-B8BCEF63FA89}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BB4278C3-A529-48C5-B01F-B8BCEF63FA89}.Release|x64.ActiveCfg = Release|Any CPU
 		{BB4278C3-A529-48C5-B01F-B8BCEF63FA89}.Release|x64.Build.0 = Release|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Debug|x64.Build.0 = Debug|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Release|x64.ActiveCfg = Release|Any CPU
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2}.Release|x64.Build.0 = Release|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Debug|x64.Build.0 = Debug|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Release|x64.ActiveCfg = Release|Any CPU
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD}.Release|x64.Build.0 = Release|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Debug|x64.Build.0 = Debug|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Release|x64.ActiveCfg = Release|Any CPU
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224}.Release|x64.Build.0 = Release|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Debug|x64.Build.0 = Debug|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Release|x64.ActiveCfg = Release|Any CPU
+		{3245438D-CEC3-4B4E-B232-B56278D9B060}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -857,6 +897,10 @@ Global
 		{065FC149-2982-4104-A4DC-C8E7C5A5D705} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{8FCBA733-6342-4308-A568-0BB42430D1FC} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{BB4278C3-A529-48C5-B01F-B8BCEF63FA89} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
+		{E25A0B0F-99C9-49DF-A604-D533FCC9D5F2} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
+		{51C5E9C8-40F7-4E55-8E2E-009A4E5DD4AD} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
+		{A2DE7D3F-09F4-4CB9-98AE-A2986E06F224} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
+		{3245438D-CEC3-4B4E-B232-B56278D9B060} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}

@@ -4,7 +4,6 @@ using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;

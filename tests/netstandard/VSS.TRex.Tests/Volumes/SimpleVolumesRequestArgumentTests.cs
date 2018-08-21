@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.Volumes.GridFabric.Arguments;
+﻿using VSS.TRex.Volumes.GridFabric.Arguments;
 using Xunit;
 
 namespace VSS.TRex.Tests.Volumes

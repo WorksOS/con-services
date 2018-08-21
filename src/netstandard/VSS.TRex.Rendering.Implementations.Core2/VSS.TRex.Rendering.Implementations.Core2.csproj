@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj" />
     <ProjectReference Include="..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
