@@ -43,7 +43,6 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Volumes.Servers.Client;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Designs;
@@ -62,13 +61,13 @@ using VSS.TRex.Services.SurveyedSurfaces;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace TRexIgniteTest
 {
@@ -759,7 +758,7 @@ namespace TRexIgniteTest
 				try
 				{
 						// Create the two filters
-						CombinedFilter FromFilter = new CombinedFilter()
+						ICombinedFilter FromFilter = new CombinedFilter()
 						{
 								AttributeFilter = new CellPassAttributeFilter(/*siteModel*/)
 								{
@@ -792,7 +791,7 @@ namespace TRexIgniteTest
 								SpatialFilter = FromFilter.SpatialFilter
 						};
 
-						return simpleVolumesServer.ComputeSimpleVolues(new SimpleVolumesRequestArgument()
+						return simpleVolumesServer.ComputeSimpleVolumes(new SimpleVolumesRequestArgument()
 						{
 								SiteModelID = ID(),
 								BaseFilter = FromFilter,

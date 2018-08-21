@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Models.Arguments;
 
 namespace VSS.TRex.Volumes.GridFabric.Arguments
@@ -26,8 +26,8 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
         /// meaingful for a filter to have a spatial extent, and to denote aa
         /// 'as-at' time only.
         /// </summary>
-        public CombinedFilter BaseFilter = null;
-        public CombinedFilter TopFilter = null;
+        public ICombinedFilter BaseFilter = null;
+        public ICombinedFilter TopFilter = null;
 
         public Guid BaseDesignID = Guid.Empty;
         public Guid TopDesignID = Guid.Empty;
@@ -35,7 +35,7 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
         /// </summary>
-        public CombinedFilter AdditionalSpatialFilter;
+        public ICombinedFilter AdditionalSpatialFilter;
 
         /// <summary>
         /// CutTolerance determines the tolerance (in meters) that the 'From' surface

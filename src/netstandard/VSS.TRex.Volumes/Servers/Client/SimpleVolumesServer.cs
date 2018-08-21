@@ -40,7 +40,7 @@ namespace VSS.TRex.Volumes.Servers.Client
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
-        public SimpleVolumesResponse ComputeSimpleVolues(SimpleVolumesRequestArgument argument)
+        public SimpleVolumesResponse ComputeSimpleVolumes(SimpleVolumesRequestArgument argument)
         {
             SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
 

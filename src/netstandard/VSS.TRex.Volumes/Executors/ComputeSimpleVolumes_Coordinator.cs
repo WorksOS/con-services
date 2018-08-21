@@ -1,12 +1,12 @@
 ﻿using System;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.Executors
@@ -36,9 +36,9 @@ namespace VSS.TRex.Volumes.Executors
         /// meaingful for a filter to have a spatial extent, and to denote aa
         /// 'as-at' time only.
         /// </summary>
-        public CombinedFilter BaseFilter;
+        public ICombinedFilter BaseFilter;
 
-        public CombinedFilter TopFilter;
+        public ICombinedFilter TopFilter;
 
         /// <summary>
         /// The ID of the 'base' design. This is the design forming the 'from' surface in 
@@ -55,7 +55,7 @@ namespace VSS.TRex.Volumes.Executors
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
         /// </summary>
-        public CombinedFilter AdditionalSpatialFilter;
+        public ICombinedFilter AdditionalSpatialFilter;
 
         /// <summary>
         /// CutTolerance determines the tolerance (in meters) that the 'From' surface
@@ -134,11 +134,11 @@ namespace VSS.TRex.Volumes.Executors
                                     //ExternalDescriptor : TASNodeRequestDescriptor;
                                     //LiftBuildSettings : TICLiftBuildSettings;
                                     VolumeComputationType volumeType,
-                                    CombinedFilter baseFilter,
-                                    CombinedFilter topFilter,
+                                    ICombinedFilter baseFilter,
+                                    ICombinedFilter topFilter,
                                     Guid baseDesignID,
                                     Guid topDesignID,
-                                    CombinedFilter additionalSpatialFilter,
+                                    ICombinedFilter additionalSpatialFilter,
                                     double cutTolerance,
                                     double fillTolerance)
         {
