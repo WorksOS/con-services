@@ -112,9 +112,9 @@ namespace VSS.TRex.Exports.Patches.Executors
             SinglePageRequestSize = DataPatchPageSize,
             SubmitSinglePageOfRequests = true
           },
-          requireSurveyedSurfaceInformation: VSS.TRex.Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) 
-                                             && VSS.TRex.Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistanceMap: VSS.TRex.Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
+          requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) 
+                                             && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+          requestRequiresAccessToDesignFileExistanceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
           overrideSpatialCellRestriction:BoundingIntegerExtent2D.Inverted());
 
         if (!processor.Build())
