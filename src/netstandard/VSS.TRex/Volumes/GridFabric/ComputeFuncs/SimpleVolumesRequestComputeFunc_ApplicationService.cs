@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;

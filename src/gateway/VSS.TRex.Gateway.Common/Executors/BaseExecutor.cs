@@ -9,8 +9,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Rendering.Servers.Client;
-using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Executors

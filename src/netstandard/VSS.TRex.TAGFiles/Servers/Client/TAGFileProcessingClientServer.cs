@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Servers;
+﻿using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.TAGFiles.Servers.Client

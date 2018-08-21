@@ -3,12 +3,13 @@ using System;
 using System.Reflection;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.Executors.Tasks;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Surfaces;
@@ -70,8 +71,8 @@ namespace VSS.TRex.Volumes
         /// meaingful for a filter to have a spatial extent, and to denote an
         /// 'as-at' time only.
         /// </summary>
-        public CombinedFilter BaseFilter { get; set; }
-        public CombinedFilter TopFilter { get; set; }
+        public ICombinedFilter BaseFilter { get; set; }
+        public ICombinedFilter TopFilter { get; set; }
 
         /// FIntermediary filter is used to assist calculation of the volumetric work
         /// done between two points in time. Conceptually, the from surface is defined
@@ -188,7 +189,7 @@ namespace VSS.TRex.Volumes
             // PipeLine.LiftBuildSettings := FLiftBuildSettings;
 
             // Construct and assign the filter set into the pipeline
-            FilterSet FilterSet;
+            IFilterSet FilterSet;
 
           if (VolumeType == VolumeComputationType.Between2Filters)
           {

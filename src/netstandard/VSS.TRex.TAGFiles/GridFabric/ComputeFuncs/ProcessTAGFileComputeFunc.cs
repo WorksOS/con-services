@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core.Compute;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;

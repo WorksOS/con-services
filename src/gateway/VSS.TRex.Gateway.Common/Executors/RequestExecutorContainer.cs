@@ -6,6 +6,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Exports.Surfaces.Requestors;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers.Client;
 

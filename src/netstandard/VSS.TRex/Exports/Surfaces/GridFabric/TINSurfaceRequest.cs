@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.Servers;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
 {

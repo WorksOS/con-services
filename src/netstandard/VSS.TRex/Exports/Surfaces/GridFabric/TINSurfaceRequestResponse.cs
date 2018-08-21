@@ -1,6 +1,5 @@
-﻿using System;
+﻿using VSS.TRex.Common;
 using VSS.TRex.Designs.TTM;
-using VSS.TRex.Pipelines;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
 {

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using Tests.Common;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
-using VSS.TRex.Machines;
 using VSS.TRex.TAGFiles.Servers.Client;
-using Tests.Common;
 
 /*
 Arguments for building project #5, Dimensions:

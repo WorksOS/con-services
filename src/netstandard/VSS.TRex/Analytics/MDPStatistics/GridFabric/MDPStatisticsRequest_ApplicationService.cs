@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.Servers;
 
 namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
 {

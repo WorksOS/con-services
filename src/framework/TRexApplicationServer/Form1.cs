@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Servers.Client;
 
 namespace TRexApplicationServer

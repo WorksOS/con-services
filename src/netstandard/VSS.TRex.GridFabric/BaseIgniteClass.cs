@@ -4,7 +4,7 @@ using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric
 {

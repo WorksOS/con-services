@@ -6,9 +6,9 @@ using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Requests.Interfaces;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
 {

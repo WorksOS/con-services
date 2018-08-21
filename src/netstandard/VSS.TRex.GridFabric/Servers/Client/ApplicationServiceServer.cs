@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.Servers.Client
+﻿using VSS.TRex.GridFabric.Models.Servers;
+
+namespace VSS.TRex.Servers.Client
 {
     /// <summary>
     /// Represents a server instance that client servers implmenting application service type capabilities such as

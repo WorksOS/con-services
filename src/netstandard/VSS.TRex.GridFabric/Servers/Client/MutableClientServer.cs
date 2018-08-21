@@ -11,11 +11,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Apache.Ignite.Core.Deployment;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Logging;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Servers.Client

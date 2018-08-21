@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Pipelines;
-using VSS.TRex.Types;
+﻿using VSS.TRex.Common;
 
 namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
 {

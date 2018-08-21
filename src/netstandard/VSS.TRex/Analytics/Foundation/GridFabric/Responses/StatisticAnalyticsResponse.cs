@@ -1,4 +1,4 @@
-﻿using VSS.TRex.GridFabric.Requests.Interfaces;
+﻿using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
 {

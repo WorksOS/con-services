@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using VSS.TRex.Executors.Tasks;
+using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 

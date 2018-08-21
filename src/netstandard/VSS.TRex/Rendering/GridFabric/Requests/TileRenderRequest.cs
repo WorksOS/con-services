@@ -1,9 +1,9 @@
 ﻿using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.ComputeFuncs;
 using VSS.TRex.Rendering.GridFabric.Responses;
-using VSS.TRex.Servers;
 
 namespace VSS.TRex.Rendering.GridFabric.Requests
 {

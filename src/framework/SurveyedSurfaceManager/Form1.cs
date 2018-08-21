@@ -3,14 +3,16 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.Geometry;
 using VSS.TRex.Services.Designs;
-using VSS.TRex.Services.Surfaces;
+using VSS.TRex.Services.SurveyedSurfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.Surfaces;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace SurveyedSurfaceManager
 {
@@ -138,7 +140,7 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                SurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
+                ISurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
 
                 if (ss == null || ss.Count == 0)
                     MessageBox.Show("No surveyed surfaces");
@@ -255,7 +257,7 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                VSS.TRex.Designs.Storage.Designs designList = DesignsService.Instance().ListDirect(ID);
+                IDesigns designList = DesignsService.Instance().ListDirect(ID);
 
                 if (designList == null || designList.Count == 0)
                     MessageBox.Show("No designs");

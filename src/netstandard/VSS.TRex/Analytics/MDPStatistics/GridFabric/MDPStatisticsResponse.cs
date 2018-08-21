@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
-using VSS.TRex.GridFabric.Requests.Interfaces;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.MDPStatistics.GridFabric

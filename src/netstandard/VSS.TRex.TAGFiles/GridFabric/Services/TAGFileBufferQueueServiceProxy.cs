@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.NodeFilters;
+using VSS.TRex.TAGFiles.GridFabric.NodeFilters;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
