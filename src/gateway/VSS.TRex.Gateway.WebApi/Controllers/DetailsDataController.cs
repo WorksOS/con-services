@@ -29,18 +29,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get CMV details from production data for the specified project and date range.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filterUid"></param>
+    /// <param name="cmvDetailsRequest"></param>
     /// <returns></returns>
     [Route("api/v1/cmv/details")]
-    [HttpGet]
-    public CompactionCmvDetailedResult GetCmvDetails(
-      [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid)
+    [HttpPost]
+    public CompactionCmvDetailedResult PostCmvDetails([FromBody] CMVDetailsRequest cmvDetailsRequest)
     {
-      Log.LogInformation($"{nameof(GetCmvDetails)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostCmvDetails)}: {Request.QueryString}");
 
-      var cmvDetailsRequest = CMVDetailsRequest.CreateCMVDetailsRequest(projectUid, null/* filter */, new[] { 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 });
+      //var cmvDetailsRequest = CMVDetailsRequest.CreateCMVDetailsRequest(projectUid, null/* filter */, new[] { 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 });
       cmvDetailsRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
@@ -54,15 +51,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get Pass Count details from production data for the specified project and date range.
     /// </summary>
+    /// <param name="passCountDetailsRequest"></param>
+    /// <returns></returns>
     [Route("api/v1/passcounts/details")]
-    [HttpGet]
-    public CompactionPassCountDetailedResult GetPassCountDetails(
-      [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid)
+    [HttpPost]
+    public CompactionPassCountDetailedResult PostPassCountDetails([FromBody] PassCountDetailsRequest passCountDetailsRequest)
     {
-      Log.LogInformation($"{nameof(GetPassCountDetails)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostPassCountDetails)}: {Request.QueryString}");
 
-      var passCountDetailsRequest = PassCountDetailsRequest.CreatePassCountDetailsRequest(projectUid, null/* filter */, new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
       passCountDetailsRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
@@ -76,22 +72,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get cut-fill details from production data for the specified project and other parameters.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filterUid"></param>
-    /// <param name="cutfillDesignUid"></param>
+    /// <param name="cutFillRequest"></param>
     /// <returns></returns>
     [Route("api/v1/cutfill/details")]
-    [HttpGet]
-    public CompactionCutFillDetailedResult GetCutFillDetails(
-      [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid,
-      [FromQuery] Guid cutfillDesignUid)
+    [HttpPost]
+    public CompactionCutFillDetailedResult PostCutFillDetails([FromBody] CutFillDetailsRequest cutFillRequest)
     {
-      Log.LogInformation($"{nameof(GetCutFillDetails)}: {Request.QueryString}");
-
-      var cutFillDesign = DesignDescriptor.CreateDesignDescriptor(-1, null, 0.0, cutfillDesignUid);
-
-      var cutFillRequest = CutFillDetailsRequest.CreateCutFillDetailsRequest(projectUid, new [] { 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2 }, null/* filter */, cutFillDesign);
+      Log.LogInformation($"{nameof(PostCutFillDetails)}: {Request.QueryString}");
 
       cutFillRequest.Validate();
 
