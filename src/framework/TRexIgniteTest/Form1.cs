@@ -49,6 +49,7 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.Storage;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters.Interfaces;
@@ -103,7 +104,7 @@ namespace TRexIgniteTest
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-        ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 				if (siteModel == null)
 				{
@@ -189,7 +190,7 @@ namespace TRexIgniteTest
 
 	  private BoundingWorldExtent3D GetZoomAllExtents()
 		{
-        ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 				if (siteModel != null)
 				{
@@ -753,7 +754,7 @@ namespace TRexIgniteTest
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 				try
 				{
@@ -886,7 +887,7 @@ namespace TRexIgniteTest
 		private void button5_Click(object sender, EventArgs e)
 		{
 			// Calculate cut fill statistics from the latest elevations to the selected design
-			var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+			var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 			var offsets = new [] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
 
 			Stopwatch sw = new Stopwatch();
@@ -920,7 +921,7 @@ namespace TRexIgniteTest
 
 		private void TemperatureSummaryButton_Click(object sender, EventArgs e)
 		{
-			var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+			var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 			Stopwatch sw = new Stopwatch();
 			sw. Start();
@@ -1207,7 +1208,7 @@ namespace TRexIgniteTest
 
     private void SpeedSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1247,7 +1248,7 @@ namespace TRexIgniteTest
 
     private void CMVSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1289,7 +1290,7 @@ namespace TRexIgniteTest
 
     private void MDPSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1331,7 +1332,7 @@ namespace TRexIgniteTest
 
     private void PassCountSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1372,7 +1373,7 @@ namespace TRexIgniteTest
 
     private void CMVDetailsButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
       var cmvBands = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 };
 
       Stopwatch sw = new Stopwatch();
@@ -1412,7 +1413,7 @@ namespace TRexIgniteTest
 
     private void PassCountDetailsButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
       var passCountBands = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
       Stopwatch sw = new Stopwatch();

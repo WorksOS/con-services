@@ -49,7 +49,7 @@ namespace VSS.TRex.Servers.Client
                     {
                         ignite.GetCluster().SetActive(true);
 
-                        Log.LogError($"Set grid '{gridName}' to active.");
+                        Log.LogInformation($"Set grid '{gridName}' to active.");
 
                         return true;
                     }
@@ -84,7 +84,7 @@ namespace VSS.TRex.Servers.Client
                 if (ignite != null && ignite.GetCluster().IsActive())
                 {
                     ignite.GetCluster().SetActive(false);
-                    Log.LogError($"Set grid '{gridName}' to inactive.");
+                    Log.LogInformation($"Set grid '{gridName}' to inactive.");
 
                     return true;
                 }
