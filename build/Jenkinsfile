@@ -92,7 +92,8 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage('Preparing runtime image') {
-		runtimeImage = docker.build(container, "-f ./build/Dockerfile .")
+		//runtimeImage = docker.build(container, "-f ./build/Dockerfile .")
+        runtimeImage = docker.build(container, "-f ./build/Dockerfile --build-arg BUILD_CONTAINER=${container} .")
 		runtimeImage.push()
 		
 		dbRuntimeImage = docker.build(containerDb, "-f ./build/Dockerfile.db .")

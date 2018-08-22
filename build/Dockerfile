@@ -1,11 +1,5 @@
-FROM microsoft/dotnet:2.0-sdk as builder
-
-COPY . /build/
-WORKDIR /build
-
-RUN chmod 777 *.sh
-
-RUN ["/bin/sh", "/build/build.sh"]
+ARG BUILD_CONTAINER
+FROM ${BUILD_CONTAINER} as build_container
 
 FROM microsoft/dotnet:2.0-runtime
 
@@ -33,5 +27,3 @@ EXPOSE 80
 
 COPY --from=builder /build/artifacts/VSS.Productivity3D.Filter.WebApi .
 
-
-ENTRYPOINT ["dotnet", "VSS.Productivity3D.Filter.WebAPI.dll"]
