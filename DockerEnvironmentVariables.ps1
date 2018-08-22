@@ -18,7 +18,7 @@
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
-[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "LOCALIPADDRESS", "Machine")
+[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "10.3.18.34", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_PORT", "9092", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Project-Consumer", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Project", "Machine")

@@ -11,235 +11,153 @@ namespace VSS.MasterData.ProjectTests
   [TestClass]
   public class ImportFileTests
   {
-    protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
+    private const string IMPORTED_BY = "JoeSmoe";
+
+    private static readonly ProjectErrorCodesProvider projectErrorCodesProvider;
+    private static readonly Guid projectUid = Guid.NewGuid();
+    private static readonly DateTime? surfaceUtc = DateTime.UtcNow;
+    private static readonly DateTime fileCreatedUtc = DateTime.UtcNow;
+    private static readonly DateTime fileUpdatedUtc = DateTime.UtcNow;
+
+    static ImportFileTests()
+    {
+      projectErrorCodesProvider = new ProjectErrorCodesProvider();
+    }
 
     [TestMethod]
     public void ValidateImportFile_NoFlowFile()
     {
-      FlowFile file = null;
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
-
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(null, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(27)));
     }
 
     [TestMethod]
     public void ValidateImportFile_FlowFileNameTooLong()
     {
-      FlowFile file = new FlowFile() {path = "", flowFilename = ""};
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "", flowFilename = "" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(28)));
     }
 
     [TestMethod]
     public void ValidateImportFile_NoPath()
     {
-      FlowFile file = new FlowFile() {path = "", flowFilename = "deblah"};
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "", flowFilename = "deblah" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(29)));
     }
 
     [TestMethod]
     public void ValidateImportFile_InvalidProjectUid()
     {
-      FlowFile file = new FlowFile() {path = "blahblah", flowFilename = "deblah"};
-      Guid projectUid = Guid.Empty;
-      ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
-      
+      var file = new FlowFile { path = "blahblah", flowFilename = "deblah" };
+
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, Guid.Empty, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(5)));
     }
 
     [TestMethod]
     public void ValidateImportFile_UnsupportedImportedFileType()
     {
-      FlowFile file = new FlowFile() {path = "blahblah", flowFilename = "deblah"};
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "blahblah", flowFilename = "deblah" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(31)));
     }
 
     [TestMethod]
     public void ValidateImportFile_InvalidFileExtension()
     {
-      FlowFile file = new FlowFile() {path = "blahblah", flowFilename = "deblah.ttm"};
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Alignment;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "blahblah", flowFilename = "deblah.ttm" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
     [TestMethod]
     public void ValidateImportFile_InvalidFileCreatedUtc()
     {
-      FlowFile file = new FlowFile() { path = "blahblah", flowFilename = "deblah.svl" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Alignment;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.MinValue;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "blahblah", flowFilename = "deblah.svl" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
+          DateTime.MinValue, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(33)));
     }
 
     [TestMethod]
     public void ValidateImportFile_InvalidFileUpdatedUtc()
     {
-      FlowFile file = new FlowFile() { path = "blahblah", flowFilename = "deblah.svl" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Alignment;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.MinValue;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "blahblah", flowFilename = "deblah.svl" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, DateTime.MinValue, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(34)));
     }
 
     [TestMethod]
     public void ValidateImportFile_InvalidImportedBy()
     {
-      FlowFile file = new FlowFile() { path = "blahblah", flowFilename = "deblah.svl" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Alignment;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = null;
+      var file = new FlowFile { path = "blahblah", flowFilename = "deblah.svl" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, null, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(35)));
     }
 
     [TestMethod]
     public void ValidateImportFile_LineworkHappyPath()
     {
-      FlowFile file = new FlowFile() {path = "\\*", flowFilename = "deblah.dxf"};
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Linework;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.Meters;
-      DateTime? surfaceUtc = null;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.dxf" };
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-        fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Linework, DxfUnitsType.Meters,
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null);
     }
 
     [TestMethod]
     public void ValidateImportFile_LineworkWrongFileExtension()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Linework;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.Meters;
-      DateTime? surfaceUtc = null;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.bbbb" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Linework, DxfUnitsType.Meters,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
     [TestMethod]
     public void ValidateImportFile_DesignSurfaceHappyPath()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = null;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-        fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null);
     }
 
     [TestMethod]
     public void ValidateImportFile_DesignSurfaceWrongFileExtension()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = null;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.bbbb" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
@@ -247,52 +165,31 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void ValidateImportFile_SurveyedSurfaceHappyPath()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-        fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc);
     }
 
     [TestMethod]
     public void ValidateImportFile_SurveyedSurfaceWrongFileExtension()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = DateTime.UtcNow;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.bbbb" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.DesignSurface, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
     [TestMethod]
     public void ValidateImportFile_SurveyedSurfaceMissingUtc()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.SurveyedSurface;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = null;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.SurveyedSurface, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(36)));
     }
 
@@ -300,34 +197,20 @@ namespace VSS.MasterData.ProjectTests
     [TestMethod]
     public void ValidateImportFile_AlignmentHappyPath()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.svl" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Alignment;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = null;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.svl" };
 
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-        fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
+        fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null);
     }
 
     [TestMethod]
     public void ValidateImportFile_AlignmentWrongFileExtension()
     {
-      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
-      Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Alignment;
-      DxfUnitsType dxfUnitsType = DxfUnitsType.ImperialFeet;
-      DateTime? surfaceUtc = null;
-      DateTime fileCreatedUtc = DateTime.UtcNow;
-      DateTime fileUpdatedUtc = DateTime.UtcNow;
-      string importedBy = "JoeSmoe";
+      var file = new FlowFile { path = "\\*", flowFilename = "deblah.ttm" };
 
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, ImportedFileType.Alignment, DxfUnitsType.ImperialFeet,
+          fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
   }

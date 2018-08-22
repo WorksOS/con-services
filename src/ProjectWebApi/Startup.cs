@@ -1,4 +1,4 @@
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+﻿using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -140,6 +140,7 @@ namespace VSS.MasterData.Project.WebAPI
         app.UseMiddleware<NewRelicMiddleware>();
       }
       app.UseFilterMiddleware<ProjectAuthentication>();
+      app.UseStaticFiles();
       // Because we use Flow Files, and Background tasks we sometimes need to reread the body of the request
       // Without this, the Request Body Stream cannot set it's read position to 0.
       // See https://stackoverflow.com/questions/31389781/read-request-body-twice

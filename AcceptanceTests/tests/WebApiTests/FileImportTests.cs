@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 
@@ -11,7 +12,9 @@ namespace WebApiTests
     private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
 
     [TestMethod]
-    public void TestNoFileUploads()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestNoFileUploads(string uriRoot)
     {
       const string testName = "File Import 1";
       msg.Title(testName, "Create standard project and customer then get imported files - There should be none.");
@@ -38,8 +41,8 @@ namespace WebApiTests
          "| TableName           | EventDate   | ProjectUID   | LegacyProjectID   | Name       | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone          | StartDate   | EndDate   | GeometryWKT   |",
         $"| Project             | 0d+09:10:00 | {projectUid} | {legacyProjectId} | {testName} | 0                | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {geometryWkt} |"};
       ts.PublishEventCollection(projectsArray);
-      var importFile = new ImportFile();
-      var expectedResults = importFile.expectedImportFileDescriptorsListResult;
+      var importFile = new ImportFile(uriRoot);
+      var expectedResults = importFile.ExpectedImportFileDescriptorsListResult;
       var uri = ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}";
 
       var filesResult = importFile.GetImportedFilesFromWebApiV4(uri, customerUid);
@@ -48,12 +51,14 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void TestImportSvlFile()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportSvlFile(string uriRoot)
     {
       const string testName = "File Import 4";
       msg.Title(testName, "Create standard project and customer then upload svl file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -79,18 +84,21 @@ namespace WebApiTests
       ts.PublishEventCollection(projectEventArray);
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
-    public void TestImport2SvlFiles()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImport2SvlFiles(string uriRoot)
     {
       const string testName = "File Import 3";
       msg.Title(testName, "Create standard project and customer then upload two alignment files");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -117,15 +125,15 @@ namespace WebApiTests
 
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment2} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment2.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
-      var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult2.ImportedFileDescriptor, expectedResult2, true);
+      var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment2}" }));
+      var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
@@ -134,12 +142,14 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void TestImportSurfaceFile()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportSurfaceFile(string uriRoot)
     {
       const string testName = "File Import 4";
       msg.Title(testName, "Create standard project and customer then upload design surface file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -165,18 +175,20 @@ namespace WebApiTests
       ts.PublishEventCollection(projectEventArray);
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
-    public void TestImport2SurfaceFiles()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImport2SurfaceFiles(string uriRoot)
     {
       const string testName = "File Import 5";
       msg.Title(testName, "Create standard project and customer then upload two Design surface files");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -203,15 +215,15 @@ namespace WebApiTests
 
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface2} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface2.FullPath()} | 1                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface1 }" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
-      var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult2.ImportedFileDescriptor, expectedResult2, true);
+      var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={ TestFile.TestDesignSurface2 }" }));
+      var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
@@ -220,12 +232,14 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void TestImportSurveyedSurfaceFile()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportSurveyedSurfaceFile(string uriRoot)
     {
       const string testName = "File Import 4";
       msg.Title(testName, "Create standard project and customer then upload surveyed surface file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -251,18 +265,20 @@ namespace WebApiTests
       ts.PublishEventCollection(projectEventArray);
       var importFileArray = new[] {
          "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | SurveyedUtc     | IsActivated | MinZoomLevel | MaxZoomLevel |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
-    public void TestImport2SurveyedSurfaceFiles()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImport2SurveyedSurfaceFiles(string uriRoot)
     {
       const string testName = "File Import 5";
       msg.Title(testName, "Create standard project and customer then upload two Surveryed surface files");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -289,15 +305,16 @@ namespace WebApiTests
 
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | SurveyedUtc     | IsActivated | MinZoomLevel | MaxZoomLevel |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface2} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |",
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface2.FullPath()} | 2                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
-      var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult2.ImportedFileDescriptor, expectedResult2, true);
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+
+      var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface2}" }));
+      var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
 
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
@@ -306,12 +323,14 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void TestImportTheSameFileTwice()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportTheSameFileTwice(string uriRoot)
     {
       const string testName = "File Import 6";
       msg.Title(testName, "Create standard project then upload two alignment files that are the same name and content");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -338,15 +357,15 @@ namespace WebApiTests
 
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
       Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
-      Assert.IsTrue(filesResult2.Message == "CreateImportedFileV4. The file has already been created.", "Expecting a message: CreateImportedFileV4.The file has already been created.");
+      var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      Assert.IsTrue(filesResult2.Message == "CreateImportedFileV4. The file has already been created.", "Expecting a message: CreateImportedFileV4. The file has already been created.");
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
@@ -354,12 +373,14 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void TestImportANewFileThenUpdateTheAlignmentFile()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportANewFileThenUpdateTheAlignmentFile(string uriRoot)
     {
       const string testName = "File Import 7";
       msg.Title(testName, "Create standard project then upload a new alignment file. Then update alignment file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -386,27 +407,29 @@ namespace WebApiTests
 
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |",
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
-      var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
     }
 
 
     [TestMethod]
-    public void TestImportANewFileThenUpdateTheDesignSurfaceFile()
+    [DataRow("api/v4/importedfile")]
+    public void TestImportANewFileThenUpdateTheDesignSurfaceFile(string uriRoot)
     {
       const string testName = "File Import 7";
       msg.Title(testName, "Create standard project then upload a new design surface file. Then update design surface file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -433,28 +456,30 @@ namespace WebApiTests
 
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |", // SurveyedUtc               |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |", // {startDateTime}           |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | true        | 15           | 19           |" }; // {startDateTime.AddDays(5)}|"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |", // {startDateTime}           |",
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | true        | 15           | 19           |" }; // {startDateTime.AddDays(5)}|"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { "filename=TestDesignSurface1.ttm" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
       Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
-      var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      var filesResult2 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
       Assert.AreEqual(2, filesResult2.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 2 imported file History but got " + filesResult2.ImportedFileDescriptor.ImportedFileHistory.Count);
     }
 
     [TestMethod]
-    public void TestImportANewFileThenUpdateTheDesignSurfaceFile_SameFileDates()
+    [DataRow("api/v4/importedfile")]
+    public void TestImportANewFileThenUpdateTheDesignSurfaceFile_SameFileDates(string uriRoot)
     {
       const string testName = "File Import 7";
       msg.Title(testName, "Create standard project then upload a new design surface file. Then update design surface file however leave same FileDates");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -481,23 +506,24 @@ namespace WebApiTests
 
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |", // SurveyedUtc               |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime}            | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |", // {startDateTime}           |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime}            | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |", // {startDateTime}|"};
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime}            | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.comChanged | true  | 15          | 19           |" }; // {startDateTime}|"};
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime}            | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |", // {startDateTime}           |",
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime}            | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |", // {startDateTime}|"};
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 1                | {startDateTime}            | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.comChanged | true  | 15          | 19           |" }; // {startDateTime}|"};
 
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
-      var filesResult3 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
+      _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      var filesResult3 = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={TestFile.TestDesignSurface1}" }));
       Assert.AreEqual(1, filesResult3.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult3.ImportedFileDescriptor.ImportedFileHistory.Count);
     }
 
     [TestMethod]
-    public void TestImportANewFileThenUpdateTheSurveyedSurfaceFile()
+    [DataRow("api/v4/importedfile")]
+    public void TestImportANewFileThenUpdateTheSurveyedSurfaceFile(string uriRoot)
     {
       const string testName = "File Import 7";
       msg.Title(testName, "Create standard project then upload a new surveyed surface file. Then update surveyed surface file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -524,27 +550,30 @@ namespace WebApiTests
 
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | SurveyedUtc     | IsActivated | MinZoomLevel | MaxZoomLevel |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 2                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |",
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2, "PUT");
-      var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Put, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 1, "Expected 1 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
     }
 
 
     [TestMethod]
-    public void TestImportANewFileThenDeleteTheAlignmentFile()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportANewFileThenDeleteTheAlignmentFile(string uriRoot)
     {
       const string testName = "File Import 7";
       msg.Title(testName, "Create standard project then upload a new alignment file. Then delete alignment file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -572,28 +601,31 @@ namespace WebApiTests
       var importFileArray = new[]
       {
         "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"
       };
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
-      importFile.importedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      importFile.ImportedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
 
-      var filesResult2 = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1, "DELETE");
-      var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete));
+      _ = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
+
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 0, "Expected 0 imported files but got " + importFileList.ImportedFileDescriptors.Count);
     }
 
     [TestMethod]
-    public void KafkaConsumeTestImportANewAlignmentFile()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void KafkaConsumeTestImportANewAlignmentFile(string uriRoot)
     {
       const string testName = "File Import 8";
       msg.Title(testName, "Kafka Consume Test Create standard project then upload a new alignment file.");
       var ts = new TestSupport();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -621,24 +653,27 @@ namespace WebApiTests
       var importFileArray = new[]
       {
         "| EventType              | ProjectUid   | CustomerUid   | Name                      | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"
       };
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
-      importFile.importedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestAlignment1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      importFile.ImportedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
+
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "fk_ProjectUID", 1, new Guid(projectUid));
     }
 
     [TestMethod]
-    public void KafkaConsumeTestTestImportANewFileThenUpdateTheSurveyedSurfaceFile()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void KafkaConsumeTestTestImportANewFileThenUpdateTheSurveyedSurfaceFile(string uriRoot)
     {
       const string testName = "File Import 9";
       msg.Title(testName, "Kafka Consume Test Create standard project then upload a new surveyed surface file. ");
       var ts = new TestSupport();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -665,22 +700,24 @@ namespace WebApiTests
 
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | SurveyedUtc     | IsActivated | MinZoomLevel | MaxZoomLevel |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult1, true);
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 2                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |",
+       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1.FullPath()} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} | true        | 0            | 0            |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDesignSurface1}" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
 
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ImportedFile", "fk_ProjectUID", 1, new Guid(projectUid));
 
     }
     [TestMethod]
-    public void TestImportdxfFileUsSurveyFeet()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportdxfFileUsSurveyFeet(string uriRoot)
     {
       const string testName = "File Import 10";
       msg.Title(testName, "Create standard project and customer then upload dxf file");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -706,17 +743,20 @@ namespace WebApiTests
       ts.PublishEventCollection(projectEventArray);
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 2            | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile.FullPath()} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 2            | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDxFfile}" }));
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
+
     [TestMethod]
-    public void TestImportdxfFileImperial()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportdxfFileImperial(string uriRoot)
     {
       const string testName = "File Import 11";
       msg.Title(testName, "Create standard project and customer then upload dxf file in imperial");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -742,18 +782,20 @@ namespace WebApiTests
       ts.PublishEventCollection(projectEventArray);
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 1            | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile.FullPath()} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 1            | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDxFfile}" }));
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
 
     [TestMethod]
-    public void TestImportdxfFileMetric()
+    [DataRow("api/v4/importedfile")]
+    [DataRow("api/v4/importedfile/direct")]
+    public void TestImportdxfFileMetric(string uriRoot)
     {
       const string testName = "File Import 12";
       msg.Title(testName, "Create standard project and customer then upload dxf file in metric");
       var ts = new TestSupport();
-      var importFile = new ImportFile();
+      var importFile = new ImportFile(uriRoot);
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
@@ -779,9 +821,9 @@ namespace WebApiTests
       ts.PublishEventCollection(projectEventArray);
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name                   | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | DxfUnitsType | MinZoomLevel | MaxZoomLevel |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 0            | 15           | 19           |"};
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDxFfile.FullPath()} | 0                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 0            | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={TestFile.TestDxFfile}" }));
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
   }
 }

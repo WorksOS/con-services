@@ -868,7 +868,6 @@ namespace TestUtility
     /// <summary>
     /// Check if the test is being debugged in VS. Set to different endpoind
     /// </summary>
-    /// <returns></returns>
     public string GetBaseUri()
     {
       var baseUri = TsCfg.webApiUri;

@@ -1,8 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 
@@ -11,15 +12,15 @@ namespace WebApiTests
   [TestClass]
   public class FileActivationTests
   {
-    private readonly Msg _msg = new Msg();
+    private readonly Msg msg = new Msg();
 
-    private const string GeometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+    private const string GEOMETRY_WKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
 
     [TestMethod]
     public void GetImportedFiles_should_return_activation_state()
     {
       const string testName = "Get Activated Import Files";
-      _msg.Title(testName, "Get all activated import files");
+      msg.Title(testName, "Get all activated import files");
       var ts = new TestSupport();
       var importFile = new ImportFile();
       var legacyProjectId = ts.SetLegacyProjectId();
@@ -42,20 +43,22 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GeometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
       var importFileArray = new[] {
         "| EventType              | ProjectUid   | CustomerUid   | Name                       | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |",
-        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment2} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment1.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |",
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestAlignment2.FullPath()} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
 
-      var filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 1);
-      var expectedResult = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post));
+      var expectedResult = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       expectedResult.IsActivated = true;
-      ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult, true);
-      filesResult = importFile.SendImportedFilesToWebApiV4(ts, importFileArray, 2);
-      expectedResult = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult, true);
+      filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 2, new ImportOptions(HttpMethod.Post));
+      expectedResult = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+
       expectedResult.IsActivated = true;
       ts.CompareTheActualImportFileWithExpectedV4(filesResult.ImportedFileDescriptor, expectedResult, true);
 
@@ -71,7 +74,7 @@ namespace WebApiTests
     public void Set_activation_should_fail_when_projectId_is_invalid()
     {
       const string testName = "Set ImportFile::IsActivated with invalid project id";
-      _msg.Title(testName, string.Empty);
+      msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -85,7 +88,7 @@ namespace WebApiTests
 
       var jsonResponse = importFile.DoHttpRequest(
           ts.GetBaseUri() + "api/v4/importedfiles?projectUid=INVALID_PROJECT_ID",
-          "PUT",
+          HttpMethod.Put,
           requestBody,
           customerUid.ToString(),
           "application/json");
@@ -100,7 +103,7 @@ namespace WebApiTests
     public void Set_activation_should_handle_project_with_no_files()
     {
       const string testName = "Set ImportFile::IsActivated with no loaded project files";
-      _msg.Title(testName, string.Empty);
+      msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -124,7 +127,7 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GeometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
       var requestBody = JsonConvert.SerializeObject(new ActivatedImportFilesRequest
@@ -137,7 +140,7 @@ namespace WebApiTests
 
       var jsonResponse = importFile.DoHttpRequest(
         ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}",
-        "PUT",
+        HttpMethod.Put,
         requestBody,
         customerUid.ToString(),
         "application/json");
@@ -152,7 +155,7 @@ namespace WebApiTests
     public void Set_activation_should_handle_empty_file_list()
     {
       const string testName = "Set ImportFile::IsActivated with empty file list";
-      _msg.Title(testName, string.Empty);
+      msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -177,10 +180,10 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GeometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      var fileResult = ImportFiles(importFile, ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment1);
+      ImportFiles(importFile, ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment1.FullPath());
       var requestBody = JsonConvert.SerializeObject(new ActivatedImportFilesRequest
       {
         ImportedFileDescriptors = new List<ActivatedFileDescriptor>()
@@ -188,7 +191,7 @@ namespace WebApiTests
 
       var jsonResponse = importFile.DoHttpRequest(
         ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}",
-        "PUT",
+        HttpMethod.Put,
         requestBody,
         customerUid.ToString(),
         "application/json");
@@ -203,7 +206,7 @@ namespace WebApiTests
     public void Set_activation_should_handle_no_eligible_files()
     {
       const string testName = "Set ImportFile::IsActivated with no valid files";
-      _msg.Title(testName, string.Empty);
+      msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -228,10 +231,10 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GeometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      var fileResult = ImportFiles(importFile, ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment2);
+      ImportFiles(importFile, ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment2.FullPath());
       var requestBody = JsonConvert.SerializeObject(new ActivatedImportFilesRequest
       {
         ImportedFileDescriptors = new List<ActivatedFileDescriptor>
@@ -242,7 +245,7 @@ namespace WebApiTests
 
       var jsonResponse = importFile.DoHttpRequest(
         ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}",
-        "PUT",
+        HttpMethod.Put,
         requestBody,
         customerUid.ToString(),
         "application/json");
@@ -257,7 +260,7 @@ namespace WebApiTests
     public void Set_activation_should_set_state_on_eligible_files()
     {
       const string testName = "Set ImportFile::IsActivated";
-      _msg.Title(testName, string.Empty);
+      msg.Title(testName, string.Empty);
 
       var ts = new TestSupport();
       var importFile = new ImportFile();
@@ -282,11 +285,11 @@ namespace WebApiTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GeometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {GEOMETRY_WKT}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      var fileResult = ImportFiles(importFile, ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment2);
-      
+      var fileResult = ImportFiles(importFile, ts, projectUid, customerUid, startDateTime, TestFile.TestAlignment2.FullPath());
+
       var requestBody = JsonConvert.SerializeObject(new ActivatedImportFilesRequest
       {
         ImportedFileDescriptors = new List<ActivatedFileDescriptor>
@@ -297,7 +300,7 @@ namespace WebApiTests
 
       var jsonResponse = importFile.DoHttpRequest(
         ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}",
-        "PUT",
+        HttpMethod.Put,
         requestBody,
         customerUid.ToString(),
         "application/json");
@@ -324,7 +327,7 @@ namespace WebApiTests
         "| EventType              | ProjectUid   | CustomerUid   | Name                       | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated |",
         $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {testFile} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        |"};
 
-      return importFile.SendImportedFilesToWebApiV4(testSupport, importFileArray, 1);
+      return importFile.SendRequestToFileImportV4(testSupport, importFileArray, 1, new ImportOptions(HttpMethod.Post));
     }
   }
 }

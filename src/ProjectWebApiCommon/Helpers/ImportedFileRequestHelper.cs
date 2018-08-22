@@ -25,7 +25,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// </summary>
   public class ImportedFileRequestHelper
   {
-
     /// <summary>
     /// Gets the imported file list for a project
     /// </summary>

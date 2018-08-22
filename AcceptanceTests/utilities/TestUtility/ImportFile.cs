@@ -17,30 +17,28 @@ namespace TestUtility
 {
   public class ImportFile
   {
+    public ImportedFileDescriptorListResult ExpectedImportFileDescriptorsListResult = new ImportedFileDescriptorListResult
+    {
+      ImportedFileDescriptors = ImmutableList<ImportedFileDescriptor>.Empty
+    };
 
-    public ImportedFileDescriptor importFileDescriptor = new ImportedFileDescriptor();
-    public ImportedFileDescriptorSingleResult expectedImportFileDescriptorSingleResult;
-    public string importedFileUid;
+    public ImportedFileDescriptor ImportFileDescriptor = new ImportedFileDescriptor();
+    public ImportedFileDescriptorSingleResult ExpectedImportFileDescriptorSingleResult;
+    public string ImportedFileUid;
+
+    private readonly string uriRoot;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
     private const string BOUNDARY_BLOCK_DELIMITER = "--";
-    private const string BOUNDARY_START = "----WebKitFormBoundary";
-    private const string BOUNDARY = BOUNDARY_BLOCK_DELIMITER + BOUNDARY_START;
-    private const int CHUNK_SIZE = 1048576; //1024 * 1024
+    private const string BOUNDARY_START = "-----";
+    private const int CHUNK_SIZE = 1024 * 1024;
 
-    public ImportedFileDescriptorListResult expectedImportFileDescriptorsListResult = new ImportedFileDescriptorListResult()
-    { ImportedFileDescriptors = ImmutableList<ImportedFileDescriptor>.Empty };
-
-    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+    public ImportFile(string uriRoot = null)
     {
-      DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
-      NullValueHandling = NullValueHandling.Ignore
-    };
+      this.uriRoot = uriRoot ?? "api/v4/importedfile";
 
-    public ImportFile()
-    {
-      expectedImportFileDescriptorSingleResult = new ImportedFileDescriptorSingleResult(importFileDescriptor);
+      ExpectedImportFileDescriptorSingleResult = new ImportedFileDescriptorSingleResult(ImportFileDescriptor);
     }
 
     /// <summary>
@@ -77,86 +75,92 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Add a string array of data 
+    /// Send request to the FileImportV4 controller
     /// </summary>
-    /// <param name="ts">Test support</param>
-    /// <param name="importFileArray">string array of data</param>
-    /// <param name="row">Add a single row at a time</param>
-    /// <param name="method">HTTP methodf</param>
-    /// <returns></returns>
-    public ImportedFileDescriptorSingleResult SendImportedFilesToWebApiV4(TestSupport ts, string[] importFileArray, int row, string method = "POST")
+    public ImportedFileDescriptorSingleResult SendRequestToFileImportV4(TestSupport ts, string[] importFileArray, int row, ImportOptions importOptions = new ImportOptions())
     {
       var uri = ts.GetBaseUri();
-
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
-      ed.FileCreatedUtc = ed.FileCreatedUtc;
-      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor = ed;
+
+      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = ed;
+
       var createdDt = ed.FileCreatedUtc.ToUniversalTime().ToString("o");
       var updatedDt = ed.FileUpdatedUtc.ToUniversalTime().ToString("o");
-      uri = uri + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={createdDt:yyyy-MM-ddTHH:mm:ss.fffffff}&fileUpdatedUtc={updatedDt:yyyy-MM-ddTHH:mm:ss.fffffff}";
-      if (ed.ImportedFileTypeName == "SurveyedSurface")
+
+      uri = uri + $"{uriRoot}?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={createdDt:yyyy-MM-ddTHH:mm:ss.fffffff}&fileUpdatedUtc={updatedDt:yyyy-MM-ddTHH:mm:ss.fffffff}";
+
+      switch (ed.ImportedFileTypeName)
       {
-        uri = uri + $"&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff} ";
+        case "SurveyedSurface":
+          uri = $"{uri}&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff} ";
+          break;
+        case "Linework":
+          uri = $"{uri}&DxfUnitsType={ed.DxfUnitsType} ";
+          break;
       }
-      if (ed.ImportedFileTypeName == "Linework")
+
+      if (importOptions.QueryParams != null)
       {
-        uri = uri + $"&DxfUnitsType={ed.DxfUnitsType} ";
+        foreach (var param in importOptions.QueryParams)
+        {
+          uri = $"{uri}&{param}";
+        }
       }
-      if (method == "DELETE")
+
+      if (importOptions.HttpMethod == HttpMethod.Delete)
       {
-        uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={importedFileUid}";
+        uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
-      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, method);
-      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
-      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc.ToUniversalTime();
-      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc.ToUniversalTime();
+
+      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, importOptions.HttpMethod);
+      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc = ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc.ToUniversalTime();
+      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc = ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc.ToUniversalTime();
+
       try
       {
-        var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response, jsonSettings);
-        return filesResult;
+        return JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response, new JsonSerializerSettings
+        {
+          DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
+          NullValueHandling = NullValueHandling.Ignore
+        });
       }
-      catch (Exception)
+      catch (Exception exception)
       {
         Console.WriteLine(response);
         Assert.Fail(response);
-        return null;
       }
-    }
 
+      return null;
+    }
 
     /// <summary>
     /// Add a string array of data 
     /// </summary>
-    /// <param name="ts">Test support</param>
-    /// <param name="projectId"></param>
-    /// <param name="importFileArray">string array of data</param>
-    /// <param name="row">Add a single row at a time</param>
-    /// <returns></returns>
     public string SendImportedFilesToWebApiV2(TestSupport ts, long projectId, string[] importFileArray, int row)
     {
-      string method = "PUT";
       var uri = ts.GetBaseUri();
       uri = uri + $"api/v2/projects/{projectId}/importedfiles";
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
-      var importedFileTbc = new ImportedFileTbc()
+      var importedFileTbc = new ImportedFileTbc
       {
         FileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed",
         Path = Path.GetFullPath(ed.Name),
         Name = Path.GetFileName(ed.Name),
         ImportedFileTypeId = ed.ImportedFileType,
         CreatedUtc = ed.FileCreatedUtc,
-        AlignmentFile = ed.ImportedFileType == VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment
-                        ? new AlignmentFile(){Offset = 1} : null,
-        SurfaceFile = ed.ImportedFileType == VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SurveyedSurface
-          ? new SurfaceFile() {SurveyedUtc = new DateTime()} : null,
-        LineworkFile = ed.ImportedFileType == VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Linework
-        ? new LineworkFile() { DxfUnitsTypeId = DxfUnitsType.Meters} : null
+        AlignmentFile = ed.ImportedFileType == ImportedFileType.Alignment
+                        ? new AlignmentFile { Offset = 1 } : null,
+        SurfaceFile = ed.ImportedFileType == ImportedFileType.SurveyedSurface
+          ? new SurfaceFile { SurveyedUtc = new DateTime() } : null,
+        LineworkFile = ed.ImportedFileType == ImportedFileType.Linework
+        ? new LineworkFile { DxfUnitsTypeId = DxfUnitsType.Meters } : null
       };
       string requestJson = JsonConvert.SerializeObject(importedFileTbc, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, requestJson, HttpStatusCode.OK, "application/json", ts.CustomerUid.ToString());
+      var response = restClient.DoHttpRequest(uri, "PUT", requestJson, HttpStatusCode.OK, "application/json", ts.CustomerUid.ToString());
 
       return response;
     }
@@ -164,12 +168,8 @@ namespace TestUtility
     /// <summary>
     /// Upload a single file to the web api 
     /// </summary>
-    /// <param name="fullFileName">Full filename</param>
-    /// <param name="uri">Full uri to send it to</param>
-    /// <param name="customerUid">Customer Uid</param>
-    /// <param name="method">HTTP method</param>
     /// <returns>Repsonse from web api as string</returns>
-    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, string method)
+    private string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
     {
       try
       {
@@ -188,15 +188,17 @@ namespace TestUtility
             // but less than 2*chunkSize
             endByte = fileSize;
           }
-          int currentChunkSize = (int)(endByte - startByte);
-          var flowId = GenerateId();
+
+          int currentChunkSize = endByte - startByte;
+          var boundaryIdentifier = Guid.NewGuid().ToString();
           var flowFileUpload = SetAllAttributesForFlowFile(fileSize, name, offset + 1, chunks, currentChunkSize);
           var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
-          string contentType = $"multipart/form-data; boundary={BOUNDARY_START}{flowId}";
+          string contentType = $"multipart/form-data; boundary={BOUNDARY_START}{boundaryIdentifier}";
+
           using (var content = new MemoryStream())
           {
-            FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY}{flowId}", content);
-            result = DoHttpRequest(uri, method, content, customerUid, contentType);
+            FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
+            result = DoHttpRequest(uri, httpMethod, content, customerUid, contentType);
           }
         }
         //The last chunk should have the result
@@ -211,14 +213,7 @@ namespace TestUtility
     /// <summary>
     /// Send HTTP request for importing a file with json payload
     /// </summary>
-    /// <param name="resourceUri">Full URI</param>
-    /// <param name="httpMethod">Method to use</param>
-    /// <param name="payloadData"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="contentType"></param>
-    /// <param name="jwt"></param>
-    /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, string customerUid, string contentType, string jwt = null)
+    public string DoHttpRequest(string resourceUri, HttpMethod httpMethod, string payloadData, string customerUid, string contentType, string jwt = null)
     {
       byte[] bytes = new UTF8Encoding().GetBytes(payloadData);
       return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType, jwt);
@@ -227,14 +222,7 @@ namespace TestUtility
     /// <summary>
     /// Send HTTP request for importing a file with binary (file contents) payload
     /// </summary>
-    /// <param name="resourceUri">Full URI</param>
-    /// <param name="httpMethod">Method to use</param>
-    /// <param name="payloadData"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="contentType"></param>
-    /// <param name="jwt"></param>
-    /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod, MemoryStream payloadData, string customerUid, string contentType, string jwt = null)
+    public string DoHttpRequest(string resourceUri, HttpMethod httpMethod, MemoryStream payloadData, string customerUid, string contentType, string jwt = null)
     {
       byte[] bytes = payloadData.ToArray();
       return DoHttpRequest(resourceUri, httpMethod, bytes, customerUid, contentType, jwt);
@@ -243,22 +231,18 @@ namespace TestUtility
     /// <summary>
     /// Send HTTP request for importing a file
     /// </summary>
-    /// <param name="resourceUri">Full URI</param>
-    /// <param name="httpMethod">Method to use</param>
-    /// <param name="payloadData"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="contentType"></param>
-    /// <param name="jwt"></param>
-    /// <returns></returns>
-    private string DoHttpRequest(string resourceUri, string httpMethod, byte[] payloadData, string customerUid, string contentType, string jwt = null)
+    private static string DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, string customerUid, string contentType, string jwt = null)
     {
-      var request = WebRequest.Create(resourceUri) as HttpWebRequest;
-      if (request == null)
-      { return string.Empty; }
-      request.Method = httpMethod;
+      if (!(WebRequest.Create(resourceUri) is HttpWebRequest request))
+      {
+        return string.Empty;
+      }
+
+      request.Method = httpMethod.Method;
       request.Headers["X-JWT-Assertion"] = jwt ?? RestClientUtil.DEFAULT_JWT;
       request.Headers["X-VisionLink-CustomerUid"] = customerUid; //"87bdf851-44c5-e311-aa77-00505688274d";
       request.Headers["X-VisionLink-ClearCache"] = "true";
+
       if (payloadData != null)
       {
         request.ContentType = contentType;
@@ -293,13 +277,7 @@ namespace TestUtility
     /// <summary>
     /// Sets the attributes for uploading using flow.
     /// </summary>
-    /// <param name="fileSize"></param>
-    /// <param name="name"></param>
-    /// <param name="currentChunkNumber"></param>
-    /// <param name="totalChunks"></param>
-    /// <param name="currentChunkSize"></param>
-    /// <returns></returns>
-    private FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize)
+    private static FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize)
     {
       var flowFileUpload = new FlowFileUpload
       {
@@ -318,24 +296,18 @@ namespace TestUtility
     /// <summary>
     /// Format the Content Disposition. This is very specific / fussy with the boundary
     /// </summary>
-    /// <param name="flowFileUpload"></param>
-    /// <param name="chunkContent"></param>
-    /// <param name="name"></param>
-    /// <param name="boundary"></param>
-    /// <param name="resultingStream"></param>
-    /// <returns></returns>
-    private void FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name,
+    private static void FormatTheContentDisposition(FlowFileUpload flowFileUpload, byte[] chunkContent, string name,
       string boundary, MemoryStream resultingStream)
     {
       var sb = new StringBuilder();
       sb.AppendFormat(
-        $"{NEWLINE}{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowChunkNumber\"{NEWLINE}{NEWLINE}{flowFileUpload.flowChunkNumber}{NEWLINE}"+
+        $"{NEWLINE}{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowChunkNumber\"{NEWLINE}{NEWLINE}{flowFileUpload.flowChunkNumber}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowChunkSize\"{NEWLINE}{NEWLINE}{flowFileUpload.flowChunkSize}{NEWLINE}" +
-        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowCurrentChunkSize\"{NEWLINE}{NEWLINE}{flowFileUpload.flowCurrentChunkSize}{NEWLINE}"+
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowCurrentChunkSize\"{NEWLINE}{NEWLINE}{flowFileUpload.flowCurrentChunkSize}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowTotalSize\"{NEWLINE}{NEWLINE}{flowFileUpload.flowTotalSize}{NEWLINE}" +
-        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowIdentifier\"{NEWLINE}{NEWLINE}{flowFileUpload.flowIdentifier}{NEWLINE}"+
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowIdentifier\"{NEWLINE}{NEWLINE}{flowFileUpload.flowIdentifier}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowFilename\"{NEWLINE}{NEWLINE}{flowFileUpload.flowFilename}{NEWLINE}" +
-        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowRelativePath\"{NEWLINE}{NEWLINE}{flowFileUpload.flowRelativePath}{NEWLINE}"+
+        $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowRelativePath\"{NEWLINE}{NEWLINE}{flowFileUpload.flowRelativePath}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowTotalChunks\"{NEWLINE}{NEWLINE}{flowFileUpload.flowTotalChunks}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"file\"; filename=\"{name}\"{NEWLINE}Content-Type: application/octet-stream{NEWLINE}{NEWLINE}");
 
@@ -350,27 +322,9 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Generate a unique flow identifier for the upload.
-    /// </summary>
-    /// <returns></returns>
-    private string GenerateId()
-    {
-      //see https://madskristensen.net/blog/generate-unique-strings-and-numbers-in-c/
-
-      long i = 1;
-      foreach (byte b in Guid.NewGuid().ToByteArray())
-      {
-        i *= ((int)b + 1);
-      }
-      return string.Format("{0:x}", i - DateTime.Now.Ticks);
-    }
-
-    /// <summary>
     /// Get the HTTP Response from the response stream and store in a string variable
     /// </summary>
-    /// <param name="response"></param>
-    /// <returns></returns>
-    private string GetStringFromResponseStream(HttpWebResponse response)
+    private static string GetStringFromResponseStream(HttpWebResponse response)
     {
       var readStream = response.GetResponseStream();
 
@@ -385,16 +339,9 @@ namespace TestUtility
       return string.Empty;
     }
 
-
     /// <summary>
     /// Call the web api for the imported files
     /// </summary>
-    /// <param name="uri"></param>
-    /// <param name="method"></param>
-    /// <param name="configJson"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="jwt"></param>
-    /// <returns></returns>
     private static string CallWebApi(string uri, string method, string configJson, string customerUid = null, string jwt = null)
     {
       var restClient = new RestClientUtil();
@@ -402,20 +349,5 @@ namespace TestUtility
         customerUid, jwt);
       return response;
     }
-  }
-
-  /// <summary>
-  /// Import file type - Copied from the repos's 
-  /// </summary>
-  public enum ImportedFileType
-  {
-    Linework = 0,
-    DesignSurface = 1,
-    SurveyedSurface = 2,
-    Alignment = 3,
-    MobileLinework = 4,
-    SiteBoundary = 5,
-    ReferenceSurface = 6,
-    MassHaulPlan = 7
   }
 }
