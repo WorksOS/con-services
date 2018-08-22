@@ -1,22 +1,24 @@
+{{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 44 | trimSuffix "-" -}}
+{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-clean
+  name: {{ $name }}-cl
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-clean
+    app: {{ $name }}-cl
 spec:
   schedule: {{ .Values.schedule }}
   jobTemplate:
     spec:
       template:
-        spec: 
+        spec:    
           containers:
           - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:{{ .Values.image.tag }}
-            name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-clean
+            name: {{ $name }}-cl
             command: ["dotnet"]
             args: ["VSS.Productivity3D.Filter.Cleanup.dll"]
             envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+                name: {{ $configName }}
             imagePullPolicy: Always
           restartPolicy: Never
