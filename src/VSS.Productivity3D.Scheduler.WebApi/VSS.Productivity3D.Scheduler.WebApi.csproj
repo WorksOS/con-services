@@ -39,7 +39,8 @@
     <PackageReference Include="Hangfire.Core" Version="1.6.17" />
     <PackageReference Include="VSS.AWS.TransferProxy" Version="1.4.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.38.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.38.2" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.1" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
   </ItemGroup>
