@@ -9,7 +9,7 @@ services:
      - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
      - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
-     - FILTER_API_URL=http://10.97.96.103:3010/api/v1
+     - FILTER_API_URL=http://filter.dev.k8s.vspengg.com/api/v1
      - SCHEDULER_INTERNAL_EXPORT_URL=http://10.97.96.103:3011/internal/v1/export
      - GEOFENCE_CACHE_LIFE=00:15:00
      - PROJECT_CACHE_LIFE=00:30:00
