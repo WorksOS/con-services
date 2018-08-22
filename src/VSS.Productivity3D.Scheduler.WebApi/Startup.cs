@@ -81,6 +81,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
       //    the webapi seems to go ahead anyways, although the db isn't up 'enough', yet for ConfigureHangfire().
       // this sleep is only required when running the full test suite with db creation and acceptance tests.
+      // a localDockerContainer build seems to be 20s is ok
+      // under k8s it needs 45s 
+      // note the delays before running acceptanceTests in .sh files
+      //      also another delay below
       var serviceProvider = services.BuildServiceProvider();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var configStore = new GenericConfiguration(logger);
@@ -150,7 +154,10 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var log = loggerFactory.CreateLogger<Startup>();
 
       ConfigureHangfireUse(app, log);
-      Console.WriteLine("Scheduler: after ConfigureHangfireUse");
+      int expirationManagerWaitMs = 2000;
+      Thread.Sleep(expirationManagerWaitMs);
+      log.LogDebug($"Scheduler: after ConfigureHangfireUse. expirationManagerWaitMs waitMs {expirationManagerWaitMs}.");
+      Console.WriteLine($"Scheduler: after ConfigureHangfireUse. expirationManagerWaitMs waitMs {expirationManagerWaitMs}.");
 
       // shouldn't need this as this projects is no longer adding recurring jobs.
       // However clean up any from prior versions for a while.
@@ -244,18 +251,18 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds),
         };
         log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
-        
+
         // do we need the dashboard?
-        //app.UseHangfireDashboard(options: new DashboardOptions
-        //{
-        //  Authorization = new[]
-        //  {
-        //    new HangfireAuthorizationFilter()
-        //  }
-        //});
+        app.UseHangfireDashboard(options: new DashboardOptions
+        {
+          Authorization = new[]
+          {
+            new HangfireAuthorizationFilter()
+          }
+        });
 
         app.UseHangfireServer(options);
-        log.LogDebug("Scheduler.Startup: after UseHangfireServer no waiting, proceed....");
+        log.LogDebug("Scheduler.Startup: after UseHangfireServer.");
       }
       catch (Exception ex)
       {
