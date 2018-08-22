@@ -25,5 +25,5 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=builder /build/artifacts/VSS.Productivity3D.Filter.WebApi .
+COPY --from=build_container /build/artifacts/VSS.Productivity3D.Filter.WebApi .
 
