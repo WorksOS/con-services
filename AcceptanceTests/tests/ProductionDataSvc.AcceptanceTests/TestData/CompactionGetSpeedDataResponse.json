@@ -54,10 +54,10 @@
   },
   "TemperatureFilter_Summary": {
     "speedSummaryData": {
-      "percentEqualsTarget": 36.8,
-      "percentGreaterThanTarget": 39.1,
-      "percentLessThanTarget": 24.1,
-      "totalAreaCoveredSqMeters": 10636.7028,
+      "percentEqualsTarget": 25.1,
+      "percentGreaterThanTarget": 14.8,
+      "percentLessThanTarget": 60.1,
+      "totalAreaCoveredSqMeters": 487.0228,
       "minTarget": 5.0,
       "maxTarget": 10.0
     },

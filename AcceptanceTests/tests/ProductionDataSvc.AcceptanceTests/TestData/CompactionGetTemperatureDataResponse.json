@@ -84,7 +84,7 @@
       "percentEqualsTarget": 0.0,
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 487.02280000000007,
+      "totalAreaCoveredSqMeters": 226.46040000000005,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
         "maxTemperatureMachineTarget": 143.0,
