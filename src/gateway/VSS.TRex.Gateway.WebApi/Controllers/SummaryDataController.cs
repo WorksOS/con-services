@@ -15,7 +15,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class SummaryDataController : BaseController
   {
-    private const short CMV_VALUE_NOT_REQUIRED = 0;
+    private const short DATA_VALUE_NOT_REQUIRED = 0;
 
     /// <summary>
     /// Default constructor.
@@ -48,14 +48,46 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var cmvSettings = CMVSettings.CreateCMVSettings(
         cmvSummaryRequest.cmvTarget,
-        CMV_VALUE_NOT_REQUIRED, 
+        DATA_VALUE_NOT_REQUIRED, 
         cmvSummaryRequest.maxCMVPercent,
-        CMV_VALUE_NOT_REQUIRED, 
+        DATA_VALUE_NOT_REQUIRED, 
         cmvSummaryRequest.minCMVPercent, 
         cmvSummaryRequest.overrideTargetCMV
       );
 
       return CompactionCmvSummaryResult.Create(result, cmvSettings);
+    }
+
+    /// <summary>
+    /// Get MDP summary from Raptor for the specified project and date range.
+    /// </summary>
+    /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.
+    [Route("api/v1/mdp/summary")]
+    [HttpGet]
+    public CompactionMdpSummaryResult GetMdpSummary(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation("GetMdpSummary: " + Request.QueryString);
+
+      var mdpSummaryRequest = MDPSummaryRequest.CreateMDPSummaryRequest(projectUid, null/* filter */, 1000, true, 120, 80);
+      mdpSummaryRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummaryMDPExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Process(mdpSummaryRequest) as MDPSummaryResult);
+
+      var mdpSettings = MDPSettings.CreateMDPSettings(
+        mdpSummaryRequest.mdpTarget,
+        DATA_VALUE_NOT_REQUIRED,
+        mdpSummaryRequest.maxMDPPercent,
+        DATA_VALUE_NOT_REQUIRED,
+        mdpSummaryRequest.minMDPPercent,
+        mdpSummaryRequest.overrideTargetMDP
+      );
+
+      return CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
     }
 
     /// <summary>
