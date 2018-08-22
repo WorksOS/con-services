@@ -80,7 +80,7 @@ namespace VSS.TRex.SiteModels
           if (csib != null)
             return csib;
 
-          FileSystemErrorStatus readResult = DIContext.Obtain<ISiteModels>().ImmutableStorageProxy.ReadStreamFromPersistentStore(ID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB, out MemoryStream csibStream);
+          FileSystemErrorStatus readResult = DIContext.Obtain<ISiteModels>().ImmutableStorageProxy().ReadStreamFromPersistentStore(ID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB, out MemoryStream csibStream);
 
           if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
             return null;
