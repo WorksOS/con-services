@@ -8,9 +8,7 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Server;
@@ -35,7 +33,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// The mutable grid storage proxy
         /// </summary>
-        private IStorageProxy storageProxy_Mutable = StorageProxy.Instance(StorageMutability.Mutable);
+        private IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
         /// <summary>
         /// Worker constructor that obtains the necessary storage proxies

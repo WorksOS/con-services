@@ -2,9 +2,8 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Storage;
+using VSS.TRex.DI;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.CoordinateSystems.Executors
@@ -32,7 +31,7 @@ namespace VSS.TRex.CoordinateSystems.Executors
       try
       {
         // Add the coordinate system to the cache
-        IStorageProxy storageProxy = StorageProxy.Instance(StorageMutability.Mutable);
+        IStorageProxy storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
         using (MemoryStream csibStream = new MemoryStream(Encoding.ASCII.GetBytes(CSIB)))
         {
