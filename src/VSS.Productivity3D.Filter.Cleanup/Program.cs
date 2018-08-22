@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
@@ -24,6 +25,8 @@ namespace VSS.Productivity3D.Filter.Cleanup
 
     private static void Main(string[] args)
     {
+      Console.WriteLine("***** Filter clean up task starting ***** ");
+      Thread.Sleep(10000);
       SetupDi(); 
       var cleanupTask = new FilterCleanupTask(ConfigStore, Logger, ServiceExceptionHandler, FilterRepository);
       

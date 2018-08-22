@@ -50,6 +50,7 @@ namespace VSS.Productivity3D.Filter.Cleanup
     /// </summary>
     public async Task<int> FilterCleanup()
     {
+      Console.WriteLine("cleanup task is about to run");
       var startUtc = DateTime.UtcNow;
       var deleteOlderThanUtc = startUtc.AddMinutes(-_ageInMinutesToDelete).ToString("yyyy-MM-dd HH:mm:ss"); // mySql requires this format 
       _log.LogInformation($"FilterCleanup: ageInMinutesToDelete: {_ageInMinutesToDelete} deleteOlderThanUtc: {deleteOlderThanUtc}.");
