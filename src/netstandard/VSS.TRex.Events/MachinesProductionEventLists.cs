@@ -72,7 +72,7 @@ namespace VSS.TRex.Events
             // an event lsit being loaded
             ProductionEventLists temp = new ProductionEventLists(Owner, machineID);
             
-            if (temp.LoadEventsForMachine(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy))
+            if (temp.LoadEventsForMachine(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy()))
             {
               // Everything is good, provide access to the loaded machine event lists.
               MachineIDMap[machineID] = temp;

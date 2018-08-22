@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
         var moqSiteModels = new Mock<ISiteModels>();
         moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuid)).Returns(mockedSiteModel);
-        moqSiteModels.Setup(mk => mk.ImmutableStorageProxy).Returns(moqStorageProxy.Object);
+        moqSiteModels.Setup(mk => mk.ImmutableStorageProxy()).Returns(moqStorageProxy.Object);
 
         // Mock the new sitemodel creation API to return jsut a new sitemodel
         moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(mockedSiteModel);

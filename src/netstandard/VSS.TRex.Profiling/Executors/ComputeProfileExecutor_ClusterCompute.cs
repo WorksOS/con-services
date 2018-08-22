@@ -64,7 +64,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="passFilter"></param>
     private void SetupForCellPassStackExamination(ICellPassAttributeFilter passFilter)
     {      
-      SegmentIterator = new SubGridSegmentIterator(null, null, DIContext.Obtain<ISiteModels>().ImmutableStorageProxy);
+      SegmentIterator = new SubGridSegmentIterator(null, null, DIContext.Obtain<ISiteModels>().ImmutableStorageProxy());
 
       if (passFilter.ReturnEarliestFilteredCellPass ||
           (passFilter.HasElevationTypeFilter && passFilter.ElevationType == ElevationType.First))

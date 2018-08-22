@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
@@ -13,10 +14,13 @@ namespace VSS.TRex.SiteModels
   {
     //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
 
+
+    private IStorageProxy _ImmutableStorageProxy = null;
+
     /// <summary>
     /// The default immutable storage proxy to be used for requests
     /// </summary>
-    public IStorageProxy ImmutableStorageProxy { get; set; } 
+    public IStorageProxy ImmutableStorageProxy() => _ImmutableStorageProxy ?? (_ImmutableStorageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage());
 
     /// <summary>
     /// Default no-arg constructor
@@ -25,9 +29,9 @@ namespace VSS.TRex.SiteModels
     {
     }
 
-    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy, ID, false);
+    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy(), ID, false);
 
-    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy, ID, CreateIfNotExist);
+    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy(), ID, CreateIfNotExist);
 
     public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
 

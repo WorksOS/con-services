@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Rendering.Servers.Client;
@@ -46,7 +47,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       return siteModel;
     }
 
-    protected CombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
+    protected ICombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
     {
       if (filter == null)
         return new CombinedFilter();//TRex doesn't like null filter
