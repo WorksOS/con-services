@@ -1,9 +1,6 @@
 ﻿using System;
-using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels
@@ -17,29 +14,9 @@ namespace VSS.TRex.SiteModels
     //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
 
     /// <summary>
-    /// The default storage proxy for the mutable/immutable envronment this SiteModels instance is running in 
-    /// </summary>
-    private static ISiteModels instance;
-
-    /// <summary>
     /// The default immutable storage proxy to be used for requests
     /// </summary>
     public IStorageProxy ImmutableStorageProxy { get; set; } 
-
-    /// <summary>
-    /// Constructs singleton instance of SiteModels
-    /// </summary>
-    /// <returns></returns>
-    public static ISiteModels Instance()
-    {
-      if (instance == null)
-      {
-        instance = DIContext.Obtain<ISiteModels>();
-        instance.ImmutableStorageProxy = StorageProxy.Instance(StorageMutability.Immutable);
-      }
-
-      return instance;
-    }
 
     /// <summary>
     /// Default no-arg constructor

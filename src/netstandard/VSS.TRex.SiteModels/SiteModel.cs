@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -79,7 +80,7 @@ namespace VSS.TRex.SiteModels
           if (csib != null)
             return csib;
 
-          FileSystemErrorStatus readResult = SiteModels.Instance().ImmutableStorageProxy.ReadStreamFromPersistentStore(ID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB, out MemoryStream csibStream);
+          FileSystemErrorStatus readResult = DIContext.Obtain<ISiteModels>().ImmutableStorageProxy.ReadStreamFromPersistentStore(ID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB, out MemoryStream csibStream);
 
           if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
             return null;

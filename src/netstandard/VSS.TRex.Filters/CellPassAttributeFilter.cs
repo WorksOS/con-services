@@ -1016,7 +1016,7 @@ end
       // TemperatureRange
       if (HasTemperatureRangeFilter)
       {
-        if (!FilterPassUsingTemepratureRange(ref PassValue))
+        if (!FilterPassUsingTemperatureRange(ref PassValue))
           return false;
       }
 
@@ -1164,7 +1164,7 @@ Exit;
       // TemperatureRange
       if (HasTemperatureRangeFilter)
       {
-        if (!FilterPassUsingTemepratureRange(ref PassValue.FilteredPass))
+        if (!FilterPassUsingTemperatureRange(ref PassValue.FilteredPass))
           return false;
       }
 
@@ -1180,7 +1180,7 @@ Exit;
     }
 
 
-    public bool FilterPassUsingTemepratureRange(ref CellPass PassValue)
+    public bool FilterPassUsingTemperatureRange(ref CellPass PassValue)
     {
       Debug.Assert(HasTemperatureRangeFilter, "Temperature range filter being used without the temperature range data being initialised");
       return (PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
@@ -1373,7 +1373,7 @@ Exit;
 
       if (HasTemperatureRangeFilter)
       {
-        if (!FilterPassUsingTemepratureRange(ref PassValue))
+        if (!FilterPassUsingTemperatureRange(ref PassValue))
           return false;
       }
 
