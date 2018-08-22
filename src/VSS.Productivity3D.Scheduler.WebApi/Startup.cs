@@ -50,12 +50,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
-      // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
-      //    the webapi seems to go ahead anyways..
-      int webAPIStartupWaitMs = 45000;
-      Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
-      Thread.Sleep(webAPIStartupWaitMs);
-
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -65,7 +59,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
-      }
+    }
 
     /// <summary>
     /// Gets the configuration.
@@ -84,7 +78,27 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     {
       services.AddCommon<Startup>(SERVICE_TITLE);
 
+      // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
+      //    the webapi seems to go ahead anyways, although the db isn't up 'enough', yet for ConfigureHangfire().
+      // this sleep is only required when running the full test suite with db creation and acceptance tests.
+      var serviceProvider = services.BuildServiceProvider();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var configStore = new GenericConfiguration(logger);
+      if (!int.TryParse(configStore.GetValueString("SCHEDULER_WEBAPI_STARTUP_WAIT_MS"), out var startupWaitMs))
+        startupWaitMs = 0;
+      if (startupWaitMs > 0)
+      {
+        Console.WriteLine($"Scheduler: Startup: startupWaitMs {startupWaitMs}");
+        Thread.Sleep(startupWaitMs);
+      }
+      else
+      {
+        Console.WriteLine("Scheduler: Startup: not waiting");
+      }
+
       ConfigureHangfire(services);
+      Console.WriteLine("Scheduler: after ConfigureHangfire");
+
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
@@ -104,7 +118,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
         });
       });
-
+      
       services.AddJaeger(SERVICE_TITLE);
       services.AddOpenTracing();
 
@@ -136,6 +150,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var log = loggerFactory.CreateLogger<Startup>();
 
       ConfigureHangfireUse(app, log);
+      Console.WriteLine("Scheduler: after ConfigureHangfireUse");
 
       // shouldn't need this as this projects is no longer adding recurring jobs.
       // However clean up any from prior versions for a while.
@@ -170,22 +185,17 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var configStore = new GenericConfiguration(logger);
 
       var hangfireConnectionString = configStore.GetConnectionString("VSPDB");
-      int queuePollIntervalSeconds;
-      int jobExpirationCheckIntervalHours;
-      int countersAggregateIntervalMinutes;
       // queuePollIntervalSeconds needs to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup
       if (!int.TryParse(configStore.GetValueString("SCHEDULER_QUE_POLL_INTERVAL_SECONDS"),
-        out queuePollIntervalSeconds))
+        out var queuePollIntervalSeconds))
         queuePollIntervalSeconds = 60;
       if (!int.TryParse(configStore.GetValueString("SCHEDULER_JOB_EXPIRATION_CHECK_HOURS"),
-        out jobExpirationCheckIntervalHours))
+        out var jobExpirationCheckIntervalHours))
         jobExpirationCheckIntervalHours = 1;
       if (!int.TryParse(configStore.GetValueString("SCHEDULER_COUNTER_AGGREGATE_MINUTES"),
-        out countersAggregateIntervalMinutes))
+        out var countersAggregateIntervalMinutes))
         countersAggregateIntervalMinutes = 55;
 
-      Console.WriteLine(
-        $"Scheduler.ConfigureServices: Scheduler database string: {hangfireConnectionString} queuePollIntervalSeconds {queuePollIntervalSeconds} jobExpirationCheckIntervalHours {jobExpirationCheckIntervalHours} countersAggregateIntervalMinutes {countersAggregateIntervalMinutes}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
         {
@@ -201,7 +211,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"Scheduler.ConfigureServices: AddHangfire failed: {ex.Message}");
+        Console.WriteLine($"Scheduler: ConfigureHangfire: AddHangfire failed: {ex.Message}");
         throw;
       }
       //GlobalJobFilters.Filters.Add(new ExportFailureFilter());
@@ -220,13 +230,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         // WorkerCount will be internally set based on #cores - on prod = 10. For a single scheduled task we need a low number
         // these affect CPU usage and number of db connections
         // things more specific to each task e.g. Hangfire.AutomaticRetryAttribute.DefaultRetryAttempts are attributes on the task
-        int workerCount; // Math.Min(Environment.ProcessorCount * 5, 20)
         // schedulePollingIntervalSeconds may need to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup?
-        int schedulePollingIntervalSeconds; // DelayedJobScheduler.DefaultPollingDelay = 15 seconds
-        if (!int.TryParse(configStore.GetValueString("SCHEDULER_WORKER_COUNT"), out workerCount))
+        if (!int.TryParse(configStore.GetValueString("SCHEDULER_WORKER_COUNT"), out var workerCount))
           workerCount = 2;
         if (!int.TryParse(configStore.GetValueString("SCHEDULER_SCHEDULE_POLLING_INTERVAL_SECONDS"),
-          out schedulePollingIntervalSeconds))
+          out var schedulePollingIntervalSeconds))
           schedulePollingIntervalSeconds = 60;
 
         var options = new BackgroundJobServerOptions
@@ -237,22 +245,21 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         };
         log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
         
-        app.UseHangfireDashboard(options: new DashboardOptions
-        {
-          Authorization = new[]
-          {
-            new HangfireAuthorizationFilter()
-          }
-        });
-        app.UseHangfireServer(options);
+        // do we need the dashboard?
+        //app.UseHangfireDashboard(options: new DashboardOptions
+        //{
+        //  Authorization = new[]
+        //  {
+        //    new HangfireAuthorizationFilter()
+        //  }
+        //});
 
-        int expirationManagerWaitMs = 2000;
-        Thread.Sleep(expirationManagerWaitMs);
-        log.LogDebug($"Scheduler.Startup: after expirationManagerWaitMs wait, proceed....");
+        app.UseHangfireServer(options);
+        log.LogDebug("Scheduler.Startup: after UseHangfireServer no waiting, proceed....");
       }
       catch (Exception ex)
       {
-        log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
+        log.LogError($"Scheduler: ConfigureHangfireUse: UseHangfireServer failed: {ex.Message}");
         throw;
       }
     }
