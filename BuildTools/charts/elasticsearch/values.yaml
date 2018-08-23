@@ -1,7 +1,7 @@
 image:
   es:
     repository: quay.io/pires/docker-elasticsearch-kubernetes
-    tag: 6.2.3
+    tag: 6.3.2
     pullPolicy: Always
   init:
     repository: busybox
@@ -39,7 +39,7 @@ common:
 # have dedicated ingest nodes, that will only perform this specific task.  
 client:
   # It isn't common to need more than 2 client nodes.
-  replicas: 3
+  replicas: 2
   antiAffinity: "soft"
 
   # The amount of RAM allocated to the JVM heap. This should be set to the
@@ -49,7 +49,7 @@ client:
 
   resources:
     requests:
-      memory: 1024Mi
+      memory: 2048Mi
 
   env:
     NODE_DATA: "false"
@@ -66,7 +66,7 @@ client:
 # master and data roles.
 data:
   # This count will depend on your data and computation needs.
-  replicas: 1
+  replicas: 2
   antiAffinity: "soft"
 
   # The amount of RAM allocated to the JVM heap. This should be set to the
@@ -76,7 +76,7 @@ data:
 
   resources:
     requests:
-      memory: 1024Mi
+      memory: 2048Mi
 
   env:
     NODE_DATA: "true"
@@ -90,7 +90,7 @@ data:
   stateful:
     # This is a default value, and will not be sufficient in a production
     # system. You'll probably want to increase it.
-    size: 100Gi
+    size: 1000Gi
 
 # The master node is responsible for lightweight cluster-wide actions such as
 # creating or deleting an index, tracking which nodes are part of the 
@@ -98,17 +98,17 @@ data:
 # important for cluster health to have a stable master node.
 master:
   # Master replica count should be (#clients / 2) + 1, and generally at least 3.
-  replicas: 1
+  replicas: 2
   antiAffinity: "soft"
   
   # The amount of RAM allocated to the JVM heap. This should be set to the
   # same value as master.resources.requests.memory, or you may see
   # OutOfMemoryErrors on startup.
-  heapMemory: 256m
+  heapMemory: 512m
 
   resources:
     requests:
-      memory: 256Mi
+      memory: 512Mi
 
   env:
     NODE_DATA: "false"
@@ -119,7 +119,7 @@ master:
     # The default value for this environment variable is 2, meaning a cluster
     # will need a minimum of 2 master nodes to operate. If you have 3 masters
     # and one dies, the cluster still works.
-    NUMBER_OF_MASTERS: "1"
+    NUMBER_OF_MASTERS: "2"
 
   # Determines the properties of the persistent volume claim associated with a
   # data node StatefulSet that is created when the common.stateful.enabled
@@ -127,7 +127,7 @@ master:
   stateful:
     # This is a default value, and will not be sufficient in a production
     # system. You'll probably want to increase it.
-    size: 20Gi  
+    size: 100Gi  
 
 curator:
   enabled: true
@@ -150,7 +150,7 @@ kibana:
   replicas: 1
   image:
     repository: docker.elastic.co/kibana/kibana-oss
-    tag: 6.2.3
+    tag: 6.3.2
     pullPolicy: Always
   httpPort: 80
   resources:
