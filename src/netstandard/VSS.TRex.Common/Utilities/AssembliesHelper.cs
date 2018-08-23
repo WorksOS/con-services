@@ -20,11 +20,16 @@ namespace VSS.TRex.Common.Utilities
       List<Assembly> allAssemblies = new List<Assembly>();
       string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+      Log.LogInformation("");
       Log.LogInformation($"Assemblies currently loaded");
+      Log.LogInformation( "==========================");
+
       foreach (Assembly asm in asms)
         Log.LogInformation($"{asm.FullName}");
 
+      Log.LogInformation("");
       Log.LogInformation($"Loading additional assmemblies from {path}");
+      Log.LogInformation("====================================");
 
       foreach (string dll in Directory.GetFiles(path, "*.dll"))
         try
@@ -42,7 +47,10 @@ namespace VSS.TRex.Common.Utilities
           Log.LogError($"Exception raised while loading assembly {dll}\n{ex}");
         }
 
+      Log.LogInformation("");
       Log.LogInformation($"Assemblies present after loading");
+      Log.LogInformation($"================================");
+
       foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
         Log.LogInformation($"{asm.FullName}");
     }
