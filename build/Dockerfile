@@ -34,7 +34,7 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=builder /artifacts/VSS.Productivity3D.Filter.WebApi .
+#COPY --from=builder /artifacts/VSS.Productivity3D.Filter.WebApi .
 
 
-ENTRYPOINT ["dotnet", "VSS.Productivity3D.Filter.WebAPI.dll"]
+#ENTRYPOINT ["dotnet", "VSS.Productivity3D.Filter.WebAPI.dll"]
