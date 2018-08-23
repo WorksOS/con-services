@@ -4,11 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.Common.Utilities
 {
   public static class AssembliesHelper
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
     public static void LoadAllAssembliesForExecutingContext()
     {
       // Find already loaded assemblies
@@ -22,11 +25,15 @@ namespace VSS.TRex.Common.Utilities
         {
           // Only load the assembly if not already present
           if (!asms.Any(x => x.Location.Equals(dll)))
+          {
+            Log.LogError($"Loading TRex assembly {dll}");
+
             allAssemblies.Add(Assembly.LoadFile(dll));
+          }
         }
-        catch
+        catch (Exception ex)
         {
-          // Ignore these exceptions
+          Log.LogError($"Exception raised while loading assembly {dll}\n{ex}");
         }
     }
   }
