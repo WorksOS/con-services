@@ -27,3 +27,4 @@ EXPOSE 80
 
 COPY --from=build_container /build/artifacts/VSS.Productivity3D.Filter.WebApi .
 
+ENTRYPOINT ["dotnet", "VSS.Productivity3D.Filter.WebAPI.dll"]
