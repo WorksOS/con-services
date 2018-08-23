@@ -20,13 +20,19 @@ namespace VSS.TRex.Common.Utilities
       List<Assembly> allAssemblies = new List<Assembly>();
       string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+      Log.LogInformation($"Assemblies currently loaded");
+      foreach (Assembly asm in asms)
+        Log.LogInformation($"{asm.FullName}");
+
+      Log.LogInformation($"Loading additional assmemblies from {path}");
+
       foreach (string dll in Directory.GetFiles(path, "*.dll"))
         try
         {
           // Only load the assembly if not already present
           if (!asms.Any(x => x.Location.Equals(dll)))
           {
-            Log.LogError($"Loading TRex assembly {dll}");
+            Log.LogInformation($"Loading TRex assembly {dll}");
 
             allAssemblies.Add(Assembly.LoadFile(dll));
           }
@@ -35,6 +41,10 @@ namespace VSS.TRex.Common.Utilities
         {
           Log.LogError($"Exception raised while loading assembly {dll}\n{ex}");
         }
+
+      Log.LogInformation($"Assemblies present after loading");
+      foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+        Log.LogInformation($"{asm.FullName}");
     }
   }
 }
