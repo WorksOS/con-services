@@ -15,23 +15,24 @@ namespace VSS.TRex.Common.Utilities
     public static void LoadAllAssembliesForExecutingContext()
     {
       // Find already loaded assemblies
-      Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
+      var asms = AppDomain.CurrentDomain.GetAssemblies();
 
-      List<Assembly> allAssemblies = new List<Assembly>();
-      string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+      var allAssemblies = new List<Assembly>();
+      var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
       Log.LogInformation("");
       Log.LogInformation($"Assemblies currently loaded");
       Log.LogInformation( "==========================");
 
-      foreach (Assembly asm in asms)
+      foreach (var asm in asms)
         Log.LogInformation($"{asm.FullName}");
 
       Log.LogInformation("");
       Log.LogInformation($"Loading additional assmemblies from {path}");
       Log.LogInformation("====================================");
 
-      foreach (string dll in Directory.GetFiles(path, "*.dll"))
+      foreach (var dll in Directory.GetFiles(path, "*.dll"))
+      {
         try
         {
           // Only load the assembly if not already present
@@ -46,12 +47,13 @@ namespace VSS.TRex.Common.Utilities
         {
           Log.LogError($"Exception raised while loading assembly {dll}\n{ex}");
         }
+      }
 
       Log.LogInformation("");
       Log.LogInformation($"Assemblies present after loading");
       Log.LogInformation($"================================");
 
-      foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+      foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
         Log.LogInformation($"{asm.FullName}");
     }
   }
