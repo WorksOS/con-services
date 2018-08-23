@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Storage.Models;
+﻿using VSS.TRex.Common;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Storage.Caches
 {

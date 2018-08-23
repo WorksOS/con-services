@@ -18,6 +18,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Exports\VSS.TRex.Exports.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj">
+      <Private>true</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />

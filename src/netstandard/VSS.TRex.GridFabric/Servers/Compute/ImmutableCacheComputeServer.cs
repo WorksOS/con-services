@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Apache.Ignite.Core.Deployment;
+using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Affinity;

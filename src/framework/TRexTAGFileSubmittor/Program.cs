@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using Tests.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Servers.Client;
@@ -162,8 +163,11 @@ namespace TRexTAGFileSubmittor
 
     static void Main(string[] args)
     {
-
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
+
       Log = VSS.TRex.Logging.Logger.CreateLogger<Program>();
 
       Log.LogInformation("Initialising TAG file processor");
