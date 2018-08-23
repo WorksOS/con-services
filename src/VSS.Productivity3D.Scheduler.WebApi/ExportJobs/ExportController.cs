@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// </summary>
     /// <param name="request">Http request details of how to get the export data</param>
     /// <returns></returns>
-    [Route("internal/v1/backgroundjob")] // double up the url with the intention of splitting this later
+    [Route("internal/v1/background")] // double up the url with the intention of splitting this later
     [Route("internal/v1/export")]//hide from TPaaS using different base url in route ('internal' instead of 'api')
     [HttpPost]
     public ScheduleJobResult StartExport([FromBody] ScheduleJobRequest request)
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// </summary>
     /// <param name="jobId">The job id</param>
     /// <returns>The AWS S3 key where the file has been saved and the current state of the job</returns>
-    [Route("api/v1/backgroundjob/{jobId}")]  // double up the url with the intention of splitting this later
+    [Route("api/v1/background/{jobId}")]  // double up the url with the intention of splitting this later
     [Route("api/v1/export/{jobId}")]
     [HttpGet]
     public JobStatusResult GetExportJobStatus(string jobId)
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="jobId">Job Id of the background job</param>
     /// <returns>The content of the results of the background job if the job is completed</returns>
     [Route("api/v1/export/{jobId}/result")]
-    [Route("api/v1/backgroundjob/{jobId}/result")]
+    [Route("api/v1/background/{jobId}/result")]
     public FileStreamResult GetExportJobResult(string jobId)
     {
       var status = GetExportJobStatus(jobId);
