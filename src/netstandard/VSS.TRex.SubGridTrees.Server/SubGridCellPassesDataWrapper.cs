@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server

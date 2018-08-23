@@ -12,6 +12,7 @@ using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;

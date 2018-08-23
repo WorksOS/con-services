@@ -7,6 +7,27 @@ using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.Common.Utilities
 {
+  [AttributeUsage(AttributeTargets.Assembly)]
+  public class ForceAssemblyReference : Attribute
+  {
+    public ForceAssemblyReference(Type forcedType)
+    {
+      //not sure if these two lines are required since 
+      //the type is passed to constructor as parameter, 
+      //thus effectively being used
+      Action<Type> noop = _ => { };
+      noop(forcedType);
+    }
+  }
+
+  /// <summary>
+  /// Iterates through all assemblies present in the same folder as the executing context and loads them if they are not
+  /// already present in the loaded assemblies in the current application domain.
+  /// WARNING: This does not work well in DotNetCore contexts as dependent assemblies loaded as a result of loading
+  /// primary assembles referenced in the project are not contained in the assemblies list returned by GetAssemblies.
+  /// DotNetCore contexts will need to directly reference members of the required assemblies to ensure they are included
+  /// by the compiler/linker.
+  /// </summary>
   public static class AssembliesHelper
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -20,7 +41,7 @@ namespace VSS.TRex.Common.Utilities
       var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
       Log.LogInformation("");
-      Log.LogInformation($"Assemblies currently loaded");
+      Log.LogInformation("Assemblies currently loaded");
       Log.LogInformation( "==========================");
 
       foreach (var asm in asms)
@@ -49,8 +70,8 @@ namespace VSS.TRex.Common.Utilities
       }
 
       Log.LogInformation("");
-      Log.LogInformation($"Assemblies present after loading");
-      Log.LogInformation($"================================");
+      Log.LogInformation("Assemblies present after loading");
+      Log.LogInformation("================================");
 
       foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
         Log.LogInformation($"{asm.FullName}");

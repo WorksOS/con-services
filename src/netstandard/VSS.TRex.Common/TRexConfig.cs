@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace VSS.TRex
+namespace VSS.TRex.Common
 {
   /// <summary>
   /// A class to contain a collection of TRex configuration controls.

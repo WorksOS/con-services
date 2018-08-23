@@ -4,6 +4,7 @@ using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;

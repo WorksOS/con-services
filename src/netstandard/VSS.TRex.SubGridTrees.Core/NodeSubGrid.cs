@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
