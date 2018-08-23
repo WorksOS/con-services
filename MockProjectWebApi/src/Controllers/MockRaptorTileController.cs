@@ -42,9 +42,10 @@ namespace MockProjectWebApi.Controllers
       {
         if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
         {
+          //Just do a fixed block of color to represent production data
           uint color = 0x000000;
-          int w = width / 4;
-          int h = height / 4;
+          const int w = 100;
+          const int h = 100;
           int x = (width - w) / 2;
           int y = (height - h) / 2;
           switch (mode)
@@ -77,7 +78,6 @@ namespace MockProjectWebApi.Controllers
                   color = Colors.Navy;
                   break;
               }
-
               break;
             case DisplayMode.TemperatureSummary:
               color = Colors.Purple;
@@ -89,7 +89,7 @@ namespace MockProjectWebApi.Controllers
               color = Colors.Lime;
               break;
             case DisplayMode.TargetSpeedSummary:
-              color = Colors.Cyan;
+              color = Colors.Brown;
               break;
             case DisplayMode.CMVChange:
               color = Colors.Orange;
@@ -148,6 +148,13 @@ namespace MockProjectWebApi.Controllers
         {
           //GroundToGround
           return "36.206612363660681808,-115.02356429250137637,36.206627682610680097,-115.02355673174442074";
+        }
+
+        if (baseUid.ToString() == "9c27697f-ea6d-478a-a168-ed20d6cd9a22" &&
+            topUid.ToString() == "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")
+        {
+          //GroundToDesign
+          return "36.207101000089814136,-115.0196040002853266,36.20749200008981461,-115.01839400028532623";
         }
         return "36.205460072631815649,-115.0262815573833564,36.210204042126029833,-115.01769848853631117";
       }
