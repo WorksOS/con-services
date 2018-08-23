@@ -460,23 +460,12 @@ namespace VSS.Productivity3D.Common.Models
 
     private static List<uint> CMVDetailsPalette => new List<uint>()
     {
-      // Decimal values: 87963, 2388910, 4755393, 7056597, 9423080, 11789820, 14413000, 10079077, 6594104, 2975773, 16764114, 16163752, 15628926, 15028564, 14493738, 13959168
-      0x01579B, // 87963
-      0x2473AE, // 2388910
-      0x488FC1, // 4755393
-      0x6BACD5, // 7056597
-      0x8FC8E8, // 9423080
-      0xB3E5FC, // 11789820
-      0xDBECC8, // 14413000
-      0x99CB65, // 10079077
-      0x649E38, // 6594104
-      0x2D681D, // 2975773
-      0xFFCCD2, // 16764114
-      0xF6A3A8, // 16163752
-      0xEE7A7E, // 15628926
-      0xE55154, // 15028564
-      0xDD282A, // 14493738
-      0xD50000  // 13959168
+      // Decimal values: 87963, 9423080, 6594104, 15628926, 13959168
+      0x01579B, // 87963 (0)
+      0x8FC8E8, // 9423080 (40)
+      0x649E38, // 6594104 (80)
+      0xEE7A7E, // 15628926 (120)
+      0xD50000  // 13959168 (150)
     };
 
     private static List<uint> PassCountDetailsPalette => new List<uint>()
@@ -521,7 +510,7 @@ namespace VSS.Productivity3D.Common.Models
     private const uint UNDER_COLOR = 0x1579B;
 
     private const int NUMBER_OF_ELEVATION_COLORS = 31;
-    private const int NUMBER_OF_CMV_DETAILS_COLORS = 16;
+    private const int NUMBER_OF_CMV_DETAILS_COLORS = 5;
     private const int NUMBER_OF_CMV_PERCENT_COLORS = 8;
     private const int NUMBER_OF_PASS_COUNT_DETAILS_COLORS = 9;
     private const int NUMBER_OF_CUT_FILL_COLORS = 7;
