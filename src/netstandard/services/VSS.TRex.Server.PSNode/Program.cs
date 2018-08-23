@@ -1,15 +1,14 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Servers.Compute;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Profiling.Interfaces;
 
 namespace VSS.TRex.Server.PSNode
 {
@@ -30,6 +29,9 @@ namespace VSS.TRex.Server.PSNode
     static void Main(string[] args)
     { 
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       var server = new SubGridProcessingServer();
       Console.WriteLine("Press anykey to exit");

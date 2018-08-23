@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Servers.Client;
 using VSS.TRex.DI;
 
@@ -14,6 +15,9 @@ namespace VSS.TRex.Server.DesignElevation
     static void Main(string[] args)
     {
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       var server = new CalculateDesignElevationsServer();
       Console.WriteLine("Press anykey to exit");

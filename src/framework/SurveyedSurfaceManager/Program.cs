@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Servers.Client;
 
@@ -20,6 +21,10 @@ namespace SurveyedSurfaceManager
     static void Main()
     {
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
+
       ImmutableClientServer server = new ImmutableClientServer("SurveyedSurfaceManager");
 
       Application.EnableVisualStyles();

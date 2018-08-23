@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Logging;
 using VSS.TRex.TAGFiles.GridFabric.Services;
@@ -22,8 +23,12 @@ namespace VSS.TRex.Service.Deployer
 
       static void Main(string[] args)
         {
-          DependencyInjection();
-          Log = Logger.CreateLogger<Program>();
+            DependencyInjection();
+
+            // Make sure all our assemblies are loaded...
+            AssembliesHelper.LoadAllAssembliesForExecutingContext();
+
+            Log = Logger.CreateLogger<Program>();
 
             // Active local client Ignite node
             MutableClientServer deployServer = new MutableClientServer("ServiceDeployer");

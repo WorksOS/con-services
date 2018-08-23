@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.SiteModels;
@@ -24,6 +28,9 @@ namespace VSS.TRex.Server.TINSurfaceExport
     static void Main(string[] args)
     {
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       ILogger Log = Logging.Logger.CreateLogger<Program>();
 

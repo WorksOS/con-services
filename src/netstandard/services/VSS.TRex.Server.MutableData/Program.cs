@@ -1,7 +1,7 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
@@ -42,6 +42,9 @@ namespace VSS.TRex.Server.MutableData
           .Build();
 
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       if (Configuration.GetSection("EnableTFAService").Value == null)
         Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g EnableTFAService");

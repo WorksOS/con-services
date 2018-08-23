@@ -230,6 +230,10 @@
       <Project>{E9FFB4FA-AAF2-4EA3-93FB-82B0B38B7FA5}</Project>
       <Name>VSS.TRex.Storage</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj">
+      <Project>{5bbd439b-f489-4ce9-9d9a-2ac9e13b1cd6}</Project>
+      <Name>VSS.TRex.Volumes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>VSS.TRex</Name>
