@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Surfaces
@@ -11,6 +13,11 @@ namespace VSS.TRex.Surfaces
     /// </summary>
     public static class SurfaceFilterUtilities
     {
+        /// <summary>
+        /// DI'ed context for access to ExistenceMaps functionality
+        /// </summary>
+        private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
+
         /// <summary>
         /// Given a set of surveyed surfaces and a filter compute which of the surfaces match any given time aspect
         /// of the filter, and the overall existance map of the surveyed surfaces that match the filter.
@@ -30,7 +37,7 @@ namespace VSS.TRex.Surfaces
                                                             ICombinedFilter Filter,
                                                             ISurveyedSurfaces ComparisonList,
                                                             ISurveyedSurfaces FilteredSurveyedSurfaces,
-                                                            SubGridTreeSubGridExistenceBitMask OverallExistenceMap)
+                                                            ISubGridTreeBitMask OverallExistenceMap)
         {
             if (SurveyedSurfaces == null)
                 return true;
@@ -47,8 +54,8 @@ namespace VSS.TRex.Surfaces
 
             if (FilteredSurveyedSurfaces.Count > 0)
             {
-                SubGridTreeSubGridExistenceBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.ExistenceMaps.GetCombinedExistenceMap(siteModelID,
-                FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(ExistenceMaps.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
+                ISubGridTreeBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.GetCombinedExistenceMap(siteModelID,
+                FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
                 if (OverallExistenceMap == null)
                     return false;

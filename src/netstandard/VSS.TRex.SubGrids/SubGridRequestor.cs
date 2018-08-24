@@ -10,6 +10,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Surfaces.GridFabric.Arguments;
 using VSS.TRex.Surfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;

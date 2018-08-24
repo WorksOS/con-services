@@ -1,8 +1,8 @@
 ﻿using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs.Executors
 {

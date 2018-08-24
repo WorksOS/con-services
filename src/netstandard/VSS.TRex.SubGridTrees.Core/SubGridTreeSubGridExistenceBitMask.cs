@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.SubGridTrees
+﻿using VSS.TRex.SubGridTrees.Interfaces;
+
+namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// A specialised descendent of SubGridTreeBitMask tailored to tracking subgrid existance within a larger subgrid tree.

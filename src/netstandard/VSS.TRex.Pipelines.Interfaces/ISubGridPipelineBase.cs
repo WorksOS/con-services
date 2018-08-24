@@ -2,7 +2,7 @@
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Tasks.Interfaces;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Interfaces
@@ -84,17 +84,17 @@ namespace VSS.TRex.Pipelines.Interfaces
         /// <summary>
         /// Map of all subgrids requiring infromation be requested from them
         /// </summary>
-        SubGridTreeSubGridExistenceBitMask OverallExistenceMap { get; set; }
-
+        ISubGridTreeBitMask OverallExistenceMap { get; set; }
+      
         /// <summary>
         /// Map of all subgrids that specifically require production data to be requested for them
         /// </summary>
-        SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap { get; set; }
-
+        ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
+      
         /// <summary>
         /// Map of all subgrids that require elevation data to be extracted from a design surface
         /// </summary>
-        SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap { get; set; }
+        ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
 
         /// <summary>
         /// Initiates processing of the pipeline

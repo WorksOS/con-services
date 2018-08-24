@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.ExistenceMaps
+﻿namespace VSS.TRex.ExistenceMaps.Interfaces
 {
     /// <summary>
     /// Constants related to existence maps

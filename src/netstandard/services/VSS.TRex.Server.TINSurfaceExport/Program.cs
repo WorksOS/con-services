@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels.Interfaces;
@@ -22,6 +23,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Complete();
     }
 

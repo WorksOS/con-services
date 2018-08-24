@@ -3,6 +3,8 @@ using System;
 using System.Reflection;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -12,6 +14,7 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Surfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
@@ -28,6 +31,11 @@ namespace VSS.TRex.Volumes
     public abstract class VolumesCalculatorBase
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
+        /// <summary>
+        /// DI'ed context for access to ExistenceMaps functionality
+        /// </summary>
+        private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
 
         /// <summary>
         /// The Aggregator to use for calculation volumes statistics
@@ -151,10 +159,10 @@ namespace VSS.TRex.Volumes
 
         // FLiftBuildSettings : TICLiftBuildSettings;
 
-        private SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap; //: TProductionDataExistanceMap;      //FPDExistenceMap : TSubGridTreeBitMask;
-        private SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
+        private ISubGridTreeBitMask ProdDataExistenceMap; //: TProductionDataExistanceMap;      //FPDExistenceMap : TSubGridTreeBitMask;
+        private ISubGridTreeBitMask OverallExistenceMap;
 
-        private SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap;
+        private ISubGridTreeBitMask DesignSubgridOverlayMap;
 
         public bool AbortedDueToTimeout { get; set; } = false;
 
@@ -250,7 +258,7 @@ namespace VSS.TRex.Volumes
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
-                        DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
+                        DesignSubgridOverlayMap = ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
 
                         if (DesignSubgridOverlayMap == null)
                             return RequestErrorStatus.NoDesignProvided;

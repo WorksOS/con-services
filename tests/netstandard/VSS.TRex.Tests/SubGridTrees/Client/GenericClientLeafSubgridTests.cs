@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
 

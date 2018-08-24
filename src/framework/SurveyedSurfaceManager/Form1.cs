@@ -2,17 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.SurveyedSurfaces;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SubGridTrees;
-using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace SurveyedSurfaceManager
@@ -26,6 +26,8 @@ namespace SurveyedSurfaceManager
 
         private SurveyedSurfaceServiceProxy DeployedSurveyedSurfaceService = null;
         private SurveyedSurfaceService SurveyedSurfaceService = null;
+
+        private IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
 
         private bool CheckConnection()
         {
@@ -97,7 +99,7 @@ namespace SurveyedSurfaceManager
                                                      out Guid SurveyedSurfaceID);
 
                     // Store the existence map for the surveyd surface for later use
-                    ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, SurveyedSurfaceID, TTM.SubgridOverlayIndex());
+                    ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, SurveyedSurfaceID, TTM.SubgridOverlayIndex());
                 }
             }
             catch (Exception E)
@@ -311,7 +313,7 @@ namespace SurveyedSurfaceManager
                                          out Guid DesignID);
 
                 // Store the existence map for the design for later use
-                ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, DesignID, TTM.SubgridOverlayIndex());
+                ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, DesignID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)
             {

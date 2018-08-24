@@ -1,8 +1,8 @@
 ﻿using System;
 using VSS.TRex.Common.CellPasses;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Exports.Patches
 {

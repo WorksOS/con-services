@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Filters.Models
 {

@@ -7,6 +7,7 @@ using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Compression;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server

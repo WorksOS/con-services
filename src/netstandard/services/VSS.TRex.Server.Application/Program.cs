@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Servers.Client;
@@ -26,6 +28,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
 
         .Complete();
     }

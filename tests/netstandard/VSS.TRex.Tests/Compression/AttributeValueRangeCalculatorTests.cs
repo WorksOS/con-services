@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using VSS.TRex.Compression;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
 namespace VSS.TRex.Tests.Compression

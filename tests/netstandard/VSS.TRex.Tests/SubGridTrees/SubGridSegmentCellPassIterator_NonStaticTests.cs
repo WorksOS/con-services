@@ -1,12 +1,9 @@
 ﻿using VSS.TRex.SubGridTrees.Server.Iterators;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Factories;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 

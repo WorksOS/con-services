@@ -1,6 +1,6 @@
-﻿using System;
-using VSS.TRex.SubGridTrees;
+﻿using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Factories;
+using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
