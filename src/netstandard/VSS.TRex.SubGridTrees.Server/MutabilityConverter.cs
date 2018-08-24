@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
@@ -12,13 +11,13 @@ namespace VSS.TRex.SubGridTrees.Server
     /// Note: The transformation may be one way trapdoor function in the case of spatial data immutability conversions that
     /// result in the compressed form of the appropriate schema.
     /// </summary>
-    public static class MutabilityConverter
+    public class MutabilityConverter : IMutabilityConverter
     {
         /// <summary>
         /// Converts the structure of the global latext cells structure into an immutable form
         /// </summary>
         /// <returns></returns>
-        public static ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper LatestPasses)
+        public ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper LatestPasses)
         {
             if (LatestPasses.IsImmutable())
             {
@@ -43,7 +42,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="mutableStream"></param>
         /// <param name="immutableStream"></param>
         /// <returns></returns>
-        public static bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, out MemoryStream immutableStream)
+        public bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, out MemoryStream immutableStream)
         {
             immutableStream = null;
 
@@ -76,7 +75,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="mutableStream"></param>
         /// <param name="immutableStream"></param>
         /// <returns></returns>
-        public static bool ConvertSubgridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+        public bool ConvertSubgridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
         {
             try
             {
@@ -116,7 +115,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="mutableStream"></param>
         /// <param name="immutableStream"></param>
         /// <returns></returns>
-        public static bool ConvertSubgridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+        public bool ConvertSubgridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
         {
             try
             {
@@ -164,7 +163,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="mutableStream"></param>
         /// <param name="immutableStream"></param>
         /// <returns></returns>
-        public static bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+        public bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
         {
             // Note: Some refactoring needs to be done with the read/write serialisation/deserialisation using BinaryFormatters
             // so that an events list can be read/written without prior knowledge of the type of the event list that is being read.
