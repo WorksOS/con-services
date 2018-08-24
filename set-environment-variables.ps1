@@ -10,6 +10,10 @@ if ($environment -ieq "--help" -or $environment -ieq "-h") {
   Exit 0
 }
 
+$commonVariables = @(
+  @{key = "PROJECT_CACHE_LIFE"; value = "00:15:00"},
+  @{key = "SCHEDULED_JOB_TIMEOUT"; value = "300000"})
+
 # Used for the Acceptance Tests client to connect to a local (LOCALHOST) instance of 3DP service.
 # Always set implicitly, regardless of the $environment type.
 $acceptanceTestsEnvironmentVariables = @(
@@ -49,7 +53,8 @@ $localhostEnvironmentVariables = @(
   @{key = "IMPORTED_FILE_API_URL"; value = "http://localhost:5001/api/v4/mock/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "http://localhost:5001/api/v1/mock/preferences"},
   @{key = "PROJECT_API_URL"; value = "http://localhost:5001/api/v4/mockproject"},
-  @{key = "PROJECT_SETTINGS_API_URL"; value = "http://localhost:5001/api/v4/mock"}
+  @{key = "PROJECT_SETTINGS_API_URL"; value = "http://localhost:5001/api/v4/mock"},
+  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://localhost:5001/internal/v1/mock/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
@@ -65,6 +70,7 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"}, # Use Alpha service here
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4"},
+  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://10.97.96.103:3011/internal/v1/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
@@ -73,12 +79,13 @@ $devCollaboratorsEnvironmentVariables = @(
 # Used when running 3DP service locally but connecting to /alpha deployed collaborating services
 $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me"},
-  @{key = "FILTER_API_URL"; value = "http://10.97.96.103:9001/api/v1"},
+  @{key = "FILTER_API_URL"; value = "http://filter.alpha.k8s.vspengg.com/api/v1"},
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"},
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"},
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project?includeLandfill=true"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4"},
+  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://10.97.96.103:9011/internal/v1/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-alpha"},
   @{key = "TCCORG"; value = "vlalpha"},
   @{key = "TCCPWD"; value = "vlalpha_key"},
@@ -93,6 +100,7 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-preferenceservice/1.0"},
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4/project?includeLandfill=true"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4"},
+  @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = ""},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-prod"},
   @{key = "TCCORG"; value = "vlprod"},
   @{key = "TCCPWD"; value = "vlprod_key"},
@@ -121,6 +129,12 @@ else {
 
   $environmentVariables = $localhostEnvironmentVariables
   Write-Host "`nSetting environment variables for local development testing...`n"
+}
+
+foreach ($_ in $commonVariables) {
+  Write-Host "  " $_.key ": " -ForegroundColor Gray -NoNewline
+  Write-Host $_.value -ForegroundColor DarkGray
+  [Environment]::SetEnvironmentVariable($_.key, $_.value, "Machine")
 }
 
 foreach ($_ in $environmentVariables) {
