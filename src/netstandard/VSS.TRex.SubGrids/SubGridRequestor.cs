@@ -94,7 +94,7 @@ namespace VSS.TRex.SubGrids
                                 int maxNumberOfPassesToReturn,
                                 AreaControlSet areaControlSet,
                                 IFilteredValuePopulationControl populationControl,
-                                SubGridTreeBitMask PDExistenceMap)
+                                ISubGridTreeBitMask PDExistenceMap)
     {
             SiteModel = sitemodel;
             Filter = filter;

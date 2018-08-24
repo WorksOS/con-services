@@ -4,7 +4,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
@@ -24,7 +24,7 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     BoundingWorldExtent3D SiteModelExtent { get; }
 
-    SubGridTreeSubGridExistenceBitMask ExistanceMap { get; }
+    ISubGridTreeBitMask ExistanceMap { get; }
 
     /// <summary>
     /// SiteModelDesigns records all the designs that have been seen in this sitemodel.
@@ -50,7 +50,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// load it from storage/cache
     /// </summary>
     /// <returns></returns>
-    SubGridTreeSubGridExistenceBitMask GetProductionDataExistanceMap(IStorageProxy StorageProxy);
+    ISubGridTreeBitMask GetProductionDataExistanceMap(IStorageProxy StorageProxy);
 
     /// <summary>
     /// GetAdjustedDataModelSpatialExtents returns the bounding extent of the production data held in the 

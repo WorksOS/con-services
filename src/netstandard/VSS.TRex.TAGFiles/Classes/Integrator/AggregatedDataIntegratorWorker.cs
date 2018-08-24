@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// A bitmask sub grid tree that tracks all subgrids modified by the tasks this worker has processed
         /// </summary>
-        private SubGridTreeSubGridExistenceBitMask WorkingModelUpdateMap;
+        private ISubGridTreeBitMask WorkingModelUpdateMap;
 
         /// <summary>
         /// The mutable grid storage proxy

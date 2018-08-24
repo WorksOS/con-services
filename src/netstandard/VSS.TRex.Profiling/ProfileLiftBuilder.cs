@@ -66,7 +66,7 @@ namespace VSS.TRex.Profiling
     private ICellPassAttributeFilter PassFilter;
 
     private ICellSpatialFilter CellFilter;
-    private SubGridTreeBitMask PDExistenceMap;
+    private ISubGridTreeBitMask PDExistenceMap;
 
     /// <summary>
     /// Cell lift builder reference to the engine that performs detailed analytics on individual cells in the profile.
@@ -100,7 +100,7 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     public ProfileLiftBuilder(ISiteModel siteModel,
-      SubGridTreeBitMask pDExistenceMap,
+      ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,
       IDesign cellPassFilter_ElevationRangeDesign,

@@ -73,7 +73,7 @@ namespace VSS.TRex.SubGrids
     private IProfilerBuilder Profiler = null;
     private ProfileCell CellProfile = null;
 
-    private SubGridTreeBitMask PDExistenceMap;
+    private ISubGridTreeBitMask PDExistenceMap;
 
     // ProductionEventChanges MachineTargetValues = null;
 
@@ -110,7 +110,7 @@ namespace VSS.TRex.SubGrids
       int maxNumberOfPassesToReturn,
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,
-      SubGridTreeBitMask pDExistenceMap)
+      ISubGridTreeBitMask pDExistenceMap)
     {
       SiteModel = sitemodel;
       StorageProxy = storageProxy;

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs
 {
@@ -67,7 +68,7 @@ namespace VSS.TRex.Designs
 
         public abstract bool HasFiltrationDataForSubGridPatch(uint SubGridX, uint SubgridY);
 
-        public virtual SubGridTreeSubGridExistenceBitMask SubgridOverlayIndex() => null;
+        public virtual ISubGridTreeBitMask SubgridOverlayIndex() => null;
 
         public void AcquireExclusiveInterlock() => Monitor.Enter(this);
         public void ReleaseExclusiveInterlock() => Monitor.Exit(this);

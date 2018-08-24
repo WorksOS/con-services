@@ -4,6 +4,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.Factories
@@ -58,7 +59,7 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
       public IProfileLiftBuilder NewProfileLiftBuilder(ISiteModel siteModel,
-        SubGridTreeBitMask pDExistenceMap,
+        ISubGridTreeBitMask pDExistenceMap,
         ICellPassAttributeFilter passFilter,
         ICellSpatialFilter cellFilter,
         IDesign cellPassFilter_ElevationRangeDesign,
