@@ -84,6 +84,20 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "TCCPWD"; value = "vlalpha_key"},
   @{key = "TCCUSERNAME"; value = "vlalpha"})
 
+# Used when running 3DP service locally but connecting to /prod deployed collaborating services
+$prodCollaboratorsEnvironmentVariables = @(
+  @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-customerservice/1.0/Customers/me"},
+  @{key = "FILTER_API_URL"; value = "http://10.211.10.253:5010/api/1.0"},
+  @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-geofenceservice/1.0"},
+  @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4/importedfiles"},
+  @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-preferenceservice/1.0"},
+  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4"},
+  @{key = "TCCFILESPACENAME"; value = "vldatastore-prod"},
+  @{key = "TCCORG"; value = "vlprod"},
+  @{key = "TCCPWD"; value = "vlprod_key"},
+  @{key = "TCCUSERNAME"; value = "vlprod"})
+
 if ($environment -ieq "--dev" -or $environment -ieq "-d") {
   $environmentVariables = $devCollaboratorsEnvironmentVariables
   Write-Host "`nSetting environment variables for remote /dev collaborator testing...`n"
@@ -91,6 +105,10 @@ if ($environment -ieq "--dev" -or $environment -ieq "-d") {
 elseif ($environment -ieq "--alpha" -or $environment -ieq "-a") {
   $environmentVariables = $alphaCollaboratorsEnvironmentVariables
   Write-Host "`nSetting environment variables for remote /alpha collaborator testing...`n"
+}
+elseif ($environment -ieq "--prod" -or $environment -ieq "-a") {
+  $environmentVariables = $prodCollaboratorsEnvironmentVariables
+  Write-Host "`nSetting environment variables for remote /prod collaborator testing...`n"
 }
 # Implicit --local environment
 else {
