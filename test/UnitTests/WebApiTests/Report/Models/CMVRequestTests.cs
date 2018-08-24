@@ -92,8 +92,8 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
 
     private long projectId = 1234;
     private Guid callId = new Guid();
-    private CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(800, 1200, 110.0, 700, 85.0, false/*, new []{ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 }*/);
-    private CMVSettingsEx cmvSettingsEx = CMVSettingsEx.CreateCMVSettingsEx(800, 1200, 110.0, 700, 85.0, false, new []{ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 });
+    private CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(800, 1200, 110.0, 700, 85.0, false);
+    private CMVSettingsEx cmvSettingsEx = CMVSettingsEx.CreateCMVSettingsEx(800, 1200, 110.0, 700, 85.0, false, new []{ 0, 40, 80, 120, 150 });
     private LiftBuildSettings liftSettings = LiftBuildSettings.CreateLiftBuildSettings(
       CCVRangePercentage.CreateCcvRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
       MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);

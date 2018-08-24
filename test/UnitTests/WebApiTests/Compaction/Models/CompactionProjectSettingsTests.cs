@@ -360,35 +360,65 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     [TestMethod]
     public void ValidateCmvDetailsSettingsTest()
     {
-      //Pass count missing values
+      //CMV details missing values
       CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
         false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 }, false, null);
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
-      //Pass count too many values
+      //CMV details too many values
       settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25, 30 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160 });
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25, 30 }, false, new List<int> { 0, 40, 80, 120, 150, 160 });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
-      //Pass count too few values
+      //CMV details too few values
       settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140});
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20 }, false, new List<int> { 0, 40, 80, 120 });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
-      //Pass count out of range value
+      //CMV details out of range value
       settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 500, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 100 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 1510 });
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 500, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 100 }, false, new List<int> { 0, 40, 80, 120, 1510 });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
-      //Pass count out of order value
+      //CMV details out of order value
       settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 20, 16, 25 }, false, new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 150, 140, 130 });
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 20, 16, 25 }, false, new List<int> { 0, 40, 80, 150, 120 });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
-      //Pass count first value not 1
+      //CMV details first value not 0
       settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 0, 3, 5, 8, 11, 16, 20, 25 }, false, new List<int> { 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 });
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 0, 3, 5, 8, 11, 16, 20, 25 }, false, new List<int> { 1, 40, 80, 120, 150 });
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
+    }
+
+
+    [TestMethod]
+    public void ValidateUpdatingCmvDetailsColorsTest()
+    {
+      CompactionProjectSettingsColors colors = CompactionProjectSettingsColors.Create(useDefaultCMVDetailsColors:false, cmvDetailsColors:new List<uint>
+      {
+        0x01579B, // 87963
+        0x2473AE, // 2388910
+        0x488FC1, // 4755393
+        0x6BACD5, // 7056597
+        0x8FC8E8, // 9423080
+        0xB3E5FC, // 11789820
+        0xDBECC8, // 14413000
+        0x99CB65, // 10079077
+        0x649E38, // 6594104
+        0x2D681D, // 2975773
+        0xFFCCD2, // 16764114
+        0xF6A3A8, // 16163752
+        0xEE7A7E, // 15628926
+        0xE55154, // 15028564
+        0xDD282A, // 14493738
+        0xD50000  // 13959168
+      });
+      Assert.ThrowsException<ServiceException>(() => colors.Validate());
+
+      colors.UpdateCmvDetailsColorsIfRequired();
+      colors.Validate();
+
     }
 
   }

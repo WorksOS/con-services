@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return tileRequest;
     }
 
-    private const int CMV_DETAILS_NUMBER_OF_COLORS = 16;
+    private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
     private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 9;
   }
 }

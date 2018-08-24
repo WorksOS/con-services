@@ -294,6 +294,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         try
         {
           ps = jsonSettings.ToObject<CompactionProjectSettingsColors>();
+          ps.UpdateCmvDetailsColorsIfRequired();
           ps.Validate();
         }
         catch (Exception ex)

@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       var ps = CompactionProjectSettings.CreateProjectSettings(
         useMachineTargetCmv: false, customTargetCmv: 50, 
         useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140,
-        useDefaultCMVTargets: false, customCMVTargets: new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 160, 170 });
+        useDefaultCMVTargets: false, customCMVTargets: new List<int> { 0, 40, 80, 120, 170 });
 
       var cmv = AutoMapperUtility.Automapper.Map<CMVSettingsEx>(ps);
       Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       ps = CompactionProjectSettings.CreateProjectSettings(
         useMachineTargetCmv: false, customTargetCmv: 50,
         useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140,
-        useDefaultCMVTargets: true, customCMVTargets: new List<int> { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 160, 170 });
+        useDefaultCMVTargets: true, customCMVTargets: new List<int> { 0, 40, 80, 120, 170 });
 
       cmv = AutoMapperUtility.Automapper.Map<CMVSettingsEx>(ps);
       Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");

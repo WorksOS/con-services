@@ -174,7 +174,7 @@ namespace VSS.Productivity3D.Common.Models
     public bool? useDefaultCMVTargets { get; private set; } = true;
     /// <summary>
     /// The collection of CMV targets when overriding the defaults. Values are in ascending order.
-    /// There must be 16 values and the first value must be 0.
+    /// There must be 5 values and the first value must be 0.
     /// </summary>
     [JsonProperty(PropertyName = "customCMVTargets", Required = Required.Default)]
     public List<int> customCMVTargets { get; private set; }
@@ -567,7 +567,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       if (useDefaultCMVTargets.HasValue && !useDefaultCMVTargets.Value)
       {
-        const int CMV_TARGETS_TOTAL = 16;
+        const int CMV_TARGETS_TOTAL = 5;
         if (customCMVTargets == null || customCMVTargets.Count != CMV_TARGETS_TOTAL)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,

@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.Common.Models
 
     /// <summary>
     /// The CMV details colour values when overriding the default ones.
-    /// There must be 16 values.
+    /// There must be 5 values.
     /// </summary>
     [JsonProperty(PropertyName = "cmvDetailsColors", Required = Required.Default)]
     public List<uint> cmvDetailsColors { get; private set; }
@@ -340,6 +340,17 @@ namespace VSS.Productivity3D.Common.Models
       mdpOverTargetColor = OVER_COLOR,
       mdpUnderTargetColor = UNDER_COLOR
     };
+
+    /// <summary>
+    /// Old settings have 16 colors, graduated from the 5 user-defined colors. New settings only have 5 colors.
+    /// </summary>
+    public void UpdateCmvDetailsColorsIfRequired()
+    {
+      if (cmvDetailsColors?.Count == 16)
+      {
+        cmvDetailsColors = new List<uint> { cmvDetailsColors[0], cmvDetailsColors[3], cmvDetailsColors[7], cmvDetailsColors[11], cmvDetailsColors[15] };
+      }
+    }
 
     #endregion
 

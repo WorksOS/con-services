@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
           for (var i = 0; i < cmvColors.Count; i++)
           {
-            //The last 16th color and value are for above...
+            //The last color and value are for above...
             palette.Add(ColorPalette.CreateColorPalette(cmvColors[i], i * STEP));
           }
           break;

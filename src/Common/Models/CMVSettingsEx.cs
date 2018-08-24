@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.Common.Models
   {
     /// <summary>
     /// The collection of CMV targets. Values are in ascending order.
-    /// There must be 16 values and the first value must be 0.
+    /// There must be 5 values and the first value must be 0.
     /// This property is not used for a summary report only for a detailed report.
     /// </summary>
     [JsonProperty(PropertyName = "customCMVDetailTargets", Required = Required.Always)]
