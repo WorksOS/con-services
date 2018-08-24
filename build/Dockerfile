@@ -1,5 +1,14 @@
-ARG BUILD_CONTAINER
-FROM ${BUILD_CONTAINER} as build_container
+FROM microsoft/dotnet:2.0-sdk as builder
+
+COPY . /build/
+WORKDIR /build
+
+RUN chmod 777 *.sh
+
+RUN rm -rf /artifacts
+RUN dotnet publish ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp2.0
+RUN dotnet publish ./src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.0
+
 
 FROM microsoft/dotnet:2.0-runtime
 
@@ -25,6 +34,6 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=build_container /build/artifacts/VSS.Productivity3D.Filter.WebApi .
+COPY --from=builder /artifacts/ .
 
 ENTRYPOINT ["dotnet", "VSS.Productivity3D.Filter.WebAPI.dll"]

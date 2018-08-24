@@ -8,6 +8,7 @@ metadata:
     app: {{ $name }}-cl
 spec:
   schedule: {{ .Values.schedule }}
+  successfulJobsHistoryLimit: 3
   jobTemplate:
     spec:
       template:
