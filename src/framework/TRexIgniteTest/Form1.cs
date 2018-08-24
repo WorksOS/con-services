@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
 using Draw = System.Drawing;
 using System.Drawing.Imaging;
@@ -296,7 +297,7 @@ namespace TRexIgniteTest
 
 		private void DoUpdateDesignsAndSurveyedSurfaces()
 		{
-				IDesigns designs = DesignsService.Instance().List(ID());
+				IDesigns designs = DIContext.Obtain<IDesignsService>().List(ID());
 
 				if (designs != null)
 				{

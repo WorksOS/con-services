@@ -99,7 +99,13 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         private IDesign CutFillDesign;
 
         [NonSerialized]
-        private bool[] PrimaryPartitionMap; 
+        private bool[] PrimaryPartitionMap;
+
+        /// <summary>
+        /// DI'ed context for designs service
+        /// </summary>
+        [NonSerialized]
+        private IDesignsService DesignsService = DIContext.Obtain<IDesignsService>();
 
         /// <summary>
         /// Default no-arg constructor
@@ -268,7 +274,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
             // Set up any required cut fill design
             if (arg.CutFillDesignID != Guid.Empty)
-                CutFillDesign = DesignsService.Instance().Find(arg.SiteModelID, arg.CutFillDesignID);
+                CutFillDesign = DesignsService.Find(arg.SiteModelID, arg.CutFillDesignID);
         }
 
 

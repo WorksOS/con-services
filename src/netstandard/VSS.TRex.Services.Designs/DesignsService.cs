@@ -17,25 +17,10 @@ namespace VSS.TRex.Services.Designs
     /// <summary>
     /// Service metaphor providing access andmanagement control over designs stored for site models
     /// </summary>
-    public class DesignsService : BaseService, IDesignsService // , IService, 
+    public class DesignsService : BaseService, IDesignsService 
     {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
-
-        [NonSerialized]
-        private static DesignsService _instance;
-
-        public static DesignsService Instance() 
-        {
-            if (_instance == null)
-            {
-                _instance = new DesignsService(StorageMutability.Immutable);
-                _instance.Init();
-            }
-
-            return _instance;
-        }
 
         /// <summary>
         /// Cache storing sitemodel instances

@@ -165,6 +165,10 @@
       <Project>{0bf0bcd0-f93c-4a2e-bcb2-3d80b587e858}</Project>
       <Name>VSS.TRex.GridFabric</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj">
+      <Project>{17975EAA-A11A-4A08-8912-4D2DE1AA4FD7}</Project>
+      <Name>VSS.TRex.Services.Designs.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj">
       <Project>{FEDB3A6F-F68F-4C39-BC0E-385C84AF7319}</Project>
       <Name>VSS.TRex.Services.Designs</Name>

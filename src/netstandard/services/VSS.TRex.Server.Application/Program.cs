@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
@@ -27,6 +26,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
+
         .Complete();
     }
 

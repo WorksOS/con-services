@@ -1,7 +1,9 @@
 ﻿using System;
-using VSS.TRex.Common.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Designs.Servers.Client;
 using VSS.TRex.DI;
+using VSS.TRex.Services.Designs;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Server.DesignElevation
 {
@@ -9,7 +11,11 @@ namespace VSS.TRex.Server.DesignElevation
   {
     private static void DependencyInjection()
     {
-      DIBuilder.New().AddLogging().Complete();
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Complete();
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
