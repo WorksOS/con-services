@@ -3,12 +3,13 @@ using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Reflection;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Storage.Utilities;
-using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage
@@ -16,6 +17,8 @@ namespace VSS.TRex.Storage
     public abstract class StorageProxy_IgniteBase
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
+        private static readonly IMutabilityConverter MutabilityConverter = DIContext.Obtain<IMutabilityConverter>();
 
         protected IIgnite ignite;
 

@@ -68,7 +68,8 @@ namespace VSS.TRex.Tests
 
             MemoryStream inStream = null;
 
-            MutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, outStream, out inStream);
+            var mutabilityConverter = new MutabilityConverter();
+            mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, outStream, out inStream);
 
             IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels);
             immutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
@@ -134,7 +135,8 @@ namespace VSS.TRex.Tests
             MemoryStream inStream = null;
 
             // Convert the mutable data into the immutable form and reload it into an immutable segment
-            MutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, outStream, out inStream);
+            var mutabilityConverter = new MutabilityConverter();
+            mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, outStream, out inStream);
 
             SubGridCellPassesDataSegment immutableSegment = new SubGridCellPassesDataSegment
                 (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true),

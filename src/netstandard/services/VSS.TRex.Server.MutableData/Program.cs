@@ -8,6 +8,8 @@ using VSS.TRex.Servers.Compute;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 
 namespace VSS.TRex.Server.MutableData
@@ -27,7 +29,8 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
-        .Complete();
+        .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
+       .Complete();
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
