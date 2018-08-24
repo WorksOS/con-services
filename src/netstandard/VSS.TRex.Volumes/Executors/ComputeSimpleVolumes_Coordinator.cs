@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel.Design.Serialization;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.RequestStatistics;
+using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -79,6 +81,11 @@ namespace VSS.TRex.Volumes.Executors
         public SimpleVolumesCalculationsAggregator Aggregator { get; set; }
 
         /// <summary>
+        /// DI'ed context for designs service
+        /// </summary>
+        private IDesignsService DesignsService = DIContext.Obtain<IDesignsService>();
+
+        /// <summary>
         /// Performs funcional initialisation of ComnputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
@@ -106,8 +113,8 @@ namespace VSS.TRex.Volumes.Executors
 
             ComputeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
-            ComputeVolumes.RefOriginal = BaseDesignID == Guid.Empty ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, BaseDesignID);
-            ComputeVolumes.RefDesign = TopDesignID == Guid.Empty ? null : Services.Designs.DesignsService.Instance().Find(SiteModelID, TopDesignID);
+            ComputeVolumes.RefOriginal = BaseDesignID == Guid.Empty ? null : DesignsService.Find(SiteModelID, BaseDesignID);
+            ComputeVolumes.RefDesign = TopDesignID == Guid.Empty ? null : DesignsService.Find(SiteModelID, TopDesignID);
 
             if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
                 ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
