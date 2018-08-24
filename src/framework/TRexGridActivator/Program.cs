@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 
 namespace TRexGridActivator
@@ -18,6 +19,9 @@ namespace TRexGridActivator
     static void Main()
     {
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);

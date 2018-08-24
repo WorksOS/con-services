@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.Cells;
 using VSS.TRex.Types;
 
-namespace VSS.TRex
+namespace VSS.TRex.Profiling.Models
 {
   /// <summary>
   /// A dummy class representing the Raptor lift build settigns schema. This is a large collection of semi-related configuration

@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace VSS.TRex
+namespace VSS.TRex.Common
 {
     /// <summary>
     /// TRex server config is intended to collect and represent configuration presented to this server instance

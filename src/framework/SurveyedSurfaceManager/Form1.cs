@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.Geometry;
 using VSS.TRex.Services.Designs;
@@ -28,7 +29,8 @@ namespace SurveyedSurfaceManager
 
         private bool CheckConnection()
         {
-            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) || (DesignsService.Instance() == null))
+            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) ||
+                (DIContext.Obtain<IDesignsService>() == null))
             {
                 MessageBox.Show("Not connected to service");
                 return false;
@@ -231,7 +233,7 @@ namespace SurveyedSurfaceManager
             // Invoke the service to remove the design
             try
             {
-                bool result = DesignsService.Instance().RemoveDirect(SiteModelID, DesignID);
+                bool result = DIContext.Obtain<IDesignsService>().RemoveDirect(SiteModelID, DesignID);
 
                 MessageBox.Show($"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
             }
@@ -257,7 +259,7 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                IDesigns designList = DesignsService.Instance().ListDirect(ID);
+                IDesigns designList = DIContext.Obtain<IDesignsService>().ListDirect(ID);
 
                 if (designList == null || designList.Count == 0)
                     MessageBox.Show("No designs");
@@ -303,7 +305,7 @@ namespace SurveyedSurfaceManager
                 TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
                 // Create the new design for the site model
-                DesignsService.Instance().AddDirect(ID,
+                DIContext.Obtain<IDesignsService>().AddDirect(ID,
                                          new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
                                          extents,
                                          out Guid DesignID);
