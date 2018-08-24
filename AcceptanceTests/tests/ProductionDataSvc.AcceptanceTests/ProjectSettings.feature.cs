@@ -236,12 +236,14 @@ this.ScenarioSetup(scenarioInfo);
   customShrinkagePercent: 5,
   customBulkingPercent: 7.5,
   useDefaultPassCountTargets: false,
-  customPassCountTargets: [1,3,5,8,11,16,20,25]
+  customPassCountTargets: [1,3,5,8,11,16,20,25],
+  useDefaultCMVTargets: false, 
+  customCMVTargets: [0,20,50,100,130]
 }", ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 76
+#line 78
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 77
+#line 79
  testRunner.Then("the settings validation result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"Project settings Targets are valid\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -253,40 +255,38 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateFullCustomSettingsColors()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Full Custom Settings Colors", ((string[])(null)));
-#line 85
-this.ScenarioSetup(scenarioInfo);
-#line 86
- testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 87
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 88
+ testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 89
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 90
   testRunner.And("a settingsType \"3\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 89
+#line 91
   testRunner.And("a projectSettings (multiline)", "{\r\n  useDefaultElevationColors: true,\r\n  elevationColors: [0xC80000, 0xFF0000, 0x" +
                     "FF3C00, 0xFF5A00, 0xFF8200, 0xFFAA00, 0xFFC800, \r\n                      0xFFDC00" +
                     ", 0xFAE600, 0xDCE600, 0xD2E600, 0xC8E600, 0xB4E600, 0x96E600, \r\n                " +
                     "      0x82E600, 0x64F000, 0x00FF00, 0x00F064, 0x00E682, 0x00E696, 0x00E6B4,\r\n   " +
                     "                   0x00E6C8, 0x00E6D2, 0x00DCDC, 0x00E6E6, 0x00C8E6, 0x00B4F0, 0" +
                     "x0096F5,\r\n                      0x0078FA, 0x005AFF, 0x0046FF, 0x0000FF],\r\n  useD" +
-                    "efaultCMVDetailsColors: true,\r\n  cmvDetailsColors: [0x01579B, 0x2473AE, 0x488FC1" +
-                    ", 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, \r\n                      0x99CB65, 0x64" +
-                    "9E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154,\r\n                      0" +
-                    "xDD282A, 0xD50000],\r\n  useDefaultCMVSummaryColors: true,\r\n  cmvOnTargetColor: 0x" +
-                    "8BC34A,\r\n  cmvOverTargetColor: 0xD50000,\r\n  cmvUnderTargetColor: 0x1579B,\r\n  use" +
-                    "DefaultCMVPercentColors: true,\r\n  cmvPercentColors: [0xD50000, 0xE57373, 0xFFCDD" +
-                    "2, 0x8BC34A, 0xB3E5FC, 0x005AFF, 0x039BE5, 0x01579B],\r\n  useDefaultPassCountDeta" +
-                    "ilsColors: true,\r\n  passCountDetailsColors: [0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DC" +
-                    "E67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037],\r\n  useDefaultPassCountSu" +
-                    "mmaryColors: true,\r\n  passCountOnTargetColor: 0x8BC34A,\r\n  passCountOverTargetCo" +
-                    "lor: 0xD50000,\r\n  passCountUnderTargetColor: 0x1579B,\r\n  useDefaultCutFillColors" +
-                    ": true,\r\n  cutFillColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x0" +
-                    "39BE5, 0x01579B],\r\n  useDefaultTemperatureSummaryColors: true,\r\n  temperatureOnT" +
-                    "argetColor: 0x8BC34A,\r\n  temperatureOverTargetColor: 0xD50000,\r\n  temperatureUnd" +
-                    "erTargetColor: 0x1579B,\r\n  useDefaultSpeedSummaryColors: true,\r\n  speedOnTargetC" +
-                    "olor: 0x8BC34A,\r\n  speedOverTargetColor: 0xD50000,\r\n  speedUnderTargetColor: 0x1" +
-                    "579B,\r\n  useDefaultMDPSummaryColors: true,\r\n  mdpOnTargetColor: 0x8BC34A,\r\n  mdp" +
-                    "OverTargetColor: 0xD50000,\r\n  mdpUnderTargetColor: 0x1579B\r\n}", ((TechTalk.SpecFlow.Table)(null)), "And ");
+                    "efaultCMVDetailsColors: true,\r\n  cmvDetailsColors: [0x01579B, 0x6BACD5, 0x99CB65" +
+                    ", 0xF6A3A8, 0xD50000],\r\n  useDefaultCMVSummaryColors: true,\r\n  cmvOnTargetColor:" +
+                    " 0x8BC34A,\r\n  cmvOverTargetColor: 0xD50000,\r\n  cmvUnderTargetColor: 0x1579B,\r\n  " +
+                    "useDefaultCMVPercentColors: true,\r\n  cmvPercentColors: [0xD50000, 0xE57373, 0xFF" +
+                    "CDD2, 0x8BC34A, 0xB3E5FC, 0x005AFF, 0x039BE5, 0x01579B],\r\n  useDefaultPassCountD" +
+                    "etailsColors: true,\r\n  passCountDetailsColors: [0x2D5783, 0x439BDC, 0xBEDFF1, 0x" +
+                    "9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037],\r\n  useDefaultPassCoun" +
+                    "tSummaryColors: true,\r\n  passCountOnTargetColor: 0x8BC34A,\r\n  passCountOverTarge" +
+                    "tColor: 0xD50000,\r\n  passCountUnderTargetColor: 0x1579B,\r\n  useDefaultCutFillCol" +
+                    "ors: true,\r\n  cutFillColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, " +
+                    "0x039BE5, 0x01579B],\r\n  useDefaultTemperatureSummaryColors: true,\r\n  temperature" +
+                    "OnTargetColor: 0x8BC34A,\r\n  temperatureOverTargetColor: 0xD50000,\r\n  temperature" +
+                    "UnderTargetColor: 0x1579B,\r\n  useDefaultSpeedSummaryColors: true,\r\n  speedOnTarg" +
+                    "etColor: 0x8BC34A,\r\n  speedOverTargetColor: 0xD50000,\r\n  speedUnderTargetColor: " +
+                    "0x1579B,\r\n  useDefaultMDPSummaryColors: true,\r\n  mdpOnTargetColor: 0x8BC34A,\r\n  " +
+                    "mdpOverTargetColor: 0xD50000,\r\n  mdpUnderTargetColor: 0x1579B\r\n}", ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 130
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden

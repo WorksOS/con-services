@@ -70,7 +70,9 @@ Scenario:  Project Settings Validate Full Custom Settings Targets
     customShrinkagePercent: 5,
     customBulkingPercent: 7.5,
     useDefaultPassCountTargets: false,
-    customPassCountTargets: [1,3,5,8,11,16,20,25]
+    customPassCountTargets: [1,3,5,8,11,16,20,25],
+    useDefaultCMVTargets: false, 
+    customCMVTargets: [0,20,50,100,130]
   }
   """
 	When I request settings validation
@@ -96,9 +98,7 @@ Scenario:  Project Settings Validate Full Custom Settings Colors
                         0x00E6C8, 0x00E6D2, 0x00DCDC, 0x00E6E6, 0x00C8E6, 0x00B4F0, 0x0096F5,
                         0x0078FA, 0x005AFF, 0x0046FF, 0x0000FF],
     useDefaultCMVDetailsColors: true,
-    cmvDetailsColors: [0x01579B, 0x2473AE, 0x488FC1, 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, 
-                        0x99CB65, 0x649E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154,
-                        0xDD282A, 0xD50000],
+    cmvDetailsColors: [0x01579B, 0x6BACD5, 0x99CB65, 0xF6A3A8, 0xD50000],
     useDefaultCMVSummaryColors: true,
     cmvOnTargetColor: 0x8BC34A,
     cmvOverTargetColor: 0xD50000,
