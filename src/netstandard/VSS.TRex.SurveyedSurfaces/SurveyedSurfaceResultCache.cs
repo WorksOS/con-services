@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.Surfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 
-namespace VSS.TRex.Surfaces
+namespace VSS.TRex.SurveyedSurfaces
 {
     /// <summary>
     /// Contains a cache of previously requested surveyed surface elevation results. This cache is simple in that no cap or retirement policy is implemented

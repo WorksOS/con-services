@@ -6,7 +6,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
-namespace VSS.TRex.Surfaces
+namespace VSS.TRex.SurveyedSurfaces
 {
     /// <summary>
     /// Utilities relating to interactions between filters and sets of surveyed surfaces

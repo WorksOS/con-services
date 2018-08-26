@@ -4,11 +4,11 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Surfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Surfaces.Executors
+namespace VSS.TRex.SurveyedSurfaces.Executors
 {
   /// <summary>
   /// Calculate a surface patch for a subgrid by querying a set of supplied surveyed surfaces and extracting
