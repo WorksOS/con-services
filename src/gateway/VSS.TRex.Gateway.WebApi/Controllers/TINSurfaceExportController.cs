@@ -76,9 +76,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       request.Validate();
 
-      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null);
-
-      container.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
+      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
 
       var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
 
@@ -111,9 +109,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       request.Validate();
 
-      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null);
-
-      container.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
+      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
 
       var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
 

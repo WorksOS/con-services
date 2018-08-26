@@ -27,10 +27,12 @@ namespace VSS.TRex.Services.Designs
         /// </summary>
         private ICache<NonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
+        private ICache<NonSpatialAffinityKey, byte[]> MutableNonSpatialCache => mutableNonSpatialCache ?? (mutableNonSpatialCache = _Ignite.GetCache<NonSpatialAffinityKey, byte[]>(CacheName));
+
         /// <summary>
         /// Service name.
         /// </summary>
-        //private string _svcName;
+    //private string _svcName;
 
         private string CacheName;
 
@@ -45,12 +47,6 @@ namespace VSS.TRex.Services.Designs
         public DesignsService(string cacheName) : this(StorageMutability.Immutable)
         {
             CacheName = cacheName;
-        }
-
-        public void Init()
-        {
-            // Delegate to the service Init() method if this becomes an Ignite service
-            mutableNonSpatialCache = _Ignite.GetCache<NonSpatialAffinityKey, byte[]>(CacheName);
         }
 
         public void Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
@@ -90,7 +86,7 @@ namespace VSS.TRex.Services.Designs
             IDesigns designList = new TRex.Designs.Storage.Designs();
             try
             {
-                designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
+                designList.FromBytes(MutableNonSpatialCache.Get(cacheKey));
             }
             catch (KeyNotFoundException)
             {
@@ -101,7 +97,7 @@ namespace VSS.TRex.Services.Designs
             designList.AddDesignDetails(DesignID, designDescriptor, extents);
 
             // Put the list back into the cache with the new entry
-            mutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
+            MutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
         }
 
         public IDesigns List(Guid SiteModelID)
@@ -111,7 +107,7 @@ namespace VSS.TRex.Services.Designs
             try
             {
                 IDesigns designList = new TRex.Designs.Storage.Designs();
-                designList.FromBytes(mutableNonSpatialCache.Get(TRex.Designs.Storage.Designs.CacheKey(SiteModelID)));
+                designList.FromBytes(MutableNonSpatialCache.Get(TRex.Designs.Storage.Designs.CacheKey(SiteModelID)));
 
                 return designList;
             }
@@ -130,7 +126,7 @@ namespace VSS.TRex.Services.Designs
             /// <param name="context"></param>
             public void Cancel(IServiceContext context)
             {
-                mutableNonSpatialCache.Remove(_svcName);
+                MutableNonSpatialCache.Remove(_svcName);
             }
 
             /// <summary>
@@ -153,7 +149,7 @@ namespace VSS.TRex.Services.Designs
                     _svcName = context.Name;
                 }
 
-                mutableNonSpatialCache = _ignite.GetCache<NonSpatialAffinityKey, Byte[]>(CacheName /*TRexCaches.MutableNonSpatialCacheName());
+                MutableNonSpatialCache = _ignite.GetCache<NonSpatialAffinityKey, Byte[]>(CacheName /*TRexCaches.MutableNonSpatialCacheName());
     */
 
         public bool Remove(Guid SiteModelID, Guid DesignID) => RemoveDirect(SiteModelID, DesignID);
@@ -169,7 +165,7 @@ namespace VSS.TRex.Services.Designs
        {
            try
            {
-               return mutableNonSpatialCache.Invoke(TRex.Designs.Storage.Designs.CacheKey(SiteModelID),
+               return MutableNonSpatialCache.Invoke(TRex.Designs.Storage.Designs.CacheKey(SiteModelID),
                                                     new RemoveDesignProcessor(),
                                                     DesignID);
            }
@@ -195,7 +191,7 @@ namespace VSS.TRex.Services.Designs
 
                 // Get the designs, creating it if it does not exist
                 IDesigns designList = new TRex.Designs.Storage.Designs();
-                designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
+                designList.FromBytes(MutableNonSpatialCache.Get(cacheKey));
 
                 // Remove the design
                 bool result = designList.RemoveDesign(DesignID);
@@ -203,7 +199,7 @@ namespace VSS.TRex.Services.Designs
                 // Put the list back into the cache with the new entry
                 if (result)
                 {
-                    mutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
+                    MutableNonSpatialCache.Put(cacheKey, designList.ToBytes());
                 }
 
                 return result;
@@ -236,7 +232,7 @@ namespace VSS.TRex.Services.Designs
 
                 // Get the designs, creating it if it does not exist
                 IDesigns designList = new TRex.Designs.Storage.Designs();
-                designList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
+                designList.FromBytes(MutableNonSpatialCache.Get(cacheKey));
 
                 // Find the design and return it
                 return designList.Count == 0 ? null : designList.Locate(DesignID);

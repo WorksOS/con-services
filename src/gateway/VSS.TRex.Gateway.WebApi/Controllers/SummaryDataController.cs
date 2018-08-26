@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvSummaryRequest) as CMVSummaryResult);
 
       var cmvSettings = CMVSettings.CreateCMVSettings(
@@ -73,7 +73,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(passCountSummaryRequest) as PassCountSummaryResult);
 
       return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);

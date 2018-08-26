@@ -13,6 +13,7 @@ using System.Reflection;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Logging;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Storage.Models;
@@ -23,8 +24,8 @@ namespace VSS.TRex.Servers.Client
     /// Defines a representation of a client able to request TRex related compute operations using
     /// the Ignite In Memory Data Grid. All client type server classes should descend from this class.
     /// </summary>
-    public class ImmutableClientServer : IgniteServer
-    {
+    public class ImmutableClientServer : IgniteServer, IImmutableClientServer
+  {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>

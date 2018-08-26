@@ -32,9 +32,10 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
 
-    protected ITileRenderingServer tileRenderServer;
-    protected IMutableClientServer tagfileClientServer;
-    public ITINSurfaceExportRequestor tINSurfaceExportRequestor;
+//    protected ITileRenderingServer tileRenderServer;
+//    protected IMutableClientServer tagfileClientServer;
+//    public ITINSurfaceExportRequestor tINSurfaceExportRequestor;
+
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
@@ -105,16 +106,12 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// Injected constructor.
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore, ILoggerFactory logger, 
-      IServiceExceptionHandler serviceExceptionHandler,
-      ITileRenderingServer tileRenderServer, 
-      IMutableClientServer tagfileClientServer) : this()
+      IServiceExceptionHandler serviceExceptionHandler) : this()
     {
       this.configStore = configStore;
       if (logger != null)
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
-      this.tileRenderServer = tileRenderServer;
-      this.tagfileClientServer = tagfileClientServer;
     }
 
     /// <summary>
@@ -132,10 +129,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     public static TExecutor
       Build<TExecutor>(IConfigurationStore configStore, ILoggerFactory logger, 
-      IServiceExceptionHandler serviceExceptionHandler, 
-      ITileRenderingServer tileRenderServer, 
-      IMutableClientServer tagfileClientServer
-        )
+      IServiceExceptionHandler serviceExceptionHandler)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor
@@ -143,8 +137,6 @@ namespace VSS.TRex.Gateway.Common.Executors
         configStore = configStore,
         log = logger.CreateLogger<TExecutor>(),
         serviceExceptionHandler = serviceExceptionHandler,
-        tileRenderServer = tileRenderServer,
-        tagfileClientServer = tagfileClientServer,
       };
 
       return executor;

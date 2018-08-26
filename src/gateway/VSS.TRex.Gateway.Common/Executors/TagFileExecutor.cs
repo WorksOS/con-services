@@ -21,9 +21,8 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    /// <param name="tagfileClientServer"></param>
     public TagFileExecutor(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IMutableClientServer tagfileClientServer) : base(configStore, logger, exceptionHandler, null, tagfileClientServer)
+        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
 

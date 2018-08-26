@@ -219,6 +219,10 @@
       <Project>{78f19853-a3d3-4dcd-8ab5-f88650b83d3f}</Project>
       <Name>VSS.TRex.Profiling</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj">
+      <Project>{b0752962-4249-4790-9d61-262eabdce6af}</Project>
+      <Name>VSS.TRex.Rendering.Implementations.Core2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj">
       <Project>{001CC650-D55D-458F-91A0-114108218772}</Project>
       <Name>VSS.TRex.Rendering</Name>
