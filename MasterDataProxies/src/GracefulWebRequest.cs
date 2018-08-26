@@ -125,9 +125,8 @@ namespace VSS.MasterData.Proxies
         {
           request.Timeout = timeout.Value;
         }
-        if (request is HttpWebRequest)
+        if (request is HttpWebRequest httpRequest)
         {
-          var httpRequest = request as HttpWebRequest;
           httpRequest.Accept = "application/json";
           //Add custom headers e.g. JWT, CustomerUid, UserUid
           if (customHeaders != null)
@@ -154,9 +153,9 @@ namespace VSS.MasterData.Proxies
         {
           using (var writeStream = await request.GetRequestStreamAsync())
           {
-            if (requestStream is MemoryStream)
+            if (requestStream is MemoryStream stream)
             {
-              var reqS = ((MemoryStream)requestStream).ToArray();
+              var reqS = stream.ToArray();
               await writeStream.WriteAsync(reqS, 0, reqS.Length);
             }
             else
@@ -166,26 +165,29 @@ namespace VSS.MasterData.Proxies
           }
         }
         else
-          //Apply payload if any
-          if (!String.IsNullOrEmpty(payloadData))
         {
-          // don't overwrite any existing one.
-          if (customHeaders == null || !customHeaders.ContainsKey("Content-Type"))
+          //Apply payload if any
+          if (!string.IsNullOrEmpty(payloadData))
           {
-            request.ContentType = "application/json";
-          }
-          //This fails to serialize the HttpWebRequest with a Json serialization exception for netcore 2.0
-          //log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
+            // don't overwrite any existing one.
+            if (customHeaders == null || !customHeaders.ContainsKey("Content-Type"))
+            {
+              request.ContentType = "application/json";
+            }
+            //This fails to serialize the HttpWebRequest with a Json serialization exception for netcore 2.0
+            //log.LogDebug($"PrepareWebRequest() T : requestWithPayload {JsonConvert.SerializeObject(request).Truncate(logMaxChar)}");
 
-
-          using (var writeStream = await request.GetRequestStreamAsync())
-          {
             UTF8Encoding encoding = new UTF8Encoding();
             byte[] bytes = encoding.GetBytes(payloadData);
-            await writeStream.WriteAsync(bytes, 0, bytes.Length);
             request.ContentLength = bytes.Length;
+
+            using (var writeStream = await request.GetRequestStreamAsync())
+            {
+              await writeStream.WriteAsync(bytes, 0, bytes.Length);
+            }
           }
         }
+
         return request;
       }
 
@@ -425,10 +427,10 @@ namespace VSS.MasterData.Proxies
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       var streamContent = await ExecuteRequestAsStreamContent(endpoint,
-        method, 
-        customHeaders, 
-        payloadData, 
-        timeout, 
+        method,
+        customHeaders,
+        payloadData,
+        timeout,
         retries,
         suppressExceptionLogging);
 
@@ -436,8 +438,8 @@ namespace VSS.MasterData.Proxies
       if (stream != null)
       {
         stream.Position = 0; // make sure we seek to the beginning, as the creeated stream may have a different position
-      }      
-      
+      }
+
       return stream;
     }
 
