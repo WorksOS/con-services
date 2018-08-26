@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Diagnostics;
 using VSS.TRex.Cells;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Utilities;
 

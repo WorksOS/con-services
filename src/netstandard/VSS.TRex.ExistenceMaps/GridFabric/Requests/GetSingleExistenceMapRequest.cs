@@ -4,6 +4,7 @@ using VSS.TRex.ExistenceMaps.Servers;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
@@ -26,7 +27,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(NonSpatialAffinityKey key)
+        public static ISubGridTreeBitMask Execute(NonSpatialAffinityKey key)
         {
             byte[] bytes = ExistenceMapServer.Instance().GetExistenceMap(key);
 
@@ -36,13 +37,13 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
                 return null;
             }
 
-            SubGridTreeSubGridExistenceBitMask mask = new SubGridTreeSubGridExistenceBitMask();
+            ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
 
             using (MemoryStream ms = new MemoryStream(bytes))
             {
                 using (BinaryReader reader = new BinaryReader(ms))
                 {
-                    SubGridTreePersistor.Read(mask, Consts.EXISTENCE_MAP_HEADER, Consts.EXISTENCE_MAP_VERSION, reader, null);
+                    SubGridTreePersistor.Read(mask, Interfaces.Consts.EXISTENCE_MAP_HEADER, Interfaces.Consts.EXISTENCE_MAP_VERSION, reader, null);
                 }
             }
 
@@ -56,7 +57,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="descriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static SubGridTreeSubGridExistenceBitMask Execute(Guid siteModeID, long descriptor, Guid ID) => Execute(CacheKey(siteModeID, descriptor, ID));
+        public static ISubGridTreeBitMask Execute(Guid siteModeID, long descriptor, Guid ID) => Execute(CacheKey(siteModeID, descriptor, ID));
         
     }
 }

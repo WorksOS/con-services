@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Servers.Client;
@@ -26,6 +29,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
 
         .Complete();
     }
@@ -64,13 +68,16 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
-        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface)
+        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
+        typeof(VSS.TRex.Rendering.Implementations.Core2.RenderingFactory),
+        typeof(VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses.TileRenderResponse_Core2)
       };
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Log.LogError($"Assembly for type {asmType} is null");
+          Log.LogError($"Assembly for type {asmType} has not been loaded.");
     }
+
     static void Main(string[] args)
     {
       DependencyInjection();
@@ -82,7 +89,14 @@ namespace VSS.TRex.Server.Application
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");
 
-      var server = new ApplicationServiceServer();
+      var server = new ApplicationServiceServer(new [] {
+        ApplicationServiceServer.DEFAULT_ROLE,
+        ServerRoles.ASNODE_PROFILER,
+        ServerRoles.PATCH_REQUEST_ROLE,
+        ServerRoles.TILE_RENDERING_NODE,
+        ServerRoles.ANALYTICS_NODE,
+      });
+
       Console.WriteLine("Press anykey to exit");
       Console.ReadLine();
     }

@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Services.Designs;
@@ -21,10 +23,12 @@ namespace TRexImmutableDataServer
       DIBuilder
         .New()
         .AddLogging()
+
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
 
         .Complete();
     }

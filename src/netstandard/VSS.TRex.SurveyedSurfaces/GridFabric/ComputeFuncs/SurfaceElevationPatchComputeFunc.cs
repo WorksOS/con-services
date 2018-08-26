@@ -4,11 +4,10 @@ using System;
 using System.Reflection;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Surfaces.Executors;
-using VSS.TRex.Surfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.Executors;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 
-namespace VSS.TRex.Surfaces.GridFabric.ComputeFuncs
+namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 {
   [Serializable]
   public class SurfaceElevationPatchComputeFunc : /*BaseComputeFunc,*/

@@ -18,6 +18,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -56,9 +57,9 @@ namespace VSS.TRex.SiteModels
         public IServerSubGridTree Grid { get { return grid; } }
 
         [NonSerialized]
-        private SubGridTreeSubGridExistenceBitMask existanceMap;
+        private ISubGridTreeBitMask existanceMap;
 
-        public SubGridTreeSubGridExistenceBitMask ExistanceMap {  get { return existanceMap; } }
+        public ISubGridTreeBitMask ExistanceMap {  get { return existanceMap; } }
 
         /// <summary>
         /// SiteModelExtent records the 3D extents of the data stored in the site model
@@ -509,7 +510,7 @@ namespace VSS.TRex.SiteModels
         /// load it from storage/cache
         /// </summary>
         /// <returns></returns>
-        public SubGridTreeSubGridExistenceBitMask GetProductionDataExistanceMap(IStorageProxy StorageProxy)
+        public ISubGridTreeBitMask GetProductionDataExistanceMap(IStorageProxy StorageProxy)
         {
             if (existanceMap == null)
             {
@@ -528,7 +529,7 @@ namespace VSS.TRex.SiteModels
             try
             {
                 // Create the new existance map instance
-                SubGridTreeSubGridExistenceBitMask localExistanceMap = existanceMap;
+                ISubGridTreeBitMask localExistanceMap = existanceMap;
 
                 // Save its content to storage
                 using (MemoryStream MS = new MemoryStream())
@@ -556,8 +557,8 @@ namespace VSS.TRex.SiteModels
         {
             try
             {
-                // Create the new existance map instance
-                SubGridTreeSubGridExistenceBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
+        // Create the new existance map instance
+                ISubGridTreeBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
 
                 // Read its content from storage 
                 StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);

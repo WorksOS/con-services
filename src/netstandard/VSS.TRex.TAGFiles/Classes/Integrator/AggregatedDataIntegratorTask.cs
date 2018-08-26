@@ -2,7 +2,7 @@
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         public IServerSubGridTree AggregatedCellPasses { get; set; }
         public IProductionEventLists AggregatedMachineEvents { get; set; }
-        public SubGridTreeSubGridExistenceBitMask AggregateModifiedSubgrids { get; set; }
+        public ISubGridTreeBitMask AggregateModifiedSubgrids { get; set; }
 
         //      Finalizer : TAggregationTaskFinalizer;
 
@@ -48,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             TargetSiteModel = null;
         }
 
-        public void SetAggregateModifiedSubgrids(ref SubGridTreeSubGridExistenceBitMask AAggregateModifiedSubgrids)
+        public void SetAggregateModifiedSubgrids(ref ISubGridTreeBitMask AAggregateModifiedSubgrids)
         {
             AggregateModifiedSubgrids = AAggregateModifiedSubgrids;
 

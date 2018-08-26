@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Designs;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using Xunit.Abstractions;

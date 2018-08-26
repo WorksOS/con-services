@@ -9,11 +9,11 @@ using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Pipelines
 {
@@ -62,12 +62,12 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// OverallExistenceMap is the map which describes the combination of Prod Data and Surveyed Surfaces
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask OverallExistenceMap { get; set; }
+        public ISubGridTreeBitMask OverallExistenceMap { get; set; }
 
         /// <summary>
         /// ProdDataExistenceMap is the subgrid existence map for the data model referenced by FDataModelID
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap { get; set; }
+        public ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
 
         /// <summary>
         /// Notes if the underlyinf query needs to include surveyed surface information in its results
@@ -77,7 +77,7 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// DesignSubgridOverlayMap is the subgrid index for subgrids that cover the design being related to for cut/fill operations
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap { get; set; }
+        public ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
 
         /// <summary>
         /// The set of filters to be made available to the subgrid processing for this request

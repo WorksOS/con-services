@@ -23,8 +23,8 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected BaseExecutor(IConfigurationStore configurationStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, ITileRenderingServer tileRenderServer, IMutableClientServer tagfileClientServer) 
-      : base(configurationStore, logger, exceptionHandler, tileRenderServer, tagfileClientServer)
+    protected BaseExecutor(IConfigurationStore configurationStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) 
+      : base(configurationStore, logger, exceptionHandler)
     {
     }
 

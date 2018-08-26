@@ -16,8 +16,8 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Surfaces.GridFabric.Arguments;
-using VSS.TRex.Surfaces.GridFabric.Requests;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -66,7 +66,7 @@ namespace VSS.TRex.Profiling
     private ICellPassAttributeFilter PassFilter;
 
     private ICellSpatialFilter CellFilter;
-    private SubGridTreeBitMask PDExistenceMap;
+    private ISubGridTreeBitMask PDExistenceMap;
 
     /// <summary>
     /// Cell lift builder reference to the engine that performs detailed analytics on individual cells in the profile.
@@ -100,7 +100,7 @@ namespace VSS.TRex.Profiling
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     public ProfileLiftBuilder(ISiteModel siteModel,
-      SubGridTreeBitMask pDExistenceMap,
+      ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,
       IDesign cellPassFilter_ElevationRangeDesign,

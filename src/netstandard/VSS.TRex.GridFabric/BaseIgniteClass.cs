@@ -20,9 +20,21 @@ namespace VSS.TRex.GridFabric
         [NonSerialized]
         private IIgnite _ignite;
 
-        protected IIgnite _Ignite { get { return _ignite; } }
+      protected IIgnite _Ignite
+      {
+        get
+        {
+          if (_ignite == null)
+          {
+            AcquireIgniteGridReference();
+            AcquireIgniteTopologyProjections();
+          }
 
-        /// <summary>
+          return _ignite;
+        }
+      }
+
+      /// <summary>
         /// The cluster group of nodes in the grid that are available for responding to design/profile requests
         /// </summary>
         [NonSerialized]

@@ -11,6 +11,7 @@ using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
@@ -119,7 +120,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           // Obtain the subgrid existence map for the project
-          SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap = SiteModel.ExistanceMap;
+          ISubGridTreeBitMask ProdDataExistenceMap = SiteModel.ExistanceMap;
 
           if (ProdDataExistenceMap == null)
           {

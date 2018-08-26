@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -19,6 +21,7 @@ namespace TRexDesignElevationsServer
         .AddLogging()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
         .Complete();
     }
 

@@ -6,12 +6,11 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Filters;
-using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
+using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
@@ -22,7 +21,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   {
     public TileExecutor(IConfigurationStore configStore, ILoggerFactory logger, 
       IServiceExceptionHandler exceptionHandler, ITileRenderingServer tileRenderServer) 
-      : base(configStore, logger, exceptionHandler, tileRenderServer, null)
+      : base(configStore, logger, exceptionHandler)
     {
     }
 
@@ -61,8 +60,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       var siteModel = GetSiteModel(request.ProjectUid);
-  
-      var response = tileRenderServer.RenderTile(
+
+      var tileRequest = new TileRenderRequest();
+      var response = tileRequest.Execute(
         new TileRenderRequestArgument
         (siteModel.ID,
           (Types.DisplayMode) request.Mode,
