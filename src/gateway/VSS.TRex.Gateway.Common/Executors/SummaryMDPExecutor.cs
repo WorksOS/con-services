@@ -25,7 +25,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   {
     public SummaryMDPExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
-      : base(configStore, logger, exceptionHandler, null, null)
+      : base(configStore, logger, exceptionHandler)
     {
     }
 

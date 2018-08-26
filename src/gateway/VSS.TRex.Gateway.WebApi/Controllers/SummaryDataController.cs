@@ -75,7 +75,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<SummaryMDPExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Build<SummaryMDPExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(mdpSummaryRequest) as MDPSummaryResult);
 
       var mdpSettings = MDPSettings.CreateMDPSettings(
