@@ -11,6 +11,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Types;
 
@@ -28,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// A bitmask sub grid tree that tracks all subgrids modified by the tasks this worker has processed
         /// </summary>
-        private SubGridTreeSubGridExistenceBitMask WorkingModelUpdateMap;
+        private ISubGridTreeBitMask WorkingModelUpdateMap;
 
         /// <summary>
         /// The mutable grid storage proxy

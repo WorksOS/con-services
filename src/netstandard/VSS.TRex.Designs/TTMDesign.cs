@@ -29,7 +29,7 @@ namespace VSS.TRex.Designs
     private double FMinHeight;
     private double FMaxHeight;
     private double FCellSize;
-    private SubGridTreeSubGridExistenceBitMask FSubgridIndex;
+    private ISubGridTreeBitMask FSubgridIndex;
 
     private void SwapVertices(ref XYZ A, ref XYZ B) => MinMax.Swap(ref A, ref B);
 
@@ -296,10 +296,10 @@ namespace VSS.TRex.Designs
     /// </summary>
     private BoundingWorldExtent3D AddTrianglePieceToSubgridIndex_Extents = new BoundingWorldExtent3D();
 
-    private void AddTrianglePieceToSubgridIndex(SubGridTree index,
+    private void AddTrianglePieceToSubgridIndex(ISubGridTree index,
       int sourceTriangle,
-      Func<SubGridTree, uint, uint, bool> leafSatisfied,
-      Action<SubGridTree, uint, uint, int> includeTriangleInLeaf,
+      Func<ISubGridTree, uint, uint, bool> leafSatisfied,
+      Action<ISubGridTree, uint, uint, int> includeTriangleInLeaf,
       XYZ H1, XYZ H2, XYZ V, bool SingleRowOnly)
     {
       uint TestLeftSubGridX, TestRightSubGridX;
@@ -444,14 +444,14 @@ namespace VSS.TRex.Designs
       } while (!WasLastRow && !SingleRowOnly);
     }
 
-    private void ScanCellsOverTriangle(SubGridTree tree,
+    private void ScanCellsOverTriangle(ISubGridTree tree,
       int triIndex,
-      Func<SubGridTree, uint, uint, bool> leafSatisfied,
-      Action<SubGridTree, uint, uint, int> includeTriangleInLeaf,
-      Action<SubGridTree,
+      Func<ISubGridTree, uint, uint, bool> leafSatisfied,
+      Action<ISubGridTree, uint, uint, int> includeTriangleInLeaf,
+      Action<ISubGridTree,
         int, // sourceTriangle
-        Func<SubGridTree, uint, uint, bool>, // leafSatisfied
-        Action<SubGridTree, uint, uint, int>, // includeTriangleInLeaf
+        Func<ISubGridTree, uint, uint, bool>, // leafSatisfied
+        Action<ISubGridTree, uint, uint, int>, // includeTriangleInLeaf
         XYZ, XYZ, XYZ, bool> ProcessTrianglePiece)
     {
       Triangle Tri = TriangleItems[triIndex];
@@ -583,8 +583,8 @@ namespace VSS.TRex.Designs
           {
             ScanCellsOverTriangle(FSubgridIndex,
               triIndex,
-              (tree, x, y) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y],
-              (tree, x, y, t) => (tree as SubGridTreeSubGridExistenceBitMask)[x, y] = true,
+              (tree, x, y) => (tree as ISubGridTreeBitMask)[x, y],
+              (tree, x, y, t) => (tree as ISubGridTreeBitMask)[x, y] = true,
               AddTrianglePieceToSubgridIndex
             );
           }
@@ -1535,6 +1535,6 @@ namespace VSS.TRex.Designs
     /// A reference to the internal subgrid existence map for the design
     /// </summary>
     /// <returns></returns>
-    public override SubGridTreeSubGridExistenceBitMask SubgridOverlayIndex() => FSubgridIndex;
+    public override ISubGridTreeBitMask SubgridOverlayIndex() => FSubgridIndex;
   }
 }

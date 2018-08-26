@@ -7,9 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -67,6 +65,10 @@ namespace VSS.TRex.Gateway.WebApi
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
 
+      services.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
+
+      services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
+
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
       bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.ImmutableGridName());
@@ -75,15 +77,6 @@ namespace VSS.TRex.Gateway.WebApi
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
       bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
       //Log.LogInformation($"Activation process completed: Mutable = {result2}");
-
-      TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
-      services.AddSingleton<ITileRenderingServer>(tileRenderServer);
-
-      MutableClientServer tagFileMutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-      services.AddSingleton<IMutableClientServer>(tagFileMutableClientServer);
-
-      ITINSurfaceExportRequestor tINSurfaceExportRequestor = new TINSurfaceExportRequestor();
-      services.AddSingleton<ITINSurfaceExportRequestor>(tINSurfaceExportRequestor);
     }
 
     /// <summary>

@@ -4,7 +4,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Surfaces.GridFabric.Arguments
+namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
 {
     public class SurfaceElevationPatchArgument
     {

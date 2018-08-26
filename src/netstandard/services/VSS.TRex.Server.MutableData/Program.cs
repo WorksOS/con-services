@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Servers.Compute;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -30,6 +32,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
        .Complete();
     }
 
@@ -65,7 +68,7 @@ namespace VSS.TRex.Server.MutableData
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Console.WriteLine($"Assembly for type {asmType} is null");
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
     static void Main(string[] args)

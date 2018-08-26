@@ -27,9 +27,6 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        // Get the rendering factory from the DI context
-        private static IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
-
         /// <summary>
         /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
         /// </summary>
@@ -71,6 +68,8 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                     Log.LogInformation("Null bitmap returned by executor");
                 }
 
+                // Get the rendering factory from the DI context
+                IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
                 return RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
             }
             finally

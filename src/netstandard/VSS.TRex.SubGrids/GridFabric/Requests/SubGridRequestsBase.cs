@@ -9,6 +9,7 @@ using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.GridFabric.Requests
@@ -60,12 +61,12 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// A subgrid bit mask tree identifying all the production data subgrids that require processing
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask ProdDataMask { get; set; }
+        public ISubGridTreeBitMask ProdDataMask { get; set; }
 
         /// <summary>
         /// A subgrid bit mask tree identifying all the surveyd surface subgrids that require processing
         /// </summary>
-        public SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask { get; set; }
+        public ISubGridTreeBitMask SurveyedSurfaceOnlyMask { get; set; }
 
         /// <summary>
         /// The set of filters to be applied to the subgrids being processed
@@ -109,8 +110,8 @@ namespace VSS.TRex.GridFabric.Requests
                                    string trexNodeId, 
                                    GridDataType requestedGridDataType, 
                                    bool includeSurveyedSurfaceInformation,
-                                   SubGridTreeSubGridExistenceBitMask prodDataMask,
-                                   SubGridTreeSubGridExistenceBitMask surveyedSurfaceOnlyMask,
+                                   ISubGridTreeBitMask prodDataMask,
+                                   ISubGridTreeBitMask surveyedSurfaceOnlyMask,
                                    IFilterSet filters,
                                    Guid cutFillDesignID) : this()
         {

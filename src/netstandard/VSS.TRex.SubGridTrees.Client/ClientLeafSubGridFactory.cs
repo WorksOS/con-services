@@ -2,6 +2,7 @@
 using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client

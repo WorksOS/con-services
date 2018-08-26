@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Helpers;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {

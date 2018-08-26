@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -10,7 +11,8 @@ using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.Surfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -23,6 +25,11 @@ namespace VSS.TRex.Pipelines
   public class PipelineProcessor : IPipelineProcessor
   {
     private static ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
+
+    /// <summary>
+    /// DI'ed context for access to ExistenceMaps functionality
+    /// </summary>
+    private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
 
     public Guid RequestDescriptor;
 
@@ -57,9 +64,9 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public GridDataType GridDataType;
 
-    public SubGridTreeSubGridExistenceBitMask ProdDataExistenceMap;
-    public SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
-    public SubGridTreeSubGridExistenceBitMask DesignSubgridOverlayMap;
+    public ISubGridTreeBitMask ProdDataExistenceMap;
+    public ISubGridTreeBitMask OverallExistenceMap;
+    public ISubGridTreeBitMask DesignSubgridOverlayMap;
 
     /// <summary>
     /// Flag indicating if all surveyed surface have been excluded from the request due to time fitlering constraints
@@ -286,8 +293,7 @@ namespace VSS.TRex.Pipelines
             return false;
         }
 
-        DesignSubgridOverlayMap = ExistenceMaps.ExistenceMaps.GetSingleExistenceMap(DataModelID,
-          ExistenceMaps.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
+        DesignSubgridOverlayMap = ExistenceMaps.GetSingleExistenceMap(DataModelID, TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
         if (DesignSubgridOverlayMap == null)
         {

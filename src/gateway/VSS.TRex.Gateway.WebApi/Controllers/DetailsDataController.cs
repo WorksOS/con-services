@@ -42,7 +42,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<DetailedCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Build<DetailedCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvDetailsRequest) as CMVDetailedResult);
 
       return CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
@@ -63,7 +63,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<DetailedPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Build<DetailedPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(passCountDetailsRequest) as PassCountDetailedResult);
 
       return CompactionPassCountDetailedResult.CreatePassCountDetailedResult(result);
@@ -84,7 +84,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<CutFillExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, null)
+          .Build<CutFillExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cutFillRequest) as CompactionCutFillDetailedResult);
     }
   }

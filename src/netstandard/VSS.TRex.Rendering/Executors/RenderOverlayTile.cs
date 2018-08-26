@@ -16,6 +16,7 @@ using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
 
@@ -276,7 +277,7 @@ namespace VSS.TRex.Rendering.Executors
     /// (zoomed out a lot) where meaningful detail cannot be drawn on the tile
     /// </summary>
     /// <returns></returns>
-    private IBitmap RenderTileAsRepresentationalDueToScale(SubGridTreeSubGridExistenceBitMask overallExistenceMap)
+    private IBitmap RenderTileAsRepresentationalDueToScale(ISubGridTreeBitMask overallExistenceMap)
     {
       PVMDisplayerBase RepresentationalDisplayer = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -27,12 +26,12 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
     /// </summary>
-    public SubGridTreeSubGridExistenceBitMask ProdDataMask;
+    public ISubGridTreeBitMask ProdDataMask;
 
     /// <summary>
     /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
     /// </summary>
-    public SubGridTreeSubGridExistenceBitMask SurveydSurfaceOnlyMask;
+    public ISubGridTreeBitMask SurveydSurfaceOnlyMask;
 
     /// <summary>
     /// A cell coordinate level (rather than world coordinate) boundary that acts as an optional final override of the spatial area

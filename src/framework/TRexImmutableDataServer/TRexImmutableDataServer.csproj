@@ -210,6 +210,10 @@
       <Project>{763a4e8f-9c42-4d3f-8188-5c7f34c0c583}</Project>
       <Name>VSS.TRex.Events</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj">
+      <Project>{be38b653-ad52-4ac6-b12c-b5caeb18b4d3}</Project>
+      <Name>VSS.TRex.ExistenceMaps.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj">
       <Project>{920b5030-74c9-48a9-85b2-8c09113025c2}</Project>
       <Name>VSS.TRex.ExistenceMaps</Name>

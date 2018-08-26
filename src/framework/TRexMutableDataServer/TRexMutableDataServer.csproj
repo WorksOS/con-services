@@ -159,6 +159,14 @@
       <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
       <Name>VSS.TRex.DI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj">
+      <Project>{be38b653-ad52-4ac6-b12c-b5caeb18b4d3}</Project>
+      <Name>VSS.TRex.ExistenceMaps.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj">
+      <Project>{920b5030-74c9-48a9-85b2-8c09113025c2}</Project>
+      <Name>VSS.TRex.ExistenceMaps</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
       <Project>{0BF0BCD0-F93C-4A2E-BCB2-3D80B587E858}</Project>
       <Name>VSS.TRex.GridFabric</Name>

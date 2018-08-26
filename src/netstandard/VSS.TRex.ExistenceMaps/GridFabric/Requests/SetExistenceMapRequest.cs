@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.ExistenceMaps.Servers;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
@@ -25,7 +26,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="key"></param>
         /// <param name="mask"></param>
         /// <returns></returns>
-        public static void Execute(NonSpatialAffinityKey key, SubGridTreeSubGridExistenceBitMask mask)
+        public static void Execute(NonSpatialAffinityKey key, ISubGridTreeBitMask mask)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -45,6 +46,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="descriptor"></param>
         /// <param name="ID"></param>
         /// <param name="mask"></param>
-        public static void Execute(Guid siteModelID, long descriptor, Guid ID, SubGridTreeSubGridExistenceBitMask mask) => Execute(CacheKey(siteModelID, descriptor, ID), mask);
+        public static void Execute(Guid siteModelID, long descriptor, Guid ID, ISubGridTreeBitMask mask) => Execute(CacheKey(siteModelID, descriptor, ID), mask);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
@@ -23,13 +23,13 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public static SubGridTreeSubGridExistenceBitMask Execute(NonSpatialAffinityKey[] keys)
+    public static ISubGridTreeBitMask Execute(NonSpatialAffinityKey[] keys)
     {
-      SubGridTreeSubGridExistenceBitMask combinedMask = null;
+      ISubGridTreeBitMask combinedMask = null;
 
       foreach (NonSpatialAffinityKey key in keys)
       {
-        SubGridTreeSubGridExistenceBitMask Mask = GetSingleExistenceMapRequest.Execute(key);
+        ISubGridTreeBitMask Mask = GetSingleExistenceMapRequest.Execute(key);
 
         if (Mask == null)
           continue;
@@ -49,6 +49,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     /// <param name="siteModelID"></param>
     /// <param name="IDs"></param>
     /// <returns></returns>
-    public static SubGridTreeSubGridExistenceBitMask Execute(Guid siteModelID, Tuple<long, Guid>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
+    public static ISubGridTreeBitMask Execute(Guid siteModelID, Tuple<long, Guid>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
   }
 }

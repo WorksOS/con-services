@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Design.Serialization;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;

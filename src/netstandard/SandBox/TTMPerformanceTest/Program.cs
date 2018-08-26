@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Designs;
 using VSS.TRex.DI;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Sandbox.TTMPerformanceTest
 {

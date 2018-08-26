@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.SubGridTrees
+﻿namespace VSS.TRex.SubGridTrees.Interfaces
 {
   public static class SubGridTreeConsts
   {

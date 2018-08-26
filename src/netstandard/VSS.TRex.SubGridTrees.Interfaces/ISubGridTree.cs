@@ -203,6 +203,18 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         BoundingWorldExtent3D GetCellExtents(uint X, uint Y);
 
         /// <summary>
+        /// GetCellExtents computes the real world extents of the OTG cell identified
+        /// by X and Y. X and Y are in the bottom left origin of the grid.
+        /// The returned extents are translated to the centered origin of the real
+        /// world coordinate system
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="extents"></param>
+        /// <returns></returns>
+        void GetCellExtents(uint X, uint Y, ref BoundingWorldExtent3D extents);
+   
+        /// <summary>
         // CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
         // it to the caller. The newly created subgrid is _not_ attached to this grid.
         /// </summary>

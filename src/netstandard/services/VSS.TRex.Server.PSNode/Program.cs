@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
@@ -26,6 +28,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Complete();
     }
 
@@ -68,7 +71,7 @@ namespace VSS.TRex.Server.PSNode
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Console.WriteLine($"Assembly for type {asmType} is null");
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
     static void Main(string[] args)

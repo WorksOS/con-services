@@ -3,7 +3,6 @@ using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
 using Draw = System.Drawing;
 using System.Drawing.Imaging;
@@ -37,38 +36,37 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Responses;
-using VSS.TRex.Profiling.Servers.Client;
 using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Volumes.Servers.Client;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.DI;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Profiling.GridFabric.Requests;
+using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Services.SurveyedSurfaces;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace TRexIgniteTest
@@ -77,11 +75,7 @@ namespace TRexIgniteTest
 	{
 		BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
-		//GenericApplicationServiceServer genericApplicationServiceServer = new GenericApplicationServiceServer();
-		TileRenderingServer tileRenderServer;
-		SimpleVolumesServer simpleVolumesServer;
-		MutableClientServer mutableClient;
-	  ProfilingServer profilingServer;
+	  private ImmutableClientServer clientIgniteContext;
 
 		SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
@@ -130,7 +124,9 @@ namespace TRexIgniteTest
 								Fence = new Fence(extents)
 						};
 
-						TileRenderResponse_Framework response = tileRenderServer.RenderTile(new TileRenderRequestArgument
+				  TileRenderRequest request = new TileRenderRequest();
+
+          TileRenderResponse_Framework response = request.Execute(new TileRenderRequestArgument
 						(ID(),
 							displayMode,
 							extents,
@@ -142,8 +138,6 @@ namespace TRexIgniteTest
 							(cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
 						)) as TileRenderResponse_Framework;
 
-        //TEST: compute profile first (reduces churn in other branches
-        // PerformProfile();
 				  var tileData = response?.TileBitmapData;
 
           if (tileData != null)
@@ -178,7 +172,8 @@ namespace TRexIgniteTest
 	    };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      ProfileRequestResponse Response = profilingServer.ComputeProfile(arg);
+	    ProfileRequest_ApplicationService request = new ProfileRequest_ApplicationService();
+	    ProfileRequestResponse Response = request.Execute(arg);
 
 	    if (Response == null)
 	      MessageBox.Show("Profile response is null");
@@ -213,10 +208,7 @@ namespace TRexIgniteTest
 				displayMode.Items.AddRange(Enum.GetNames(typeof(DisplayMode)));
 				displayMode.SelectedIndex = (int)DisplayMode.Height;
 
-				tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
-				simpleVolumesServer = SimpleVolumesServer.NewInstance(new [] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT });
-				mutableClient = new MutableClientServer("TestApplication");
-        profilingServer = ProfilingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.ASNODE_PROFILER});
+        clientIgniteContext = new ImmutableClientServer("TRexIgniteClient-Framework");
 
 				// Instantiate a site model changed listener to catch changes to site model attributes
 				SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
@@ -793,7 +785,9 @@ namespace TRexIgniteTest
 								SpatialFilter = FromFilter.SpatialFilter
 						};
 
-						return simpleVolumesServer.ComputeSimpleVolumes(new SimpleVolumesRequestArgument()
+	  			  SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
+
+            return request.Execute(new SimpleVolumesRequestArgument()
 						{
 								SiteModelID = ID(),
 								BaseFilter = FromFilter,

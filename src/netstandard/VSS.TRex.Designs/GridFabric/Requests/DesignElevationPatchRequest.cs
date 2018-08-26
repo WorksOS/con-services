@@ -1,8 +1,8 @@
 ﻿using Apache.Ignite.Core.Compute;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.Requests
 {

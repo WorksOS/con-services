@@ -6,7 +6,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Exports.Surfaces.GridFabric;
-using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
@@ -24,9 +23,8 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="exceptionHandler"></param>
     /// <param name="tINSurfaceExportRequestor"></param>
     public TINSurfaceExportExecutor(IConfigurationStore configStore,
-      ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, ITINSurfaceExportRequestor tINSurfaceExportRequestor) : base(configStore, logger, exceptionHandler, null, null)
+      ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
-      this.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
     }
 
     /// <summary>
@@ -47,7 +45,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var response = tINSurfaceExportRequestor.Execute(new TINSurfaceRequestArgument
+      var tinRequest = new TINSurfaceRequest();
+      var response = tinRequest.Execute(new TINSurfaceRequestArgument
           {
             Tolerance = request.Tolerance ?? 0.0,
             ProjectID = request.ProjectUid.Value,

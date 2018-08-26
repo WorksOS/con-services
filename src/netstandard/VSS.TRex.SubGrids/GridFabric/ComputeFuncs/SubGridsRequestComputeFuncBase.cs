@@ -54,7 +54,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
         [NonSerialized]
-        private SubGridTreeSubGridExistenceBitMask ProdDataMask;
+        private ISubGridTreeBitMask ProdDataMask;
 
         /// <summary>
         /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
@@ -63,7 +63,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
         [NonSerialized]
-        private SubGridTreeSubGridExistenceBitMask SurveyedSurfaceOnlyMask;
+        private ISubGridTreeBitMask SurveyedSurfaceOnlyMask;
 
         [NonSerialized]
         protected SubGridsRequestArgument localArg;
