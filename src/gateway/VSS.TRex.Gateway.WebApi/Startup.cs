@@ -7,9 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -79,14 +77,6 @@ namespace VSS.TRex.Gateway.WebApi
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
       bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
       //Log.LogInformation($"Activation process completed: Mutable = {result2}");
-
-
-
-//      TileRenderingServer tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
-//      services.AddSingleton<ITileRenderingServer>(tileRenderServer);
-
-//      ITINSurfaceExportRequestor tINSurfaceExportRequestor = new TINSurfaceExportRequestor();
-//      services.AddSingleton<ITINSurfaceExportRequestor>(tINSurfaceExportRequestor);
     }
 
     /// <summary>

@@ -5,9 +5,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Exports.Surfaces.Requestors;
-using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Rendering.Servers.Client;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -31,10 +28,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// handle exceptions
     /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
-
-//    protected ITileRenderingServer tileRenderServer;
-//    protected IMutableClientServer tagfileClientServer;
-//    public ITINSurfaceExportRequestor tINSurfaceExportRequestor;
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
