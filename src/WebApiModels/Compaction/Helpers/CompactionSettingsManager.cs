@@ -92,16 +92,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
           break;
         case DisplayMode.CCV:
-          const int STEP = 100;
+          var cmvDetailsSettings = CompactionCmvSettingsEx(projectSettings);
           var cmvColors = projectSettingsColors.useDefaultCMVDetailsColors.HasValue &&
                           projectSettingsColors.useDefaultCMVDetailsColors.Value
             ? CompactionProjectSettingsColors.DefaultSettings.cmvDetailsColors
             : projectSettingsColors.cmvDetailsColors;
 
-          for (var i = 0; i < cmvColors.Count; i++)
+          for (var i = 0; i < cmvDetailsSettings.customCMVDetailTargets.Length; i++)
           {
             //The last color and value are for above...
-            palette.Add(ColorPalette.CreateColorPalette(cmvColors[i], i * STEP));
+            palette.Add(ColorPalette.CreateColorPalette(cmvColors[i], cmvDetailsSettings.customCMVDetailTargets[i]));
           }
           break;
         case DisplayMode.PassCount:
