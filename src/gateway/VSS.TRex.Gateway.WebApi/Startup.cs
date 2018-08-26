@@ -59,15 +59,14 @@ namespace VSS.TRex.Gateway.WebApi
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+      services.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
+      services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
+
       //Set up logging etc. for TRex
       var serviceProvider = services.BuildServiceProvider();
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
-
-      services.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
-
-      services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
 
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
