@@ -219,10 +219,6 @@
       <Project>{78f19853-a3d3-4dcd-8ab5-f88650b83d3f}</Project>
       <Name>VSS.TRex.Profiling</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj">
-      <Project>{b0752962-4249-4790-9d61-262eabdce6af}</Project>
-      <Name>VSS.TRex.Rendering.Implementations.Core2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj">
       <Project>{001CC650-D55D-458F-91A0-114108218772}</Project>
       <Name>VSS.TRex.Rendering</Name>
@@ -295,13 +291,13 @@
       <Project>{F1D135BE-638E-4E1C-9D8B-06F2A618C2F9}</Project>
       <Name>VSS.TRex.Rendering.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
-      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
-      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj">
       <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
       <Name>VSS.TRex.Geometry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
+      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
+      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
