@@ -65,7 +65,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Log.LogError($"Assembly for type {asmType} is null");
+          Log.LogError($"Assembly for type {asmType} has not been loaded.");
     }
 
     static void Main(string[] args)

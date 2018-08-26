@@ -71,7 +71,7 @@ namespace VSS.TRex.Server.PSNode
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Console.WriteLine($"Assembly for type {asmType} is null");
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
     static void Main(string[] args)
