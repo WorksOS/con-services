@@ -65,7 +65,7 @@ namespace VSS.TRex.Gateway.WebApi
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
 
-      services.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-Framework"));
+      services.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
 
       services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
 
