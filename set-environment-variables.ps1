@@ -93,13 +93,13 @@ $alphaCollaboratorsEnvironmentVariables = @(
 
 # Used when running 3DP service locally but connecting to /prod deployed collaborating services
 $prodCollaboratorsEnvironmentVariables = @(
-  @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-customerservice/1.0/Customers/me"},
-  @{key = "FILTER_API_URL"; value = "http://10.211.10.253:5010/api/1.0"},
-  @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-geofenceservice/1.0"},
-  @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4/importedfiles"},
-  @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-preferenceservice/1.0"},
-  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4/project?includeLandfill=true"},
-  @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-prod-projects/1.4"},
+  @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me"},
+  @{key = "FILTER_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-3dfilter/1.0"},
+  @{key = "GEOFENCE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0"},
+  @{key = "IMPORTED_FILE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles"},
+  @{key = "PREFERENCE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0"},
+  @{key = "PROJECT_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = ""},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-prod"},
   @{key = "TCCORG"; value = "vlprod"},
