@@ -15,6 +15,8 @@
     FilterCustomBoundary,
     FilterDesignBoundary,
     FilterAlignmentBoundary,
-    CutFillDesignBoundary
+    CutFillDesignBoundary,
+    GeofenceBoundary,
+    LoadDumpData
   }
 }
