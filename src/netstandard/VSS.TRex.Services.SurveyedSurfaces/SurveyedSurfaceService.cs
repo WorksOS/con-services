@@ -26,9 +26,6 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        [NonSerialized]
-        private static readonly ISurveyedSurfaceFactory SurveyedSurfaceFactory = DIContext.Obtain<ISurveyedSurfaceFactory>();
-
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
@@ -67,7 +64,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         {
             mutableNonSpatialCache.Invoke(CacheKey(SiteModelID),
                                           new AddSurveyedSurfaceProcessor(),
-                                          SurveyedSurfaceFactory.NewInstance(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
+                                          DIContext.Obtain<ISurveyedSurfaceFactory>().NewInstance(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
         }
 
         /// <summary>
