@@ -12,7 +12,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_LeafSubgrid_Creation()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
             ILeafSubGrid leaf = null;
 
             // Test creation of a leaf node without an owner tree
@@ -45,7 +45,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_LeafSubgrid_IsEmpty()
         {
-            ISubGridTree tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+            ISubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
             ILeafSubGrid leaf = new LeafSubGrid(tree, null, tree.NumLevels);
 
             // Base leaf classes don't implement CellHasValue(), so this call should fail with an exception

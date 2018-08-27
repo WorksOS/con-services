@@ -18,12 +18,8 @@ using VSS.TRex.Analytics.CMVStatistics.Summary;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
-using VSS.TRex.TAGFiles.Classes.Queues;
-using VSS.TRex.TAGFiles.GridFabric.Arguments;
-using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
-using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.Details;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
@@ -32,41 +28,46 @@ using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
-using VSS.TRex.Designs;
-using VSS.TRex.Designs.Storage;
 using VSS.TRex.Executors;
 using VSS.TRex.Exports.Patches;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.GridFabric.Caches;
-using VSS.TRex.GridFabric.Events;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Queues;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Responses;
-using VSS.TRex.Profiling.Servers.Client;
 using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.Servers.Client;
-using VSS.TRex.Servers;
-using VSS.TRex.Servers.Client;
-using VSS.TRex.Services.Designs;
-using VSS.TRex.Services.Surfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
-using VSS.TRex.Surfaces;
-using VSS.TRex.TAGFiles.Classes;
-using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Volumes.GridFabric.Responses;
-using VSS.TRex.Volumes.Servers.Client;
-using VSS.TRex.SiteModels;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.Storage;
+using VSS.TRex.DI;
 using VSS.TRex.Exports.Servers.Client;
+using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Profiling.GridFabric.Requests;
+using VSS.TRex.Rendering.GridFabric.Requests;
+using VSS.TRex.Servers.Client;
+using VSS.TRex.Services.Designs;
+using VSS.TRex.Services.SurveyedSurfaces;
+using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.TAGFiles.Classes;
+using VSS.TRex.TAGFiles.Classes.Validator;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Requests;
+using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Volumes.GridFabric.Requests;
+using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace TRexIgniteTest
 {
@@ -74,11 +75,7 @@ namespace TRexIgniteTest
 	{
 		BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
-		//GenericApplicationServiceServer genericApplicationServiceServer = new GenericApplicationServiceServer();
-		TileRenderingServer tileRenderServer;
-		SimpleVolumesServer simpleVolumesServer;
-		MutableClientServer mutableClient;
-	  ProfilingServer profilingServer;
+	  private ImmutableClientServer clientIgniteContext;
 
 		SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
@@ -102,7 +99,7 @@ namespace TRexIgniteTest
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-        ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 				if (siteModel == null)
 				{
@@ -112,7 +109,7 @@ namespace TRexIgniteTest
 
 				try
 				{
-						CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter
+						ICellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter
 						{
 								ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
 								HasElevationTypeFilter = true,
@@ -120,14 +117,16 @@ namespace TRexIgniteTest
 								SurveyedSurfaceExclusionList = GetSurveyedSurfaceExclusionList(siteModel)
 						};
 
-						CellSpatialFilter SpatialFilter = new CellSpatialFilter
+						ICellSpatialFilter SpatialFilter = new CellSpatialFilter
 						{
 								CoordsAreGrid = true,
 								IsSpatial = true,
 								Fence = new Fence(extents)
 						};
 
-						TileRenderResponse_Framework response = tileRenderServer.RenderTile(new TileRenderRequestArgument
+				  TileRenderRequest request = new TileRenderRequest();
+
+          TileRenderResponse_Framework response = request.Execute(new TileRenderRequestArgument
 						(ID(),
 							displayMode,
 							extents,
@@ -139,8 +138,6 @@ namespace TRexIgniteTest
 							(cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
 						)) as TileRenderResponse_Framework;
 
-        //TEST: compute profile first (reduces churn in other branches
-        // PerformProfile();
 				  var tileData = response?.TileBitmapData;
 
           if (tileData != null)
@@ -175,7 +172,8 @@ namespace TRexIgniteTest
 	    };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      ProfileRequestResponse Response = profilingServer.ComputeProfile(arg);
+	    ProfileRequest_ApplicationService request = new ProfileRequest_ApplicationService();
+	    ProfileRequestResponse Response = request.Execute(arg);
 
 	    if (Response == null)
 	      MessageBox.Show("Profile response is null");
@@ -188,7 +186,7 @@ namespace TRexIgniteTest
 
 	  private BoundingWorldExtent3D GetZoomAllExtents()
 		{
-        ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+        ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 				if (siteModel != null)
 				{
@@ -210,10 +208,7 @@ namespace TRexIgniteTest
 				displayMode.Items.AddRange(Enum.GetNames(typeof(DisplayMode)));
 				displayMode.SelectedIndex = (int)DisplayMode.Height;
 
-				tileRenderServer = TileRenderingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.TILE_RENDERING_NODE });
-				simpleVolumesServer = SimpleVolumesServer.NewInstance(new [] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT });
-				mutableClient = new MutableClientServer("TestApplication");
-        profilingServer = ProfilingServer.NewInstance(new[] { ApplicationServiceServer.DEFAULT_ROLE_CLIENT, ServerRoles.ASNODE_PROFILER});
+        clientIgniteContext = new ImmutableClientServer("TRexIgniteClient-Framework");
 
 				// Instantiate a site model changed listener to catch changes to site model attributes
 				SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
@@ -294,7 +289,7 @@ namespace TRexIgniteTest
 
 		private void DoUpdateDesignsAndSurveyedSurfaces()
 		{
-				Designs designs = DesignsService.Instance().List(ID());
+				IDesigns designs = DIContext.Obtain<IDesignsService>().List(ID());
 
 				if (designs != null)
 				{
@@ -304,12 +299,12 @@ namespace TRexIgniteTest
 
 						cmbDesigns.DisplayMember = "Text";
 						cmbDesigns.ValueMember = "Value";
-						cmbDesigns.DataSource = designs.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
+						cmbDesigns.DataSource = designs.Select(x => new { Text = x.Get_DesignDescriptor().FullPath, Value = x }).ToArray();
 				}
 
 				SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService(StorageMutability.Immutable);
 				surveyedSurfacesService.Init(null);
-				SurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
+				ISurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
 
 				if (surveyedSurfaces != null)
 				{
@@ -319,7 +314,7 @@ namespace TRexIgniteTest
 
 						cmbSurveyedSurfaces.DisplayMember = "Text";
 						cmbSurveyedSurfaces.ValueMember = "Value";
-						cmbSurveyedSurfaces.DataSource = surveyedSurfaces.Select(x => new { Text = x.DesignDescriptor.FullPath, Value = x }).ToArray();
+						cmbSurveyedSurfaces.DataSource = surveyedSurfaces.Select(x => new { Text = x.Get_DesignDescriptor().FullPath, Value = x }).ToArray();
 				}
 		}
 
@@ -752,12 +747,12 @@ namespace TRexIgniteTest
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            ISiteModel siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+            ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 				try
 				{
 						// Create the two filters
-						CombinedFilter FromFilter = new CombinedFilter()
+						ICombinedFilter FromFilter = new CombinedFilter()
 						{
 								AttributeFilter = new CellPassAttributeFilter(/*siteModel*/)
 								{
@@ -790,7 +785,9 @@ namespace TRexIgniteTest
 								SpatialFilter = FromFilter.SpatialFilter
 						};
 
-						return simpleVolumesServer.ComputeSimpleVolues(new SimpleVolumesRequestArgument()
+	  			  SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
+
+            return request.Execute(new SimpleVolumesRequestArgument()
 						{
 								SiteModelID = ID(),
 								BaseFilter = FromFilter,
@@ -885,7 +882,7 @@ namespace TRexIgniteTest
 		private void button5_Click(object sender, EventArgs e)
 		{
 			// Calculate cut fill statistics from the latest elevations to the selected design
-			var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+			var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 			var offsets = new [] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
 
 			Stopwatch sw = new Stopwatch();
@@ -919,7 +916,7 @@ namespace TRexIgniteTest
 
 		private void TemperatureSummaryButton_Click(object sender, EventArgs e)
 		{
-			var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+			var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
 			Stopwatch sw = new Stopwatch();
 			sw. Start();
@@ -966,18 +963,18 @@ namespace TRexIgniteTest
 			// Tests the time taken to perform 10,000 full TTM patch requests for a test design, both locally, and by accessing a 
 			// remote DesignElevation service
 
-			TTMDesign design = new TTMDesign(SubGridTree.DefaultCellSize);
+			TTMDesign design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
 			design.LoadFromFile(@"C:\Temp\Bug36372.ttm");
 			const int numPatches = 10000;
 
-			float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+			float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
 
 			for (int i = 0; i < numPatches; i++)
 			{
-					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTreeConsts.DefaultCellSize, 0);
 			}
 
 			MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
@@ -988,7 +985,7 @@ namespace TRexIgniteTest
 
 			for (int i = 0; i < numPatches; i++)
 			{
-					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTree.DefaultCellSize, 0);
+					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTreeConsts.DefaultCellSize, 0);
 			}
 
 			MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
@@ -1206,7 +1203,7 @@ namespace TRexIgniteTest
 
     private void SpeedSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1246,7 +1243,7 @@ namespace TRexIgniteTest
 
     private void CMVSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1288,7 +1285,7 @@ namespace TRexIgniteTest
 
     private void MDPSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1330,7 +1327,7 @@ namespace TRexIgniteTest
 
     private void PassCountSummaryButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1371,7 +1368,7 @@ namespace TRexIgniteTest
 
     private void CMVDetailsButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
       var cmvBands = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 };
 
       Stopwatch sw = new Stopwatch();
@@ -1411,7 +1408,7 @@ namespace TRexIgniteTest
 
     private void PassCountDetailsButton_Click(object sender, EventArgs e)
     {
-      var siteModel = VSS.TRex.SiteModels.SiteModels.Instance().GetSiteModel(ID(), false);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
       var passCountBands = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
       Stopwatch sw = new Stopwatch();

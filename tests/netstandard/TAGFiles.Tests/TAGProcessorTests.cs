@@ -3,6 +3,7 @@ using System.Linq;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes.Processors;
@@ -19,8 +20,8 @@ namespace TAGFiles.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new VSS.TRex.Machines.Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
         }
@@ -30,8 +31,8 @@ namespace TAGFiles.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new VSS.TRex.Machines.Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
@@ -65,8 +66,8 @@ namespace TAGFiles.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new VSS.TRex.Machines.Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
@@ -83,16 +84,16 @@ namespace TAGFiles.Tests
             processor.DataTime = eventDate2;
             processor.DoPostProcessFileAction(true);
 
-            Assert.True(MachineTargetValueChangesAggregator.GPSModeStateEvents.Last().State == GPSMode.NoGPS &&
-                          MachineTargetValueChangesAggregator.GPSModeStateEvents.Last().Date == eventDate,
+            Assert.True(MachineTargetValueChangesAggregator.GPSModeStateEvents.LastStateValue() == GPSMode.NoGPS &&
+                          MachineTargetValueChangesAggregator.GPSModeStateEvents.LastStateDate() == eventDate,
                           "DoPostProcessFileAction did not set GPSMode event");
 
-            Assert.True(MachineTargetValueChangesAggregator.PositioningTechStateEvents.Last().State == PositioningTech.UTS &&
-                          MachineTargetValueChangesAggregator.PositioningTechStateEvents.Last().Date == eventDate,
+            Assert.True(MachineTargetValueChangesAggregator.PositioningTechStateEvents.LastStateValue() == PositioningTech.UTS &&
+                          MachineTargetValueChangesAggregator.PositioningTechStateEvents.LastStateDate().Date == eventDate,
                           "DoPostProcessFileAction did not set positioning tech event");
 
-            Assert.True(MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().State == ProductionEventType.EndEvent /*EndRecordedData*/ &&
-                          MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.Last().Date == eventDate2,
+            Assert.True(MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.LastStateValue() == ProductionEventType.EndEvent /*EndRecordedData*/ &&
+                          MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.LastStateDate().Date == eventDate2,
                           "DoPostProcessFileAction did not set end recorded data event");
         }
 
@@ -101,8 +102,8 @@ namespace TAGFiles.Tests
         {
             var SiteModel = new SiteModel();
             var Machine = new Machine();
-            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel);
-            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.kNullInternalSiteModelMachineIndex);
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 

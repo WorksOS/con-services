@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Servers.Client;
 using Xunit;
 

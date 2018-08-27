@@ -24,7 +24,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   {
     public DetailedPassCountExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
-      : base(configStore, logger, exceptionHandler, null, null)
+      : base(configStore, logger, exceptionHandler)
     {
     }
 

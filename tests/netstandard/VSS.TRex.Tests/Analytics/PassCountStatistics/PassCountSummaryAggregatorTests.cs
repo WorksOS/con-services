@@ -2,6 +2,7 @@
 using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -27,10 +28,10 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       Assert.True(aggregator.IsTargetValueConstant, "Invalid initial value for IsTargetValueConstant.");
       Assert.True(!aggregator.MissingTargetValue, "Invalid initial value for MissingTargetValue.");
       Assert.True(!aggregator.OverrideTargetPassCount, "Invalid initial value for OverrideTargetPassCount.");
-      Assert.True(aggregator.OverridingTargetPassCountRange.Min == CellPass.NullPassCountValue, "Invalid initial value for OverridingTargetPassCountRange.Min.");
-      Assert.True(aggregator.OverridingTargetPassCountRange.Max == CellPass.NullPassCountValue, "Invalid initial value for OverridingTargetPassCountRange.Max.");
-      Assert.True(aggregator.LastPassCountTargetRange.Min == CellPass.NullPassCountValue, "Invalid initial value for LastPassCountTargetRange.Min.");
-      Assert.True(aggregator.LastPassCountTargetRange.Max == CellPass.NullPassCountValue, "Invalid initial value for LastPassCountTargetRange.Max.");
+      Assert.True(aggregator.OverridingTargetPassCountRange.Min == CellPassConsts.NullPassCountValue, "Invalid initial value for OverridingTargetPassCountRange.Min.");
+      Assert.True(aggregator.OverridingTargetPassCountRange.Max == CellPassConsts.NullPassCountValue, "Invalid initial value for OverridingTargetPassCountRange.Max.");
+      Assert.True(aggregator.LastPassCountTargetRange.Min == CellPassConsts.NullPassCountValue, "Invalid initial value for LastPassCountTargetRange.Min.");
+      Assert.True(aggregator.LastPassCountTargetRange.Max == CellPassConsts.NullPassCountValue, "Invalid initial value for LastPassCountTargetRange.Max.");
     }
 
     [Fact]

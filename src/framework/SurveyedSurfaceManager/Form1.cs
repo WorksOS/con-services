@@ -2,14 +2,18 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using VSS.TRex;
+using VSS.TRex.Common;
 using VSS.TRex.Designs;
-using VSS.TRex.ExistenceMaps;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Services.Designs;
-using VSS.TRex.Services.Surfaces;
-using VSS.TRex.SubGridTrees;
-using VSS.TRex.Surfaces;
+using VSS.TRex.Services.SurveyedSurfaces;
+using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace SurveyedSurfaceManager
 {
@@ -23,9 +27,12 @@ namespace SurveyedSurfaceManager
         private SurveyedSurfaceServiceProxy DeployedSurveyedSurfaceService = null;
         private SurveyedSurfaceService SurveyedSurfaceService = null;
 
+        private IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
+
         private bool CheckConnection()
         {
-            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) || (DesignsService.Instance() == null))
+            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) ||
+                (DIContext.Obtain<IDesignsService>() == null))
             {
                 MessageBox.Show("Not connected to service");
                 return false;
@@ -61,7 +68,7 @@ namespace SurveyedSurfaceManager
             try
             {
                 // Load the file and extract its extents
-                TTMDesign TTM = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
                 string fileName = Path.Combine(new string[] { txtFilePath.Text, txtFileName.Text });
                 DesignLoadResult result = TTM.LoadFromFile(fileName);
                 if (result != DesignLoadResult.Success)
@@ -92,7 +99,7 @@ namespace SurveyedSurfaceManager
                                                      out Guid SurveyedSurfaceID);
 
                     // Store the existence map for the surveyd surface for later use
-                    ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, SurveyedSurfaceID, TTM.SubgridOverlayIndex());
+                    ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, SurveyedSurfaceID, TTM.SubgridOverlayIndex());
                 }
             }
             catch (Exception E)
@@ -137,7 +144,7 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                SurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
+                ISurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
 
                 if (ss == null || ss.Count == 0)
                     MessageBox.Show("No surveyed surfaces");
@@ -157,7 +164,7 @@ namespace SurveyedSurfaceManager
         /// <param name="e"></param>
         private void button1_Click_1(object sender, EventArgs e)
         {
-            SurveyedSurfaceService = new SurveyedSurfaceService(VSS.TRex.Storage.StorageMutability.Immutable);
+            SurveyedSurfaceService = new SurveyedSurfaceService(StorageMutability.Immutable);
             SurveyedSurfaceService.Init(null);
         }
 
@@ -228,7 +235,7 @@ namespace SurveyedSurfaceManager
             // Invoke the service to remove the design
             try
             {
-                bool result = DesignsService.Instance().RemoveDirect(SiteModelID, DesignID);
+                bool result = DIContext.Obtain<IDesignsService>().RemoveDirect(SiteModelID, DesignID);
 
                 MessageBox.Show($"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
             }
@@ -254,7 +261,7 @@ namespace SurveyedSurfaceManager
                     return;
                 }
 
-                VSS.TRex.Designs.Storage.Designs designList = DesignsService.Instance().ListDirect(ID);
+                IDesigns designList = DIContext.Obtain<IDesignsService>().ListDirect(ID);
 
                 if (designList == null || designList.Count == 0)
                     MessageBox.Show("No designs");
@@ -292,7 +299,7 @@ namespace SurveyedSurfaceManager
             try
             {
                 // Load the file and extract its extents
-                TTMDesign TTM = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
                 TTM.LoadFromFile(Path.Combine(new [] { txtFilePath.Text, txtFileName.Text }));
 
                 BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
@@ -300,13 +307,13 @@ namespace SurveyedSurfaceManager
                 TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
                 // Create the new design for the site model
-                DesignsService.Instance().AddDirect(ID,
+                DIContext.Obtain<IDesignsService>().AddDirect(ID,
                                          new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
                                          extents,
                                          out Guid DesignID);
 
                 // Store the existence map for the design for later use
-                ExistenceMaps.SetExistenceMap(ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, DesignID, TTM.SubgridOverlayIndex());
+                ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, DesignID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)
             {

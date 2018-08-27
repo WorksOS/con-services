@@ -5,6 +5,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Tests.TestFixtures
 {

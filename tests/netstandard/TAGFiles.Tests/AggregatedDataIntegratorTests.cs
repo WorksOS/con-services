@@ -1,17 +1,12 @@
 ﻿using VSS.TRex.TAGFiles.Classes.Integrator;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VSS.TRex.Events;
-using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using Xunit;
 using VSS.TRex.SubGridTrees.Factories;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace TAGFiles.Tests
 {
@@ -25,7 +20,7 @@ namespace TAGFiles.Tests
             SiteModel siteModel = new SiteModel("TestName", "TestDesc", Guid.NewGuid(), 1.0);
             VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
             ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
-            ServerSubGridTree tree = new ServerSubGridTree(siteModel);
+            ServerSubGridTree tree = new ServerSubGridTree(siteModel.ID);
             ProductionEventLists events = new ProductionEventLists(siteModel, machine.InternalSiteModelMachineIndex /* machine.ID*/);
 
             integrator.AddTaskToProcessList(siteModel, machine, tree, 0, events);

@@ -1,8 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\netstandard\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
-    <ProjectReference Include="..\..\..\..\src\netstandard\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 

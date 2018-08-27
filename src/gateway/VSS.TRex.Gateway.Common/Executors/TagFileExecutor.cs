@@ -6,7 +6,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 
@@ -21,9 +21,8 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    /// <param name="tagfileClientServer"></param>
     public TagFileExecutor(IConfigurationStore configStore,
-        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, IMutableClientServer tagfileClientServer) : base(configStore, logger, exceptionHandler, null, tagfileClientServer)
+        ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
 

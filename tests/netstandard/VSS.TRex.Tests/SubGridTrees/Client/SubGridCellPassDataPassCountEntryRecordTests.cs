@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Types;
 using Xunit;
 
@@ -13,8 +14,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       rec.Clear();
 
-      Assert.True(rec.MeasuredPassCount == CellPass.NullPassCountValue);
-      Assert.True(rec.TargetPassCount == CellPass.NullPassCountValue);
+      Assert.True(rec.MeasuredPassCount == CellPassConsts.NullPassCountValue);
+      Assert.True(rec.TargetPassCount == CellPassConsts.NullPassCountValue);
     }
   }
 }

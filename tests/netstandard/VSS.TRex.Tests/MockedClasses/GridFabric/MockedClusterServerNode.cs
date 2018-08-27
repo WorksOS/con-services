@@ -1,10 +1,7 @@
 ﻿using Apache.Ignite.Core.Cluster;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Tests.MockedClasses.GridFabric
 {

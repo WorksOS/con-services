@@ -30,6 +30,42 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Compression\VSS.TRex.Compression.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events.Models\VSS.TRex.Events.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Exports\VSS.TRex.Exports.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Filters\VSS.TRex.Filters.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines\VSS.TRex.Machines.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Server.Interfaces\VSS.TRex.SubGridTrees.Server.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
   </ItemGroup>

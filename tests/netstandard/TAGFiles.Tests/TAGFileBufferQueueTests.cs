@@ -3,10 +3,12 @@ using System.IO;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using VSS.TRex.TAGFiles.Classes.Queues;
-using VSS.TRex.GridFabric.Caches;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Servers;
+using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Servers.Client;
+using VSS.TRex.Storage.Caches;
+using VSS.TRex.TAGFiles.Models;
 using Xunit;
 
 namespace TAGFiles.Tests

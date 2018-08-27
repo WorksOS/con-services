@@ -7,10 +7,12 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Rendering.Servers.Client;
-using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -21,8 +23,8 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected BaseExecutor(IConfigurationStore configurationStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler, ITileRenderingServer tileRenderServer, IMutableClientServer tagfileClientServer) 
-      : base(configurationStore, logger, exceptionHandler, tileRenderServer, tagfileClientServer)
+    protected BaseExecutor(IConfigurationStore configurationStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) 
+      : base(configurationStore, logger, exceptionHandler)
     {
     }
 
@@ -33,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected ISiteModel GetSiteModel(Guid? ID)
     {
-      ISiteModel siteModel = ID.HasValue ? SiteModels.SiteModels.Instance().GetSiteModel(ID.Value) : null;
+      ISiteModel siteModel = ID.HasValue ? DIContext.Obtain<ISiteModels>().GetSiteModel(ID.Value) : null;
 
       if (siteModel == null)
       {
@@ -45,7 +47,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       return siteModel;
     }
 
-    protected CombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
+    protected ICombinedFilter ConvertFilter(FilterResult filter, ISiteModel siteModel)
     {
       if (filter == null)
         return new CombinedFilter();//TRex doesn't like null filter

@@ -155,9 +155,133 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj">
+      <Project>{C943B9D9-7331-40F9-BFCF-C2389B1B4974}</Project>
+      <Name>VSS.TRex.Analytics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj">
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj">
+      <Project>{0d1d3c84-74b6-41a7-8296-bdedf3f9583f}</Project>
+      <Name>VSS.TRex.Designs.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj">
+      <Project>{211f9d49-5928-4b84-b9e6-12f4cc270adf}</Project>
+      <Name>VSS.TRex.Designs.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs\VSS.TRex.Designs.csproj">
+      <Project>{6CCBD780-2641-479B-AEC0-F13907749ECF}</Project>
+      <Name>VSS.TRex.Designs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj">
+      <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
+      <Name>VSS.TRex.DI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Exports\VSS.TRex.Exports.csproj">
+      <Project>{13FA1282-4C45-44CB-BFE8-E9DD1793A0DE}</Project>
+      <Name>VSS.TRex.Exports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj">
+      <Project>{78b63e5e-8d7b-42bc-bbfc-cacdd3838a94}</Project>
+      <Name>VSS.TRex.Filters.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj">
+      <Project>{46e7869f-f2a5-40ee-9281-bb18e24769e8}</Project>
+      <Name>VSS.TRex.Filters.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Filters\VSS.TRex.Filters.csproj">
+      <Project>{f1b8058c-7136-4f12-92ca-7db3ad7d548c}</Project>
+      <Name>VSS.TRex.Filters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj">
+      <Project>{7a68abbe-5cbb-4b54-ba85-93d4603fb0cb}</Project>
+      <Name>VSS.TRex.GridFabric.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
+      <Project>{0BF0BCD0-F93C-4A2E-BCB2-3D80B587E858}</Project>
+      <Name>VSS.TRex.GridFabric</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj">
+      <Project>{4fb06a26-18a7-4080-aebf-5197aeaba6b6}</Project>
+      <Name>VSS.TRex.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj">
+      <Project>{04f42031-2ede-4681-8c81-2da8dc0c583a}</Project>
+      <Name>VSS.TRex.Profiling.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj">
+      <Project>{a3f56f4f-2728-4fc8-aba6-23bcaa72c318}</Project>
+      <Name>VSS.TRex.Profiling.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj">
+      <Project>{78f19853-a3d3-4dcd-8ab5-f88650b83d3f}</Project>
+      <Name>VSS.TRex.Profiling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj">
+      <Project>{001CC650-D55D-458F-91A0-114108218772}</Project>
+      <Name>VSS.TRex.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj">
+      <Project>{17975EAA-A11A-4A08-8912-4D2DE1AA4FD7}</Project>
+      <Name>VSS.TRex.Services.Designs.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj">
+      <Project>{FEDB3A6F-F68F-4C39-BC0E-385C84AF7319}</Project>
+      <Name>VSS.TRex.Services.Designs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.SurveyedSurfaces\VSS.TRex.Services.SurveyedSurfaces.csproj">
+      <Project>{786EE762-216E-46D3-936F-7F478693D76C}</Project>
+      <Name>VSS.TRex.Services.SurveyedSurfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj">
+      <Project>{780e0712-9e35-4fed-b936-cb86cc02ab53}</Project>
+      <Name>VSS.TRex.SiteModels.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj">
+      <Project>{a614210e-b1a6-4e02-96fc-1ff78a86c5a9}</Project>
+      <Name>VSS.TRex.SiteModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj">
+      <Project>{06b93475-a235-4f5d-a226-48e4205f9ba1}</Project>
+      <Name>VSS.TRex.Storage.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
+      <Project>{6c9c0264-67a6-4035-bbc2-6ab380a51c30}</Project>
+      <Name>VSS.TRex.Storage.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
+      <Project>{E9FFB4FA-AAF2-4EA3-93FB-82B0B38B7FA5}</Project>
+      <Name>VSS.TRex.Storage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj">
+      <Project>{c423088f-2b76-49f9-b601-666980a4c1c7}</Project>
+      <Name>VSS.TRex.SubGridTrees.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj">
+      <Project>{2da02751-d54e-4eb6-8e13-a4310aefba11}</Project>
+      <Name>VSS.TRex.SubGridTrees.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj">
+      <Project>{cdee4496-d107-4b46-babe-8bd66a4e8434}</Project>
+      <Name>VSS.TRex.SurveyedSurfaces.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj">
+      <Project>{9f873cc8-c105-4141-ad06-9a2332d3ad7b}</Project>
+      <Name>VSS.TRex.SurveyedSurfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj">
+      <Project>{05328D4B-D1D4-459E-AC45-7C5DB2E9026B}</Project>
+      <Name>VSS.TRex.TAGFiles.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj">
+      <Project>{7B80F16B-4CAB-4BF5-80FA-BB96C7674908}</Project>
+      <Name>VSS.TRex.TAGFiles</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj">
+      <Project>{5BBD439B-F489-4CE9-9D9A-2AC9E13B1CD6}</Project>
+      <Name>VSS.TRex.Volumes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
@@ -167,13 +291,13 @@
       <Project>{F1D135BE-638E-4E1C-9D8B-06F2A618C2F9}</Project>
       <Name>VSS.TRex.Rendering.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
-      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
-      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj">
       <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
       <Name>VSS.TRex.Geometry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
+      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
+      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

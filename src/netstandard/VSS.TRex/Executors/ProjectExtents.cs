@@ -1,7 +1,7 @@
 ﻿using System;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Servers.Client;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Executors
@@ -18,7 +18,7 @@ namespace VSS.TRex.Executors
         /// <returns></returns>
         public static BoundingWorldExtent3D ProductionDataOnly(Guid ID)
         {
-            ISiteModel SiteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.SiteModels.Instance().GetSiteModel(ID, false));
+            ISiteModel SiteModel = GenericApplicationServiceServer.PerformAction(() => DIContext.Obtain<ISiteModels>().GetSiteModel(ID, false));
 
             return SiteModel?.SiteModelExtent ?? BoundingWorldExtent3D.Inverted();
         }
@@ -30,7 +30,7 @@ namespace VSS.TRex.Executors
         /// <returns></returns>
         public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(Guid ID)
         {
-            ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
+            ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID, false);
 
             return SiteModel?.GetAdjustedDataModelSpatialExtents(new Guid[0]) ?? BoundingWorldExtent3D.Inverted();
         }
@@ -44,7 +44,7 @@ namespace VSS.TRex.Executors
         /// <returns></returns>
         public static BoundingWorldExtent3D ProductionDataAndSurveyedSurfaces(Guid ID, Guid[] SurveydSurfaceExclusionList)
         {
-            ISiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
+            ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID, false);
 
             return SiteModel?.GetAdjustedDataModelSpatialExtents(SurveydSurfaceExclusionList) ?? BoundingWorldExtent3D.Inverted();
         }

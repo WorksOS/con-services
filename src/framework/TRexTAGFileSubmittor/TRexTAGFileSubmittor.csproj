@@ -141,6 +141,34 @@
       <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
       <Name>VSS.TRex.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj">
+      <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
+      <Name>VSS.TRex.DI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
+      <Project>{0BF0BCD0-F93C-4A2E-BCB2-3D80B587E858}</Project>
+      <Name>VSS.TRex.GridFabric</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj">
+      <Project>{4fb06a26-18a7-4080-aebf-5197aeaba6b6}</Project>
+      <Name>VSS.TRex.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj">
+      <Project>{e747af05-d0dc-4a6a-b2d9-61185b5b01db}</Project>
+      <Name>VSS.TRex.Machines.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Machines\VSS.TRex.Machines.csproj">
+      <Project>{14cbb231-9fd9-4e6a-a828-c419e1c88879}</Project>
+      <Name>VSS.TRex.Machines</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj">
+      <Project>{05328D4B-D1D4-459E-AC45-7C5DB2E9026B}</Project>
+      <Name>VSS.TRex.TAGFiles.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj">
+      <Project>{7B80F16B-4CAB-4BF5-80FA-BB96C7674908}</Project>
+      <Name>VSS.TRex.TAGFiles</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>VSS.TRex</Name>

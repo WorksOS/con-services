@@ -15,4 +15,8 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,13 +2,18 @@
 using System.Windows.Forms;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps;
+using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Classes;
 
 namespace TRexMutableDataServer
@@ -28,6 +33,7 @@ namespace TRexMutableDataServer
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
         .Complete();
     }
 
@@ -41,6 +47,9 @@ namespace TRexMutableDataServer
         .Build();
 
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       if (Configuration.GetSection("EnableTFAService").Value == null)
         Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g EnableTFAService");

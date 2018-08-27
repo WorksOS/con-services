@@ -2,11 +2,10 @@
 using System.IO;
 using System.Text;
 using VSS.TRex.Cells;
-using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -50,7 +49,7 @@ namespace VSS.TRex.Tests
             // and compare the mutable and immutable versions for consistency.
 
             // Create a leaf to contain the mutable directory
-            IServerLeafSubGrid mutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid mutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels);
             mutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false);
 
             // Load the mutable stream of information
@@ -69,9 +68,10 @@ namespace VSS.TRex.Tests
 
             MemoryStream inStream = null;
 
-            MutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, outStream, out inStream);
+            var mutabilityConverter = new MutabilityConverter();
+            mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, outStream, out inStream);
 
-            IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTree.SubGridTreeLevels);
+            IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels);
             immutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
 
             inStream.Position = 0;
@@ -135,7 +135,8 @@ namespace VSS.TRex.Tests
             MemoryStream inStream = null;
 
             // Convert the mutable data into the immutable form and reload it into an immutable segment
-            MutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, outStream, out inStream);
+            var mutabilityConverter = new MutabilityConverter();
+            mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, outStream, out inStream);
 
             SubGridCellPassesDataSegment immutableSegment = new SubGridCellPassesDataSegment
                 (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true),

@@ -8,6 +8,7 @@ using VSS.TRex.Machines;
 using VSS.TRex.TAGFiles.Servers.Client;
 using Microsoft.Extensions.Logging;
 using Tests.Common;
+using VSS.TRex.Common.Utilities;
 
 /*
 Arguments for building project #5, Dimensions:
@@ -159,6 +160,9 @@ namespace VSS.TRex.Tools.TagfileSubmitter
     static void Main(string[] args)
     {
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       Log = Logging.Logger.CreateLogger<Program>();
 

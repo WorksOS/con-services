@@ -1,8 +1,5 @@
-﻿using System;
-using VSS.TRex.SubGridTrees.Utilities;
-using VSS.TRex;
-using Xunit;
-using VSS.TRex.SubGridTrees;
+﻿using Xunit;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
@@ -15,13 +12,13 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Cell X & Y location to compute the subgrid relative X and y cell indices that location would have in any subgrid.
 
             byte SubGridCellX, SubGridCellY;
-            SubGridUtilities.GetOTGLeafSubGridCellIndex(0, 0, out SubGridCellX, out SubGridCellY);
+            VSS.TRex.SubGridTrees.Server.Utilities.SubGridUtilities.GetOTGLeafSubGridCellIndex(0, 0, out SubGridCellX, out SubGridCellY);
             Assert.True(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
 
-            SubGridUtilities.GetOTGLeafSubGridCellIndex(SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1, out SubGridCellX, out SubGridCellY);
-            Assert.True(SubGridCellX == (SubGridTree.SubGridTreeDimension - 1) && SubGridCellY == (SubGridTree.SubGridTreeDimension - 1), "Subgrid cell indices incorrect");
+            VSS.TRex.SubGridTrees.Server.Utilities.SubGridUtilities.GetOTGLeafSubGridCellIndex(SubGridTreeConsts.SubGridTreeDimensionMinus1, SubGridTreeConsts.SubGridTreeDimensionMinus1, out SubGridCellX, out SubGridCellY);
+            Assert.True(SubGridCellX == (SubGridTreeConsts.SubGridTreeDimension - 1) && SubGridCellY == (SubGridTreeConsts.SubGridTreeDimension - 1), "Subgrid cell indices incorrect");
 
-            SubGridUtilities.GetOTGLeafSubGridCellIndex(SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension, out SubGridCellX, out SubGridCellY);
+            VSS.TRex.SubGridTrees.Server.Utilities.SubGridUtilities.GetOTGLeafSubGridCellIndex(SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension, out SubGridCellX, out SubGridCellY);
             Assert.True(SubGridCellX == 0 && SubGridCellY == 0, "Subgrid cell indices incorrect");
         }
     }

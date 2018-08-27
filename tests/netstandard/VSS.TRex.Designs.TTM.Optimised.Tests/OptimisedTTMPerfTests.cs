@@ -5,7 +5,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Tests
 {
   public class OptimisedTTMPerfTests
   {
-    [Fact]
+    [Fact(Skip = "File too big to add to source control")]
     public void Test_TINLoad()
     {
       VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel tin = new VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel();
@@ -17,7 +17,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Tests
       Assert.True(false, $"Duration to load file containing {tin.Triangles.Items.Length} triangles and {tin.Vertices.Items.Length} vertices: {endTime - startTime}");
     }
 
-    [Fact]
+    [Fact(Skip = "File too big to add to source control")]
     public void Test_TINLoad2()
     {
       VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel readonly_tin = new VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel();
@@ -66,7 +66,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Tests
       }
     }
 
-    [Fact]
+    [Fact(Skip = "File too big to add to source control")]
     public void Test_TINLoadAndSave()
     {
       VSS.TRex.Designs.TTM.TrimbleTINModel readwrite_tin = new VSS.TRex.Designs.TTM.TrimbleTINModel();

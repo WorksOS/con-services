@@ -3,6 +3,7 @@ using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Analytics.CMVStatistics.Summary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -27,8 +28,8 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
       Assert.True(aggregator.IsTargetValueConstant, "Invalid initial value for IsTargetValueConstant.");
       Assert.True(!aggregator.MissingTargetValue, "Invalid initial value for MissingTargetValue.");
       Assert.True(!aggregator.OverrideMachineCMV, "Invalid initial value for OverrideTemperatureWarningLevels.");
-      Assert.True(aggregator.OverridingMachineCMV == CellPass.NullCCV, "Invalid initial value for OverridingMachineCMV.");
-      Assert.True(aggregator.LastTargetCMV == CellPass.NullCCV, "Invalid initial value for LastTargetCMV.");
+      Assert.True(aggregator.OverridingMachineCMV == CellPassConsts.NullCCV, "Invalid initial value for OverridingMachineCMV.");
+      Assert.True(aggregator.LastTargetCMV == CellPassConsts.NullCCV, "Invalid initial value for LastTargetCMV.");
     }
 
     [Fact]

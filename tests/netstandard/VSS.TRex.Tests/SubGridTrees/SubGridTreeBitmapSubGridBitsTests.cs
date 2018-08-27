@@ -1,9 +1,9 @@
 ﻿using System;
-using VSS.TRex;
 using System.IO;
 using System.Text;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
@@ -94,7 +94,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridTreeBitmapSubGridBitsTests_CountBits()
         {
             SubGridTreeBitmapSubGridBits bits = SubGridTreeBitmapSubGridBits.FullMask;
-            Assert.Equal(bits.CountBits(), SubGridTree.CellsPerSubgrid);
+            Assert.Equal(bits.CountBits(), SubGridTreeConsts.CellsPerSubgrid);
 
             bits.Clear();
             Assert.Equal((uint)0, bits.CountBits());
@@ -257,7 +257,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
             BoundingIntegerExtent2D boundsFull = bits.ComputeCellsExtents();
-            Assert.True(boundsFull.Equals(new BoundingIntegerExtent2D(0, 0, SubGridTree.SubGridTreeDimensionMinus1, SubGridTree.SubGridTreeDimensionMinus1)),
+            Assert.True(boundsFull.Equals(new BoundingIntegerExtent2D(0, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1, SubGridTreeConsts.SubGridTreeDimensionMinus1)),
                 "ComputeCellsExtents is incorrect for full grid");
 
             bits.Clear();
@@ -279,7 +279,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             sum = 0;
             bits.ForEach((x, y) => { if (bits.BitSet(x, y)) sum++; });
-            Assert.True(sum == bits.CountBits() && sum == SubGridTree.CellsPerSubgrid, "Summation via ForEach on full mask did not give expected result");
+            Assert.True(sum == bits.CountBits() && sum == SubGridTreeConsts.CellsPerSubgrid, "Summation via ForEach on full mask did not give expected result");
 
             sum = 0;
             bits.Clear();
@@ -299,11 +299,11 @@ namespace VSS.TRex.Tests.SubGridTrees
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             bits.ForEach((x, y) => { return true; });
-            Assert.Equal(bits.CountBits(), SubGridTree.CellsPerSubgrid);
+            Assert.Equal(bits.CountBits(), SubGridTreeConsts.CellsPerSubgrid);
 
             bits.Clear();
             bits.ForEach((x, y) => { return x < 16; });
-            Assert.Equal(bits.CountBits(), SubGridTree.CellsPerSubgrid / 2);
+            Assert.Equal(bits.CountBits(), SubGridTreeConsts.CellsPerSubgrid / 2);
 
             bits.Clear();
             bits.ForEach((x, y) => { return (x == 1) && (y == 1); });
@@ -320,7 +320,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             sum = 0;
             bits.ForEachSetBit((x, y) => { sum++; });
-            Assert.True(sum == bits.CountBits() && sum == SubGridTree.CellsPerSubgrid, "Summation via ForEachSetBit on full mask did not give expected result");
+            Assert.True(sum == bits.CountBits() && sum == SubGridTreeConsts.CellsPerSubgrid, "Summation via ForEachSetBit on full mask did not give expected result");
 
             sum = 0;
             bits.Clear();
@@ -348,12 +348,12 @@ namespace VSS.TRex.Tests.SubGridTrees
             sum = 0;
             bits.Clear();
             bits.ForEachClearBit((x, y) => { sum++; });
-            Assert.Equal((uint)sum, SubGridTree.CellsPerSubgrid);
+            Assert.Equal((uint)sum, SubGridTreeConsts.CellsPerSubgrid);
 
             sum = 0;
             bits.SetBit(1, 1);
             bits.ForEachClearBit((x, y) => { sum++; });
-            Assert.Equal((uint)sum, SubGridTree.CellsPerSubgrid - 1);
+            Assert.Equal((uint)sum, SubGridTreeConsts.CellsPerSubgrid - 1);
         }
 
         [Fact]
@@ -476,10 +476,10 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal(0, bits.SumBitRows());
 
             bits[0, 0] = true;
-            Assert.NotEqual(bits.SumBitRows(), (1 << SubGridTree.SubGridTreeDimension) - 1);
+            Assert.NotEqual(bits.SumBitRows(), (1 << SubGridTreeConsts.SubGridTreeDimension) - 1);
 
-            bits[0, SubGridTree.SubGridTreeDimensionMinus1] = true;
-            Assert.NotEqual(bits.SumBitRows(), (1 << SubGridTree.SubGridTreeDimension));
+            bits[0, SubGridTreeConsts.SubGridTreeDimensionMinus1] = true;
+            Assert.NotEqual(bits.SumBitRows(), (1 << SubGridTreeConsts.SubGridTreeDimension));
 
             bits.Fill();
             Assert.Equal(bits.SumBitRows(), SubGridTreeBitmapSubGridBits.SumBitRowsFullCount);

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.SubGridTrees;
 using Xunit;
 

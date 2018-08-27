@@ -1,15 +1,23 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Designs;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace VSS.TRex.DesignProfiling.Tests
 {
   public class TTMDesignTests : IClassFixture<DILoggingFixture>
   {
-        private static TTMDesign design;
+    private readonly ITestOutputHelper output;
+
+    public TTMDesignTests(ITestOutputHelper output)
+    {
+      this.output = output;
+    }
+
+    private static TTMDesign design;
 
         private void LoadTheDesign()
         {
@@ -17,7 +25,7 @@ namespace VSS.TRex.DesignProfiling.Tests
           {
             if (design == null)
             {
-              design = new TTMDesign(SubGridTree.DefaultCellSize);
+              design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
               design.LoadFromFile(Path.Combine("TestData", "Bug36372.ttm"));
             }
           }
@@ -38,7 +46,7 @@ namespace VSS.TRex.DesignProfiling.Tests
         {
             try
             {
-                TTMDesign localDesign = new TTMDesign(SubGridTree.DefaultCellSize);
+                TTMDesign localDesign = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
 
                 Assert.NotNull(localDesign);
             }
@@ -113,28 +121,28 @@ namespace VSS.TRex.DesignProfiling.Tests
         public void InterpolateHeightsTest(double probeX, double probeY)
         {
             LoadTheDesign();
-            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
-            bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+            bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTreeConsts.DefaultCellSize, 0);
 
             Assert.True(result, "Heights interpolation returned false");
         }
 
-    // [Theory(Skip = "Performance Test")]
-    [Theory]
-    [InlineData(247500.0, 193350.0)]
+        [Theory]
+        [InlineData(247500.0, 193350.0)]
         public void InterpolateHeightsTestPerf(double probeX, double probeY)
         {
             LoadTheDesign();
 
-            float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+            float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
           DateTime _start = DateTime.Now;
             for (int i = 0; i < 10000; i++)
-                design.InterpolateHeights(Patch, probeX, probeY, SubGridTree.DefaultCellSize, 0);
+                design.InterpolateHeights(Patch, probeX, probeY, SubGridTreeConsts.DefaultCellSize, 0);
           DateTime _end = DateTime.Now;
 
-          Assert.True(false, $"Perf Test: Duration for 10000 patch requests: {_end - _start}");
+          output.WriteLine( $"Perf Test: Duration for 10000 patch requests: {_end - _start}");
+          Assert.True(true);
         }
 
         [Fact]
@@ -160,7 +168,7 @@ namespace VSS.TRex.DesignProfiling.Tests
       {
         if (design == null)
         {
-          design = new TTMDesign(SubGridTree.DefaultCellSize);
+          design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
           design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
         }
       }
@@ -173,7 +181,7 @@ namespace VSS.TRex.DesignProfiling.Tests
       LoadTheGiantDesign();
       TimeSpan loadTime = DateTime.Now - _start;
 
-      float[,] Patch = new float[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+      float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
       int numPatches = 0;
       _start = DateTime.Now;
@@ -184,16 +192,15 @@ namespace VSS.TRex.DesignProfiling.Tests
         double cellSize = leaf.Owner.CellSize;
         leaf.CalculateWorldOrigin(out double originX, out double originY);
 
-        leaf.ForEach((x, y) => { design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTree.SubGridTreeDimension, 0); });
+        leaf.ForEach((x, y) => { design.InterpolateHeights(Patch, originX + x * cellSize, originY + y * cellSize, cellSize / SubGridTreeConsts.SubGridTreeDimension, 0); });
 
         return true;
       });
 
       TimeSpan lookupTime = DateTime.Now - _start;
 
-      Assert.True(false, $"Perf Test: Duration for {numPatches} patch requests, load = {loadTime}, lookups = {lookupTime}");
+      output.WriteLine($"Perf Test: Duration for {numPatches} patch requests, load = {loadTime}, lookups = {lookupTime}");
+      Assert.True(true);
     }
-
-
   }
 }

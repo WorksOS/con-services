@@ -4,11 +4,11 @@ using System.Text;
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 using Xunit;
 using VSS.TRex.SubGridTrees.Server;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
@@ -153,7 +153,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_WriteRead_Test()
         {
             // Create the main 2D array of cell pass arrays
-            CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
+            CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
 
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new [] { TestCellPass() });
@@ -272,7 +272,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_SetState_Test()
         {
             // Create the main 2D array of cell pass arrays
-            CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
+            CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
 
             // Create each sub array and add a test cell pass to it
             SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new [] { TestCellPass() });

@@ -9,6 +9,7 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -38,7 +39,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
         var moqSiteModels = new Mock<ISiteModels>();
         moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuid)).Returns(mockedSiteModel);
-        moqSiteModels.Setup(mk => mk.ImmutableStorageProxy).Returns(moqStorageProxy.Object);
+        moqSiteModels.Setup(mk => mk.ImmutableStorageProxy()).Returns(moqStorageProxy.Object);
 
         // Mock the new sitemodel creation API to return jsut a new sitemodel
         moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(mockedSiteModel);
@@ -66,12 +67,12 @@ namespace VSS.TRex.Tests.CoordinateSystem
       [Fact]
       public void Test_CoordinateSystemPersistency_Read()
       {
-        // MemoryStream csibStream;
-        // SiteModels.SiteModels.Instance().ImmutableStorageProxy.ReadStreamFromPersistentStore
-        // (CoordinateSystemsTestsDIFixture.NewSiteModelGuid, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
-        //  FileSystemStreamType.CoordinateSystemCSIB, out csibStream);
+      // MemoryStream csibStream;
+      // DIContext.Obtain<ISiteModels>().ImmutableStorageProxy.ReadStreamFromPersistentStore
+      // (CoordinateSystemsTestsDIFixture.NewSiteModelGuid, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
+      //  FileSystemStreamType.CoordinateSystemCSIB, out csibStream);
 
-        SiteModel siteModel = new SiteModel("TestName", "TestDesc", CoordinateSystemsTestsDIFixture.NewSiteModelGuid, 1.0);
+      SiteModel siteModel = new SiteModel("TestName", "TestDesc", CoordinateSystemsTestsDIFixture.NewSiteModelGuid, 1.0);
 
         string CSIB = siteModel.CSIB();
 

@@ -48,7 +48,8 @@ namespace VSS.TRex.Tests.Profiling
     [Fact]
     public void Test_ProfilerBuilder_Creation_Null()
     {
-      IProfilerBuilder builder = new ProfilerBuilder(null, null, GridDataType.All, null, null, null, null, null, null);
+      IProfilerBuilder builder = new ProfilerBuilder();
+      builder.Configure(null, null, GridDataType.All, null, null, null, null, null, null);
 
       Assert.True(builder != null, "Builder failed to construct");
     }
@@ -56,7 +57,8 @@ namespace VSS.TRex.Tests.Profiling
     [Fact]
     public void Test_ProfilerBuilder_Creation_ProfileBuilders()
     {
-      IProfilerBuilder builder = new ProfilerBuilder(null, null, GridDataType.All, null, null, null, null, null, null);
+      IProfilerBuilder builder = new ProfilerBuilder();
+      builder.Configure(null, null, GridDataType.All, null, null, null, null, null, null);
 
       Assert.True(builder.CellLiftBuilder == ProfileBuilderTests_Fixture.newCellLiftBuilder.Object, "Cell lift builder not expected one");
       Assert.True(builder.CellProfileBuilder == ProfileBuilderTests_Fixture.newCellProfileBuilder.Object,

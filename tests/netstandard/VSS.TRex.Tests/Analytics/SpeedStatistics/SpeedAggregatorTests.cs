@@ -3,6 +3,7 @@ using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -26,8 +27,8 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
       Assert.True(aggregator.CellsScannedUnderTarget == 0, "Invalid initial value for CellsScannedUnderTarget.");
       Assert.True(aggregator.IsTargetValueConstant, "Invalid initial value for IsTargetValueConstant.");
       Assert.True(!aggregator.MissingTargetValue, "Invalid initial value for MissingTargetValue.");
-      Assert.True(aggregator.TargetMachineSpeed.Max == CellPass.NullMachineSpeed, "Invalid initial value for TargetMachineSpeed.Max.");
-      Assert.True(aggregator.TargetMachineSpeed.Min == CellPass.NullMachineSpeed, "Invalid initial value for TargetMachineSpeed.Min.");
+      Assert.True(aggregator.TargetMachineSpeed.Max == CellPassConsts.NullMachineSpeed, "Invalid initial value for TargetMachineSpeed.Max.");
+      Assert.True(aggregator.TargetMachineSpeed.Min == CellPassConsts.NullMachineSpeed, "Invalid initial value for TargetMachineSpeed.Min.");
     }
 
     [Fact]

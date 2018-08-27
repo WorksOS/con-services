@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
@@ -94,7 +95,7 @@ namespace TAGFiles.Tests
             Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0)),
                 "Matcher process function returned false");
 
-            Assert.Equal((byte) sink.ICCCAValues.GetLatest(), CellPass.NullCCA);
+            Assert.Equal((byte) sink.ICCCAValues.GetLatest(), CellPassConsts.NullCCA);
         }
 
         [Fact()]
@@ -115,7 +116,7 @@ namespace TAGFiles.Tests
             Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0)),
                 "Matcher process function returned false");
 
-            Assert.Equal((byte) sink.ICCCARightFrontValues.GetLatest(), CellPass.NullCCA);
+            Assert.Equal((byte) sink.ICCCARightFrontValues.GetLatest(), CellPassConsts.NullCCA);
         }
 
         [Fact()]
@@ -136,7 +137,7 @@ namespace TAGFiles.Tests
             Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0)),
                 "Matcher process function returned false");
 
-            Assert.Equal((byte) sink.ICCCARightRearValues.GetLatest(), CellPass.NullCCA);
+            Assert.Equal((byte) sink.ICCCARightRearValues.GetLatest(), CellPassConsts.NullCCA);
         }
 
         [Fact()]
@@ -157,7 +158,7 @@ namespace TAGFiles.Tests
             Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0)),
                 "Matcher process function returned false");
 
-            Assert.Equal((byte) sink.ICCCALeftFrontValues.GetLatest(), CellPass.NullCCA);
+            Assert.Equal((byte) sink.ICCCALeftFrontValues.GetLatest(), CellPassConsts.NullCCA);
         }
 
 
@@ -179,7 +180,7 @@ namespace TAGFiles.Tests
             Assert.True(matcher.ProcessEmptyValue(new TAGDictionaryItem("", TAGDataType.t8bitUInt, 0)),
                 "Matcher process function returned false");
 
-            Assert.Equal((byte) sink.ICCCALeftRearValues.GetLatest(), CellPass.NullCCA);
+            Assert.Equal((byte) sink.ICCCALeftRearValues.GetLatest(), CellPassConsts.NullCCA);
         }
 
 
@@ -235,7 +236,7 @@ namespace TAGFiles.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteCCV, "Incorrect value after assignment");
 
-            Assert.Equal((short) sink.ICCCVValues.GetLatest(), CellPass.NullCCV);
+            Assert.Equal((short) sink.ICCCVValues.GetLatest(), CellPassConsts.NullCCV);
         }
 
         [Fact()]
@@ -245,7 +246,7 @@ namespace TAGFiles.Tests
             InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
             var matcher = new TAGTargetCCVValueMatcher(sink, state);
 
-            Assert.Equal(sink.ICCCVTargetValue, CellPass.NullCCV);
+            Assert.Equal(sink.ICCCVTargetValue, CellPassConsts.NullCCV);
 
             Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t12bitUInt, 0),
                     100),
@@ -285,7 +286,7 @@ namespace TAGFiles.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteMDP, "Incorrect value after assignment");
 
-            Assert.Equal((short) sink.ICMDPValues.GetLatest(), CellPass.NullMDP);
+            Assert.Equal((short) sink.ICMDPValues.GetLatest(), CellPassConsts.NullMDP);
         }
 
         [Fact()]
@@ -295,7 +296,7 @@ namespace TAGFiles.Tests
             InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
             var matcher = new TAGTargetMDPValueMatcher(sink, state);
 
-            Assert.Equal(sink.ICMDPTargetValue, CellPass.NullMDP);
+            Assert.Equal(sink.ICMDPTargetValue, CellPassConsts.NullMDP);
 
             Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem("", TAGDataType.t12bitUInt, 0),
                     100),
@@ -351,7 +352,7 @@ namespace TAGFiles.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteTemperature, "Incorrect value after assignment");
 
-            Assert.Equal((ushort) sink.ICTemperatureValues.GetLatest(), CellPass.NullMaterialTemperatureValue);
+            Assert.Equal((ushort) sink.ICTemperatureValues.GetLatest(), CellPassConsts.NullMaterialTemperatureValue);
         }
 
         [Fact()]
@@ -413,7 +414,7 @@ namespace TAGFiles.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteAmplitude, "Incorrect value after assignment");
 
-            Assert.Equal((ushort) sink.ICAmplitudes.GetLatest(), CellPass.NullAmplitude);
+            Assert.Equal((ushort) sink.ICAmplitudes.GetLatest(), CellPassConsts.NullAmplitude);
         }
 
         [Fact()]
@@ -447,7 +448,7 @@ namespace TAGFiles.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteFrequency, "Incorrect value after assignment");
 
-            Assert.Equal((ushort) sink.ICFrequencys.GetLatest(), CellPass.NullFrequency);
+            Assert.Equal((ushort) sink.ICFrequencys.GetLatest(), CellPassConsts.NullFrequency);
         }
 
         [Fact()]
@@ -495,7 +496,7 @@ namespace TAGFiles.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteRMV, "Incorrect value after assignment");
 
-            Assert.Equal((short) sink.ICRMVValues.GetLatest(), CellPass.NullRMV);
+            Assert.Equal((short) sink.ICRMVValues.GetLatest(), CellPassConsts.NullRMV);
         }
 
         [Fact()]
@@ -571,7 +572,7 @@ namespace TAGFiles.Tests
 
             Assert.False(state.HaveSeenAnAbsoluteVolkelMeasUtilRange, "Incorrect value after assignment");
 
-            Assert.Equal((int) sink.VolkelMeasureUtilRanges.GetLatest(), CellPass.NullVolkelMeasUtilRange);
+            Assert.Equal((int) sink.VolkelMeasureUtilRanges.GetLatest(), CellPassConsts.NullVolkelMeasUtilRange);
         }
 
         [Fact()]

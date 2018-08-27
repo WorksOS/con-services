@@ -11,7 +11,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Servers.Client;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -80,7 +80,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
 
       var tagfileResult = WithServiceExceptionTryExecute(() => RequestExecutorContainer
-                                                     .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler, null, tagfileClientServer)
+                                                     .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
                                                      .Process(tfRequest)) as TagFileResult;
 
       // todo we probably need to return some proper return codes to determine further course of action

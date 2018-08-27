@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Implementations.Framework;
 using VSS.TRex.SiteModels;
@@ -27,6 +29,8 @@ namespace TRexApplicationServer
 
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
+        .Add(x => x.AddSingleton<IExistenceMaps>(new VSS.TRex.ExistenceMaps.ExistenceMaps()))
+
         .Complete();
     }
 
@@ -37,6 +41,9 @@ namespace TRexApplicationServer
     static void Main()
     {
       DependencyInjection();
+
+      // Make sure all our assemblies are loaded...
+      AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);

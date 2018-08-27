@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -99,7 +99,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       int Count = 0;
 
       clientGrid.ForEach((x, y) => Count++);
-      Assert.True(SubGridTree.SubGridTreeCellsPerSubgrid == Count, "ForEach did not iterate all cells");
+      Assert.True(SubGridTreeConsts.SubGridTreeCellsPerSubgrid == Count, "ForEach did not iterate all cells");
     }
 
     [Theory]

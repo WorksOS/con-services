@@ -19,21 +19,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Analytics\Foundation\GridFabric\Arguments\**" />
-    <Compile Remove="Analytics\Foundation\GridFabric\Requests\**" />
-    <Compile Remove="CoordinateSystems\GridFabric\Requests\**" />
-    <Compile Remove="Profiling\Executors\Tasks\**" />
-    <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Arguments\**" />
-    <EmbeddedResource Remove="Analytics\Foundation\GridFabric\Requests\**" />
-    <EmbeddedResource Remove="CoordinateSystems\GridFabric\Requests\**" />
-    <EmbeddedResource Remove="Profiling\Executors\Tasks\**" />
-    <None Remove="Analytics\Foundation\GridFabric\Arguments\**" />
-    <None Remove="Analytics\Foundation\GridFabric\Requests\**" />
-    <None Remove="CoordinateSystems\GridFabric\Requests\**" />
-    <None Remove="Profiling\Executors\Tasks\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Apache.Ignite" Version="2.6.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
@@ -46,14 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
-    <ProjectReference Include="..\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
-    <ProjectReference Include="..\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
-    <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Exports\Surfaces\Interfaces\" />
+    <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Converters
 {
@@ -59,9 +60,9 @@ namespace VSS.TRex.Gateway.Common.Converters
     }
 
 
-    public class CustomCellPassAttributeFilterResolver : IValueResolver<FilterResult, CombinedFilter, CellPassAttributeFilter>
+    public class CustomCellPassAttributeFilterResolver : IValueResolver<FilterResult, CombinedFilter, ICellPassAttributeFilter>
     {
-      public CellPassAttributeFilter Resolve(FilterResult src, CombinedFilter dst, CellPassAttributeFilter member, ResolutionContext context)
+      public ICellPassAttributeFilter Resolve(FilterResult src, CombinedFilter dst, ICellPassAttributeFilter member, ResolutionContext context)
       {
         var returnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value;
     
@@ -76,9 +77,9 @@ namespace VSS.TRex.Gateway.Common.Converters
       }
     }
 
-    public class CustomCellSpatialFilterResolver : IValueResolver<FilterResult, CombinedFilter, CellSpatialFilter>
+    public class CustomCellSpatialFilterResolver : IValueResolver<FilterResult, CombinedFilter, ICellSpatialFilter>
     {
-      public CellSpatialFilter Resolve(FilterResult src, CombinedFilter dst, CellSpatialFilter member, ResolutionContext context)
+      public ICellSpatialFilter Resolve(FilterResult src, CombinedFilter dst, ICellSpatialFilter member, ResolutionContext context)
       {
         Fence fence = null;
         if (src.PolygonGrid != null)

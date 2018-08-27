@@ -1,13 +1,11 @@
 ﻿using VSS.TRex.SubGridTrees.Server.Iterators;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Factories;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
@@ -36,8 +34,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubGridSegmentCellPassIterator_NonStaticTests_SetIteratorElevationRange()
         {
-            var tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            var iterator = new SubGridSegmentCellPassIterator_NonStatic(new SubGridSegmentIterator(new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels), new SubGridDirectory(), null));
+            var tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            var iterator = new SubGridSegmentCellPassIterator_NonStatic(new SubGridSegmentIterator(new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels), new SubGridDirectory(), null));
 
             iterator.SetIteratorElevationRange(12.0, 23.0);
 
@@ -48,8 +46,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubGridSegmentCellPassIterator_NonStaticTests_Initialise()
         {
-            var tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            var iterator = new SubGridSegmentCellPassIterator_NonStatic(new SubGridSegmentIterator(new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels), new SubGridDirectory(), null));
+            var tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            var iterator = new SubGridSegmentCellPassIterator_NonStatic(new SubGridSegmentIterator(new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels), new SubGridDirectory(), null));
 
             iterator.SegmentIterator.IterationDirection = IterationDirection.Forwards;
             iterator.Initialise();
@@ -73,8 +71,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact()]
         public void Test_SubGridSegmentCellPassIterator_NonStaticTests_SetTimeRangeTest()
         {
-            var tree = new SubGridTree(SubGridTree.SubGridTreeLevels, 1, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
-            var iterator = new SubGridSegmentCellPassIterator_NonStatic(new SubGridSegmentIterator(new ServerSubGridTreeLeaf(tree, null, SubGridTree.SubGridTreeLevels), new SubGridDirectory(), null));
+            var tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1, new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>());
+            var iterator = new SubGridSegmentCellPassIterator_NonStatic(new SubGridSegmentIterator(new ServerSubGridTreeLeaf(tree, null, SubGridTreeConsts.SubGridTreeLevels), new SubGridDirectory(), null));
 
             iterator.SetTimeRange(true, new DateTime(2000, 1, 1), new DateTime(2000, 1, 2));
 

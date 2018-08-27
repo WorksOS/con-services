@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 using Xunit;
 

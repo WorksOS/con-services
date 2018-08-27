@@ -1,7 +1,8 @@
 ﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Utilities;
+using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -79,7 +80,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         });
 
         if (ComputedGridExtent.IsValidPlanExtent)
-          ComputedGridExtent.Offset(-(int)SubGridTree.DefaultIndexOriginOffset, -(int)SubGridTree.DefaultIndexOriginOffset);
+          ComputedGridExtent.Offset(-(int)SubGridTreeConsts.DefaultIndexOriginOffset, -(int)SubGridTreeConsts.DefaultIndexOriginOffset);
 
         // Convert the grid rectangle to a world rectangle
         BoundingWorldExtent3D ComputedWorldExtent = new BoundingWorldExtent3D
@@ -96,7 +97,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       public void GridToTINDecimatorTests_BuildMesh_SinglePoint()
       {
         DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 100, SubGridTreeConsts.DefaultIndexOriginOffset + 100] = 100.0f;
 
         GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
 
@@ -110,8 +111,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       public void GridToTINDecimatorTests_BuildMesh_TwoPoints()
       {
         DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 100, SubGridTreeConsts.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 101, SubGridTreeConsts.DefaultIndexOriginOffset + 101] = 100.0f;
 
         GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
@@ -124,9 +125,9 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       public void GridToTINDecimatorTests_BuildMesh_ThreePoints()
       {
         DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 100, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 101] = 100.0f;
-        dataStore[SubGridTree.DefaultIndexOriginOffset + 101, SubGridTree.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 100, SubGridTreeConsts.DefaultIndexOriginOffset + 100] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 101, SubGridTreeConsts.DefaultIndexOriginOffset + 101] = 100.0f;
+        dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + 101, SubGridTreeConsts.DefaultIndexOriginOffset + 100] = 100.0f;
 
         GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));
@@ -140,7 +141,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
       {
         DecimationElevationSubGridTree dataStore = new DecimationElevationSubGridTree();
 
-        SubGridUtilities.SubGridDimensionalIterator((x, y) => dataStore[SubGridTree.DefaultIndexOriginOffset + x, SubGridTree.DefaultIndexOriginOffset + y] = 100.0f);
+        SubGridUtilities.SubGridDimensionalIterator((x, y) => dataStore[SubGridTreeConsts.DefaultIndexOriginOffset + x, SubGridTreeConsts.DefaultIndexOriginOffset + y] = 100.0f);
 
         GridToTINDecimator decimator = new GridToTINDecimator(dataStore);
         decimator.SetDecimationExtents(DataStoreExtents(dataStore));

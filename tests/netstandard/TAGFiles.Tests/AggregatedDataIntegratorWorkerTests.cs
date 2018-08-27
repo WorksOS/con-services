@@ -4,12 +4,13 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.TRex.DI;
-using VSS.TRex.Executors.Executors;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Classes.Integrator;
+using VSS.TRex.TAGFiles.Executors;
 using Xunit;
 
 namespace TAGFiles.Tests
@@ -80,7 +81,7 @@ public class TAGFileTestsDIFixture : IDisposable
 
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = new SiteModel("TestName", "TestDesc", TAGFileTestsDIFixture.NewSiteModelGuid, 1.0);
-            VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), VSS.TRex.Machines.Machine.kNullInternalSiteModelMachineIndex, false);
+            VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), MachineConsts.kNullInternalSiteModelMachineIndex, false);
 
             // Create the integrator and add the processed TAG file to its processing list
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
