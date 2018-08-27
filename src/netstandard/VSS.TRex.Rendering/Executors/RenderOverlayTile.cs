@@ -10,6 +10,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;
@@ -511,7 +512,7 @@ namespace VSS.TRex.Rendering.Executors
         FilterSet Filters = new FilterSet(filterSet);
 
         // Construct PipelineProcessor
-        PipelineProcessor processor = new PipelineProcessor(
+        IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
           requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
           siteModel: SiteModel,

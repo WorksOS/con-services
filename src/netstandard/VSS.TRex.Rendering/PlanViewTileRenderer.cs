@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
-using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
@@ -122,7 +122,7 @@ namespace VSS.TRex.Rendering
     /// <param name="mode"></param>
     /// <param name="processor"></param>
     /// <returns></returns>
-    public RequestErrorStatus PerformRender( DisplayMode mode, PipelineProcessor processor)
+    public RequestErrorStatus PerformRender( DisplayMode mode, IPipelineProcessor processor)
     {
       try
       {

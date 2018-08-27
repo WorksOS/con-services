@@ -120,7 +120,8 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
         // Provide the processor with a customised request analyser configured to return a set of subgrids. These subgrids
         // are the feed stock for the generated TIN surface
-        processor = new PipelineProcessor(requestDescriptor: RequestDescriptor,
+        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstance(
+          requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
           siteModel: null,
           gridDataType: GridDataFromModeConverter.Convert(DisplayMode.Height),
@@ -134,11 +135,8 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           requestRequiresAccessToDesignFileExistanceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(DisplayMode.Height),
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
 
-        if (!processor.Build())
-        {
-          Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
+        if (processor == null)
           return false;
-        }
 
         processor.Process();
 

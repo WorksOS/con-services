@@ -2,12 +2,14 @@
 using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
@@ -64,12 +66,11 @@ namespace VSS.TRex.Analytics.Foundation
       {
         try
         {
-          // TODO: add when lift build setting ssupported
-          // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
+        // TODO: add when lift build setting ssupported
+        // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
 
-          // Compute the report as required
-          PipelineProcessor processor =
-            new PipelineProcessor(requestDescriptor: RequestDescriptor,
+          IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstance
+             (requestDescriptor: RequestDescriptor,
               dataModelID: SiteModel.ID,
               siteModel: SiteModel,
               gridDataType: RequestedGridDataType,
@@ -84,11 +85,8 @@ namespace VSS.TRex.Analytics.Foundation
               overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
             );
 
-          if (!processor.Build())
-          {
-            Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+          if (processor == null)
             return false;
-          }
 
           processor.Process();
 

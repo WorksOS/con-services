@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -96,13 +97,12 @@ namespace VSS.TRex.Exports.Patches.Executors
 
         Guid RequestDescriptor = Guid.NewGuid();
 
-        // Provide the processor with a customised request analyser configured to return a specific page of subgrids
-        processor = new PipelineProcessor(requestDescriptor: RequestDescriptor,
-          dataModelID: DataModelID, 
-          siteModel:null,
-          gridDataType: GridDataFromModeConverter.Convert(Mode), 
-          response: PatchSubGridsResponse, 
-          filters: Filters, 
+        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstance(requestDescriptor: RequestDescriptor,
+          dataModelID: DataModelID,
+          siteModel: null,
+          gridDataType: GridDataFromModeConverter.Convert(Mode),
+          response: PatchSubGridsResponse,
+          filters: Filters,
           cutFillDesignID: CutFillDesignID,
           task: new PatchTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode)),
           pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
@@ -112,16 +112,13 @@ namespace VSS.TRex.Exports.Patches.Executors
             SinglePageRequestSize = DataPatchPageSize,
             SubmitSinglePageOfRequests = true
           },
-          requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) 
+          requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
                                              && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
           requestRequiresAccessToDesignFileExistanceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
-          overrideSpatialCellRestriction:BoundingIntegerExtent2D.Inverted());
+          overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
 
-        if (!processor.Build())
-        {
-          Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
+        if (processor == null)
           return false;
-        }
 
         // If this is the first page requested then count the total number of patches required for all subgrids to be returned
         if (DataPatchPageNumber == 0)

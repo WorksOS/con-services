@@ -51,7 +51,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The spatial extents derived from the parameters when building the pipeline
     /// </summary>
-    public BoundingWorldExtent3D SpatialExtents = BoundingWorldExtent3D.Full(); // No get;set; on purpose
+    public BoundingWorldExtent3D SpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
 
     /// <summary>
     /// The response used as the return from the pipeline request
@@ -61,11 +61,11 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Grid data type to be processed and/or returned by the query (eg: Height, CutFill etc)
     /// </summary>
-    public GridDataType GridDataType;
+    public GridDataType GridDataType { get; set; }
 
-    public ISubGridTreeBitMask ProdDataExistenceMap;
-    public ISubGridTreeBitMask OverallExistenceMap;
-    public ISubGridTreeBitMask DesignSubgridOverlayMap;
+    public ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
+    public ISubGridTreeBitMask OverallExistenceMap { get; set; }
+    public ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
 
     /// <summary>
     /// Flag indicating if all surveyed surface have been excluded from the request due to time fitlering constraints
@@ -145,7 +145,7 @@ namespace VSS.TRex.Pipelines
                              Guid dataModelID,
                              ISiteModel siteModel,
                              GridDataType gridDataType,
-                             SubGridsPipelinedReponseBase response,
+                             ISubGridsPipelinedReponseBase response,
                              IFilterSet filters,
                              Guid cutFillDesignID,
                              ITask task,
@@ -281,7 +281,7 @@ namespace VSS.TRex.Pipelines
       }
 
       // Adjust the extents we have been given to encompass the spatial extent of the supplied filters (if any)
-      Filters.ApplyFilterAndSubsetBoundariesToExtents(ref SpatialExtents);
+      Filters.ApplyFilterAndSubsetBoundariesToExtents(SpatialExtents);
 
       // If this request involves a relationship with a design then ensure the existance map
       // for the design is loaded in to memory to allow the request pipeline to confine

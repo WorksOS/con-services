@@ -45,10 +45,12 @@ namespace VSS.TRex.Filters
     /// Applies spatial filter restrictions to the extents required to request data for.
     /// </summary>
     /// <param name="extents"></param>
-    public void ApplyFilterAndSubsetBoundariesToExtents(ref BoundingWorldExtent3D extents)
+    public void ApplyFilterAndSubsetBoundariesToExtents(BoundingWorldExtent3D extents)
     {
       foreach (var filter in Filters)
-        extents = filter?.SpatialFilter?.CalculateIntersectionWithExtents(extents) ?? extents;
+      {
+        filter?.SpatialFilter?.CalculateIntersectionWithExtents(extents);
+      }
     }
   }
 }

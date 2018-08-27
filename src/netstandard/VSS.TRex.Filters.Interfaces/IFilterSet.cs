@@ -13,7 +13,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// Applies spatial filter restrictions to the extents required to request data for.
     /// </summary>
     /// <param name="extents"></param>
-    void ApplyFilterAndSubsetBoundariesToExtents(ref BoundingWorldExtent3D extents);
+    void ApplyFilterAndSubsetBoundariesToExtents(BoundingWorldExtent3D extents);
   }
 
 }
