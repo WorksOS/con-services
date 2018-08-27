@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -83,7 +84,7 @@ namespace VSS.TRex.SubGrids
 
         /// <summary>
         /// Constructor that accepts the common parameters around a set of subgrids the requestor will be asked to process
-        /// and initialises the requestor state ready to start processing indivudla subgrid requests.
+        /// and initialises the requestor state ready to start processing individual subgrid requests.
         /// </summary>
         public SubGridRequestor(ISiteModel sitemodel,
                                 IStorageProxy storageProxy,
@@ -128,7 +129,7 @@ namespace VSS.TRex.SubGrids
             // Obtain local reference to surveyed surface list. If it is replaced while processing the
             // list then the local reference will still be valid allowing lock free read access to the list.
             ISurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
-            FilteredSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
+            FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
             if (SurveyedSurfaceList?.Count > 0)
             {
