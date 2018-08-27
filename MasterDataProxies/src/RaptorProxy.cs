@@ -291,7 +291,7 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Gets a production data tile from the 3dpm WMS service.
     /// </summary>
-    public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
+    public async Task<Stream> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
       string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetProductionDataTile: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
@@ -307,12 +307,7 @@ namespace VSS.MasterData.Proxies
 
       var request = new GracefulWebRequest(logger, configurationStore);
       var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", $"{queryParameters1}{queryParameters2}{queryParameters3}");
-      var result = await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
-      using (var ms = new MemoryStream())
-      {
-        await result.CopyToAsync(ms);
-        return ms.ToArray();
-      }
+      return await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
     }
 
     /// <summary>
