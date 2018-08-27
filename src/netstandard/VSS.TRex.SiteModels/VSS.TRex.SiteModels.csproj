@@ -19,7 +19,6 @@
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
     <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
-    <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
   </ItemGroup>
 
 </Project>

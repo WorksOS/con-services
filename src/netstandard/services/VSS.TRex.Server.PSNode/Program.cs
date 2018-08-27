@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
@@ -13,6 +11,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Server.PSNode
 {
@@ -24,6 +23,8 @@ namespace VSS.TRex.Server.PSNode
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))

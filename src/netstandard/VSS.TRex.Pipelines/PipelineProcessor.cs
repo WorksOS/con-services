@@ -12,7 +12,6 @@ using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -239,21 +238,24 @@ namespace VSS.TRex.Pipelines
         // Obtain local reference to surveyed surfaces (lock free access)
         ISurveyedSurfaces LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
 
-        // Construct two filtered survyed surface lists to act as a rolling pair used as arguments
-        // to the ProcessSurveyedSurfacesForFilter method
-        ISurveyedSurfaces FilterSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
-        ISurveyedSurfaces FilteredSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
-
-        foreach (var filter in Filters.Filters)
+        if (LocalSurveyedSurfaces != null)
         {
-          if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(DataModelID, LocalSurveyedSurfaces, filter,
-            FilteredSurveyedSurfaces, FilterSurveyedSurfaces, OverallExistenceMap))
-          {
-            Response.ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
-            return false;
-          }
+          // Construct two filtered surveyed surface lists to act as a rolling pair used as arguments
+          // to the ProcessSurveyedSurfacesForFilter method
+          ISurveyedSurfaces FilterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+          ISurveyedSurfaces FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
-          SurveyedSurfacesExludedViaTimeFiltering |= FilterSurveyedSurfaces.Count > 0;
+          foreach (var filter in Filters.Filters)
+          {
+            if (!LocalSurveyedSurfaces.ProcessSurveyedSurfacesForFilter(DataModelID, filter,
+              FilteredSurveyedSurfaces, FilterSurveyedSurfaces, OverallExistenceMap))
+            {
+              Response.ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
+              return false;
+            }
+
+            SurveyedSurfacesExludedViaTimeFiltering |= FilterSurveyedSurfaces.Count > 0;
+          }
         }
       }
 

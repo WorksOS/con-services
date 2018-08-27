@@ -9,6 +9,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 //[assembly: ForceAssemblyReference(typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D))]
 
@@ -21,6 +22,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
         DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))

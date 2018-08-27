@@ -1,6 +1,8 @@
 ﻿using Apache.Ignite.Core.Cache;
 using System;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Services.SurveyedSurfaces
@@ -15,7 +17,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         {
             try
             {
-                TRex.SurveyedSurfaces.SurveyedSurfaces ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
+                ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
                 if (entry.Exists)
                 {
                     ss.FromBytes(entry.Value);

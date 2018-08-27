@@ -8,6 +8,8 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace SurveyedSurfaceManager
 {
@@ -24,6 +26,7 @@ namespace SurveyedSurfaceManager
         .AddLogging()
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
         .Complete();
     }
 
