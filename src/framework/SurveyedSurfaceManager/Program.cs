@@ -27,6 +27,7 @@ namespace SurveyedSurfaceManager
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Complete();
     }
 

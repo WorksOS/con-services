@@ -12,6 +12,7 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace TRexApplicationServer
@@ -24,7 +25,8 @@ namespace TRexApplicationServer
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new VSS.TRex.SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
 
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs

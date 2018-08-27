@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Servers.Compute;
 using VSS.TRex.SiteModels.Interfaces;
@@ -29,6 +28,7 @@ namespace VSS.TRex.Server.MutableData
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))

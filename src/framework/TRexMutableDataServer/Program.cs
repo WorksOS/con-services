@@ -30,6 +30,7 @@ namespace TRexMutableDataServer
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))

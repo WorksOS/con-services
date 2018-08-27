@@ -11,6 +11,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Server.PSNode
@@ -24,6 +25,7 @@ namespace VSS.TRex.Server.PSNode
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))

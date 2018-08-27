@@ -12,7 +12,6 @@ using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Services.Surfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 
@@ -26,6 +25,9 @@ namespace VSS.TRex.Services.SurveyedSurfaces
     {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
+        [NonSerialized]
+        private static readonly ISurveyedSurfaceFactory SurveyedSurfaceFactory = DIContext.Obtain<ISurveyedSurfaceFactory>();
 
         /// <summary>
         /// Cache storing sitemodel instances
@@ -64,8 +66,8 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         public void Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
         {
             mutableNonSpatialCache.Invoke(CacheKey(SiteModelID),
-                                          new AddSurveyedSurfaceProcessor(), 
-                                          new SurveyedSurface(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
+                                          new AddSurveyedSurfaceProcessor(),
+                                          SurveyedSurfaceFactory.NewInstance(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
         }
 
         /// <summary>
@@ -116,7 +118,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
 
             try
             {
-                ISurveyedSurfaces ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
+                ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
                 ss.FromBytes(mutableNonSpatialCache.Get(cacheKey));
                 return ss;
             }
@@ -199,7 +201,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
                 NonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
 
                 // Get the surveyed surfaces, creating it if it does not exist
-                ISurveyedSurfaces ssList = new TRex.SurveyedSurfaces.SurveyedSurfaces();
+                ISurveyedSurfaces ssList = DIContext.Obtain<ISurveyedSurfaces>();
                 ssList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
 
                 // Add the new surveyed surface, generating a random ID from a GUID
