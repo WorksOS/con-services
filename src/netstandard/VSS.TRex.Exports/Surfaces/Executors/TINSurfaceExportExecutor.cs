@@ -129,7 +129,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           filters: Filters,
           cutFillDesignID: Guid.Empty,
           task: new SurfaceTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(DisplayMode.Height)),
-          pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+          pipelineStyle: PipelineProcessorPipelineStyle.Progressive,  //pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
           requestAnalyser: new RequestAnalyser(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
           requestRequiresAccessToDesignFileExistanceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(DisplayMode.Height),

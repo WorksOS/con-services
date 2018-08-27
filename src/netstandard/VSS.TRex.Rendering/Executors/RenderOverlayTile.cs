@@ -521,7 +521,7 @@ namespace VSS.TRex.Rendering.Executors
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
           task: new PVMRenderingTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode), Renderer),
-          pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+          pipelineStyle:PipelineProcessorPipelineStyle.Progressive,  //pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
           requestAnalyser: new RequestAnalyser(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
                                              Utilities.FilterRequireSurveyedSurfaceInformation(Filters),

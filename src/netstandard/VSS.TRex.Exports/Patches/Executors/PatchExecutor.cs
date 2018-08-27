@@ -105,7 +105,7 @@ namespace VSS.TRex.Exports.Patches.Executors
           filters: Filters,
           cutFillDesignID: CutFillDesignID,
           task: new PatchTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode)),
-          pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+          pipelineStyle: PipelineProcessorPipelineStyle.Progressive,  //pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
           requestAnalyser: new RequestAnalyser
           {
             SinglePageRequestNumber = DataPatchPageNumber,

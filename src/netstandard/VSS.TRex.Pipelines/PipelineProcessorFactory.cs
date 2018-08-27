@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -40,7 +42,7 @@ namespace VSS.TRex.Pipelines
       IFilterSet filters,
       Guid cutFillDesignID,
       ITask task,
-      ISubGridPipelineBase pipeline,
+      PipelineProcessorPipelineStyle pipelineStyle, //ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
       bool requestRequiresAccessToDesignFileExistanceMap,
@@ -48,7 +50,7 @@ namespace VSS.TRex.Pipelines
     {
       var pipelineProcesor = NewInstanceNoBuild
         (requestDescriptor, dataModelID, siteModel, gridDataType, response, filters, cutFillDesignID, 
-        task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistanceMap,
+        task, pipelineStyle, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistanceMap,
         overrideSpatialCellRestriction);
 
       if (!pipelineProcesor.Build())
@@ -85,12 +87,19 @@ namespace VSS.TRex.Pipelines
       IFilterSet filters,
       Guid cutFillDesignID,
       ITask task,
-      ISubGridPipelineBase pipeline,
+      PipelineProcessorPipelineStyle pipelineStyle,  // ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
       bool requestRequiresAccessToDesignFileExistanceMap,
       BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
+      ISubGridPipelineBase pipeline = null;
+      if (pipelineStyle == PipelineProcessorPipelineStyle.Aggregative)
+        pipeline = new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>();
+      else
+        if (pipelineStyle == PipelineProcessorPipelineStyle.Progressive)
+          pipeline = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
+
       return new PipelineProcessor
         (requestDescriptor, dataModelID, siteModel, gridDataType, response, filters, cutFillDesignID,
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistanceMap,

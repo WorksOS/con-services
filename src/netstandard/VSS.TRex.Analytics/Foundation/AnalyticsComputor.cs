@@ -78,7 +78,7 @@ namespace VSS.TRex.Analytics.Foundation
               filters: Filters,
               cutFillDesignID: CutFillDesignID,
               task: new AggregatedPipelinedSubGridTask(Aggregator),
-              pipeline: new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
+              pipelineStyle: PipelineProcessorPipelineStyle.Aggregative, //pipeline: new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
               requestAnalyser: new RequestAnalyser(),
               requestRequiresAccessToDesignFileExistanceMap: CutFillDesignID != Guid.Empty,
               requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
