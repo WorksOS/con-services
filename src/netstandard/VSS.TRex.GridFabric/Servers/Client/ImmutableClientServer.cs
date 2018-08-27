@@ -1,4 +1,4 @@
-using Apache.Ignite.Core;
+﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
@@ -18,6 +18,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Servers.Client
 {
