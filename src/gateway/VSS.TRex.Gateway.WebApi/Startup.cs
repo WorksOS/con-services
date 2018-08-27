@@ -59,9 +59,6 @@ namespace VSS.TRex.Gateway.WebApi
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      services.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
-      services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
-
       //Set up logging etc. for TRex
       var serviceProvider = services.BuildServiceProvider();
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
