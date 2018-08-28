@@ -69,7 +69,8 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
-        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface)
+        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
+        typeof(VSS.TRex.Volumes.CutFillVolume)
       };
 
       foreach (var asmType in AssemblyDependencies)

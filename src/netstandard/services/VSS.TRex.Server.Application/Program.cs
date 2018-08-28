@@ -117,7 +117,8 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.Rendering.Implementations.Core2.RenderingFactory),
-        typeof(VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses.TileRenderResponse_Core2)
+        typeof(VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses.TileRenderResponse_Core2),
+        typeof(VSS.TRex.Volumes.CutFillVolume)
       };
 
       foreach (var asmType in AssemblyDependencies)
