@@ -7,8 +7,6 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.Types;
@@ -105,7 +103,7 @@ namespace VSS.TRex.Exports.Patches.Executors
           filters: Filters,
           cutFillDesignID: CutFillDesignID,
           task: new PatchTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode)),
-          pipelineStyle: PipelineProcessorPipelineStyle.Progressive,  //pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: new RequestAnalyser
           {
             SinglePageRequestNumber = DataPatchPageNumber,

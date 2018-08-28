@@ -5,6 +5,8 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
@@ -21,6 +23,19 @@ namespace VSS.TRex.Server.Application
 {
   class Program
   {
+    private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    {
+      switch (key)
+      {
+        case PipelineProcessorPipelineStyle.DefaultAggregative:
+          return new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>();
+        case PipelineProcessorPipelineStyle.DefaultProgressive:
+          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
+        default:
+          return null;
+      }
+    }
+
     private static void DependencyInjection()
     {
         DIBuilder.New()
@@ -37,6 +52,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
 
         .Complete();
     }

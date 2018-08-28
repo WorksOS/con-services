@@ -7,8 +7,6 @@ using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -129,7 +127,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           filters: Filters,
           cutFillDesignID: Guid.Empty,
           task: new SurfaceTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(DisplayMode.Height)),
-          pipelineStyle: PipelineProcessorPipelineStyle.Progressive,  //pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: new RequestAnalyser(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
           requestRequiresAccessToDesignFileExistanceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(DisplayMode.Height),

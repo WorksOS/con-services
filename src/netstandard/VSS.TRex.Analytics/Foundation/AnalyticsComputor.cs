@@ -5,8 +5,6 @@ using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
@@ -78,7 +76,7 @@ namespace VSS.TRex.Analytics.Foundation
               filters: Filters,
               cutFillDesignID: CutFillDesignID,
               task: new AggregatedPipelinedSubGridTask(Aggregator),
-              pipelineStyle: PipelineProcessorPipelineStyle.Aggregative, //pipeline: new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
+              pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
               requestAnalyser: new RequestAnalyser(),
               requestRequiresAccessToDesignFileExistanceMap: CutFillDesignID != Guid.Empty,
               requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,

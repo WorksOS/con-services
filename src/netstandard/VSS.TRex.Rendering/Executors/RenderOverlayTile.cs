@@ -7,8 +7,6 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Abstractions;
@@ -521,7 +519,7 @@ namespace VSS.TRex.Rendering.Executors
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
           task: new PVMRenderingTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode), Renderer),
-          pipelineStyle:PipelineProcessorPipelineStyle.Progressive,  //pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: new RequestAnalyser(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
                                              Utilities.FilterRequireSurveyedSurfaceInformation(Filters),

@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Servers.Client;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Services.Designs;
@@ -20,6 +22,19 @@ namespace VSS.TRex.Server.TINSurfaceExport
 {
   class Program
   {
+    private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    {
+      switch (key)
+      {
+        case PipelineProcessorPipelineStyle.DefaultAggregative:
+          return new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>();
+        case PipelineProcessorPipelineStyle.DefaultProgressive:
+          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
+        default:
+          return null;
+      }
+    }
+
     private static void DependencyInjection()
     {
         DIBuilder.New()
@@ -32,6 +47,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Complete();
     }
 

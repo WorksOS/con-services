@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.Pipelines.Tasks.Interfaces;
 
 namespace VSS.TRex.Pipelines
 {
@@ -26,7 +26,7 @@ namespace VSS.TRex.Pipelines
     /// Creates a pip
     /// </summary>
     /// <param name="task"></param>
-    public SubGridPipelineAggregative(/*int AID, */ PipelinedSubGridTask task) : base(/*AID, */ task)
+    public SubGridPipelineAggregative(/*int AID, */ ITask task) : base(/*AID, */ task)
         {
         }
     }

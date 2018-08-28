@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.Pipelines.Tasks.Interfaces;
 
 namespace VSS.TRex.Pipelines
 {
@@ -28,7 +28,7 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     /// <param name="AID"></param>
     /// <param name="task"></param>
-    public SubGridPipelineProgressive( /*int AID, */ PipelinedSubGridTask task) : base( /*AID,*/ task)
+    public SubGridPipelineProgressive( /*int AID, */ ITask task) : base( /*AID,*/ task)
     {
     }
   }

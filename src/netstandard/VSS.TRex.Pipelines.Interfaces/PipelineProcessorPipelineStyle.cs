@@ -5,11 +5,11 @@
     /// <summary>
     /// Uses a derivative of SubGridPipelineProgressive to orchestrate the subgrid query pipeline
     /// </summary>
-    Progressive,
+    DefaultProgressive,
 
     /// <summary>
     /// Uses a derivative of SubGridPipelineAggregative to orchestrate the subgrid query pipeline
     /// </summary>
-    Aggregative
+    DefaultAggregative
   }
 }
