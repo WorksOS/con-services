@@ -195,6 +195,14 @@
       <Project>{E9FFB4FA-AAF2-4EA3-93FB-82B0B38B7FA5}</Project>
       <Name>VSS.TRex.Storage</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj">
+      <Project>{cdee4496-d107-4b46-babe-8bd66a4e8434}</Project>
+      <Name>VSS.TRex.SurveyedSurfaces.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj">
+      <Project>{9f873cc8-c105-4141-ad06-9a2332d3ad7b}</Project>
+      <Name>VSS.TRex.SurveyedSurfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj">
       <Project>{7B80F16B-4CAB-4BF5-80FA-BB96C7674908}</Project>
       <Name>VSS.TRex.TAGFiles</Name>

@@ -5,6 +5,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
@@ -118,7 +119,7 @@ namespace VSS.TRex.Profiling
         // Filter out any surveyed surfaces which don't match current filter (if any)
         // - realistically, this is time filters we're thinking of here
 
-        FilteredSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
+        FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>(); 
 
         SiteModel.SurveyedSurfaces?.FilterSurveyedSurfaceDetails(PassFilter.HasTimeFilter, PassFilter.StartTime,
           PassFilter.EndTime, PassFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,

@@ -14,6 +14,7 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
+using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 
@@ -39,7 +40,7 @@ namespace VSS.TRex.Gateway.WebApi
       // Add framework services.
       services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels());
-
+      services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();

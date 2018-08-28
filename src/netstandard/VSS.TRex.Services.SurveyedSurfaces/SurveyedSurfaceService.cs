@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Services.Surfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 
@@ -38,6 +38,8 @@ namespace VSS.TRex.Services.SurveyedSurfaces
 
         private string CacheName;
 
+        private NonSpatialAffinityKey CacheKey(Guid siteModelID) => new NonSpatialAffinityKey(siteModelID, "SurveyedSurfaces");
+
         /// <summary>
         /// Default no-arg constructor supplied default TRex grid and MutableNonSpatial cache name for surveyed surface information
         /// </summary>
@@ -60,9 +62,9 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         /// <param name="extents"></param>
         public void Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents )
         {
-            mutableNonSpatialCache.Invoke(TRex.SurveyedSurfaces.SurveyedSurfaces.CacheKey(SiteModelID), 
-                                          new AddSurveyedSurfaceProcessor(), 
-                                          new SurveyedSurface(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
+            mutableNonSpatialCache.Invoke(CacheKey(SiteModelID),
+                                          new AddSurveyedSurfaceProcessor(),
+                                          DIContext.Obtain<ISurveyedSurfaceFactory>().NewInstance(designDescriptor.DesignID, designDescriptor, asAtDate, extents));
         }
 
         /// <summary>
@@ -77,11 +79,11 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         {
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
 
-            NonSpatialAffinityKey cacheKey = TRex.SurveyedSurfaces.SurveyedSurfaces.CacheKey(SiteModelID);
+          NonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
             SuveyedSurfaceID = Guid.NewGuid();
 
             // Get the surveyed surfaces, creating it if it does not exist
-            TRex.SurveyedSurfaces.SurveyedSurfaces ssList = new TRex.SurveyedSurfaces.SurveyedSurfaces();
+            ISurveyedSurfaces ssList = DIContext.Obtain<ISurveyedSurfaces>();
 
             try
             {
@@ -108,12 +110,13 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         /// </summary>
         public ISurveyedSurfaces List(Guid SiteModelID)
         {
-            Log.LogInformation($"Listing surveyed surfaces from {TRex.SurveyedSurfaces.SurveyedSurfaces.CacheKey(SiteModelID)}");
+            NonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
+            Log.LogInformation($"Listing surveyed surfaces from {cacheKey}");
 
             try
             {
-                TRex.SurveyedSurfaces.SurveyedSurfaces ss = new TRex.SurveyedSurfaces.SurveyedSurfaces();
-                ss.FromBytes(mutableNonSpatialCache.Get(TRex.SurveyedSurfaces.SurveyedSurfaces.CacheKey(SiteModelID)));
+                ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
+                ss.FromBytes(mutableNonSpatialCache.Get(cacheKey));
                 return ss;
             }
             catch (KeyNotFoundException)
@@ -170,7 +173,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         {
             try
             {
-                return mutableNonSpatialCache.Invoke(TRex.SurveyedSurfaces.SurveyedSurfaces.CacheKey(SiteModelID),
+                return mutableNonSpatialCache.Invoke(CacheKey(SiteModelID),
                                                      new RemoveSurveyedSurfaceProcessor(),
                                                      SurveySurfaceID);
             }
@@ -192,16 +195,11 @@ namespace VSS.TRex.Services.SurveyedSurfaces
 
             try
             {
-                NonSpatialAffinityKey cacheKey = TRex.SurveyedSurfaces.SurveyedSurfaces.CacheKey(SiteModelID);
+                NonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
 
                 // Get the surveyed surfaces, creating it if it does not exist
-                TRex.SurveyedSurfaces.SurveyedSurfaces ssList = new TRex.SurveyedSurfaces.SurveyedSurfaces();
+                ISurveyedSurfaces ssList = DIContext.Obtain<ISurveyedSurfaces>();
                 ssList.FromBytes(mutableNonSpatialCache.Get(cacheKey));
-
-                if (ssList == null)
-                {
-                    ssList = new TRex.SurveyedSurfaces.SurveyedSurfaces();
-                }
 
                 // Add the new surveyed surface, generating a random ID from a GUID
                 bool result = ssList.RemoveSurveyedSurface(SurveySurfaceID);
