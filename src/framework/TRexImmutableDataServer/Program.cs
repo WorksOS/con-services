@@ -5,6 +5,7 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Services.Designs;
@@ -27,6 +28,7 @@ namespace TRexImmutableDataServer
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
+        .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
 
