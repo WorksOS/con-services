@@ -2,7 +2,7 @@
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs

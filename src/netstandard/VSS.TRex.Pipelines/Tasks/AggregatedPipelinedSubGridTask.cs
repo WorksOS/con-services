@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.Interfaces;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Pipelines.Tasks
@@ -9,8 +9,8 @@ namespace VSS.TRex.Pipelines.Tasks
   /// Provides pipelined task semantics for workflows where the subgrids being processed are being aggregated into
   /// a summarised version rather than being passed through to the requesting context
   /// </summary>
-  public class AggregatedPipelinedSubGridTask : PipelinedSubGridTask
-    {
+  public class AggregatedPipelinedSubGridTask : PipelinedSubGridTask, IAggregatedPipelinedSubGridTask
+  {
         /// <summary>
         /// The aggregator performing computation operations
         /// </summary>

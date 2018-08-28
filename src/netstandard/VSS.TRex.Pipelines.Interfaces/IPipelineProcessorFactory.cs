@@ -2,7 +2,7 @@
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 

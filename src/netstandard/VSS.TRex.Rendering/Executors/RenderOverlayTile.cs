@@ -8,7 +8,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;

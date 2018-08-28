@@ -1,8 +1,7 @@
 ﻿using System;
-using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Pipelines.Tasks.Interfaces
+namespace VSS.TRex.Pipelines.Interfaces.Tasks
 {
     public interface ITask  
     {

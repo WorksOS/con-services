@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Pipelines.Tasks.Interfaces;
+﻿using VSS.TRex.Pipelines.Interfaces.Tasks;
 
 namespace VSS.TRex.Rendering.Executors.Tasks
 {

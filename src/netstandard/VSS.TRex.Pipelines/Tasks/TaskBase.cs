@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Tasks

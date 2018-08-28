@@ -7,7 +7,7 @@ using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.Types;
 

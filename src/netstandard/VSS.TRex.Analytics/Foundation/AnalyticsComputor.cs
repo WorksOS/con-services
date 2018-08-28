@@ -8,7 +8,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
