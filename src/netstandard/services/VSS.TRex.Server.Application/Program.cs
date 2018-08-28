@@ -44,6 +44,7 @@ namespace VSS.TRex.Server.Application
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
       {
+        typeof(VSS.TRex.Analytics.MDPStatistics.MDPAggregator),
         typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
         typeof(VSS.TRex.Exports.Patches.PatchResult),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
