@@ -7,8 +7,8 @@
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
     <ProjectReference Include="..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
-    <ProjectReference Include="..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />
     <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
   </ItemGroup>
 
 </Project>

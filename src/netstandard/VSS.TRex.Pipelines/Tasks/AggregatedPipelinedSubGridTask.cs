@@ -1,25 +1,30 @@
 ﻿using System;
 using VSS.TRex.Interfaces;
+using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Pipelines.Tasks
 {
-    /// <summary>
-    /// Provides pipelined task semantics for workflows where the subgrids being processed are being aggregated into
-    /// a summarised version rather than being passed through to the requesting context
-    /// </summary>
-    public class AggregatedPipelinedSubGridTask : PipelinedSubGridTask
+  /// <summary>
+  /// Provides pipelined task semantics for workflows where the subgrids being processed are being aggregated into
+  /// a summarised version rather than being passed through to the requesting context
+  /// </summary>
+  public class AggregatedPipelinedSubGridTask : PipelinedSubGridTask
     {
         /// <summary>
         /// The aggregator performing computation operations
         /// </summary>
-        private ISubGridRequestsAggregator Aggregator;
+        public ISubGridRequestsAggregator Aggregator { get; set; }
+      
+        public AggregatedPipelinedSubGridTask() : base(Guid.NewGuid(), "", Types.GridDataType.All)
+        {
+        }
 
         /// <summary>
         /// Constructor acceoting an aggregator and defaulting all other internal Task state
         /// </summary>
         /// <param name="aggregator"></param>
-        public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid(), "", Types.GridDataType.All)
+        public AggregatedPipelinedSubGridTask(ISubGridRequestsAggregator aggregator) : this()
         {
             Aggregator = aggregator;
         }

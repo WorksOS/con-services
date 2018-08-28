@@ -3,11 +3,11 @@ using System;
 using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
-using VSS.TRex.Pipelines;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.Types;
 
@@ -95,28 +95,31 @@ namespace VSS.TRex.Exports.Patches.Executors
 
         Guid RequestDescriptor = Guid.NewGuid();
 
-        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstance(requestDescriptor: RequestDescriptor,
+        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
           siteModel: null,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
           response: PatchSubGridsResponse,
           filters: Filters,
           cutFillDesignID: CutFillDesignID,
-          task: new PatchTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode)),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.PatchExport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: new RequestAnalyser
-          {
-            SinglePageRequestNumber = DataPatchPageNumber,
-            SinglePageRequestSize = DataPatchPageSize,
-            SubmitSinglePageOfRequests = true
-          },
+          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
                                              && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
           requestRequiresAccessToDesignFileExistanceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
 
-        if (processor == null)
+        // Configure the request analyser to return a single page of results.
+        processor.RequestAnalyser.SinglePageRequestNumber = DataPatchPageNumber;
+        processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;
+        processor.RequestAnalyser.SubmitSinglePageOfRequests = true;
+
+        if (!processor.Build())
+        {
+          Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
           return false;
+        }
 
         // If this is the first page requested then count the total number of patches required for all subgrids to be returned
         if (DataPatchPageNumber == 0)

@@ -5,12 +5,17 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Exports.Patches.Executors.Tasks;
+using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.Rendering.Abstractions;
+using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
@@ -36,6 +41,23 @@ namespace VSS.TRex.Server.Application
       }
     }
 
+    private static ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    {
+      switch (key)
+      {
+        case PipelineProcessorTaskStyle.AggregatedPipelined:
+          return new AggregatedPipelinedSubGridTask();
+        case PipelineProcessorTaskStyle.PVMRendering:
+          return new PVMRenderingTask();
+        case PipelineProcessorTaskStyle.PatchExport:
+          return new PatchTask();
+        case PipelineProcessorTaskStyle.SurfaceExport:
+          return new SurfaceTask();
+        default:
+          return null;
+      }
+    }
+
     private static void DependencyInjection()
     {
         DIBuilder.New()
@@ -53,6 +75,8 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
+        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
 
         .Complete();
     }

@@ -16,7 +16,7 @@ namespace VSS.TRex.Pipelines.Tasks
         /// <summary>
         /// The request descriptor assigned to the task.
         /// </summary>
-        public Guid RequestDescriptor = Guid.Empty;
+        public Guid RequestDescriptor { get; set; }= Guid.Empty;
 
         /// <summary>
         /// Determines if the processing of the task activities as been cancelled by external control

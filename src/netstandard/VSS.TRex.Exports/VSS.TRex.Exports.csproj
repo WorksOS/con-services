@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
     <ProjectReference Include="..\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />

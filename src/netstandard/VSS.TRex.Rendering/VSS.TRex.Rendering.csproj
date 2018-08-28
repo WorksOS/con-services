@@ -7,11 +7,16 @@
   <ItemGroup>
     <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Filters\VSS.TRex.Filters.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />
     <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
   </ItemGroup>
 
 </Project>

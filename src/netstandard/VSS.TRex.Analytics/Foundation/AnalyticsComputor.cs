@@ -6,9 +6,9 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Interfaces;
-using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.Pipelines.Tasks.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
@@ -67,7 +67,7 @@ namespace VSS.TRex.Analytics.Foundation
         // TODO: add when lift build setting ssupported
         // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
 
-          IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstance
+          IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
              (requestDescriptor: RequestDescriptor,
               dataModelID: SiteModel.ID,
               siteModel: SiteModel,
@@ -75,16 +75,22 @@ namespace VSS.TRex.Analytics.Foundation
               response: response,
               filters: Filters,
               cutFillDesignID: CutFillDesignID,
-              task: new AggregatedPipelinedSubGridTask(Aggregator),
+              task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
               pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
-              requestAnalyser: new RequestAnalyser(),
+              requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
               requestRequiresAccessToDesignFileExistanceMap: CutFillDesignID != Guid.Empty,
               requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
               overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
             );
 
-          if (processor == null)
+          // Assign the provided aggregator into the pipelined subgrid task
+          ((IAggregatedPipelinedSubGridTask)processor.Task).Aggregator = Aggregator;
+
+          if (!processor.Build())
+          {
+            Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
             return false;
+          }
 
           processor.Process();
 

@@ -7,17 +7,20 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.Executors.Tasks
 {
-    /// <summary>
-    /// A Task specialised towards rendering subgrid based information onto Plan View Map tiles
-    /// </summary>
-    public class PVMRenderingTask : PipelinedSubGridTask
-    {
+  /// <summary>
+  /// A Task specialised towards rendering subgrid based information onto Plan View Map tiles
+  /// </summary>
+  public class PVMRenderingTask : PipelinedSubGridTask, IPVMRenderingTask
+  {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The tile renderer responsible for processing subgrid information into tile based thematic rendering
         /// </summary>
         public PlanViewTileRenderer TileRenderer { get; set; }
+
+        public PVMRenderingTask()
+        { }
 
         /// <summary>
         /// Constructs the PVM renderering task to accept subgrids returning from the processing engine
