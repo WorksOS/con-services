@@ -22,6 +22,7 @@
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />

@@ -1,11 +1,19 @@
 ﻿using VSS.TRex.Common;
 using VSS.TRex.Geometry;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Interfaces
 {
   public interface IPipelineProcessor
   {
+    /// <summary>
+    /// Reference to the site model incolved in the request
+    /// </summary>
+    ISiteModel SiteModel { get; set; }
+
     /// <summary>
     /// Records if the pipeline was aborted before completing operations
     /// </summary>
@@ -63,5 +71,19 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// Performing all processing activities to retrieve subgrids
     /// </summary>
     void Process();
+
+    /// <summary>
+    /// The spatial extents derived from the parameters when building the pipeline
+    /// </summary>
+    BoundingWorldExtent3D SpatialExtents { get; set; }
+
+    /// <summary>
+    /// Grid data type to be processed and/or returned by the query (eg: Height, CutFill etc)
+    /// </summary>
+    GridDataType GridDataType { get; set; }
+
+    ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
+    ISubGridTreeBitMask OverallExistenceMap { get; set; }
+    ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
   }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Tasks
@@ -16,7 +16,7 @@ namespace VSS.TRex.Pipelines.Tasks
         /// <summary>
         /// The request descriptor assigned to the task.
         /// </summary>
-        public Guid RequestDescriptor = Guid.Empty;
+        public Guid RequestDescriptor { get; set; }= Guid.Empty;
 
         /// <summary>
         /// Determines if the processing of the task activities as been cancelled by external control

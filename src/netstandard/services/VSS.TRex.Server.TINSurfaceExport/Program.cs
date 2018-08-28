@@ -4,6 +4,12 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Servers.Client;
+using VSS.TRex.Exports.Surfaces.Executors.Tasks;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
+using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -18,6 +24,28 @@ namespace VSS.TRex.Server.TINSurfaceExport
 {
   class Program
   {
+    private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    {
+      switch (key)
+      {
+        case PipelineProcessorPipelineStyle.DefaultProgressive:
+          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
+        default:
+          return null;
+      }
+    }
+
+    private static ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    {
+      switch (key)
+      {
+        case PipelineProcessorTaskStyle.SurfaceExport:
+          return new SurfaceTask();
+        default:
+          return null;
+      }
+    }
+
     private static void DependencyInjection()
     {
         DIBuilder.New()
@@ -29,6 +57,11 @@ namespace VSS.TRex.Server.TINSurfaceExport
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
+        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
+
         .Complete();
     }
 

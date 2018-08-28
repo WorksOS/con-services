@@ -7,10 +7,8 @@ using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
-using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -120,19 +118,25 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
         // Provide the processor with a customised request analyser configured to return a set of subgrids. These subgrids
         // are the feed stock for the generated TIN surface
-        processor = new PipelineProcessor(requestDescriptor: RequestDescriptor,
+        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+          requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
           siteModel: null,
           gridDataType: GridDataFromModeConverter.Convert(DisplayMode.Height),
           response: SurfaceSubGridsResponse,
           filters: Filters,
           cutFillDesignID: Guid.Empty,
-          task: new SurfaceTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(DisplayMode.Height)),
-          pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
-          requestAnalyser: new RequestAnalyser(),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.SurfaceExport),
+          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
           requestRequiresAccessToDesignFileExistanceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(DisplayMode.Height),
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
+
+        // Set the surface task parameters for progressive processing
+        processor.Task.RequestDescriptor = RequestDescriptor;
+        processor.Task.TRexNodeID = RequestingTRexNodeID;
+        processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);
 
         if (!processor.Build())
         {

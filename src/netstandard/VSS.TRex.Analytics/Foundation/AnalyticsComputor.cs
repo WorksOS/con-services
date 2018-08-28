@@ -2,13 +2,12 @@
 using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Interfaces;
-using VSS.TRex.Pipelines;
-using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
@@ -64,25 +63,27 @@ namespace VSS.TRex.Analytics.Foundation
       {
         try
         {
-          // TODO: add when lift build setting ssupported
-          // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
+        // TODO: add when lift build setting ssupported
+        // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
 
-          // Compute the report as required
-          PipelineProcessor processor =
-            new PipelineProcessor(requestDescriptor: RequestDescriptor,
+          IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
+             (requestDescriptor: RequestDescriptor,
               dataModelID: SiteModel.ID,
               siteModel: SiteModel,
               gridDataType: RequestedGridDataType,
               response: response,
               filters: Filters,
               cutFillDesignID: CutFillDesignID,
-              task: new AggregatedPipelinedSubGridTask(Aggregator),
-              pipeline: new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
-              requestAnalyser: new RequestAnalyser(),
+              task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
+              pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
+              requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
               requestRequiresAccessToDesignFileExistanceMap: CutFillDesignID != Guid.Empty,
               requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
               overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
             );
+
+          // Assign the provided aggregator into the pipelined subgrid task
+          ((IAggregatedPipelinedSubGridTask)processor.Task).Aggregator = Aggregator;
 
           if (!processor.Build())
           {
