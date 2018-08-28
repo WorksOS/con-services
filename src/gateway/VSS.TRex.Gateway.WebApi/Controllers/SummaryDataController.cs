@@ -59,18 +59,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// Get MDP summary from Raptor for the specified project and date range.
+    /// Get MDP summary from production data for the specified project and date range.
     /// </summary>
-    /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.
+    /// <param name="mdpSummaryRequest"></param>
+    /// <returns></returns>
     [Route("api/v1/mdp/summary")]
-    [HttpGet]
-    public CompactionMdpSummaryResult GetMdpSummary(
-      [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid)
+    [HttpPost]
+    public CompactionMdpSummaryResult PostMdpSummary([FromBody] MDPSummaryRequest mdpSummaryRequest)
     {
-      Log.LogInformation("GetMdpSummary: " + Request.QueryString);
+      Log.LogInformation("PostMdpSummary: " + Request.QueryString);
 
-      var mdpSummaryRequest = MDPSummaryRequest.CreateMDPSummaryRequest(projectUid, null/* filter */, 1000, true, 120, 80);
       mdpSummaryRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
