@@ -16,7 +16,6 @@
     <ProjectReference Include="..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
     <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
-    <ProjectReference Include="..\VSS.TRex.Machines\VSS.TRex.Machines.csproj" />
     <ProjectReference Include="..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj" />

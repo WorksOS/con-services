@@ -7,7 +7,6 @@ using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes.Processors;
@@ -103,7 +102,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       // Now open tagfile and validate contents
-      ISiteModel siteModel = new SiteModel(Guid.Empty);
+      ISiteModel siteModel = DIContext.Obtain<ISiteModel>();
       var machine = new Machine()
       {
         TargetValueChanges = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex)
