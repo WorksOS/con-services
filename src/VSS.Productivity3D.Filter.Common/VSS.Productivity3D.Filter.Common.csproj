@@ -10,25 +10,29 @@
     <RootNamespace>VSS.Productivity3D.Filter.Common</RootNamespace>
   </PropertyGroup>
 
+
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="6.2.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.0" />
-	  <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.30.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.27.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.37.*" />
+    <PackageReference Include="AutoMapper" Version="6.2.2" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningsAsErrors></WarningsAsErrors>
-    
+    <WarningsAsErrors />
+    <NoWarn>1701;1702;1705;NU1605</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1705;NU1605</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
 </Project>

@@ -18,7 +18,7 @@ function SetEnvironmentVariableLocalhost {
     [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
     [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
     [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_PORT", "9092", "Machine")
-    [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "LOCALIPADDRESS", "Machine")
     [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Filter-Producer", "Machine")
     [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Filter", "Machine")
     [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")

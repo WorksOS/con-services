@@ -5,6 +5,7 @@ using Moq;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Internal;
@@ -281,7 +282,8 @@ namespace ExecutorTests
         Assert.IsNull(filterObj.startUtc);
       else
         Assert.AreEqual(DateTime.Parse(startDate).ToUniversalTime(), DateTime.Parse(filterObj.startUtc.ToString()));
-      Assert.AreEqual(DateTime.Parse(endDate).ToUniversalTime(), DateTime.Parse(filterObj.endUTC.ToString()));
+
+      Assert.AreEqual((DateTime.Parse(endDate).ToUniversalTime()).ToString(), filterObj.endUtc.ToString());
     }
 
     [TestMethod]

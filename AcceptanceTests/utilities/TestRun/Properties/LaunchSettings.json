@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "TestRun": {
-      "commandName": "Project",
-      "commandLineArgs": "results=\\testresults\\results.xml project=WebApiTests messages=false"
-    }
-  }
-}

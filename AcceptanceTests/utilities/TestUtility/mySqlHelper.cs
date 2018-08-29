@@ -21,6 +21,7 @@ namespace TestUtility
     {
       var allFields = fields.Split(',');
       var results = string.Empty;
+      Console.WriteLine(connectionString);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
@@ -49,6 +50,7 @@ namespace TestUtility
     public string ExecuteMySqlQueryAndReturnRecordCountResult(string connectionString, string queryString)
     {
       string queryResult = null;
+      Console.WriteLine(connectionString);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
@@ -72,6 +74,7 @@ namespace TestUtility
     public int ExecuteMySqlInsert(string connectionString, string sqlCommand)
     {
       Log.Info(sqlCommand, Log.ContentType.DbQuery);
+      Console.WriteLine(connectionString);
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();

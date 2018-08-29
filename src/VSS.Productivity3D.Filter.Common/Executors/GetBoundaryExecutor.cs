@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         //Check it belongs to the project
         associations =
-          await (auxRepository as IProjectRepository).GetAssociatedGeofences(request.ProjectUid)
+          await ((IProjectRepository) auxRepository).GetAssociatedGeofences(request.ProjectUid)
             .ConfigureAwait(false);
       }
       catch (Exception e)
@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48, e.Message);
       }
 
-      if (!associations.Any(a => string.Equals(request.BoundaryUid, a.GeofenceUID.ToString(), StringComparison.OrdinalIgnoreCase)))
+      if (associations == null || !associations.Any(a => string.Equals(request.BoundaryUid, a.GeofenceUID.ToString(), StringComparison.OrdinalIgnoreCase)))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 49);
       }

@@ -14,6 +14,3 @@ dotnet publish WebApiTests/WebApiTests.csproj -o ../../deploy/WebApiTests -f net
 dotnet publish ExecutorTests/ExecutorTests.csproj -o ../../deploy/ExecutorTests -f netcoreapp2.0
 dotnet publish RepositoryTests/RepositoryTests.csproj -o ../../deploy/RepositoryTests -f netcoreapp2.0
 
-cd ..
-cd utilities
-dotnet publish TestRun/TestRun.csproj -o ../../deploy/TestRun -f netcoreapp2.0

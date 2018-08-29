@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Tests.Local", "test\UnitTests\VSS.Productivity3D.Filter.Tests\VSS.Productivity3D.Filter.Tests.Local.csproj", "{DA63A0D2-ABD3-4330-91DF-FA6893A04090}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Cleanup.Local", "src\VSS.Productivity3D.Filter.Cleanup\VSS.Productivity3D.Filter.Cleanup.Local.csproj", "{221FA8E2-4768-400F-A869-983FFB7D0ECD}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local", "..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj", "{8E9784FC-CE36-4573-9C8E-20CF0DD49647}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Local", "..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj", "{0C6A4031-390B-426B-A5D3-ABEB5C0719AE}"
@@ -31,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\Mer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj", "{DC9A55A0-4EFD-4BD4-918A-F7DADF6890E1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models.Local", "..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj", "{2CB83641-0D8C-4FA7-BC83-0D83C0F88D77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,10 @@ Global
 		{DA63A0D2-ABD3-4330-91DF-FA6893A04090}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA63A0D2-ABD3-4330-91DF-FA6893A04090}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA63A0D2-ABD3-4330-91DF-FA6893A04090}.Release|Any CPU.Build.0 = Release|Any CPU
+		{221FA8E2-4768-400F-A869-983FFB7D0ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{221FA8E2-4768-400F-A869-983FFB7D0ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{221FA8E2-4768-400F-A869-983FFB7D0ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{221FA8E2-4768-400F-A869-983FFB7D0ECD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8E9784FC-CE36-4573-9C8E-20CF0DD49647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E9784FC-CE36-4573-9C8E-20CF0DD49647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E9784FC-CE36-4573-9C8E-20CF0DD49647}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -85,6 +93,10 @@ Global
 		{DC9A55A0-4EFD-4BD4-918A-F7DADF6890E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC9A55A0-4EFD-4BD4-918A-F7DADF6890E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC9A55A0-4EFD-4BD4-918A-F7DADF6890E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CB83641-0D8C-4FA7-BC83-0D83C0F88D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CB83641-0D8C-4FA7-BC83-0D83C0F88D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CB83641-0D8C-4FA7-BC83-0D83C0F88D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CB83641-0D8C-4FA7-BC83-0D83C0F88D77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

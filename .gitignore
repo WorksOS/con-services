@@ -23,13 +23,11 @@ lib/
 [Rr]eleases/
 x64/
 x86/
-build/
 bld/
 [Bb]in/
 [Oo]bj/ 
 _ReSharper*/
 [Tt]est[Rr]esult*
-deploy/
 
 # Track ToolsFolder
 !tools/x64/
@@ -42,6 +40,7 @@ deploy/
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+deploy/
 
 #NUNIT
 *.VisualState.xml

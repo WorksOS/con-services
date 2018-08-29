@@ -50,17 +50,12 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <returns>Returns a BoundarysResult if successful</returns>     
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as BoundaryRequestFull;
-      if (request == null)
+      var boundaryRequest = item as BoundaryRequestFull;
+      if (boundaryRequest == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 54);
       }
 
-      return await ProcessRequest(request).ConfigureAwait(false);
-    }
-
-    private async Task<GeofenceDataSingleResult> ProcessRequest(BoundaryRequestFull boundaryRequest)
-    {
       // if BoundaryUid supplied, then exception as cannot update a boundary (for now at least)
       if (!string.IsNullOrEmpty(boundaryRequest.Request.BoundaryUid))
       {
@@ -108,7 +103,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       //The code check for association below is not needed until we can update a boundary
 
       //Boundary may be used in many filters but only create association between boundary and project once.
-      var retrievedAssociation = (await (auxRepository as IProjectRepository)
+      var retrievedAssociation = (await ((IProjectRepository) auxRepository)
           .GetAssociatedGeofences(boundaryRequest.ProjectUid)
           .ConfigureAwait(false))
         .SingleOrDefault(a => a.GeofenceUID.ToString() == boundaryRequest.Request.BoundaryUid);
@@ -128,7 +123,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
         try
         {
-          var payload = JsonConvert.SerializeObject(new { CreateBoundaryEvent = associateProjectGeofence });
+          var payload = JsonConvert.SerializeObject(new { AssociateProjectBoundaryEvent = associateProjectGeofence });
 
           producer.Send(kafkaTopicName,
             new List<KeyValuePair<string, string>>
@@ -140,8 +135,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 56, e.Message);
         }
-      }        
-        
+      }
+
       var retrievedBoundary = await ((IGeofenceRepository)Repository)
         .GetGeofence(boundaryRequest.Request.BoundaryUid)
         .ConfigureAwait(false);

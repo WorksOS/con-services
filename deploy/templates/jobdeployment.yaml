@@ -1,0 +1,25 @@
+{{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 44 | trimSuffix "-" -}}
+{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ $name }}-cl
+  labels:
+    app: {{ $name }}-cl
+spec:
+  schedule: {{ .Values.schedule }}
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:    
+          containers:
+          - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:{{ .Values.image.tag }}
+            name: {{ $name }}-cl
+            command: ["dotnet"]
+            args: ["VSS.Productivity3D.Filter.Cleanup.dll"]
+            envFrom:
+            - configMapRef:
+                name: {{ $configName }}
+            imagePullPolicy: Always
+          restartPolicy: Never

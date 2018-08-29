@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2-runtime-jessie
+FROM microsoft/dotnet:2.0-sdk
 COPY . /app
 WORKDIR /app
 
@@ -11,3 +11,4 @@ RUN ["/bin/bash", "rm_cr.sh"]
 VOLUME testresults
 
 ENTRYPOINT ["/bin/bash", "runtests.sh"]
+

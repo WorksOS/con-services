@@ -41,6 +41,7 @@ namespace VSS.Productivity3D.Filter.Tests
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<ICustomerProxy, CustomerProxy>()
         .AddTransient<IProjectListProxy, ProjectListProxy>()
+        //.AddTransient<IFilterRepository, FilterRepository>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>();

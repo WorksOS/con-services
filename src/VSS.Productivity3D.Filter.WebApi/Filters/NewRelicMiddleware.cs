@@ -1,11 +1,13 @@
-﻿#if NET_4_7
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using VSS.WebApi.Common;
+using VSS.Common.Exceptions;
 
-namespace VSS.Productivity3D.Common.Filters
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Filters
 {
   /// <summary>
   /// This middleware logs events into NewRelic. This must be added after TIDAuth middleware
@@ -29,43 +31,85 @@ namespace VSS.Productivity3D.Common.Filters
     /// <param name="context">The current <see cref="HttpContext"/> object.</param>
     public async Task Invoke(HttpContext context)
     {
-      var watch = System.Diagnostics.Stopwatch.StartNew();
+      // Serialize the request body into an object we can interrogate for NewRelic instrumentation purposes.
+      var requestBodyStream = new MemoryStream();
+      await context.Request.Body.CopyToAsync(requestBodyStream);
+      requestBodyStream.Seek(0, SeekOrigin.Begin);
 
-      await this.NextRequestDelegate.Invoke(context);
+      var requestBodyText = new StreamReader(requestBodyStream).ReadToEnd();
+      var obj = JObject.Parse(requestBodyText);
 
-      watch.Stop();
-
-      if (context.User is TIDCustomPrincipal principal)
+      var eventAttributes = new Dictionary<string, object>
       {
-        string projectUid=String.Empty;
-        string origin = String.Empty;
+        // Asset Id request properties
+        {"projectId", obj.GetProperty("projectId")},
+        {"deviceType", obj.GetProperty("deviceType")},
+        {"radioSerial", obj.GetProperty("radioSerial")},
+        // Project Id request properties
+        {"assetId", obj.GetProperty("assetId")},
+        {"latitude", obj.GetProperty("latitude")},
+        {"longitude", obj.GetProperty("longitude")},
+        {"height", obj.GetProperty("height")},
+        {"timeOfPosition", obj.GetProperty("timeOfPosition")},
+        {"tccOrgUid", obj.GetProperty("tccOrgUid")}
+      };
 
-        if (context.Request.Query.ContainsKey("projectuid"))
-        {
-          projectUid = context.Request.Query["projectuid"];
-        }
+      // Set the request body to our stream before invoking the request delegate.
+      requestBodyStream.Seek(0, SeekOrigin.Begin);
+      context.Request.Body = requestBodyStream;
 
-        if (context.Request.Headers.ContainsKey("Origin"))
-        {
-          origin = context.Request.Headers["Origin"];
-        }
+      // In order to deserialize the response body we need to set it up now as a stream, before invoking the request delegate.
+      var bodyStream = context.Response.Body;
+      var responseBodyStream = new MemoryStream();
+      context.Response.Body = responseBodyStream;
 
-        var eventAttributes = new Dictionary<string, object>
-        {
-          {"endpoint", context.Request.Path.ToString()},
-          {"userUid", principal.Identity.Name.ToString()},
-          {"customerUid", principal.CustomerUid.ToString()},
-          {"userName", principal.UserEmail.ToString()},
-          {"customerName", principal.CustomerName.ToString()},
-          {"elapsedTime", (Single) watch.ElapsedMilliseconds},
-          {"projectUid",projectUid.ToString() },
-          {"origin",origin.ToString() },
-          {"result", context.Response.StatusCode.ToString() }
-        };
+      try
+      {
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        await this.NextRequestDelegate.Invoke(context);
+        watch.Stop();
 
-        NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Filter_Request", eventAttributes);
+        await context.Response.Body.CopyToAsync(responseBodyStream);
+        responseBodyStream.Seek(0, SeekOrigin.Begin);
+
+        var responseBodyText = new StreamReader(responseBodyStream).ReadToEnd();
+        obj = JObject.Parse(responseBodyText);
+
+        eventAttributes.Add("elapsedTime", (Single)watch.ElapsedMilliseconds);
+        // ContractExecutionResult response properties
+        eventAttributes.Add("code", obj.GetProperty("Code"));
+        eventAttributes.Add("message", obj.GetProperty("Message"));
+
+        //Processing results
+        eventAttributes.Add("ProcessingResult", obj.GetProperty("Result"));
+        eventAttributes.Add("AssetIdResult", obj.GetProperty("assetId"));
+        eventAttributes.Add("MachineLevelResult", obj.GetProperty("machineLevel"));
+        eventAttributes.Add("ProjectIdResult", obj.GetProperty("projectId"));
+
+        // Reset the response body stream.
+        responseBodyStream.Seek(0, SeekOrigin.Begin);
+        await responseBodyStream.CopyToAsync(bodyStream);
       }
+      catch (ServiceException exception)
+      {
+        await new MemoryStream(Encoding.UTF8.GetBytes(exception.GetContent)).CopyToAsync(bodyStream);
+      }
+
+      // Retrieve response properties for instrumentation recording.
+      eventAttributes.Add("endpoint", context.Request.Path.ToString());
+      eventAttributes.Add("result", context.Response.StatusCode.ToString());
+
+      NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileAuth_Request", eventAttributes);
+    }
+  }
+
+  internal static class JObjectExtensions
+  {
+    public static string GetProperty(this JObject jObject, string property)
+    {
+      return jObject.TryGetValue(property, StringComparison.OrdinalIgnoreCase, out JToken token)
+        ? token.ToString()
+        : null;
     }
   }
 }
-#endif

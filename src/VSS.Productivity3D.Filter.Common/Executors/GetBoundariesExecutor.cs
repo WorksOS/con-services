@@ -1,21 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Filter.Common.Utilities;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
@@ -57,32 +51,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         return null;
       }
 
-      IEnumerable<Geofence> geofences = null;
-      try
-      {
-        IEnumerable<ProjectGeofence> associations = 
-          await (auxRepository as IProjectRepository).GetAssociatedGeofences(request.ProjectUid)
-          .ConfigureAwait(false);
-
-        if (associations.Count() > 0)
-        {
-          geofences = await ((IGeofenceRepository) Repository)
-            .GetGeofences(associations.Select(a => a.GeofenceUID.ToString()))
-            .ConfigureAwait(false);
-        }
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 49, e.Message);
-      }
-
-      // may be none, return success and empty list
-      return new GeofenceDataListResult
-      {
-        GeofenceData = (geofences ?? new List<Geofence> ())
-          .Select(x => AutoMapperUtility.Automapper.Map<GeofenceData>(x))
-          .ToImmutableList()
-      };
+      return await BoundaryHelper.GetProjectBoundaries(
+        log, serviceExceptionHandler,
+        request.ProjectUid, (IProjectRepository)auxRepository, (IGeofenceRepository)Repository).ConfigureAwait(false);
+      
     }
   }
 }

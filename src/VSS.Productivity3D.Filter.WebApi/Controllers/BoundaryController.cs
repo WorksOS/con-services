@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -18,6 +17,7 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -60,15 +60,17 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var requestFull = BoundaryRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
-        (User as TIDCustomPrincipal).IsApplication,
-        await (User as FilterPrincipal).GetProject(projectUid),
+        ((TIDCustomPrincipal) User).IsApplication,
+        await ((FilterPrincipal) User).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         request);
 
       requestFull.Validate(ServiceExceptionHandler);
       requestFull.Request.BoundaryPolygonWKT = GeofenceValidation.MakeGoodWkt(requestFull.Request.BoundaryPolygonWKT);
 
-      var getResult = await GetProjectBoundaries(projectUid);
+      var getResult = await BoundaryHelper.GetProjectBoundaries(
+        Log, ServiceExceptionHandler, 
+        projectUid, _projectRepository, _geofenceRepository).ConfigureAwait(false);
       if (getResult.GeofenceData.Any(g => request.Name.Equals(g.GeofenceName, StringComparison.OrdinalIgnoreCase)))
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 62);
@@ -90,15 +92,15 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <returns>Returns an instance of <see cref="ContractExecutionResult"/>.</returns>
     [Route("api/v1/boundary/{ProjectUid}")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteBoundary(string projectUid, [FromUri] string boundaryUid)
+    public async Task<ContractExecutionResult> DeleteBoundary(string projectUid, [FromQuery] string boundaryUid)
     {
       Log.LogInformation(
         $"{ToString()}.DeleteBoundary: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
 
       var requestFull = BoundaryUidRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
-        (User as TIDCustomPrincipal).IsApplication,
-        await (User as FilterPrincipal).GetProject(projectUid),
+        ((TIDCustomPrincipal) User).IsApplication,
+        await ((FilterPrincipal) User).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         boundaryUid);
 
@@ -129,8 +131,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var requestFull = BaseRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
-        (User as TIDCustomPrincipal).IsApplication,
-        await (User as FilterPrincipal).GetProject(projectUid),
+        ((TIDCustomPrincipal) User).IsApplication,
+        await ((FilterPrincipal) User).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name);
 
       requestFull.Validate(ServiceExceptionHandler);
@@ -153,15 +155,15 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// <returns><see cref="GeofenceDataSingleResult"/></returns>
     [Route("api/v1/boundary/{ProjectUid}")]
     [HttpGet]
-    public async Task<GeofenceDataSingleResult> GetProjectBoundary(string projectUid, [FromUri] string boundaryUid)
+    public async Task<GeofenceDataSingleResult> GetProjectBoundary(string projectUid, [FromQuery] string boundaryUid)
     {
       Log.LogInformation(
         $"{ToString()}.GetProjectBoundary: CustomerUID={(User as TIDCustomPrincipal)?.CustomerUid} IsApplication={(User as TIDCustomPrincipal)?.IsApplication} UserUid={((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name} ProjectUid: {projectUid} BoundaryUid: {boundaryUid}");
 
       var requestFull = BoundaryUidRequestFull.Create(
         (User as TIDCustomPrincipal)?.CustomerUid,
-        (User as TIDCustomPrincipal).IsApplication,
-        await (User as FilterPrincipal).GetProject(projectUid),
+        ((TIDCustomPrincipal) User).IsApplication,
+        await ((FilterPrincipal) User).GetProject(projectUid),
         ((User as TIDCustomPrincipal)?.Identity as GenericIdentity)?.Name,
         boundaryUid);
 
@@ -176,5 +178,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         $"{ToString()}.GetProjectBoundary Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result as GeofenceDataSingleResult;
     }
+    
   }
 }
