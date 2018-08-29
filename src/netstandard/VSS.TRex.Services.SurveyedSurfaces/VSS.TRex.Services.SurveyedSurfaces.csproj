@@ -12,7 +12,6 @@
     <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
     <ProjectReference Include="..\VSS.TRex.Services.SurveyedSurfaces.Interfaces\VSS.TRex.Services.SurveyedSurfaces.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
-    <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
   </ItemGroup>
 
 </Project>

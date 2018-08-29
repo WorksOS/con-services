@@ -207,6 +207,10 @@
       <Project>{4fb06a26-18a7-4080-aebf-5197aeaba6b6}</Project>
       <Name>VSS.TRex.Logging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj">
+      <Project>{e747af05-d0dc-4a6a-b2d9-61185b5b01db}</Project>
+      <Name>VSS.TRex.Machines.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj">
       <Project>{04f42031-2ede-4681-8c81-2da8dc0c583a}</Project>
       <Name>VSS.TRex.Profiling.Interfaces</Name>

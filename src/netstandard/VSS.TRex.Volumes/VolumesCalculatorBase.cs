@@ -15,7 +15,6 @@ using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
@@ -168,8 +167,8 @@ namespace VSS.TRex.Volumes
 
         //        FEpochCount           : Integer;
 
-        ISurveyedSurfaces FilteredBaseSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
-        ISurveyedSurfaces FilteredTopSurveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
+        ISurveyedSurfaces FilteredBaseSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+        ISurveyedSurfaces FilteredTopSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
         public Guid RequestDescriptor { get; set; } = Guid.Empty;
 
@@ -268,22 +267,25 @@ namespace VSS.TRex.Volumes
 
                     // Work out the surveyed surfaces and coverage areas that need to be taken into account
 
-                    ISurveyedSurfaces SurveyedSurface = SiteModel.SurveyedSurfaces;
+                    ISurveyedSurfaces SurveyedSurfaces = SiteModel.SurveyedSurfaces;
 
-                    // See if we need to handle surveyed surface data for 'base'
-                    // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-                    if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenFilterAndDesign)
+                    if (SurveyedSurfaces != null)
                     {
-                        if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(SiteModel.ID, SurveyedSurface, BaseFilter, FilteredTopSurveyedSurfaces, FilteredBaseSurveyedSurfaces, OverallExistenceMap))
+                        // See if we need to handle surveyed surface data for 'base'
+                        // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+                        if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenFilterAndDesign)
+                        {
+                          if (!SurveyedSurfaces.ProcessSurveyedSurfacesForFilter(SiteModel.ID, BaseFilter, FilteredTopSurveyedSurfaces, FilteredBaseSurveyedSurfaces, OverallExistenceMap))
                             return RequestErrorStatus.Unknown;
-                    }
-
-                    // See if we need to handle surveyed surface data for 'top'
-                    // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-                    if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-                    {
-                        if (!SurfaceFilterUtilities.ProcessSurveyedSurfacesForFilter(SiteModel.ID, SurveyedSurface, TopFilter, FilteredBaseSurveyedSurfaces, FilteredTopSurveyedSurfaces, OverallExistenceMap))
+                        }
+                    
+                        // See if we need to handle surveyed surface data for 'top'
+                        // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+                        if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenDesignAndFilter)
+                        {
+                          if (!SurveyedSurfaces.ProcessSurveyedSurfacesForFilter(SiteModel.ID, TopFilter, FilteredBaseSurveyedSurfaces, FilteredTopSurveyedSurfaces, OverallExistenceMap))
                             return RequestErrorStatus.Unknown;
+                        }
                     }
 
                     // Add in the production data existance map to the computed surveyed surfaces existance maps

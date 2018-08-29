@@ -1,7 +1,7 @@
-﻿using VSS.TRex.Pipelines.Interfaces;
+﻿using System;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.Pipelines.Tasks.Interfaces
+namespace VSS.TRex.Pipelines.Interfaces.Tasks
 {
     public interface ITask  
     {
@@ -18,5 +18,6 @@ namespace VSS.TRex.Pipelines.Tasks.Interfaces
         ISubGridPipelineBase PipeLine { get; set; }
 
         bool IsCancelled { get; set; }
+        Guid RequestDescriptor { get; set; }
     }
 }

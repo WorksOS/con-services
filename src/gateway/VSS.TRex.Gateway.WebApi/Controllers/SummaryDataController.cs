@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -15,7 +14,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class SummaryDataController : BaseController
   {
-    private const short CMV_VALUE_NOT_REQUIRED = 0;
+    private const short DATA_VALUE_NOT_REQUIRED = 0;
 
     /// <summary>
     /// Default constructor.
@@ -48,14 +47,44 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var cmvSettings = CMVSettings.CreateCMVSettings(
         cmvSummaryRequest.cmvTarget,
-        CMV_VALUE_NOT_REQUIRED, 
+        DATA_VALUE_NOT_REQUIRED, 
         cmvSummaryRequest.maxCMVPercent,
-        CMV_VALUE_NOT_REQUIRED, 
+        DATA_VALUE_NOT_REQUIRED, 
         cmvSummaryRequest.minCMVPercent, 
         cmvSummaryRequest.overrideTargetCMV
       );
 
       return CompactionCmvSummaryResult.Create(result, cmvSettings);
+    }
+
+    /// <summary>
+    /// Get MDP summary from production data for the specified project and date range.
+    /// </summary>
+    /// <param name="mdpSummaryRequest"></param>
+    /// <returns></returns>
+    [Route("api/v1/mdp/summary")]
+    [HttpPost]
+    public CompactionMdpSummaryResult PostMdpSummary([FromBody] MDPSummaryRequest mdpSummaryRequest)
+    {
+      Log.LogInformation("PostMdpSummary: " + Request.QueryString);
+
+      mdpSummaryRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummaryMDPExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(mdpSummaryRequest) as MDPSummaryResult);
+
+      var mdpSettings = MDPSettings.CreateMDPSettings(
+        mdpSummaryRequest.mdpTarget,
+        DATA_VALUE_NOT_REQUIRED,
+        mdpSummaryRequest.maxMDPPercent,
+        DATA_VALUE_NOT_REQUIRED,
+        mdpSummaryRequest.minMDPPercent,
+        mdpSummaryRequest.overrideTargetMDP
+      );
+
+      return CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
     }
 
     /// <summary>

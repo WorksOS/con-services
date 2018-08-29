@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Utilities.Interfaces;
 
@@ -25,11 +28,15 @@ namespace VSS.TRex.SurveyedSurfaces
         public bool Sorted { get { return FSorted; } }
 
         /// <summary>
+        /// DI'ed context for access to ExistenceMaps functionality
+        /// </summary>
+        private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
+    
+        /// <summary>
         /// No-arg constructor
         /// </summary>
         public SurveyedSurfaces()
         {
-
         }
 
         /// <summary>
@@ -278,7 +285,7 @@ namespace VSS.TRex.SurveyedSurfaces
             }
 
             FilteredSurveyedSurfaceDetails.Clear();
-            foreach (SurveyedSurface ss in this)
+            foreach (ISurveyedSurface ss in this)
             {
                 if (!HasTimeFilter)
                 {
@@ -304,13 +311,50 @@ namespace VSS.TRex.SurveyedSurfaces
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Calculate the cache key for the surveyd surface list
-        /// </summary>
-        /// <param name="SiteModelID"></param>
-        /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "SurveyedSurfaces");
-
         public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
+
+        /// <summary>
+        /// Given a filter compute which of the surfaces in the list match any given time aspect
+        /// of the filter, and the overall existance map of the surveyed surfaces that match the filter.
+        /// ComparisonList denotes a possibly pre-filtered set of surfaces for another filter; if this is the same as the 
+        /// filtered set of surfaces then the overall existence map for those surfaces will not be computed as it is 
+        /// assumed to be the same.
+        /// </summary>
+        /// <param name="siteModelID"></param>
+        /// <param name="Filter"></param>
+        /// <param name="ComparisonList"></param>
+        /// <param name="FilteredSurveyedSurfaces"></param>
+        /// <param name="OverallExistenceMap"></param>
+        /// <returns></returns>
+        public bool ProcessSurveyedSurfacesForFilter(Guid siteModelID,
+                                                     ICombinedFilter Filter,
+                                                     ISurveyedSurfaces ComparisonList,
+                                                     ISurveyedSurfaces FilteredSurveyedSurfaces,
+                                                     ISubGridTreeBitMask OverallExistenceMap)
+        {
+            // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+            FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
+                                                          Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime,
+                                                          Filter.AttributeFilter.ExcludeSurveyedSurfaces(),
+                                                          FilteredSurveyedSurfaces,
+                                                          Filter.AttributeFilter.SurveyedSurfaceExclusionList);
+         
+            if (FilteredSurveyedSurfaces?.Equals(ComparisonList) == true)
+              return true;
+         
+            if (FilteredSurveyedSurfaces.Count > 0)
+            {
+              ISubGridTreeBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.GetCombinedExistenceMap(siteModelID,
+              FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
+         
+              if (OverallExistenceMap == null)
+                return false;
+         
+              if (SurveyedSurfaceExistanceMap != null)
+                OverallExistenceMap.SetOp_OR(SurveyedSurfaceExistanceMap);
+            }
+         
+            return true;
+        }
     }
 }

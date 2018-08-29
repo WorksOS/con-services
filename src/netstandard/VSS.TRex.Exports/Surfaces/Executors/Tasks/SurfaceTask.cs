@@ -22,6 +22,9 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     /// </summary>
     public List<GenericLeafSubGrid<float>> SurfaceSubgrids = new List<GenericLeafSubGrid<float>>();
 
+    public SurfaceTask()
+    { }
+
     /// <summary>
     /// Constructs the patch task
     /// </summary>

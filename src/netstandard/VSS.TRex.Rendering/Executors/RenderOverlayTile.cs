@@ -7,9 +7,8 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
-using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;
@@ -507,11 +506,11 @@ namespace VSS.TRex.Rendering.Executors
         CellExtents.Expand(1);
 
         ICombinedFilter[] filterSet = Filter1 == null && Filter2 == null ?
-          new CombinedFilter[0] : Filter2 == null ? new[] {Filter1} : new[] {Filter1, Filter2};
-        FilterSet Filters = new FilterSet(filterSet);
+          new ICombinedFilter[0] : Filter2 == null ? new[] {Filter1} : new[] {Filter1, Filter2};
+        IFilterSet Filters = new FilterSet(filterSet);
 
         // Construct PipelineProcessor
-        PipelineProcessor processor = new PipelineProcessor(
+        IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
           requestDescriptor: RequestDescriptor,
           dataModelID: DataModelID,
           siteModel: SiteModel,
@@ -519,14 +518,20 @@ namespace VSS.TRex.Rendering.Executors
           response: new SubGridsPipelinedReponseBase(),
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
-          task: new PVMRenderingTask(RequestDescriptor, RequestingTRexNodeID, GridDataFromModeConverter.Convert(Mode), Renderer),
-          pipeline: new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
-          requestAnalyser: new RequestAnalyser(),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.PVMRendering),
+          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
                                              Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
           requestRequiresAccessToDesignFileExistanceMap: Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
           overrideSpatialCellRestriction: CellExtents
         );
+
+        // Set the PVM rendering task parameters for progressive processing
+        processor.Task.RequestDescriptor = RequestDescriptor;
+        processor.Task.TRexNodeID = RequestingTRexNodeID;
+        processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
+        ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
         // Set the initial spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate syste,
         processor.SpatialExtents = RotatedTileBoundingExtents;

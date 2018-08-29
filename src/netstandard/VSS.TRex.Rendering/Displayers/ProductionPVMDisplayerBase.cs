@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Draw = System.Drawing;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;

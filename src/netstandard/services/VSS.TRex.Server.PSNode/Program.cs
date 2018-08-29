@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
@@ -14,6 +12,8 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Server.PSNode
 {
@@ -27,6 +27,9 @@ namespace VSS.TRex.Server.PSNode
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
+        .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
@@ -41,6 +44,7 @@ namespace VSS.TRex.Server.PSNode
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
       {
+        typeof(VSS.TRex.Analytics.MDPStatistics.MDPAggregator),
         typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
         typeof(VSS.TRex.Exports.Patches.PatchResult),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
@@ -69,7 +73,8 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
-        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface)
+        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
+        typeof(VSS.TRex.Volumes.CutFillVolume)
       };
 
       foreach (var asmType in AssemblyDependencies)

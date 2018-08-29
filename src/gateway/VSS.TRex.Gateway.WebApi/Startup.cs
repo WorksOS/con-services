@@ -14,8 +14,7 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.Exports.Surfaces.Requestors;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -39,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi
       // Add framework services.
       services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels());
-
+      services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
@@ -65,10 +64,6 @@ namespace VSS.TRex.Gateway.WebApi
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
-
-      services.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
-
-      services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
 
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");

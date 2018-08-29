@@ -21,7 +21,6 @@ using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
@@ -116,7 +115,7 @@ namespace VSS.TRex.SiteModels
         /// </summary>
         public ISiteModelDesignList SiteModelDesigns { get { return siteModelDesigns; } }
 
-        private ISurveyedSurfaces surveyedSurfaces = new SurveyedSurfaces.SurveyedSurfaces();
+        private ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
         // This is a list of TTM descriptors which indicate designs
         // that can be used as a snapshot of an actual ground surface at a specific point in time
@@ -602,12 +601,12 @@ namespace VSS.TRex.SiteModels
 
             if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
             {
-                foreach (SurveyedSurface surveyedSurface in SurveyedSurfaces)
+                foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
                     SpatialExtents.Include(surveyedSurface.Extents);
             }
             else
             {
-                foreach (SurveyedSurface surveyedSurface in SurveyedSurfaces)
+                foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
                 {
                     if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
                         SpatialExtents.Include(surveyedSurface.Extents);

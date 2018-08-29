@@ -20,6 +20,9 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
     /// </summary>
     public List<IClientLeafSubGrid> PatchSubgrids = new List<IClientLeafSubGrid>();
 
+    public PatchTask()
+    { }
+
     /// <summary>
     /// Constructs the patch task
     /// </summary>

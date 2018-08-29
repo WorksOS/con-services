@@ -12,7 +12,7 @@ using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Tasks.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Pipelines
