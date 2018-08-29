@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Logging;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -88,7 +88,7 @@ namespace VSS.TRex.TAGFiles.Executors
         // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
         // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
         // storage proxy assigned to it
-        SiteModel = new SiteModel(Guid.Empty);
+        SiteModel = DIContext.Obtain<ISiteModel>();
 
         // Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
         Machine = new Machine()

@@ -33,6 +33,7 @@ namespace TRexMutableDataServer
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
+        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModel()))
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))

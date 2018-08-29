@@ -32,6 +32,7 @@ namespace VSS.TRex.Server.MutableData
         .Build()
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModels.SiteModel()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))

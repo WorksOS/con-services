@@ -18,7 +18,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
