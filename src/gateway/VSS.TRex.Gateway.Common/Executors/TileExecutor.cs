@@ -20,8 +20,7 @@ namespace VSS.TRex.Gateway.Common.Executors
   public class TileExecutor : BaseExecutor
   {
     public TileExecutor(IConfigurationStore configStore, ILoggerFactory logger, 
-      IServiceExceptionHandler exceptionHandler, ITileRenderingServer tileRenderServer) 
-      : base(configStore, logger, exceptionHandler)
+      IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
 

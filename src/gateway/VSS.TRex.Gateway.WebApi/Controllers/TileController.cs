@@ -13,13 +13,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   public class TileController : BaseController
   {
-    private ITileRenderingServer tileRenderServer;
 
     public TileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, 
-      IConfigurationStore configStore, ITileRenderingServer tileRenderServer)
-      : base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
+      IConfigurationStore configStore): base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
     {
-      this.tileRenderServer = tileRenderServer;
     }
 
     [HttpPost]
