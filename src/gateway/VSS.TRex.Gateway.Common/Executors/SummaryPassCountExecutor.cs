@@ -4,7 +4,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
 using VSS.TRex.Analytics.PassCountStatistics.Summary;
 using VSS.TRex.Filters;

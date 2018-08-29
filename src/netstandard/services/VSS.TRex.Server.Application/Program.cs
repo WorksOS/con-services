@@ -14,9 +14,6 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
-using VSS.TRex.Rendering.Abstractions;
-using VSS.TRex.Rendering.Executors.Tasks;
-using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -48,7 +45,7 @@ namespace VSS.TRex.Server.Application
         case PipelineProcessorTaskStyle.AggregatedPipelined:
           return new AggregatedPipelinedSubGridTask();
         case PipelineProcessorTaskStyle.PVMRendering:
-          return new PVMRenderingTask();
+          return null; // Not responsible for rendering, this is in TileRendering service /*new PVMRenderingTask();*/
         case PipelineProcessorTaskStyle.PatchExport:
           return new PatchTask();
         case PipelineProcessorTaskStyle.SurfaceExport:
@@ -60,17 +57,13 @@ namespace VSS.TRex.Server.Application
 
     private static void DependencyInjection()
     {
-        DIBuilder.New()
+      DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
-
-        // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
-        .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
-
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
@@ -109,7 +102,6 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.Machines.Machine),
         typeof(VSS.TRex.Pipelines.PipelineProcessor),
         typeof(VSS.TRex.Profiling.CellLiftBuilder),
-        typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
         typeof(VSS.TRex.Services.Designs.DesignsService),
         typeof(VSS.TRex.Services.SurveyedSurfaces.SurveyedSurfaceService),
         typeof(VSS.TRex.SubGrids.CutFillUtilities),
@@ -117,8 +109,6 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Rendering.Implementations.Core2.RenderingFactory),
-        typeof(VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses.TileRenderResponse_Core2),
         typeof(VSS.TRex.Volumes.CutFillVolume)
       };
 
@@ -138,11 +128,11 @@ namespace VSS.TRex.Server.Application
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");
 
-      var server = new ApplicationServiceServer(new [] {
+      var server = new ApplicationServiceServer(new[]
+      {
         ApplicationServiceServer.DEFAULT_ROLE,
         ServerRoles.ASNODE_PROFILER,
         ServerRoles.PATCH_REQUEST_ROLE,
-        ServerRoles.TILE_RENDERING_NODE,
         ServerRoles.ANALYTICS_NODE,
       });
 
