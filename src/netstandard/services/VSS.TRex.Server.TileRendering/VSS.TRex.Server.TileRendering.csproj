@@ -20,4 +20,10 @@
     <ProjectReference Include="..\..\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
