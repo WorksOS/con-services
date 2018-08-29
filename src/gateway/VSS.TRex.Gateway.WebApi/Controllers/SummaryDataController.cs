@@ -48,10 +48,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var cmvSettings = CMVSettings.CreateCMVSettings(
         cmvSummaryRequest.cmvTarget,
-        DATA_VALUE_NOT_REQUIRED, 
+        DATA_VALUE_NOT_REQUIRED,
         cmvSummaryRequest.maxCMVPercent,
-        DATA_VALUE_NOT_REQUIRED, 
-        cmvSummaryRequest.minCMVPercent, 
+        DATA_VALUE_NOT_REQUIRED,
+        cmvSummaryRequest.minCMVPercent,
         cmvSummaryRequest.overrideTargetCMV
       );
 
@@ -107,6 +107,27 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Process(passCountSummaryRequest) as PassCountSummaryResult);
 
       return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
+    }
+
+    /// <summary>
+    /// Get Speed summary from production for the specified project and date range. Project UID must be provided.
+    /// </summary>
+    /// <param name="speedSummaryRequest"></param>
+    /// <returns></returns>
+    [Route("api/v1/speed/summary")]
+    [HttpPost]
+    public CompactionSpeedSummaryResult PostSpeedSummary([FromBody] SpeedSummaryRequest speedSummaryRequest)
+    {
+      Log.LogInformation($"{nameof(PostSpeedSummary)}: {Request.QueryString}");
+
+      speedSummaryRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummarySpeedExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(speedSummaryRequest) as SpeedSummaryResult);
+
+      return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);;
     }
   }
 }
