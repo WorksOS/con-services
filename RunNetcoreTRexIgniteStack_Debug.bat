@@ -9,3 +9,6 @@ start "DesignElevation" cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Ser
 timeout 7
 start "TINSurfaceExport" cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/bin/Debug/netcoreapp2.0/VSS.TRex.Server.TINSurfaceExport.dll"
 timeout 7
+start "TileRendering" cmd.exe /k "dotnet src/netstandard/services/VSS.TRex.Server.TileRendering/bin/Debug/netcoreapp2.0/VSS.TRex.Server.TileRendering.dll"
+timeout 7
+
