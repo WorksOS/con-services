@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-//using VSS.VisionLink.Interfaces.Events.Telematics.Context;
 
 namespace TestUtility
 {
-    public static class DateTimeExtensions
+  public static class DateTimeExtensions
     {
         public static string ToSafeString(this object obj)
         {

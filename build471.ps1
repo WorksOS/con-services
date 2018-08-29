@@ -10,8 +10,9 @@ if (Test-Path -path $artifactsDir) {
     Remove-Item -Force -Recurse -Path $artifactsDir 
 }
 
-If (Test-path $artfifactZip) {
-    Remove-item $artfifactZip
+# Attempt to remove the old build artifact, don't throw an error if there's no file found.
+if ( $(Try { Test-Path $artifactFilename } Catch { $false }) ) {
+    Remove-item $artifactFilename
 }
 
 # Restore, build/publish for configuration net471.

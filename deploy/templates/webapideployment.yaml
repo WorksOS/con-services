@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  labels:
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    spec:
+      containers:
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-fileaccess-webapi:{{ .Values.image.tag }}
+        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}        
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /ping
+            port: 80
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 80
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
