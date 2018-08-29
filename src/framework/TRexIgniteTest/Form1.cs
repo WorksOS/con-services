@@ -708,13 +708,13 @@ namespace TRexIgniteTest
 				  string result1 = CalculateCacheStatistics(TRexCaches.MutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableNonSpatialCacheName()));
 				  string result2 = CalculateCacheStatistics(TRexCaches.MutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.MutableSpatialCacheName()));
 
-				  AppendTextBoxWothNewLine("Mutable Statistics");
-          AppendTextBoxWothNewLine("==================================================");
-          AppendTextBoxWothNewLine(result1);
-				  AppendTextBoxWothNewLine(result2);
+				  AppendTextBoxWithNewLine("Mutable Statistics");
+          AppendTextBoxWithNewLine("==================================================");
+          AppendTextBoxWithNewLine(result1);
+				  AppendTextBoxWithNewLine(result2);
         }
 				else
-					AppendTextBoxWothNewLine("No Ignite referece for mutable Statistics");
+					AppendTextBoxWithNewLine("No Ignite referece for mutable Statistics");
 
 				ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
 				if (ignite != null)
@@ -722,20 +722,20 @@ namespace TRexIgniteTest
 				  string result1 = CalculateCacheStatistics(TRexCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableNonSpatialCacheName()));
 					string result2 = CalculateCacheStatistics(TRexCaches.ImmutableSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
 
-				  AppendTextBoxWothNewLine("Immutable Statistics");
-				  AppendTextBoxWothNewLine("==================================================");
-				  AppendTextBoxWothNewLine(result1);
-				  AppendTextBoxWothNewLine(result2);
+				  AppendTextBoxWithNewLine("Immutable Statistics");
+				  AppendTextBoxWithNewLine("==================================================");
+				  AppendTextBoxWithNewLine(result1);
+				  AppendTextBoxWithNewLine(result2);
         }
         else
-				  AppendTextBoxWothNewLine("No Ignite referece for immutable Statistics");
+				  AppendTextBoxWithNewLine("No Ignite referece for immutable Statistics");
 			}
 			catch (Exception ee)
 			{
 			  textBoxTest.Text = String.Empty;
-			  AppendTextBoxWothNewLine("An error occurred:");
-			  AppendTextBoxWothNewLine("==============================================================================================================================================");
-        AppendTextBoxWothNewLine(ee.ToString());
+			  AppendTextBoxWithNewLine("An error occurred:");
+			  AppendTextBoxWithNewLine("==============================================================================================================================================");
+        AppendTextBoxWithNewLine(ee.ToString());
 			}
 		}
 
@@ -828,9 +828,9 @@ namespace TRexIgniteTest
 				}
 			Cursor.Current = Cursors.Default;
 
-      AppendTextBoxWothNewLine("Simple Volume Response [Screen Extents]:");
-		  AppendTextBoxWothNewLine("================================================");
-      AppendTextBoxWothNewLine($"{volume}");
+      AppendTextBoxWithNewLine("Simple Volume Response [Screen Extents]:");
+		  AppendTextBoxWithNewLine("================================================");
+      AppendTextBoxWithNewLine($"{volume}");
 		}
 
 		private void pictureBox1_Click(object sender, EventArgs e)
@@ -904,14 +904,14 @@ namespace TRexIgniteTest
 		  if (result != null)
 		  {
 		    // Show the list of percentages calculated by the request
-		    AppendTextBoxWothNewLine($"Cut/Fill details Results (in {sw.Elapsed}");
-		    AppendTextBoxWothNewLine("================================================");
+		    AppendTextBoxWithNewLine($"Cut/Fill details Results (in {sw.Elapsed}");
+		    AppendTextBoxWithNewLine("================================================");
 		    for (int i = 0; i < offsets.Length; i++)
-		      AppendTextBoxWothNewLine($"{offsets[i]} - {result.Percents[i]:##0.#0}%");
+		      AppendTextBoxWithNewLine($"{offsets[i]} - {result.Percents[i]:##0.#0}%");
 
       }
       else
-		    AppendTextBoxWothNewLine("No Result");
+		    AppendTextBoxWithNewLine("No Result");
 		}
 
 		private void TemperatureSummaryButton_Click(object sender, EventArgs e)
@@ -939,18 +939,18 @@ namespace TRexIgniteTest
 
 			  if (result != null)
 			  {
-			    AppendTextBoxWothNewLine($"Temperature Summary Results (in {sw.Elapsed}) :");
-			    AppendTextBoxWothNewLine("================================================");
-          AppendTextBoxWothNewLine($"Minimum Temperature: {result.MinimumTemperature}");
-			    AppendTextBoxWothNewLine($"Maximum Temperature: {result.MaximumTemperature}");
-			    AppendTextBoxWothNewLine($"Above Temperature Percentage: {result.AboveTargetPercent}");
-			    AppendTextBoxWothNewLine($"Within Temperature Percentage Range: {result.WithinTargetPercent}");
-			    AppendTextBoxWothNewLine($"Below Temperature Percentage: {result.BelowTargetPercent}");
-			    AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
-          AppendTextBoxWothNewLine($"Is Target Temperature Constant: {result.IsTargetTemperatureConstant}");
+			    AppendTextBoxWithNewLine($"Temperature Summary Results (in {sw.Elapsed}) :");
+			    AppendTextBoxWithNewLine("================================================");
+          AppendTextBoxWithNewLine($"Minimum Temperature: {result.MinimumTemperature}");
+			    AppendTextBoxWithNewLine($"Maximum Temperature: {result.MaximumTemperature}");
+			    AppendTextBoxWithNewLine($"Above Temperature Percentage: {result.AboveTargetPercent}");
+			    AppendTextBoxWithNewLine($"Within Temperature Percentage Range: {result.WithinTargetPercent}");
+			    AppendTextBoxWithNewLine($"Below Temperature Percentage: {result.BelowTargetPercent}");
+			    AppendTextBoxWithNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+          AppendTextBoxWithNewLine($"Is Target Temperature Constant: {result.IsTargetTemperatureConstant}");
 			  }
 			  else
-          AppendTextBoxWothNewLine("No result");
+          AppendTextBoxWithNewLine("No result");
 			}
 			finally
 			{
@@ -1014,9 +1014,9 @@ namespace TRexIgniteTest
 			}
 			Cursor.Current = Cursors.Default;
 
-		  AppendTextBoxWothNewLine("Simple Volume Response [Model Extents]:");
-		  AppendTextBoxWothNewLine("================================================");
-      AppendTextBoxWothNewLine($"{volume}");
+		  AppendTextBoxWithNewLine("Simple Volume Response [Model Extents]:");
+		  AppendTextBoxWithNewLine("================================================");
+      AppendTextBoxWithNewLine($"{volume}");
 		}
 
 		private void btnFileOpen_Click(object sender, EventArgs e)
@@ -1225,15 +1225,15 @@ namespace TRexIgniteTest
 
         if (result != null)
         {
-          AppendTextBoxWothNewLine($"Machine Speed Summary Results (in {sw.Elapsed}) :");
-          AppendTextBoxWothNewLine("================================================");
-          AppendTextBoxWothNewLine($"Above Machine Speed Percentage: {result.AboveTargetPercent}");
-          AppendTextBoxWothNewLine($"Within Machine Speed Percentage Range: {result.WithinTargetPercent}");
-          AppendTextBoxWothNewLine($"Below Machine Speed Percentage: {result.BelowTargetPercent}");
-          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+          AppendTextBoxWithNewLine($"Machine Speed Summary Results (in {sw.Elapsed}) :");
+          AppendTextBoxWithNewLine("================================================");
+          AppendTextBoxWithNewLine($"Above Machine Speed Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWithNewLine($"Within Machine Speed Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWithNewLine($"Below Machine Speed Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWithNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
         }
         else
-          AppendTextBoxWothNewLine("No Result");
+          AppendTextBoxWithNewLine("No Result");
       }
       finally
       {
@@ -1267,12 +1267,12 @@ namespace TRexIgniteTest
 
         if (result != null)
         {
-          AppendTextBoxWothNewLine($"CMV Summary Results (in {sw.Elapsed}):");
-          AppendTextBoxWothNewLine("================================================");
-          AppendTextBoxWothNewLine($"Above CMV Percentage: {result.AboveTargetPercent}");
-          AppendTextBoxWothNewLine($"Within CMV Percentage Range: {result.WithinTargetPercent}");
-          AppendTextBoxWothNewLine($"Below CMV Percentage: {result.BelowTargetPercent}");
-          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+          AppendTextBoxWithNewLine($"CMV Summary Results (in {sw.Elapsed}):");
+          AppendTextBoxWithNewLine("================================================");
+          AppendTextBoxWithNewLine($"Above CMV Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWithNewLine($"Within CMV Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWithNewLine($"Below CMV Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWithNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
         }
         else
           textBoxTest.AppendText("No result");
@@ -1309,15 +1309,15 @@ namespace TRexIgniteTest
 
         if (result != null)
         {
-          AppendTextBoxWothNewLine($"MDP Summary Results (in {sw.Elapsed}) :");
-          AppendTextBoxWothNewLine("================================================");
-          AppendTextBoxWothNewLine($"Above MDP Percentage: {result.AboveTargetPercent}");
-          AppendTextBoxWothNewLine($"Within MDP Percentage Range: {result.WithinTargetPercent}");
-          AppendTextBoxWothNewLine($"Below MDP Percentage: {result.BelowTargetPercent}");
-          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+          AppendTextBoxWithNewLine($"MDP Summary Results (in {sw.Elapsed}) :");
+          AppendTextBoxWithNewLine("================================================");
+          AppendTextBoxWithNewLine($"Above MDP Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWithNewLine($"Within MDP Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWithNewLine($"Below MDP Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWithNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
         }
         else
-          AppendTextBoxWothNewLine("No Result");
+          AppendTextBoxWithNewLine("No Result");
       }
       finally
       {
@@ -1350,12 +1350,12 @@ namespace TRexIgniteTest
 
         if (result != null)
         {
-          AppendTextBoxWothNewLine($"Pass Count Summary Results (in {sw.Elapsed}) :");
-          AppendTextBoxWothNewLine("================================================");
-          AppendTextBoxWothNewLine($"Above Pass Count Percentage: {result.AboveTargetPercent}");
-          AppendTextBoxWothNewLine($"Within Pass Count Percentage Range: {result.WithinTargetPercent}");
-          AppendTextBoxWothNewLine($"Below Pass Count Percentage: {result.BelowTargetPercent}");
-          AppendTextBoxWothNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
+          AppendTextBoxWithNewLine($"Pass Count Summary Results (in {sw.Elapsed}) :");
+          AppendTextBoxWithNewLine("================================================");
+          AppendTextBoxWithNewLine($"Above Pass Count Percentage: {result.AboveTargetPercent}");
+          AppendTextBoxWithNewLine($"Within Pass Count Percentage Range: {result.WithinTargetPercent}");
+          AppendTextBoxWithNewLine($"Below Pass Count Percentage: {result.BelowTargetPercent}");
+          AppendTextBoxWithNewLine($"Total Area Covered in Sq Meters: {result.TotalAreaCoveredSqMeters}");
         }
         else
           textBoxTest.AppendText("No result");
@@ -1391,11 +1391,11 @@ namespace TRexIgniteTest
 
         if (result != null)
         {
-          AppendTextBoxWothNewLine($"CMV Details Results (in {sw.Elapsed}) :");
-          AppendTextBoxWothNewLine("================================================");
+          AppendTextBoxWithNewLine($"CMV Details Results (in {sw.Elapsed}) :");
+          AppendTextBoxWithNewLine("================================================");
 
           for (int i = 0; i < cmvBands.Length; i++)
-            AppendTextBoxWothNewLine($"{cmvBands[i] / 10} - {result.Percents[i]:##0.#0}%");
+            AppendTextBoxWithNewLine($"{cmvBands[i] / 10} - {result.Percents[i]:##0.#0}%");
         }
         else
           textBoxTest.AppendText("No result");
@@ -1431,11 +1431,11 @@ namespace TRexIgniteTest
 
         if (result != null)
         {
-          AppendTextBoxWothNewLine($"Pass Count Details Results (in {sw.Elapsed}) :");
-          AppendTextBoxWothNewLine("================================================");
+          AppendTextBoxWithNewLine($"Pass Count Details Results (in {sw.Elapsed}) :");
+          AppendTextBoxWithNewLine("================================================");
 
           for (int i = 0; i < passCountBands.Length; i++)
-            AppendTextBoxWothNewLine($"{passCountBands[i]} - {result.Percents[i]:##0.#0}%");
+            AppendTextBoxWithNewLine($"{passCountBands[i]} - {result.Percents[i]:##0.#0}%");
         }
         else
           textBoxTest.AppendText("No result");
@@ -1453,7 +1453,7 @@ namespace TRexIgniteTest
     }
 
     #region Helpers
-	  private void AppendTextBoxWothNewLine(string newLine)
+	  private void AppendTextBoxWithNewLine(string newLine)
 	  {
 	    textBoxTest.AppendText(newLine + Environment.NewLine);
 	  }
@@ -1464,5 +1464,30 @@ namespace TRexIgniteTest
 	    textBoxTest.AppendText("Processing data and getting result...");
     }
     #endregion
+
+    private void button8_Click(object sender, EventArgs e)
+    {
+      // Get project statistics
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
+
+      textBoxTest.Text = String.Empty;
+
+      if (siteModel == null)
+      {
+        AppendTextBoxWithNewLine($"Project {ID()} does not exist");
+        return;
+      }
+
+      AppendTextBoxWithNewLine($"Statistics for project {ID()}:");
+      AppendTextBoxWithNewLine("================================================");
+      AppendTextBoxWithNewLine($"Last modified date: {siteModel.LastModifiedDate}");
+      AppendTextBoxWithNewLine($"Machine count: {siteModel.Machines.Count}");
+      AppendTextBoxWithNewLine($"Surveyed surface count: {siteModel.SurveyedSurfaces?.Count ?? 0}");
+      AppendTextBoxWithNewLine($"Design count: {siteModel.SiteModelDesigns?.Count ?? 0}");
+      AppendTextBoxWithNewLine($"Extents: {siteModel.SiteModelExtent}");
+      AppendTextBoxWithNewLine($"Adjusted extents with Surveyed Surfaces: {siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0])}");
+      AppendTextBoxWithNewLine($"Coordinate System Information Block: {(siteModel.CSIB() == string.Empty ? siteModel.CSIB() : "None")}");
+      AppendTextBoxWithNewLine($"IgnoreInvalidPositions: {siteModel.IgnoreInvalidPositions}");
+    }
   }
 }
