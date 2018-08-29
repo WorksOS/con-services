@@ -109,9 +109,6 @@
     <ProjectReference Include="..\..\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj">
       <Private>true</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj">
-      <Private>true</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj">
       <Private>true</Private>
     </ProjectReference>
@@ -170,9 +167,6 @@
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj">
-      <Private>true</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj">
       <Private>true</Private>
     </ProjectReference>
   </ItemGroup>
