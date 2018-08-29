@@ -11,8 +11,6 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Executors

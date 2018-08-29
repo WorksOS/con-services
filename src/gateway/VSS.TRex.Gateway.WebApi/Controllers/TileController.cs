@@ -7,7 +7,6 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Rendering.Servers.Client;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
