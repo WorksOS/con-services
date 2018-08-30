@@ -16,7 +16,7 @@ namespace VSS.TRex.Types
     public ushort Max { get; set; }
 
     /// <summary>
-    /// Constractor with arguments.
+    /// Constructor with arguments.
     /// </summary>
     /// <param name="min"></param>
     /// <param name="max"></param>

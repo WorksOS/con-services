@@ -38,6 +38,17 @@ namespace VSS.TRex.Types
 	    Max = CellPassConsts.NullMachineSpeed;
 	  }
 
+	  /// <summary>
+	  /// Initialises the Min and Max properties with values.
+	  /// </summary>
+	  /// <param name="min"></param>
+	  /// <param name="max"></param>
+	  public void SetMinMax(ushort min, ushort max)
+	  {
+	    Min = min;
+	    Max = max;
+	  }
+
     /// <summary>
     /// Serialises content of the cell to the writer
     /// </summary>
