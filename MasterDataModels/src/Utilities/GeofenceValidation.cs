@@ -13,6 +13,7 @@ namespace VSS.MasterData.Models.Utilities
     public const string ValidationNoBoundary = "NoBoundary";
     public const string ValidationLessThan3Points = "LessThan3Points";
     public const string ValidationInvalidFormat = "InvalidFormat";
+    public const string ValidationInvalidPointValue = "InvalidPointValue";
 
     private static readonly List<string> Replacements = new List<string> {"POLYGON", "(", ")"};
  
@@ -89,6 +90,12 @@ namespace VSS.MasterData.Models.Utilities
         if (points.Count < 3)
         {
           return ValidationLessThan3Points;
+        }
+
+        if (points.Any(point => (point.Latitude < -90.0 || point.Latitude > 90.0 || point.Longitude < -180.0 || point.Longitude > 180.0) 
+                                || (Math.Abs(point.Longitude) < 2 && Math.Abs(point.Latitude) < 2)))
+        {
+          return ValidationInvalidPointValue;
         }
       }
       catch

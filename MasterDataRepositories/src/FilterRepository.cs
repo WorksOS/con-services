@@ -341,8 +341,9 @@ namespace VSS.MasterData.Repositories
         $"    AND fk_FilterTypeID = {(int)FilterType.Transient}" +
         $"    AND LastActionedUTC < '{deleteOlderThanUtc}';";
 
+      log.LogDebug($"FilterRepository/DeleteTransientFilters SQL: {delete}");
       deletedCount = await ExecuteWithAsyncPolicy(delete);
-      log.LogDebug("FilterRepository/DeleteTransientFilters: deleted {0} rows");
+      log.LogDebug($"FilterRepository/DeleteTransientFilters: deleted {deletedCount} rows");
       return deletedCount;
     }
 
