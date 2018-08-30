@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Drawing;
 using System.Reflection;
+using VSS.TRex.Common;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
@@ -171,13 +173,15 @@ namespace VSS.TRex.Rendering
         {
           PerformAnyRequiredDebugLevelDisplay();
 
-          /*// Draw diagonal cross and top left corner indicators
-          Displayer.MapView.DrawLine(BLPoint.X, BLPoint.Y, TRPoint.X, TRPoint.Y, Color.Red);
-          Displayer.MapView.DrawLine(BLPoint.X, TRPoint.Y, TRPoint.X, BLPoint.Y, Color.Red);
+          if (TRexConfig.Debug_DrawDiagonalCrossOnRenderedTiles)
+          {
+            // Draw diagonal cross and top left corner indicators
+            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.OriginY, Displayer.MapView.LimitX, Displayer.MapView.LimitY, Color.Red);
+            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.LimitX, Displayer.MapView.OriginY, Color.Red);
 
-          Displayer.MapView.DrawLine(BLPoint.X, TRPoint.Y, BLPoint.X, TRPoint.Y - 50, Color.Red);
-          Displayer.MapView.DrawLine(BLPoint.X, TRPoint.Y, BLPoint.X + 50, TRPoint.Y - 0.1, Color.Red);
-          */
+            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.OriginX, Displayer.MapView.CenterY, Color.Red);
+            Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.CenterX, Displayer.MapView.LimitY - 0.01, Color.Red);
+          }
         }
 
         return processor.Response.ResultStatus;
