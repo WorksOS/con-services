@@ -28,7 +28,7 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// <summary>
     /// Private constructor
     /// </summary>
-    protected SpeedSummaryRequest()
+    private SpeedSummaryRequest()
     {
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -15,6 +16,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   public class SummaryDataController : BaseController
   {
     private const short DATA_VALUE_NOT_REQUIRED = 0;
+    private const double TEMPERATURE_TARGET_MIN = 10.5;
+    private const double TEMPERATURE_TARGET_MAX = 150.5;
 
     /// <summary>
     /// Default constructor.
@@ -126,7 +129,30 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummarySpeedExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(speedSummaryRequest) as SpeedSummaryResult);
 
-      return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);;
+      return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);
+      ;
+    }
+
+    /// <summary>
+    /// Get Temperature summary from production data for the specified project and date range.
+    /// </summary>
+    [Route("api/v1/temperature/summary")]
+    [HttpGet]
+    public CompactionTemperatureSummaryResult GetTemperatureSummary(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation($"{nameof(GetTemperatureSummary)}: {Request.QueryString}");
+
+      var temperatureSummaryRequest = new TemperatureSummaryRequest(projectUid, null/* filter */, new TemperatureSettings(TEMPERATURE_TARGET_MAX, TEMPERATURE_TARGET_MIN, true));
+      temperatureSummaryRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummaryTemperatureExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(temperatureSummaryRequest) as TemperatureSummaryResult);
+
+      return new CompactionTemperatureSummaryResult(result);
     }
   }
 }
