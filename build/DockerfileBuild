@@ -6,8 +6,11 @@ RUN apk --no-cache add bash nodejs nodejs-npm
 #Copy files from scm into build container and build
 COPY . /build/
 
+#Try manual restore
+RUN dotnet restore /build/TRex.netstandard.sln --verbosity detailed
+
 #publish TRex
-RUN dotnet publish /build/TRex.netstandard.sln --verbosity detailed --output /trex
+RUN dotnet publish /build/TRex.netstandard.sln --verbosity detailed --output /trex --no-restore
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
