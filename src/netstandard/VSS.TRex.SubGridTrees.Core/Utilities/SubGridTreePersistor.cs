@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 
@@ -11,14 +12,16 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
     /// </summary>
     public static class SubGridTreePersistor
     {
-      /// <summary>
-      /// Serialises all the subgrids in the tree out to the writer
-      /// </summary>
-      /// <param name="tree"></param>
-      /// <param name="writer"></param>
-      /// <param name="subGridSerialiser"></param>
-      /// <returns></returns>
-      static bool SerialiseOut(ISubGridTree tree, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
+        private static ILogger Log = Logging.Logger.CreateLogger("SubGridTreePersistor");
+
+        /// <summary>
+        /// Serialises all the subgrids in the tree out to the writer
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <param name="writer"></param>
+        /// <param name="subGridSerialiser"></param>
+        /// <returns></returns>
+        static bool SerialiseOut(ISubGridTree tree, BinaryWriter writer, Action<ISubGrid, BinaryWriter> subGridSerialiser)
         {
             long SubgridCount = tree.CountLeafSubgridsInMemory();
 
@@ -117,11 +120,10 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
 
                 return true;
             }
-            catch
+            catch (Exception E)
             {
-                //TODO readd when logging available
-                // SIGLogMessage.Publish(Self, Format('Exception in TSubgridTreePersistor.SerialiseIn: %s', [E.Message]), slmcError);
-                return false;
+              Log.LogError($"Exception in {nameof(SerialiseIn)}: {E}");
+              return false;
             }
         }
 
@@ -154,18 +156,16 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
 
                 if (Header != header || Version != version || Size == 0 || Size != reader.BaseStream.Length)
                 {
-                    // TODO readd when logging available
-                    //SIGLogMessage.Publish(Self, Format('Header, version or stream size mismatch reading spatial subgrid index. Header=''%s'' (expected ''%s''), Version=%d (expected %d), Size=%d (expected %d)', [Header, FHeader, Version, FVersion, FStream.Size, Size]), slmcWarning);
-                    return false;
+                  Log.LogError($"Header, version or stream size mismatch reading spatial subgrid index. Header={Header} (expected {header}), Version={Version} (expected {version}), Size={reader.BaseStream.Length} (expected {Size})");
+                  return false;
                 }
 
                 return SerialiseIn(tree, reader, subGridSerialiser);
             }
-            catch
+            catch (Exception E)
             {
-                //
-                // SIGLogMessage.Publish(Self, Format('Exception in TSubgridTreePersistor.LoadFromStream: %s', [E.Message]), slmcException);
-                return false;
+              Log.LogError($"Exception in {nameof(Read)}: {E}");
+              return false;
             }
         }
     }

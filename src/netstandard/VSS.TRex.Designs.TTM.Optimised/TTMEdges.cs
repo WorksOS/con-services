@@ -4,7 +4,6 @@ using VSS.TRex.Designs.TTM.Optimised.Exceptions;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
-  // TODO: Consider removing edges entirely from the optimised model
   /// <summary>
   /// Contains the set of triangles that form the edge of the TIN. Note, in the optimised model, while these are read
   /// neighbour information is not meaning there is not understanding of which side of the triangle is the edge

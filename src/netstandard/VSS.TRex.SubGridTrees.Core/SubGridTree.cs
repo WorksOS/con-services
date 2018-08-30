@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -62,6 +63,8 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public class SubGridTree : ISubGridTree
     {
+        private static ILogger Log = Logging.Logger.CreateLogger("SubGridTree");
+
         /****************************** Internal members **************************/
 
         /// <summary>
@@ -346,10 +349,8 @@ namespace VSS.TRex.SubGridTrees
             // First calculate the leaf data cell indexes for the given real world extent
             if (!CalculateRegionGridCoverage(extent, out BoundingIntegerExtent2D cellExtent))
             {
-                // TODO: Reinstate logging once it is set up
                 // The extents requested lie at least partially ouside the tree. Ignore this request.
-                //  SIGLogMessage.PublishNoODS(Self, Format('TSubGridTree.ScanSubGrids could not convert %s in a cell extent',
-                //                                                    [Extent.AsText]), slmcWarning);
+                Log.LogWarning($"{nameof(ScanSubGrids)} could not convert {extent} in a cell extent");
                 return false;
             }
 

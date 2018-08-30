@@ -21,7 +21,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    /// <param name="tINSurfaceExportRequestor"></param>
     public TINSurfaceExportExecutor(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
