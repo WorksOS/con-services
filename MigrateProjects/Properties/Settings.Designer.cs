@@ -25,7 +25,7 @@ namespace MigrateProjects.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10.211.16.11")]
+        [global::System.Configuration.DefaultSettingValueAttribute("kafka1.prod.vssengg.com")]
         public string KAFKA_URI {
             get {
                 return ((string)(this["KAFKA_URI"]));

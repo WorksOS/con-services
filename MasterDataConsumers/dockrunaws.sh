@@ -19,7 +19,7 @@ docker run -i -t --detach --name vss-project-masterdataproject \
 -e MYSQL_PORT='3306' \
 -e MYSQL_USERNAME='root' \
 -e MYSQL_ROOT_PASSWORD='d3vRDS1234_' \
--e KAFKA_URI='10.97.99.172' \
+-e KAFKA_URI='kafka2.dev.vssengg.com' \
 -e KAFKA_PORT='9092' \
 -e KAFKA_GROUP_NAME='Project-Consumer' \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
@@ -35,7 +35,7 @@ docker run -i -t --detach --name vss-project-masterdatacustomer \
 -e MYSQL_PORT='3306' \
 -e MYSQL_USERNAME='root' \
 -e MYSQL_ROOT_PASSWORD='d3vRDS1234_' \
--e KAFKA_URI='10.97.99.172' \
+-e KAFKA_URI='kafka2.dev.vssengg.com' \
 -e KAFKA_PORT='9092' \
 -e KAFKA_GROUP_NAME='Project-Consumer' \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
@@ -51,7 +51,7 @@ docker run -i -t --detach --name vss-project-masterdatageofence \
 -e MYSQL_PORT='3306' \
 -e MYSQL_USERNAME='root' \
 -e MYSQL_ROOT_PASSWORD='d3vRDS1234_' \
--e KAFKA_URI='10.97.99.172' \
+-e KAFKA_URI='kafka2.dev.vssengg.com' \
 -e KAFKA_PORT='9092' \
 -e KAFKA_GROUP_NAME='Project-Consumer' \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
@@ -67,7 +67,7 @@ docker run -i -t --detach --name vss-project-masterdatasubscription \
 -e MYSQL_PORT='3306' \
 -e MYSQL_USERNAME='root' \
 -e MYSQL_ROOT_PASSWORD='d3vRDS1234_' \
--e KAFKA_URI='10.97.99.172' \
+-e KAFKA_URI='kafka2.dev.vssengg.com' \
 -e KAFKA_PORT='9092' \
 -e KAFKA_GROUP_NAME='Project-Consumer' \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
