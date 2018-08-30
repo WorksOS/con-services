@@ -15,10 +15,10 @@ namespace VSS.TRex.Gateway.WebApi
   {
     public static void Main(string[] args)
     {
-      var webHost = BuildWebHost(args);
-
       Startup.ImmutableClientServer = new ImmutableClientServer("TRexIgniteClient-DotNetStandard");
       Startup.MutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
+
+      var webHost = BuildWebHost(args);
 
       webHost.Run();
     }
