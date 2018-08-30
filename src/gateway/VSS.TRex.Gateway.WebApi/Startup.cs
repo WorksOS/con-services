@@ -15,11 +15,22 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Requestors;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
   public class Startup
   {
+    /// <summary>
+    /// Reference to immutable node client necessary for TAG file submission
+    /// </summary>
+    public static IImmutableClientServer ImmutableClientServer;
+
+    /// <summary>
+    /// Reference to mutable node client necessary for read requests
+    /// </summary>
+    public static IMutableClientServer MutableClientServer;
+
     /// <summary>
     /// The name of this service for swagger etc.
     /// </summary>
@@ -42,6 +53,8 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddSingleton(ImmutableClientServer);
+      services.AddSingleton(MutableClientServer);
 
       services.AddOpenTracing(builder =>
       {
