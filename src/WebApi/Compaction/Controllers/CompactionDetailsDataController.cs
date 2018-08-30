@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     [Route("api/v2/cmv/details/targets")]
     [HttpGet]
-    [Obsolete]
+    [Obsolete("Use 'cmv/details' for v2 and 'compaction/cmv/detailed' for v1 result")]
     public async Task<CompactionCmvDetailedResult> GetCmvDetailsTargets(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
