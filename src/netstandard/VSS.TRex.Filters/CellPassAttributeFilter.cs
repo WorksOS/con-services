@@ -296,6 +296,9 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     private int MachineIDListsComparison(short[] list1, short[] list2)
     {
+      if (list1 == null && list2 == null)
+        return 0;
+
       // Check list lengths
       int result = list1.Length < list2.Length ? -1 : list1.Length == list2.Length ? 0 : 1;
 
