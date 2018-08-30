@@ -284,6 +284,31 @@
             Initializes a new instance of the <see cref="T:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator"/> class.
             </summary>
         </member>
+        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.ActualHttpMessageTypes">
+            <summary>
+            Gets CLR types that are used as the content of <see cref="T:System.Net.Http.HttpRequestMessage"/> or <see cref="T:System.Net.Http.HttpResponseMessage"/>.
+            </summary>
+        </member>
+        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.ActionSamples">
+            <summary>
+            Gets the objects that are used directly as samples for certain actions.
+            </summary>
+        </member>
+        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects">
+            <summary>
+            Gets the objects that are serialized as samples by the supported formatters.
+            </summary>
+        </member>
+        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories">
+            <summary>
+            Gets factories for the objects that the supported formatters will serialize as samples. Processed in order,
+            stopping when the factory successfully returns a non-<see langref="null"/> object.
+            </summary>
+            <remarks>
+            Collection includes just <see cref="M:LandfillService.WebApi.Areas.HelpPage.ObjectGenerator.GenerateObject(System.Type)"/> initially. Use
+            <code>SampleObjectFactories.Insert(0, func)</code> to provide an override and
+            <code>SampleObjectFactories.Add(func)</code> to provide a fallback.</remarks>
+        </member>
         <member name="M:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.GetSampleRequests(System.Web.Http.Description.ApiDescription)">
             <summary>
             Gets the request body samples for a given <see cref="T:System.Web.Http.Description.ApiDescription"/>.
@@ -356,31 +381,6 @@
             <param name="type">The type.</param>
             <param name="mediaType">Type of the media.</param>
             <returns></returns>
-        </member>
-        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.ActualHttpMessageTypes">
-            <summary>
-            Gets CLR types that are used as the content of <see cref="T:System.Net.Http.HttpRequestMessage"/> or <see cref="T:System.Net.Http.HttpResponseMessage"/>.
-            </summary>
-        </member>
-        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.ActionSamples">
-            <summary>
-            Gets the objects that are used directly as samples for certain actions.
-            </summary>
-        </member>
-        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects">
-            <summary>
-            Gets the objects that are serialized as samples by the supported formatters.
-            </summary>
-        </member>
-        <member name="P:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories">
-            <summary>
-            Gets factories for the objects that the supported formatters will serialize as samples. Processed in order,
-            stopping when the factory successfully returns a non-<see langref="null"/> object.
-            </summary>
-            <remarks>
-            Collection includes just <see cref="M:LandfillService.WebApi.Areas.HelpPage.ObjectGenerator.GenerateObject(System.Type)"/> initially. Use
-            <code>SampleObjectFactories.Insert(0, func)</code> to provide an override and
-            <code>SampleObjectFactories.Add(func)</code> to provide a fallback.</remarks>
         </member>
         <member name="T:LandfillService.WebApi.Areas.HelpPage.HelpPageSampleKey">
             <summary>
@@ -511,6 +511,160 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="T:LandfillService.WebApi.Controllers.HomeController">
+            <summary>
+            Service documentation controller
+            </summary>
+        </member>
+        <member name="T:LandfillService.WebApi.Controllers.ProjectsController">
+            <summary>
+            Handles projectResponse related requests
+            </summary>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PerhapsUpdateProjectList(System.String,System.String)">
+            <summary>
+            Retrieves a list of projects from the db
+            </summary>
+            <param name="userUid">User ID</param>
+            <param name="customerUid">User ID</param>
+            <returns>A list of projects or error details</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get">
+            <summary>
+            Returns the list of projects available to the user
+            </summary>
+            <returns>List of available projects</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetRandomEntries">
+            <summary>
+            TEST CODE: generate random projectResponse data entries 
+            </summary>
+            <returns>Random projectResponse data entries</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get(System.UInt32,System.Nullable{System.Guid},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Returns the projectResponse data for the given projectResponse. If geofenceUid is not specified, 
+            data for the entire projectResponse area is returned otherwise data for the geofenced area is returned.
+            If no date range specified, returns data for the last 2 years to today in the projectResponse time zone
+            otherwise returns data for the specified date range.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="geofenceUid">GeofenceResponse UID</param>
+            <param name="startDate">Start date in projectResponse time zone for which to return data</param>
+            <param name="endDate">End date in projectResponse time zone for which to return data</param>
+            <returns>List of data entries for each day in date range and the status of volume retrieval for the projectResponse</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetWeights(System.UInt32)">
+            <summary>
+            Returns the weights for all geofences for the projectResponse for the date range 
+            of the last 2 years to today in the projectResponse time zone.
+            </summary>
+            <param name="id">Project ID</param>
+            <returns>List of entries for each day in date range and the weight for each geofence for that day</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceWeights(LandfillService.Common.Models.ProjectResponse)">
+            <summary>
+            Retrieves weights entries for each geofence in the projectResponse.
+            </summary>
+            <param name="projectResponse">Project</param>
+            <returns>List of dates with the weight for each geofence for that date</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.Nullable{System.Guid})">
+            <summary>
+            Saves weights submitted in the request.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="geofenceUid">GeofenceResponse UID</param>
+            <returns>Project data and status of volume retrieval</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeTimeSummary(System.UInt32)">
+            <summary>
+            Gets volume and time summary for a landfill projectResponse.
+            </summary>
+            <param name="id">Project ID</param>
+            <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.CurrentWeekMonday(System.DateTime)">
+            <summary>
+            Returns the date representing the Monday of the week the given date falls in.
+            </summary>
+            <param name="date">The date for which to find the start of the week</param>
+            <returns>The date of the Monday of that week</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetAirspaceVolumeInBackground(System.String,LandfillService.Common.Models.ProjectResponse,System.Boolean,System.Int32)">
+            <summary>
+            Retrieves airspace volume summary from Raptor.
+            </summary>
+            <param name="userUid">User ID</param>
+            <param name="projectResponse">Project</param>
+            <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
+            <param name="designId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetProjectStatisticsInBackground(System.String,LandfillService.Common.Models.ProjectResponse)">
+            <summary>
+            Retrieves projectResponse statistics from Raptor.
+            </summary>
+            <param name="userUid">User ID</param>
+            <param name="projectResponse">Project</param>
+            <returns>Date extents from projectResponse statistics</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofences(System.UInt32)">
+            <summary>
+            Returns a list of geofences for the projectResponse. A geofence is associated with a projectResponse if its
+            boundary is inside or intersects that of the projectResponse and it is of type 'Landfill'. The projectResponse
+            geofence is also returned.
+            </summary>
+            <param name="id">Project ID</param>
+            <returns>List of geofences with their bounding boxes</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceBoundary(System.UInt32,System.Guid)">
+            <summary>
+            Returns a geofence boundary.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="geofenceUid">GeofenceResponse UID</param>
+            <returns>List of WGS84 boundary points in radians</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCARatio(System.UInt32,System.Nullable{System.Guid},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Gets CCA ratio data on a daily basis for a landfill projectResponse for all machines. If geofenceUid is not specified, 
+            CCA ratio data for the entire projectResponse area is returned otherwise CCA ratio data for the geofenced area is returned.
+            If no date range specified, returns CCA ratio data for the last 2 years to today in the projectResponse time zone
+            otherwise returns CCA ratio data for the specified date range.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="geofenceUid">GeofenceResponse UID</param>
+            <param name="startDate">Start date in projectResponse time zone for which to return data</param>
+            <param name="endDate">End date in projectResponse time zone for which to return data</param>
+            <returns>List of machines and daily CCA ratio</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCASummary(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.Guid},System.Nullable{System.UInt32},System.String,System.Nullable{System.Boolean},System.Nullable{System.Int32})">
+            <summary>
+            Gets CCA summary data for a landfill projectResponse for the specified date. If geofenceUid is not specified, 
+            CCA summary data for the entire projectResponse area is returned otherwise CCA data for the geofenced area is returned.
+            If machine (asset ID, machine name and John Doe flag) is not specified, returns data for all machines 
+            else for the specified machine. If lift ID is not specified returns data for all lifts else for the specified lift.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="date">Date in projectResponse time zone for which to return data</param>
+            <param name="geofenceUid">GeofenceResponse UID</param>
+            <param name="assetId">Asset ID (from MachineDetails)</param>
+            <param name="machineName">Machine name (from MachineDetails)</param>
+            <param name="isJohnDoe">IsJohnDoe flag (from MachineDetails)</param>
+            <param name="liftId">Lift/Layer ID</param>
+            <returns>CCA summary for the date</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMachineLifts(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Gets a list of machines and lifts for a landfill projectResponse. If no date range specified, 
+            the last 2 years to today in the projectResponse time zone is used.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="startDate">Start date in projectResponse time zone for which to return data</param>
+            <param name="endDate">End date in projectResponse time zone for which to return data</param>
+            <returns>List of machines and lifts in projectResponse time zone</returns>
+        </member>
         <member name="T:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult">
             <summary>
             
@@ -523,15 +677,6 @@
             <param name="challenge"></param>
             <param name="innerResult"></param>
         </member>
-        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult.ExecuteAsync(System.Threading.CancellationToken)">
-            <summary>
-            Creates an <see cref="T:System.Net.Http.HttpResponseMessage"/> asynchronously.
-            </summary>
-            <returns>
-            A task that, when completed, contains the <see cref="T:System.Net.Http.HttpResponseMessage"/>.
-            </returns>
-            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-        </member>
         <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult.Challenge">
             <summary>
             
@@ -542,19 +687,7 @@
             
             </summary>
         </member>
-        <member name="T:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult">
-            <summary>
-              The result of authentication
-            </summary>
-        </member>
-        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.#ctor(System.String,System.Net.Http.HttpRequestMessage)">
-            <summary>
-            
-            </summary>
-            <param name="reasonPhrase"></param>
-            <param name="request"></param>
-        </member>
-        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.ExecuteAsync(System.Threading.CancellationToken)">
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult.ExecuteAsync(System.Threading.CancellationToken)">
             <summary>
             Creates an <see cref="T:System.Net.Http.HttpResponseMessage"/> asynchronously.
             </summary>
@@ -563,146 +696,9 @@
             </returns>
             <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.ReasonPhrase">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.Request">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="T:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt">
-            <summary>
-              Model class for Jwt
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Iss">
-            <summary>
-              Iss
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Exp">
-            <summary>
-              Exp
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Subscriber">
-            <summary>
-              Subscriber
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApplicationId">
-            <summary>
-              ApplicationId
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApplicationName">
-            <summary>
-              Application Name
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApplicationTier">
-            <summary>
-              Application Tier
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApiContext">
-            <summary>
-              Api Context
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Version">
-            <summary>
-              Version
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Tier">
-            <summary>
-              Tier
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.KeyType">
-            <summary>
-              Key Type
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.UserType">
-            <summary>
-              User Type
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.EndUser">
-            <summary>
-              EndUser
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.EndUserTenantId">
-            <summary>
-              Tenant Id of the End User
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Email">
-            <summary>
-              Email
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.GivenName">
-            <summary>
-              FirstName
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.LastName">
-            <summary>
-              Last Name
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Otp">
-            <summary>
-              OneTimePassword
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Role">
-            <summary>
-              Roles of the User
-            </summary>
-        </member>
-        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Uuid">
-            <summary>
-              Unique Id of the User
-            </summary>
-        </member>
-        <member name="T:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper.TryGetJwtToken(System.Net.Http.Headers.HttpRequestHeaders,System.String@)">
-            <summary>
-              This method is used to get the Jwt Assertion Token string from the HTTP Request Header
-            </summary>
-            <param name="httpRequestHeaders">Incoming Request Headers</param>
-            <param name="jwtToken">Output parameter - Jwt Assetion Token string</param>
-            <returns>true, if Http Headers contain Jwt; false, otherwise</returns>
-        </member>
-        <member name="M:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper.IsValidJwtToken(System.String)">
-            <summary>
-              This method is used to check if the Jwt Token is valid or not
-            </summary>
-            <param name="jwtToken"></param>
-            <returns>true, if the Jwt Token is valid; false, otherwise</returns>
-        </member>
-        <member name="M:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper.DecodeJwtToken(System.String)">
-            <summary>
-              This method is used to decode the validated jwtToken and return the Jwt object
-            </summary>
-            <param name="jwtToken"></param>
-            <returns>returns null if jwtToken is null/invalid else, returns the Jwt object</returns>
-        </member>
         <member name="T:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models.ProjectDescriptor">
             <summary>
-              Describes VL project
+              Describes VL projectResponse
             </summary>
         </member>
         <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models.ProjectDescriptor.isArchived">
@@ -721,175 +717,53 @@
               <c>true</c> if this instance is landfill; otherwise, <c>false</c>.
             </value>
         </member>
-        <member name="T:LandfillService.WebApi.Controllers.HomeController">
+        <member name="T:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult">
             <summary>
-            Service documentation controller
+              The result of authentication
             </summary>
         </member>
-        <member name="T:LandfillService.WebApi.Controllers.ProjectsController">
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.#ctor(System.String,System.Net.Http.HttpRequestMessage)">
             <summary>
-            Handles project related requests
+            
+            </summary>
+            <param name="reasonPhrase"></param>
+            <param name="request"></param>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.ReasonPhrase">
+            <summary>
+            
             </summary>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PerhapsUpdateProjectList(System.String)">
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.Request">
             <summary>
-            Retrieves a list of projects from the db
+            
             </summary>
-            <param name="userUid">User ID</param>
-            <returns>A list of projects or error details</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get">
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.ExecuteAsync(System.Threading.CancellationToken)">
             <summary>
-            Returns the list of projects available to the user
+            Creates an <see cref="T:System.Net.Http.HttpResponseMessage"/> asynchronously.
             </summary>
-            <returns>List of available projects</returns>
+            <returns>
+            A task that, when completed, contains the <see cref="T:System.Net.Http.HttpResponseMessage"/>.
+            </returns>
+            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetRandomEntries">
+        <member name="M:AuthUtilities.TryGetJwtToken(System.Net.Http.Headers.HttpRequestHeaders,System.String@)">
             <summary>
-            TEST CODE: generate random project data entries 
+              This method is used to get the Jwt Assertion Token string from the HTTP Request Header
             </summary>
-            <returns>Random project data entries</returns>
+            <param name="httpRequestHeaders">Incoming Request Headers</param>
+            <param name="jwtToken">Output parameter - Jwt Assetion Token string</param>
+            <returns>true, if Http Headers contain Jwt; false, otherwise</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get(System.UInt32,System.Nullable{System.Guid},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:AuthUtilities.TryGetHeader(System.Net.Http.Headers.HttpRequestHeaders,System.String,System.String@)">
             <summary>
-            Returns the project data for the given project. If geofenceUid is not specified, 
-            data for the entire project area is returned otherwise data for the geofenced area is returned.
-            If no date range specified, returns data for the last 2 years to today in the project time zone
-            otherwise returns data for the specified date range.
+              This method is used to get the Jwt Assertion Token string from the HTTP Request Header
             </summary>
-            <param name="id">Project ID</param>
-            <param name="geofenceUid">Geofence UID</param>
-            <param name="startDate">Start date in project time zone for which to return data</param>
-            <param name="endDate">End date in project time zone for which to return data</param>
-            <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetWeights(System.UInt32)">
-            <summary>
-            Returns the weights for all geofences for the project for the date range 
-            of the last 2 years to today in the project time zone.
-            </summary>
-            <param name="id">Project ID</param>
-            <returns>List of entries for each day in date range and the weight for each geofence for that day</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceWeights(LandfillService.Common.Models.Project)">
-            <summary>
-            Retrieves weights entries for each geofence in the project.
-            </summary>
-            <param name="project">Project</param>
-            <returns>List of dates with the weight for each geofence for that date</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.Nullable{System.Guid})">
-            <summary>
-            Saves weights submitted in the request.
-            </summary>
-            <param name="id">Project ID</param>
-            <param name="geofenceUid">Geofence UID</param>
-            <returns>Project data and status of volume retrieval</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMissingVolumesInBackground(System.String,LandfillService.Common.Models.Project)">
-            <summary>
-            Retries volume summary retrieval from Raptor for volumes marked not retrieved
-            </summary>
-            <param name="userUid">User ID</param>
-            <param name="project">Project</param>
-            <returns></returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumesInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.IEnumerable{LandfillService.Common.Models.DateEntry},System.Action)">
-            <summary>
-            Retrieves volumes via a background task in batches of 10 parallel requests
-            </summary>
-            <param name="userUid">User ID</param>
-            <param name="project">Project</param>
-            <param name="entries">Date entries (providing dates and geofence uids to request)</param>
-            <param name="onComplete">Code to execute on completion</param>
-            <returns></returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeTimeSummary(System.UInt32)">
-            <summary>
-            Gets volume and time summary for a landfill project.
-            </summary>
-            <param name="id">Project ID</param>
-            <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.CurrentWeekMonday(System.DateTime)">
-            <summary>
-            Returns the date representing the Monday of the week the given date falls in.
-            </summary>
-            <param name="date">The date for which to find the start of the week</param>
-            <returns>The date of the Monday of that week</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetAirspaceVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Boolean,System.Int32)">
-            <summary>
-            Retrieves airspace volume summary from Raptor.
-            </summary>
-            <param name="userUid">User ID</param>
-            <param name="project">Project</param>
-            <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
-            <returns></returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetProjectStatisticsInBackground(System.String,LandfillService.Common.Models.Project)">
-            <summary>
-            Retrieves project statistics from Raptor.
-            </summary>
-            <param name="userUid">User ID</param>
-            <param name="project">Project</param>
-            <returns>Date extents from project statistics</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofences(System.UInt32)">
-            <summary>
-            Returns a list of geofences for the project. A geofence is associated with a project if its
-            boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
-            geofence is also returned.
-            </summary>
-            <param name="id">Project ID</param>
-            <returns>List of geofences with their bounding boxes</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceBoundary(System.UInt32,System.Guid)">
-            <summary>
-            Returns a geofence boundary.
-            </summary>
-            <param name="id">Project ID</param>
-            <param name="geofenceUid">Geofence UID</param>
-            <returns>List of WGS84 boundary points in radians</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCARatio(System.UInt32,System.Nullable{System.Guid},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
-            <summary>
-            Gets CCA ratio data on a daily basis for a landfill project for all machines. If geofenceUid is not specified, 
-            CCA ratio data for the entire project area is returned otherwise CCA ratio data for the geofenced area is returned.
-            If no date range specified, returns CCA ratio data for the last 2 years to today in the project time zone
-            otherwise returns CCA ratio data for the specified date range.
-            </summary>
-            <param name="id">Project ID</param>
-            <param name="geofenceUid">Geofence UID</param>
-            <param name="startDate">Start date in project time zone for which to return data</param>
-            <param name="endDate">End date in project time zone for which to return data</param>
-            <returns>List of machines and daily CCA ratio</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCASummary(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.Guid},System.Nullable{System.UInt32},System.String,System.Nullable{System.Boolean},System.Nullable{System.Int32})">
-            <summary>
-            Gets CCA summary data for a landfill project for the specified date. If geofenceUid is not specified, 
-            CCA summary data for the entire project area is returned otherwise CCA data for the geofenced area is returned.
-            If machine (asset ID, machine name and John Doe flag) is not specified, returns data for all machines 
-            else for the specified machine. If lift ID is not specified returns data for all lifts else for the specified lift.
-            </summary>
-            <param name="id">Project ID</param>
-            <param name="date">Date in project time zone for which to return data</param>
-            <param name="geofenceUid">Geofence UID</param>
-            <param name="assetId">Asset ID (from MachineDetails)</param>
-            <param name="machineName">Machine name (from MachineDetails)</param>
-            <param name="isJohnDoe">IsJohnDoe flag (from MachineDetails)</param>
-            <param name="liftId">Lift/Layer ID</param>
-            <returns>CCA summary for the date</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMachineLifts(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
-            <summary>
-            Gets a list of machines and lifts for a landfill project. If no date range specified, 
-            the last 2 years to today in the project time zone is used.
-            </summary>
-            <param name="id">Project ID</param>
-            <param name="startDate">Start date in project time zone for which to return data</param>
-            <param name="endDate">End date in project time zone for which to return data</param>
-            <returns>List of machines and lifts in project time zone</returns>
+            <param name="httpRequestHeaders">Incoming Request Headers</param>
+            <param name="headerName"></param>
+            <param name="headerValue"></param>
+            <returns>true, if Http Headers contain Jwt; false, otherwise</returns>
         </member>
     </members>
 </doc>

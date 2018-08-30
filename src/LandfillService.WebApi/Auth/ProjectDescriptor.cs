@@ -1,7 +1,7 @@
 namespace VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models
 {
   /// <summary>
-  ///   Describes VL project
+  ///   Describes VL projectResponse
   /// </summary>
   public class ProjectDescriptor
   {

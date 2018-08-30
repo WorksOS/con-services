@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: landfillservice-testing
+spec:
+  containers:
+
+  - name: mysql-container
+    image: mysql/mysql-server:5.7.15
+    command: ["/entrypoint.sh"]
+    args: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports:
+    - containerPort: 3306
+    livenessProbe:
+      tcpSocket:
+        port: 3306
+    readinessProbe:
+      tcpSocket:
+        port: 3306
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+
+  - name: masterdataconsumercustomer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+    tty: true
+    env:
+    - name: KAFKA_TOPICS
+      value: "VSS.Interfaces.Events.MasterData.ICustomerEvent"
+
+  - name: masterdataconsumerproject
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose.env
+    tty: true
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing    
+    env:
+    - name: KAFKA_TOPICS
+      value: "VSS.Interfaces.Events.MasterData.IProjectEvent"
+    - name: MYSQL_DATABASE_NAME
+      value: "VSS-MasterData-Project-Only"
+      
+  - name: masterdataconsumergeofence
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+    tty: true
+    env:
+    - name: KAFKA_TOPICS
+      value: "VSS.Interfaces.Events.MasterData.IGeofenceEvent"
+
+  - name: masterdataconsumersubscription
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+    tty: true
+    env:
+    - name: KAFKA_TOPICS
+      value: "VSS.Interfaces.Events.MasterData.ISubscriptionEvent"
+
+  - name: masterdataschema
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    tty: true
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+    env:
+    - name: INF
+      value: "1"
+     
+  - name: projectonlyschema
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+    tty: true
+    env:
+    - name: MYSQL_DATABASE_NAME
+      value: "VSS-MasterData-Project-Only"
+    - name: INF
+      value: "1"
+
+  - name: zookeeper-container
+    image: wurstmeister/zookeeper:3.4.6
+    ports:
+    - containerPort: 2181
+    livenessProbe:
+      tcpSocket:
+        port: 2181
+    readinessProbe:
+      tcpSocket:
+        port: 2181
+
+  - name: kafka-container
+    image: wurstmeister/kafka:0.11.0.1
+    ports:
+    - containerPort: 9092
+    livenessProbe:
+      tcpSocket:
+        port: 9092
+    readinessProbe:
+      tcpSocket:
+        port: 9092
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+
+  - name: mockapi-container
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    ports:
+    - containerPort: 5001
+    livenessProbe:
+      tcpSocket:
+        port: 5001
+    readinessProbe:
+      tcpSocket:
+        port: 5001
+    tty: true
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing
+
+  - name: service-container
+    image: !container!
+    ports:
+    - containerPort: 80
+    livenessProbe:
+      httpGet:
+        scheme: HTTP
+        path: /ping
+        port: 80
+      readinessProbe:
+        httpGet:
+          path: /ping
+          port: 80
+    tty: true
+    envFrom:
+    - configMapRef:
+        name: landfillservice-testing

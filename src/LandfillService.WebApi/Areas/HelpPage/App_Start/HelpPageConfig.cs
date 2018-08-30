@@ -1,5 +1,5 @@
 // Uncomment the following to provide samples for PageResult<T>. Must also add the Microsoft.AspNet.WebApi.OData
-// package to your project.
+// package to your projectResponse.
 ////#define Handle_PageResultOfT
 
 using System.Collections.Generic;
@@ -55,12 +55,12 @@ namespace LandfillService.WebApi.Areas.HelpPage
                 new TextSample("Binary JSON content. See http://bsonspec.org for details."),
                 new MediaTypeHeaderValue("application/bson"));
 
-            config.SetActualResponseType(typeof(IEnumerable<Project>), "Projects", "Get");
+            config.SetActualResponseType(typeof(IEnumerable<ProjectResponse>), "Projects", "Get");
             List<string> parms = new List<string> { "id", "geofenceUid" , "startDate", "endDate"};
             config.SetActualResponseType(typeof(ProjectData), "Projects", "Get", parms.ToArray());
             config.SetActualResponseType(typeof(WeightData), "Projects", "GetWeights", "id");
             config.SetActualResponseType(typeof(WeightData), "Projects", "PostWeights");
-            config.SetActualResponseType(typeof(IEnumerable<Geofence>), "Projects", "GetGeofences", "id");
+            config.SetActualResponseType(typeof(IEnumerable<GeofenceResponse>), "Projects", "GetGeofences", "id");
             parms = new List<string>{"id", "geofenceUid"};
             config.SetActualResponseType(typeof(IEnumerable<WGSPoint>), "Projects", "GetGeofenceBoundary", parms.ToArray());
             config.SetActualResponseType(typeof(VolumeTime), "Projects", "GetVolumeTimeSummary", "id");

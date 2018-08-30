@@ -1,59 +1,55 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Dynamic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Filters;
+using Common.Models;
 using log4net;
 using LandfillService.Common;
 using Newtonsoft.Json;
-using VSS.Customer.Data;
-using VSS.Subscription.Data;
-using VSS.Project.Data;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
 
+//using VSS.VisionLink.Utilization.WebApi.Configuration.Principal;
+//using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
 
-namespace VSS.VisionLink.Utilization.WebApi.Configuration
+namespace LandfillService.WebApi.Auth
 {
   public class TIDAuthFilter : IAuthenticationFilter
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
+    public Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
     {
-
       if (ConfigurationManager.AppSettings["JWT"] != "Disabled")
       {
         //Passing the WebAPI Request headers to JWTHelper function to obtain the JWT Token
-        var utils = new AuthUtilities(new MySqlCustomerRepository(), new MySqlSubscriptionRepository(),
-            new MySqlProjectRepository());
-        string message = string.Empty;
-        string userUid = string.Empty;
+        var utils = new AuthUtilities();
+        string message;
+        string userUid;
         string jwt = string.Empty;
         var customer = utils.GetContext(context.Request.Headers, out message, out userUid, out jwt);
-        Log.DebugFormat("Authorization: For userID {0} customer is {1}", userUid, customer);
+        Log.DebugFormat("Authorization: For userID {0} customer is {1}", userUid, customer?.CustomerUID);
 
-        Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
-        IEnumerable<VSS.Project.Data.Models.Project> userProjects;
+        Dictionary<long, ProjectDescriptor> projectList;
 
         if (customer != null)
         {
-          userProjects = utils.GetLandfillProjectsForUser(userUid);
+          IEnumerable<Project> userProjects = utils.GetLandfillProjectsForUser(userUid);
           projectList = new Dictionary<long, ProjectDescriptor>();
+          
           foreach (var userProject in userProjects)
           {
-            projectList.Add(userProject.ProjectID,
+            projectList.Add(userProject.LegacyProjectID,
               new ProjectDescriptor
               {
                 isLandFill = true,
-                isArchived = userProject.IsDeleted || userProject.SubEndDate < DateTime.UtcNow
+                isArchived = userProject.IsDeleted || userProject.SubscriptionEndDate < DateTime.UtcNow
               });
           }
           Log.DebugFormat("Authorization: for Customer: {0} projectList is: {1}", customer, projectList.ToString());
@@ -65,9 +61,9 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
         {
           projectList = new Dictionary<long, ProjectDescriptor>();
           context.Principal = new LandfillPrincipal(projectList, userUid, Guid.Empty.ToString());
-          //context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
         }
       }
+      return Task.FromResult(0);
     }
 
     public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
@@ -95,17 +91,14 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
 
     public LandfillPrincipal(Dictionary<long, ProjectDescriptor> projects, string userUid, string customerUid) : this()
     {
-      //Identity = new GenericIdentity("LandfillUser");
-
       Projects = projects;
       UserUid = userUid;
       CustomerUid = customerUid;
     }
 
-    public LandfillPrincipal(Dictionary<long, ProjectDescriptor> projects, string userUid, string customerUid, string jwt) : this()
+    public LandfillPrincipal(Dictionary<long, ProjectDescriptor> projects, string userUid, string customerUid,
+      string jwt) : this()
     {
-      //Identity = new GenericIdentity("LandfillUser");
-
       Projects = projects;
       UserUid = userUid;
       CustomerUid = customerUid;
