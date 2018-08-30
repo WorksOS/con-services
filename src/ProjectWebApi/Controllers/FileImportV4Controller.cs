@@ -216,7 +216,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       // Query String will be empty if no query string is passed in, if not it formattes the values correctly and includes the required '?'
-      var callbackUrl = $"{Request.Scheme}://{Request.Host}/internal/v4/importedfile{Request.QueryString}";
+      var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
+      var callbackUrl = $"{baseUrl}/internal/v4/importedfile{Request.QueryString}";
 
       var request = new ScheduleJobRequest
       {

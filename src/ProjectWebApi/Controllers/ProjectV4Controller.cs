@@ -188,7 +188,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
 
-      var callbackUrl = $"{Request.Scheme}://{Request.Host}/internal/v4/project";
+      var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
+      var callbackUrl = $"{baseUrl}/internal/v4/project";
 
       var request = new ScheduleJobRequest
       {
@@ -276,7 +277,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ProjectDataValidator.Validate(project, projectRepo, serviceExceptionHandler);
       await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), log, serviceExceptionHandler, projectRepo);
 
-      var callbackUrl = $"{Request.Scheme}://{Request.Host}/internal/v4/project";
+      var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
+      var callbackUrl = $"{baseUrl}/internal/v4/project";
       var request = new ScheduleJobRequest
       {
         Filename = projectRequest.ProjectName + Guid.NewGuid(), // Make sure the filename is unique, it's not important what it's called as the scheduled job keeps a reference
