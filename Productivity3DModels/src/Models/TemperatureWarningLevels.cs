@@ -35,19 +35,12 @@ namespace VSS.Productivity3D.Models.Models
     { }
 
     /// <summary>
-    /// Create instance of TemperatureWarningLevels
+    /// Overload constructor with parameters.
     /// </summary>
-    public static TemperatureWarningLevels CreateTemperatureWarningLevels
-        (
-          ushort min,
-          ushort max
-        )
+    public TemperatureWarningLevels(ushort min, ushort max)
     {
-      return new TemperatureWarningLevels
-      {
-        min = min,
-        max = max
-      };
+      this.min = min;
+      this.max = max;
     }
 
     /// <summary>
