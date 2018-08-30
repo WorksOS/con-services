@@ -19,14 +19,13 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
-    public SubGridPipelineProgressive() : base()
+    public SubGridPipelineProgressive()
     {
     }
 
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
-    /// <param name="AID"></param>
     /// <param name="task"></param>
     public SubGridPipelineProgressive( /*int AID, */ ITask task) : base( /*AID,*/ task)
     {
