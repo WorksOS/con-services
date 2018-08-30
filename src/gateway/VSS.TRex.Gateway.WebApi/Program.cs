@@ -17,12 +17,9 @@ namespace VSS.TRex.Gateway.WebApi
     {
       var webHost = BuildWebHost(args);
 
-      Startup.ImmutableClientServer = new ImmutableClientServer("TRexIgniteClient-DotNetStandard");
-      Startup.MutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-
       webHost.Run();
     }
-
+    
     public static IWebHost BuildWebHost(string[] args)
     {
       var kestrelConfig = new ConfigurationBuilder()

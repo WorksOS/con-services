@@ -16,21 +16,12 @@ using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Gateway.WebApi
 {
   public class Startup
   {
-    /// <summary>
-    /// Reference to immutable node client necessary for TAG file submission
-    /// </summary>
-    public static IImmutableClientServer ImmutableClientServer;
-
-    /// <summary>
-    /// Reference to mutable node client necessary for read requests
-    /// </summary>
-    public static IMutableClientServer MutableClientServer;
-
     /// <summary>
     /// The name of this service for swagger etc.
     /// </summary>
@@ -53,8 +44,6 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddSingleton(ImmutableClientServer);
-      services.AddSingleton(MutableClientServer);
 
       services.AddOpenTracing(builder =>
       {
@@ -76,6 +65,11 @@ namespace VSS.TRex.Gateway.WebApi
       var serviceProvider = services.BuildServiceProvider();
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Logging.Logger.Inject(loggerFactory);
+      DIContext.Inject(serviceProvider);
+
+      services.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
+      services.AddSingleton(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
+      serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
 
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
