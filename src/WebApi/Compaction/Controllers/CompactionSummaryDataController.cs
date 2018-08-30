@@ -210,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return CompactionTemperatureSummaryResult.CreateEmptyResult();
+        return new CompactionTemperatureSummaryResult();
       }
 
       var projectSettings = await GetProjectSettingsTargets(projectUid);
@@ -227,7 +227,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result =
           RequestExecutorContainerFactory.Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient)
             .Process(request) as TemperatureSummaryResult;
-        var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
+        var returnResult = new CompactionTemperatureSummaryResult(result);
         Log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);

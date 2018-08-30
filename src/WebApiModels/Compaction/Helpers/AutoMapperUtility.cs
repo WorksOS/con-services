@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       public TemperatureWarningLevels Resolve(CompactionProjectSettings src, LiftBuildSettings dst, TemperatureWarningLevels member, ResolutionContext context)
       {
         return src.OverrideMachineTargetTemperature
-          ? TemperatureWarningLevels.CreateTemperatureWarningLevels(src.CustomTargetTemperatureWarningLevelMinimum, src.CustomTargetTemperatureWarningLevelMaximum) : null;
+          ? new TemperatureWarningLevels(src.CustomTargetTemperatureWarningLevelMinimum, src.CustomTargetTemperatureWarningLevelMaximum) : null;
       }
     }
 
