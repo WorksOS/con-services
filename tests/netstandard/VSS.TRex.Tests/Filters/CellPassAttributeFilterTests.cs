@@ -4,7 +4,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Filters;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
-using VSS.TRex.SubGridTrees.Client;
 using Xunit;
 
 namespace VSS.TRex.Tests.Filters
@@ -14,7 +13,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CellPassAttributeFilter()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
             Assert.False(filter.AnyFilterSelections || filter.AnyMachineEventFilterSelections || filter.AnyNonMachineEventFilterSelections,
                 "Filter flags set for default filter");
@@ -23,7 +22,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_Prepare()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
             Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialised");
 
@@ -63,7 +62,7 @@ namespace VSS.TRex.Tests.Filters
             (string name, Action<CellPassAttributeFilter> setState, Func<CellPassAttributeFilter, bool> checkSetState,
                          Action<CellPassAttributeFilter> clearState, Func<CellPassAttributeFilter, bool> checkClearState)
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
             Assert.True(checkClearState(filter), $"[{name}] State set when expected to be not set (1)");
 
@@ -86,8 +85,8 @@ namespace VSS.TRex.Tests.Filters
 
         private void Test_CellPassAttributeFilter_CompareTo_Aspect(string name, Action<CellPassAttributeFilter> SetState)
         {
-            CellPassAttributeFilter filter1 = new CellPassAttributeFilter(/*null*/);
-            CellPassAttributeFilter filter2 = new CellPassAttributeFilter(/*null*/);
+            CellPassAttributeFilter filter1 = new CellPassAttributeFilter();
+            CellPassAttributeFilter filter2 = new CellPassAttributeFilter();
 
             SetState(filter1);
             Assert.Equal(-1, filter1.CompareTo(filter2));
@@ -183,15 +182,17 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_Machine()
         {
-            // TODO readd when machines are available
-            //Test_CellPassAttributeFilter_CompareTo_Aspect("Machine", x => { x.HasMachineFilter = true; x.Machine =  });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("Machine true", x => { x.HasMachineFilter = true; });
+
+            Test_CellPassAttributeFilter_CompareTo_Aspect("Machine true with list", x => { x.HasMachineFilter = true; x.MachineIDs = new short[] { 1 };});
+            Test_CellPassAttributeFilter_CompareTo_Aspect("Machine true with list", x => { x.HasMachineFilter = true; x.MachineIDs = new short [] {1, 2, 3};});
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_CompareTo_MinElevMapping()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping true", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping false", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; });
+            Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping false", x => { x.HasMinElevMappingFilter = false; x.MinElevationMapping = false; });
         }
 
         [Fact()]
@@ -276,7 +277,7 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialisation()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/)
+            CellPassAttributeFilter filter = new CellPassAttributeFilter()
             {
                 ElevationRangeIsInitialised = true,
                 ElevationRangeDesignElevations = new VSS.TRex.SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
@@ -337,8 +338,8 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_Assign()
         {
-          CellPassAttributeFilter filter1 = new CellPassAttributeFilter(/*null*/);
-          CellPassAttributeFilter filter2 = new CellPassAttributeFilter(/*null*/);
+          CellPassAttributeFilter filter1 = new CellPassAttributeFilter();
+          CellPassAttributeFilter filter2 = new CellPassAttributeFilter();
           filter1.ClearFilter();
           filter2.ClearFilter();
           filter1.MaterialTemperatureMin = 10;
@@ -369,19 +370,21 @@ namespace VSS.TRex.Tests.Filters
                                                             x => !x.HasMachineDirectionFilter && x.MachineDirection == MachineDirection.Unknown);
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact()]
         public void Test_CellPassAttributeFilter_ClearMachines()
         {
-            //TODO: Readd when machines are available
-            Assert.True(false);
-
+          Test_CellPassAttributeFilter_ClearFilter_Aspect("Machines",
+            x => { x.HasMachineFilter = true; },
+            x => x.HasMachineFilter,
+            x => { x.ClearMachines(); },
+            x => !x.HasMachineFilter && x.MachinesList == null);
         }
 
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearMinElevationMapping()
         {
             Test_CellPassAttributeFilter_ClearFilter_Aspect("MinElevMapping",
-                                                            x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; },
+                                                            x => { x.HasMinElevMappingFilter = true; },
                                                             x => x.HasMinElevMappingFilter,
                                                             x => { x.ClearMinElevationMapping(); },
                                                             x => !x.HasMinElevMappingFilter && x.MinElevationMapping == false);
@@ -501,18 +504,19 @@ namespace VSS.TRex.Tests.Filters
 
         }
 
-        [Fact(Skip = "Not Implemented")]
+        [Fact()]
         public void Test_CellPassAttributeFilter_InitialiseMachineIDsSet()
         {
-            // TODO: Add when machine are available
-            Assert.True(false);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
+            Assert.False(filter.HasMachineFilter, "Machine filter set");
+            Assert.False(filter.MachinesList == null || filter.MachinesList.Length == 0, "Machine filter contains machines");
         }
 
         [Fact(Skip = "Not Implemented")]
         public void Test_CellPassAttributeFilter_IsTimeRangeFilter()
         {
-            CellPassAttributeFilter filter = new CellPassAttributeFilter(/*null*/);
+            CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
             Assert.False(filter.IsTimeRangeFilter(), "Time range set");
 
