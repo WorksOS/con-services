@@ -1,4 +1,5 @@
 ﻿using TAGProcServiceDecls;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
 {
@@ -29,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
       {
         case TTAGProcServerProcessResult.tpsprOK:
           {
-            return (message: "Success.", type: permanent, continuable: true);
+            return (message: ContractExecutionResult.DefaultMessage, type: permanent, continuable: true);
           }
         case TTAGProcServerProcessResult.tpsprUnknown:
           {

@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Jaeger.Thrift;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -33,6 +39,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly ILoggerFactory logger;
     private readonly ITransferProxy transferProxy;
     private readonly IConfigurationStore configStore;
+    private readonly bool useTrexGateway;
+    private readonly ITRexTagFileProxy tRexTagFileProxy;
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
       ? VelociraptorConstants.NO_PROJECT_ID
@@ -41,14 +50,21 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public TagFileController(IASNodeClient raptorClient, ITagProcessor tagProcessor, ILoggerFactory logger, ITransferProxy transferProxy, IConfigurationStore configStore)
+    public TagFileController(IASNodeClient raptorClient, ITagProcessor tagProcessor, ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
       this.logger = logger;
       log = logger.CreateLogger<TagFileController>();
       this.transferProxy = transferProxy;
+      this.tRexTagFileProxy = tRexTagFileProxy;
       this.configStore = configStore;
+
+      useTrexGateway = false;
+      if (!bool.TryParse(configStore.GetValueString("ENABLE_TFA_SERVICE"), out useTrexGateway))
+      {
+        useTrexGateway = false;
+      }
     }
 
     /// <summary>
@@ -104,17 +120,47 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [PostRequestVerifier]
     [Route("api/v2/tagfiles/direct")]
     [HttpPost]
-    public ObjectResult PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
+    public async Task<ObjectResult> PostTagFileDirectSubmission([FromBody] CompactionTagFileRequest request)
     {
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
+      // for now: we will ALWAYS send to Raptor, but only send to TRex if configured.
+      //          if TRex fails, then we will continue with Raptor send
+      // todo the file is archived within the Raptor exec. 
+      //          when Raptor is potentially disabled, this functionality will need to be
+      //          moved and reworked with meaningful TRex/TFA resultCodes 
+      if (useTrexGateway)
+      {
+        try
+        {
+          request.Validate();
+
+          var resultTRex = await RequestExecutorContainerFactory
+            .Build<TagFileDirectSubmissionTRexExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, null, tRexTagFileProxy, CustomHeaders)
+            .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
+
+          if (resultTRex.Code == 0)
+          {
+            log.LogDebug($"PostTagFile (Direct TRex): Successfully imported TAG file '{request.FileName}'.");
+          }
+          else
+          {
+            log.LogDebug($"PostTagFile (Direct TRex): Failed to import TAG file '{request.FileName}', {resultTRex.Message}");
+          }
+        }
+        catch (Exception ex)
+        {
+          log.LogDebug($"PostTagFile (Direct): failed with ServiceException {ex.Message}");
+        }
+      }
+
       var tfRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, VelociraptorConstants.NO_PROJECT_ID, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
       tfRequest.Validate();
 
-      var result = RequestExecutorContainerFactory
-             .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy)
-             .Process(tfRequest) as TagFileDirectSubmissionResult;
+      var result = await RequestExecutorContainerFactory
+             .Build<TagFileDirectSubmissionRaptorExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy)
+             .ProcessAsync(tfRequest) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)
       {
