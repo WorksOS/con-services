@@ -296,6 +296,12 @@
       0.0,
       0.0
     ],
+    "cmvTarget": {
+      "cmvMachineTarget": 70.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 80.0,
+    "maxCMVPercent": 130.0,
     "Code": 0,
     "Message": "success"
   },
@@ -307,6 +313,12 @@
       0.0,
       0.0
     ],
+    "cmvTarget": {
+      "cmvMachineTarget": 10.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 75.0,
+    "maxCMVPercent": 100.0,
     "Code": 0,
     "Message": "success"
   },
@@ -318,6 +330,12 @@
       0.0,
       0.0
     ],
+    "cmvTarget": {
+      "cmvMachineTarget": 70.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 80.0,
+    "maxCMVPercent": 130.0,
     "Code": 0,
     "Message": "success"
   },
@@ -334,6 +352,12 @@
       0.0,
       0.0
     ],
+    "cmvTarget": {
+      "cmvMachineTarget": 70.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 80.0,
+    "maxCMVPercent": 130.0,
     "Code": 0,
     "Message": "success"
   }
