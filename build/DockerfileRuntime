@@ -24,16 +24,14 @@ ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
 ENV IGNITE_HOME=/trex/
 ENV IS_KUBERNETES=true
 
-# # Copy built artifacts from last stage into runtime container
-# # TRex still cannot run in 
+#Bring libs accross TODO: make the common part of this a new image to speed build times
+COPY --from=build_container /trex/libs /trex/libs/
+
+# Copy built artifacts from last stage into runtime container
 COPY --from=build_container /trex/${COMPONENT} /trex/
 #Get the ignite libs as these are ignored by dotnet publish
 #COPY --from=build_container /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
 WORKDIR /trex
-
-#A bit of a hack to try and get logging working in java
-#RUN mkdir config
-#RUN cp java.util.logging.properties ./config
 
 
 
