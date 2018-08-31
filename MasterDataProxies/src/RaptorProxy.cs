@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -291,7 +292,7 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Gets a production data tile from the 3dpm WMS service.
     /// </summary>
-    public async Task<Stream> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
+    public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height, 
       string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.GetProductionDataTile: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
@@ -306,8 +307,11 @@ namespace VSS.MasterData.Proxies
       string queryParameters3 = $"&mode={mode}&width={width}&height={height}&bbox={bbox}{cutFillDesignParam}";
 
       var request = new GracefulWebRequest(logger, configurationStore);
-      var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", $"{queryParameters1}{queryParameters2}{queryParameters3}");
-      return await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
+      var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles", $"{queryParameters1}{queryParameters2}{queryParameters3}");
+      var result = await request.ExecuteRequest<string>(url, "GET", customHeaders, null, null, 3);
+      dynamic jobj = JToken.Parse(result);
+      byte[] tileData = jobj.TileData;   
+      return tileData;
     }
 
     /// <summary>
