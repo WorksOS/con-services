@@ -15,6 +15,8 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Requestors;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -62,6 +64,11 @@ namespace VSS.TRex.Gateway.WebApi
       var serviceProvider = services.BuildServiceProvider();
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Logging.Logger.Inject(loggerFactory);
+      DIContext.Inject(serviceProvider);
+
+      services.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
+      services.AddSingleton(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
+      serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
 
       //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.

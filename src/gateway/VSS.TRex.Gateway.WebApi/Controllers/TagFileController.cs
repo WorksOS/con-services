@@ -11,7 +11,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -20,20 +19,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class TagFileController : BaseController
   {
-
-    private IMutableClientServer tagfileClientServer;
-
     /// <summary>
     /// Controller for tagfile processing
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="exceptionHandler"></param>
     /// <param name="configStore"></param>
-    /// <param name="tagFileClientServer"></param>
-    public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IMutableClientServer tagFileClientServer)
+    public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore)
         : base(loggerFactory, loggerFactory.CreateLogger<TagFileController>(), exceptionHandler, configStore)
     {
-      this.tagfileClientServer = tagFileClientServer;
     }
 
     /// <summary>
