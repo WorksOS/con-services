@@ -324,6 +324,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             if (!ReturnedFirstItemInIteration)
             {
                 MoveToFirstSubGrid();
+                return CurrentSubGrid != null;
             }
 
             do
@@ -337,7 +338,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 }
 
                 Result = Scanner == null || (Scanner.OnProcessLeafSubgrid(SubGrid) && !Scanner.Aborted);
-            } while (!Result && !(Scanner != null && Scanner.Aborted));
+              } while (!Result && !(Scanner != null && Scanner.Aborted));
 
             CurrentSubGrid = Result ? SubGrid : null;
 
