@@ -72,7 +72,6 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
     <PackageReference Include="WebApiContrib.Core.Formatter.Protobuf" Version="2.0.1" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.6.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
