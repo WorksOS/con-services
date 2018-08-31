@@ -178,6 +178,9 @@
     <None Update="igniteKubeConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ignitePersistentImmutableKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="immutablePersistence.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
