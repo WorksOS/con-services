@@ -34,7 +34,8 @@ node ('jenkinsslave-pod') {
 		"TileRendering",
 		"TINSurfaceExport",
 		"Gateway",
-		"Webtools"
+		"Webtools",
+		"Utils"
 		]
 
     //Set the build name so it is consistant with VSTS

@@ -18,6 +18,8 @@ RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.TileRendering
 RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport
 RUN dotnet publish /build/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway
 RUN dotnet publish /build/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools
+RUN dotnet publish /build/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator
+RUN dotnet publish /build/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer
 
 
 
