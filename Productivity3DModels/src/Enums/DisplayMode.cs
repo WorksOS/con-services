@@ -174,6 +174,11 @@
         /// <summary>
         /// Analysed raw CCA summary information from recorded CCA values Landfill compactors.
         /// </summary>
-        CCASummary
+        CCASummary,
+
+        /// <summary>
+        /// 3D Design for map
+        /// </summary>
+        Design3D
     }
 }
