@@ -1,5 +1,6 @@
 #BUILD_CONTAINER is the container where T-Rex was just built and unit tested in usually this should be local i.e. not pushed to ecr or elsewhere.
 ARG BUILD_CONTAINER
+ARG COMPONENT
 FROM ${BUILD_CONTAINER} as build_container
 
 #We are using the above as a base container as it is the one one just build and tested, therefore we want its T-Rex binaries
@@ -25,7 +26,7 @@ ENV IS_KUBERNETES=true
 
 # # Copy built artifacts from last stage into runtime container
 # # TRex still cannot run in 
-COPY --from=build_container /trex/ /trex/
+COPY --from=build_container /trex/${COMPONENT} /trex/
 #Get the ignite libs as these are ignored by dotnet publish
 #COPY --from=build_container /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
 WORKDIR /trex

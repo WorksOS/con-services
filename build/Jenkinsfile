@@ -23,10 +23,17 @@ node ('jenkinsslave-pod') {
     def project_name = jobnameparts[0].toLowerCase()
     def versionNumber = branch + "-" + params.VSTS_BUILD_NUMBER
 
-	
-	//The runtimeContainerTag will need to updated when we want to push this to ecr
 	def buildContainerTag = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
 	def runtimeContainerTag = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+
+	def trexComponents = [
+		"ApplicationServer",
+		"DesignElevation",
+		"MutableData",
+		"PSNode",
+		"TileRendering",
+		"TINSurfaceExport"
+		]
 
     //Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
@@ -90,12 +97,15 @@ node ('jenkinsslave-pod') {
     }
 
 	stage('Build Runtime Container') {
-	def runtime_container = docker.build(runtimeContainerTag, "-f ./build/DockerfileRuntime --build-arg BUILD_CONTAINER=${buildContainerTag} .")
-	
-	//This is where we would push at the moment just list available images to verify we have built containers
-	
-	sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
-	sh "docker images"
-	runtime_container.push()
+		//build common container
+
+		for (int i = 0; i < trexComponents.size(); i++ ){
+			def component = trexComponents[i]
+			def imagetag = runtimeContainerTag + "." + component
+			def runtime_container = docker.build(imagetag, "-f ./build/DockerfileRuntime --build-arg BUILD_CONTAINER=${buildContainerTag} --build-arg COMPONENT=${component} .")
+			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
+			sh "docker images"
+			runtime_container.push()
+		}
 	}	
 }

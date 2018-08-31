@@ -7,10 +7,15 @@ RUN apk --no-cache add bash nodejs nodejs-npm
 COPY . /build/
 
 #Try manual restore
-RUN dotnet restore /build/TRex.netstandard.sln --verbosity detailed
+#RUN dotnet restore /build/TRex.netstandard.sln --verbosity detailed
 
-#publish TRex
-RUN dotnet publish /build/TRex.netstandard.sln --verbosity detailed --output /trex --no-restore
+#publish TRex servers
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
