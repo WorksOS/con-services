@@ -94,10 +94,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Get CMV details from Raptor for the specified project and date range.
+    /// Get CMV details from Raptor for the specified project and date range. 
     /// </summary>
     [Route("api/v2/cmv/details/targets")]
     [HttpGet]
+    [Obsolete("Use 'cmv/details' for v2 and 'compaction/cmv/detailed' for v1 result")]
     public async Task<CompactionCmvDetailedResult> GetCmvDetailsTargets(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
@@ -111,8 +112,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as CMVDetailedResult;
-        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
 
+        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result, null, null);
         Log.LogInformation("GetCmvDetailsTargets result: " + JsonConvert.SerializeObject(returnResult));
 
         return returnResult;
@@ -149,9 +150,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient)
+        var result1 = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as CMVDetailedResult;
-        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
+
+        var result2 = RequestExecutorContainerFactory
+          .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
+          .Process(request) as CMVSummaryResult;
+
+        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result1, result2, request.cmvSettings);
 
         Log.LogInformation("GetCmvDetails result: " + JsonConvert.SerializeObject(returnResult));
 
