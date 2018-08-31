@@ -14,7 +14,8 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
-using VSS.TRex.Exports.Surfaces.Requestors;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
@@ -23,7 +24,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     /// <summary>
     /// The name of this service for swagger etc.
     /// </summary>
-    private const string SERVICE_TITLE = "TRex Gateway API";
+    private const string SERVICE_TITLE = "TRex Mutable Gateway API";
     /// <summary>
     /// The logger repository name
     /// </summary>
@@ -38,7 +39,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       // Add framework services.
       services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels());
-      services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
@@ -53,8 +53,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
 
       services.AddJaeger(SERVICE_TITLE);
 
-      //services.AddMemoryCache();
-      services.AddCommon<Startup>(SERVICE_TITLE, "API for TRex Gateway");
+      services.AddCommon<Startup>(SERVICE_TITLE, "API for TRex Mutable Gateway");
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -64,10 +63,9 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
 
-      //TODO: Work out how we want to activate the grid in netcore. For now do it here directly.
-      //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Immutable TRex grid");
-      bool result1 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.ImmutableGridName());
-      //Log.LogInformation($"Activation process completed: Immutable = {result1}");
+      services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
+      serviceProvider = services.BuildServiceProvider();
+      DIContext.Inject(serviceProvider);
 
       //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
       bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());

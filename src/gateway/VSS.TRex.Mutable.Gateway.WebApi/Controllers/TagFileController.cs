@@ -11,29 +11,23 @@ using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.GridFabric.Interfaces;
 
-namespace VSS.TRex.Gateway.WebApi.Controllers
+namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 {
   /// <summary>
   /// Process Tagfiles Controller
   /// </summary>
   public class TagFileController : BaseController
   {
-
-    private IMutableClientServer tagfileClientServer;
-
     /// <summary>
     /// Controller for tagfile processing
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="exceptionHandler"></param>
     /// <param name="configStore"></param>
-    /// <param name="tagFileClientServer"></param>
-    public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore, IMutableClientServer tagFileClientServer)
+    public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore)
         : base(loggerFactory, loggerFactory.CreateLogger<TagFileController>(), exceptionHandler, configStore)
     {
-      this.tagfileClientServer = tagFileClientServer;
     }
 
     /// <summary>
@@ -45,9 +39,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public String Get()
     {
       // Test endpoint connection
-      return "You have reached api/v1/tagfiles";
+      return "You have reached api/v2/tagfiles";
     }
-
 
     /// <summary>
     /// For accepting and loading manually or automatically submitted tag files.
@@ -86,18 +79,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       // todo we probably need to return some proper return codes to determine further course of action
       if (tagfileResult != null)
       {
-        if (tagfileResult.Code == 0)
-          return (IActionResult)Ok(tagfileResult);
-        else
-        {
-          return BadRequest(tagfileResult);
-        }
+        return tagfileResult.Code == 0 ? (IActionResult)Ok(tagfileResult) : BadRequest(tagfileResult);
       }
       else
       {
         return BadRequest(TagFileResult.Create(1, "Unexpected failure"));
       }
-
     }
 
     public class JsonContractPropertyResolver : DefaultContractResolver
@@ -128,6 +115,5 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           Formatting.None,
           new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver(properties) });
     }
-
   }
 }

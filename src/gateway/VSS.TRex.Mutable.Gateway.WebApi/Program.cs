@@ -14,15 +14,9 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
 {
   public class Program
   {
-    private static IImmutableClientServer ImmutableClientServer;
-    private static IMutableClientServer MutableClientServer;
-
     public static void Main(string[] args)
     {
       var webHost = BuildWebHost(args);
-
-      ImmutableClientServer = new ImmutableClientServer("TRexIgniteClient-DotNetStandard");
-      MutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
 
       webHost.Run();
     }

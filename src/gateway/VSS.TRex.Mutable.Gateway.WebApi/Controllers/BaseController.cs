@@ -9,7 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.TRex.Gateway.WebApi.Controllers
+namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 {
   /// <summary>
   /// Common base class for TRex gateway controllers.
