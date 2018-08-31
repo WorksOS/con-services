@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     private CMVDetailedResult ConvertResult(TCMVDetails details)
     {
-      return CMVDetailedResult.Create(details.Percents);
+      return new CMVDetailedResult(details.Percents);
     }
 
     private TCMVSettings ConvertSettings(CMVSettings settings)

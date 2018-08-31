@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (success)
       {
-        result = CompactionCutFillDetailedResult.CreateCutFillDetailedResult(cutFillDetails.Percents);
+        result = new CompactionCutFillDetailedResult(cutFillDetails.Percents);
       }
       else
       {

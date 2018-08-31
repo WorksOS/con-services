@@ -212,7 +212,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         new List<MachineDetails> { MachineDetails.Create(assetId, machineName, isJohnDoe) }
        );
 
-      var request = TileRequest.CreateTileRequest
+      var request = new TileRequest
       (
         projectId,
         null,
@@ -227,7 +227,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         null,
         0,
         FilterLayerMethod.TagfileLayerNumber,
-        BoundingBox2DLatLon.CreateBoundingBox2DLatLon
+        new BoundingBox2DLatLon
           (
             double.Parse(points[1]) * ConversionConstants.DEGREES_TO_RADIANS, // The Bottom Left corner, longitude...
             double.Parse(points[0]) * ConversionConstants.DEGREES_TO_RADIANS, // The Bottom Left corner, latitude...

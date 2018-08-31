@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             break;
           case ImportedFileType.SurveyedSurface:
             log.LogDebug("Storing ground surface file in Raptor");
-            DesignDescriptor dd = DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
+            DesignDescriptor dd = new DesignDescriptor(request.FileId, request.File, 0.0);
             ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
               .Construct_GroundSurface_Args(
                 request.ProjectId.Value,

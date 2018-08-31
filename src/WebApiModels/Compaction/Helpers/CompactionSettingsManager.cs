@@ -82,12 +82,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               : projectSettingsColors.elevationColors;
             var step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
 
-            palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
+            palette.Add(new ColorPalette(ColorSettings.Default.elevationBelowColor, -1));
             for (var i = 0; i < colors.Count; i++)
             {
-              palette.Add(ColorPalette.CreateColorPalette((uint) colors[i], elevExtents.MinElevation + i * step));
+              palette.Add(new ColorPalette((uint) colors[i], elevExtents.MinElevation + i * step));
             }
-            palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationAboveColor, -1));
+            palette.Add(new ColorPalette(ColorSettings.Default.elevationAboveColor, -1));
           }
 
           break;
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           for (var i = 0; i < cmvDetailsSettings.customCMVDetailTargets.Length; i++)
           {
             //The last color and value are for above...
-            palette.Add(ColorPalette.CreateColorPalette(cmvColors[i], cmvDetailsSettings.customCMVDetailTargets[i]));
+            palette.Add(new ColorPalette(cmvColors[i], cmvDetailsSettings.customCMVDetailTargets[i]));
           }
           break;
         case DisplayMode.PassCount:
@@ -114,10 +114,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           for (var i = 0; i < passCountSettings.passCounts.Length; i++)
           {
             //The colors and values for 1-8
-            palette.Add(ColorPalette.CreateColorPalette(passCountDetailColors[i], passCountSettings.passCounts[i]));
+            palette.Add(new ColorPalette(passCountDetailColors[i], passCountSettings.passCounts[i]));
           }
           //The 9th color and value (for above)
-          palette.Add(ColorPalette.CreateColorPalette(passCountDetailColors[8], passCountSettings.passCounts[7] + 1));
+          palette.Add(new ColorPalette(passCountDetailColors[8], passCountSettings.passCounts[7] + 1));
           break;
         case DisplayMode.PassCountSummary:
           //Values don't matter here as no machine override for compaction
@@ -139,9 +139,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             : projectSettingsColors.passCountOverTargetColor ??
               CompactionProjectSettingsColors.DefaultSettings.passCountOverTargetColor.Value;
 
-          palette.Add(ColorPalette.CreateColorPalette(underColor, ColorSettings.Default.passCountMinimum.value));
-          palette.Add(ColorPalette.CreateColorPalette(onColor, ColorSettings.Default.passCountTarget.value));
-          palette.Add(ColorPalette.CreateColorPalette(overColor, ColorSettings.Default.passCountMaximum.value));
+          palette.Add(new ColorPalette(underColor, ColorSettings.Default.passCountMinimum.value));
+          palette.Add(new ColorPalette(onColor, ColorSettings.Default.passCountTarget.value));
+          palette.Add(new ColorPalette(overColor, ColorSettings.Default.passCountMaximum.value));
           break;
         case DisplayMode.CutFill:
           //Note: cut-fill also requires a design for tile requests 
@@ -153,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
           for (var i = 0; i < cutFillColors.Count; i++)
           {
-            palette.Add(ColorPalette.CreateColorPalette(cutFillColors[i], cutFillTolerances[i]));
+            palette.Add(new ColorPalette(cutFillColors[i], cutFillTolerances[i]));
           }
           break;
         case DisplayMode.TemperatureSummary:
@@ -175,9 +175,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             : projectSettingsColors.temperatureOverTargetColor ??
               CompactionProjectSettingsColors.DefaultSettings.temperatureOverTargetColor.Value;
 
-          palette.Add(ColorPalette.CreateColorPalette(underColor, 0));
-          palette.Add(ColorPalette.CreateColorPalette(onColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(overColor, 2));
+          palette.Add(new ColorPalette(underColor, 0));
+          palette.Add(new ColorPalette(onColor, 1));
+          palette.Add(new ColorPalette(overColor, 2));
           break;
         case DisplayMode.CCVPercentSummary:
           useDefaultValue = projectSettingsColors.useDefaultCMVSummaryColors.HasValue &&
@@ -198,12 +198,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             : projectSettingsColors.cmvOverTargetColor ??
               CompactionProjectSettingsColors.DefaultSettings.cmvOverTargetColor.Value;
 
-          palette.Add(ColorPalette.CreateColorPalette(onColor, 0));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryWorkInProgressLayerColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(underColor, 2));
-          palette.Add(ColorPalette.CreateColorPalette(overColor, 3));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryTooThickLayerColor, 4));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryApprovedLayerColor, 5));
+          palette.Add(new ColorPalette(onColor, 0));
+          palette.Add(new ColorPalette(ColorSettings.Default.ccvSummaryWorkInProgressLayerColor, 1));
+          palette.Add(new ColorPalette(underColor, 2));
+          palette.Add(new ColorPalette(overColor, 3));
+          palette.Add(new ColorPalette(ColorSettings.Default.ccvSummaryTooThickLayerColor, 4));
+          palette.Add(new ColorPalette(ColorSettings.Default.ccvSummaryApprovedLayerColor, 5));
           break;
         case DisplayMode.MDPPercentSummary:
           useDefaultValue = projectSettingsColors.useDefaultMDPSummaryColors.HasValue &&
@@ -224,12 +224,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             : projectSettingsColors.mdpOverTargetColor ??
               CompactionProjectSettingsColors.DefaultSettings.mdpOverTargetColor.Value;
 
-          palette.Add(ColorPalette.CreateColorPalette(onColor, 0));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryWorkInProgressLayerColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(underColor, 2));
-          palette.Add(ColorPalette.CreateColorPalette(overColor, 3));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryTooThickLayerColor, 4));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryApprovedLayerColor, 5));
+          palette.Add(new ColorPalette(onColor, 0));
+          palette.Add(new ColorPalette(ColorSettings.Default.mdpSummaryWorkInProgressLayerColor, 1));
+          palette.Add(new ColorPalette(underColor, 2));
+          palette.Add(new ColorPalette(overColor, 3));
+          palette.Add(new ColorPalette(ColorSettings.Default.mdpSummaryTooThickLayerColor, 4));
+          palette.Add(new ColorPalette(ColorSettings.Default.mdpSummaryApprovedLayerColor, 5));
           break;
         case DisplayMode.TargetSpeedSummary:
           useDefaultValue = projectSettingsColors.useDefaultSpeedSummaryColors.HasValue &&
@@ -250,9 +250,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             : projectSettingsColors.speedOverTargetColor ??
               CompactionProjectSettingsColors.DefaultSettings.speedOverTargetColor.Value;
 
-          palette.Add(ColorPalette.CreateColorPalette(underColor, 0));
-          palette.Add(ColorPalette.CreateColorPalette(onColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(overColor, 2));
+          palette.Add(new ColorPalette(underColor, 0));
+          palette.Add(new ColorPalette(onColor, 1));
+          palette.Add(new ColorPalette(overColor, 2));
           break;
         case DisplayMode.CMVChange:
           const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
@@ -263,14 +263,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             ? CompactionProjectSettingsColors.DefaultSettings.cmvPercentColors
             : projectSettingsColors.cmvPercentColors;
 
-          palette.Add(ColorPalette.CreateColorPalette(Colors.None, double.MinValue));
+          palette.Add(new ColorPalette(Colors.None, double.MinValue));
 
           for (var i = 0; i < cmvPercentChangeSettings.Length; i++)
           {
-            palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
+            palette.Add(new ColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
           }
 
-          palette.Add(ColorPalette.CreateColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1],
+          palette.Add(new ColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1],
             NO_CCV));
 
           break;

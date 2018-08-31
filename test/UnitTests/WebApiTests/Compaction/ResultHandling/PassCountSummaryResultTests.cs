@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [DataRow(10.234, true)]
     public void HasData_Should_return_expected_result_From_coverage_value(double totalAreaCovered, bool expectedResult)
     {
-      var obj = PassCountSummaryResult.Create(null, false, 0, 0, 0, 0, totalAreaCovered);
+      var obj = new PassCountSummaryResult(null, false, 0, 0, 0, 0, totalAreaCovered);
 
       Assert.AreEqual(expectedResult, obj.HasData());
     }

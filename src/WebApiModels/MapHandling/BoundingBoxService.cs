@@ -436,7 +436,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           foreach (var coordPair in coordList)
           {
-            points.Add(WGSPoint.CreatePoint(coordPair[1].LatDegreesToRadians(),
+            points.Add(new WGSPoint(coordPair[1].LatDegreesToRadians(),
               coordPair[0].LonDegreesToRadians())); //GeoJSON is lng/lat
           }
         }
@@ -555,7 +555,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             int count = isCenterline ? pdsPoints.Length / 2 : pdsPoints.Length;
             for (int i = 0; i < count; i++)
             {
-              alignmentPoints.Add(WGSPoint.CreatePoint(pdsPoints[i].Lat, pdsPoints[i].Lon));
+              alignmentPoints.Add(new WGSPoint(pdsPoints[i].Lat, pdsPoints[i].Lon));
             }
           }
         }

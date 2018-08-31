@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
     [TestMethod]
     public void IsAlignmentProfile_Should_return_true_when_AlignmentDesign_file_is_set()
     {
-      var request = ProfileProductionDataRequest.CreateProfileProductionData(0, Guid.NewGuid(), ProductionDataType.All, null, 0, DesignDescriptor.CreateDesignDescriptor(1, FileDescriptor.CreateFileDescriptor("1", "path", "filename"), 0), null, null, 0, 0, null, false);
+      var request = ProfileProductionDataRequest.CreateProfileProductionData(0, Guid.NewGuid(), ProductionDataType.All, null, 0, new DesignDescriptor(1, FileDescriptor.CreateFileDescriptor("1", "path", "filename"), 0), null, null, 0, 0, null, false);
       Assert.IsTrue(request.IsAlignmentDesign);
     }
   }

@@ -73,14 +73,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     private CMVSummaryResult ConvertResult(TCMVSummary summary)
     {
-      return CMVSummaryResult.Create(
-                summary.CompactedPercent,
-                summary.ConstantTargetCMV,
-                summary.IsTargetCMVConstant,
-                summary.OverCompactedPercent,
-                summary.ReturnCode,
-                summary.TotalAreaCoveredSqMeters,
-                summary.UnderCompactedPercent);
+      return new CMVSummaryResult(
+        summary.CompactedPercent,
+        summary.ConstantTargetCMV,
+        summary.IsTargetCMVConstant,
+        summary.OverCompactedPercent,
+        summary.ReturnCode,
+        summary.TotalAreaCoveredSqMeters,
+        summary.UnderCompactedPercent);
     }
 
     private TCMVSettings ConvertSettings(CMVSettings settings)

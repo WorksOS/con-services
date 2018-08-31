@@ -87,11 +87,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     {
       List<WGSPoint> polygonPoints = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(10, 20),
-        WGSPoint.CreatePoint(15, 20),
-        WGSPoint.CreatePoint(13, 15),
-        WGSPoint.CreatePoint(25, 30),
-        WGSPoint.CreatePoint(27, 27)
+        new WGSPoint(10, 20),
+        new WGSPoint(15, 20),
+        new WGSPoint(13, 15),
+        new WGSPoint(25, 30),
+        new WGSPoint(27, 27)
       };
 
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, 
@@ -112,12 +112,12 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     public void GetBoundingBoxPolygonAndDesignBoundaryFilter()
     {  
       //design boundary points: -115.018,36.208 -115.025,36.214 -115.123,36.17 -115.018,36.208
-      DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
+      DesignDescriptor design = new DesignDescriptor(-1, null, 0);
       List<WGSPoint> polygonPoints = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(35.98.LatDegreesToRadians(), -115.11.LonDegreesToRadians()),
-        WGSPoint.CreatePoint(36.15.LatDegreesToRadians(), -115.74.LonDegreesToRadians()),
-        WGSPoint.CreatePoint(36.10.LatDegreesToRadians(), -115.39.LonDegreesToRadians())
+        new WGSPoint(35.98.LatDegreesToRadians(), -115.11.LonDegreesToRadians()),
+        new WGSPoint(36.15.LatDegreesToRadians(), -115.74.LonDegreesToRadians()),
+        new WGSPoint(36.10.LatDegreesToRadians(), -115.39.LonDegreesToRadians())
       };
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, 
         polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null, 
@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     [TestMethod]
     public void GetBoundingBoxDesignBoundaryFilter()
     {
-      DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
+      DesignDescriptor design = new DesignDescriptor(-1, null, 0);
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, design, null, null, null, null, null);
@@ -182,7 +182,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     [TestMethod]
     public void GetBoundingBoxCutFillDesign()
     {
-      DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
+      DesignDescriptor design = new DesignDescriptor(-1, null, 0);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -213,18 +213,18 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     {
       List<WGSPoint> polygonPoints = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(10, 20),
-        WGSPoint.CreatePoint(15, 20),
-        WGSPoint.CreatePoint(13, 15),
-        WGSPoint.CreatePoint(25, 30),
-        WGSPoint.CreatePoint(27, 27)
+        new WGSPoint(10, 20),
+        new WGSPoint(15, 20),
+        new WGSPoint(13, 15),
+        new WGSPoint(25, 30),
+        new WGSPoint(27, 27)
       };
 
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null,
         polygonPoints, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
-      DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
+      DesignDescriptor design = new DesignDescriptor(-1, null, 0);
 
       var raptorClient = new Mock<IASNodeClient>();
 
@@ -252,7 +252,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     [TestMethod]
     public void GetBoundingBoxAlignmentFilter()
     {
-      DesignDescriptor alignment = DesignDescriptor.CreateDesignDescriptor(-1, null, 0);
+      DesignDescriptor alignment = new DesignDescriptor(-1, null, 0);
       var filter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, null,
         null, null, alignment, 0, 3, 0.5, 0.5, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null);
@@ -288,11 +288,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
     {
       List<WGSPoint> polygonPoints1 = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(10, 20),
-        WGSPoint.CreatePoint(15, 20),
-        WGSPoint.CreatePoint(13, 15),
-        WGSPoint.CreatePoint(25, 30),
-        WGSPoint.CreatePoint(27, 27)
+        new WGSPoint(10, 20),
+        new WGSPoint(15, 20),
+        new WGSPoint(13, 15),
+        new WGSPoint(25, 30),
+        new WGSPoint(27, 27)
       };
 
       var baseFilter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null,
@@ -301,11 +301,11 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       List<WGSPoint> polygonPoints2 = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(30, 20),
-        WGSPoint.CreatePoint(25, 25),
-        WGSPoint.CreatePoint(50, 35),
-        WGSPoint.CreatePoint(25, 15),
-        WGSPoint.CreatePoint(32, 16)
+        new WGSPoint(30, 20),
+        new WGSPoint(25, 25),
+        new WGSPoint(50, 35),
+        new WGSPoint(25, 15),
+        new WGSPoint(32, 16)
       };
 
       var topFilter = FilterResult.CreateFilter(null, null, null, null, null, null, null, null, null, null, 

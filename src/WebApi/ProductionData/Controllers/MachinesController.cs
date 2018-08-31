@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     public MachineExecutionResult Get([FromRoute] long projectId)
     {
-      var id = ProjectID.Create(projectId);
+      var id = new ProjectID(projectId);
       id.Validate();
 
       return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineExecutionResult> Get([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = ProjectID.Create(projectId, projectUid);
+      var id = new ProjectID(projectId, projectUid);
       id.Validate();
       return RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
     }
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     public ContractExecutionResult Get([FromRoute] long projectId, [FromRoute] long machineId)
     {
-      var id = ProjectID.Create(projectId);
+      var id = new ProjectID(projectId);
       id.Validate();
       var result =
           RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<ContractExecutionResult> Get([FromRoute] Guid projectUid, [FromRoute] long machineId)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = ProjectID.Create(projectId, projectUid);
+      var id = new ProjectID(projectId, projectUid);
       id.Validate();
       var result =
           RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     public MachineDesignsExecutionResult GetMachineDesigns([FromRoute] long projectId)
     {
-      var id = ProjectID.Create(projectId);
+      var id = new ProjectID(projectId);
       id.Validate();
       var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = ProjectID.Create(projectId, projectUid);
+      var id = new ProjectID(projectId, projectUid);
       id.Validate();
       var result = RequestExecutorContainerFactory.Build<GetMachineDesignsExecutor>(logger, raptorClient).Process(id) as MachineDesignsExecutionResult;
       return CreateUniqueDesignList(result);
@@ -182,7 +182,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineDesignDetailsExecutionResult> GetMachineDesignDetails([FromRoute] Guid projectUid, [FromQuery]string startUtc, [FromQuery]string endUtc)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = ProjectID.Create(projectId, projectUid);
+      var id = new ProjectID(projectId, projectUid);
       id.Validate();
 
       DateTime? beginUtc;
@@ -221,7 +221,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet]
     public LayerIdsExecutionResult GetMachineLayerIds([FromRoute] long projectId)
     {
-      var id = ProjectID.Create(projectId);
+      var id = new ProjectID(projectId);
       id.Validate();
       return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
     }
@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<LayerIdsExecutionResult> GetMachineLayerIds([FromRoute] Guid projectUid)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = ProjectID.Create(projectId, projectUid);
+      var id = new ProjectID(projectId, projectUid);
       id.Validate();
       return RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
     }
@@ -257,7 +257,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet]
     public MachineLayerIdsExecutionResult GetMachineLifts([FromRoute] long projectId, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
-      var id = ProjectID.Create(projectId);
+      var id = new ProjectID(projectId);
       id.Validate();
 
       return GetMachineLiftsWith(id, startUtc, endUtc);
@@ -278,7 +278,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineLayerIdsExecutionResult> GetMachineLifts([FromRoute] Guid projectUid, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
       var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var id = ProjectID.Create(projectId, projectUid);
+      var id = new ProjectID(projectId, projectUid);
       id.Validate();
 
       return GetMachineLiftsWith(id, startUtc, endUtc);

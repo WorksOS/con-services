@@ -23,13 +23,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       var points = new List<WGSPoint3D>
       {
-        WGSPoint3D.CreatePoint(0.631986074660308, -2.00757760231466),
-        WGSPoint3D.CreatePoint(0.631907507374149, -2.00758733949739),
-        WGSPoint3D.CreatePoint(0.631904485465203, -2.00744352879854),
-        WGSPoint3D.CreatePoint(0.631987283352491, -2.00743753668608)
+        new WGSPoint3D(0.631986074660308, -2.00757760231466),
+        new WGSPoint3D(0.631907507374149, -2.00758733949739),
+        new WGSPoint3D(0.631904485465203, -2.00744352879854),
+        new WGSPoint3D(0.631987283352491, -2.00743753668608)
       };
 
-      return WGS84Fence.CreateWGS84Fence(points.ToArray());
+      return new WGS84Fence(points.ToArray());
     }
 
     private (TagFileRequestLegacy fileRequest, TWGS84FenceContainer container) CreateRequest(byte[] tagData, long projectId, bool createFence = true)

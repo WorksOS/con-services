@@ -68,8 +68,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       public CCVRangePercentage Resolve(CompactionProjectSettings src, LiftBuildSettings dst, CCVRangePercentage member, ResolutionContext context)
       {
         return src.OverrideDefaultTargetRangeCmvPercent ? 
-          CCVRangePercentage.CreateCcvRangePercentage(src.CustomTargetCmvPercentMinimum, src.CustomTargetCmvPercentMaximum) :
-          CCVRangePercentage.CreateCcvRangePercentage(CompactionProjectSettings.DefaultSettings.CustomTargetCmvPercentMinimum, CompactionProjectSettings.DefaultSettings.CustomTargetCmvPercentMaximum);
+          new CCVRangePercentage(src.CustomTargetCmvPercentMinimum, src.CustomTargetCmvPercentMaximum) :
+          new CCVRangePercentage(CompactionProjectSettings.DefaultSettings.CustomTargetCmvPercentMinimum, CompactionProjectSettings.DefaultSettings.CustomTargetCmvPercentMaximum);
       }
     }
 
@@ -78,8 +78,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       public MDPRangePercentage Resolve(CompactionProjectSettings src, LiftBuildSettings dst, MDPRangePercentage member, ResolutionContext context)
       {
         return src.OverrideDefaultTargetRangeMdpPercent ? 
-          MDPRangePercentage.CreateMdpRangePercentage(src.CustomTargetMdpPercentMinimum, src.CustomTargetMdpPercentMaximum) :
-          MDPRangePercentage.CreateMdpRangePercentage(CompactionProjectSettings.DefaultSettings.CustomTargetMdpPercentMinimum, CompactionProjectSettings.DefaultSettings.CustomTargetMdpPercentMaximum);
+          new MDPRangePercentage(src.CustomTargetMdpPercentMinimum, src.CustomTargetMdpPercentMaximum) :
+          new MDPRangePercentage(CompactionProjectSettings.DefaultSettings.CustomTargetMdpPercentMinimum, CompactionProjectSettings.DefaultSettings.CustomTargetMdpPercentMaximum);
       }
     }
 
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       public TargetPassCountRange Resolve(CompactionProjectSettings src, LiftBuildSettings dst, TargetPassCountRange member, ResolutionContext context)
       {
         return src.OverrideMachineTargetPassCount
-          ? TargetPassCountRange.CreateTargetPassCountRange((ushort) src.customTargetPassCountMinimum, (ushort) src.customTargetPassCountMaximum)
+          ? new TargetPassCountRange((ushort) src.customTargetPassCountMinimum, (ushort) src.customTargetPassCountMaximum)
           : null;
       }
     }
@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       public MachineSpeedTarget Resolve(CompactionProjectSettings src, LiftBuildSettings dst, MachineSpeedTarget member, ResolutionContext context)
       {
-        return MachineSpeedTarget.CreateMachineSpeedTarget(src.CustomTargetSpeedMinimum, src.CustomTargetSpeedMaximum);
+        return new MachineSpeedTarget(src.CustomTargetSpeedMinimum, src.CustomTargetSpeedMaximum);
       }
     }
 

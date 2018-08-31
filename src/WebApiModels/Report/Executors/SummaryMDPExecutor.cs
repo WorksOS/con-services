@@ -88,14 +88,14 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
     private MDPSummaryResult ConvertResult(TMDPSummary summary)
     {
-      return MDPSummaryResult.Create(
-                summary.CompactedPercent,
-                summary.ConstantTargetMDP,
-                summary.IsTargetMDPConstant,
-                summary.OverCompactedPercent,
-                summary.ReturnCode,
-                summary.TotalAreaCoveredSqMeters,
-                summary.UnderCompactedPercent);
+      return new MDPSummaryResult(
+        summary.CompactedPercent,
+        summary.ConstantTargetMDP,
+        summary.IsTargetMDPConstant,
+        summary.OverCompactedPercent,
+        summary.ReturnCode,
+        summary.TotalAreaCoveredSqMeters,
+        summary.UnderCompactedPercent);
     }
 
     private TMDPSettings ConvertSettings(MDPSettings settings)

@@ -25,16 +25,24 @@ namespace VSS.Productivity3D.Common.Models
     public int[] customCMVDetailTargets { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private CMVSettingsEx()
     {
     }
 
     /// <summary>
-    /// Creates instance of CMVSettingsEx class
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVSettingsEx CreateCMVSettingsEx(
+    /// <param name="cmvTarget"></param>
+    /// <param name="maxCMV"></param>
+    /// <param name="maxCMVPercent"></param>
+    /// <param name="minCMV"></param>
+    /// <param name="minCMVPercent"></param>
+    /// <param name="overrideTargetCMV"></param>
+    /// <param name="customCMVDetailTargets"></param>
+    public CMVSettingsEx
+    (
       short cmvTarget,
       short maxCMV,
       double maxCMVPercent,
@@ -44,16 +52,13 @@ namespace VSS.Productivity3D.Common.Models
       int[] customCMVDetailTargets
     )
     {
-      return new CMVSettingsEx()
-      {
-        cmvTarget = cmvTarget,
-        maxCMV = maxCMV,
-        maxCMVPercent = maxCMVPercent,
-        minCMV = minCMV,
-        minCMVPercent = minCMVPercent,
-        overrideTargetCMV = overrideTargetCMV,
-        customCMVDetailTargets = customCMVDetailTargets
-      };
+      this.cmvTarget = cmvTarget;
+      this.maxCMV = maxCMV;
+      this.maxCMVPercent = maxCMVPercent;
+      this.minCMV = minCMV;
+      this.minCMVPercent = minCMVPercent;
+      this.overrideTargetCMV = overrideTargetCMV;
+      this.customCMVDetailTargets = customCMVDetailTargets;
     }
 
     /// <summary>

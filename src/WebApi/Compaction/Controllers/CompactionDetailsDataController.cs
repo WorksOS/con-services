@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as CMVDetailedResult;
 
-        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result, null, null);
+        var returnResult = new CompactionCmvDetailedResult(result, null, null);
         Log.LogInformation("GetCmvDetailsTargets result: " + JsonConvert.SerializeObject(returnResult));
 
         return returnResult;
@@ -157,7 +157,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as CMVSummaryResult;
 
-        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result1, result2, request.cmvSettings);
+        var returnResult = new CompactionCmvDetailedResult(result1, result2, request.cmvSettings);
 
         Log.LogInformation("GetCmvDetails result: " + JsonConvert.SerializeObject(returnResult));
 
@@ -199,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                      .Build<DetailedPassCountExecutor>(LoggerFactory, RaptorClient)
                      .Process(request) as PassCountDetailedResult;
 
-        var returnResult = CompactionPassCountDetailedResult.CreatePassCountDetailedResult(result);
+        var returnResult = new CompactionPassCountDetailedResult(result);
 
         Log.LogInformation("GetPassCountDetails result: " + JsonConvert.SerializeObject(returnResult));
 
