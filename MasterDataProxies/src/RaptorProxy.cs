@@ -308,10 +308,12 @@ namespace VSS.MasterData.Proxies
 
       var request = new GracefulWebRequest(logger, configurationStore);
       var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles", $"{queryParameters1}{queryParameters2}{queryParameters3}");
-      var result = await request.ExecuteRequest<string>(url, "GET", customHeaders, null, null, 3);
-      dynamic jobj = JToken.Parse(result);
-      byte[] tileData = jobj.TileData;   
-      return tileData;
+      var stream = await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
+      using (var ms = new MemoryStream())
+      {
+        await stream.CopyToAsync(ms);
+        return ms.ToArray();
+      }
     }
 
     /// <summary>
