@@ -36,7 +36,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(PostCmvDetails)}: {Request.QueryString}");
 
-      //var cmvDetailsRequest = CMVDetailsRequest.CreateCMVDetailsRequest(projectUid, null/* filter */, new[] { 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 });
       cmvDetailsRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
@@ -44,7 +43,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<DetailedCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvDetailsRequest) as CMVDetailedResult);
 
-      return CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
+      return new CompactionCmvDetailedResult(result, null, null);
     }
 
     /// <summary>
@@ -65,7 +64,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<DetailedPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(passCountDetailsRequest) as PassCountDetailedResult);
 
-      return CompactionPassCountDetailedResult.CreatePassCountDetailedResult(result);
+      return new CompactionPassCountDetailedResult(result);
     }
 
     /// <summary>

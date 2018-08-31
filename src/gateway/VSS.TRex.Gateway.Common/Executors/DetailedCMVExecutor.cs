@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (cmvDetailsResult != null)
-        return CMVDetailedResult.Create(cmvDetailsResult.Percents);
+        return new CMVDetailedResult(cmvDetailsResult.Percents);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         "Failed to get requested CMV details data"));

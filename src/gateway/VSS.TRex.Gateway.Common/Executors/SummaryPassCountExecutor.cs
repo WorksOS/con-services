@@ -66,8 +66,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private SummaryResult ConvertResult(PassCountSummaryResult summary)
     {
-      return SummaryResult.Create(
-        TargetPassCountRange.CreateTargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max),
+      return new SummaryResult(
+        new TargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max),
         summary.IsTargetPassCountConstant,
         summary.WithinTargetPercent,
         summary.AboveTargetPercent,

@@ -62,7 +62,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private SummaryResult ConvertResult(CMVSummaryResult summary)
     {
-      return SummaryResult.Create(
+      return new SummaryResult(
         summary.WithinTargetPercent,
         summary.ConstantTargetCMV,
         summary.IsTargetCMVConstant,

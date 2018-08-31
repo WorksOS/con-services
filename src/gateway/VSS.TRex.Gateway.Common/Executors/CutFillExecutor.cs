@@ -56,7 +56,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (cutFillResult != null)
-        return CompactionCutFillDetailedResult.CreateCutFillDetailedResult(cutFillResult.Percents);
+        return new CompactionCutFillDetailedResult(cutFillResult.Percents);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         "Failed to get requested cut-fill details data"));

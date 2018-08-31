@@ -20,6 +20,9 @@ namespace VSS.TRex.Gateway.Common.Executors
   /// </summary>
   public class SummarySpeedExecutor : BaseExecutor
   {
+    private const int PRECISION_PERCENTAGE = 1;
+    private const int PRECISION_AREA = 5;
+
     public SummarySpeedExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler exceptionHandler)
       : base(configStore, logger, exceptionHandler)
@@ -64,12 +67,12 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private SummaryResult ConvertResult(SpeedSummaryResult result)
     {
-      return SummaryResult.Create
+      return new SummaryResult
       (
-        Math.Round(result.AboveTargetPercent, 1, MidpointRounding.AwayFromZero),
-        Math.Round(result.BelowTargetPercent, 1, MidpointRounding.AwayFromZero),
-        Math.Round(result.WithinTargetPercent, 1, MidpointRounding.AwayFromZero),
-        Math.Round(result.TotalAreaCoveredSqMeters, 5)
+        Math.Round(result.AboveTargetPercent, PRECISION_PERCENTAGE, MidpointRounding.AwayFromZero),
+        Math.Round(result.BelowTargetPercent, PRECISION_PERCENTAGE, MidpointRounding.AwayFromZero),
+        Math.Round(result.WithinTargetPercent, PRECISION_PERCENTAGE, MidpointRounding.AwayFromZero),
+        Math.Round(result.TotalAreaCoveredSqMeters, PRECISION_AREA)
       );
     }
   }

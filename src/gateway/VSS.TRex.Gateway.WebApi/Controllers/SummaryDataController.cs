@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvSummaryRequest) as CMVSummaryResult);
 
-      var cmvSettings = CMVSettings.CreateCMVSettings(
+      var cmvSettings = new CMVSettings(
         cmvSummaryRequest.cmvTarget,
         DATA_VALUE_NOT_REQUIRED,
         cmvSummaryRequest.maxCMVPercent,
@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         cmvSummaryRequest.overrideTargetCMV
       );
 
-      return CompactionCmvSummaryResult.Create(result, cmvSettings);
+      return new CompactionCmvSummaryResult(result, cmvSettings);
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummaryMDPExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(mdpSummaryRequest) as MDPSummaryResult);
 
-      var mdpSettings = MDPSettings.CreateMDPSettings(
+      var mdpSettings = new MDPSettings(
         mdpSummaryRequest.mdpTarget,
         DATA_VALUE_NOT_REQUIRED,
         mdpSummaryRequest.maxMDPPercent,
@@ -87,7 +87,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         mdpSummaryRequest.overrideTargetMDP
       );
 
-      return CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
+      return new CompactionMdpSummaryResult(result, mdpSettings);
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(passCountSummaryRequest) as PassCountSummaryResult);
 
-      return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
+      return new CompactionPassCountSummaryResult(result);
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummarySpeedExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(speedSummaryRequest) as SpeedSummaryResult);
 
-      return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);
+      return new CompactionSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);
       ;
     }
 
@@ -137,14 +137,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Get Temperature summary from production data for the specified project and date range.
     /// </summary>
     [Route("api/v1/temperature/summary")]
-    [HttpGet]
-    public CompactionTemperatureSummaryResult GetTemperatureSummary(
-      [FromQuery] Guid projectUid,
+    [HttpPost]
+    public CompactionTemperatureSummaryResult PostTemperatureSummary([FromBody] TemperatureSummaryRequest temperatureSummaryRequest,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogInformation($"{nameof(GetTemperatureSummary)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostTemperatureSummary)}: {Request.QueryString}");
 
-      var temperatureSummaryRequest = new TemperatureSummaryRequest(projectUid, null/* filter */, new TemperatureSettings(TEMPERATURE_TARGET_MAX, TEMPERATURE_TARGET_MIN, true));
+      //var temperatureSummaryRequest = new TemperatureSummaryRequest(projectUid, null/* filter */, new TemperatureSettings(TEMPERATURE_TARGET_MAX, TEMPERATURE_TARGET_MIN, true));
       temperatureSummaryRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>

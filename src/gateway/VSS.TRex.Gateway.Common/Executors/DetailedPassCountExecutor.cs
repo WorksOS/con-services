@@ -53,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (passCountDetailsResult != null)
-        return PassCountDetailedResult.Create(TargetPassCountRange.CreateTargetPassCountRange(
+        return new PassCountDetailedResult(new TargetPassCountRange(
           MIN_TARGET_PASS_COUNT, MAX_TARGET_PASS_COUNT),  
           false,
           passCountDetailsResult.Percents,
