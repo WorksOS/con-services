@@ -16,7 +16,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "TRexGateway": {
+    "TRexMutableGateway": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/values",
