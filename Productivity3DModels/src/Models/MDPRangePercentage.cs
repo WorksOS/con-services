@@ -29,25 +29,20 @@ namespace VSS.Productivity3D.Models.Models
 
     
     /// <summary>
-    /// Private constructor
+    /// Deafault private constructor
     /// </summary>
     private MDPRangePercentage()
     {}
 
     /// <summary>
-    /// Create instance of MDPRangePercentage
+    /// Overload constructor with parameters.
     /// </summary>
-    public static MDPRangePercentage CreateMdpRangePercentage
-        (
-          double min,
-          double max
-        )
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    public MDPRangePercentage(double min, double max)
     {
-      return new MDPRangePercentage
-             {
-               min = min,
-               max = max
-             };
+      this.min = min;
+      this.max = max;
     }
 
     /// <summary>

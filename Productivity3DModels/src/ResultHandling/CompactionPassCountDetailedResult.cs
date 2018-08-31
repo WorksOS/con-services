@@ -13,25 +13,19 @@ namespace VSS.Productivity3D.Models.ResultHandling
     [JsonProperty(PropertyName = "passCountDetailsData")]
     public PassCountDetailsData DetailedData { get; private set; }
 
-    public static CompactionPassCountDetailedResult CreateEmptyResult() => new CompactionPassCountDetailedResult();
-
     /// <summary>
-    /// Default private constructor.
+    /// Default constructor.
     /// </summary>
-    private CompactionPassCountDetailedResult()
+    public CompactionPassCountDetailedResult()
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CompactionPassCountDetailedResult CreatePassCountDetailedResult(PassCountDetailedResult result)
+    /// <param name="result"></param>
+    public CompactionPassCountDetailedResult(PassCountDetailedResult result)
     {
-      if (result == null || !result.HasData())
-      {
-        return CreateEmptyResult();
-      }
-
-      return new CompactionPassCountDetailedResult
+      if (result != null && result.HasData())
       {
         DetailedData = new PassCountDetailsData
         {
@@ -43,8 +37,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
             TargetVaries = !result.IsTargetPassCountConstant
           },
           TotalCoverageArea = result.TotalCoverageArea
-        }
-      };
+        };
+      }
     }
   }
 }

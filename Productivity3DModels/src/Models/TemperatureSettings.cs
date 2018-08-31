@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Models.Models
     public bool overrideTemperatureRange { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private TemperatureSettings()
     {
@@ -42,6 +42,9 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
+    /// <param name="maxTemperature"></param>
+    /// <param name="minTemperature"></param>
+    /// <param name="overrideTemperatureRange"></param>
     public TemperatureSettings(
         double maxTemperature,
         double minTemperature, 

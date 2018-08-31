@@ -29,27 +29,36 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public DesignDescriptor designDescriptor { get; private set; }
 
-    public static CutFillDetailsRequest CreateCutFillDetailsRequest(long projectId, double[] tolerances, FilterResult filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
+    /// <summary>
+    /// Overload constructor with parameters.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="tolerances"></param>
+    /// <param name="filter"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="designDescriptor"></param>
+    public CutFillDetailsRequest(long projectId, double[] tolerances, FilterResult filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
     {
-      return new CutFillDetailsRequest
-      {
-        ProjectId = projectId,
-        CutFillTolerances = tolerances,
-        filter = filter,
-        liftBuildSettings = liftBuildSettings,
-        designDescriptor = designDescriptor
-      };
+      ProjectId = projectId;
+      CutFillTolerances = tolerances;
+      this.filter = filter;
+      this.liftBuildSettings = liftBuildSettings;
+      this.designDescriptor = designDescriptor;
     }
 
-    public static CutFillDetailsRequest CreateCutFillDetailsRequest(Guid projectUid, double[] tolerances, FilterResult filter, DesignDescriptor designDescriptor)
+    /// <summary>
+    /// Overload constructor with parameters.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="tolerances"></param>
+    /// <param name="filter"></param>
+    /// <param name="designDescriptor"></param>
+    public CutFillDetailsRequest(Guid projectUid, double[] tolerances, FilterResult filter, DesignDescriptor designDescriptor)
     {
-      return new CutFillDetailsRequest
-      {
-        ProjectUid = projectUid,
-        CutFillTolerances = tolerances,
-        filter = filter,
-        designDescriptor = designDescriptor
-      };
+      ProjectUid = projectUid;
+      CutFillTolerances = tolerances;
+      this.filter = filter;
+      this.designDescriptor = designDescriptor;
     }
 
     /// <summary>

@@ -68,6 +68,14 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
+    /// <param name="minimumTemperature"></param>
+    /// <param name="maximumTemperature"></param>
+    /// <param name="isTargetTemperatureConstant"></param>
+    /// <param name="returnCode"></param>
+    /// <param name="totalAreaCoveredSqMeters"></param>
+    /// <param name="aboveTemperaturePercent"></param>
+    /// <param name="withinTemperaturePercent"></param>
+    /// <param name="belowTemperaturePercent"></param>
     public TemperatureSummaryResult(
       double minimumTemperature,
       double maximumTemperature,

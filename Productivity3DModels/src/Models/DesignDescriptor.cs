@@ -40,23 +40,24 @@ namespace VSS.Productivity3D.Models.Models
     public bool ShouldSerializeuid() => uid.HasValue;
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private DesignDescriptor()
     { }
 
     /// <summary>
-    /// Create instance of FileDescriptor
+    /// Overload constructor with parameters.
     /// </summary>
-    public static DesignDescriptor CreateDesignDescriptor(long id, FileDescriptor file, double offset, Guid? uid = null)
+    /// <param name="id"></param>
+    /// <param name="file"></param>
+    /// <param name="offset"></param>
+    /// <param name="uid"></param>
+    public DesignDescriptor(long id, FileDescriptor file, double offset, Guid? uid = null)
     {
-      return new DesignDescriptor
-      {
-        id = id,
-        file = file,
-        offset = offset,
-        uid = uid
-      };
+      this.id = id;
+      this.file = file;
+      this.offset = offset;
+      this.uid = uid;
     }
 
     /// <summary>

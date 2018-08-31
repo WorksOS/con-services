@@ -25,21 +25,20 @@ namespace VSS.Productivity3D.Models.Models
     public double value { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private ColorPalette()
     { }
 
     /// <summary>
-    /// Create instance of ColorPalette
+    /// Overload constructor with parameters.
     /// </summary>
-    public static ColorPalette CreateColorPalette(uint color, double value)
+    /// <param name="color"></param>
+    /// <param name="value"></param>
+    public ColorPalette(uint color, double value)
     {
-      return new ColorPalette
-      {
-        color = color,
-        value = value
-      };
+      this.color = color;
+      this.value = value;
     }
 
     /// <summary>

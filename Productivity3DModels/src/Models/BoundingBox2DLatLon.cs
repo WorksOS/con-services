@@ -47,28 +47,30 @@ namespace VSS.Productivity3D.Models.Models
 
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private BoundingBox2DLatLon()
     { }
 
     /// <summary>
-    /// Create instance of BoundingBox2DLatLon
+    /// Overload constructor with parameters.
     /// </summary>
-    public static BoundingBox2DLatLon CreateBoundingBox2DLatLon(
-        double blLon,
-        double blLat,
-        double trLon,
-        double trLat
-        )
+    /// <param name="blLon"></param>
+    /// <param name="blLat"></param>
+    /// <param name="trLon"></param>
+    /// <param name="trLat"></param>
+    public BoundingBox2DLatLon
+    (
+      double blLon,
+      double blLat,
+      double trLon,
+      double trLat
+    )
     {
-      return new BoundingBox2DLatLon
-      {
-        bottomLeftLon = blLon,
-        bottomLeftLat = blLat,
-        topRightLon = trLon,
-        topRightLat = trLat
-      };
+      bottomLeftLon = blLon;
+      bottomLeftLat = blLat;
+      topRightLon = trLon;
+      topRightLat = trLat;
     }
 
     /// <summary>

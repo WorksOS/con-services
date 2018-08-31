@@ -28,17 +28,20 @@ namespace VSS.Productivity3D.Models.Models
     public Guid? ProjectUid { get; set; }
 
     /// <summary>
-    /// Creates an instance of the ProjectID class.
+    /// Default protected constructor.
+    /// </summary>
+    protected ProjectID()
+    { }
+
+    /// <summary>
+    /// Overload constructor with parameters.
     /// </summary>
     /// <param name="projectId">The Raptor datamodel & legacy project identifier.</param>
     /// <param name="projectUid">The project UID.</param>
-    public static ProjectID Create(long projectId, Guid? projectUid = null)
+    public ProjectID(long projectId, Guid? projectUid = null)
     {
-      return new ProjectID
-      {
-        ProjectId = projectId,
-        ProjectUid = projectUid
-      };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
     }
 
     /// <summary>

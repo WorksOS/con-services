@@ -37,17 +37,18 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public bool HasData() => Math.Abs(this.CoverageArea) > 0.001;
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static SpeedSummaryResult Create(double aboveTarget, double belowTarget, double matchTarget, double CoverageArea)
+    /// <param name="aboveTarget"></param>
+    /// <param name="belowTarget"></param>
+    /// <param name="matchTarget"></param>
+    /// <param name="coverageArea"></param>
+    public SpeedSummaryResult(double aboveTarget, double belowTarget, double matchTarget, double coverageArea)
     {
-      return new SpeedSummaryResult
-      {
-        AboveTarget = aboveTarget,
-        BelowTarget = belowTarget,
-        CoverageArea = CoverageArea,
-        MatchTarget = matchTarget,
-      };
+      AboveTarget = aboveTarget;
+      BelowTarget = belowTarget;
+      CoverageArea = coverageArea;
+      MatchTarget = matchTarget;
     }
   }
 }

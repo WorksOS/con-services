@@ -16,24 +16,19 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public MdpSummaryData SummaryData { get; private set; }
 
     /// <summary>
-    /// Default private constructor.
+    /// Default constructor.
     /// </summary>
-    private CompactionMdpSummaryResult()
+    public CompactionMdpSummaryResult()
     { }
 
-    public static CompactionMdpSummaryResult CreateEmptyResult() => new CompactionMdpSummaryResult();
-
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CompactionMdpSummaryResult CreateMdpSummaryResult(MDPSummaryResult result, MDPSettings settings)
+    /// <param name="result"></param>
+    /// <param name="settings"></param>
+    public CompactionMdpSummaryResult(MDPSummaryResult result, MDPSettings settings)
     {
-      if (result == null || !result.HasData())
-      {
-        return CreateEmptyResult();
-      }
-
-      return new CompactionMdpSummaryResult
+      if (result != null && result.HasData())
       {
         SummaryData = new MdpSummaryData
         {
@@ -48,8 +43,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
           },
           MinMDPPercent = settings.minMDPPercent,
           MaxMDPPercent = settings.maxMDPPercent
-        }
-      };
+        };
+      }
     }
   }
 }

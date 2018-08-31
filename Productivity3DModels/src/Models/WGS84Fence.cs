@@ -11,6 +11,9 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class WGS84Fence
   {
+    /// <summary>
+    /// Default private constructor.
+    /// </summary>
     private WGS84Fence()
     { }
 
@@ -24,12 +27,12 @@ namespace VSS.Productivity3D.Models.Models
     public WGSPoint3D[] Points { get; private set; }
 
     /// <summary>
-    /// Creates the WSG84 fence object.
+    /// Overload constructor with parameters.
     /// </summary>
     /// <param name="wgsPoints">The WGS points.</param>
-    public static WGS84Fence CreateWGS84Fence(WGSPoint3D[] wgsPoints)
+    public WGS84Fence(WGSPoint3D[] wgsPoints)
     {
-      return new WGS84Fence { Points = wgsPoints };
+      Points = wgsPoints;
     }
   }
 }

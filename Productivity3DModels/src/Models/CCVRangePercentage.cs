@@ -29,25 +29,20 @@ namespace VSS.Productivity3D.Models.Models
 
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private CCVRangePercentage()
     { }
 
     /// <summary>
-    /// Create instance of CCVRangePercentage
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CCVRangePercentage CreateCcvRangePercentage
-        (
-          double min,
-          double max
-        )
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    public CCVRangePercentage(double min, double max)
     {
-      return new CCVRangePercentage
-      {
-        min = min,
-        max = max
-      };
+      this.min = min;
+      this.max = max;
     }
 
     /// <summary>

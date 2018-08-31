@@ -16,24 +16,18 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public PassCountSummaryData SummaryData { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Defaullt constructor
     /// </summary>
-    private CompactionPassCountSummaryResult()
+    public CompactionPassCountSummaryResult()
     { }
 
-    public static CompactionPassCountSummaryResult CreateEmptyResult() => new CompactionPassCountSummaryResult();
-
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CompactionPassCountSummaryResult CreatePassCountSummaryResult(PassCountSummaryResult result)
+    /// <param name="result"></param>
+    public CompactionPassCountSummaryResult(PassCountSummaryResult result)
     {
-      if (result == null || !result.HasData())
-      {
-        return CreateEmptyResult();
-      }
-
-      return new CompactionPassCountSummaryResult
+      if (result != null && result.HasData())
       {
         SummaryData = new PassCountSummaryData
         {
@@ -47,8 +41,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
             MaxPassCountMachineTarget = result.ConstantTargetPassCountRange.max,
             TargetVaries = !result.IsTargetPassCountConstant
           }
-        }
-      };
+        };
+      }
     }
   }
 }

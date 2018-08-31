@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Models.Models
 
     
     /// <summary>
-    /// Private constructor.
+    /// Defauilt private constructor.
     /// </summary>
     private TargetPassCountRange()
     {
@@ -37,19 +37,14 @@ namespace VSS.Productivity3D.Models.Models
     }
 
     /// <summary>
-    /// Create an instance of the TargetPassCountRange class.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static TargetPassCountRange CreateTargetPassCountRange
-        (
-          ushort min,
-          ushort max
-        )
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    public TargetPassCountRange(ushort min, ushort max)
     {
-      return new TargetPassCountRange
-      {
-        min = min,
-        max = max
-      };
+      this.min = min;
+      this.max = max;
     }
 
     /// <summary>

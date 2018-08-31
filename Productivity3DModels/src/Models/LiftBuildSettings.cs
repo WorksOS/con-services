@@ -137,16 +137,33 @@ namespace VSS.Productivity3D.Models.Models
     public MachineSpeedTarget machineSpeedTarget { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private LiftBuildSettings()
     { }
 
-
     /// <summary>
-    /// Create instance of LiftBuildSettings
+    /// Overload constructor with parameters.
     /// </summary>
-    public static LiftBuildSettings CreateLiftBuildSettings(
+    /// <param name="cCVRange"></param>
+    /// <param name="cCVSummarizeTopLayerOnly"></param>
+    /// <param name="deadBandLowerBoundary"></param>
+    /// <param name="deadBandUpperBoundary"></param>
+    /// <param name="firstPassThickness"></param>
+    /// <param name="liftDetectionType"></param>
+    /// <param name="liftThicknessType"></param>
+    /// <param name="mDPRange"></param>
+    /// <param name="mDPSummarizeTopLayerOnly"></param>
+    /// <param name="overridingLiftThickness"></param>
+    /// <param name="overridingMachineCCV"></param>
+    /// <param name="overridingMachineMDP"></param>
+    /// <param name="overridingTargetPassCountRange"></param>
+    /// <param name="overridingTemperatureWarningLevels"></param>
+    /// <param name="includeSupersededLifts"></param>
+    /// <param name="liftThicknessTarget"></param>
+    /// <param name="machineSpeedTarget"></param>
+    public LiftBuildSettings
+    (
       CCVRangePercentage cCVRange,
       bool cCVSummarizeTopLayerOnly,
       double deadBandLowerBoundary,
@@ -164,28 +181,25 @@ namespace VSS.Productivity3D.Models.Models
       bool? includeSupersededLifts,
       LiftThicknessTarget liftThicknessTarget,
       MachineSpeedTarget machineSpeedTarget
-      )
+    )
     {
-      return new LiftBuildSettings
-      {
-        cCVRange = cCVRange,
-        cCVSummarizeTopLayerOnly = cCVSummarizeTopLayerOnly,
-        deadBandLowerBoundary = deadBandLowerBoundary,
-        deadBandUpperBoundary = deadBandUpperBoundary,
-        firstPassThickness = firstPassThickness,
-        liftDetectionType = liftDetectionType,
-        liftThicknessType = liftThicknessType,
-        mDPRange = mDPRange,
-        mDPSummarizeTopLayerOnly = mDPSummarizeTopLayerOnly,
-        overridingLiftThickness = overridingLiftThickness,
-        overridingMachineCCV = overridingMachineCCV,
-        overridingMachineMDP = overridingMachineMDP,
-        overridingTargetPassCountRange = overridingTargetPassCountRange,
-        overridingTemperatureWarningLevels = overridingTemperatureWarningLevels,
-        includeSupersededLifts = includeSupersededLifts,
-        liftThicknessTarget = liftThicknessTarget,
-        machineSpeedTarget = machineSpeedTarget
-      };
+      this.cCVRange = cCVRange;
+      this.cCVSummarizeTopLayerOnly = cCVSummarizeTopLayerOnly;
+      this.deadBandLowerBoundary = deadBandLowerBoundary;
+      this.deadBandUpperBoundary = deadBandUpperBoundary;
+      this.firstPassThickness = firstPassThickness;
+      this.liftDetectionType = liftDetectionType;
+      this.liftThicknessType = liftThicknessType;
+      this.mDPRange = mDPRange;
+      this.mDPSummarizeTopLayerOnly = mDPSummarizeTopLayerOnly;
+      this.overridingLiftThickness = overridingLiftThickness;
+      this.overridingMachineCCV = overridingMachineCCV;
+      this.overridingMachineMDP = overridingMachineMDP;
+      this.overridingTargetPassCountRange = overridingTargetPassCountRange;
+      this.overridingTemperatureWarningLevels = overridingTemperatureWarningLevels;
+      this.includeSupersededLifts = includeSupersededLifts;
+      this.liftThicknessTarget = liftThicknessTarget;
+      this.machineSpeedTarget = machineSpeedTarget;
     }
 
     /// <summary>

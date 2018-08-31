@@ -24,9 +24,10 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
+    /// <param name="result"></param>
     public CompactionTemperatureSummaryResult(TemperatureSummaryResult result)
     {
-      if (result != null && !result.HasData())
+      if (result != null && result.HasData())
       {
         SummaryData = new TemperatureSummaryData
         {

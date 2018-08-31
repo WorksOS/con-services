@@ -61,33 +61,37 @@ namespace VSS.Productivity3D.Models.Models
     private const double MAX_PERCENT_CMV = 250.0;
 
     /// <summary>
-    /// Private constructor
+    /// Default protected constructor
     /// </summary>
     protected CMVSettings()
     {
     }
 
     /// <summary>
-    /// Create instance of CMVSettings
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVSettings CreateCMVSettings(
-        short cmvTarget,
-        short maxCMV,
-        double maxCMVPercent,
-        short minCMV,
-        double minCMVPercent,
-        bool overrideTargetCMV
-        )
+    /// <param name="cmvTarget"></param>
+    /// <param name="maxCMV"></param>
+    /// <param name="maxCMVPercent"></param>
+    /// <param name="minCMV"></param>
+    /// <param name="minCMVPercent"></param>
+    /// <param name="overrideTargetCMV"></param>
+    public CMVSettings
+    (
+      short cmvTarget,
+      short maxCMV,
+      double maxCMVPercent,
+      short minCMV,
+      double minCMVPercent,
+      bool overrideTargetCMV
+    )
     {
-      return new CMVSettings
-      {
-        cmvTarget = cmvTarget,
-        maxCMV = maxCMV,
-        maxCMVPercent = maxCMVPercent,
-        minCMV = minCMV,
-        minCMVPercent = minCMVPercent,
-        overrideTargetCMV = overrideTargetCMV
-      };
+      this.cmvTarget = cmvTarget;
+      this.maxCMV = maxCMV;
+      this.maxCMVPercent = maxCMVPercent;
+      this.minCMV = minCMV;
+      this.minCMVPercent = minCMVPercent;
+      this.overrideTargetCMV = overrideTargetCMV;
     }
     
     /// <summary>

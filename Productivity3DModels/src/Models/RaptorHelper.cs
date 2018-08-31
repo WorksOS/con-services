@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Models.Models
             count = palettes.Count == CMV_PERCENT_CHANGE_NUMBER_OF_COLORS - 1 ? cmvPercentChangeColorNumber : CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2;
 
             if (count == CMV_PERCENT_CHANGE_NUMBER_OF_COLORS)
-              palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
+              palettes.Insert(0, new ColorPalette(0, 0));
             break;
           case DisplayMode.Latency:
             break;

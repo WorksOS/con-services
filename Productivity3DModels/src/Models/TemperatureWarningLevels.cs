@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Models.Models
 
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private TemperatureWarningLevels()
     { }
@@ -37,6 +37,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
     public TemperatureWarningLevels(ushort min, ushort max)
     {
       this.min = min;

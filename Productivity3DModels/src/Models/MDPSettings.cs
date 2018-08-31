@@ -54,33 +54,37 @@ namespace VSS.Productivity3D.Models.Models
     public bool overrideTargetMDP { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Defailt private constructor
     /// </summary>
     private MDPSettings()
     {
     }
 
     /// <summary>
-    /// Create instance of MDPSettings
+    /// Overload constructor with parameters.
     /// </summary>
-    public static MDPSettings CreateMDPSettings(
-        short mdpTarget,
-        short maxMDP,
-        double maxMDPPercent,
-        short minMDP,
-        double minMDPPercent,
-        bool overrideTargetMDP
-        )
+    /// <param name="mdpTarget"></param>
+    /// <param name="maxMDP"></param>
+    /// <param name="maxMDPPercent"></param>
+    /// <param name="minMDP"></param>
+    /// <param name="minMDPPercent"></param>
+    /// <param name="overrideTargetMDP"></param>
+    public MDPSettings
+    (
+      short mdpTarget,
+      short maxMDP,
+      double maxMDPPercent,
+      short minMDP,
+      double minMDPPercent,
+      bool overrideTargetMDP
+    )
     {
-      return new MDPSettings
-      {
-        mdpTarget = mdpTarget,
-        maxMDP = maxMDP,
-        maxMDPPercent = maxMDPPercent,
-        minMDP = minMDP,
-        minMDPPercent = minMDPPercent,
-        overrideTargetMDP = overrideTargetMDP
-      };
+      this.mdpTarget = mdpTarget;
+      this.maxMDP = maxMDP;
+      this.maxMDPPercent = maxMDPPercent;
+      this.minMDP = minMDP;
+      this.minMDPPercent = minMDPPercent;
+      this.overrideTargetMDP = overrideTargetMDP;
     }
 
 

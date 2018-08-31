@@ -10,6 +10,9 @@ namespace VSS.Productivity3D.Models.ResultHandling
   /// </summary>
   public class CompactionSpeedSummaryResult : ContractExecutionResult
   {
+    private const double CMSEC_TO_KMHOUR_CONVERSION_FACTOR = 0.036;
+    private const int PRECISION = 1;
+
     /// <summary>
     /// The Speed summary data results
     /// </summary>
@@ -17,27 +20,20 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public SpeedSummaryData SummaryData { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default constructor
     /// </summary>
-    private CompactionSpeedSummaryResult()
+    public CompactionSpeedSummaryResult()
     { }
 
-    public static CompactionSpeedSummaryResult CreateEmptyResult() => new CompactionSpeedSummaryResult();
-
     /// <summary>
-    /// SpeedSummaryResult create instance
+    /// Overload constructor with parameters.
     /// </summary>
     /// <param name="result">The speed results from Raptor</param>
     /// <param name="speedTarget">The speed target from Raptor</param>
     /// <returns>An instance of CompactionSpeedSummaryResult</returns>
-    public static CompactionSpeedSummaryResult CreateSpeedSummaryResult(SpeedSummaryResult result, MachineSpeedTarget speedTarget)
+    public CompactionSpeedSummaryResult(SpeedSummaryResult result, MachineSpeedTarget speedTarget)
     {
-      if (result == null || !result.HasData())
-      {
-        return CreateEmptyResult();
-      }
-
-      return new CompactionSpeedSummaryResult
+      if (result != null && result.HasData())
       {
         SummaryData = new SpeedSummaryData
         {
@@ -46,13 +42,13 @@ namespace VSS.Productivity3D.Models.ResultHandling
           PercentLessThanTarget = result.BelowTarget,
           TotalAreaCoveredSqMeters = result.CoverageArea,
           MinTargetMachineSpeed =
-            Math.Round(speedTarget.MinTargetMachineSpeed * 0.036, 1,
+            Math.Round(speedTarget.MinTargetMachineSpeed * CMSEC_TO_KMHOUR_CONVERSION_FACTOR, PRECISION,
               MidpointRounding.AwayFromZero), // cm per second converted to km per hour...
           MaxTargetMachineSpeed =
-            Math.Round(speedTarget.MaxTargetMachineSpeed * 0.036, 1,
+            Math.Round(speedTarget.MaxTargetMachineSpeed * CMSEC_TO_KMHOUR_CONVERSION_FACTOR, PRECISION,
               MidpointRounding.AwayFromZero) // cm per second converted to km per hour...
-        }
-      };
+        };
+      }
     }
   }
 }

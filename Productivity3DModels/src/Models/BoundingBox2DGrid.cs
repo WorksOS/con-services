@@ -37,28 +37,30 @@ namespace VSS.Productivity3D.Models.Models
     public double topRightY { get; set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private BoundingBox2DGrid()
     { }
 
     /// <summary>
-    /// Create instance of BoundingBox2DGrid
+    /// Overload constructor with parameters.
     /// </summary>
-    public static BoundingBox2DGrid CreateBoundingBox2DGrid(
-    double botLeftX,
-    double botLeftY,
-    double topRightX,
-    double topRightY
+    /// <param name="botLeftX"></param>
+    /// <param name="botLeftY"></param>
+    /// <param name="topRightX"></param>
+    /// <param name="topRightY"></param>
+    public BoundingBox2DGrid
+    (
+      double botLeftX,
+      double botLeftY,
+      double topRightX,
+      double topRightY
     )
     {
-      return new BoundingBox2DGrid
-      {
-        bottomLeftX = botLeftX,
-        bottomleftY = botLeftY,
-        topRightX = topRightX,
-        topRightY = topRightY
-      };
+      bottomLeftX = botLeftX;
+      bottomleftY = botLeftY;
+      this.topRightX = topRightX;
+      this.topRightY = topRightY;
     }
 
     /// <summary>
