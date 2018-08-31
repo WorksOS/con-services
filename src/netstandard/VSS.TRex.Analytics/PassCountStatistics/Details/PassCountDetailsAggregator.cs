@@ -47,17 +47,22 @@ namespace VSS.TRex.Analytics.PassCountStatistics.Details
 
       // Works out the percentage each colour on the map represents
 
-      if (!(subGrids[0][0] is ClientPassCountLeafSubGrid SubGrid))
-        return;
-
-      SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+      foreach (IClientLeafSubGrid[] subGrid in subGrids)
       {
-        var passCountValue = SubGrid.Cells[I, J];
+        if (subGrid == null)
+          continue;
 
-        if (passCountValue.MeasuredPassCount != CellPassConsts.NullPassCountValue) // Is there a measured value to test?..
-          IncrementCountOfTransition(passCountValue.MeasuredPassCount);
-      });
+        if (subGrid[0] is ClientPassCountLeafSubGrid SubGrid)
+        {
+          SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+          {
+            var passCountValue = SubGrid.Cells[I, J];
+
+            if (passCountValue.MeasuredPassCount != CellPassConsts.NullPassCountValue) // Is there a measured value to test?..
+              IncrementCountOfTransition(passCountValue.MeasuredPassCount);
+          });
+        }
+      }
     }
-
   }
 }
