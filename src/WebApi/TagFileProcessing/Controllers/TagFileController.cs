@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Jaeger.Thrift;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -61,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       this.configStore = configStore;
 
       useTrexGateway = false;
-      if (!bool.TryParse(configStore.GetValueString("ENABLE_TFA_SERVICE"), out useTrexGateway))
+      if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out useTrexGateway))
       {
         useTrexGateway = false;
       }
@@ -97,6 +94,32 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
 
+      // todos as per the direct API
+      if (useTrexGateway)
+      {
+        try
+        {
+          request.Validate();
+
+          var resultTRex = await RequestExecutorContainerFactory
+            .Build<TagFileNonDirectSubmissionTRexExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, null, tRexTagFileProxy, CustomHeaders)
+            .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
+
+          if (resultTRex.Code == 0)
+          {
+            log.LogDebug($"PostTagFile (nonDirect TRex): Successfully imported TAG file '{request.FileName}'.");
+          }
+          else
+          {
+            log.LogDebug($"PostTagFile (nonDirect TRex): Failed to import TAG file '{request.FileName}', {resultTRex.Message}");
+          }
+        }
+        catch (Exception ex)
+        {
+          log.LogDebug($"PostTagFile (nonDirect): failed with ServiceException {ex.Message}");
+        }
+      }
+
       var legacyProjectId = GetLegacyProjectId(request.ProjectUid).Result;
       WGS84Fence boundary = null;
 
@@ -126,10 +149,11 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
       // for now: we will ALWAYS send to Raptor, but only send to TRex if configured.
-      //          if TRex fails, then we will continue with Raptor send
-      // todo the file is archived within the Raptor exec. 
-      //          when Raptor is potentially disabled, this functionality will need to be
-      //          moved and reworked with meaningful TRex/TFA resultCodes 
+      //          if TRex fails, then we will continue sending to Raptor
+      // todo:
+      //          work out where archiving is done (trex gateway only does on success)
+      //          gateway will eventually return a ContractExecutionResult 
+
       if (useTrexGateway)
       {
         try
@@ -175,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private IActionResult ExecuteRequest(TagFileRequestLegacy tfRequest)
     {
       var responseObj = RequestExecutorContainerFactory
-                        .Build<TagFileExecutor>(logger, raptorClient, tagProcessor)
+                        .Build<TagFileNonDirectSubmissionRaptorExecutor>(logger, raptorClient, tagProcessor)
                         .Process(tfRequest);
 
       return responseObj.Code == 0

@@ -19,12 +19,12 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
   /// <summary>
   /// For submitting TAG files to Raptor.
   /// </summary>
-  public class TagFileExecutor : RequestExecutorContainer
+  public class TagFileNonDirectSubmissionRaptorExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build.
     /// </summary>
-    public TagFileExecutor()
+    public TagFileNonDirectSubmissionRaptorExecutor()
     {
       ProcessErrorCodes();
     }

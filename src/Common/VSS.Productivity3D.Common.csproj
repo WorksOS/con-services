@@ -46,7 +46,7 @@
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.39.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.41.2" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />

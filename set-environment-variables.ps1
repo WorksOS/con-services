@@ -26,7 +26,8 @@ $acceptanceTestsEnvironmentVariables = @(
   @{key = "RAPTOR_WEBSERVICES_HOST"; value = "localhost"},
   @{key = "REPORT_SVC_BASE_URI"; value = ":5000"},
   @{key = "TAG_SVC_BASE_URI"; value = ":5000"},
-  @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"})
+  @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
+  @{key = "ENABLE_TREX_GATEWAY"; value = "false"})
 
 # Common TCC and AWS variables, will be set for any chosen $environment type.
 $tccAndAwsEnvironmentVariables = @(
@@ -43,7 +44,8 @@ $tccAndAwsEnvironmentVariables = @(
   @{key = "TCCSynchProductionDataArchivedFolder"; value = "Production-Data (Archived)"},
   @{key = "TCCSynchProjectBoundaryIssueFolder"; value = "Project Boundary (Issue)"},    
   @{key = "TCCSynchSubscriptionIssueFolder"; value = "Subscription (Issue)"},
-  @{key = "TCCSynchOtherIssueFolder"; value = "Other... (Issue)"})
+  @{key = "TCCSynchOtherIssueFolder"; value = "Other... (Issue)"},
+  @{key = "ENABLE_TREX_GATEWAY"; value = "false"})
 
 # Used when running the collaborating services against a locally running MockWebApi service.
 $localhostEnvironmentVariables = @(
@@ -54,11 +56,13 @@ $localhostEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "http://localhost:5001/api/v1/mock/preferences"},
   @{key = "PROJECT_API_URL"; value = "http://localhost:5001/api/v4/mockproject"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "http://localhost:5001/api/v4/mock"},
+  @{key = "TREX_TAGFILE_API_URL"; value = "http://mockprojectwebapi:5001/api/v2/mocktrextagfile"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://localhost:5001/internal/v1/mock/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
-  @{key = "TCCUSERNAME"; value = "vldev"})
+  @{key = "TCCUSERNAME"; value = "vldev"},
+  @{key = "ENABLE_TREX_GATEWAY"; value = "false"})
 
 # Used when running 3DP service locally but connecting to /dev deployed collaborating services
 # NOTE: Some of these services point to Alpha collaborators because the Dev versions do not exist or function incorrectly.
@@ -70,11 +74,13 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"}, # Use Alpha service here
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4"},
+  @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-dev-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://10.97.96.103:3011/internal/v1/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
-  @{key = "TCCUSERNAME"; value = "vldev"})
+  @{key = "TCCUSERNAME"; value = "vldev"},
+  @{key = "ENABLE_TREX_GATEWAY"; value = "false"})
 
 # Used when running 3DP service locally but connecting to /alpha deployed collaborating services
 $alphaCollaboratorsEnvironmentVariables = @(
@@ -85,11 +91,13 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"},
   @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project?includeLandfill=true"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4"},
+  @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-alpha-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://10.97.96.103:9011/internal/v1/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-alpha"},
   @{key = "TCCORG"; value = "vlalpha"},
   @{key = "TCCPWD"; value = "vlalpha_key"},
-  @{key = "TCCUSERNAME"; value = "vlalpha"})
+  @{key = "TCCUSERNAME"; value = "vlalpha"},
+  @{key = "ENABLE_TREX_GATEWAY"; value = "false"})
 
 # Used when running 3DP service locally but connecting to /prod deployed collaborating services
 $prodCollaboratorsEnvironmentVariables = @(
@@ -100,11 +108,13 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0"},
   @{key = "PROJECT_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project?includeLandfill=true"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4"},
+  @{key = "TREX_TAGFILE_API_URL"; value = "http://api.trimble.com/t/trimble.com/vss-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = ""},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-prod"},
   @{key = "TCCORG"; value = "vlprod"},
   @{key = "TCCPWD"; value = "vlprod_key"},
-  @{key = "TCCUSERNAME"; value = "vlprod"})
+  @{key = "TCCUSERNAME"; value = "vlprod"},
+  @{key = "ENABLE_TREX_GATEWAY"; value = "false"})
 
 if ($environment -ieq "--dev" -or $environment -ieq "-d") {
   $environmentVariables = $devCollaboratorsEnvironmentVariables

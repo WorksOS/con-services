@@ -9,18 +9,18 @@ using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {
   /// <summary>
-  /// For submitting direct submitted TAG files to TRex.
+  /// For submitting TAG files to Raptor.
   /// </summary>
-  public class TagFileDirectSubmissionTRexExecutor : RequestExecutorContainer
+  public class TagFileNonDirectSubmissionTRexExecutor : RequestExecutorContainer
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionTagFileRequest;
 
       // gobbles any exception
-      var result = await TagFileHelper.SendTagFileToTRex(request,
-        tRexTagFileProxy, log, customHeaders).ConfigureAwait(false);
-      return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper((TTAGProcServerProcessResult) result.Code));
+      var result = await TagFileHelper.SendTagFileToTRex(request, 
+        tRexTagFileProxy, log, customHeaders, false).ConfigureAwait(false);
+      return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper((TTAGProcServerProcessResult)result.Code));
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

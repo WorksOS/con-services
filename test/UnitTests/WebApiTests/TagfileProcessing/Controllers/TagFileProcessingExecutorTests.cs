@@ -14,6 +14,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -102,7 +103,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
          "")).Returns(TTAGProcServerProcessResult.tpsprOK);
 
       // create submitter
-      var submitter = RequestExecutorContainerFactory.Build<TagFileExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object);
+      var submitter = RequestExecutorContainerFactory.Build<TagFileNonDirectSubmissionRaptorExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object);
 
       // Act
       var result = submitter.Process(requestData.fileRequest);
@@ -129,9 +130,41 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var mockTagProcessor = new Mock<ITagProcessor>();
       var mockRaptorClient = new Mock<IASNodeClient>();
 
-      var submitter = RequestExecutorContainerFactory.Build<TagFileExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object);
+      var submitter = RequestExecutorContainerFactory.Build<TagFileNonDirectSubmissionRaptorExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object);
 
       Assert.ThrowsException<ServiceException>(() => submitter.Process(requestData.fileRequest), exceptionMessage);
+    }
+
+    [TestMethod]
+    public async Task NonDirectTRex__TagFileSubmitterSuccessfull()
+    {
+      // at this stage, the only difference between Trex direct and non-direct is the TRexGateway endpoint
+      //    so here's no point in duplicating tests.
+
+      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
+      var request = new CompactionTagFileRequest()
+      {
+        ProjectUid = null,
+        FileName = "Machine Name--whatever --161230235959",
+        Data = tagFileContent,
+        OrgId = string.Empty
+      };
+
+      // create the Trex mocks with successful result
+      var trexGatewayResult =
+        TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprOK));
+      var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IDictionary<string, string>>()))
+        .ReturnsAsync(trexGatewayResult);
+      var customHeaders = new Dictionary<string, string>();
+
+      var submitter = RequestExecutorContainerFactory
+        .Build<TagFileNonDirectSubmissionTRexExecutor>(_logger, null, null, null, null, null, null, null, null, mockTRexTagFileProxy.Object, customHeaders);
+
+      var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
+
+      Assert.IsNotNull(result);
+      Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage);
     }
 
     [TestMethod]
@@ -146,9 +179,6 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         OrgId = string.Empty
       };
       
-      var configStore = new Mock<IConfigurationStore>();
-      configStore.Setup(c => c.GetValueString("ENABLE_TFA_SERVICE")).Returns("true");
-
       // create the Trex mocks with successful result
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprOK));
