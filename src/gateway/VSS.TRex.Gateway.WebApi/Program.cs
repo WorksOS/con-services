@@ -5,8 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
 using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Servers.Client;
 using VSS.WebApi.Common;
 
 namespace VSS.TRex.Gateway.WebApi
