@@ -32,7 +32,9 @@ node ('jenkinsslave-pod') {
 		"MutableData",
 		"PSNode",
 		"TileRendering",
-		"TINSurfaceExport"
+		"TINSurfaceExport",
+		"Gateway",
+		"Webtools"
 		]
 
     //Set the build name so it is consistant with VSTS
@@ -97,7 +99,7 @@ node ('jenkinsslave-pod') {
     }
 
 	stage('Build Runtime Container') {
-		//build common container
+		//TODO build common container and use that
 
 		for (int i = 0; i < trexComponents.size(); i++ ){
 			def component = trexComponents[i]
