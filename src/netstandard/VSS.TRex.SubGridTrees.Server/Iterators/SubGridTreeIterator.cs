@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Iterators
