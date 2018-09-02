@@ -76,29 +76,35 @@ namespace VSS.TRex.Analytics.CutFillStatistics
             }
         }
 
-        /// <summary>
-        /// Processes an elevation subgrid into a cut fill isopach and calculate the counts of cells where the cut fill
-        /// height fits into the requested bands
-        /// </summary>
-        /// <param name="subGrids"></param>
-        public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+      /// <summary>
+      /// Processes an elevation subgrid into a cut fill isopach and calculate the counts of cells where the cut fill
+      /// height fits into the requested bands
+      /// </summary>
+      /// <param name="subGrids"></param>
+      public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
+      {
+        base.ProcessSubgridResult(subGrids);
+
+        // Works out the percentage each colour on the map represents
+
+        foreach (IClientLeafSubGrid[] subGrid in subGrids)
         {
-            base.ProcessSubgridResult(subGrids);
+          if (subGrid == null)
+            continue;
 
-            // Works out the percentage each colour on the map represents
-
-            if (!(subGrids[0][0] is ClientHeightLeafSubGrid SubGrid))
-                return;
-
+          if (subGrid[0] is ClientHeightLeafSubGrid SubGrid)
+          {
             SubGridUtilities.SubGridDimensionalIterator((I, J) =>
             {
-                float Value = SubGrid.Cells[I, J];
-                if (Value != Consts.NullHeight) // is there a value to test
-                {
-                    SummaryCellsScanned++;
-                    IncrementCountOfCutFillTransition(Value);
-                }
+              float Value = SubGrid.Cells[I, J];
+              if (Value != Consts.NullHeight) // is there a value to test
+              {
+                SummaryCellsScanned++;
+                IncrementCountOfCutFillTransition(Value);
+              }
             });
+          }
         }
+      }
     }
 }

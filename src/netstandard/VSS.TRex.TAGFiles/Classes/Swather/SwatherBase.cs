@@ -39,8 +39,6 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
         protected TAGProcessorBase Processor { get; set; }
 
-        protected IServerLeafSubGrid LastInMemoryLeafSubGrid { get; set; }
-
         protected Fence InterpolationFence { get; set; }
 
         public void CommitCellPassToModel(uint cellX, uint cellY,
@@ -59,7 +57,6 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             // directly with the subgrid tree being populated
 
             IServerLeafSubGrid SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
-            LastInMemoryLeafSubGrid = SubGrid;
 
             SubGrid.AllocateLeafFullPassStacks();
 

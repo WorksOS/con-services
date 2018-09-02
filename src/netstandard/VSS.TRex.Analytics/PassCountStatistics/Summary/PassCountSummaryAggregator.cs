@@ -64,60 +64,66 @@ namespace VSS.TRex.Analytics.PassCountStatistics.Summary
       base.ProcessSubgridResult(subGrids);
 
       // Works out the percentage each colour on the map represents
-
-      if (!(subGrids[0][0] is ClientPassCountLeafSubGrid SubGrid))
-        return;
-
-      var currentPassTargetRange = new PassCountRangeRecord(CellPassConsts.NullPassCountValue, CellPassConsts.NullPassCountValue);
-
-      SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+      foreach (IClientLeafSubGrid[] subGrid in subGrids)
       {
-        var passCountValue = SubGrid.Cells[I, J];
+        if (subGrid == null)
+          continue;
 
-        if (passCountValue.MeasuredPassCount != CellPassConsts.NullPassCountValue) // Is there a value to test...
+        if (subGrid[0] is ClientPassCountLeafSubGrid SubGrid)
         {
-          // This part is releated to Summary data
-          if (OverrideTargetPassCount)
-          { 
-            if (LastPassCountTargetRange.Min != OverridingTargetPassCountRange.Min && LastPassCountTargetRange.Max != OverridingTargetPassCountRange.Max)
-              LastPassCountTargetRange = OverridingTargetPassCountRange;
+          var currentPassTargetRange = new PassCountRangeRecord(CellPassConsts.NullPassCountValue, CellPassConsts.NullPassCountValue);
 
-            if (currentPassTargetRange.Min != OverridingTargetPassCountRange.Min && currentPassTargetRange.Max != OverridingTargetPassCountRange.Max)
-              currentPassTargetRange = OverridingTargetPassCountRange;
-          }
-          else
+          SubGridUtilities.SubGridDimensionalIterator((I, J) =>
           {
-            // Using the machine target values test if target varies...
-            if (IsTargetValueConstant) // Do we need to test?..
+            var passCountValue = SubGrid.Cells[I, J];
+
+            if (passCountValue.MeasuredPassCount != CellPassConsts.NullPassCountValue) // Is there a value to test...
             {
-              if (passCountValue.TargetPassCount != CellPassConsts.NullPassCountValue && LastPassCountTargetRange.Min != CellPassConsts.NullPassCountValue && LastPassCountTargetRange.Max != CellPassConsts.NullPassCountValue) // Values all good to test...
-                IsTargetValueConstant = passCountValue.TargetPassCount >= LastPassCountTargetRange.Min && passCountValue.TargetPassCount <= LastPassCountTargetRange.Max; // Check to see if target value varies...
+              // This part is releated to Summary data
+              if (OverrideTargetPassCount)
+              {
+                if (LastPassCountTargetRange.Min != OverridingTargetPassCountRange.Min && LastPassCountTargetRange.Max != OverridingTargetPassCountRange.Max)
+                  LastPassCountTargetRange = OverridingTargetPassCountRange;
+
+                if (currentPassTargetRange.Min != OverridingTargetPassCountRange.Min && currentPassTargetRange.Max != OverridingTargetPassCountRange.Max)
+                  currentPassTargetRange = OverridingTargetPassCountRange;
+              }
+              else
+              {
+                // Using the machine target values test if target varies...
+                if (IsTargetValueConstant) // Do we need to test?..
+                {
+                  if (passCountValue.TargetPassCount != CellPassConsts.NullPassCountValue && LastPassCountTargetRange.Min != CellPassConsts.NullPassCountValue &&
+                      LastPassCountTargetRange.Max != CellPassConsts.NullPassCountValue) // Values all good to test...
+                    IsTargetValueConstant = passCountValue.TargetPassCount >= LastPassCountTargetRange.Min && passCountValue.TargetPassCount <= LastPassCountTargetRange.Max; // Check to see if target value varies...
+                }
+
+                if (passCountValue.TargetPassCount != CellPassConsts.NullPassCountValue && (passCountValue.TargetPassCount < LastPassCountTargetRange.Min || passCountValue.TargetPassCount > LastPassCountTargetRange.Max))
+                  LastPassCountTargetRange.SetMinMax(passCountValue.TargetPassCount, passCountValue.TargetPassCount); // ConstantPassTarget holds last good values...
+
+                if (passCountValue.TargetPassCount < currentPassTargetRange.Min || passCountValue.TargetPassCount > currentPassTargetRange.Max)
+                  currentPassTargetRange.SetMinMax(passCountValue.TargetPassCount, passCountValue.TargetPassCount);
+              }
+
+              if (currentPassTargetRange.Min != CellPassConsts.NullPassCountValue && currentPassTargetRange.Max != CellPassConsts.NullPassCountValue)
+              {
+                SummaryCellsScanned++; // For summary only...
+                if (passCountValue.MeasuredPassCount > LastPassCountTargetRange.Max)
+                  CellsScannedOverTarget++;
+                else if (passCountValue.MeasuredPassCount < LastPassCountTargetRange.Min)
+                  CellsScannedUnderTarget++;
+                else
+                  CellsScannedAtTarget++;
+              }
+              else // We have data but no target data to do a summary of cell...
+                MissingTargetValue = true; // Flag to issue a warning to user...
+
+              // TODO The line below should be invoked for Pass Count detals calculation...
+              // Transitions.IncrementCountOfTransition(PassCountValue.MeasuredPassCount); // Passcount Detail is counted here
             }
-
-            if (passCountValue.TargetPassCount != CellPassConsts.NullPassCountValue && (passCountValue.TargetPassCount < LastPassCountTargetRange.Min || passCountValue.TargetPassCount > LastPassCountTargetRange.Max))
-              LastPassCountTargetRange.SetMinMax(passCountValue.TargetPassCount, passCountValue.TargetPassCount); // ConstantPassTarget holds last good values...
-
-            if (passCountValue.TargetPassCount < currentPassTargetRange.Min || passCountValue.TargetPassCount > currentPassTargetRange.Max)
-              currentPassTargetRange.SetMinMax(passCountValue.TargetPassCount, passCountValue.TargetPassCount);
-          }
-
-          if (currentPassTargetRange.Min != CellPassConsts.NullPassCountValue && currentPassTargetRange.Max != CellPassConsts.NullPassCountValue)
-          {
-            SummaryCellsScanned++; // For summary only...
-            if (passCountValue.MeasuredPassCount > LastPassCountTargetRange.Max)
-              CellsScannedOverTarget++;
-            else if (passCountValue.MeasuredPassCount < LastPassCountTargetRange.Min)
-              CellsScannedUnderTarget++;
-            else
-              CellsScannedAtTarget++;
-          }
-          else  // We have data but no target data to do a summary of cell...
-            MissingTargetValue = true; // Flag to issue a warning to user...
-          
-          // TODO The line below should be invoked for Pass Count detals calculation...
-          // Transitions.IncrementCountOfTransition(PassCountValue.MeasuredPassCount); // Passcount Detail is counted here
+          });
         }
-      });
+      }
     }
   }
 }
