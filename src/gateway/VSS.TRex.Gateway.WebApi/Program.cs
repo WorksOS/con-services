@@ -5,28 +5,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
 using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Servers.Client;
 using VSS.WebApi.Common;
 
 namespace VSS.TRex.Gateway.WebApi
 {
   public class Program
   {
-    private static IImmutableClientServer ImmutableClientServer;
-    private static IMutableClientServer MutableClientServer;
-
     public static void Main(string[] args)
     {
       var webHost = BuildWebHost(args);
 
-      ImmutableClientServer = new ImmutableClientServer("TRexIgniteClient-DotNetStandard");
-      MutableClientServer = new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-
       webHost.Run();
     }
-
+    
     public static IWebHost BuildWebHost(string[] args)
     {
       var kestrelConfig = new ConfigurationBuilder()

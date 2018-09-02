@@ -48,7 +48,19 @@ namespace VSS.TRex.Exports.Patches.Executors.Tasks
         return false;
       }
 
-      PatchSubgrids.Add((response as IClientLeafSubGrid[])[0]);
+      if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+      {
+        Log.LogWarning("No subgrid responses returned");
+        return false;
+      }
+
+      foreach (var subGrid in subGridResponses)
+      {
+        if (subGrid == null)
+          continue;
+
+        PatchSubgrids.Add(subGrid);
+      }
 
       return true;
     }

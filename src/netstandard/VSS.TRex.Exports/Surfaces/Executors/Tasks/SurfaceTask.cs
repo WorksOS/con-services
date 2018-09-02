@@ -50,19 +50,31 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
         return false;
       }
 
+      if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+      {
+        Log.LogWarning("No subgrid responses returned");
+        return false;
+      }
+
       // Convert the ClientHeightLeafSubgrid into a GenericLeafSubGrid<float>...
 
-      ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) (response as IClientLeafSubGrid[])[0];
-
-      GenericLeafSubGrid<float> leaf = new GenericLeafSubGrid<float>
+      foreach (var subGrid in subGridResponses)
       {
-        OriginX = originSubGrid.OriginX,
-        OriginY = originSubGrid.OriginY,
-        Items = originSubGrid.Clone2DArray(),
-        Level = originSubGrid.Level
-      };
+        if (subGrid == null)
+          continue;
 
-      SurfaceSubgrids.Add(leaf);
+        ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
+
+        GenericLeafSubGrid<float> leaf = new GenericLeafSubGrid<float>
+        {
+          OriginX = originSubGrid.OriginX,
+          OriginY = originSubGrid.OriginY,
+          Items = originSubGrid.Clone2DArray(),
+          Level = originSubGrid.Level
+        };
+
+        SurfaceSubgrids.Add(leaf);
+      }
 
       return true;
     }
