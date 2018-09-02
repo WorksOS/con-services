@@ -47,7 +47,7 @@ namespace VSS.TRex.Common
         /// <summary>
         /// Paints a red diagonal cross on each rendered tile to aid in confirming correct registration of rendered data
         /// </summary>
-        public static bool Debug_DrawDiagonalCrossOnRenderedTiles = true;
+        public static bool Debug_DrawDiagonalCrossOnRenderedTiles = false;
 
       /*
         /// <summary>
