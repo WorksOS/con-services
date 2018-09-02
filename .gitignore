@@ -303,9 +303,6 @@ ASALocalRun/
 #ignore thumbnails created by windows
 Thumbs.db
 
-*.tag
-/Alan_RunFullRaptorIgniteStackAndClient_Debug.bat
-
 /coverage.json
 /coverage-hits.txt
 /coverage-html/*
