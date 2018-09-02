@@ -16,6 +16,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
@@ -73,8 +74,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Generates a image for use in the 3d map control
     /// These can be heightmaps / textures / designs
     /// </summary>
-    /// <param name="projectUid">Proejct UID</param>
+    /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Optional Filter UID</param>
+    /// <param name="designUid">The Design File UID if showing the Design (ignored otherwise)</param>
     /// <param name="type">Map Display Type - Heightmap / Texture / Design</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc (Ignored in Height Map type)</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
@@ -88,6 +90,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<TileResult> GetMapTileData(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
+      [FromQuery] Guid? designUid,
       [FromQuery] MapDisplayType type,
       [FromQuery] DisplayMode mode,
       [FromQuery] ushort width,
@@ -98,14 +101,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       CompactionProjectSettingsColors projectSettingsColors;
-
+      DesignDescriptor design = null;
       if (type == MapDisplayType.DesignMap)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Not Implemented"));
+        projectSettingsColors = GetGreyScaleHeightColors();
+        design = await GetAndValidateDesignDescriptor(projectUid, designUid);
+        mode = DisplayMode.Design3D;
       }
-
-      if (type == MapDisplayType.HeightMap)
+      else if (type == MapDisplayType.HeightMap)
       {
         projectSettingsColors = GetGreyScaleHeightColors();
         mode = DisplayMode.Height; // The height map must be of type height....
@@ -126,7 +129,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           width,
           height,
           boundingBoxHelper.GetBoundingBox(bbox),
-          null,
+          design,
           null,
           null,
           null,
@@ -141,9 +144,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Generates a raw image for use in the 3d map control
     /// These can be heightmaps / textures / designs
     /// </summary>
-    /// <param name="projectUid">Proejct UID</param>
+    /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Optional Filter UID</param>
     /// <param name="type">Map Display Type - Heightmap / Texture / Design</param>
+    /// /// <param name="designUid">The Design File UID if showing the Design (ignored otherwise)</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc (Ignored in Height Map type)</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
     /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
@@ -156,13 +160,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public async Task<FileResult> GetMapTileDataRaw(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
+      [FromQuery] Guid? designUid,
       [FromQuery] MapDisplayType type,
       [FromQuery] DisplayMode mode,
       [FromQuery] ushort width,
       [FromQuery] ushort height,
       [FromQuery] string bbox)
     {
-      var result = await GetMapTileData(projectUid, filterUid, type, mode, width, height, bbox);
+      var result = await GetMapTileData(projectUid, filterUid, designUid, type, mode, width, height, bbox);
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
 
