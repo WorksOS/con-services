@@ -16,8 +16,8 @@ namespace VSS.TRex.Tests.Filters
             Assert.True(!filter.IsAlignmentMask && !filter.IsDesignMask && !filter.IsPositional && !filter.IsSpatial && !filter.IsSquare,
             "Cell spatial filter not created correctly");
 
-            Assert.True(filter.LeftOffset == Consts.NullDouble && filter.RightOffset == Consts.NullDouble && 
-                          filter.StartStation == Consts.NullDouble && filter.EndStation == Consts.NullDouble &&
+            Assert.True(!filter.LeftOffset.HasValue && !filter.RightOffset.HasValue && 
+                          !filter.StartStation.HasValue && !filter.EndStation.HasValue &&
                           filter.Fence.IsNull() && filter.AlignmentFence.IsNull() && 
                           filter.PositionX == Consts.NullDouble && filter.PositionY == Consts.NullDouble &&
                           filter.PositionRadius == Consts.NullDouble && filter.HasAlignmentDesignMask() == false &&
@@ -55,10 +55,10 @@ namespace VSS.TRex.Tests.Filters
 
             Assert.True(filter.AlignmentFence.IsNull() &&
                           filter.Fence.IsNull() &&
-                          filter.EndStation == Consts.NullDouble &&
-                          filter.StartStation == Consts.NullDouble &&
-                          filter.LeftOffset == Consts.NullDouble &&
-                          filter.RightOffset == Consts.NullDouble &&
+                          !filter.EndStation.HasValue &&
+                          !filter.StartStation.HasValue &&
+                          !filter.LeftOffset.HasValue &&
+                          !filter.RightOffset.HasValue &&
                           filter.AlignmentMaskDesignUID == Guid.Empty &&
                           filter.SurfaceDesignMaskDesignUid == Guid.Empty &&
                           filter.PositionRadius == Consts.NullDouble &&

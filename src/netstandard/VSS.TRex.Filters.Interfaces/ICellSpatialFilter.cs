@@ -53,22 +53,22 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// The starting station of the parametrically defined alignment spatial filter
     /// </summary>
-    double StartStation { get; set; }
+    double? StartStation { get; set; }
 
     /// <summary>
     /// The ending station of the parametrically defined alignment spatial filter
     /// </summary>
-    double EndStation { get; set; }
+    double? EndStation { get; set; }
 
     /// <summary>
     /// The left offset of the parametrically defined alignment spatial filter
     /// </summary>
-    double LeftOffset { get; set; }
+    double? LeftOffset { get; set; }
 
     /// <summary>
     /// The right offset of the parametrically defined alignment spatial filter
     /// </summary>
-    double RightOffset { get; set; }
+    double? RightOffset { get; set; }
 
     /// <summary>
     /// CoordsAreGrid controls whether the plan (XY/NE) coordinates in the spatial filters are to 

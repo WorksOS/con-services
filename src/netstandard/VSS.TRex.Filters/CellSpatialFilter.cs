@@ -88,22 +88,22 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// The starting station of the parametrically defined alignment spatial filter
         /// </summary>
-        public double StartStation { get; set; } = Consts.NullDouble;
+        public double? StartStation { get; set; }
 
         /// <summary>
         /// The ending station of the parametrically defined alignment spatial filter
         /// </summary>
-        public double EndStation { get; set; } = Consts.NullDouble;
+        public double? EndStation { get; set; }
 
         /// <summary>
         /// The left offset of the parametrically defined alignment spatial filter
         /// </summary>
-        public double LeftOffset { get; set; } = Consts.NullDouble;
+        public double? LeftOffset { get; set; }
 
         /// <summary>
         /// The right offset of the parametrically defined alignment spatial filter
         /// </summary>
-        public double RightOffset { get; set; } = Consts.NullDouble;
+        public double? RightOffset { get; set; }
 
         /// <summary>
         /// CoordsAreGrid controls whether the plan (XY/NE) coordinates in the spatial filters are to 
@@ -178,10 +178,10 @@ namespace VSS.TRex.Filters
             IsAlignmentMask = false;
 
             AlignmentFence.Clear();
-            StartStation = Consts.NullDouble;
-            EndStation = Consts.NullDouble;
-            LeftOffset = Consts.NullDouble;
-            RightOffset = Consts.NullDouble;
+            StartStation = null;
+            EndStation = null;
+            LeftOffset = null;
+            RightOffset = null;
 
             AlignmentMaskDesignUID = Guid.Empty;
         }
@@ -226,9 +226,9 @@ namespace VSS.TRex.Filters
         /// <returns></returns>
         public bool HasAlignmentDesignMask()
         {
-            return (AlignmentMaskDesignUID != Guid.Empty) && 
-                   ((StartStation != Consts.NullDouble) && (EndStation != Consts.NullDouble) &&
-                    (LeftOffset != Consts.NullDouble) && (RightOffset != Consts.NullDouble));
+            return AlignmentMaskDesignUID != Guid.Empty && 
+                   StartStation.HasValue && EndStation.HasValue &&
+                   LeftOffset.HasValue && RightOffset.HasValue;
         }
 
         /// <summary>
