@@ -393,9 +393,9 @@ this.GetHeightMapsAndTexturesWithFilters("Pass Count Mode Texture with Filter", 
 #line hidden
         }
         
-        public virtual void AttemptToGetDesignWhichIsNotImplemented(string requestName, string projectUID, string bBox, string width, string height, string mode, string type, string difference, string[] exampleTags)
+        public virtual void AttemptToGetDesign(string requestName, string responseName, string projectUID, string filterUID, string designUID, string bBox, string width, string height, string mode, string type, string difference, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Attempt to get design, which is not implemented", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Attempt to get design", exampleTags);
 #line 47
 this.ScenarioSetup(scenarioInfo);
 #line 48
@@ -405,29 +405,36 @@ testRunner.And("the result file \"Map3dGetDataTilesResponse.json\"", ((string)(n
 #line 50
 testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 51
-testRunner.And(string.Format("mode \"{0}\" and type \"{1}\" and bbox \"{2}\" and width \"{3}\" and height \"{4}\"", mode, type, bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("designUid \"{0}\"", designUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 52
-testRunner.Then("I request something that is not completed the response HTTP code should be \"400\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+testRunner.And(string.Format("mode \"{0}\" and type \"{1}\" and bbox \"{2}\" and width \"{3}\" and height \"{4}\"", mode, type, bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 53
+testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 54
+testRunner.Then(string.Format("the result tile should match the \"{0}\" from the repository within \"{1}\" percent", responseName, difference), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Attempt to get design, which is not implemented: Height Map and mode with Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Attempt to get design: Design Height Map")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Map3dTile")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Height Map and mode with Filter")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Height Map and mode with Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Design Height Map")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "Design Height Map")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResponseName", "DesignHeightMap")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUID", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Type", "1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Difference", "5")]
-        public virtual void AttemptToGetDesignWhichIsNotImplemented_HeightMapAndModeWithFilter()
+        public virtual void AttemptToGetDesign_DesignHeightMap()
         {
 #line 47
-this.AttemptToGetDesignWhichIsNotImplemented("Height Map and mode with Filter", "ff91dd40-1569-4765-a2bc-014321f76ace", "36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439", "256", "256", "0", "1", "5", ((string[])(null)));
+this.AttemptToGetDesign("Design Height Map", "DesignHeightMap", "ff91dd40-1569-4765-a2bc-014321f76ace", "3ef41e3c-d1f5-40cd-b012-99d11ff432ef", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439", "256", "256", "0", "1", "5", ((string[])(null)));
 #line hidden
         }
     }

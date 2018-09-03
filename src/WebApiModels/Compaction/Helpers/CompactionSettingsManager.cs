@@ -67,6 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       switch (mode)
       {
+        case DisplayMode.Design3D:
         case DisplayMode.Height:
 
           if (elevExtents == null)
