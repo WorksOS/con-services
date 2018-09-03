@@ -24,6 +24,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
 {
   class Program
   {
+    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
+
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       switch (key)
@@ -118,8 +120,14 @@ namespace VSS.TRex.Server.TINSurfaceExport
       Log.LogDebug("Creating service");
 
       var server = new TINSurfaceExportRequestServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      Console.WriteLine("Press ctrl+c to exit");
+      Console.CancelKeyPress += (s, a) =>
+      {
+        Console.WriteLine("Exiting");
+        WaitHandle.Set();
+      };
+
+      WaitHandle.WaitOne();
     }
   }
 }

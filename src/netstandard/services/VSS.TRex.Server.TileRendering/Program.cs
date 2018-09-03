@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
@@ -24,6 +25,9 @@ namespace VSS.TRex.Server.TileRendering
 {
   class Program
   {
+
+    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
+
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       switch (key)
@@ -119,8 +123,14 @@ namespace VSS.TRex.Server.TileRendering
       Log.LogDebug("Creating service");
 
       var server = new TileRenderingServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      Console.WriteLine("Press ctrl+c to exit");
+      Console.CancelKeyPress += (s, a) =>
+      {
+        Console.WriteLine("Exiting");
+        WaitHandle.Set();
+      };
+
+      WaitHandle.WaitOne();
     }
   }
 }
