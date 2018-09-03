@@ -263,11 +263,11 @@ namespace VSS.TRex.Filters
       /// <param name="performAttributeSubFilter"></param>
       /// <returns></returns>
       public bool FilterSinglePass(FilteredPassData[] filteredPassValues,
-                                     int passValueCount,
-                                     bool wantEarliestPass,
-                                     ref FilteredSinglePassInfo filteredPassInfo,
-                                     object /*IProfileCell*/ profileCell,
-                                     bool performAttributeSubFilter)
+                                   int passValueCount,
+                                   bool wantEarliestPass,
+                                   ref FilteredSinglePassInfo filteredPassInfo,
+                                   object /*IProfileCell*/ profileCell,
+                                   bool performAttributeSubFilter)
         {
             bool Accept;
             bool Result = false;

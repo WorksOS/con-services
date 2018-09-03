@@ -33,7 +33,7 @@ namespace VSS.TRex.Machines.Interfaces
     /// Determines if the type of this machine is one of the machine tyeps that supports compaction operations
     /// </summary>
     /// <returns></returns>
-    bool MachineIsConpactorType();
+    bool MachineIsCompactorType();
 
     void Assign(IMachine source);
 

@@ -57,7 +57,7 @@ namespace VSS.TRex.Filters
   public class CellPassAttributeFilter : DataPassFilter, ICellPassAttributeFilter
   {
     [NonSerialized]
-    private ISiteModel siteModel = null;
+    private ISiteModel siteModel;
 
     /// <summary>
     /// Owner is the SiteModel instance to which this filter relates and is used in cases where machine related
@@ -318,10 +318,8 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public int CompareTo(ICellPassAttributeFilter AFilter)
     {
-      int Result;
-
       // Time
-      Result = FlagCheck(HasTimeFilter, AFilter.HasTimeFilter);
+      int Result = FlagCheck(HasTimeFilter, AFilter.HasTimeFilter);
       if (Result != 0)
       {
         return Result;
@@ -561,7 +559,6 @@ namespace VSS.TRex.Filters
     public void ClearDesigns()
     {
       HasDesignFilter = false;
-
       DesignNameID = Consts.kNoDesignNameID;
     }
 
@@ -590,7 +587,6 @@ namespace VSS.TRex.Filters
     public void ClearElevationType()
     {
       HasElevationTypeFilter = false;
-
       ElevationType = ElevationType.Last;
     }
 
@@ -620,14 +616,12 @@ namespace VSS.TRex.Filters
     public void ClearGPSTolerance()
     {
       HasGPSToleranceFilter = false;
-
       GPSTolerance = Consts.kMaxGPSAccuracyErrorLimit;
     }
 
     public void ClearGuidanceMode()
     {
       HasGCSGuidanceModeFilter = false;
-
       GCSGuidanceMode = MachineAutomaticsMode.Unknown;
     }
 
@@ -640,7 +634,6 @@ namespace VSS.TRex.Filters
     public void ClearLayerState()
     {
       HasLayerStateFilter = false;
-
       LayerState = LayerState.Invalid;
     }
 
@@ -745,20 +738,17 @@ namespace VSS.TRex.Filters
       HasPassCountRangeFilter = Source.HasPassCountRangeFilter;
 
       Prepare();
-
     }
 
     public void ClearCompactionMachineOnlyRestriction()
     {
       HasCompactionMachinesOnlyFilter = false;
-
       RestrictFilteredDataToCompactorsOnly = false;
     }
 
     public void ClearMachineDirection()
     {
       HasMachineDirectionFilter = false;
-
       MachineDirection = MachineDirection.Unknown;
     }
 
@@ -771,21 +761,18 @@ namespace VSS.TRex.Filters
     public void ClearMinElevationMapping()
     {
       HasMinElevMappingFilter = false;
-
       MinElevationMapping = false;
     }
 
     public void ClearPassType()
     {
       HasPassTypeFilter = false;
-
       PassTypeSet = PassTypeSet.None;
     }
 
     public void ClearPositioningTech()
     {
       HasPositioningTechFilter = false;
-
       PositioningTech = PositioningTech.Unknown;
     }
 
@@ -806,7 +793,6 @@ namespace VSS.TRex.Filters
     // FilterPass determines if a single pass conforms to the current filtering configuration
     public override bool FilterPass(ref CellPass PassValue)
     {
-      int StateChangeIndex;
       int DesignNameIDValue = Consts.kNoDesignNameID;
       VibrationState VibeStateValue = VibrationState.Invalid;
       MachineGear MachineGearValue = MachineGear.Null;
@@ -814,7 +800,6 @@ namespace VSS.TRex.Filters
       GPSAccuracyAndTolerance GPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
       PositioningTech PositioningTechStateValue = PositioningTech.Unknown;
       MachineAutomaticsMode GCSGuidanceModeValue = MachineAutomaticsMode.Unknown;
-      IMachine Machine;
       ushort LayerIDStateValue = ushort.MaxValue; // ID of current layer
 
       if (!AnyFilterSelections)
@@ -847,9 +832,9 @@ namespace VSS.TRex.Filters
       if (HasCompactionMachinesOnlyFilter)
       {
         //Machine = siteModel.Machines.Locate(PassValue.MachineID);
-        Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
+        IMachine Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
 
-        if (Machine != null && !Machine.MachineIsConpactorType())
+        if (Machine != null && !Machine.MachineIsCompactorType())
           return false;
       }
 
@@ -859,7 +844,7 @@ namespace VSS.TRex.Filters
 
       if (HasDesignFilter)
       {
-        DesignNameIDValue = machineTargetValues.DesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, DesignNameIDValue);
+        DesignNameIDValue = machineTargetValues.DesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, DesignNameIDValue);
 
         if ((DesignNameIDValue != Consts.kAllDesignsNameID) && (DesignNameID != DesignNameIDValue))
           return false;
@@ -867,7 +852,7 @@ namespace VSS.TRex.Filters
 
       if (HasVibeStateFilter)
       {
-        VibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, VibeStateValue);
+        VibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(PassValue.Time, out _, VibeStateValue);
 
         if (VibeState != VibeStateValue)
           return false;
@@ -875,7 +860,7 @@ namespace VSS.TRex.Filters
 
       if (HasGCSGuidanceModeFilter)
       {
-        GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, GCSGuidanceModeValue);
+        GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, GCSGuidanceModeValue);
 
         if (GCSGuidanceMode != GCSGuidanceModeValue)
           return false;
@@ -883,7 +868,7 @@ namespace VSS.TRex.Filters
 
       if (HasMachineDirectionFilter)
       {
-        MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, MachineGearValue);
+        MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out _, MachineGearValue);
 
         if (((MachineDirection == MachineDirection.Forward && !TRex.Machines.Machine.MachineGearIsForwardGear(MachineGearValue))) ||
             ((MachineDirection == MachineDirection.Reverse && !TRex.Machines.Machine.MachineGearIsReverseGear(MachineGearValue))))
@@ -892,7 +877,7 @@ namespace VSS.TRex.Filters
 
       if (HasMinElevMappingFilter)
       {
-        MinElevMappingValue = machineTargetValues.MinElevMappingStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, MinElevMappingValue);
+        MinElevMappingValue = machineTargetValues.MinElevMappingStateEvents.GetValueAtDate(PassValue.Time, out _, MinElevMappingValue);
 
         if (MinElevationMapping != MinElevMappingValue)
           return false;
@@ -900,7 +885,7 @@ namespace VSS.TRex.Filters
 
       if (HasGPSAccuracyFilter || HasGPSToleranceFilter)
       {
-        GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, GPSAccuracyAndToleranceValue);
+        GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out _, GPSAccuracyAndToleranceValue);
 
         if (HasGPSAccuracyFilter && GPSAccuracy != GPSAccuracyAndToleranceValue.GPSAccuracy && !GPSAccuracyIsInclusive)
           return false;
@@ -917,7 +902,7 @@ namespace VSS.TRex.Filters
 
       if (HasPositioningTechFilter)
       {
-        PositioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, PositioningTechStateValue);
+        PositioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(PassValue.Time, out _, PositioningTechStateValue);
 
         if (PositioningTech != PositioningTechStateValue)
           return false;
@@ -926,7 +911,7 @@ namespace VSS.TRex.Filters
       // Filter on LayerID
       if (HasLayerIDFilter)
       {
-        LayerIDStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, LayerIDStateValue);
+        LayerIDStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(PassValue.Time, out _, LayerIDStateValue);
         if (LayerID != LayerIDStateValue)
           return false;
       }
@@ -950,23 +935,10 @@ namespace VSS.TRex.Filters
 
     public override bool FilterPass(ref FilteredPassData PassValue)
     {
-      IMachine Machine;
-
       if (!AnyFilterSelections)
       {
         return true;
       }
-
-      /* TODO readd when ifopt C+ understood in c#
-{$IFOPT C+}
-if not Assigned(FOwner) 
-{
-SIGLogMessage.Publish(Self, 'TICGridDataPassFilter.FilterPass: SiteModel owner not set for filter', slmcError); {SKIP}
-Result = false;
-Exit;
-}
-{$ENDIF}
-*/
 
       if (HasTimeFilter)
       {
@@ -989,8 +961,8 @@ Exit;
 
       if (HasCompactionMachinesOnlyFilter)
       {
-        Machine = siteModel.Machines[PassValue.FilteredPass.InternalSiteModelMachineIndex];
-        if (Machine != null && !Machine.MachineIsConpactorType())
+        IMachine Machine = siteModel.Machines[PassValue.FilteredPass.InternalSiteModelMachineIndex];
+        if (Machine != null && !Machine.MachineIsCompactorType())
           return false;
       }
 
@@ -1086,16 +1058,6 @@ Exit;
 
     public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
     {
-      // TODO readd when ifopt c+ is understood
-      /*  {$IFOPT C+}
-        if not Assigned(FOwner) 
-          {
-            SIGLogMessage.Publish(Self, 'TICGridDataPassFilter.FilterPassUsingTimeOnly: SiteModel owner not set for filter', slmcError); {SKIP}
-            Result = false;
-            Exit;
-          }
-        {$ENDIF} */
-
       if (StartTime == DateTime.MinValue)
       {
         // It's an End/As At time filter
@@ -1191,8 +1153,6 @@ Exit;
 
     public bool FilterPass_NoMachineEvents(CellPass PassValue)
     {
-      IMachine Machine;
-
       if (!AnyNonMachineEventFilterSelections)
       {
         return true;
@@ -1222,9 +1182,9 @@ Exit;
       if (HasCompactionMachinesOnlyFilter)
       {
         //Machine = siteModel.Machines.Locate(PassValue.MachineID);
-        Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
+        IMachine Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
 
-        if (Machine != null && !Machine.MachineIsConpactorType())
+        if (Machine != null && !Machine.MachineIsCompactorType())
           return false;
       }
 
@@ -1261,7 +1221,6 @@ Exit;
     public bool FilterSinglePass(CellPass[] PassValues,
         int PassValueCount,
         ref FilteredSinglePassInfo FilteredPassInfo,
-        //             ref FilteredMultiplePassInfo FilteredPassesBuffer
         object /*IProfileCell*/ profileCell)
     {
       return base.FilterSinglePass(PassValues,
@@ -1344,17 +1303,23 @@ Exit;
 
     public override bool IsTimeRangeFilter() => HasTimeFilter && StartTime > DateTime.MinValue;
 
-    // LastRecordedCellPassSatisfiesFilter denotes whether the settings in the filter
-    // may be satisfied by examining the last recorded value wrt the subgrid information
-    // currently being requested. This allows the cached latest recorded values slice
-    // stored
-
+    /// <summary>
+    /// LastRecordedCellPassSatisfiesFilter denotes whether the settings in the filter
+    /// may be satisfied by examining the last recorded value wrt the subgrid information
+    /// currently being requested. This allows the cached latest recorded values slice
+    /// stored
+    /// </summary>
     public bool LastRecordedCellPassSatisfiesFilter => !AnyFilterSelections && !ReturnEarliestFilteredCellPass;
 
-    // FilterMultiplePasses selects a set of passes from the list of passes
-    // in <PassValues> where <PassValues> contains the entire
-    // list of passes for a cell in the database.
-
+    /// <summary>
+    /// FilterMultiplePasses selects a set of passes from the list of passes
+    /// in <PassValues> where <PassValues> contains the entire
+    /// list of passes for a cell in the database.
+    /// </summary>
+    /// <param name="passValues"></param>
+    /// <param name="PassValueCount"></param>
+    /// <param name="filteredPassInfo"></param>
+    /// <returns></returns>
     public override bool FilterMultiplePasses(CellPass[] passValues,
         int PassValueCount,
         ref FilteredMultiplePassInfo filteredPassInfo)
