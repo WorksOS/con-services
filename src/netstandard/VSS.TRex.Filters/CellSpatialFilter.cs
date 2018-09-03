@@ -236,7 +236,7 @@ namespace VSS.TRex.Filters
         /// or design mask spatial filter
         /// </summary>
         /// <returns></returns>
-        public bool HasSurfaceDesignMask() =>  SurfaceDesignMaskDesignUid != Guid.Empty;
+        public bool HasSurfaceDesignMask => SurfaceDesignMaskDesignUid != Guid.Empty;
 
         /// <summary>
         /// Determines if the type of the spatial filter is Spatial or Positional

@@ -10,6 +10,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
@@ -1398,16 +1399,16 @@ Exit;
     /// <returns></returns>
     public bool FilterSinglePass(CellPass[] PassValues,
         int PassValueCount,
-        ref FilteredSinglePassInfo FilteredPassInfo
+        ref FilteredSinglePassInfo FilteredPassInfo,
         //             ref FilteredMultiplePassInfo FilteredPassesBuffer)
-        // TODO add when cell profile available... ProfileCell CellProfile
+        object /*IProfileCell*/ profileCell
     )
     {
       return base.FilterSinglePass(PassValues,
           PassValueCount,
           ReturnEarliestFilteredCellPass,
           ref FilteredPassInfo,
-          // TODO readd when available CellProfile,
+          (IProfileCell)profileCell,
           true);
     }
 
