@@ -16,24 +16,19 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public CmvSummaryData SummaryData { get; private set; }
 
     /// <summary>
-    /// Default private constructor.
+    /// Default constructor.
     /// </summary>
-    private CompactionCmvSummaryResult()
+    public CompactionCmvSummaryResult()
     { }
-    
-    public static CompactionCmvSummaryResult CreateEmptyResult() => new CompactionCmvSummaryResult();
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CompactionCmvSummaryResult Create(CMVSummaryResult result, CMVSettings settings)
+    /// <param name="result"></param>
+    /// <param name="settings"></param>
+    public CompactionCmvSummaryResult(CMVSummaryResult result, CMVSettings settings)
     {
-      if (result == null || !result.HasData())
-      {
-        return CreateEmptyResult();
-      }
-
-      return new CompactionCmvSummaryResult
+      if (result != null && result.HasData())
       {
         SummaryData = new CmvSummaryData
         {
@@ -46,10 +41,10 @@ namespace VSS.Productivity3D.Models.ResultHandling
             CmvMachineTarget = result.ConstantTargetCmv / 10,
             TargetVaries = !result.IsTargetCmvConstant
           },
-          MinCMVPercent = settings.minCMVPercent,
-          MaxCMVPercent = settings.maxCMVPercent
-        }
-      };
+          MinCMVPercent = settings.MinCMVPercent,
+          MaxCMVPercent = settings.MaxCMVPercent
+        };
+      }
     }
   }
 }

@@ -139,13 +139,34 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Default private constructor.
     /// </summary>
-    protected TileRequest()
+    private TileRequest()
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static TileRequest CreateTileRequest(
+    /// <param name="projectId"></param>
+    /// <param name="callId"></param>
+    /// <param name="mode"></param>
+    /// <param name="palettes"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="computeVolType"></param>
+    /// <param name="computeVolNoChangeTolerance"></param>
+    /// <param name="designDescriptor"></param>
+    /// <param name="filter1"></param>
+    /// <param name="filterId1"></param>
+    /// <param name="filter2"></param>
+    /// <param name="filterId2"></param>
+    /// <param name="filterLayerMethod"></param>
+    /// <param name="boundingBoxLatLon"></param>
+    /// <param name="boundingBoxGrid"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="representationalDisplayColor"></param>
+    /// <param name="cmvDetailsColorNumber"></param>
+    /// <param name="cmvPercentChangeColorNumber"></param>
+    /// <param name="setSummaryDataLayersVisibility"></param>
+    public TileRequest(
       long projectId,
       Guid? callId,
       DisplayMode mode,
@@ -168,30 +189,27 @@ namespace VSS.Productivity3D.Models.Models
       uint cmvPercentChangeColorNumber = 6,
       bool setSummaryDataLayersVisibility = true)
     {
-      return new TileRequest
-      {
-        ProjectId = projectId,
-        CallId = callId,
-        Mode = mode,
-        Palettes = palettes,
-        LiftBuildSettings = liftBuildSettings,
-        ComputeVolumesType = computeVolType,
-        ComputeVolNoChangeTolerance = computeVolNoChangeTolerance,
-        DesignDescriptor = designDescriptor,
-        Filter1 = filter1,
-        FilterId1 = filterId1,
-        Filter2 = filter2,
-        FilterId2 = filterId2,
-        FilterLayerMethod = filterLayerMethod,
-        BoundBoxLatLon = boundingBoxLatLon,
-        BoundBoxGrid = boundingBoxGrid,
-        Width = width,
-        Height = height,
-        RepresentationalDisplayColor = representationalDisplayColor,
-        cmvDetailsColorNumber = cmvDetailsColorNumber,
-        cmvPercentChangeColorNumber = cmvPercentChangeColorNumber,
-        setSummaryDataLayersVisibility = setSummaryDataLayersVisibility
-      };
+      ProjectId = projectId;
+      CallId = callId;
+      Mode = mode;
+      Palettes = palettes;
+      LiftBuildSettings = liftBuildSettings;
+      ComputeVolumesType = computeVolType;
+      ComputeVolNoChangeTolerance = computeVolNoChangeTolerance;
+      DesignDescriptor = designDescriptor;
+      Filter1 = filter1;
+      FilterId1 = filterId1;
+      Filter2 = filter2;
+      FilterId2 = filterId2;
+      FilterLayerMethod = filterLayerMethod;
+      BoundBoxLatLon = boundingBoxLatLon;
+      BoundBoxGrid = boundingBoxGrid;
+      Width = width;
+      Height = height;
+      RepresentationalDisplayColor = representationalDisplayColor;
+      p_cmvDetailsColorNumber = cmvDetailsColorNumber;
+      p_cmvPercentChangeColorNumber = cmvPercentChangeColorNumber;
+      SetSummaryDataLayersVisibility = setSummaryDataLayersVisibility;
     }
 
     /// <summary>
@@ -234,14 +252,14 @@ namespace VSS.Productivity3D.Models.Models
             "Only one bounding box is allowed"));
       }
 
-      if (Mode == DisplayMode.TargetThicknessSummary && LiftBuildSettings.liftThicknessTarget == null)
+      if (Mode == DisplayMode.TargetThicknessSummary && LiftBuildSettings.LiftThicknessTarget == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "For this mode LiftThickness Target in LIftBuildSettings must be specified."));
       }
 
-      if (Mode == DisplayMode.TargetSpeedSummary && LiftBuildSettings.machineSpeedTarget == null)
+      if (Mode == DisplayMode.TargetSpeedSummary && LiftBuildSettings.MachineSpeedTarget == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

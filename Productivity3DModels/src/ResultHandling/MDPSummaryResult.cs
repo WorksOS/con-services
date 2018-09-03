@@ -58,11 +58,19 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// </summary>
     private MDPSummaryResult()
     { }
-    
+
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static MDPSummaryResult Create(
+    /// <param name="compactedPercent"></param>
+    /// <param name="constantTargetMDP"></param>
+    /// <param name="isTargetMDPConstant"></param>
+    /// <param name="overCompactedPercent"></param>
+    /// <param name="returnCode"></param>
+    /// <param name="totalAreaCoveredSqMeters"></param>
+    /// <param name="underCompactedPercent"></param>
+    /// <returns></returns>
+    public MDPSummaryResult(
       double compactedPercent,
       short constantTargetMDP,
       bool isTargetMDPConstant,
@@ -72,16 +80,13 @@ namespace VSS.Productivity3D.Models.ResultHandling
       double underCompactedPercent
       )
     {
-      return new MDPSummaryResult
-      {
-        CompactedPercent = compactedPercent,
-        ConstantTargetMDP = constantTargetMDP,
-        IsTargetMDPConstant = isTargetMDPConstant,
-        OverCompactedPercent = overCompactedPercent,
-        ReturnCode = returnCode,
-        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
-        UnderCompactedPercent = underCompactedPercent
-      };
+      CompactedPercent = compactedPercent;
+      ConstantTargetMDP = constantTargetMDP;
+      IsTargetMDPConstant = isTargetMDPConstant;
+      OverCompactedPercent = overCompactedPercent;
+      ReturnCode = returnCode;
+      TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters;
+      UnderCompactedPercent = underCompactedPercent;
     }
   }
 }

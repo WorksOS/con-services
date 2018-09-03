@@ -16,49 +16,51 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "bottomLeftX", Required = Required.Always)]
     [Required]
-    public double bottomLeftX { get; set; }
+    public double BottomLeftX { get; set; }
     /// <summary>
     /// The bottom left corner of the bounding box, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "bottomleftY", Required = Required.Always)]
     [Required]
-    public double bottomleftY { get; set; }
+    public double BottomleftY { get; set; }
     /// <summary>
     /// The top right corner of the bounding box, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "topRightX", Required = Required.Always)]
     [Required]
-    public double topRightX { get; set; }
+    public double TopRightX { get; set; }
     /// <summary>
     /// The top right corner of the bounding box, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "topRightY", Required = Required.Always)]
     [Required]
-    public double topRightY { get; set; }
+    public double TopRightY { get; set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private BoundingBox2DGrid()
     { }
 
     /// <summary>
-    /// Create instance of BoundingBox2DGrid
+    /// Overload constructor with parameters.
     /// </summary>
-    public static BoundingBox2DGrid CreateBoundingBox2DGrid(
-    double botLeftX,
-    double botLeftY,
-    double topRightX,
-    double topRightY
+    /// <param name="botLeftX"></param>
+    /// <param name="botLeftY"></param>
+    /// <param name="topRightX"></param>
+    /// <param name="topRightY"></param>
+    public BoundingBox2DGrid
+    (
+      double botLeftX,
+      double botLeftY,
+      double topRightX,
+      double topRightY
     )
     {
-      return new BoundingBox2DGrid
-      {
-        bottomLeftX = botLeftX,
-        bottomleftY = botLeftY,
-        topRightX = topRightX,
-        topRightY = topRightY
-      };
+      BottomLeftX = botLeftX;
+      BottomleftY = botLeftY;
+      TopRightX = topRightX;
+      TopRightY = topRightY;
     }
 
     /// <summary>
@@ -66,7 +68,7 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (bottomLeftX > topRightX || bottomleftY > topRightY)
+      if (BottomLeftX > TopRightX || BottomleftY > TopRightY)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "bottomLeftLon", Required = Required.Always)]
     [Required]
     [DecimalIsWithinRange(-Math.PI, Math.PI)]
-    public double bottomLeftLon { get; private set; }
+    public double BottomLeftLon { get; private set; }
 
     /// <summary>
     /// The bottom left corner of the bounding box, expressed in radians
@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "bottomLeftLat", Required = Required.Always)]
     [Required]
     [DecimalIsWithinRange(-Math.PI / 2, Math.PI / 2)]
-    public double bottomLeftLat { get; private set; }
+    public double BottomLeftLat { get; private set; }
 
     /// <summary>
     /// The top right corner of the bounding box, expressed in radians
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "topRightLon", Required = Required.Always)]
     [Required]
     [DecimalIsWithinRange(-Math.PI, Math.PI)]
-    public double topRightLon { get; private set; }
+    public double TopRightLon { get; private set; }
 
     /// <summary>
     /// The top right corner of the bounding box, expressed in radians
@@ -43,32 +43,34 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "topRightLat", Required = Required.Always)]
     [Required]
     [DecimalIsWithinRange(-Math.PI / 2, Math.PI / 2)]
-    public double topRightLat { get; private set; }
+    public double TopRightLat { get; private set; }
 
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private BoundingBox2DLatLon()
     { }
 
     /// <summary>
-    /// Create instance of BoundingBox2DLatLon
+    /// Overload constructor with parameters.
     /// </summary>
-    public static BoundingBox2DLatLon CreateBoundingBox2DLatLon(
-        double blLon,
-        double blLat,
-        double trLon,
-        double trLat
-        )
+    /// <param name="blLon"></param>
+    /// <param name="blLat"></param>
+    /// <param name="trLon"></param>
+    /// <param name="trLat"></param>
+    public BoundingBox2DLatLon
+    (
+      double blLon,
+      double blLat,
+      double trLon,
+      double trLat
+    )
     {
-      return new BoundingBox2DLatLon
-      {
-        bottomLeftLon = blLon,
-        bottomLeftLat = blLat,
-        topRightLon = trLon,
-        topRightLat = trLat
-      };
+      BottomLeftLon = blLon;
+      BottomLeftLat = blLat;
+      TopRightLon = trLon;
+      TopRightLat = trLat;
     }
 
     /// <summary>
@@ -76,7 +78,7 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (bottomLeftLon > topRightLon || bottomLeftLat > topRightLat)
+      if (BottomLeftLon > TopRightLon || BottomLeftLat > TopRightLat)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

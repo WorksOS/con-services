@@ -31,8 +31,6 @@ namespace VSS.Productivity3D.Models.ResultHandling
     [JsonProperty(PropertyName = "maxCMVPercent")]
     public double MaxCMVPercent { get; set; }
 
-    public static CompactionCmvDetailedResult CreateEmptyResult() => new CompactionCmvDetailedResult();
-
     /// <summary>
     /// Default private constructor.
     /// </summary>
@@ -40,36 +38,28 @@ namespace VSS.Productivity3D.Models.ResultHandling
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CompactionCmvDetailedResult CreateCmvDetailedResult(CMVDetailedResult result1, CMVSummaryResult result2, CMVSettings settings)
+    /// <param name="result1"></param>
+    /// <param name="result2"></param>
+    /// <param name="settings"></param>
+    public CompactionCmvDetailedResult(CMVDetailedResult result1, CMVSummaryResult result2, CMVSettings settings)
     {
-      CompactionCmvDetailedResult details = null;
+      if (result1 != null && result1.HasData())
+      {
+        Percents = result1.Percents;
 
-      if (result1 == null || !result1.HasData())
-      {
-        details = CreateEmptyResult();
-      }
-      else
-      {
-        details = new CompactionCmvDetailedResult
-        {
-          Percents = result1.Percents
-        };
-      }
+        if (result2 == null || !result2.HasData()) return;
 
-      if (result2 != null && result2.HasData())
-      {
-        details.MinCMVPercent = settings.minCMVPercent;
-        details.MaxCMVPercent = settings.maxCMVPercent;
-        details.CmvTarget = new CmvTargetData
+        MinCMVPercent = settings.MinCMVPercent;
+        MaxCMVPercent = settings.MaxCMVPercent;
+        CmvTarget = new CmvTargetData
         {
           CmvMachineTarget = result2.ConstantTargetCmv / 10,
           TargetVaries = !result2.IsTargetCmvConstant
         };
       }
-
-      return details;
     }
+
   }
 }

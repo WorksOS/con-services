@@ -61,9 +61,16 @@ namespace VSS.Productivity3D.Models.ResultHandling
     { }
 
     /// <summary>
-    /// Create instance of PassCountSummaryResult
+    /// Overload constructor with parameters.
     /// </summary>
-    public static PassCountSummaryResult Create(
+    /// <param name="constantTargetPassCountRange"></param>
+    /// <param name="isTargetPassCountConstant"></param>
+    /// <param name="percentEqualsTarget"></param>
+    /// <param name="percentGreaterThanTarget"></param>
+    /// <param name="percentLessThanTarget"></param>
+    /// <param name="returnCode"></param>
+    /// <param name="totalAreaCoveredSqMeters"></param>
+    public PassCountSummaryResult(
       TargetPassCountRange constantTargetPassCountRange,
       bool isTargetPassCountConstant,
       double percentEqualsTarget,
@@ -72,16 +79,13 @@ namespace VSS.Productivity3D.Models.ResultHandling
       short returnCode,
       double totalAreaCoveredSqMeters)
     {
-      return new PassCountSummaryResult
-      {
-        ConstantTargetPassCountRange = constantTargetPassCountRange,
-        IsTargetPassCountConstant = isTargetPassCountConstant,
-        PercentEqualsTarget = percentEqualsTarget,
-        PercentGreaterThanTarget = percentGreaterThanTarget,
-        PercentLessThanTarget = percentLessThanTarget,
-        ReturnCode = returnCode,
-        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
-      };
+      ConstantTargetPassCountRange = constantTargetPassCountRange;
+      IsTargetPassCountConstant = isTargetPassCountConstant;
+      PercentEqualsTarget = percentEqualsTarget;
+      PercentGreaterThanTarget = percentGreaterThanTarget;
+      PercentLessThanTarget = percentLessThanTarget;
+      ReturnCode = returnCode;
+      TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters;
     }
 
     /// <summary>
@@ -91,7 +95,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public override string ToString()
     {
       return
-        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.min}, {this.ConstantTargetPassCountRange.max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percentEqualsTarget:{this.PercentEqualsTarget}, percentGreaterThanTarget:{this.PercentGreaterThanTarget}, percentLessThanTarget:{this.PercentLessThanTarget}, totalAreaCoveredSqMeters:{this.TotalAreaCoveredSqMeters}, returnCode:{this.ReturnCode}";
+        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.Min}, {this.ConstantTargetPassCountRange.Max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percentEqualsTarget:{this.PercentEqualsTarget}, percentGreaterThanTarget:{this.PercentGreaterThanTarget}, percentLessThanTarget:{this.PercentLessThanTarget}, totalAreaCoveredSqMeters:{this.TotalAreaCoveredSqMeters}, returnCode:{this.ReturnCode}";
     }
   }
 }
