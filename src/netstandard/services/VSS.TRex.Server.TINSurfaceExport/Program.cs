@@ -120,15 +120,23 @@ namespace VSS.TRex.Server.TINSurfaceExport
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");
 
+      var cancelTokenSource = new CancellationTokenSource();
       var server = new TINSurfaceExportRequestServer();
-      Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += (s, a) =>
+
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
-        WaitHandle.Set();
+        cancelTokenSource.Cancel();
       };
 
-      WaitHandle.WaitOne();
+      //Console.WriteLine("Press ctrl+c to exit");
+      //Console.CancelKeyPress += (s, a) =>
+      //{
+      //  Console.WriteLine("Exiting");
+      //  WaitHandle.Set();
+      //};
+
+      //WaitHandle.WaitOne();
     }
   }
 }
