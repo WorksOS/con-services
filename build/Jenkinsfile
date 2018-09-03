@@ -34,6 +34,7 @@ node ('jenkinsslave-pod') {
 		"TileRendering",
 		"TINSurfaceExport",
 		"Gateway",
+		"MutableGateway",
 		"Webtools",
 		"Utils"
 		]
