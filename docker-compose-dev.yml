@@ -11,8 +11,7 @@ services:
      - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
      - FILTER_API_URL=http://filter.dev.k8s.vspengg.com/api/v1
      - TREX_TAGFILE_API_URL=http://api-stg.trimble.com/t/trimble.com/vss-alpha-trexgateway/2.0/tagfiles
-     - SCHEDULER_INTERNAL_EXPORT_URL=http://10.97.96.103:3011/internal/v1/export
-     - TREX_TAGFILE_API_URL=http://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/2.0/tagfiles
+     - SCHEDULER_INTERNAL_EXPORT_URL=http://10.97.96.103:3011/internal/v1/export     
      - GEOFENCE_CACHE_LIFE=00:15:00
      - PROJECT_CACHE_LIFE=00:30:00
      - IMPORTED_FILE_CACHE_LIFE=00:15:00

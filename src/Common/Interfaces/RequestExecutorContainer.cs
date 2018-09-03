@@ -9,6 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -64,6 +65,8 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected ITRexTagFileProxy tRexTagFileProxy;
 
     protected IDictionary<string, string> customHeaders;
+
+    protected RaptorPrincipal User;
 
     /// <summary>
     /// Gets the available contract execution error states.
@@ -147,7 +150,9 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IDictionary<string, string> customHeaders)
+    public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, 
+      IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
+      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IDictionary<string, string> customHeaders)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;

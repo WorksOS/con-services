@@ -16,7 +16,9 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient = null,
       ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null,
-      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, IDictionary<string, string> customHeaders = null)
+      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
+      ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, 
+      IDictionary<string, string> customHeaders = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;

@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -36,13 +38,8 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly ILoggerFactory logger;
     private readonly ITransferProxy transferProxy;
     private readonly IConfigurationStore configStore;
-    private readonly bool useTrexGateway;
     private readonly ITRexTagFileProxy tRexTagFileProxy;
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
-
-    private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
-      ? VelociraptorConstants.NO_PROJECT_ID
-      : await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid.Value);
+    private IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.
@@ -56,28 +53,25 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       this.transferProxy = transferProxy;
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.configStore = configStore;
-
-      useTrexGateway = false;
-      if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out useTrexGateway))
-      {
-        useTrexGateway = false;
-      }
     }
 
     /// <summary>
-    /// Posts TAG file to Raptor. 
+    /// Posts TAG file to TRex and Raptor. 
     /// </summary>
     /// <remarks>
-    /// This endpoint is only used as a tool for for reprocessing tagfiles for Raptor (not TRex).
+    /// This endpoint is only used as a tool for for reprocessing tagfiles for Trex and Raptor.
     /// </remarks>
     [PostRequestVerifier]
     [Route("api/v1/tagfiles")]
     [HttpPost]
-    public IActionResult Post([FromBody]TagFileRequestLegacy request)
+    public async Task<IActionResult> Post([FromBody]TagFileRequestLegacy request)
     {
       request.Validate();
 
-      return ExecuteRequest(request);
+      var requestExt =
+        CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, null);
+
+      return await ExecuteNonDirectRequest(requestExt).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -94,44 +88,24 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
 
-      // todos as per the direct API
-      if (useTrexGateway)
-      {
-        try
-        {
-          request.Validate();
-
-          var resultTRex = await RequestExecutorContainerFactory
-            .Build<TagFileNonDirectSubmissionTRexExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, null, tRexTagFileProxy, CustomHeaders)
-            .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
-
-          if (resultTRex.Code == 0)
-          {
-            log.LogDebug($"PostTagFile (nonDirect TRex): Successfully imported TAG file '{request.FileName}'.");
-          }
-          else
-          {
-            log.LogDebug($"PostTagFile (nonDirect TRex): Failed to import TAG file '{request.FileName}', {resultTRex.Message}");
-          }
-        }
-        catch (Exception ex)
-        {
-          log.LogDebug($"PostTagFile (nonDirect): failed with ServiceException {ex.Message}");
-        }
+      Guid result;
+      if (request.ProjectUid == null || !Guid.TryParse(request.ProjectUid.ToString(), out result))
+      { 
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Failed to process tagfile with error: Manual tag file submissions must include a projectUid."));
       }
 
       var legacyProjectId = GetLegacyProjectId(request.ProjectUid).Result;
       WGS84Fence boundary = null;
-
       if (legacyProjectId != VelociraptorConstants.NO_PROJECT_ID)
       {
         boundary = await GetProjectBoundary(legacyProjectId);
       }
+      var requestExt =
+        CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, legacyProjectId, boundary);
 
-      var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, legacyProjectId, boundary, VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
-      tagFileRequest.Validate();
-
-      return ExecuteRequest(tagFileRequest);
+      return await ExecuteNonDirectRequest(requestExt).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -148,59 +122,23 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
-      // for now: we will ALWAYS send to Raptor, but only send to TRex if configured.
-      //          if TRex fails, then we will continue sending to Raptor
-      // todo:
-      //          work out where archiving is done (trex gateway only does on success)
-      //          gateway will eventually return a ContractExecutionResult 
-
-      if (useTrexGateway)
-      {
-        try
-        {
-          request.Validate();
-
-          var resultTRex = await RequestExecutorContainerFactory
-            .Build<TagFileDirectSubmissionTRexExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, null, tRexTagFileProxy, CustomHeaders)
-            .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
-
-          if (resultTRex.Code == 0)
-          {
-            log.LogDebug($"PostTagFile (Direct TRex): Successfully imported TAG file '{request.FileName}'.");
-          }
-          else
-          {
-            log.LogDebug($"PostTagFile (Direct TRex): Failed to import TAG file '{request.FileName}', {resultTRex.Message}");
-          }
-        }
-        catch (Exception ex)
-        {
-          log.LogDebug($"PostTagFile (Direct): failed with ServiceException {ex.Message}");
-        }
-      }
-
-      var tfRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data, VelociraptorConstants.NO_PROJECT_ID, null, VelociraptorConstants.NO_MACHINE_ID, false, false);
-      tfRequest.Validate();
-
       var result = await RequestExecutorContainerFactory
-             .Build<TagFileDirectSubmissionRaptorExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy)
-             .ProcessAsync(tfRequest) as TagFileDirectSubmissionResult;
+        .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, customHeaders)
+        .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)
       {
-        log.LogDebug($"PostTagFile (Direct): Successfully imported TAG file '{request.FileName}'.");
-        return StatusCode((int)HttpStatusCode.OK, result);
+        return StatusCode((int) HttpStatusCode.OK, result);
       }
 
-      log.LogDebug($"PostTagFile (Direct): Failed to import TAG file '{request.FileName}', {result.Message}");
       return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
 
-    private IActionResult ExecuteRequest(TagFileRequestLegacy tfRequest)
+    private async Task<IActionResult> ExecuteNonDirectRequest(CompactionTagFileRequestExtended requestExt)
     {
-      var responseObj = RequestExecutorContainerFactory
-                        .Build<TagFileNonDirectSubmissionRaptorExecutor>(logger, raptorClient, tagProcessor)
-                        .Process(tfRequest);
+      var responseObj = await RequestExecutorContainerFactory
+        .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, customHeaders)
+        .ProcessAsync(requestExt).ConfigureAwait(false);
 
       return responseObj.Code == 0
         ? (IActionResult)Ok(responseObj)
@@ -218,16 +156,22 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver(properties) });
     }
 
+
+    private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
+      ? VelociraptorConstants.NO_PROJECT_ID
+      : await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid.Value);
+
     /// <summary>
     /// Gets the WGS84 project boundary geofence for a given project Id.
     /// </summary>
     private async Task<WGS84Fence> GetProjectBoundary(long legacyProjectId)
     {
-      var projectData = await((RaptorPrincipal)User).GetProject(legacyProjectId);
+      var projectData = await ((RaptorPrincipal)User).GetProject(legacyProjectId);
 
       return projectData.ProjectGeofenceWKT == null
         ? null
         : WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
+
   }
 }
