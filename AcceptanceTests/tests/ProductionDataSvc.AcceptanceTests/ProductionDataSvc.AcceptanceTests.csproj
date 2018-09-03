@@ -277,11 +277,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DesignCache.feature</DependentUpon>
     </Compile>
-    <Compile Include="DotOnTheMap.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DotOnTheMap.feature</DependentUpon>
-    </Compile>
     <Compile Include="DxfTile.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -521,11 +516,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="TagFile.feature.cs">
-      <DependentUpon>TagFile.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="StepDefinitions\DesignCacheSteps.cs" />
     <Compile Include="StepDefinitions\DotOnTheMapSteps.cs" />
     <Compile Include="StepDefinitions\EditDataSteps.cs" />
@@ -645,10 +635,6 @@
     <None Include="DesignCache.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>DesignCache.feature.cs</LastGenOutput>
-    </None>
-    <None Include="DotOnTheMap.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>DotOnTheMap.feature.cs</LastGenOutput>
     </None>
     <None Include="DxfTile.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -790,10 +776,6 @@
     <None Include="SummaryVolumes.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>SummaryVolumes.feature.cs</LastGenOutput>
-    </None>
-    <None Include="TagFile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>TagFile.feature.cs</LastGenOutput>
     </None>
     <None Include="TestData\0523J019SW--CB54XW  JLM00885--140826174539.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

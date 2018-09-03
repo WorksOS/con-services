@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using System.Net;
-using Newtonsoft.Json;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.FIlters;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models

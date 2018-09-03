@@ -56,25 +56,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     }
 
     /// <summary>
-    /// Posts TAG file to TRex and Raptor. 
-    /// </summary>
-    /// <remarks>
-    /// This endpoint is only used as a tool for for reprocessing tagfiles for Trex and Raptor.
-    /// </remarks>
-    [PostRequestVerifier]
-    [Route("api/v1/tagfiles")]
-    [HttpPost]
-    public async Task<IActionResult> Post([FromBody]TagFileRequestLegacy request)
-    {
-      request.Validate();
-
-      var requestExt =
-        CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, null);
-
-      return await ExecuteNonDirectRequest(requestExt).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// For accepting and loading manually or automatically submitted tag files.
     /// </summary>
     /// <remarks>
@@ -87,15 +68,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     {
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
-
-      Guid result;
-      if (request.ProjectUid == null || !Guid.TryParse(request.ProjectUid.ToString(), out result))
-      { 
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Failed to process tagfile with error: Manual tag file submissions must include a projectUid."));
-      }
-
+      
       var legacyProjectId = GetLegacyProjectId(request.ProjectUid).Result;
       WGS84Fence boundary = null;
       if (legacyProjectId != VelociraptorConstants.NO_PROJECT_ID)
@@ -105,7 +78,13 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var requestExt =
         CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, legacyProjectId, boundary);
 
-      return await ExecuteNonDirectRequest(requestExt).ConfigureAwait(false);
+      var responseObj = await RequestExecutorContainerFactory
+        .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, customHeaders)
+        .ProcessAsync(requestExt).ConfigureAwait(false);
+
+      return responseObj.Code == 0
+        ? (IActionResult)Ok(responseObj)
+        : BadRequest(responseObj);
     }
 
     /// <summary>
@@ -133,18 +112,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
-
-    private async Task<IActionResult> ExecuteNonDirectRequest(CompactionTagFileRequestExtended requestExt)
-    {
-      var responseObj = await RequestExecutorContainerFactory
-        .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, customHeaders)
-        .ProcessAsync(requestExt).ConfigureAwait(false);
-
-      return responseObj.Code == 0
-        ? (IActionResult)Ok(responseObj)
-        : BadRequest(responseObj);
-    }
-
+    
     /// <summary>
     /// Serialize the request ignoring the Data property so not to overwhelm the logs.
     /// </summary>
