@@ -60,13 +60,11 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Executors
             data = new byte[stream.Length];
             stream.Read(data, 0, (int)stream.Length);
             success = true;
-            log.LogInformation("RawFileAccessExecutor: Succeeded in reading {0}: {1}\\{2}",
-                request.FilespaceId, request.Path, request.FileName);
+            log.LogInformation("RawFileAccessExecutor: Succeeded in reading {0}: {1}\\{2}",request.FilespaceId, request.Path, request.FileName);
           }
           else
           {
-            log.LogInformation("RawFileAccessExecutor: Failed to read {0}: {1}\\{2} (stream is 0 length)",
-                request.FilespaceId, request.Path, request.FileName);
+            log.LogInformation("RawFileAccessExecutor: Failed to read {0}: {1}\\{2} (stream is 0 length)",request.FilespaceId, request.Path, request.FileName);
           }
         }
         else
@@ -76,8 +74,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Executors
       }
       catch (Exception ex)
       {
-        log.LogError(null, ex, "***ERROR*** FileAccessExecutor: Failed on getting {0} file from TCC!",
-            request.FileName);
+        log.LogError(null, ex, "***ERROR*** FileAccessExecutor: Failed on getting {0} file from TCC!",request.FileName);
       }
 
       if (success)
@@ -85,8 +82,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Executors
         return RawFileAccessResult.CreateRawFileAccessResult(data);
       }
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to download file from TCC"));
+      throw new ServiceException(HttpStatusCode.BadRequest,new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to download file from TCC"));
     }
 
     protected override void ProcessErrorCodes()
@@ -98,9 +94,9 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Executors
     {
       string fullName = string.IsNullOrEmpty(file.FileName) ? file.Path : Path.Combine(file.Path, file.FileName);
       fullName = fullName.Replace(Path.DirectorySeparatorChar, '/');
-
+      log.LogDebug("DownloadFile: {0}: {1} {2}", file.FilespaceId, file.Path, file.FileName);
       var downloadFileResult = fileAccess.GetFile(file.FilespaceId, fullName).Result;
-
+      log.LogDebug("DownloadFile Result length: {0}", downloadFileResult.Length);
       if (downloadFileResult != null && downloadFileResult.Length > 0)
       {
         downloadFileResult.Seek(0, SeekOrigin.Begin);
