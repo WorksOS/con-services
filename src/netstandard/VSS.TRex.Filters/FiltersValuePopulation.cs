@@ -109,13 +109,6 @@ namespace VSS.TRex.Filters
       if (PopulationControl.WantsEventInAvoidZoneStateValues)
       {
         throw new NotImplementedException("PopulationControl.WantsEventInAvoidZoneStateValues not implemented");
-        /*
-        LocateInAvoidZone2DStateValueAtDate(MachineTargetValues, _Time, _EventInAvoidZone);
-        EventValues.EventInAvoidZoneState = _EventInAvoidZone;
-
-        LocateInAvoidZoneUSStateValueAtDate(MachineTargetValues, _Time, _EventInAvoidZone);
-        EventValues.EventInAvoidZoneState = EventValues.EventInAvoidZoneState || _EventInAvoidZone;
-        */
       }
 
       if (PopulationControl.WantsEventGPSAccuracyValues)

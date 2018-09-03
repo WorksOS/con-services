@@ -35,7 +35,6 @@ namespace VSS.TRex.Filters
         public bool HasVibeStateFilter { get; set; }
         public bool HasLayerStateFilter { get; set; }
         public bool HasMinElevMappingFilter { get; set; }
-        //        public bool HasAvoidZoneStateFilter { get; set; }
         public bool HasElevationTypeFilter { get; set; }
         public bool HasGCSGuidanceModeFilter { get; set; } 
         public bool HasGPSAccuracyFilter { get; set; }
@@ -112,7 +111,6 @@ namespace VSS.TRex.Filters
         {
             // Set the filter internal flag to indicate that there is at least one attribute filter configured.
             AnyFilterSelections =
-                //                HasAvoidZoneStateFilter ||
                 HasCompactionMachinesOnlyFilter ||
                 HasDesignFilter ||
                 HasElevationRangeFilter ||
@@ -138,7 +136,6 @@ namespace VSS.TRex.Filters
                 HasMachineDirectionFilter ||
                 HasMinElevMappingFilter ||
                 HasGCSGuidanceModeFilter ||
-                // HasInAvoidZoneFilter ||
                 HasGPSAccuracyFilter ||
                 HasGPSToleranceFilter ||
                 HasPositioningTechFilter ||

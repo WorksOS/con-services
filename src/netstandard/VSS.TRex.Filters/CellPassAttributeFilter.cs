@@ -108,11 +108,6 @@ namespace VSS.TRex.Filters
     /// </summary>
     public bool GPSToleranceIsGreaterThan { get; set; }
 
-    // AvoidZoneEnteringEvents : Boolean;
-    // AvoidZoneExitingEvents : Boolean;
-    // AvoidZone2DZones : Boolean;
-    // AvoidZoneUndergroundServiceZones : Boolean;
-
     public ElevationType ElevationType { get; set; } = ElevationType.Last;
 
     /// <summary>
@@ -257,7 +252,6 @@ namespace VSS.TRex.Filters
       ClearMachineDirection();
       ClearPassType();
       ClearMinElevationMapping();
-      // ClearAvoidZoneState();
       ClearElevationType();
       ClearGuidanceMode();
       ClearElevationRange();
@@ -701,13 +695,6 @@ namespace VSS.TRex.Filters
       GPSAccuracyIsInclusive = Source.GPSAccuracyIsInclusive;
       GPSToleranceIsGreaterThan = Source.GPSToleranceIsGreaterThan;
 
-      /*
-        AvoidZoneEnteringEvents  = Source.FAvoidZoneEnteringEvents;
-        AvoidZoneExitingEvents  = Source.FAvoidZoneExitingEvents;
-        AvoidZone2DZones  = Source.FAvoidZone2DZones;
-        AvoidZoneUndergroundServiceZones = Source.FAvoidZoneUndergroundServiceZones;
-      */
-
       ElevationType = Source.ElevationType;
 
       GCSGuidanceMode = Source.GCSGuidanceMode;
@@ -760,19 +747,6 @@ namespace VSS.TRex.Filters
       Prepare();
 
     }
-
-    /*
-public void TICGridDataPassFilter.ClearAvoidZoneState;
-{
-Exclude(FilterSelections, icfsInAvoidZone);
-
-FAvoidZoneEnteringEvents = false;
-FAvoidZoneExitingEvents = false;
-
-FAvoidZone2DZones = false;
-FAvoidZoneUndergroundServiceZones = false;
-}
-*/
 
     public void ClearCompactionMachineOnlyRestriction()
     {
@@ -843,29 +817,11 @@ FAvoidZoneUndergroundServiceZones = false;
       IMachine Machine;
       ushort LayerIDStateValue = ushort.MaxValue; // ID of current layer
 
-      /* SPR 10733: AZ filters should only apply to AZ transgression events
-      InAvoidZoneStateValue: TICInAvoidZoneState;
-      AvoidZoneEvent : TICEventInAvoidZoneStateValueChangeBase;
-      AZ2DResult : Boolean;
-      AZUSResult : Boolean;
-      */
-
       if (!AnyFilterSelections)
       {
         // There are no constrictive filter criteria - all cell passes pass the filter
         return false;
       }
-
-      /* TODO
-        {$IFOPT C+}
-        if not Assigned(FOwner) 
-          {
-            SIGLogMessage.Publish(Self, 'TICGridDataPassFilter.FilterPass: SiteModel owner not set for filter', slmcError); {SKIP}
-            Result = false;
-            Exit;
-          }
-        {$ENDIF}
-      */
 
       if (HasTimeFilter)
       {
@@ -942,40 +898,6 @@ FAvoidZoneUndergroundServiceZones = false;
           return false;
       }
 
-      /* SPR 10733: AZ filters should only apply to AZ transgression events
-      if icfsInAvoidZone in FilterSelections 
-      {
-        if FAvoidZone2DZones 
-          {
-            AvoidZoneEvent = LocateInAvoidZone2DStateValueAtDate(PassValue.MachineID, PassValue.Time, InAvoidZoneStateValue);
-
-AZ2DResult = Assigned(AvoidZoneEvent) and
-              (((FAvoidZoneEnteringEvents and AvoidZoneEvent.IsInsideAvoidanceZone) OR
-                (FAvoidZoneExitingEvents and AvoidZoneEvent.IsOutsideAvoidanceZone))
-                          AND
-                          AvoidZoneEvent.Is2DZoneAvoidanceZone);
-end
-        else
-          AZ2DResult = true;
-
-        if FAvoidZoneUndergroundServiceZones 
-          {
-            AvoidZoneEvent = LocateInAvoidZoneUSStateValueAtDate(PassValue.MachineID, PassValue.Time, InAvoidZoneStateValue);
-
-AZUSResult = Assigned(AvoidZoneEvent) and
-              (((FAvoidZoneEnteringEvents and AvoidZoneEvent.IsInsideAvoidanceZone) OR
-                (FAvoidZoneExitingEvents and AvoidZoneEvent.IsOutsideAvoidanceZone))
-                          AND
-                          AvoidZoneEvent.IsUndergroundServiceAvoidanceZone);
-end
-        else
-          AZUSResult = true;
-
-        if not(AZ2DResult or AZUSResult) 
-         Exit;
-}
-      */
-
       if (HasGPSAccuracyFilter || HasGPSToleranceFilter)
       {
         GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out StateChangeIndex, GPSAccuracyAndToleranceValue);
@@ -1028,11 +950,6 @@ end
 
     public override bool FilterPass(ref FilteredPassData PassValue)
     {
-      /* SPR 10733: AZ filters should only apply to AZ transgression events
-      AZ2DResult : Boolean;
-    AZUSResult : Boolean;
-      */
-
       IMachine Machine;
 
       if (!AnyFilterSelections)
@@ -1105,26 +1022,6 @@ Exit;
         if (GCSGuidanceMode != PassValue.EventValues.EventMachineAutomatics)
           return false;
       }
-
-      /* SPR 10733: AZ filters should only apply to AZ transgression events
-      if icfsInAvoidZone in FilterSelections 
-        {
-          if FAvoidZone2DZones 
-            AZ2DResult = (FAvoidZoneEnteringEvents and((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZone2DMask) != 0)) OR
-                         (FAvoidZoneExitingEvents and ((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZone2DMask) = 0))
-          else
-            AZ2DResult = true;
-
-          if FAvoidZoneUndergroundServiceZones 
-            AZUSResult = (FAvoidZoneEnteringEvents and((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZoneUndergroundServiceMask) != 0)) OR
-                         (FAvoidZoneExitingEvents and ((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZoneUndergroundServiceMask) = 0))
-          else
-            AZUSResult = true;
-
-          if not(AZ2DResult or AZUSResult) 
-           Exit;
-    }
-      */
 
       if (HasGPSAccuracyFilter)
       {
@@ -1216,27 +1113,11 @@ Exit;
 
     public bool FilterPass_MachineEvents(ref FilteredPassData PassValue)
     {
-      /*
-         SPR 10733: AZ filters should only apply to AZ transgression events
-        AZ2DResult : Boolean;
-        AZUSResult : Boolean;
-      */
-
       if (!AnyMachineEventFilterSelections)
       {
         // There are no constrictive machine events filter criteria - all cell passes pass the filter
         return true;
       }
-
-      // TODO readd when IFOPT c+ understood in c#
-      /*{$IFOPT C+}
-      if not Assigned(FOwner) 
-        {
-          SIGLogMessage.Publish(Self, 'TICGridDataPassFilter.FilterPass: SiteModel owner not set for filter', slmcError); {SKIP}
-          Result = false;
-          Exit;
-        }
-      {$ENDIF} */
 
       if (HasDesignFilter)
       {
@@ -1268,26 +1149,6 @@ Exit;
         if (GCSGuidanceMode != PassValue.EventValues.EventMachineAutomatics)
           return false;
       }
-
-      /* SPR 10733: AZ filters should only apply to AZ transgression events
-      if icfsInAvoidZone in FilterSelections 
-        {
-          if FAvoidZone2DZones 
-            AZ2DResult = (FAvoidZoneEnteringEvents and((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZone2DMask) != 0)) OR
-                         (FAvoidZoneExitingEvents and ((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZone2DMask) = 0))
-          else
-            AZ2DResult = true;
-
-          if FAvoidZoneUndergroundServiceZones 
-            AZUSResult = (FAvoidZoneEnteringEvents and((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZoneUndergroundServiceMask) != 0)) OR
-                         (FAvoidZoneExitingEvents and ((PassValue.EventValues.EventInAvoidZoneState and kICInAvoidZoneUndergroundServiceMask) = 0))
-          else
-            AZUSResult = true;
-
-          if not(AZ2DResult or AZUSResult) 
-           Exit;
-    }
-      */
 
       if (HasGPSAccuracyFilter)
       {
@@ -1400,9 +1261,8 @@ Exit;
     public bool FilterSinglePass(CellPass[] PassValues,
         int PassValueCount,
         ref FilteredSinglePassInfo FilteredPassInfo,
-        //             ref FilteredMultiplePassInfo FilteredPassesBuffer)
-        object /*IProfileCell*/ profileCell
-    )
+        //             ref FilteredMultiplePassInfo FilteredPassesBuffer
+        object /*IProfileCell*/ profileCell)
     {
       return base.FilterSinglePass(PassValues,
           PassValueCount,
@@ -1411,43 +1271,6 @@ Exit;
           (IProfileCell)profileCell,
           true);
     }
-
-    /*
-public void TICGridDataPassFilter.GetCurrentSettings(const Settings: TICFilterSettings);
-{
-  if not Assigned(Settings) 
-    Exit;
-
-Settings.StartTime    = FStartTime;
-  Settings.EndTime      = FEndTime;
-  Settings.Machines     = FMachines;
-  Settings.DesignNameID = FDesignNameID;
-  Settings.VibeState    = FVibeState;
-  Settings.LayerState   = FLayerState;
-  Settings.MachineDirection = FMachineDirection;
-  Settings.MinElevationMapping = FMinElevationMapping;
-  Settings.PositioningTech = FPositioningTech;
-  Settings.GPSAccuracy = FGPSAccuracy;
-  Settings.GPSTolerance = FGPSTolerance;
-  Settings.GPSToleranceIsGreaterThan = FGPSToleranceIsGreaterThan;
-  Settings.AvoidZoneEnteringEvents = FAvoidZoneEnteringEvents;
-  Settings.AvoidZoneExitingEvents = FAvoidZoneExitingEvents;
-  Settings.AvoidZone2DZones = FAvoidZone2DZones;
-  Settings.AvoidZoneUndergroundServiceZones = FAvoidZoneUndergroundServiceZones;
-  Settings.ElevationType   = FElevationType;
-  Settings.GCSGuidanceMode = FGCSGuidanceMode;
-  Settings.ReturnEarliestFilteredCellPass = FReturnEarliestFilteredCellPass;
-  Settings.PassFilterSelections = FilterSelections;
-  Settings.LayerID = FLayerID;
-  Settings.PassTypeSelections = FPassTypeSet;
-  Settings.ElevationRangeLevel = FElevationRangeLevel;
-  Settings.ElevationRangeOffset =  FElevationRangeOffset;
-  Settings.ElevationRangeThickness  =  FElevationRangeThickness;
-  Settings.ElevationRangeDesign  = FElevationRangeDesign;
-  Settings.ElevationType = FElevationType;
-
-}
-*/
 
     public void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY)
     {
@@ -1474,70 +1297,6 @@ Settings.StartTime    = FStartTime;
 
       ElevationRangeBottomElevationForCell = ElevationRangeTopElevationForCell - ElevationRangeThickness;
     }
-
-    /*
-public void TICGridDataPassFilter.Initialise(const Settings: TICFilterSettings);
-var i : Integer;
-{
-  if not Assigned(Settings) 
-    Exit;
-
-FStartTime                            = Settings.StartTime;
-  FEndTime                              = Settings.EndTime;
-
-  FMachines                             = Settings.Machines;
-  InitialiseMachineIDsSet;
-
-  FDesignNameID                         = Settings.DesignNameID;
-  FVibeState                            = Settings.VibeState;
-  FLayerState                           = Settings.LayerState;
-  FMachineDirection                     = Settings.MachineDirection;
-  FMinElevationMapping                  = Settings.MinElevationMapping;
-
-  FPositioningTech                      = Settings.PositioningTech;
-
-  FGPSTolerance                         = Settings.GPSTolerance;
-  FGPSAccuracyIsInclusive               = Settings.GPSAccuracyIsInclusive;
-  FGPSToleranceIsGreaterThan            = Settings.GPSToleranceIsGreaterThan;
-  FGPSAccuracy                          = Settings.GPSAccuracy;
-
-  FAvoidZoneEnteringEvents              = Settings.AvoidZoneEnteringEvents;
-  FAvoidZoneExitingEvents               = Settings.AvoidZoneExitingEvents;
-  FAvoidZone2DZones                     = Settings.AvoidZone2DZones;
-  FAvoidZoneUndergroundServiceZones     = Settings.AvoidZoneUndergroundServiceZones;
-
-  FElevationType                        = Settings.ElevationType;
-  FGCSGuidanceMode                      = Settings.GCSGuidanceMode;
-
-  FReturnEarliestFilteredCellPass       = Settings.ReturnEarliestFilteredCellPass;
-
-  FElevationRangeDesign                 = Settings.ElevationRangeDesign;
-  FElevationRangeLevel                  = Settings.ElevationRangeLevel;
-  FElevationRangeOffset                 = Settings.ElevationRangeOffset;
-  FElevationRangeThickness              = Settings.ElevationRangeThickness;
-
-  FRestrictFilteredDataToCompactorsOnly = Settings.HasCompactionMachinesOnlyComponent;
-
-  FilterSelections                      = Settings.PassFilterSelections;
-
-  SetLength(FSurveyedSurfaceExclusionList, Length(Settings.SurveyedSurfaceExclusionList));
-  for i = Low(Settings.SurveyedSurfaceExclusionList) to High(Settings.SurveyedSurfaceExclusionList) do
-    FSurveyedSurfaceExclusionList[i]=Settings.SurveyedSurfaceExclusionList[i];
-
-  FLayerID                              = Settings.LayerID;
-  FPassTypeSet                          = Settings.PassTypeSelections;
-}
-*/
-
-    /*
-     * public void TICGridDataPassFilter.Initialise(const AOwner: TObject;
-const Settings: TICFilterSettings);
-{
-  SetOwner(AOwner);
-
-  Initialise(Settings);
-}
-*/
 
     public void InitialiseElevationRangeFilter(IClientHeightLeafSubGrid DesignElevations)
     {
@@ -1591,327 +1350,6 @@ const Settings: TICFilterSettings);
     // stored
 
     public bool LastRecordedCellPassSatisfiesFilter => !AnyFilterSelections && !ReturnEarliestFilteredCellPass;
-
-    /* FilterEvent is not used in any apparent context in current gen systems, though it may have been used by SiteVision office for timeline requests
-            // Returns true if passes are returned which meet the set filter (if any)
-            public bool FilterEvent(ProductionEventChanges EventList, ProductionEventChangeBase Event)
-            {
-                bool EventMeetsMachineFilter;
-                //  AvoidZoneEvent                  :TICEventInAvoidZoneStateValueChangeBase;
-                //  FilteredAZEventOK               :Boolean;
-                //  ComparingIncompatibleAZs: Boolean;
-                DesignNameEvent: TICEventDesignNameValueChange;
-                VibeStateChange: TICEventVibrationStateValueChange;
-                MachinegearChange: TICEventMachineGearValueChange;
-                MinElevMappingChange: TICEventMinElevMappingStateValueChange;
-                PositioningTechStateChange: TICEventPositioningTechStateValueChange;
-                //  LayerIDStateChange              :TICLayerIDValueChangeList; ??
-                GCSGuidanceModeChange: TICEventMachineAutomaticsStateChange;
-                Machine Machine;
-                int StateChangeIndex;
-                short GPSToleranceValue;
-                GPSAccuracy GPSAccuracyValue;
-                long DesignNameEventValue;
-                VibrationState VibeStateChangeValue;
-                MachineGear MachinegearChangeValue;
-                bool MinElevMappingChangeValue;
-                PositioningTech PositioningTechStateChangeValue;
-                // LayerIDStateChangeValue         :TICLayerState; // ??
-                MachineAutomaticsMode GCSGuidanceModeChangeValue;
-
-                Machine = Owner.MachinesTargetValues.LocateByMachineID(EventList.MachineID);
-                if (Machine == null)
-                    return false;
-
-                if (HasTimeFilter)
-                {
-                    if (StartTime == DateTime.MinValue)
-                    {
-                        // It's an End/As At time filter
-                        if (Event.Date > EndTime)
-                            return false;
-                    }
-
-                    // In that case it's a time range filter
-                    if (Event.Date < StartTime || Event.Date > EndTime)
-                        return false;
-                }
-
-                if (HasMachineFilter)
-                {
-                    EventMeetsMachineFilter = false;
-
-                    for (int i = 0; i < Machines.Length; i++)
-                    {
-                        if (EventList.MachineID = Machines[i].ID)
-                        {
-                            EventMeetsMachineFilter = true;
-                            break;
-                        }
-                    }
-
-                    if (!EventMeetsMachineFilter)
-                        return false;
-                }
-
-                // Note: If one type of avoidance zone event is being filtered against another type of
-                //       avoidance zone event, then just pass this filtering step, as avoidance zones
-                //       are opaque to each others filtering. Filtering is only applied within the
-                //       same avoidance zone type in this instance. This is actually a different set
-                //       of semantics when compared to grid filtering where combinations of avoidance
-                //       zones are applied to filter cell passes
-                //(*
-                 *  if icfsInAvoidZone in FilterSelections 
-                    {
-                      FilteredAZEventOK = false;
-
-                      if FAvoidZone2DZones 
-                        {
-                          AvoidZoneEvent = Nil;
-                          ComparingIncompatibleAZs = false;
-
-                          if EventList is TICEventInAvoidZoneStateValueChangeList 
-                            {
-                              if Event is TICEventInAvoidZone2DStateValueChange 
-                                AvoidZoneEvent = TICEventInAvoidZoneStateValueChangeBase(Event)
-                              else
-                                ComparingIncompatibleAZs = true;
-                            end
-                          else
-                            {
-                              Machine.TargetValueChanges.EventMachineInAvoidZone2DStates.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                              if StateChangeIndex!= -1 
-                               AvoidZoneEvent = TICEventInAvoidZoneStateValueChangeBase(Machine.TargetValueChanges.EventMachineInAvoidZone2DStates[StateChangeIndex]);
-                }
-
-                          if not ComparingIncompatibleAZs 
-                            {
-                              if not Assigned(AvoidZoneEvent) 
-                                Exit;
-
-                              if not((FAvoidZoneEnteringEvents and AvoidZoneEvent.IsInsideAvoidanceZone) OR
-                                     (FAvoidZoneExitingEvents and AvoidZoneEvent.IsOutsideAvoidanceZone)) 
-                               Exit;
-
-                FilteredAZEventOK = true;
-                            }
-                        }
-
-                      if not FAvoidZoneUndergroundServiceZones and not FilteredAZEventOK 
-                        Exit;
-
-                      if FAvoidZoneUndergroundServiceZones 
-                        {
-                          AvoidZoneEvent = Nil;
-                          ComparingIncompatibleAZs = false;
-
-                          if EventList is TICEventInAvoidZoneStateValueChangeList 
-                            {
-                              if Event is TICEventInAvoidZoneUSStateValueChange 
-                                AvoidZoneEvent = TICEventInAvoidZoneStateValueChangeBase(Event)
-                              else
-                                ComparingIncompatibleAZs = true;
-                            end
-                          else
-                            {
-                              Machine.TargetValueChanges.EventMachineInAvoidZoneUSStates.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                              if StateChangeIndex!= -1 
-                               AvoidZoneEvent = TICEventInAvoidZoneStateValueChangeBase(Machine.TargetValueChanges.EventMachineInAvoidZoneUSStates[StateChangeIndex])
-                              else
-                                AvoidZoneEvent = Nil;
-                            }
-
-                          if not ComparingIncompatibleAZs 
-                            {
-                              if not Assigned(AvoidZoneEvent) 
-                                Exit;
-
-                              if not((FAvoidZoneEnteringEvents and AvoidZoneEvent.IsInsideAvoidanceZone) OR
-                                     (FAvoidZoneExitingEvents and AvoidZoneEvent.IsOutsideAvoidanceZone)) 
-                               Exit;
-
-                FilteredAZEventOK = true;
-                            }
-                        }
-
-                      if not FilteredAZEventOK 
-                        Exit;
-                }
-                //*)
-
-                if (HasDesignFilter)
-                {
-                    DesignNameEvent = null;
-                    DesignNameEventValue = Consts.kNoDesignNameID;
-
-                    if (EventList is TICEventDesignNameValueChangeList)
-                    {
-                        DesignNameEvent = TICEventDesignNameValueChange(Event);
-                    }
-                    else
-                    {
-                        DesignNameEventValue = Machine.TargetValueChanges.EventDesignNames.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                    }
-
-                    if (DesignNameEvent != null)
-                    {
-                        DesignNameEventValue = DesignNameEvent.EventDesignNameID;
-                    }
-
-                    if (DesignNameID != Consts.kAllDesignsNameID && DesignNameID != DesignNameEventValue)
-                        return false;
-                }
-
-                if (HasVibeStateFilter)
-                {
-                    VibeStateChange = null;
-                    VibeStateChangeValue = VibrationState.Invalid;
-
-                    if (EventList is TICEventVibrationStateValueChangeList)
-                    {
-                        VibeStateChange = TICEventVibrationStateValueChange(Event);
-                    }
-                    else
-                    {
-                        VibeStateChangeValue = Machine.TargetValueChanges.EventVibrationStates.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                    }
-
-                    if (VibeStateChange != null)
-                    {
-                        VibeStateChangeValue = VibeStateChange.EventVibrationState;
-                    }
-
-                    if (VibeState != VibeStateChangeValue)
-                        return false;
-                }
-
-                if (HasMachineFilter)
-                {
-                    MachinegearChangeValue = MachineGear.Null;
-                    MachinegearChange = null;
-
-                    if (EventList is TICEventMachineGearValueChangeList)
-                    {
-                        MachinegearChange = TICEventMachineGearValueChange(Event);
-                    }
-                    else
-                    {
-                        MachinegearChangeValue = Machine.TargetValueChanges.EventMachineGears.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                    }
-
-                    if (MachinegearChange != null)
-                    {
-                        MachinegearChangeValue = MachinegearChange.EventMachineGear;
-                    }
-
-                    if ((MachineDirection == MachineDirection.Forward && !(Machine.MachineGearIsForwardGear(MachinegearChangeValue))) ||
-                        (MachineDirection == MachineDirection.Reverse && !(Machine.MachineGearIsReverseGear(MachinegearChangeValue))))
-                        return false;
-                }
-
-                if (HasMinElevMappingFilter)
-                {
-                    MinElevMappingChangeValue = false;
-                    MinElevMappingChange = null;
-
-                    if (EventList is TICEventMachineGearValueChangeList)
-                    {
-                        MinElevMappingChange = TICEventMinElevMappingStateValueChange(Event);
-                    }
-                    else
-                    {
-                        MinElevMappingChangeValue = Machine.TargetValueChanges.EventMachineMinEleveMappingStates.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                    }
-
-                    if (MinElevMappingChange != null)
-                    {
-                        MinElevMappingChangeValue = MinElevMappingChange.MinElevMappingState;
-                    }
-
-                    if (MinElevationMapping != MinElevMappingChangeValue)
-                        return false;
-                }
-
-                if (HasGCSGuidanceModeFilter)
-                {
-                    GCSGuidanceModeChange = null;
-                    GCSGuidanceModeChangeValue = MachineAutomaticsMode.Unknown;
-
-                    if (EventList is TICEventMachineAutomaticsValueChangeList)
-                    {
-                        GCSGuidanceModeChange = TICEventMachineAutomaticsStateChange(Event);
-                    }
-                    else
-                    {
-                        GCSGuidanceModeChangeValue = Machine.TargetValueChanges.EventMachineAutomaticsStates.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                    }
-
-                    if (GCSGuidanceModeChange != null)
-                    {
-                        GCSGuidanceModeChangeValue = GCSGuidanceModeChange.EventMachineAutomatics;
-                    }
-
-                    if (GCSGuidanceMode != GCSGuidanceModeChangeValue)
-                        return false;
-                }
-
-                if (HasGPSAccuracyFilter || HasGPSToleranceFilter)
-                {
-                    if (EventList is TICEventPositionAccuracyValueChangeList)
-                    {
-                        GPSAccuracyValue = TICGPSAccuracyStateValueChange(Event).GPSAccuracyState;
-                        GPSToleranceValue = TICGPSAccuracyStateValueChange(Event).GPSAccuracyErrorLimit;
-                    }
-                    else
-                    {
-                        GPSAccuracyValue = Machine.TargetValueChanges.EventGPSAccuracyStates.GetValuesAtDate(Event.EventDate, StateChangeIndex, GPSToleranceValue);
-                    }
-
-                    if (GPSAccuracyValue != GPSAccuracy.Unknown)
-                    {
-                        if (HasGPSAccuracyFilter)
-                        {
-                            if (GPSAccuracy != GPSAccuracyValue && !GPSAccuracyIsInclusive)
-                                return false;
-
-                            if (GPSAccuracyIsInclusive && GPSAccuracy < GPSAccuracyValue)
-                                return false;
-                        }
-
-                        if (HasGPSToleranceFilter &&
-                           !((GPSToleranceValue != CellPass.NullGPSTolerance) &&
-                             ((!GPSToleranceIsGreaterThan && GPSToleranceValue < GPSTolerance) ||
-                              (GPSToleranceIsGreaterThan && GPSToleranceValue >= GPSTolerance))))
-                      return false;
-                    }
-                }
-
-                if (HasPositioningTechFilter)
-                {
-                    PositioningTechStateChangeValue = PositioningTech.Unknown;
-                    PositioningTechStateChange = null;
-
-                    if (EventList is TICEventPositioningTechStateValueChangeList)
-                    {
-                        PositioningTechStateChange = TICEventPositioningTechStateValueChange(Event);
-                    }
-                    else
-                    {
-                        PositioningTechStateChangeValue = Machine.TargetValueChanges.EventPositioningTechStates.GetValueAtDate(Event.EventDate, StateChangeIndex);
-                    }
-
-                    if (PositioningTechStateChange != null)
-                    {
-                        PositioningTechStateChangeValue = PositioningTechStateChange.PositioningTechState;
-                    }
-
-                    if (PositioningTech != PositioningTechStateChangeValue)
-                        return false;
-                }
-
-                return true;
-            }
-    */
 
     // FilterMultiplePasses selects a set of passes from the list of passes
     // in <PassValues> where <PassValues> contains the entire
