@@ -7,7 +7,7 @@
     <Company>VSS</Company>
     <Product>VSS.Productivity3D.Models.netcore</Product>
     <Description>Shared models for 3D Productivity and TRex web API</Description>
-    <VersionPrefix>1.8.0</VersionPrefix>
+    <VersionPrefix>1.8.1</VersionPrefix>
     <AssemblyName>VSS.Productivity3D.Models</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -21,7 +21,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.3" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.*" />
   </ItemGroup>
 
   <ItemGroup>

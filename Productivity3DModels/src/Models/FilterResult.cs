@@ -298,9 +298,9 @@ namespace VSS.Productivity3D.Models.Models
     public bool? AsAtDate { get; protected set; }
 
     /// <summary>
-    /// Default private constructor.
+    /// Default public constructor.
     /// </summary>
-    private FilterResult()
+    public FilterResult()
     { }
 
     private bool isFilterEmpty()
