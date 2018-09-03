@@ -102,8 +102,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             colorValues = new List<ColorValue>();
             for (int i = 0; i < compactionPalette.Count; i++)
             {
-              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value / 10));//Raptor CMV is 10ths but return actual CMV to UI
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
+                compactionPalette[i].Value / 10));//Raptor CMV is 10ths but return actual CMV to UI
             }
             cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
@@ -111,50 +111,50 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             colorValues = new List<ColorValue>();
             for (int i = 0; i < compactionPalette.Count - 1; i++)
             {
-              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
+                compactionPalette[i].Value));
             }
             passCountDetailPalette = DetailPalette.CreateDetailPalette(colorValues,
-              compactionPalette[compactionPalette.Count - 1].color, null);
+              compactionPalette[compactionPalette.Count - 1].Color, null);
             break;
           case DisplayMode.PassCountSummary:
-            passCountSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].color,
-              compactionPalette[1].color, compactionPalette[0].color);
+            passCountSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].Color,
+              compactionPalette[1].Color, compactionPalette[0].Color);
             break;
           case DisplayMode.CutFill:
             colorValues = new List<ColorValue>();
             for (int i = compactionPalette.Count - 1; i >= 0; i--)
             {
-              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
+                compactionPalette[i].Value));
             }
             cutFillPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
           case DisplayMode.TemperatureSummary:
-            temperatureSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].color,
-              compactionPalette[1].color, compactionPalette[0].color);
+            temperatureSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].Color,
+              compactionPalette[1].Color, compactionPalette[0].Color);
             break;
           case DisplayMode.CCVPercentSummary:
-            cmvSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[3].color,
-              compactionPalette[0].color, compactionPalette[2].color);
+            cmvSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[3].Color,
+              compactionPalette[0].Color, compactionPalette[2].Color);
             break;
           case DisplayMode.MDPPercentSummary:
-            mdpSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[3].color,
-              compactionPalette[0].color, compactionPalette[2].color);
+            mdpSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[3].Color,
+              compactionPalette[0].Color, compactionPalette[2].Color);
             break;
           case DisplayMode.TargetSpeedSummary:
-            speedSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].color,
-              compactionPalette[1].color, compactionPalette[0].color);
+            speedSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].Color,
+              compactionPalette[1].Color, compactionPalette[0].Color);
             break;
           case DisplayMode.CMVChange:
             colorValues = new List<ColorValue>();
             for (int i = 1; i < compactionPalette.Count - 1; i++)
             {
-              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
+                compactionPalette[i].Value));
             }
             cmvPercentChangePalette = DetailPalette.CreateDetailPalette(colorValues,
-              compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
+              compactionPalette[compactionPalette.Count - 1].Color, compactionPalette[0].Color);
             break;
         }
 
@@ -193,11 +193,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         List<ColorValue> colorValues = new List<ColorValue>();
         for (int i = 1; i < compactionPalette.Count - 1; i++)
         {
-          colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-            compactionPalette[i].value));
+          colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
+            compactionPalette[i].Value));
         }
         elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
-          compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
+          compactionPalette[compactionPalette.Count - 1].Color, compactionPalette[0].Color);
       }
 
       return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(elevationPalette);

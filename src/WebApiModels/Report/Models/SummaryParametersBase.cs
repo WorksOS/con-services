@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     {
       base.Validate(); 
 
-      if (this.LiftBuildSettings.liftThicknessTarget == null)
+      if (this.LiftBuildSettings.LiftThicknessTarget == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

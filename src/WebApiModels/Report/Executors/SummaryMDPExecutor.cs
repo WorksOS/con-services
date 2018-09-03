@@ -102,13 +102,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     {
       return new TMDPSettings
       {
-        MDPTarget = settings.mdpTarget,
+        MDPTarget = settings.MdpTarget,
         IsSummary = true,
-        MaxMDP = settings.maxMDP,
-        MaxMDPPercent = settings.maxMDPPercent,
-        MinMDP = settings.minMDP,
-        MinMDPPercent = settings.minMDPPercent,
-        OverrideTargetMDP = settings.overrideTargetMDP
+        MaxMDP = settings.MaxMDP,
+        MaxMDPPercent = settings.MaxMDPPercent,
+        MinMDP = settings.MinMDP,
+        MinMDPPercent = settings.MinMDPPercent,
+        OverrideTargetMDP = settings.OverrideTargetMDP
       };
     }
   }

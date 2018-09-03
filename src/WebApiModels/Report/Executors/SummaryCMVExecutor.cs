@@ -87,13 +87,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       return new TCMVSettings
       {
-        CMVTarget = settings.cmvTarget,
+        CMVTarget = settings.CmvTarget,
         IsSummary = true,
-        MaxCMV = settings.maxCMV,
-        MaxCMVPercent = settings.maxCMVPercent,
-        MinCMV = settings.minCMV,
-        MinCMVPercent = settings.minCMVPercent,
-        OverrideTargetCMV = settings.overrideTargetCMV
+        MaxCMV = settings.MaxCMV,
+        MaxCMVPercent = settings.MaxCMVPercent,
+        MinCMV = settings.MinCMV,
+        MinCMVPercent = settings.MinCMVPercent,
+        OverrideTargetCMV = settings.OverrideTargetCMV
       };
     }
   }

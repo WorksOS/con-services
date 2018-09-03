@@ -248,22 +248,22 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
         var cmvIndex = noCCVValue || noCCVElevation
           ? ValueTargetType.NoData
-          : (cmvPercent < liftBuildSettings.cCVRange.min
+          : (cmvPercent < liftBuildSettings.CCVRange.Min
             ? ValueTargetType.BelowTarget
-            : (cmvPercent > liftBuildSettings.cCVRange.max ? ValueTargetType.AboveTarget : ValueTargetType.OnTarget));
+            : (cmvPercent > liftBuildSettings.CCVRange.Max ? ValueTargetType.AboveTarget : ValueTargetType.OnTarget));
 
         var mdpIndex = noMDPValue || noMDPElevation
           ? ValueTargetType.NoData
-          : (mdpPercent < liftBuildSettings.mDPRange.min
+          : (mdpPercent < liftBuildSettings.MDPRange.Min
             ? ValueTargetType.BelowTarget
-            : (mdpPercent > liftBuildSettings.mDPRange.max ? ValueTargetType.AboveTarget : ValueTargetType.OnTarget));
+            : (mdpPercent > liftBuildSettings.MDPRange.Max ? ValueTargetType.AboveTarget : ValueTargetType.OnTarget));
 
         var speedIndex = noSpeedValue || float.IsNaN(lastPassHeight)
           ? ValueTargetType.NoData
-          : (currCell.cellMaxSpeed > liftBuildSettings.machineSpeedTarget.MaxTargetMachineSpeed
+          : (currCell.cellMaxSpeed > liftBuildSettings.MachineSpeedTarget.MaxTargetMachineSpeed
             ? ValueTargetType.AboveTarget
-            : (currCell.cellMinSpeed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed &&
-               currCell.cellMaxSpeed < liftBuildSettings.machineSpeedTarget.MinTargetMachineSpeed
+            : (currCell.cellMinSpeed < liftBuildSettings.MachineSpeedTarget.MinTargetMachineSpeed &&
+               currCell.cellMaxSpeed < liftBuildSettings.MachineSpeedTarget.MinTargetMachineSpeed
               ? ValueTargetType.BelowTarget
               : ValueTargetType.OnTarget));
 

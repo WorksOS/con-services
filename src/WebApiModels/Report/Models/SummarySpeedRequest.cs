@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     public override void Validate()
     {
       base.Validate();
-      if (this.LiftBuildSettings.machineSpeedTarget == null)
+      if (this.LiftBuildSettings.MachineSpeedTarget == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Target speed must be specified for the request."));

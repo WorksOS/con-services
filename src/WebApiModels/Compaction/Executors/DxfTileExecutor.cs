@@ -41,13 +41,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       string filespaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
       //Calculate zoom level
-      int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.topRightLat - request.bbox.bottomLeftLat,
-        request.bbox.topRightLon - request.bbox.bottomLeftLon);
-      log.LogDebug("DxfTileExecutor: BBOX differences {0} {1} {2}", request.bbox.topRightLat - request.bbox.bottomLeftLat,
-        request.bbox.topRightLon - request.bbox.bottomLeftLon,zoomLevel);
+      int zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.TopRightLat - request.bbox.BottomLeftLat,
+        request.bbox.TopRightLon - request.bbox.BottomLeftLon);
+      log.LogDebug("DxfTileExecutor: BBOX differences {0} {1} {2}", request.bbox.TopRightLat - request.bbox.BottomLeftLat,
+        request.bbox.TopRightLon - request.bbox.BottomLeftLon,zoomLevel);
       int numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
-      Point topLeftLatLng = new Point(request.bbox.topRightLat.LatRadiansToDegrees(),
-        request.bbox.bottomLeftLon.LonRadiansToDegrees());
+      Point topLeftLatLng = new Point(request.bbox.TopRightLat.LatRadiansToDegrees(),
+        request.bbox.BottomLeftLon.LonRadiansToDegrees());
       Point topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
       log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, xtile={2}, ytile={3}", zoomLevel, numTiles,
         topLeftTile.x, topLeftTile.y);

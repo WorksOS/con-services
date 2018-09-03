@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Common.Models
     /// This property is not used for a summary report only for a detailed report.
     /// </summary>
     [JsonProperty(PropertyName = "customCMVDetailTargets", Required = Required.Always)]
-    public int[] customCMVDetailTargets { get; private set; }
+    public int[] CustomCMVDetailTargets { get; private set; }
 
     /// <summary>
     /// Default private constructor
@@ -52,13 +52,13 @@ namespace VSS.Productivity3D.Common.Models
       int[] customCMVDetailTargets
     )
     {
-      this.cmvTarget = cmvTarget;
-      this.maxCMV = maxCMV;
-      this.maxCMVPercent = maxCMVPercent;
-      this.minCMV = minCMV;
-      this.minCMVPercent = minCMVPercent;
-      this.overrideTargetCMV = overrideTargetCMV;
-      this.customCMVDetailTargets = customCMVDetailTargets;
+      CmvTarget = cmvTarget;
+      MaxCMV = maxCMV;
+      MaxCMVPercent = maxCMVPercent;
+      MinCMV = minCMV;
+      MinCMVPercent = minCMVPercent;
+      OverrideTargetCMV = overrideTargetCMV;
+      CustomCMVDetailTargets = customCMVDetailTargets;
     }
 
     /// <summary>
@@ -69,26 +69,26 @@ namespace VSS.Productivity3D.Common.Models
       base.Validate();
 
       // Validate custom CMV Detail targets...
-      if (customCMVDetailTargets == null || customCMVDetailTargets.Length == 0)
+      if (CustomCMVDetailTargets == null || CustomCMVDetailTargets.Length == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CMV Detail targets required"));
       }
-      if (customCMVDetailTargets[0] != MIN_CMV)
+      if (CustomCMVDetailTargets[0] != MIN_CMV)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"CMV Detail targets must start at {MIN_CMV}"));
       }
-      for (int i = 1; i < customCMVDetailTargets.Length; i++)
+      for (int i = 1; i < CustomCMVDetailTargets.Length; i++)
       {
-        if (customCMVDetailTargets[i] <= customCMVDetailTargets[i - 1])
+        if (CustomCMVDetailTargets[i] <= CustomCMVDetailTargets[i - 1])
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CMV Detail targets must be ordered from lowest to the highest"));
         }
       }
-      if (customCMVDetailTargets[customCMVDetailTargets.Length - 1] < MIN_CMV || customCMVDetailTargets[customCMVDetailTargets.Length - 1] > MAX_CMV)
+      if (CustomCMVDetailTargets[CustomCMVDetailTargets.Length - 1] < MIN_CMV || CustomCMVDetailTargets[CustomCMVDetailTargets.Length - 1] > MAX_CMV)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

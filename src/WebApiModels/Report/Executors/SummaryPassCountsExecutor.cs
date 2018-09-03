@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     private PassCountSummaryResult ConvertResult(TPassCountSummary summary, LiftBuildSettings liftSettings)
     {
       return new PassCountSummaryResult(
-          liftSettings != null && liftSettings.overridingTargetPassCountRange != null ? liftSettings.overridingTargetPassCountRange : new TargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max), 
+          liftSettings != null && liftSettings.OverridingTargetPassCountRange != null ? liftSettings.OverridingTargetPassCountRange : new TargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max), 
           summary.IsTargetPassCountConstant, 
           summary.PercentEqualsTarget,
           summary.PercentGreaterThanTarget,

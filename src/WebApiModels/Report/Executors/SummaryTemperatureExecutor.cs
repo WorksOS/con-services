@@ -86,9 +86,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       return new TTemperatureSettings
       {
-        MaximumTemperatureRange = settings.maxTemperature,
-        MinimumTemperatureRange = settings.minTemperature,
-        OverrideMachineTarget = settings.overrideTemperatureRange
+        MaximumTemperatureRange = settings.MaxTemperature,
+        MinimumTemperatureRange = settings.MinTemperature,
+        OverrideMachineTarget = settings.OverrideTemperatureRange
       };
     }
 

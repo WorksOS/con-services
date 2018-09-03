@@ -485,7 +485,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              $"Failed to get design boundary for file: {designDescriptor.file.fileName}"));
+              $"Failed to get design boundary for file: {designDescriptor.File.fileName}"));
         }
         return null;
       }

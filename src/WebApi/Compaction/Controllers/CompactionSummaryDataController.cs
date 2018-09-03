@@ -282,7 +282,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as SpeedSummaryResult;
         var returnResult =
-          new CompactionSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
+          new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
         Log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);

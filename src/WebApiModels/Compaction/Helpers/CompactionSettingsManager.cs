@@ -98,10 +98,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             ? CompactionProjectSettingsColors.DefaultSettings.cmvDetailsColors
             : projectSettingsColors.cmvDetailsColors;
 
-          for (var i = 0; i < cmvDetailsSettings.customCMVDetailTargets.Length; i++)
+          for (var i = 0; i < cmvDetailsSettings.CustomCMVDetailTargets.Length; i++)
           {
             //The last color and value are for above...
-            palette.Add(new ColorPalette(cmvColors[i], cmvDetailsSettings.customCMVDetailTargets[i]));
+            palette.Add(new ColorPalette(cmvColors[i], cmvDetailsSettings.CustomCMVDetailTargets[i]));
           }
           break;
         case DisplayMode.PassCount:

@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           baseFilter,
           topFilter,
           RaptorConverters.convertOptions(null, request.LiftBuildSettings, request.ComputeVolNoChangeTolerance,
-            request.FilterLayerMethod, request.Mode, request.setSummaryDataLayersVisibility),
+            request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
           designDescriptor,
           volType,
           request.RepresentationalDisplayColor,
