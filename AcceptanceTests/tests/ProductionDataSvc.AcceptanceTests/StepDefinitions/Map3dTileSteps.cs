@@ -35,6 +35,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       _tileRequester.QueryString.Add("ProjectUid", projectUid);
     }
 
+    [Given(@"designUid ""(.*)""")]
+    public void GivenDesignUid(string designUid)
+    {
+      _tileRequester.QueryString.Add("DesignUid", designUid);
+    }
+
     [Given(@"filterUid ""(.*)""")]
     public void GivenFilterUid(string filterUid)
     {

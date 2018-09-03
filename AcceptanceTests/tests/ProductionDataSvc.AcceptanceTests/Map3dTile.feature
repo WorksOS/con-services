@@ -44,12 +44,14 @@ Examples:
 | CCV Mode Texture with Filter                                            | CCVModeTextureFilter       | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 1    | 2    | 5          |
 | Pass Count Mode Texture with Filter                                     | PassCountModeTextureFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 4    | 2    | 5          |
 
-Scenario Outline: Attempt to get design, which is not implemented
+Scenario Outline: Attempt to get design
 Given the Map3d service URI "/api/v2/map3d"
 And the result file "Map3dGetDataTilesResponse.json"
 And projectUid "<ProjectUID>"
+And designUid "<DesignUID>"
 And mode "<Mode>" and type "<Type>" and bbox "<BBox>" and width "<Width>" and height "<Height>"
-Then I request something that is not completed the response HTTP code should be "400"
+When I request result
+Then the result tile should match the "<ResponseName>" from the repository within "<Difference>" percent
 Examples: 
-| RequestName                     | ProjectUID                           | BBox                                                                  | Width | Height | Mode | Type | Difference |
-| Height Map and mode with Filter | ff91dd40-1569-4765-a2bc-014321f76ace | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 0    | 1    | 5          |
+| RequestName       | ResponseName    | ProjectUID                           | FilterUID                            | DesignUID                            | BBox                                                                  | Width | Height | Mode | Type | Difference |
+| Design Height Map | DesignHeightMap | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 36.2063171248096,-115.021142444626,36.2083428474075,-115.017457089439 | 256   | 256    | 0    | 1    | 5          |

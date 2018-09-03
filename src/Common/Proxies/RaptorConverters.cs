@@ -153,6 +153,7 @@ namespace VSS.Productivity3D.Common.Proxies
       List<ColorPalette> palettes = null;
       switch (mode)
       {
+        case DisplayMode.Design3D:
         case DisplayMode.Height:
           int numberOfColors = 30;
 
@@ -361,6 +362,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmCCVChange: return DisplayMode.CMVChange;
         case TICDisplayMode.icdmCCA: return DisplayMode.CCA;
         case TICDisplayMode.icdmCCASummary: return DisplayMode.CCASummary;
+        case TICDisplayMode.icdm3DDesign: return DisplayMode.Design3D;
         default: throw new Exception($"Unknown TICDisplayMode {Convert.ToInt16(mode)}");
       }
     }
@@ -399,6 +401,7 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.CMVChange: return TICDisplayMode.icdmCCVChange;
         case DisplayMode.CCA: return TICDisplayMode.icdmCCA;
         case DisplayMode.CCASummary: return TICDisplayMode.icdmCCASummary;
+        case DisplayMode.Design3D: return TICDisplayMode.icdm3DDesign;
         default: throw new Exception($"Unknown DisplayMode {Convert.ToInt16(mode)}");
       }
     }

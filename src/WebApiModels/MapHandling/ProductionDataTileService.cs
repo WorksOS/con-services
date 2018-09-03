@@ -146,7 +146,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>Elevation extents to use</returns>
     private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, DisplayMode mode)
     {
-      var elevExtents = mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
+      var elevExtents = (mode == DisplayMode.Height || mode == DisplayMode.Design3D)
+        ? elevProxy.GetElevationRange(projectId, filter, projectSettings)
+        : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();
       return elevExtents;
