@@ -137,9 +137,9 @@ namespace VSS.Productivity3D.Models.Models
     public ushort Height { get; protected set; }
 
     /// <summary>
-    /// Default private constructor.
+    /// Default public constructor.
     /// </summary>
-    private TileRequest()
+    public TileRequest()
     { }
 
     /// <summary>
