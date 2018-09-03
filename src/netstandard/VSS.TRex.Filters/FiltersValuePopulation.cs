@@ -19,14 +19,12 @@ namespace VSS.TRex.Filters
       ref FilteredPassData filteredPass)
     {
       DateTime _Time;
-      // todo _EventInAvoidZone :TICInAvoidZoneState;
       // todo bool UseMachineRMVThreshold;
       // todo short OverrideRMVJumpThreshold;
 
       if (values == null)
       {
-        Log.LogDebug(
-          $"***Error*** MachineTargetValues supplied to PopulateFilteredValues is null. PopulationControl = {PopulationControl.GetFlags():X}");
+        Log.LogDebug($"***Error*** MachineTargetValues supplied to PopulateFilteredValues is null. PopulationControl = {PopulationControl.GetFlags():X}");
         return;
       }
 
@@ -133,7 +131,7 @@ namespace VSS.TRex.Filters
 
       if (PopulationControl.WantsTempWarningLevelMinValues)
       {
-        filteredPass.TargetValues.TempWarningLevelMin =values.TargetMinMaterialTemperature.GetValueAtDate(_Time, out int _);
+        filteredPass.TargetValues.TempWarningLevelMin = values.TargetMinMaterialTemperature.GetValueAtDate(_Time, out int _);
         filteredPass.TargetValues.TempWarningLevelMax = values.TargetMaxMaterialTemperature.GetValueAtDate(_Time, out int _);
       }
 

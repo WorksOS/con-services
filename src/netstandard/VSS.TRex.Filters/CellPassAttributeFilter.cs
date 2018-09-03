@@ -6,7 +6,6 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Machines;
@@ -1023,7 +1022,6 @@ end
           return false;
       }
 
-
       return true;
     }
 
@@ -1171,7 +1169,6 @@ Exit;
           return false;
       }
 
-
       return true;
     }
 
@@ -1182,16 +1179,12 @@ Exit;
              Range.InRange(PassValue.Height, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     }
 
-
     public bool FilterPassUsingTemperatureRange(ref CellPass PassValue)
     {
       Debug.Assert(HasTemperatureRangeFilter, "Temperature range filter being used without the temperature range data being initialised");
       return (PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
              Range.InRange(PassValue.MaterialTemperature, MaterialTemperatureMin, MaterialTemperatureMax);
     }
-
-
-
 
     public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
     {
