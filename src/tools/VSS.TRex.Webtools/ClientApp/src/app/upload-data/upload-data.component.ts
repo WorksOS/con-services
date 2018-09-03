@@ -5,7 +5,7 @@ import { _ } from 'underscore'
 import { UploadDataService } from './upload-data.service'
 import { ITagFileRequest } from "./tagfile-request"
 
-//const URL = 'http://trex.dev.k8s.vspengg.com/api/v2/tagfiles';
+//const URL = 'http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles';
 
 //Dimensions
 const ProjectUid = 'bea52e4f-faa2-e511-80e5-0050568821e6';
