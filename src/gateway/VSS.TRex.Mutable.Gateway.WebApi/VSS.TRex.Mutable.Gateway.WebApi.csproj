@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>VSS.TRex.Mutable.Gateway.WebApi</AssemblyName>
     <OutputType>exe</OutputType>

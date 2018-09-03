@@ -67,9 +67,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
 
-      //Log.LogInformation("About to call ActivatePersistentGridServer.Instance().SetGridActive() for Mutable TRex grid");
-      bool result2 = ActivatePersistentGridServer.Instance().SetGridActive(TRexGrids.MutableGridName());
-      //Log.LogInformation($"Activation process completed: Mutable = {result2}");
     }
 
     /// <summary>
