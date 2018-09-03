@@ -16,6 +16,11 @@ namespace VSS.MasterData.Proxies
 {
   public class GracefulWebRequest
   {
+    /// <summary>
+    /// If there is no provided LOG_MAX_CHAR env variable, then we will default to this
+    /// </summary>
+    private const int DefaultLogMaxChar = 1000;
+
     private readonly ILogger log;
     private readonly int logMaxChar;
 
@@ -24,9 +29,11 @@ namespace VSS.MasterData.Proxies
       log = logger.CreateLogger<GracefulWebRequest>();
       logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR");
 
-      if (logMaxChar == 0)
+      // Config Store may return -1 if the variable doesn't exist
+      if (logMaxChar <= 0)
       {
-        log.LogWarning("Missing environment variable LOG_MAX_CHAR, long web api responses will not be truncated");
+        log.LogInformation($"Missing environment variable LOG_MAX_CHAR, defaulting to {DefaultLogMaxChar}");
+        logMaxChar = DefaultLogMaxChar;
       }
     }
 
