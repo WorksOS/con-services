@@ -43,7 +43,12 @@ namespace VSS.TRex.Common
         /// </summary>
         public static string PersistentCacheStoreLocation = Path.Combine("/persist", "TRexIgniteData");
         //public static string PersistentCacheStoreLocation = "C:/temp/TRexIgniteData"; //Path.Combine(Path.GetTempPath(), "TRexIgniteData");
-    
+
+        /// <summary>
+        /// Paints a red diagonal cross on each rendered tile to aid in confirming correct registration of rendered data
+        /// </summary>
+        public static bool Debug_DrawDiagonalCrossOnRenderedTiles = false;
+
       /*
         /// <summary>
         /// Use TFA service to validate tagfiles

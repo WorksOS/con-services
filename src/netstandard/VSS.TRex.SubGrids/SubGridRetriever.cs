@@ -335,8 +335,6 @@ namespace VSS.TRex.SubGrids
     /// Retrieves cell values for a subgrid stripe at a time. Currently deprecated in favour of RetriveSubGridCell()
     /// </summary>
     /// <param name="StripeIndex"></param>
-    /// <param name="CellX"></param>
-    /// <param name="CellY"></param>
     /// <returns></returns>
     public ServerRequestResult RetrieveSubGridStripe(byte StripeIndex)
     {

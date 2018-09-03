@@ -191,7 +191,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.TINSurfaceE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ExistenceMaps.Interfaces", "src\netstandard\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj", "{BE38B653-AD52-4AC6-B12C-B5CAEB18B4D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.Server.TileRendering", "src\netstandard\services\VSS.TRex.Server.TileRendering\VSS.TRex.Server.TileRendering.csproj", "{68603A56-6983-44A5-965E-872B9CF1AF3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Server.TileRendering", "src\netstandard\services\VSS.TRex.Server.TileRendering\VSS.TRex.Server.TileRendering.csproj", "{68603A56-6983-44A5-965E-872B9CF1AF3B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Mutable.Gateway.WebApi", "src\gateway\VSS.TRex.Mutable.Gateway.WebApi\VSS.TRex.Mutable.Gateway.WebApi.csproj", "{0681E873-E195-4FA7-B01F-F4EE0103EEC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -873,6 +875,14 @@ Global
 		{68603A56-6983-44A5-965E-872B9CF1AF3B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{68603A56-6983-44A5-965E-872B9CF1AF3B}.Release|x64.ActiveCfg = Release|Any CPU
 		{68603A56-6983-44A5-965E-872B9CF1AF3B}.Release|x64.Build.0 = Release|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Debug|x64.Build.0 = Debug|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Release|x64.ActiveCfg = Release|Any CPU
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -964,6 +974,7 @@ Global
 		{48E38209-342E-4F1E-ACAE-12B13263D6DD} = {01875DCB-0427-485C-8451-FE63B5C9EAAA}
 		{BE38B653-AD52-4AC6-B12C-B5CAEB18B4D3} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{68603A56-6983-44A5-965E-872B9CF1AF3B} = {01875DCB-0427-485C-8451-FE63B5C9EAAA}
+		{0681E873-E195-4FA7-B01F-F4EE0103EEC6} = {81A855E1-74D0-41F1-B691-8D449EDBE014}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}

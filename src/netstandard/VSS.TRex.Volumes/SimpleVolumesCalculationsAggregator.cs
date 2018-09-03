@@ -387,6 +387,9 @@ namespace VSS.TRex.Volumes
             {
                 foreach (IClientLeafSubGrid[] subGridResult in subGrids)
                 {
+                    if (subGridResult == null)
+                      continue;
+
                     // We have a subgrid from the Production Database. If we are processing volumes
                     // between two filters, then there will be a second subgrid in the sungrids array.
                     // By convention BaseSubgrid is always the first subgrid in the array,
@@ -402,9 +405,7 @@ namespace VSS.TRex.Volumes
                     }
 
                     if (subGrids.Length > 1)
-                    {
                         TopSubGrid = subGridResult[1]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
-                    }
                     else
                         TopSubGrid = NullHeightSubgrid;
 

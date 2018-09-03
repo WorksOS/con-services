@@ -346,20 +346,15 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="functor"></param>
         public void ScanAllSetBitsAsSubGridAddresses(Action<ISubGridCellAddress> functor)
         {
-            ISubGridCellAddress address = new SubGridCellAddress();
+          ScanAllSubGrids(leaf =>
+          {
+            ((SubGridTreeLeafBitmapSubGrid)leaf).Bits.ForEachSetBit((x, y) =>
+              functor(new SubGridCellAddress((uint)(leaf.OriginX + x) << SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                             (uint)(leaf.OriginY + y) << SubGridTreeConsts.SubGridIndexBitsPerLevel))
+            );
 
-            ScanAllSubGrids(leaf =>
-                {
-                    (leaf as SubGridTreeLeafBitmapSubGrid).Bits.ForEachSetBit((x, y) =>
-                    {
-                        address.X = (uint)(leaf.OriginX + x) << SubGridTreeConsts.SubGridIndexBitsPerLevel;
-                        address.Y = (uint)(leaf.OriginY + y) << SubGridTreeConsts.SubGridIndexBitsPerLevel;
-
-                        functor(address);
-                    });
-
-                    return true;
-                });
+            return true;
+          });
         }
-    }
+  }
 }
