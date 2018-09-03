@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public override string ToString()
     {
       return
-        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.min}, {this.ConstantTargetPassCountRange.max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percents:{string.Join("%, ", this.Percents) + "%"}";
+        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.Min}, {this.ConstantTargetPassCountRange.Max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percents:{string.Join("%, ", this.Percents) + "%"}";
     }
   }
 }

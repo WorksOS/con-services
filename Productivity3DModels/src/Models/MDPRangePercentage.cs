@@ -11,13 +11,16 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class MDPRangePercentage 
   {
+    private const double MIN_PERCENT = 0.0;
+    private const double MAX_PERCENT = 250.0;
+
     /// <summary>
     /// The minimum percentage range. Must be between 0 and 250.
     /// </summary>
     [Range(MIN_PERCENT, MAX_PERCENT)]
     [JsonProperty(PropertyName = "min", Required = Required.Always)]
     [Required]
-    public double min { get; private set; }
+    public double Min { get; private set; }
 
     /// <summary>
     /// The maximum percentage range. Must be between 0 and 250.
@@ -25,11 +28,11 @@ namespace VSS.Productivity3D.Models.Models
     [Range(MIN_PERCENT, MAX_PERCENT)]
     [JsonProperty(PropertyName = "max", Required = Required.Always)]
     [Required]
-    public double max { get; private set; }
+    public double Max { get; private set; }
 
     
     /// <summary>
-    /// Deafault private constructor
+    /// Default private constructor
     /// </summary>
     private MDPRangePercentage()
     {}
@@ -41,8 +44,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="max"></param>
     public MDPRangePercentage(double min, double max)
     {
-      this.min = min;
-      this.max = max;
+      Min = min;
+      Max = max;
     }
 
     /// <summary>
@@ -50,14 +53,11 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (min > max)
+      if (Min > Max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "MDP percentage minimum must be less than MDP percentage maximum"));
       }
     }
-
-    private const double MIN_PERCENT = 0.0;
-    private const double MAX_PERCENT = 250.0;
   }
 }

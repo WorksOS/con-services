@@ -32,8 +32,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
           Percents = result.Percents.Skip(1).ToArray(), //don't return the pass count 0 value (see PassCountSettings)
           PassCountTarget = new PassCountTargetData
           {
-            MinPassCountMachineTarget = result.ConstantTargetPassCountRange.min,
-            MaxPassCountMachineTarget = result.ConstantTargetPassCountRange.max,
+            MinPassCountMachineTarget = result.ConstantTargetPassCountRange.Min,
+            MaxPassCountMachineTarget = result.ConstantTargetPassCountRange.Max,
             TargetVaries = !result.IsTargetPassCountConstant
           },
           TotalCoverageArea = result.TotalCoverageArea

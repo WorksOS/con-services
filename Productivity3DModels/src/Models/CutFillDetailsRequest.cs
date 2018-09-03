@@ -17,17 +17,17 @@ namespace VSS.Productivity3D.Models.Models
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
     /// </summary>
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings LiftBuildSettings { get; private set; }
 
     /// <summary>
     /// The descriptor for the design for which to to generate the cut-fill data.
     /// </summary>
-    public DesignDescriptor designDescriptor { get; private set; }
+    public DesignDescriptor DesignDescriptor { get; private set; }
 
     /// <summary>
     /// Overload constructor with parameters.
@@ -41,9 +41,9 @@ namespace VSS.Productivity3D.Models.Models
     {
       ProjectId = projectId;
       CutFillTolerances = tolerances;
-      this.filter = filter;
-      this.liftBuildSettings = liftBuildSettings;
-      this.designDescriptor = designDescriptor;
+      Filter = filter;
+      LiftBuildSettings = liftBuildSettings;
+      DesignDescriptor = designDescriptor;
     }
 
     /// <summary>
@@ -57,8 +57,8 @@ namespace VSS.Productivity3D.Models.Models
     {
       ProjectUid = projectUid;
       CutFillTolerances = tolerances;
-      this.filter = filter;
-      this.designDescriptor = designDescriptor;
+      Filter = filter;
+      DesignDescriptor = designDescriptor;
     }
 
     /// <summary>
@@ -68,16 +68,13 @@ namespace VSS.Productivity3D.Models.Models
     {
       base.Validate();
 
-      if (filter != null)
-      {
-        filter.Validate();  
-      }
+      Filter?.Validate();  
 
-      liftBuildSettings?.Validate();
+      LiftBuildSettings?.Validate();
 
-      if (designDescriptor != null)
+      if (DesignDescriptor != null)
       {
-        designDescriptor.Validate();
+        DesignDescriptor.Validate();
       }
       else
       {

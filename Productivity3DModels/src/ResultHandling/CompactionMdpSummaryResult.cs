@@ -41,8 +41,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
             MdpMachineTarget = result.ConstantTargetMDP / 10,
             TargetVaries = !result.IsTargetMDPConstant
           },
-          MinMDPPercent = settings.minMDPPercent,
-          MaxMDPPercent = settings.maxMDPPercent
+          MinMDPPercent = settings.MinMDPPercent,
+          MaxMDPPercent = settings.MaxMDPPercent
         };
       }
     }

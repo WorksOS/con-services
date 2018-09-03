@@ -15,14 +15,14 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "color", Required = Required.Always)]
     [Required]
-    public uint color { get; private set; }
+    public uint Color { get; private set; }
 
     /// <summary>
     /// The datum value at which the color defined in color should be used.
     /// </summary>
     [JsonProperty(PropertyName = "value", Required = Required.Always)]
     [Required]
-    public double value { get; private set; }
+    public double Value { get; private set; }
 
     /// <summary>
     /// Default private constructor
@@ -37,8 +37,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="value"></param>
     public ColorPalette(uint color, double value)
     {
-      this.color = color;
-      this.value = value;
+      Color = color;
+      Value = value;
     }
 
     /// <summary>

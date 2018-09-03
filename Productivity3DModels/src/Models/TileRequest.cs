@@ -207,9 +207,9 @@ namespace VSS.Productivity3D.Models.Models
       Width = width;
       Height = height;
       RepresentationalDisplayColor = representationalDisplayColor;
-      this.cmvDetailsColorNumber = cmvDetailsColorNumber;
-      this.cmvPercentChangeColorNumber = cmvPercentChangeColorNumber;
-      this.setSummaryDataLayersVisibility = setSummaryDataLayersVisibility;
+      p_cmvDetailsColorNumber = cmvDetailsColorNumber;
+      p_cmvPercentChangeColorNumber = cmvPercentChangeColorNumber;
+      SetSummaryDataLayersVisibility = setSummaryDataLayersVisibility;
     }
 
     /// <summary>
@@ -252,14 +252,14 @@ namespace VSS.Productivity3D.Models.Models
             "Only one bounding box is allowed"));
       }
 
-      if (Mode == DisplayMode.TargetThicknessSummary && LiftBuildSettings.liftThicknessTarget == null)
+      if (Mode == DisplayMode.TargetThicknessSummary && LiftBuildSettings.LiftThicknessTarget == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "For this mode LiftThickness Target in LIftBuildSettings must be specified."));
       }
 
-      if (Mode == DisplayMode.TargetSpeedSummary && LiftBuildSettings.machineSpeedTarget == null)
+      if (Mode == DisplayMode.TargetSpeedSummary && LiftBuildSettings.MachineSpeedTarget == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

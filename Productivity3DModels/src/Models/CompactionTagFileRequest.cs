@@ -37,8 +37,10 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public void Validate()
+    public override void Validate()
     {
+      base.Validate();
+
       if (Data == null || !Data.Any())
       {
           throw new ServiceException(HttpStatusCode.BadRequest,

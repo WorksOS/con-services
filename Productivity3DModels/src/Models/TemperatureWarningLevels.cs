@@ -11,13 +11,16 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class TemperatureWarningLevels 
   {
+    private const ushort MIN_TEMPERATURE = 0;
+    private const ushort MAX_TEMPERATURE = 4095;//10ths degrees Celcius i.e. 409.5°C
+
     /// <summary>
     /// The minimum permitted value in 10ths of a degree celcius. For example, 300 means 30.0°C.
     /// </summary>
     [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "min", Required = Required.Always)] 
     [Required]
-    public ushort min { get; private set; }
+    public ushort Min { get; private set; }
 
     /// <summary>
     /// The maximum permitted value in 10ths of a degree celcius. For example, 800 means 80.0°C.
@@ -25,7 +28,7 @@ namespace VSS.Productivity3D.Models.Models
     [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "max", Required = Required.Always)]
     [Required]
-    public ushort max { get; private set; }
+    public ushort Max { get; private set; }
 
 
     /// <summary>
@@ -41,8 +44,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="max"></param>
     public TemperatureWarningLevels(ushort min, ushort max)
     {
-      this.min = min;
-      this.max = max;
+      Min = min;
+      Max = max;
     }
 
     /// <summary>
@@ -50,14 +53,11 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (min > max)
+      if (Min > Max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Temperature warning level minimum must be less than Temperature warning level maximum"));
       }
     }
-
-    private const ushort MIN_TEMPERATURE = 0;
-    private const ushort MAX_TEMPERATURE = 4095;//10ths degrees Celcius i.e. 409.5°C
   }
 }

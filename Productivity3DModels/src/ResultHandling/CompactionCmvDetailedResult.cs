@@ -51,8 +51,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
 
         if (result2 == null || !result2.HasData()) return;
 
-        MinCMVPercent = settings.minCMVPercent;
-        MaxCMVPercent = settings.maxCMVPercent;
+        MinCMVPercent = settings.MinCMVPercent;
+        MaxCMVPercent = settings.MaxCMVPercent;
         CmvTarget = new CmvTargetData
         {
           CmvMachineTarget = result2.ConstantTargetCmv / 10,

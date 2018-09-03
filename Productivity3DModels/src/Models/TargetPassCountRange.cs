@@ -11,13 +11,16 @@ namespace VSS.Productivity3D.Models.Models
   /// </summary>
   public class TargetPassCountRange 
   {
+    private const ushort MIN_TARGET_PASS_COUNT = 1;
+    private const ushort MAX_TARGET_PASS_COUNT = ushort.MaxValue; // 65535...
+
     /// <summary>
     /// The minimum range value. Must be between 1 and 65535.
     /// </summary>
     [Range(MIN_TARGET_PASS_COUNT, MAX_TARGET_PASS_COUNT)]
     [JsonProperty(PropertyName = "min", Required = Required.Always)]
     [Required]
-    public ushort min { get; private set; }
+    public ushort Min { get; private set; }
 
     /// <summary>
     /// The maximum range value. Must be between 1 and 65535.
@@ -25,11 +28,11 @@ namespace VSS.Productivity3D.Models.Models
     [Range(MIN_TARGET_PASS_COUNT, MAX_TARGET_PASS_COUNT)]
     [JsonProperty(PropertyName = "max", Required = Required.Always)]
     [Required]
-    public ushort max { get; private set; }
+    public ushort Max { get; private set; }
 
     
     /// <summary>
-    /// Defauilt private constructor.
+    /// Default private constructor.
     /// </summary>
     private TargetPassCountRange()
     {
@@ -43,8 +46,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="max"></param>
     public TargetPassCountRange(ushort min, ushort max)
     {
-      this.min = min;
-      this.max = max;
+      Min = min;
+      Max = max;
     }
 
     /// <summary>
@@ -53,14 +56,11 @@ namespace VSS.Productivity3D.Models.Models
     public void Validate()
     {
 
-      if (min > max)
+      if (Min > Max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Target Pass Count minimum value must be less than Target Pass Count maximum value."));      
       }
     }
-
-    private const ushort MIN_TARGET_PASS_COUNT = 1;
-    private const ushort MAX_TARGET_PASS_COUNT = ushort.MaxValue; // 65535...
   }
 }

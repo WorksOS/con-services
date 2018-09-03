@@ -41,8 +41,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
             CmvMachineTarget = result.ConstantTargetCmv / 10,
             TargetVaries = !result.IsTargetCmvConstant
           },
-          MinCMVPercent = settings.minCMVPercent,
-          MaxCMVPercent = settings.maxCMVPercent
+          MinCMVPercent = settings.MinCMVPercent,
+          MaxCMVPercent = settings.MaxCMVPercent
         };
       }
     }

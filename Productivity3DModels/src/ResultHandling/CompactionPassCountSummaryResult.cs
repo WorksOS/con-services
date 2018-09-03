@@ -37,8 +37,8 @@ namespace VSS.Productivity3D.Models.ResultHandling
           TotalAreaCoveredSqMeters = result.TotalAreaCoveredSqMeters,
           PassCountTarget = new PassCountTargetData
           {
-            MinPassCountMachineTarget = result.ConstantTargetPassCountRange.min,
-            MaxPassCountMachineTarget = result.ConstantTargetPassCountRange.max,
+            MinPassCountMachineTarget = result.ConstantTargetPassCountRange.Min,
+            MaxPassCountMachineTarget = result.ConstantTargetPassCountRange.Max,
             TargetVaries = !result.IsTargetPassCountConstant
           }
         };
