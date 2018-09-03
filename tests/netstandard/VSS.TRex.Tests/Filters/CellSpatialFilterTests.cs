@@ -1,6 +1,6 @@
-﻿using VSS.TRex.Common;
+﻿using System;
+using VSS.TRex.Common;
 using VSS.TRex.Geometry;
-using VSS.TRex.Designs;
 using Xunit;
 using VSS.TRex.Filters;
 
@@ -44,7 +44,8 @@ namespace VSS.TRex.Tests.Filters
             filter.StartStation = 100;
             filter.LeftOffset = -1;
             filter.RightOffset = 1;
-            filter.ReferenceDesignID = 123456;
+            filter.AlignmentMaskDesignUID = Guid.Empty;
+            filter.SurfaceDesignMaskDesignUid = Guid.Empty;
             filter.Fence.SetExtents(1, 1, 2, 2);
             filter.PositionRadius = 10;
             filter.PositionX = 10;
@@ -58,7 +59,8 @@ namespace VSS.TRex.Tests.Filters
                           filter.StartStation == Consts.NullDouble &&
                           filter.LeftOffset == Consts.NullDouble &&
                           filter.RightOffset == Consts.NullDouble &&
-                          filter.ReferenceDesignID == long.MinValue &&
+                          filter.AlignmentMaskDesignUID == Guid.Empty &&
+                          filter.SurfaceDesignMaskDesignUid == Guid.Empty &&
                           filter.PositionRadius == Consts.NullDouble &&
                           filter.PositionX == Consts.NullDouble &&
                           filter.PositionY == Consts.NullDouble,
@@ -72,7 +74,7 @@ namespace VSS.TRex.Tests.Filters
 
             filter.IsAlignmentMask = true;
             filter.AlignmentFence = new Fence(0, 0, 1, 1);
-            filter.ReferenceDesignID = 123456;
+            filter.AlignmentMaskDesignUID = Guid.NewGuid();
             filter.StartStation = 100;
             filter.EndStation = 1000;
             filter.LeftOffset = -1;
@@ -80,7 +82,7 @@ namespace VSS.TRex.Tests.Filters
 
             Assert.True(filter.IsAlignmentMask && !filter.AlignmentFence.IsNull() &&
                 filter.StartStation == 100 && filter.EndStation == 1000 && filter.LeftOffset == -1 && filter.RightOffset == 1 &&
-                filter.ReferenceDesignID != long.MinValue,
+                filter.AlignmentMaskDesignUID != Guid.Empty,
                 "Alignment mask not initialised correctly");
         }
 
@@ -90,16 +92,9 @@ namespace VSS.TRex.Tests.Filters
             CellSpatialFilter filter = new CellSpatialFilter();
 
             filter.IsDesignMask = true;
-            filter.StartStation = 100;
-            filter.EndStation = 1000;
-            filter.LeftOffset = -1;
-            filter.RightOffset = 1;
-            filter.ReferenceDesignID = 123456;
+            filter.SurfaceDesignMaskDesignUid = Guid.NewGuid();
 
-            Assert.True(filter.IsDesignMask && 
-                filter.StartStation == 100 && filter.EndStation == 1000 && filter.LeftOffset == -1 && filter.RightOffset == 1 &&
-                filter.ReferenceDesignID != long.MinValue,
-                "Alignment mask not initialised correctly");
+            Assert.True(filter.IsDesignMask && filter.SurfaceDesignMaskDesignUid != Guid.Empty, "Alignment mask not initialised correctly");
         }
 
         [Fact()]
@@ -147,11 +142,11 @@ namespace VSS.TRex.Tests.Filters
             CellSpatialFilter filter = new CellSpatialFilter();
 
             filter.IsDesignMask = true;
-            filter.ReferenceDesignID = 123456;
+            filter.SurfaceDesignMaskDesignUid = Guid.Empty;
 
             filter.ClearDesignMask();
 
-            Assert.True(!filter.IsDesignMask && filter.ReferenceDesignID == long.MinValue,
+            Assert.True(!filter.IsDesignMask && filter.SurfaceDesignMaskDesignUid == Guid.Empty,
                 "Design mask not cleared correctly");
         }
 

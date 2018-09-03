@@ -12,19 +12,11 @@ using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
-  public class TTMAndMetaDatActioNResult// : IActionResult
+  public class TTMAndMetaDatActioNResult // : IActionResult
   {
     public int a, b, c, d;
 
     public FileStreamResult theFile;
-
-//    public byte[] data;
-
-    //   public Task ExecuteResultAsync(ActionContext context)
-//    {
-    //      throw new NotImplementedException();
-//      return null;
-//    }
   }
 
   /// <summary>
@@ -120,7 +112,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         {
           a = tinResult.TINData.Length,
 
-         theFile = new FileStreamResult(new MemoryStream(tinResult.TINData), "application/ttm")
+          theFile = new FileStreamResult(new MemoryStream(tinResult.TINData), "application/ttm")
         });
 
       return new FileStreamResult(new MemoryStream(tinResult.TINData), "application/ttm")
