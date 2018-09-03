@@ -28,9 +28,9 @@ namespace VSS.Productivity3D.Models.Models
     public Guid? ProjectUid { get; set; }
 
     /// <summary>
-    /// Default protected constructor.
+    /// Default public constructor.
     /// </summary>
-    protected ProjectID()
+    public ProjectID()
     { }
 
     /// <summary>
