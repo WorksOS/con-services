@@ -24,7 +24,7 @@ namespace VSS.TRex.Filters
 
       if (values == null)
       {
-        Log.LogDebug($"***Error*** MachineTargetValues supplied to PopulateFilteredValues is null. PopulationControl = {PopulationControl.GetFlags():X}");
+        Log.LogError($"MachineTargetValues supplied to PopulateFilteredValues is null. PopulationControl = {PopulationControl.GetFlags():X}");
         return;
       }
 
