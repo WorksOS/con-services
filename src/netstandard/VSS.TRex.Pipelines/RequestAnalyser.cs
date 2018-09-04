@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -17,6 +19,9 @@ namespace VSS.TRex.Pipelines
   public class RequestAnalyser : IRequestAnalyser
   {
     private static ILogger Log = Logging.Logger.CreateLogger<RequestAnalyser>();
+
+    private IExistenceMaps existenceMaps = null;
+    private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
     /// <summary>
     /// The pipeline that has initiated this request analysis
@@ -116,18 +121,22 @@ namespace VSS.TRex.Pipelines
           FilterRestriction = filter.SpatialFilter.CalculateIntersectionWithExtents(FilterRestriction);
       }
 
-      // TODO: Complete when design filter existance map is available
-      /*
-      //  for each filter and mask in filter to FOwner.OverallExistenceMap
-      foreach (CombinedFilter filter in Owner.FilterSet.Filters)
+      // Combine the overall existance map with the existence maps from any surface design filter aspects in 
+      // the filter set supplied with the request.
+      foreach (var filter in Pipeline.FilterSet.Filters)
       {
-          if (filter != null && filter.AttributeFilter.HasDesignFilter && filter.DesignFilterSubgridOverlayMap)
+          if (filter != null && filter.SpatialFilter.IsDesignMask)
           {
-              //    SIGLogMessage.PublishNoODS(Self, Format('#D# %s Has Design %s Anding with OverallExistMap',[Self.ClassName,FOwner.FilterSet.Filters[I].DesignFilter.FileName]), slmcDebug);
-              Owner.OverallExistenceMap.SetOp_AND(filter.DesignFilterSubgridOverlayMap);
+            Log.LogDebug($"Has Design {filter.SpatialFilter.SurfaceDesignMaskDesignUid}, ANDing with OverallExistMap");
+
+            ISubGridTreeBitMask mask = GetExistenceMaps().GetSingleExistenceMap(Pipeline.DataModelID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+
+            if (mask != null)
+              Pipeline.OverallExistenceMap.SetOp_AND(mask);
+            else
+              throw new Exception($"{nameof(RequestAnalyser)}: Failed to get existence map for surface design ID:{filter.SpatialFilter.SurfaceDesignMaskDesignUid}");
           }
       }
-      */
 
       ScanningFullWorldExtent = !WorldExtents.IsValidPlanExtent || WorldExtents.IsMaximalPlanConverage;
 
@@ -144,7 +153,7 @@ namespace VSS.TRex.Pipelines
     public bool Execute()
     {
       if (Pipeline == null)
-        throw new ArgumentException("No owning pipeline", "Owner");
+        throw new ArgumentException("No owning pipeline", "Pipeline");
 
       if (Pipeline.FilterSet == null)
         throw new ArgumentException("No filters in pipeline", "Filters");
@@ -285,11 +294,6 @@ namespace VSS.TRex.Pipelines
 
               // Add the leaf subgrid identitied by the address below, along with the production data and surveyed surface
               // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
-              // SubGridCellAddress NewSubGridAddress =
-              // new SubGridCellAddress((CastSubGrid.OriginX + I) << SubGridTreeConsts.SubGridIndexBitsPerLevel,
-              //                        (CastSubGrid.OriginY + J) << SubGridTreeConsts.SubGridIndexBitsPerLevel,
-              //                        Owner.ProdDataExistenceMap.GetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J),
-              //                        Owner.IncludeSurveyedSurfaceInformation);
 
               TotalNumberOfSubgridsToRequest++;
 

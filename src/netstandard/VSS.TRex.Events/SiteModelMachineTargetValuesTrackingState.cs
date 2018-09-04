@@ -73,13 +73,6 @@ namespace VSS.TRex.Events
     public ushort EventLayerID;
     public SiteModelMachineTargetValueTrackingState<ushort> EventLayerID_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>();
 
-    // Todo - avoidance zones not included
-    //    InAvoidZone2DState          : TICInAvoidZoneState;
-    //    InAvoidZone2DState_Tracking : TTICSiteModelMachineTargetValueTrackingState;
-
-    //    InAvoidZoneUSState          : TICInAvoidZoneState;
-    //    InAvoidZoneUSState_Tracking : TTICSiteModelMachineTargetValueTrackingState;
-
     // Todo - map resets not included
 //    public DateTime EventMapResetPriorDate;
     //    EventMapResetDesignID        : TICDesignNameID;
@@ -152,17 +145,6 @@ namespace VSS.TRex.Events
         MinElevMappingState = false;
         MinElevMappingState_Tracking.Initialise();
       }
-
-      /* todo... Avoidance zones not included
-      if (populationControl.WantsEventInAvoidZoneStateValues)
-      {
-        InAvoidZone2DState = 0;
-        InAvoidZone2DState_Tracking.Initialise();
-
-        InAvoidZoneUSState = 0;
-        InAvoidZoneUSState_Tracking.Initialise();
-      }
-      */
 
       if (populationControl.WantsEventICFlagsValues)
       {

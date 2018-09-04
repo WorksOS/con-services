@@ -226,9 +226,9 @@ namespace VSS.TRex.Filters.Interfaces
     /// <returns></returns>
     bool FilterSinglePass(CellPass[] PassValues,
       int PassValueCount,
-      ref FilteredSinglePassInfo FilteredPassInfo
+      ref FilteredSinglePassInfo FilteredPassInfo,
     //             ref FilteredMultiplePassInfo FilteredPassesBuffer)
-    // TODO add when cell profile available... ProfileCell CellProfile
+      object /*IProfileCell*/ profileCell
     );
 
     void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY);
@@ -253,7 +253,7 @@ namespace VSS.TRex.Filters.Interfaces
       int passValueCount,
       bool wantEarliestPass,
       ref FilteredSinglePassInfo filteredPassInfo,
-      // TODO ProfileCell CellProfile,
+      object profileCell,
       bool performAttributeSubFilter);
 
     /// <summary>
@@ -265,13 +265,14 @@ namespace VSS.TRex.Filters.Interfaces
     /// <param name="passValueCount"></param>
     /// <param name="wantEarliestPass"></param>
     /// <param name="filteredPassInfo"></param>
+    /// <param name="profileCell"></param>
     /// <param name="performAttributeSubFilter"></param>
     /// <returns></returns>
     bool FilterSinglePass(FilteredPassData[] filteredPassValues,
       int passValueCount,
       bool wantEarliestPass,
       ref FilteredSinglePassInfo filteredPassInfo,
-      // TODO   ProfileCell cellProfile,
+      object /* IProfileCell*/ profileCell,
       bool performAttributeSubFilter);
   }
 }

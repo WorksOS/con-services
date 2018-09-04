@@ -78,38 +78,32 @@ namespace VSS.TRex.Filters
         /// </summary>
         public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = new BoundingIntegerExtent2D();
 
-        /// <summary>
-        /// The design used as a part of a design or alignment mask spatial filter
-        /// </summary>
-        public long ReferenceDesignID = long.MinValue;
-        //        public DesignDescriptor ReferenceDesign = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
-
-        /// <summary>
-        /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
-        /// design recorded in DesignFilter will be included
-        /// </summary>
-        public long DesignFilterID = long.MinValue;
-        //        public DesignDescriptor DesignFilter = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
+      /// <summary>
+      /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
+      /// design recorded in DesignFilter will be included
+      /// </summary>
+      //    public Guid DesignFilterUID = Guid.Empty;
+      //        public DesignDescriptor DesignFilter = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
 
         /// <summary>
         /// The starting station of the parametrically defined alignment spatial filter
         /// </summary>
-        public double StartStation { get; set; } = Consts.NullDouble;
+        public double? StartStation { get; set; }
 
         /// <summary>
         /// The ending station of the parametrically defined alignment spatial filter
         /// </summary>
-        public double EndStation { get; set; } = Consts.NullDouble;
+        public double? EndStation { get; set; }
 
         /// <summary>
         /// The left offset of the parametrically defined alignment spatial filter
         /// </summary>
-        public double LeftOffset { get; set; } = Consts.NullDouble;
+        public double? LeftOffset { get; set; }
 
         /// <summary>
         /// The right offset of the parametrically defined alignment spatial filter
         /// </summary>
-        public double RightOffset { get; set; } = Consts.NullDouble;
+        public double? RightOffset { get; set; }
 
         /// <summary>
         /// CoordsAreGrid controls whether the plan (XY/NE) coordinates in the spatial filters are to 
@@ -133,14 +127,20 @@ namespace VSS.TRex.Filters
         public bool IsDesignMask { get; set; }
 
         /// <summary>
+        /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
+        /// design recorded in DesignMask will be included
+        /// </summary>
+        public Guid SurfaceDesignMaskDesignUid { get; set; } = Guid.Empty;
+
+        /// <summary>
         /// Using a load alignment design to 'mask' the cells that should be included in the filter
         /// </summary>
         public bool IsAlignmentMask { get; set; }
 
         /// <summary>
-        /// Using a design to spatial cut-out the cells to be included in the filter. This appears similar to DesignMask (TODO: Resolve this).
+        /// The design used as an alignment mask spatial filter
         /// </summary>
-        public bool IsDesignFilter { get; set; }
+        public Guid AlignmentMaskDesignUID { get; set; } = Guid.Empty;
 
         /// <summary>
         ///  Spatial cell fitler constructor
@@ -156,7 +156,7 @@ namespace VSS.TRex.Filters
         /// <returns></returns>
         public string ActiveFiltersString()
         {
-            return string.Format("Spatial:{0}, Positional:{1}, DesignMask:{2}, AlignmentMask:{3}", IsSpatial, IsPositional, IsDesignMask, IsAlignmentMask);
+            return $"Spatial:{IsSpatial}, Positional:{IsPositional}, DesignMask:{IsDesignMask}, AlignmentMask:{IsAlignmentMask}";
         }
 
         /// <summary>
@@ -178,16 +178,12 @@ namespace VSS.TRex.Filters
             IsAlignmentMask = false;
 
             AlignmentFence.Clear();
-        }
+            StartStation = null;
+            EndStation = null;
+            LeftOffset = null;
+            RightOffset = null;
 
-        /// <summary>
-        /// Clear all state related to using a design for a filter
-        /// </summary>
-        public void ClearDesignFilter()
-        {
-            IsDesignFilter = false;
-
-            DesignFilterID = long.MinValue;
+            AlignmentMaskDesignUID = Guid.Empty;
         }
 
         /// <summary>
@@ -197,12 +193,7 @@ namespace VSS.TRex.Filters
         {
             IsDesignMask = false;
 
-            StartStation = Consts.NullDouble;
-            EndStation = Consts.NullDouble;
-            LeftOffset = Consts.NullDouble;
-            RightOffset = Consts.NullDouble;
-
-            ReferenceDesignID = long.MinValue;
+            SurfaceDesignMaskDesignUid = Guid.Empty;
         }
 
         /// <summary>
@@ -235,15 +226,22 @@ namespace VSS.TRex.Filters
         /// <returns></returns>
         public bool HasAlignmentDesignMask()
         {
-            return (ReferenceDesignID != long.MinValue) && 
-                        ((StartStation != Consts.NullDouble) && (EndStation != Consts.NullDouble) &&
-                      (LeftOffset != Consts.NullDouble) && (RightOffset != Consts.NullDouble));
+            return AlignmentMaskDesignUID != Guid.Empty && 
+                   StartStation.HasValue && EndStation.HasValue &&
+                   LeftOffset.HasValue && RightOffset.HasValue;
         }
+
+        /// <summary>
+        /// Determines if the filter contains sufficient information to adequately describe an active alignment
+        /// or design mask spatial filter
+        /// </summary>
+        /// <returns></returns>
+        public bool HasSurfaceDesignMask => SurfaceDesignMaskDesignUid != Guid.Empty;
 
         /// <summary>
         /// Determines if the type of the spatial filter is Spatial or Positional
         /// </summary>
-        public bool HasSpatialOrPostionalFilters => IsSpatial || IsPositional || IsDesignFilter;
+        public bool HasSpatialOrPostionalFilters => IsSpatial || IsPositional || IsDesignMask || IsAlignmentMask;
 
         /// <summary>
         /// Determines if a cell given by it's central location is included in the spatial filter
@@ -262,10 +260,10 @@ namespace VSS.TRex.Filters
             {
                 if (IsSquare)
                 {
-                    return (!((CellCenterX < (PositionX - PositionRadius)) ||
-                              (CellCenterX > (PositionX + PositionRadius)) ||
-                              (CellCenterY < (PositionY - PositionRadius)) ||
-                              (CellCenterY > (PositionY + PositionRadius))));
+                    return !(CellCenterX < PositionX - PositionRadius ||
+                             CellCenterX > PositionX + PositionRadius ||
+                             CellCenterY < PositionY - PositionRadius ||
+                             CellCenterY > PositionY + PositionRadius);
                 }
 
                 double Distance = MathUtilities.Hypot(CellCenterX - PositionX, CellCenterY - PositionY);

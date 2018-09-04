@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
@@ -441,6 +442,28 @@ namespace VSS.TRex.Profiling
       if (CellMaxSpeed < speed)
         CellMaxSpeed = speed;
     }
+
+    /// <summary>
+    /// Determines if the recorded time of a given pass lies within the time range of a layer that is
+    /// deemed to be superceded by another layer
+    /// </summary>
+    /// <param name="Pass"></param>
+    /// <returns></returns>
+    public bool IsInSupersededLayer(CellPass Pass)
+    {
+      for (int I = 0; I < Layers.Count(); I++)
+      {
+        IProfileLayer layer = Layers[I];
+        if ((layer.Status & LayerStatus.Superseded) != 0)
+        {
+          if (Pass.Time >= Passes.FilteredPassData[layer.StartCellPassIdx].FilteredPass.Time &&
+              Pass.Time <= layer.LastLayerPassTime)
+            return true;
+        }
+      }
+
+      return false;
+    }
   }
 
   //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
@@ -485,8 +508,6 @@ namespace VSS.TRex.Profiling
       function  TopPassTargetThicknessByCompactor(const Layer :TICProfileLayer) :TICLiftThickness;
 
       procedure NormalizeLayersMaxThickness(const FirstPassThickness :TICCellHeight);
-
-      function  IsInSupersededLayer(const Pass :TICCellPassValue) :Boolean;
 
       Function  NullCellCoordinate : Boolean; Inline;
 

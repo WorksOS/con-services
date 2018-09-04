@@ -19,14 +19,12 @@ namespace VSS.TRex.Filters
       ref FilteredPassData filteredPass)
     {
       DateTime _Time;
-      // todo _EventInAvoidZone :TICInAvoidZoneState;
       // todo bool UseMachineRMVThreshold;
       // todo short OverrideRMVJumpThreshold;
 
       if (values == null)
       {
-        Log.LogDebug(
-          $"***Error*** MachineTargetValues supplied to PopulateFilteredValues is null. PopulationControl = {PopulationControl.GetFlags():X}");
+        Log.LogError($"MachineTargetValues supplied to PopulateFilteredValues is null. PopulationControl = {PopulationControl.GetFlags():X}");
         return;
       }
 
@@ -111,13 +109,6 @@ namespace VSS.TRex.Filters
       if (PopulationControl.WantsEventInAvoidZoneStateValues)
       {
         throw new NotImplementedException("PopulationControl.WantsEventInAvoidZoneStateValues not implemented");
-        /*
-        LocateInAvoidZone2DStateValueAtDate(MachineTargetValues, _Time, _EventInAvoidZone);
-        EventValues.EventInAvoidZoneState = _EventInAvoidZone;
-
-        LocateInAvoidZoneUSStateValueAtDate(MachineTargetValues, _Time, _EventInAvoidZone);
-        EventValues.EventInAvoidZoneState = EventValues.EventInAvoidZoneState || _EventInAvoidZone;
-        */
       }
 
       if (PopulationControl.WantsEventGPSAccuracyValues)
@@ -133,7 +124,7 @@ namespace VSS.TRex.Filters
 
       if (PopulationControl.WantsTempWarningLevelMinValues)
       {
-        filteredPass.TargetValues.TempWarningLevelMin =values.TargetMinMaterialTemperature.GetValueAtDate(_Time, out int _);
+        filteredPass.TargetValues.TempWarningLevelMin = values.TargetMinMaterialTemperature.GetValueAtDate(_Time, out int _);
         filteredPass.TargetValues.TempWarningLevelMax = values.TargetMaxMaterialTemperature.GetValueAtDate(_Time, out int _);
       }
 

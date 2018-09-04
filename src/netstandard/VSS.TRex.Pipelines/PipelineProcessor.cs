@@ -25,10 +25,8 @@ namespace VSS.TRex.Pipelines
   {
     private static ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
 
-    /// <summary>
-    /// DI'ed context for access to ExistenceMaps functionality
-    /// </summary>
-    private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
+    private IExistenceMaps existenceMaps = null;
+    private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
     public Guid RequestDescriptor;
 
@@ -183,11 +181,11 @@ namespace VSS.TRex.Pipelines
       Pipeline.PipelineTask = Task;
       Task.PipeLine = Pipeline;
 
-      // Introduce the Request analyser to the pipeline and spatial extents is requires
+      // Introduce the Request analyser to the pipeline and spatial extents it requires
       RequestAnalyser.Pipeline = Pipeline;
       RequestAnalyser.WorldExtents = SpatialExtents;
 
-      // Construct an aggregated set of exlcluded surveyed surfaces for the filters used in the query
+      // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
       foreach (var filter in Filters.Filters)
       {
         if (filter != null && SurveyedSurfaceExclusionList.Length > 0)
@@ -228,7 +226,7 @@ namespace VSS.TRex.Pipelines
 
       // Obtain the subgrid existence map for the project
       // Retrieve the existence map for the datamodel
-      OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask()
+      OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask
       {
         CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize
       };
@@ -295,7 +293,7 @@ namespace VSS.TRex.Pipelines
             return false;
         }
 
-        DesignSubgridOverlayMap = ExistenceMaps.GetSingleExistenceMap(DataModelID, TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
+        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
         if (DesignSubgridOverlayMap == null)
         {
