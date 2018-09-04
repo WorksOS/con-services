@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Cells;
