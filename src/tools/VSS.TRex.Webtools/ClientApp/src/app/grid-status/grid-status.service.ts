@@ -33,9 +33,14 @@ export class GridStatusService {
     });
 
     return result;
-    //  .pipe(
-    //  catchError(this.handleError('getGrids', []))
-    //);
+  }
+
+  public activateGrid(grid: IGrid): void {
+    let url = `${this.baseUrl}api/grids/active/${grid.name}/true`
+    console.log(url);
+    this.http.put<string>(url, null).subscribe((result) => {
+      console.log(result)
+    });
   }
 
 }

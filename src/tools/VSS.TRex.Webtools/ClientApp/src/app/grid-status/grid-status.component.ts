@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 })
 export class GridStatusComponent {
   public status: string = "Unknown";
-  public selectedGrid: IGrid = null;
+  //public selectedGrids: IGrid[] = [];
   public grids: IGrid[];
 
 
@@ -27,6 +27,11 @@ export class GridStatusComponent {
 
   public getGrids() {
     this.gridStatusService.getGrids();
+  }
+
+  public activateGrid(grid: IGrid) {
+    console.log(`Grid is ${grid}`)
+    this.gridStatusService.activateGrid(grid);
   }
 }
 

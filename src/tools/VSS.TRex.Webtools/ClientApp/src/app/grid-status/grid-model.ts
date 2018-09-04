@@ -1,4 +1,4 @@
 export interface IGrid {
-  Name: string;
-  IsActive: boolean;
+  name: string;
+  isActive: boolean;
  }
