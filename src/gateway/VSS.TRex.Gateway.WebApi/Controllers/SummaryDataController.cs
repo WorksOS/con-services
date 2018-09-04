@@ -143,7 +143,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(PostTemperatureSummary)}: {Request.QueryString}");
 
-      //var temperatureSummaryRequest = new TemperatureSummaryRequest(projectUid, null/* filter */, new TemperatureSettings(TEMPERATURE_TARGET_MAX, TEMPERATURE_TARGET_MIN, true));
       temperatureSummaryRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
