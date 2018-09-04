@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
@@ -119,7 +120,7 @@ namespace VSS.TRex.Server.Application
           Log.LogError($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       DependencyInjection();
 
@@ -144,6 +145,8 @@ namespace VSS.TRex.Server.Application
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }

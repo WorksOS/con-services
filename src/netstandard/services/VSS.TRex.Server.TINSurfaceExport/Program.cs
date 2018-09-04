@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -107,7 +108,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
           Log.LogError($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       DependencyInjection();
 
@@ -126,6 +127,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }

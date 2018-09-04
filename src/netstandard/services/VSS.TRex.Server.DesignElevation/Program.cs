@@ -7,6 +7,7 @@ using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Storage.Models;
+using System.Threading.Tasks;
 
 namespace VSS.TRex.Server.DesignElevation
 {
@@ -47,7 +48,7 @@ namespace VSS.TRex.Server.DesignElevation
         if (asmType.Assembly == null)
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       DependencyInjection();
 
@@ -60,6 +61,8 @@ namespace VSS.TRex.Server.DesignElevation
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }

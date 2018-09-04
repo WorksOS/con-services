@@ -14,6 +14,7 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
+using System.Threading.Tasks;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -75,7 +76,7 @@ namespace VSS.TRex.Server.MutableData
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       // Load settings for Mutabledata
 
@@ -106,6 +107,8 @@ namespace VSS.TRex.Server.MutableData
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }
