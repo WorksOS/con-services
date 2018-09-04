@@ -97,34 +97,6 @@ export class UploadDataComponent {
     this.uploadDataService.addTagfile(tagToUpload).subscribe( () =>
       this.continueFileUpload()
     );
-
-    //this.uploadFile = this.upload.http({
-    //  url: URL,
-    //  data: {
-    //    "fileName": this.selectedFiles[this.fileCount].name,
-    //    "data": this.selectedFiles[this.fileCount].base64part,
-    //    "ProjectUid": ProjectUid,
-    //    "OrgId": OrgId
-    //  },
-    //  headers: { "Content-Type": "application/json" }
-    //});
-
-    //this.uploadFile.then((resp: any) => {
-    //  if (resp.status === 200) {
-    //    this.fileUploadedSuccessfully = this.fileUploadedSuccessfully + 1;
-    //    this.continueFileUpload();
-    //  } else {
-    //    this.failedFileUpload.push({
-    //      fileName: resp.config.data.fileName,
-    //      errorCode: resp.data.Code,
-    //      errorMessage: resp.data.Message.indexOf(":") > 0 ? resp.data.Message.split(":") : resp.data.Message
-    //    });
-    //    this.continueFileUpload();
-    //  }
-    //}, (error: any) => {
-    //  console.log("Error status: " + error.status);
-    //  this.continueFileUpload();
-    //});
   }
 
   public cancelUpload() {
@@ -144,25 +116,9 @@ export class UploadDataComponent {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
         fileEntry.file((file: File) => {
 
-          // Here you can access the real file
+          // Here is the file log it to console for fun
           console.log(droppedFile.relativePath, file);
           this.selectedFiles.push(file);
-
-          /**
-          // You could upload it like this:
-          const formData = new FormData()
-          formData.append('logo', file, relativePath)
-
-          // Headers
-          const headers = new HttpHeaders({
-            'security-token': 'mytoken'
-          })
-
-          this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
-          .subscribe(data => {
-            // Sanitized logo returned from backend
-          })
-          **/
 
         });
       } else {

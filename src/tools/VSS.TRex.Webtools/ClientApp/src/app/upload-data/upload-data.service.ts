@@ -19,7 +19,7 @@ const httpOptions = {
 
 @Injectable()
 export class UploadDataService {
-  heroesUrl = 'http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles';  // URL to web api
+  tagUploadUrl = 'http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles';  // URL to web api
   private handleError: HandleError;
 
   constructor(
@@ -54,7 +54,7 @@ export class UploadDataService {
 
   /** POST: submit a tag file to trex */
   addTagfile(tagFile: ITagFileRequest): Observable<ITagFileRequest> {
-    return this.http.post<ITagFileRequest>(this.heroesUrl, tagFile, httpOptions)
+    return this.http.post<ITagFileRequest>(this.tagUploadUrl, tagFile, httpOptions)
       .pipe(
         catchError(this.handleError('submitTagFile', tagFile))
       );
@@ -81,9 +81,3 @@ export class UploadDataService {
   //}
 }
 
-
-/*
-Copyright 2017-2018 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/
