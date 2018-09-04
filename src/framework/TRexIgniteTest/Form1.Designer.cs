@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.panel1 = new System.Windows.Forms.Panel();
       this.btnEmpty = new System.Windows.Forms.Button();
       this.editProjectID = new System.Windows.Forms.TextBox();
@@ -68,10 +69,11 @@
       this.label6 = new System.Windows.Forms.Label();
       this.cmbDesigns = new System.Windows.Forms.ComboBox();
       this.label5 = new System.Windows.Forms.Label();
-      this.tabControl1 = new System.Windows.Forms.TabControl();
+      this.tabTileRequest = new System.Windows.Forms.TabControl();
       this.tabPageRender = new System.Windows.Forms.TabPage();
       this.btnZoomAll = new System.Windows.Forms.Button();
       this.tabPageTest = new System.Windows.Forms.TabPage();
+      this.button8 = new System.Windows.Forms.Button();
       this.PassCountDetailsButton = new System.Windows.Forms.Button();
       this.CMVDetailsButton = new System.Windows.Forms.Button();
       this.PassCountSummaryButton = new System.Windows.Forms.Button();
@@ -98,17 +100,23 @@
       this.edtAssetID = new System.Windows.Forms.TextBox();
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.btnKill = new System.Windows.Forms.Button();
+      this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.txtJSON = new System.Windows.Forms.TextBox();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.button8 = new System.Windows.Forms.Button();
+      this.txtGatewayBase = new System.Windows.Forms.TextBox();
+      this.chkUseGateway = new System.Windows.Forms.CheckBox();
+      this.label11 = new System.Windows.Forms.Label();
+      this.btnTemplate = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
       this.panel3.SuspendLayout();
-      this.tabControl1.SuspendLayout();
+      this.tabTileRequest.SuspendLayout();
       this.tabPageRender.SuspendLayout();
       this.tabPageTest.SuspendLayout();
       this.tabPage3.SuspendLayout();
       this.tabPage4.SuspendLayout();
+      this.tabPage1.SuspendLayout();
       this.SuspendLayout();
       // 
       // panel1
@@ -118,7 +126,7 @@
       this.panel1.Controls.Add(this.btnEmpty);
       this.panel1.Controls.Add(this.editProjectID);
       this.panel1.Controls.Add(this.label2);
-      this.panel1.Location = new System.Drawing.Point(873, 2);
+      this.panel1.Location = new System.Drawing.Point(867, 2);
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(351, 41);
       this.panel1.TabIndex = 15;
@@ -236,7 +244,7 @@
       this.chkIncludeSurveyedSurfaces.AutoSize = true;
       this.chkIncludeSurveyedSurfaces.Checked = true;
       this.chkIncludeSurveyedSurfaces.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkIncludeSurveyedSurfaces.Location = new System.Drawing.Point(9, 321);
+      this.chkIncludeSurveyedSurfaces.Location = new System.Drawing.Point(21, 351);
       this.chkIncludeSurveyedSurfaces.Name = "chkIncludeSurveyedSurfaces";
       this.chkIncludeSurveyedSurfaces.Size = new System.Drawing.Size(150, 17);
       this.chkIncludeSurveyedSurfaces.TabIndex = 37;
@@ -328,7 +336,7 @@
       // chkSelectEarliestPass
       // 
       this.chkSelectEarliestPass.AutoSize = true;
-      this.chkSelectEarliestPass.Location = new System.Drawing.Point(9, 344);
+      this.chkSelectEarliestPass.Location = new System.Drawing.Point(21, 374);
       this.chkSelectEarliestPass.Name = "chkSelectEarliestPass";
       this.chkSelectEarliestPass.Size = new System.Drawing.Size(117, 17);
       this.chkSelectEarliestPass.TabIndex = 25;
@@ -339,7 +347,7 @@
       // lblCellsPerPixel
       // 
       this.lblCellsPerPixel.AutoSize = true;
-      this.lblCellsPerPixel.Location = new System.Drawing.Point(12, 295);
+      this.lblCellsPerPixel.Location = new System.Drawing.Point(24, 325);
       this.lblCellsPerPixel.Name = "lblCellsPerPixel";
       this.lblCellsPerPixel.Size = new System.Drawing.Size(73, 13);
       this.lblCellsPerPixel.TabIndex = 24;
@@ -348,7 +356,7 @@
       // lblViewHeight
       // 
       this.lblViewHeight.AutoSize = true;
-      this.lblViewHeight.Location = new System.Drawing.Point(12, 265);
+      this.lblViewHeight.Location = new System.Drawing.Point(24, 295);
       this.lblViewHeight.Name = "lblViewHeight";
       this.lblViewHeight.Size = new System.Drawing.Size(64, 13);
       this.lblViewHeight.TabIndex = 23;
@@ -357,7 +365,7 @@
       // lblViewWidth
       // 
       this.lblViewWidth.AutoSize = true;
-      this.lblViewWidth.Location = new System.Drawing.Point(12, 243);
+      this.lblViewWidth.Location = new System.Drawing.Point(24, 273);
       this.lblViewWidth.Name = "lblViewWidth";
       this.lblViewWidth.Size = new System.Drawing.Size(61, 13);
       this.lblViewWidth.TabIndex = 22;
@@ -432,7 +440,7 @@
       this.panel2.Controls.Add(this.pictureBox1);
       this.panel2.Location = new System.Drawing.Point(2, 58);
       this.panel2.Name = "panel2";
-      this.panel2.Size = new System.Drawing.Size(865, 607);
+      this.panel2.Size = new System.Drawing.Size(859, 607);
       this.panel2.TabIndex = 16;
       // 
       // textBoxTest
@@ -450,7 +458,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pictureBox1.Location = new System.Drawing.Point(0, 2);
       this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(862, 602);
+      this.pictureBox1.Size = new System.Drawing.Size(856, 602);
       this.pictureBox1.TabIndex = 1;
       this.pictureBox1.TabStop = false;
       this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
@@ -465,7 +473,7 @@
       this.panel3.Controls.Add(this.label5);
       this.panel3.Location = new System.Drawing.Point(2, 2);
       this.panel3.Name = "panel3";
-      this.panel3.Size = new System.Drawing.Size(862, 50);
+      this.panel3.Size = new System.Drawing.Size(856, 50);
       this.panel3.TabIndex = 17;
       // 
       // cmbSurveyedSurfaces
@@ -476,7 +484,7 @@
       this.cmbSurveyedSurfaces.FormattingEnabled = true;
       this.cmbSurveyedSurfaces.Location = new System.Drawing.Point(105, 25);
       this.cmbSurveyedSurfaces.Name = "cmbSurveyedSurfaces";
-      this.cmbSurveyedSurfaces.Size = new System.Drawing.Size(754, 21);
+      this.cmbSurveyedSurfaces.Size = new System.Drawing.Size(748, 21);
       this.cmbSurveyedSurfaces.TabIndex = 33;
       // 
       // label6
@@ -496,7 +504,7 @@
       this.cmbDesigns.FormattingEnabled = true;
       this.cmbDesigns.Location = new System.Drawing.Point(105, 3);
       this.cmbDesigns.Name = "cmbDesigns";
-      this.cmbDesigns.Size = new System.Drawing.Size(754, 21);
+      this.cmbDesigns.Size = new System.Drawing.Size(748, 21);
       this.cmbDesigns.TabIndex = 31;
       // 
       // label5
@@ -508,23 +516,26 @@
       this.label5.TabIndex = 30;
       this.label5.Text = "Design";
       // 
-      // tabControl1
+      // tabTileRequest
       // 
-      this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+      this.tabTileRequest.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.tabControl1.Controls.Add(this.tabPageRender);
-      this.tabControl1.Controls.Add(this.tabPageTest);
-      this.tabControl1.Controls.Add(this.tabPage3);
-      this.tabControl1.Controls.Add(this.tabPage4);
-      this.tabControl1.Location = new System.Drawing.Point(873, 49);
-      this.tabControl1.Name = "tabControl1";
-      this.tabControl1.SelectedIndex = 0;
-      this.tabControl1.Size = new System.Drawing.Size(351, 618);
-      this.tabControl1.TabIndex = 18;
-      this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+      this.tabTileRequest.Controls.Add(this.tabPageRender);
+      this.tabTileRequest.Controls.Add(this.tabPageTest);
+      this.tabTileRequest.Controls.Add(this.tabPage3);
+      this.tabTileRequest.Controls.Add(this.tabPage4);
+      this.tabTileRequest.Controls.Add(this.tabPage1);
+      this.tabTileRequest.Location = new System.Drawing.Point(867, 49);
+      this.tabTileRequest.Name = "tabTileRequest";
+      this.tabTileRequest.SelectedIndex = 0;
+      this.tabTileRequest.Size = new System.Drawing.Size(351, 618);
+      this.tabTileRequest.TabIndex = 18;
+      this.tabTileRequest.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
       // 
       // tabPageRender
       // 
+      this.tabPageRender.Controls.Add(this.chkUseGateway);
+      this.tabPageRender.Controls.Add(this.txtGatewayBase);
       this.tabPageRender.Controls.Add(this.btnZoomAll);
       this.tabPageRender.Controls.Add(this.btmZoomIn);
       this.tabPageRender.Controls.Add(this.btnZoomOut);
@@ -589,6 +600,16 @@
       this.tabPageTest.TabIndex = 1;
       this.tabPageTest.Text = "Tests";
       this.tabPageTest.UseVisualStyleBackColor = true;
+      // 
+      // button8
+      // 
+      this.button8.Location = new System.Drawing.Point(19, 412);
+      this.button8.Name = "button8";
+      this.button8.Size = new System.Drawing.Size(140, 21);
+      this.button8.TabIndex = 53;
+      this.button8.Text = "Project Statistics...";
+      this.button8.UseVisualStyleBackColor = true;
+      this.button8.Click += new System.EventHandler(this.button8_Click);
       // 
       // PassCountDetailsButton
       // 
@@ -851,6 +872,32 @@
       this.btnKill.UseVisualStyleBackColor = true;
       this.btnKill.Click += new System.EventHandler(this.btnKill_Click);
       // 
+      // tabPage1
+      // 
+      this.tabPage1.Controls.Add(this.btnTemplate);
+      this.tabPage1.Controls.Add(this.label11);
+      this.tabPage1.Controls.Add(this.txtJSON);
+      this.tabPage1.Location = new System.Drawing.Point(4, 22);
+      this.tabPage1.Name = "tabPage1";
+      this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage1.Size = new System.Drawing.Size(343, 592);
+      this.tabPage1.TabIndex = 4;
+      this.tabPage1.Text = "Tile Request";
+      this.tabPage1.UseVisualStyleBackColor = true;
+      // 
+      // txtJSON
+      // 
+      this.txtJSON.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.txtJSON.Location = new System.Drawing.Point(10, 48);
+      this.txtJSON.Multiline = true;
+      this.txtJSON.Name = "txtJSON";
+      this.txtJSON.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+      this.txtJSON.Size = new System.Drawing.Size(327, 524);
+      this.txtJSON.TabIndex = 1;
+      this.txtJSON.Text = resources.GetString("txtJSON.Text");
+      // 
       // openFileDialog1
       // 
       this.openFileDialog1.DefaultExt = "\"tag\"";
@@ -858,22 +905,51 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // button8
+      // txtGatewayBase
       // 
-      this.button8.Location = new System.Drawing.Point(19, 412);
-      this.button8.Name = "button8";
-      this.button8.Size = new System.Drawing.Size(140, 21);
-      this.button8.TabIndex = 53;
-      this.button8.Text = "Project Statistics...";
-      this.button8.UseVisualStyleBackColor = true;
-      this.button8.Click += new System.EventHandler(this.button8_Click);
+      this.txtGatewayBase.Location = new System.Drawing.Point(122, 228);
+      this.txtGatewayBase.Name = "txtGatewayBase";
+      this.txtGatewayBase.Size = new System.Drawing.Size(190, 20);
+      this.txtGatewayBase.TabIndex = 38;
+      this.txtGatewayBase.Text = "http://localhost:55750/";
+      // 
+      // chkUseGateway
+      // 
+      this.chkUseGateway.AutoSize = true;
+      this.chkUseGateway.Checked = true;
+      this.chkUseGateway.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chkUseGateway.Location = new System.Drawing.Point(26, 231);
+      this.chkUseGateway.Name = "chkUseGateway";
+      this.chkUseGateway.Size = new System.Drawing.Size(90, 17);
+      this.chkUseGateway.TabIndex = 39;
+      this.chkUseGateway.Text = "Use Gateway";
+      this.chkUseGateway.UseVisualStyleBackColor = true;
+      // 
+      // label11
+      // 
+      this.label11.AutoSize = true;
+      this.label11.Location = new System.Drawing.Point(18, 7);
+      this.label11.Name = "label11";
+      this.label11.Size = new System.Drawing.Size(221, 13);
+      this.label11.TabIndex = 2;
+      this.label11.Text = "Auto update for mode, projectUid and extents";
+      // 
+      // btnTemplate
+      // 
+      this.btnTemplate.Location = new System.Drawing.Point(229, 23);
+      this.btnTemplate.Name = "btnTemplate";
+      this.btnTemplate.Size = new System.Drawing.Size(99, 23);
+      this.btnTemplate.TabIndex = 3;
+      this.btnTemplate.Text = "Update Template";
+      this.btnTemplate.UseVisualStyleBackColor = true;
+      this.btnTemplate.Click += new System.EventHandler(this.btnTemplate_Click);
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(1232, 672);
-      this.Controls.Add(this.tabControl1);
+      this.ClientSize = new System.Drawing.Size(1226, 672);
+      this.Controls.Add(this.tabTileRequest);
       this.Controls.Add(this.panel3);
       this.Controls.Add(this.panel2);
       this.Controls.Add(this.panel1);
@@ -887,7 +963,7 @@
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
       this.panel3.ResumeLayout(false);
       this.panel3.PerformLayout();
-      this.tabControl1.ResumeLayout(false);
+      this.tabTileRequest.ResumeLayout(false);
       this.tabPageRender.ResumeLayout(false);
       this.tabPageRender.PerformLayout();
       this.tabPageTest.ResumeLayout(false);
@@ -895,6 +971,8 @@
       this.tabPage3.ResumeLayout(false);
       this.tabPage3.PerformLayout();
       this.tabPage4.ResumeLayout(false);
+      this.tabPage1.ResumeLayout(false);
+      this.tabPage1.PerformLayout();
       this.ResumeLayout(false);
 
         }
@@ -938,7 +1016,7 @@
         private System.Windows.Forms.Button button6;
 				private System.Windows.Forms.Button btnSubmitTagFile;
         private System.Windows.Forms.Button btnCalcAll;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabTileRequest;
         private System.Windows.Forms.TabPage tabPageRender;
         private System.Windows.Forms.Button btnZoomAll;
         private System.Windows.Forms.TabPage tabPageTest;
@@ -972,6 +1050,12 @@
     private System.Windows.Forms.Button PassCountDetailsButton;
     private System.Windows.Forms.TextBox textBoxTest;
     private System.Windows.Forms.Button button8;
+    private System.Windows.Forms.TabPage tabPage1;
+    private System.Windows.Forms.TextBox txtJSON;
+    private System.Windows.Forms.CheckBox chkUseGateway;
+    private System.Windows.Forms.TextBox txtGatewayBase;
+    private System.Windows.Forms.Label label11;
+    private System.Windows.Forms.Button btnTemplate;
   }
 }
 

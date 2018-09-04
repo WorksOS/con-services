@@ -344,6 +344,7 @@ namespace VSS.TRex.Tests.Filters
           filter1.MaterialTemperatureMin = 10;
           filter1.MaterialTemperatureMax = 30;
           filter1.HasTemperatureRangeFilter = true;
+          filter1.FilterTemperatureByLastPass = true;
           Assert.Equal(-1, filter1.CompareTo(filter2));
           filter2.Assign(filter1);
           Assert.Equal(0, filter1.CompareTo(filter2));

@@ -49,6 +49,9 @@ namespace VSS.TRex.Filters
         public bool HasCompactionMachinesOnlyFilter { get; set; }
 
         public bool HasTemperatureRangeFilter { get; set; }
+
+        public bool FilterTemperatureByLastPass { get; set; }
+
         public bool HasPassCountRangeFilter { get; set; }
 
         public bool ExcludeSurveyedSurfaces()
