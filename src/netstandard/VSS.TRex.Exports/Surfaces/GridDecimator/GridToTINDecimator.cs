@@ -810,9 +810,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
       catch (Exception E)
       {
-        // TODO readd when logging available
-        //SIGLogMessage.PublishNoODS(Self, Format('Exception ''%s'' in FZplane.Init. Vertices are V1=%s, V2=%s, V3=%s',
-        //  [E.Message, ScanTri.Vertices[0].AsText, ScanTri.Vertices[1].AsText, ScanTri.Vertices[2].AsText]), slmcException);
+        Log.LogError($"Exception {E} in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}");
         ValidTriangle = false;
       }
 

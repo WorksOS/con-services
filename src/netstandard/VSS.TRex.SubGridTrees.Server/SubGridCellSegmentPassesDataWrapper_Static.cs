@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -246,6 +248,12 @@ namespace VSS.TRex.SubGridTrees.Server
     public void SetInternalMachineID(uint X, uint Y, int passNumber, short internalMachineID)
       {
         throw new InvalidOperationException("Immutable cell pass segment.");
+      }
+
+      public void GetSegmentElevationRange(out double MinElev, out double MaxElev)
+      {
+        MinElev = Consts.NullDouble;
+        MaxElev = Consts.NullDouble;
       }
 
     public void Write(BinaryWriter writer)

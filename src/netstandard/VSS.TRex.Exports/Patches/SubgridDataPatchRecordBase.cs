@@ -31,7 +31,6 @@ namespace VSS.TRex.Exports.Patches
     /// <param name="subGrid"></param>
     public virtual void Populate(IClientLeafSubGrid subGrid)
     {
-      // todo: reconcile grid origin versus index origin offset basis for cell originX and celloriginY
       CellOriginX = (int) subGrid.OriginX;
       CellOriginY = (int) subGrid.OriginY;
     }

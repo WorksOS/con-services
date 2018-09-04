@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Geometry;
 
@@ -7,6 +8,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 {
   public class TinningEngine
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(TinningEngine));
+
     public TrimbleTINModel TIN { get; set; }
 
     /// <summary>
@@ -38,6 +41,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// DeLauney insertion of a new vertex into the surface.
     /// </summary>
     private Triangle SuccSuccLastTriangle { get; set; }
+
+    private long SurfaceWalkOverflowCount;
 
     public TinningEngine()
     {
@@ -86,7 +91,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <returns></returns>
     protected Triangle GetBestTri(TriVertex aPoint, Triangle aTriangle, Triangle lastTri, out bool found)
     {
-      Triangle Result = null;
+      Triangle Result;
       found = false;
 
       TriVertex firstPoint = aTriangle.Vertices[0];
@@ -283,15 +288,17 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       bool Found = false;
       int SideIdx = 0;
 
-      while (Index < NumAffected && !Found)
+      while (Index < NumAffected)
       {
         for (int J = 0; J < 3; J++)
+        {
           if (AffectedList[Index].Tri.Neighbours[J] == null || InList(AffectedList[Index].Tri.Neighbours[J], CandidateList, NumCandidates))
           {
             SideIdx = J;
             Found = true;
             break;
           }
+        }
 
         if (Found)
           break;
@@ -475,7 +482,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       {
         if (++nSteps > 10000)
         {
-          // TODO? Inc(SurfaceWalkOverflowCount);
+          SurfaceWalkOverflowCount++;
           nSteps = 0;
 
           // Try again from another start triangle
@@ -799,13 +806,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
 
       // Iterate through all the vertices adding them to the surface
-      DateTime StartTime= DateTime.Now;
-      //LocateTriangle2StepCount:= 0;
-      //CandidateListReassignmentSteps:= 0;
-      //AddCandidateCalls:= 0;
-      //GetNodeTestCount:= 0;
-      //InListTestCount:= 0;
-      //SurfaceWalkOverflowCount:= 0;
+      DateTime StartTime = DateTime.Now;
+      SurfaceWalkOverflowCount = 0;
 
       // Don't read the 4 vertices we added for the bounding rectangle tris
       int MaxRealVertex = TIN.Vertices.Count - 1 - 4;
@@ -816,21 +818,8 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       DateTime FinishTime = DateTime.Now;
       try
       {
-        // TODO: Readd when logging available
-        /*SIGLogMessage.PublishNoODS(Self,
-                                   format('Coordinate incorporation took %s to process %d vertices into %d triangles using %d surface traverse steps and %d candidate reassignments and %d AddCandidate() calls and %d GetNode() tests and %d InList() tests and %d quadtree lookups' + ' at a rate of %.3f vertices/sec, encountering %d surface walk overflows', { SKIP}
-                                          [FormatDateTime('nn:ss.zzz', FinishTime - StartTime), {SKIP}
-                                           FTIN.Vertices.Count,
-                                           FTIN.Triangles.Count,
-                                           LocateTriangle2StepCount,
-                                           CandidateListReassignmentSteps,
-                                           AddCandidateCalls,
-                                           GetNodeTestCount,
-                                           InListTestCount,
-                                           QuadTreeLookUpTestCount,
-                                           FTIN.Vertices.Count / ((FinishTime - StartTime) * (24*60*60)),
-                                           SurfaceWalkOverflowCount]),
-                                   slmcMessage);*/
+        Log.LogInformation($"Coordinate incorporation took {FinishTime - StartTime} to process {TIN.Vertices.Count} vertices into {TIN.Triangles.Count} triangles " +
+                           $"at a rate of {TIN.Vertices.Count / ((FinishTime - StartTime).TotalSeconds)} vertices/sec, encountering {SurfaceWalkOverflowCount} surface walk overflows");
       }
       catch
       {

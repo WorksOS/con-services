@@ -20,7 +20,7 @@ namespace TAGFiles.Tests
 {
     public class TerrainSwatherTests : IClassFixture<DILoggingFixture>
     {
-        [Fact()]
+        [Fact]
         public void Test_TerrainSwather_Creation()
         {
             var siteModel = new SiteModel();
@@ -37,8 +37,7 @@ namespace TAGFiles.Tests
                 "TerrainSwather not created as expected");
         }
 
-        [Fact()]
-        //TODO this should be done with expectedException
+        [Fact]
         public void Test_TerrainSwather_PerformSwathing()
         {
             var siteModel = new SiteModel();

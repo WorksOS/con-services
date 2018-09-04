@@ -54,7 +54,7 @@ namespace VSS.TRex.Designs.Models
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("[{0}:'{1}', '{2}', '{3}', '{4}', '{5}']", DesignID, FileSpace, FileSpaceID, Folder, FileName, Offset);
+            return $"[{DesignID}:'{FileSpace}', '{FileSpaceID}', '{Folder}', '{FileName}', '{Offset}']";
         }
 
         public bool Equals(DesignDescriptor other)

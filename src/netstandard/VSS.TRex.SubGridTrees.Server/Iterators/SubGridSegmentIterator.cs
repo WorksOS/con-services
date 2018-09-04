@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -11,6 +12,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     /// </summary>
     public class SubGridSegmentIterator : ISubGridSegmentIterator
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(SubGridSegmentIterator));
+
         // CurrentSubgridSegment is a reference to the current subgrid segment that the iterator is currently
         // up to in the sub grid tree scan. By definition, this subgrid is locked for
         // the period that FCurrentSubgridSegment references it.
@@ -33,8 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             if (IterationState.SubGrid == null)
             {
-                // TODO add when logging available
-                //SIGLogMessage.PublishNoODS(Self, 'No subgrid node assigned to iteration state', slmcAssert);
+                Log.LogCritical("No subgrid node assigned to iteration state");
                 return null;
             }
 
@@ -42,13 +44,11 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             {
                 while (IterationState.NextSegment())
                 {
-                    /* TODO Locking not implemented yet (and planned no to be!)
                     if (!(!MarkReturnedSegmentsAsTouched || IterationState.SubGrid.Locked))
                     {
-                        SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s not locked in LocateNextSubgridSegmentInIteration as expected', [IterationState.SubGrid.Moniker]), slmcAssert);
+                        Log.LogCritical($"Subgrid {IterationState.SubGrid.Moniker()} not locked in LocateNextSubgridSegmentInIteration as expected");
                         return null;
                     }
-                    */
 
                     ISubGridCellPassesDataSegmentInfo SegmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
 
@@ -84,8 +84,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
                         if (Result == null)
                         {
-                            // TODO add when logging available
-                            //SIGLogMessage.PublishNoODS(Self, 'FIterationState.SubGrid.Cells.AllocateSegment failed to create a new segment', slmcAssert);
+                            Log.LogCritical("IterationState.SubGrid.Cells.AllocateSegment failed to create a new segment");
                             return null;
                         }
                     }
@@ -157,34 +156,32 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             }
             finally
             {
-                // TODO: Currently no caching layer... (and planning npt to be)
-                /*
-                if (MarkReturnedSegmentsAsTouched && (Result != null) && Result.Owner.PresentInCache)
-                {
-                    if (IterationState.SubGrid != Result.Owner)
-                    {
-                        // TODO add when logging available
-                        //   SIGLogMessage.PublishNoODS(Self, Format('TSubGridSegmentIteratorBase.LocateNextSubgridSegmentInIteration: Owner of segment is not the same as the subgrid assigned to the iterator (%s vs %s)', [Result.Owner.Moniker, FIterationState.SubGrid]), slmcAssert);
-                    }
-                    if (Result.Owner.Locked)
-                    {
-                        // if (VLPDSvcLocations.VLPDPSNode_TouchSubgridAndSegmentsInCacheDuringAccessOperations)
-                        // {
-                        //     DataStoreInstance.GridDataCache.SubgridSegmentTouched(Result);
-                        // }
-
-                        Result.ReferenceCacheStamp = MarkedCacheStamp;
-                    }
-                    else
-                    {
-                        // TODO Add when logging available
-                        //SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s not locked as required in LocateNextSubgridSegmentInIteration', [Result.Owner.Moniker]), slmcAssert);
-                    }
-                }
-                */
+        // TODO: Currently no caching layer... (and planning not to be)
+        /*
+        if (MarkReturnedSegmentsAsTouched && (Result != null) && Result.Owner.PresentInCache)
+        {
+            if (IterationState.SubGrid != Result.Owner)
+            {
+                Log.LogCritical($"TSubGridSegmentIteratorBase.LocateNextSubgridSegmentInIteration: Owner of segment is not the same as the subgrid assigned to the iterator ({[Result.Owner.Moniker} vs IterationState.SubGrid)");
             }
+            if (Result.Owner.Locked)
+            {
+                // if (VLPDSvcLocations.VLPDPSNode_TouchSubgridAndSegmentsInCacheDuringAccessOperations)
+                // {
+                //     DataStoreInstance.GridDataCache.SubgridSegmentTouched(Result);
+                // }
 
-            return Result;
+                Result.ReferenceCacheStamp = MarkedCacheStamp;
+            }
+            else
+            {
+                Log.LogCritical($"Subgrid {Result.Owner.Moniker()} not locked as required in LocateNextSubgridSegmentInIteration");
+            }
+        }
+        */
+      }
+
+      return Result;
         }
 
         public ISubGridCellPassesDataSegment CurrentSubGridSegment { get; set; }
