@@ -271,6 +271,7 @@ namespace VSS.TRex.Filters
       AnyMachineEventFilterSelections = false;
       AnyNonMachineEventFilterSelections = false;
       ReturnEarliestFilteredCellPass = false;
+      FilterTemperatureByLastPass = false;
     }
 
     public void ClearVibeState()
@@ -542,6 +543,9 @@ namespace VSS.TRex.Filters
         Result = MaterialTemperatureMax.CompareTo(AFilter.MaterialTemperatureMax);
         if (Result != 0)
           return Result;
+        Result = FilterTemperatureByLastPass.CompareTo(AFilter.FilterTemperatureByLastPass);
+        if (Result != 0)
+          return Result;
       }
 
       // PassCountRangeFilter
@@ -728,6 +732,7 @@ namespace VSS.TRex.Filters
 
       MaterialTemperatureMin = Source.MaterialTemperatureMin;
       MaterialTemperatureMax = Source.MaterialTemperatureMax;
+      FilterTemperatureByLastPass = Source.FilterTemperatureByLastPass;
       PasscountRangeMin = Source.PasscountRangeMin;
       PasscountRangeMax = Source.PasscountRangeMax;
 
@@ -1017,7 +1022,7 @@ end
       }
 
       // TemperatureRange
-      if (HasTemperatureRangeFilter)
+      if (HasTemperatureRangeFilter & !FilterTemperatureByLastPass)
       {
         if (!FilterPassUsingTemperatureRange(ref PassValue))
           return false;
@@ -1165,7 +1170,7 @@ Exit;
       }
 
       // TemperatureRange
-      if (HasTemperatureRangeFilter)
+      if (HasTemperatureRangeFilter & !FilterTemperatureByLastPass)
       {
         if (!FilterPassUsingTemperatureRange(ref PassValue.FilteredPass))
           return false;
@@ -1374,8 +1379,8 @@ Exit;
       }
 
 
-      if (HasTemperatureRangeFilter)
-      {
+      if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behavours depending on display or grid type etc
+      { // filtering on every cell here
         if (!FilterPassUsingTemperatureRange(ref PassValue))
           return false;
       }

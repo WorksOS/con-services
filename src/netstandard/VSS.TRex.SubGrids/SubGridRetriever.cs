@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Cells;
@@ -353,6 +354,9 @@ namespace VSS.TRex.SubGrids
 
       try
       {
+
+
+
         /* TODO Readd when LiftBuildSettings is implemented
          &&
          (!(_GridDataType in [icdtCCV, icdtCCVPercent]) && (LiftBuildSettings.CCVSummaryTypes<>[])) &&
@@ -376,6 +380,10 @@ namespace VSS.TRex.SubGrids
           if (SeiveFilterInUse || !PrepareGridForCacheStorageIfNoSeiving)
             if (!ClientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) // This cell does not match the filter mask and should not be processed
               continue;
+
+
+          if (_GridDataType == GridDataType.CellProfile) // all requests using this data type should filter temperature range using lastpass only
+            Filter.AttributeFilter.FilterTemperatureByLastPass = true;
 
           // For pass attributes that are maintained on a historical last pass basis
           // (meaning their values bubble up through cell passes where the values of
@@ -569,6 +577,8 @@ namespace VSS.TRex.SubGrids
                     SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Calling BuildLiftsForCell', [StripeIndex, J, CellX, CellY]), slmcDebug);
                 */
 
+
+
                 if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
                   AssignmentContext, // Place a filtered value into this assignment context
                   CellPassIterator,  // Iterate over the cells using this cell pass iterator
@@ -581,7 +591,16 @@ namespace VSS.TRex.SubGrids
                   // Filtered value selection is combined with lift analysis in this context via
                   // the provision of the client grid and the assignment context to the
                   // lift analysis engine
-                  HaveFilteredPass = true;
+
+                  // if we have a temperature filter to be filtered by lastpass
+                  if (Filter.AttributeFilter.HasTemperatureRangeFilter && Filter.AttributeFilter.FilterTemperatureByLastPass)
+                    {
+                      HaveFilteredPass = ( CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
+                             Range.InRange(CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature, Filter.AttributeFilter.MaterialTemperatureMin, Filter.AttributeFilter.MaterialTemperatureMax);
+
+                    }
+                  else
+                    HaveFilteredPass = true;
                 }
 
                 /* TODO ...                 if (Debug_ExtremeLogSwitchD)

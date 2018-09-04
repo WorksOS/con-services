@@ -172,6 +172,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool HasPassTypeFilter { get; set; }
     bool HasCompactionMachinesOnlyFilter { get; set; }
     bool HasTemperatureRangeFilter { get; set; }
+    bool FilterTemperatureByLastPass { get; set; }
     bool HasPassCountRangeFilter { get; set; }
     bool AnyFilterSelections { get; set; }
     bool AnyMachineEventFilterSelections { get; set; }

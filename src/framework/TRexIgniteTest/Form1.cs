@@ -77,7 +77,10 @@ namespace TRexIgniteTest
 
 	  private ImmutableClientServer clientIgniteContext;
 
-		SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
+	  private byte[] tileData;
+	  private string tileParamsTemplate;
+
+    SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
 
 		/// <summary>
 		/// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
@@ -95,7 +98,57 @@ namespace TRexIgniteTest
 			}
 		}
 
-		private Draw.Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
+
+
+	  private async Task<long> GatewayRender(string jsonParams, DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
+	  {
+	    if (tileData != null)
+	      tileData = null;
+
+      // if our data is only one cell wide
+	    if (extents.MinX == extents.MaxX)
+	    {
+	      extents.MinX = extents.MinX - 1;
+	      extents.MaxX = extents.MaxX + 1;
+	    }
+	    if (extents.MinY == extents.MaxY)
+	    {
+	      extents.MinY = extents.MinY - 1;
+	      extents.MaxY = extents.MaxY + 1;
+	    }
+
+      // simple way to update params in template
+      jsonParams = jsonParams.Replace("\"projectUid\": \"00000000-0000-0000-0000-000000000000\"", $"\"projectUid\": \"{editProjectID.Text}\"");
+	    jsonParams = jsonParams.Replace("\"mode\": 0", $"\"mode\": { (int)displayMode}");
+	    jsonParams = jsonParams.Replace("\"bottomLeftX\": 0.0", $"\"bottomLeftX\": {extents.MinX}");
+	    jsonParams = jsonParams.Replace("\"bottomLeftY\": 0.0", $"\"bottomLeftY\": {extents.MinY}");
+	    jsonParams = jsonParams.Replace("\"topRightX\": 0.0", $"\"topRightX\": {extents.MaxX}");
+	    jsonParams = jsonParams.Replace("\"topRightY\": 0.0", $"\"topRightY\": {extents.MaxY}");
+	    jsonParams = jsonParams.Replace("\"width\": 400", $"\"width\": {width}");
+	    jsonParams = jsonParams.Replace("\"height\": 400", $"\"height\": {height}");
+	    txtJSON.Text = jsonParams; // show result of change on tile request tab
+
+	    GatewayHelper myGateway = new GatewayHelper();
+
+	    try
+	    {
+	      Task<Byte[]> taskResponse = myGateway.GetTile(txtGatewayBase.Text, jsonParams);
+	      tileData = await taskResponse;
+	      return 0;
+
+      }
+      catch (Exception ex)
+	    {
+	      MessageBox.Show($"GatewayRender Error:{ex.Message}");
+	      return 1;
+	    }
+
+
+	  }
+
+
+
+    private Draw.Bitmap PerformRender(DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
 		{
 				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
 				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
@@ -126,21 +179,31 @@ namespace TRexIgniteTest
 
 				  TileRenderRequest request = new TileRenderRequest();
 
-          TileRenderResponse_Framework response = request.Execute(new TileRenderRequestArgument
-						(ID(),
-							displayMode,
-							extents,
-							true, // CoordsAreGrid
-							(ushort)width, // PixelsX
-							(ushort)height, // PixelsY
-							new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
-							null, // filter 2
-							(cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID// DesignDescriptor
-						)) as TileRenderResponse_Framework;
+				  if (chkUseGateway.Checked)
+				  {
+				    var task = Task.Run(async () => await GatewayRender(tileParamsTemplate, displayMode, width, height, returnEarliestFilteredCellPass, extents));
+            task.Wait();
+				//    var asyncFunctionResult = task.Result;
+				  }
+        else
+				  {
 
-				  var tileData = response?.TileBitmapData;
+				    TileRenderResponse_Framework response = request.Execute(new TileRenderRequestArgument
+				    (ID(),
+				      displayMode,
+				      extents,
+				      true, // CoordsAreGrid
+				      (ushort) width, // PixelsX
+				      (ushort) height, // PixelsY
+				      new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
+				      null, // filter 2
+				      (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID // DesignDescriptor
+				    )) as TileRenderResponse_Framework;
 
-          if (tileData != null)
+				    tileData = response?.TileBitmapData;
+				  }
+
+				  if (tileData != null)
 				  {
 				    using (var ms = new MemoryStream(tileData))
 				    {
@@ -220,6 +283,8 @@ namespace TRexIgniteTest
 		  textBoxTest.Visible = false;
 		  textBoxTest.Height = pictureBox1.Height;
 		  textBoxTest.Width = pictureBox1.Width;
+		  tileParamsTemplate = txtJSON.Text; // master copy
+
 		}
 
 		private void fitExtentsToView(int width, int height)
@@ -1488,6 +1553,12 @@ namespace TRexIgniteTest
       AppendTextBoxWithNewLine($"Adjusted extents with Surveyed Surfaces: {siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0])}");
       AppendTextBoxWithNewLine($"Coordinate System Information Block: {(siteModel.CSIB() == string.Empty ? siteModel.CSIB() : "None")}");
       AppendTextBoxWithNewLine($"IgnoreInvalidPositions: {siteModel.IgnoreInvalidPositions}");
+    }
+
+    private void btnTemplate_Click(object sender, EventArgs e)
+    {
+      // allows user to add extra params to request
+      tileParamsTemplate = txtJSON.Text;
     }
   }
 }
