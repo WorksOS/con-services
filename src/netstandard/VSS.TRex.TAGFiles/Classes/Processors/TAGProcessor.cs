@@ -107,7 +107,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
             DateTime LocalTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
 
-            EndProofingName = string.Format("{0} ({1:YYYY:MM:DD} {1:HH:mm:ss})", TempStr, LocalTime);
+            EndProofingName = $"{TempStr} ({LocalTime:YYYY:MM:DD} {LocalTime:HH:mm:ss})";
 
 /* TODO add when proofing runs are supported
             // Create a new proofing run entry to represent this run
@@ -735,6 +735,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(TagFileStartTime, TRex.Types.PositioningTech.UTS);
                 }
             }
+
+            // Take into account the fact that the site model extent computed from TAG file swathing
+            // operations bounds the cell center points and does not take into account that cells have
+            // an area. Expand the computed site model extent by half a cell size to ensure the reported
+            // site model extent covers the extent of the cells created by swathing the TAG file.
+            SiteModel.SiteModelExtent.Expand(SiteModel.Grid.CellSize / 2, SiteModel.Grid.CellSize / 2);
 
             // Update the design extent...
             if (Design != string.Empty)
