@@ -35,8 +35,8 @@ namespace VSS.TRex.Webtools
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
 
-      services.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard"));
-      services.AddSingleton(new MutableClientServer("Webtools"));
+      services.AddSingleton(new ImmutableClientServer("Webtools-Immutable"));
+      services.AddSingleton(new MutableClientServer("Webtools-Mutable"));
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
 
