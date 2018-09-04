@@ -72,7 +72,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
       // (CoordinateSystemsTestsDIFixture.NewSiteModelGuid, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
       //  FileSystemStreamType.CoordinateSystemCSIB, out csibStream);
 
-      SiteModel siteModel = new SiteModel("TestName", "TestDesc", CoordinateSystemsTestsDIFixture.NewSiteModelGuid, 1.0);
+      SiteModel siteModel = new SiteModel(/*"TestName", "TestDesc", */CoordinateSystemsTestsDIFixture.NewSiteModelGuid, 1.0);
 
         string CSIB = siteModel.CSIB();
 

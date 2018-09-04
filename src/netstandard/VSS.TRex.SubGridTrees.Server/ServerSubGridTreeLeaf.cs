@@ -518,11 +518,13 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             //            SubGridCellPassesDataSegment Segment;
 
+            /* Locking for TRex not yet defined
             if (!Locked)
             {
                 Log.LogCritical($"May not calculate latest pass information if the subgrid {Moniker()} is not locked");
                 return;
             }
+            */
 
             if (!Dirty)
             {
