@@ -14,12 +14,9 @@ export class GridStatusComponent {
   public status: string = "Unknown";
   public selectedGrid: IGrid = null;
   public grids: IGrid[];
-  //private baseUrl: string;
-  //private http: Http;
 
 
   constructor(
-    //private http: Http,
     private gridStatusService: GridStatusService
   ) { }
 
