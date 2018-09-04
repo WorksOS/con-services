@@ -270,8 +270,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 35
-  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting bad request retur" +
-                        "n", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting Unauthorized retu" +
+                        "rn", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 36
   testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

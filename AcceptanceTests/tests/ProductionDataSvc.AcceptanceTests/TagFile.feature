@@ -32,7 +32,7 @@ Scenario Outline: TagFile - Bad Request
   | FilenameTooLong  | -1   |
 
 Scenario Outline: TagFile - Archived Project
-  When I POST a Tag file with name "<ParamName>" from the repository expecting bad request return
+  When I POST a Tag file with name "<ParamName>" from the repository expecting Unauthorized return
   Then the Tag Process Service response should contain Code <Code> and Message <Message>
   Examples: 
   | ParamName        | Code | Message                                                                                                  |
