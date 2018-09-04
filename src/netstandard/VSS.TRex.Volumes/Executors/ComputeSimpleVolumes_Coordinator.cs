@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -17,6 +18,8 @@ namespace VSS.TRex.Volumes.Executors
     /// </summary>
     public class ComputeSimpleVolumes_Coordinator
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(ComputeSimpleVolumes_Coordinator));
+
         /// <summary>
         /// The ID of the site model the volume is being calculated for 
         /// </summary>
@@ -177,8 +180,7 @@ namespace VSS.TRex.Volumes.Executors
             //LLHCoords: TCSConversionCoordinates;
             //CoordConversionResult: TCoordServiceErrorStatus;
 
-            // TODO: Readd when loggin available
-            // SIGLogMessage.PublishNoODS(Self, Format('#In# Performing %s.Execute for DataModel:%d', [Self.ClassName, FDataModelID]), slmcMessage);
+            Log.LogInformation($"#In# Performing {nameof(ComputeSimpleVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
 
             try
             {
@@ -254,25 +256,21 @@ namespace VSS.TRex.Volumes.Executors
 
                     if (ResultStatus != RequestErrorStatus.OK)
                     {
-                        // TODO Readd when logging available
-                        // SIGLogMessage.PublishNoODS(Self, Format('Summary volume result: Failure, error = %d', [Ord(ResultStatus)]), slmcMessage);
+                      Log.LogInformation("Summary volume result: Failure, error = {ResultStatus}");
 
-                        // Send the (empty) results back to the caller
-                        return VolumesResult;
+                      // Send the (empty) results back to the caller
+                      return VolumesResult;
                     }
 
-                    /* TODO: Readd when logging available
-                    SIGLogMessage.PublishNoODS(Self, Format('#Result# Summary volume result: Cut=%.3f, Fill=%.3f, Area=%.3f',            
-                                              [CutFillVolume.CutVolume, CutFillVolume.FillVolume, CoverageArea]), slmcMessage);
-                    */
+                    Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutVolume:.3F}, Fill={Aggregator.FillVolume:.3F}, Area={Aggregator.CoverageArea:.3F}");
 
                     // Instruct the Aggregator to perform any finalisation logic before reading out the results
                     Aggregator.Finalise();
 
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
-                        // TODO: Readd when logging available
-                        //SIGLogMessage.PublishNoODS(Self, 'Summary volume invalid PlanExtents. Possibly no data found', slmcMessage);
+                        Log.LogInformation("Summary volume invalid PlanExtents. Possibly no data found");
+
                         if (Aggregator.CoverageArea == 0 && Aggregator.CutFillVolume.CutVolume == 0 && Aggregator.CutFillVolume.FillVolume == 0)
                             ResultStatus = RequestErrorStatus.NoProductionDataFound;
                         else
@@ -318,10 +316,9 @@ namespace VSS.TRex.Volumes.Executors
                         ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsFailed.Increment();
                 }
             }
-            catch //(Exception E)
+            catch (Exception E)
             {
-                // TODO readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Exception "%s"', [Self.ClassName, E.Message]), slmcException);
+                Log.LogError($"Exception {E}");
             }
 
             return VolumesResult;
