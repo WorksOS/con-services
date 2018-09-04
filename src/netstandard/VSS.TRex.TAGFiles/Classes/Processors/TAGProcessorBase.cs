@@ -31,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     private const double kMaxEpochInterval = 10;
 
         /// <summary>
-        /// Any gap of over this many seconds indicates the loggin was paused
+        /// Any gap of over this many seconds indicates the logging was paused
         /// Epochs crossing such gaps, even if they fall within the Epoch distance
         /// interval, are not processed.
         /// </summary>
@@ -568,22 +568,18 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         // If the distance between the two epochs is > kMaxEpochInterval, then don't process this epoch pair
         // Test both sides of the quadrilateral to see if either is longer than the largest inter-epoch gap
 
-
-        // todo check this code works      
-        //foreach (MachineSide machSide in Enum.GetValues(typeof(MachineSide)))
           for (int J = 0; J < InterpolationFences.Length; J++)
               {
-
                 for (int I = 0; I < InterpolationFences[J].Count; I++)
                 {
                   if (DataTime < PrevEpochTime.AddSeconds(kPausedLoggingIntervalSeconds) && !InterpolationFences[J][I].IsNull())
                   {
-                    if (((Math.Pow(InterpolationFences[J][I][0].X - InterpolationFences[J][I][3].X, 2) +
-                          Math.Pow(InterpolationFences[J][I][0].Y - InterpolationFences[J][I][3].Y, 2)) <= MaxEpochIntervalSquared) &&
-                        ((Math.Pow(InterpolationFences[J][I][1].X - InterpolationFences[J][I][2].X, 2) +
-                          Math.Pow(InterpolationFences[J][I][1].Y - InterpolationFences[J][I][2].Y, 2)) <= MaxEpochIntervalSquared))
+                    if (Math.Pow(InterpolationFences[J][I][0].X - InterpolationFences[J][I][3].X, 2) +
+                        Math.Pow(InterpolationFences[J][I][0].Y - InterpolationFences[J][I][3].Y, 2) <= MaxEpochIntervalSquared &&
+                        Math.Pow(InterpolationFences[J][I][1].X - InterpolationFences[J][I][2].X, 2) +
+                        Math.Pow(InterpolationFences[J][I][1].Y - InterpolationFences[J][I][2].Y, 2) <= MaxEpochIntervalSquared)
                     {
-                      //                            InterpolationFences[I].UpdateExtents();
+                      // InterpolationFences[I].UpdateExtents();
 
                       // Process the quadrilateral formed by the two epochs
                       if (!DoProcessEpochContext(InterpolationFences[J][I],(MachineSide)J))
@@ -595,11 +591,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 }
               }
 
-
-        // Set first epoch to second for next loop
-
-        //------------ FRONT AXLE ----------------
-        FrontLeftInterpolationFence[0].Assign(FrontLeftInterpolationFence[3]);
+               // Set first epoch to second for next loop
+             
+               //------------ FRONT AXLE ----------------
+               FrontLeftInterpolationFence[0].Assign(FrontLeftInterpolationFence[3]);
                 FrontLeftInterpolationFence[1].Assign(FrontLeftInterpolationFence[2]);
 
                 FrontRightInterpolationFence[0].Assign(FrontRightInterpolationFence[3]);

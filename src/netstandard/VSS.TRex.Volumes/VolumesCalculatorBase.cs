@@ -186,8 +186,7 @@ namespace VSS.TRex.Volumes
 
             PipeLine.DataModelID = SiteModel.ID;
 
-            // Readd when logging available
-            //SIGLogMessage.PublishNoODS(Self, Format('Volume calculation extents for DM=%d, Request=%d: %s', [FDataModelID, FRequestDescriptor, FExtents.AsText]), slmcDebug);
+            Log.LogDebug($"Volume calculation extents for DM={SiteModel.ID}, Request={RequestDescriptor}: {Extents}");
             PipeLine.WorldExtents.Assign(Extents);
 
             PipeLine.OverallExistenceMap = OverallExistenceMap;
@@ -400,10 +399,9 @@ namespace VSS.TRex.Volumes
 
                 return Result;
             }
-            catch // (Exception E)
+            catch (Exception E)
             {
-                // Readd when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('%s.Execute raised exception ''%s''', [Self.Classname, E.Message]), slmcException);
+                Log.LogError($"Exception {E}");
             }
 
             return RequestErrorStatus.Unknown;
