@@ -44,11 +44,13 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             {
                 while (IterationState.NextSegment())
                 {
+                    /* TODO: Locking semantics not yet defined
                     if (!(!MarkReturnedSegmentsAsTouched || IterationState.SubGrid.Locked))
                     {
                         Log.LogCritical($"Subgrid {IterationState.SubGrid.Moniker()} not locked in LocateNextSubgridSegmentInIteration as expected");
                         return null;
                     }
+                    */
 
                     ISubGridCellPassesDataSegmentInfo SegmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
 
