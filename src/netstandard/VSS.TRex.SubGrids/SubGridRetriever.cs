@@ -68,16 +68,15 @@ namespace VSS.TRex.SubGrids
     private double StepX, StepY;
     private double IntraGridOffsetX, IntraGridOffsetY;
 
-    private IFilteredValuePopulationControl PopulationControl = null;
+    private IFilteredValuePopulationControl PopulationControl;
 
-    private IProfilerBuilder Profiler = null;
-    private ProfileCell CellProfile = null;
+    private IProfilerBuilder Profiler;
+    private ProfileCell CellProfile;
 
     private ISubGridTreeBitMask PDExistenceMap;
 
     // ProductionEventChanges MachineTargetValues = null;
 
-    // long LastGetTargetValues_MachineID = -1;
     // bool MachineTargetValuesEventsLocked = false;
     private bool HaveFilteredPass;
     private FilteredPassData CurrentPass;
@@ -141,68 +140,10 @@ namespace VSS.TRex.SubGrids
       AssignmentContext = new FilteredValueAssignmentContext();
     }
 
-    private void AcquirePopulationFilterValuesInterlock()
-    {
-      /* TODO
-  if Debug_ExtremeLogSwitchD then
-    SIGLogMessage.PublishNoODS(Nil, Format('In AcquirePopulationFilterValuesInterlock %d at %dx%d', [StripeIndex, CellX, CellY]), slmcDebug);
-
-  MachineTargetValues.TargetValueChanges.AcquireReadAccessInterlock;
-
-  if Debug_ExtremeLogSwitchD then
-    SIGLogMessage.PublishNoODS(Nil, Format('In AcquirePopulationFilterValuesInterlock %d at %dx%d (Complete)', [StripeIndex, CellX, CellY]), slmcDebug);
-    */
-    }
-
-    private void ReleasePopulationFilterValuesInterlock()
-    {
-      /* TODO
-      if Debug_ExtremeLogSwitchD then
-      SIGLogMessage.PublishNoODS(Nil, Format('In ReleasePopulationFilterValuesInterlock %d at %dx%d', [StripeIndex, CellX, CellY]), slmcDebug);
-
-      if MachineTargetValuesEventsLocked then
-      begin
-      MachineTargetValuesEventsLocked = False;
-      MachineTargetValues.TargetValueChanges.ReleaseReadAccessInterlock;
-      end;
-
-      if Debug_ExtremeLogSwitchD then
-      SIGLogMessage.PublishNoODS(Nil, Format('In ReleasePopulationFilterValuesInterlock %d at %dx%d (Complete)', [StripeIndex, CellX, CellY]), slmcDebug);
-      */
-    }
-
-    /* TODO GetTargetValues only called by non-supported contexts in the code below
-    private ProductionEventChanges GetTargetValues(long ForMachineID)
-    {
-        if (ForMachineID == -1)
-            return null;
-
-        if (ForMachineID == LastGetTargetValues_MachineID)
-            return MachineTargetValues;
-
-        // Locate the machine target values of the machine we want to lock
-        MachineTargetValues = SiteModel.MachinesTargetValues[ForMachineID];
-
-        // If necessary, acquire the interlock on this set of machine target values
-        if (PopulationControl.AnySet && MachineTargetValues != null)
-        {
-            MachineTargetValuesEventsLocked = true;
-            // RCE 36155        AcquirePopulationFilterValuesInterlock;
-            LastGetTargetValues_MachineID = ForMachineID;
-        }
-        else
-            LastGetTargetValues_MachineID = -1;
-
-        return MachineTargetValues;
-    }
-    */
-
     private void ProcessCellPasses()
     {
-
       bool haveHalfPass = false;
       int passRangeCount = 0;
-      bool takePass = false;
 
       while (CellPassIterator.MayHaveMoreFilterableCellPasses() &&
              CellPassIterator.GetNextCellPass(ref CurrentPass.FilteredPass))
@@ -213,7 +154,7 @@ namespace VSS.TRex.SubGrids
 
         if (Filter.AttributeFilter.FilterPass(ref CurrentPass))
         {
-
+          bool takePass;
           if (Filter.AttributeFilter.HasPassCountRangeFilter)
           {
 
@@ -262,8 +203,6 @@ namespace VSS.TRex.SubGrids
               }
             }
           }
-
-
         }
       }
     }
@@ -443,11 +382,9 @@ namespace VSS.TRex.SubGrids
           HaveFilteredPass = false;
 
           if (UseLastPassGrid)
-          {
-            /* TODO - readd when logging available
-           if Debug_ExtremeLogSwitchD then
-               SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Using last pass grid', [StripeIndex, J, CellX, CellY]), slmcDebug);
-            */
+          {           
+            // if (Debug_ExtremeLogSwitchD)
+            //   Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Using last pass grid");
 
             AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref AssignmentContext.FilteredValue.FilteredPassData.FilteredPass, StripeIndex, J);
 
@@ -459,11 +396,8 @@ namespace VSS.TRex.SubGrids
           }
           else
           {
-            // SIGLogMessage.PublishNoODS(Nil, Format('Using profiler, StripeIndex = %d', [StripeIndex]), slmcMessage);
-
-            /* TODO Readd when logging available             if (Debug_ExtremeLogSwitchD)
-                SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Using profiler', [StripeIndex, J, CellX, CellY]), slmcDebug);
-            */
+            // if (Debug_ExtremeLogSwitchD)
+            //    Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Using profiler");
 
             Filter.AttributeFilter.InitaliaseFilteringForCell(StripeIndex, J);
 
@@ -565,9 +499,8 @@ namespace VSS.TRex.SubGrids
               {
                 CellPassIterator.SetCellCoordinatesInSubgrid(StripeIndex, J);
 
-                /* TODO ...                 if (Debug_ExtremeLogSwitchD)
-                    SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Calling BuildLiftsForCell', [StripeIndex, J, CellX, CellY]), slmcDebug);
-                */
+                // if (Debug_ExtremeLogSwitchD)
+                //  Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Calling BuildLiftsForCell");
 
                 if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
                   AssignmentContext, // Place a filtered value into this assignment context
@@ -584,9 +517,8 @@ namespace VSS.TRex.SubGrids
                   HaveFilteredPass = true;
                 }
 
-                /* TODO ...                 if (Debug_ExtremeLogSwitchD)
-                    SIGLogMessage.PublishNoODS(Nil, Format('SI@%d/%d at %dx%d: Call to BuildLiftsForCell completed', [StripeIndex, J, CellX, CellY]), slmcDebug);
-                */
+                // if (Debug_ExtremeLogSwitchD)
+                //    Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Call to BuildLiftsForCell completed");
               }
             }
             else
@@ -643,12 +575,8 @@ namespace VSS.TRex.SubGrids
       }
       finally
       {
-        ReleasePopulationFilterValuesInterlock();
-
-        /* TODO...
-        if (Debug_ExtremeLogSwitchD)
-          SIGLogMessage.PublishNoODS(Nil, Format('Completed stripe iteration %d at %dx%d', [StripeIndex, CellX, CellY]), slmcDebug);
-        */
+        //if (Debug_ExtremeLogSwitchD)
+        //  Log.LogDebug("Completed stripe iteration {StripeIndex} at {CellX}x{CellY}");
       }
     }
 
@@ -1005,7 +933,8 @@ namespace VSS.TRex.SubGrids
           // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
           _SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0, false, false);
 
-          /* TODO ???: if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)
+          /* TODO ???: TRex locking not finalised
+          if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)
           {
               SIGLogMessage.PublishNoODS(Nil, Format('Returned, locked, subgrid has incorrect lock token (%d vs expected %d)', [_SubGrid.LockToken, ASubGridLockToken]), slmcAssert); {SKIP}
               return Result;
@@ -1080,21 +1009,19 @@ namespace VSS.TRex.SubGrids
               AreaControlSet.PixelYWorldSize = 0;
             }
 
-            /* TODO if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
-              // SIGLogMessage.PublishNoODS(Nil, Format('Performing stripe iteration at %dx%d', [CellX, CellY]), slmcDebug);
-            */
+            //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC)
+            //  Log.LogDebug($"Performing stripe iteration at {CellX}x{CellY}");
 
             // Iterate over the stripes in the subgrid processing each one in turn.
             for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
               RetrieveSubGridStripe(I);
 
-            /* TODO if VLPDSvcLocations.Debug_ExtremeLogSwitchC then
-              SIGLogMessage.PublishNoODS(Nil, Format('Stripe iteration complete at %dx%d', [CellX, CellY]), slmcDebug);
-              */
+            //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then
+            //  Log.LogDebug($"Stripe iteration complete at {CellX}x{CellY}");
           }
           finally
           {
-            /* TODO - move to owning context of the cell pass loooker upper...
+            /* TODO - move to owning context of the cell pass looker upper...
           if (CellPassFastEventLookerUpper != null)
           {
                 if (VLPDSvcLocations.Debug_LogCellPassLookerUpperFullLookups)
@@ -1110,11 +1037,11 @@ namespace VSS.TRex.SubGrids
         }
         finally
         {
-          /* TODO...
+          /* TODO... TRex locking not finalised
           if (_SubGrid != null)
               _SubGrid.ReleaseLock(ASubGridLockToken);
           */
-          //      SIGLogMessage.PublishNoODS(Nil, 'Completed RetrieveSubGrid operation', slmcDebug); {SKIP}
+          // Log.LogDebug("Completed RetrieveSubGrid operation");
         }
       }
       catch (Exception e)
@@ -1123,7 +1050,7 @@ namespace VSS.TRex.SubGrids
         throw;
       }
 
-//            Log.LogInformation("Exiting RetrieveSubGrid");
+//  Log.LogInformation("Exiting RetrieveSubGrid");
 
       return Result;
     }
