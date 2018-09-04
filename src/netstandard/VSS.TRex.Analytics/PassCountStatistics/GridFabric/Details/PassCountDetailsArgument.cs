@@ -9,7 +9,6 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details
   [Serializable]
   public class PassCountDetailsArgument : BaseApplicationServiceRequestArgument
   {
-    // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
     /// <summary>
     /// Pass Count details values.
     /// </summary>

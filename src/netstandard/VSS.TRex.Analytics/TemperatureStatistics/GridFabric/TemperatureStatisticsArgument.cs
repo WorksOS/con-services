@@ -10,8 +10,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	[Serializable]
 	public class TemperatureStatisticsArgument : BaseApplicationServiceRequestArgument
   {
-		// TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
-
 		/// <summary>
 		/// The flag is to indicate wehther or not the temperature warning levels to be user overrides.
 		/// </summary>
