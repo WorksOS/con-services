@@ -39,7 +39,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I POST a Tag file with name ""(.*)"" from the repository expecting bad request return")]
     public void WhenIPOSTATagFileWithNameFromTheRepositoryExpectingBadRequestReturn(string paramName)
     {
-      tagPoster.DoInvalidRequest(paramName);
+      tagPoster.DoInvalidRequest(paramName, HttpStatusCode.Unauthorized);
     }
 
     [When(@"I POST a Tag file with name ""(.*)"" from the repository expecting Unauthorized return")]
