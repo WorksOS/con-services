@@ -278,7 +278,7 @@ namespace VSS.TRex.Filters
         (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventMinElevMappingValues) != 0 ||
         passFilter.HasMinElevMappingFilter;
       WantsEventInAvoidZoneStateValues =
-        false; // todo (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsInAvoidZoneStateValues) != 0 || passFilter.HasAvoidZoneStateFilter;
+        false; // (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsInAvoidZoneStateValues) != 0 || passFilter.HasAvoidZoneStateFilter;
       WantsEventGPSAccuracyValues =
         (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventGPSAccuracyValues) != 0 ||
         passFilter.HasGPSAccuracyFilter || passFilter.HasGPSToleranceFilter;

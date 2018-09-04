@@ -192,7 +192,6 @@ namespace VSS.TRex.Tests.Filters
         public void Test_CellPassAttributeFilter_CompareTo_MinElevMapping()
         {
             Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping true", x => { x.HasMinElevMappingFilter = true; x.MinElevationMapping = true; });
-            Test_CellPassAttributeFilter_CompareTo_Aspect("MinElevationMapping false", x => { x.HasMinElevMappingFilter = false; x.MinElevationMapping = false; });
         }
 
         [Fact()]
@@ -345,6 +344,7 @@ namespace VSS.TRex.Tests.Filters
           filter1.MaterialTemperatureMin = 10;
           filter1.MaterialTemperatureMax = 30;
           filter1.HasTemperatureRangeFilter = true;
+          filter1.FilterTemperatureByLastPass = true;
           Assert.Equal(-1, filter1.CompareTo(filter2));
           filter2.Assign(filter1);
           Assert.Equal(0, filter1.CompareTo(filter2));
@@ -510,7 +510,7 @@ namespace VSS.TRex.Tests.Filters
             CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
             Assert.False(filter.HasMachineFilter, "Machine filter set");
-            Assert.False(filter.MachinesList == null || filter.MachinesList.Length == 0, "Machine filter contains machines");
+            Assert.True(filter.MachinesList == null || filter.MachinesList.Length == 0, "Machine filter contains machines");
         }
 
         [Fact(Skip = "Not Implemented")]

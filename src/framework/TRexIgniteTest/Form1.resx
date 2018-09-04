@@ -117,6 +117,68 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="txtJSON.Text" xml:space="preserve">
+    <value>{
+    "projectId": 1001158,
+    "projectUid": "00000000-0000-0000-0000-000000000000",
+    "callId": "00000000-0000-0000-0000-000000000001",
+    "mode": 0,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": 0,
+    "filter2": null,
+    "filterId2": 0,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 0.0,
+      "bottomLeftY": 0.0,
+      "topRightX": 0.0,
+      "topRightY": 0.0
+    },
+    "width": 400,
+    "height": 400
+ }</value>
+  </data>
   <metadata name="openFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>

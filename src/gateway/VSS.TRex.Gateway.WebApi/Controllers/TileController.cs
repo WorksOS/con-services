@@ -12,7 +12,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   public class TileController : BaseController
   {
-
     public TileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, 
       IConfigurationStore configStore): base(loggerFactory, loggerFactory.CreateLogger<TileController>(), exceptionHandler, configStore)
     {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Geometry;
@@ -61,7 +63,7 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Base class for implementation of sub grid trees that defines various parameters and constants related to them
     /// </summary>
-    public class SubGridTree : ISubGridTree
+    public class SubGridTree : ISubGridTree, IEnumerator<ISubGrid>
     {
         private static ILogger Log = Logging.Logger.CreateLogger("SubGridTree");
 
@@ -648,5 +650,29 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     /// <returns></returns>
     public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubgrid(NumLevels) as ILeafSubGrid;
+
+      public IEnumerator<ISubGrid> GetEnumerator()
+      {
+        return null;
+      }
+
+      public bool MoveNext()
+      {
+        throw new NotImplementedException();
+      }
+
+      public void Reset()
+      {
+        throw new NotImplementedException();
+      }
+
+      public ISubGrid Current { get; }
+
+      object IEnumerator.Current => Current;
+
+      public void Dispose()
+      {
+        throw new NotImplementedException();
+      }
     }
 }

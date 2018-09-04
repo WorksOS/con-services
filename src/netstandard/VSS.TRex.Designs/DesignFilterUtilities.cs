@@ -13,13 +13,8 @@ namespace VSS.TRex.Designs
     public static class DesignFilterUtilities
     {
         /// <summary>
-        /// DI'ed context for access to ExistenceMaps functionality
-        /// </summary>
-        private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
-
-        /// <summary>
         /// Given a design used as an elevation range filter aspect, retrieve the existence map for the design and
-        /// including it in the supplied overall existence map for the query
+        /// includes it in the supplied overall existence map for the query
         /// </summary>
         /// <param name="siteModel"></param>
         /// <param name="filter"></param>
@@ -32,21 +27,23 @@ namespace VSS.TRex.Designs
             if (filter == null)
                 return true;
 
+            if (overallExistenceMap == null)
+              return false;
+
             if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
             {
-                ISubGridTreeBitMask DesignExistanceMap = ExistenceMaps.GetSingleExistenceMap
+                ISubGridTreeBitMask DesignExistanceMap = DIContext.Obtain<IExistenceMaps>().GetSingleExistenceMap
                     (siteModel.ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
 
-                if (overallExistenceMap == null)
-                    return false;
-
                 if (DesignExistanceMap != null)
+                {
+                    // Not sure this is really needed...
+                    DesignExistanceMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModel.Grid.CellSize;
                     overallExistenceMap.SetOp_OR(DesignExistanceMap);
-
-              DesignExistanceMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModel.Grid.CellSize;
+                }
             }
 
-      return true;
+            return true;
         }
     }
 }

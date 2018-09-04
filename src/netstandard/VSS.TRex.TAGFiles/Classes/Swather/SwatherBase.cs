@@ -97,7 +97,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                             PassType passType,
                                             MachineSide machineSide)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public bool BaseProductionDataSupportedByMachine => true; // Need to wire this into subscriptions

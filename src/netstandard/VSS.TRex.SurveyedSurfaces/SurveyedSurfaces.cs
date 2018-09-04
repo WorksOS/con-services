@@ -27,11 +27,9 @@ namespace VSS.TRex.SurveyedSurfaces
 
         public bool Sorted { get { return FSorted; } }
 
-        /// <summary>
-        /// DI'ed context for access to ExistenceMaps functionality
-        /// </summary>
-        private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
-    
+        private IExistenceMaps existenceMaps = null;
+        private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
+
         /// <summary>
         /// No-arg constructor
         /// </summary>
@@ -344,7 +342,7 @@ namespace VSS.TRex.SurveyedSurfaces
          
             if (FilteredSurveyedSurfaces.Count > 0)
             {
-              ISubGridTreeBitMask SurveyedSurfaceExistanceMap = ExistenceMaps.GetCombinedExistenceMap(siteModelID,
+              ISubGridTreeBitMask SurveyedSurfaceExistanceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
               FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
          
               if (OverallExistenceMap == null)
