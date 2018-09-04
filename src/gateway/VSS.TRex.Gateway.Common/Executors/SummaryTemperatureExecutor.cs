@@ -49,10 +49,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          OverrideTemperatureWarningLevels = request.temperatureSettings != null && request.temperatureSettings.overrideTemperatureRange,
+          OverrideTemperatureWarningLevels = request.temperatureSettings != null && request.temperatureSettings.OverrideTemperatureRange,
           OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(
-            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.minTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
-            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.maxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
+            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
+            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
         }
       );
 

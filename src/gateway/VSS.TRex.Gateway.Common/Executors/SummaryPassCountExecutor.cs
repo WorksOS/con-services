@@ -44,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var targetPassCountRange = new PassCountRangeRecord();
       if (request.overridingTargetPassCountRange != null)
-        targetPassCountRange.SetMinMax(request.overridingTargetPassCountRange.min, request.overridingTargetPassCountRange.max);
+        targetPassCountRange.SetMinMax(request.overridingTargetPassCountRange.Min, request.overridingTargetPassCountRange.Max);
 
       PassCountSummaryOperation operation = new PassCountSummaryOperation();
       PassCountSummaryResult passCountSummaryResult = operation.Execute(

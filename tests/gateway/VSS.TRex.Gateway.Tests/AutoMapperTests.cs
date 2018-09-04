@@ -40,10 +40,10 @@ namespace VSS.TRex.Gateway.Tests
     {
       var box = new BoundingBox2DGrid(10, 12, 35, 27);  
       var box3d = AutoMapperUtility.Automapper.Map<BoundingWorldExtent3D>(box);
-      Assert.Equal(box.bottomLeftX, box3d.MinX);
-      Assert.Equal(box.bottomleftY, box3d.MinY);
-      Assert.Equal(box.topRightX, box3d.MaxX);
-      Assert.Equal(box.topRightY, box3d.MaxY);
+      Assert.Equal(box.BottomLeftX, box3d.MinX);
+      Assert.Equal(box.BottomleftY, box3d.MinY);
+      Assert.Equal(box.TopRightX, box3d.MaxX);
+      Assert.Equal(box.TopRightY, box3d.MaxY);
     }
 
     [Fact]
@@ -51,10 +51,10 @@ namespace VSS.TRex.Gateway.Tests
     {
       var box = new BoundingBox2DLatLon(10, 12, 35, 27);
       var box3d = AutoMapperUtility.Automapper.Map<BoundingWorldExtent3D>(box);
-      Assert.Equal(box.bottomLeftLon, box3d.MinX);
-      Assert.Equal(box.bottomLeftLat, box3d.MinY);
-      Assert.Equal(box.topRightLon, box3d.MaxX);
-      Assert.Equal(box.topRightLat, box3d.MaxY);
+      Assert.Equal(box.BottomLeftLon, box3d.MinX);
+      Assert.Equal(box.BottomLeftLat, box3d.MinY);
+      Assert.Equal(box.TopRightLon, box3d.MaxX);
+      Assert.Equal(box.TopRightLat, box3d.MaxY);
     }
 
     [Fact]

@@ -44,14 +44,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       //var liftBuildSettings =
       //  RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       CutFillOperation operation = new CutFillOperation();
       CutFillResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        DesignID = request.designDescriptor.uid ?? Guid.Empty,
+        DesignID = request.DesignDescriptor.Uid ?? Guid.Empty,
         Offsets = request.CutFillTolerances
       });
 
