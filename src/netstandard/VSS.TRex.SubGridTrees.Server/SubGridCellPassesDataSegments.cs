@@ -56,7 +56,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (segmentInfo == null)
             {
-                //TODO add when lgogin available
+                //TODO add when logging available
                 //                SIGLogMessage.PublishNoODS(Self, Format('Null segment info passed to TICSubGridCellPassesDataList.AddNewSegment for subgrid %s', { SKIP}
                 //                                              [SubGrid.Moniker]), slmcAssert);
                 return null;
