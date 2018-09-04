@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using VSS.TRex.TAGFiles.GridFabric.Services;
-using VSS.TRex.Logging;
-using Microsoft.Extensions.Logging;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Logging;
+using VSS.TRex.TAGFiles.GridFabric.Services;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -18,15 +14,19 @@ namespace VSS.TRex.Webtools.Controllers
 
     private static readonly ILogger Log = Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
+    /// <summary>
+    /// Deploys the TagFileBufferQueueService to the grid
+    /// </summary>
+    /// <returns></returns>
     [HttpPut("tagfilebuffer")]
     public string DeployTagFileBufferService()
     {
       Log.LogInformation($"Obtaining proxy for TAG file buffer queue service");
 
-      // Ensure the continuous query service is installed that supports TAG file processing
-      TAGFileBufferQueueServiceProxy proxy = new TAGFileBufferQueueServiceProxy();
       try
       {
+        // Ensure the continuous query service is installed that supports TAG file processing
+        TAGFileBufferQueueServiceProxy proxy = new TAGFileBufferQueueServiceProxy();
         Log.LogInformation($"Deploying TAG file buffer queue service");
         proxy.Deploy();
       }
@@ -39,7 +39,5 @@ namespace VSS.TRex.Webtools.Controllers
       Log.LogInformation($"Complected service deployment for TAG file buffer queue service");
       return $"Complected service deployment for TAG file buffer queue service";
     }
-
-
   }
 }
