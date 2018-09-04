@@ -97,7 +97,6 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                             PassType passType,
                                             MachineSide machineSide)
         {
-            //throw new NotImplementedException();
             return true;
         }
 

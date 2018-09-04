@@ -2,11 +2,8 @@
 using System.Diagnostics;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
-using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Swather;
 using VSS.TRex.TAGFiles.Types;
