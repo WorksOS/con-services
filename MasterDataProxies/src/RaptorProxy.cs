@@ -307,7 +307,7 @@ namespace VSS.MasterData.Proxies
       string queryParameters3 = $"&mode={mode}&width={width}&height={height}&bbox={bbox}{cutFillDesignParam}";
 
       var request = new GracefulWebRequest(logger, configurationStore);
-      var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles", $"{queryParameters1}{queryParameters2}{queryParameters3}");
+      var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", $"{queryParameters1}{queryParameters2}{queryParameters3}");
       var stream = await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
       using (var ms = new MemoryStream())
       {
