@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Extensions.Configuration;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +19,6 @@ namespace VSS.TRex.Server.MutableData
 {
   class Program
   {
-    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
-
     public static IConfiguration Configuration { get; set; }
 
     private static void DependencyInjection()
@@ -82,7 +80,7 @@ namespace VSS.TRex.Server.MutableData
       // Load settings for Mutabledata
 
       Configuration = new ConfigurationBuilder()
-       //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
+          //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
           .AddEnvironmentVariables() // can also come from environment variables which will override json file
           .Build();
@@ -102,14 +100,12 @@ namespace VSS.TRex.Server.MutableData
 
 
       var server = new TagProcComputeServer();
-      Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += (s, a) =>
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
-        WaitHandle.Set();
+        cancelTokenSource.Cancel();
       };
-
-      WaitHandle.WaitOne();
     }
   }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,9 +26,6 @@ namespace VSS.TRex.Server.Application
 {
   class Program
   {
-  //Event to signal when to shutdown
-    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
-
 
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
@@ -141,13 +138,12 @@ namespace VSS.TRex.Server.Application
         ServerRoles.ANALYTICS_NODE,
       });
 
- Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += (s, a) =>
-        { Console.WriteLine("Exiting");
-          WaitHandle.Set();
-        };
-
-      WaitHandle.WaitOne();
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      {
+        Console.WriteLine("Exiting");
+        cancelTokenSource.Cancel();
+      };
     }
   }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
@@ -19,8 +19,6 @@ namespace VSS.TRex.Server.PSNode
 {
   class Program
   {
-    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
-
     private static void DependencyInjection()
     {
       DIBuilder
@@ -83,20 +81,18 @@ namespace VSS.TRex.Server.PSNode
     }
 
     static void Main(string[] args)
-    { 
+    {
       DependencyInjection();
 
       EnsureAssemblyDependenciesAreLoaded();
 
       var server = new SubGridProcessingServer();
-      Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += (s, a) =>
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
-        WaitHandle.Set();
+        cancelTokenSource.Cancel();
       };
-
-      WaitHandle.WaitOne();
     }
   }
 }

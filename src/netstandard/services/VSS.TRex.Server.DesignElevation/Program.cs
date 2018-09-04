@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Designs.Servers.Client;
 using System.Threading;
@@ -12,8 +12,6 @@ namespace VSS.TRex.Server.DesignElevation
 {
   class Program
   {
-    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
-
     private static void DependencyInjection()
     {
       DIBuilder
@@ -56,13 +54,12 @@ namespace VSS.TRex.Server.DesignElevation
       EnsureAssemblyDependenciesAreLoaded();
 
       var server = new CalculateDesignElevationsServer();
-      Console.CancelKeyPress += (s, a) =>
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
-        WaitHandle.Set();
+        cancelTokenSource.Cancel();
       };
-
-      WaitHandle.WaitOne();
     }
   }
 }

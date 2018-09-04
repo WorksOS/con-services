@@ -25,9 +25,6 @@ namespace VSS.TRex.Server.TileRendering
 {
   class Program
   {
-
-    private static readonly AutoResetEvent WaitHandle = new AutoResetEvent(false);
-
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       switch (key)
@@ -123,14 +120,12 @@ namespace VSS.TRex.Server.TileRendering
       Log.LogDebug("Creating service");
 
       var server = new TileRenderingServer();
-      Console.WriteLine("Press ctrl+c to exit");
-      Console.CancelKeyPress += (s, a) =>
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {
         Console.WriteLine("Exiting");
-        WaitHandle.Set();
+        cancelTokenSource.Cancel();
       };
-
-      WaitHandle.WaitOne();
     }
   }
 }
