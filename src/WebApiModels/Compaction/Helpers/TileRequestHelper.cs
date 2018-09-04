@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         }
       }
 
-      TileRequest tileRequest = TileRequest.CreateTileRequest(
+      TileRequest tileRequest = new TileRequest(
         ProjectId, null, mode, palette, liftSettings, (VolumesType)computeVolType,
         0, design, filter1, 0, filter2, 0,
         Filter == null || !Filter.LayerType.HasValue ? FilterLayerMethod.None : Filter.LayerType.Value,

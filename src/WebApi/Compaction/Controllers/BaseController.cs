@@ -250,7 +250,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
-      return DesignDescriptor.CreateDesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
+      return new DesignDescriptor(file.LegacyFileId, fileDescriptor, 0.0);
     }
 
     /// <summary>
@@ -360,7 +360,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             await ApplyDateRange(projectUid, filterData);
 
             var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
-              WGSPoint3D.CreatePoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+              new WGSPoint3D(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
             var layerMethod = filterData.LayerNumber.HasValue
               ? FilterLayerMethod.TagfileLayerNumber
@@ -372,7 +372,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               returnEarliest = true;
             }
 
-            var raptorFilter = FilterResult.CreateFilter(filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
+            var raptorFilter = new FilterResult(filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
 
             Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 

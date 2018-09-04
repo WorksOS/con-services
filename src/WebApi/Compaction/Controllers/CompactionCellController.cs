@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var request = CellDatumRequest.CreateCellDatumRequest(
         projectId,
         displayMode,
-        WGSPoint.CreatePoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()),
+        new WGSPoint(lat.LatDegreesToRadians(), lon.LonDegreesToRadians()),
         null,
         filter,
         filter?.Id ?? -1,

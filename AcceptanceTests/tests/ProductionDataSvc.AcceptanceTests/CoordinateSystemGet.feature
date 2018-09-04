@@ -16,5 +16,5 @@ Scenario Outline: CoordinateSystemGet - Bad Request
   Then the response should contain error code <errorCode>
   Examples: 
   | ProjectId | httpCode | errorCode |
-  | 0         | 400      | -1        |
+  | 0         | 401      | -5        |
   | 1099999   | 400      | -4        |

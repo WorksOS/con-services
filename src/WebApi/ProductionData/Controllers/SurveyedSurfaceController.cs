@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v1/projects/{projectId}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromRoute] long projectId, [FromRoute] long surveyedSurfaceId)
     {
-      ProjectID projId = ProjectID.Create(projectId);
+      ProjectID projId = new ProjectID(projectId);
       projId.Validate();
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<ContractExecutionResult> GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
       long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      ProjectID projId = ProjectID.Create(projectId, projectUid);
+      ProjectID projId = new ProjectID(projectId, projectUid);
       projId.Validate();
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [Route("api/v1/projects/{projectId}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromRoute] long projectId)
     {
-      ProjectID request = ProjectID.Create(projectId);
+      ProjectID request = new ProjectID(projectId);
 
       request.Validate();
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient).Process(request) as SurveyedSurfaceResult;
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<SurveyedSurfaceResult> Get([FromRoute] Guid projectUid)
     {
       long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      ProjectID request = ProjectID.Create(projectId, projectUid);
+      ProjectID request = new ProjectID(projectId, projectUid);
 
       request.Validate();
       return RequestExecutorContainerFactory.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient).Process(request) as SurveyedSurfaceResult;

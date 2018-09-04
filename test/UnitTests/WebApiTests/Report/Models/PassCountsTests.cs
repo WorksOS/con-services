@@ -63,8 +63,8 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     private long projectId = 1234;
     private Guid callId = new Guid();
     private PassCountSettings passCountSettings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 3, 5, 10 });
-    private LiftBuildSettings liftSettings = LiftBuildSettings.CreateLiftBuildSettings(
-      CCVRangePercentage.CreateCcvRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
-      MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);
+    private LiftBuildSettings liftSettings = new LiftBuildSettings(
+      new CCVRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
+      new MDPRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);
   }
 }

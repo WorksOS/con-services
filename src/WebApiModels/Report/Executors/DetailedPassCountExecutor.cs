@@ -81,10 +81,10 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
 
     private PassCountDetailedResult ConvertResult(TPassCountDetails details, LiftBuildSettings liftSettings)
     {
-      return PassCountDetailedResult.Create(
-          ((liftSettings != null) && (liftSettings.overridingTargetPassCountRange != null)) 
-              ? liftSettings.overridingTargetPassCountRange 
-              : (!details.IsTargetPassCountConstant ? TargetPassCountRange.CreateTargetPassCountRange((ushort)0, (ushort)0) : TargetPassCountRange.CreateTargetPassCountRange(details.ConstantTargetPassCountRange.Min, details.ConstantTargetPassCountRange.Max)),
+      return new PassCountDetailedResult(
+          ((liftSettings != null) && (liftSettings.OverridingTargetPassCountRange != null)) 
+              ? liftSettings.OverridingTargetPassCountRange 
+              : (!details.IsTargetPassCountConstant ? new TargetPassCountRange(0, 0) : new TargetPassCountRange(details.ConstantTargetPassCountRange.Min, details.ConstantTargetPassCountRange.Max)),
           details.IsTargetPassCountConstant,
           details.Percents, details.TotalAreaCoveredSqMeters);
     }

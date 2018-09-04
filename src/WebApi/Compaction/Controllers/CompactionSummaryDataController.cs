@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return CompactionCmvSummaryResult.CreateEmptyResult();
+        return new CompactionCmvSummaryResult();
       }
 
       Log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
               .Process(request) as CMVSummaryResult;
 
-        var returnResult = CompactionCmvSummaryResult.Create(result, request.cmvSettings);
+        var returnResult = new CompactionCmvSummaryResult(result, request.cmvSettings);
         Log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);
@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return CompactionMdpSummaryResult.CreateEmptyResult();
+        return new CompactionMdpSummaryResult();
       }
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(LoggerFactory, RaptorClient, null, this.ConfigStore)
           .Process(request) as MDPSummaryResult;
-        var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
+        var returnResult = new CompactionMdpSummaryResult(result, mdpSettings);
         Log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);
@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return CompactionPassCountSummaryResult.CreateEmptyResult();
+        return new CompactionPassCountSummaryResult();
       }
 
       PassCounts request = await GetPassCountRequest(projectUid, filterUid, true);
@@ -173,7 +173,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as PassCountSummaryResult;
-        var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
+        var returnResult = new CompactionPassCountSummaryResult(result);
         Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);
@@ -210,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return CompactionTemperatureSummaryResult.CreateEmptyResult();
+        return new CompactionTemperatureSummaryResult();
       }
 
       var projectSettings = await GetProjectSettingsTargets(projectUid);
@@ -227,7 +227,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result =
           RequestExecutorContainerFactory.Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient)
             .Process(request) as TemperatureSummaryResult;
-        var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
+        var returnResult = new CompactionTemperatureSummaryResult(result);
         Log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);
@@ -269,7 +269,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return CompactionSpeedSummaryResult.CreateEmptyResult();
+        return new CompactionSpeedSummaryResult();
       }
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -282,7 +282,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var result = RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as SpeedSummaryResult;
         var returnResult =
-          CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
+          new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
         Log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);

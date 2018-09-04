@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           RaptorConverters.DesignDescriptor(request.DesignDescriptor),
           volType,
           RaptorConverters.convertOptions(null, request.LiftBuildSettings,
-            request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.setSummaryDataLayersVisibility),
+            request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
           request.PatchNumber,
           request.PatchSize,
           out var patch,

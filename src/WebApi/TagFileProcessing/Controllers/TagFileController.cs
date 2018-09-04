@@ -157,7 +157,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       return projectData.ProjectGeofenceWKT == null
         ? null
-        : WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
+        : new WGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
   }
 }

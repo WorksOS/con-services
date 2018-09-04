@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
                  profile.OTGCellY,
                  profile.Station,
                  profile.TopLayerPassCount,
-                 TargetPassCountRange.CreateTargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
+                 new TargetPassCountRange(profile.TopLayerPassCountTargetRangeMin, profile.TopLayerPassCountTargetRangeMax),
                  ConvertCellLayers(profile.Layers, ConvertFilteredPassData(profile.Passes))
                  
              );

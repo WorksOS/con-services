@@ -30,13 +30,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     private SpeedSummaryResult ConvertResult(TASNodeSpeedSummaryResult result)
     {
 
-      return SpeedSummaryResult.Create
-          (
-              Math.Round(result.AboveTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
-              Math.Round(result.BelowTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
-              Math.Round(result.MatchTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
-              Math.Round(result.CovegareArea, 5)
-          );
+      return new SpeedSummaryResult
+      (
+        Math.Round(result.AboveTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
+        Math.Round(result.BelowTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
+        Math.Round(result.MatchTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
+        Math.Round(result.CovegareArea, 5)
+      );
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

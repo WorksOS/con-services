@@ -270,8 +270,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 35
-  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting bad request retur" +
-                        "n", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When(string.Format("I POST a Tag file with name \"{0}\" from the repository expecting Unauthorized retu" +
+                        "rn", paramName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 36
   testRunner.Then(string.Format("the Tag Process Service response should contain Code {0} and Message {1}", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -283,12 +283,14 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "TagFile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidProjectId")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParamName", "InvalidProjectId")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-1")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"The project has been archived and this function is not allowed.\"")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Code", "-5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "\"Missing Project or project does not belong to specified customer or don\'t have a" +
+            "ccess to the project 0\"")]
         public virtual void TagFile_ArchivedProject_InvalidProjectId()
         {
 #line 34
-this.TagFile_ArchivedProject("InvalidProjectId", "-1", "\"The project has been archived and this function is not allowed.\"", ((string[])(null)));
+this.TagFile_ArchivedProject("InvalidProjectId", "-5", "\"Missing Project or project does not belong to specified customer or don\'t have a" +
+                    "ccess to the project 0\"", ((string[])(null)));
 #line hidden
         }
     }

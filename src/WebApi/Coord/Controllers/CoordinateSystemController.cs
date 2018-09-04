@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [HttpGet]
     public CoordinateSystemSettings Get([FromRoute] long projectId)
     {
-      ProjectID request = ProjectID.Create(projectId);
+      ProjectID request = new ProjectID(projectId);
 
       request.Validate();
       return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
     {
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      ProjectID request = ProjectID.Create(projectId, projectUid);
+      ProjectID request = new ProjectID(projectId, projectUid);
 
       request.Validate();
       return RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger, raptorClient).Process(request) as CoordinateSystemSettings;

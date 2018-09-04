@@ -14,8 +14,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreatePassCountDetailedResult_Should_return_null_object_When_TotalCoverageArea_is_null()
     {
-      var passCountDetailedResult = PassCountDetailedResult.Create(null, false, null, 0);
-      var result = CompactionPassCountDetailedResult.CreatePassCountDetailedResult(passCountDetailedResult);
+      var passCountDetailedResult = new PassCountDetailedResult(null, false, null, 0);
+      var result = new CompactionPassCountDetailedResult(passCountDetailedResult);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);
@@ -25,10 +25,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreatePassCountDetailedResult_Should_return_full_object_When_TotalCoverageArea_is_not_null()
     {
-      var passCountRange = TargetPassCountRange.CreateTargetPassCountRange(45, 67);
-      var passCountDetailedResult = PassCountDetailedResult.Create(passCountRange, false, new[] { 12.3, 45.6 }, 123.45);
+      var passCountRange = new TargetPassCountRange(45, 67);
+      var passCountDetailedResult = new PassCountDetailedResult(passCountRange, false, new[] { 12.3, 45.6 }, 123.45);
 
-      var result = CompactionPassCountDetailedResult.CreatePassCountDetailedResult(passCountDetailedResult);
+      var result = new CompactionPassCountDetailedResult(passCountDetailedResult);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);

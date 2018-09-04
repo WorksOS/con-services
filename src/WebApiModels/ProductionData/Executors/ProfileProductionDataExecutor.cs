@@ -162,7 +162,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
               temperatureHeight = float.NaN,
               temperatureLevel = -1,
               topLayerPassCount = -1,
-              topLayerPassCountTargetRange = TargetPassCountRange.CreateTargetPassCountRange(VelociraptorConstants.NO_PASSCOUNT, VelociraptorConstants.NO_PASSCOUNT),
+              topLayerPassCountTargetRange = new TargetPassCountRange(VelociraptorConstants.NO_PASSCOUNT, VelociraptorConstants.NO_PASSCOUNT),
               passCountIndex = -1,
               topLayerThickness = float.NaN
             });
@@ -208,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
                 (currCell.materialTemperature > currCell.materialTemperatureWarnMax ? 0 : 1)),
 
             topLayerPassCount = noPassCountValue ? -1 : currCell.topLayerPassCount,
-            topLayerPassCountTargetRange = TargetPassCountRange.CreateTargetPassCountRange(currCell.topLayerPassCountTargetRange.Min, currCell.topLayerPassCountTargetRange.Max),
+            topLayerPassCountTargetRange = new TargetPassCountRange(currCell.topLayerPassCountTargetRange.Min, currCell.topLayerPassCountTargetRange.Max),
 
             passCountIndex = noPassCountValue ? -1 :
               (currCell.topLayerPassCount < currCell.topLayerPassCountTargetRange.Min ? 2 :

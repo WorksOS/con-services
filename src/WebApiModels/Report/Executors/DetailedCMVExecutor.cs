@@ -99,34 +99,34 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     private CMVDetailedResult ConvertResult(TCMVDetails details)
     {
-      return CMVDetailedResult.Create(details.Percents);
+      return new CMVDetailedResult(details.Percents);
     }
 
     private TCMVSettings ConvertSettings(CMVSettings settings)
     {
       return new TCMVSettings
       {
-        CMVTarget = settings.cmvTarget,
+        CMVTarget = settings.CmvTarget,
         IsSummary = false,
-        MaxCMV = settings.maxCMV,
-        MaxCMVPercent = settings.maxCMVPercent,
-        MinCMV = settings.minCMV,
-        MinCMVPercent = settings.minCMVPercent,
-        OverrideTargetCMV = settings.overrideTargetCMV
+        MaxCMV = settings.MaxCMV,
+        MaxCMVPercent = settings.MaxCMVPercent,
+        MinCMV = settings.MinCMV,
+        MinCMVPercent = settings.MinCMVPercent,
+        OverrideTargetCMV = settings.OverrideTargetCMV
       };
     }
     private TCMVSettingsExt ConvertSettingsExt(CMVSettingsEx settings)
     {
       return new TCMVSettingsExt()
       {
-        CMVTarget = settings.cmvTarget,
+        CMVTarget = settings.CmvTarget,
         IsSummary = false,
-        MaxCMV = settings.maxCMV,
-        MaxCMVPercent = settings.maxCMVPercent,
-        MinCMV = settings.minCMV,
-        MinCMVPercent = settings.minCMVPercent,
-        OverrideTargetCMV = settings.overrideTargetCMV,
-        CMVDetailPercents = settings.customCMVDetailTargets
+        MaxCMV = settings.MaxCMV,
+        MaxCMVPercent = settings.MaxCMVPercent,
+        MinCMV = settings.MinCMV,
+        MinCMVPercent = settings.MinCMVPercent,
+        OverrideTargetCMV = settings.OverrideTargetCMV,
+        CMVDetailPercents = settings.CustomCMVDetailTargets
       };
     }
 

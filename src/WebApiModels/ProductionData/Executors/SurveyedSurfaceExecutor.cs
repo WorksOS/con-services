@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       return surveyedSurfaces.Select(surveyedSurface => SurveyedSurfaceDetails.CreateSurveyedSurfaceDetails(
         id: surveyedSurface.ID,
-        surveyedSurface: DesignDescriptor.CreateDesignDescriptor(
+        surveyedSurface: new DesignDescriptor(
           surveyedSurface.DesignDescriptor.DesignID,
           FileDescriptor.CreateFileDescriptor(
             surveyedSurface.DesignDescriptor.FileSpaceID,

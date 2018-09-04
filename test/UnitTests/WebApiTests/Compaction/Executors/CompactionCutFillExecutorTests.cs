@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [TestMethod]
     public void CutFillExecutorNoResult()
     {
-      var request = CutFillDetailsRequest.CreateCutFillDetailsRequest(0, null, null, null, null);
+      var request = new CutFillDetailsRequest(0, null, null, null, null);
 
       TCutFillDetails details = new TCutFillDetails();
 
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [TestMethod]
     public void CutFillExecutorSuccess()
     {
-      var request = CutFillDetailsRequest.CreateCutFillDetailsRequest(0, null, null, null, null);
+      var request = new CutFillDetailsRequest(0, null, null, null, null);
 
       TCutFillDetails details = new TCutFillDetails { Percents = new[] { 5.0, 20.0, 13.0, 10.0, 22.0, 12.0, 18.0 } };
 
