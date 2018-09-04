@@ -2,7 +2,7 @@
 using VSS.TRex.Cells;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
-using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters
@@ -35,7 +35,6 @@ namespace VSS.TRex.Filters
         public bool HasVibeStateFilter { get; set; }
         public bool HasLayerStateFilter { get; set; }
         public bool HasMinElevMappingFilter { get; set; }
-        //        public bool HasAvoidZoneStateFilter { get; set; }
         public bool HasElevationTypeFilter { get; set; }
         public bool HasGCSGuidanceModeFilter { get; set; } 
         public bool HasGPSAccuracyFilter { get; set; }
@@ -112,7 +111,6 @@ namespace VSS.TRex.Filters
         {
             // Set the filter internal flag to indicate that there is at least one attribute filter configured.
             AnyFilterSelections =
-                //                HasAvoidZoneStateFilter ||
                 HasCompactionMachinesOnlyFilter ||
                 HasDesignFilter ||
                 HasElevationRangeFilter ||
@@ -138,7 +136,6 @@ namespace VSS.TRex.Filters
                 HasMachineDirectionFilter ||
                 HasMinElevMappingFilter ||
                 HasGCSGuidanceModeFilter ||
-                // HasInAvoidZoneFilter ||
                 HasGPSAccuracyFilter ||
                 HasGPSToleranceFilter ||
                 HasPositioningTechFilter ||
@@ -160,7 +157,7 @@ namespace VSS.TRex.Filters
                                      int passValueCount,
                                      bool wantEarliestPass,
                                      ref FilteredSinglePassInfo filteredPassInfo,
-                                     // TODO ProfileCell CellProfile,
+                                     object /* IProfileCell */ profileCell,
                                      bool performAttributeSubFilter)
         {
             bool Accept;
@@ -183,9 +180,9 @@ namespace VSS.TRex.Filters
                         return false;
                     }
 
-                    //TODO use this when CellProfile is available
-                    // Accept = CellProfile == null ? PassIsAcceptable : PassIsAcceptable && !CellProfile.IsInSupersededLayer(PassValues[I]);
-                    Accept = PassIsAcceptable(ref passValues[I]);
+                    Accept = profileCell == null 
+                      ? PassIsAcceptable(ref passValues[I]) 
+                      : PassIsAcceptable(ref passValues[I]) && !((IProfileCell)profileCell).IsInSupersededLayer(passValues[I]);
 
                     if (Accept)
                     {
@@ -204,9 +201,9 @@ namespace VSS.TRex.Filters
                         return false;
                     }
 
-                    //TODO use this when CellProfile is available
-                    // Accept = CellProfile == null ? PassIsAcceptable : PassIsAcceptable && !CellProfile.IsInSupersededLayer(PassValues[I]);
-                    Accept = PassIsAcceptable(ref passValues[I]);
+                    Accept = profileCell == null
+                      ? PassIsAcceptable(ref passValues[I])
+                      : PassIsAcceptable(ref passValues[I]) && !((IProfileCell)profileCell).IsInSupersededLayer(passValues[I]);
 
                     if (Accept)
                     {
@@ -253,23 +250,24 @@ namespace VSS.TRex.Filters
             return true;
         }
 
-        /// <summary>
-        /// FilterSinglePass selects a single passes from the list of passes in
-        /// PassValues where PassValues contains the entire list of passes for
-        /// a cell in the database.
-        /// </summary>
-        /// <param name="filteredPassValues"></param>
-        /// <param name="passValueCount"></param>
-        /// <param name="wantEarliestPass"></param>
-        /// <param name="filteredPassInfo"></param>
-        /// <param name="performAttributeSubFilter"></param>
-        /// <returns></returns>
-        public bool FilterSinglePass(FilteredPassData[] filteredPassValues,
-                                     int passValueCount,
-                                     bool wantEarliestPass,
-                                     ref FilteredSinglePassInfo filteredPassInfo,
-                                     // TODO   ProfileCell cellProfile,
-                                     bool performAttributeSubFilter)
+      /// <summary>
+      /// FilterSinglePass selects a single passes from the list of passes in
+      /// PassValues where PassValues contains the entire list of passes for
+      /// a cell in the database.
+      /// </summary>
+      /// <param name="filteredPassValues"></param>
+      /// <param name="passValueCount"></param>
+      /// <param name="wantEarliestPass"></param>
+      /// <param name="filteredPassInfo"></param>
+      /// <param name="profileCell"></param>
+      /// <param name="performAttributeSubFilter"></param>
+      /// <returns></returns>
+      public bool FilterSinglePass(FilteredPassData[] filteredPassValues,
+                                   int passValueCount,
+                                   bool wantEarliestPass,
+                                   ref FilteredSinglePassInfo filteredPassInfo,
+                                   object /*IProfileCell*/ profileCell,
+                                   bool performAttributeSubFilter)
         {
             bool Accept;
             bool Result = false;
@@ -291,9 +289,9 @@ namespace VSS.TRex.Filters
                         return false;
                     }
 
-                    //TODO use this when CellProfile is available
-                    //Accept = CellProfile == null ? PassIsAcceptable : PassIsAcceptable && !cellProfile.IsInSupersededLayer(filteredPassValues[I].FilteredPass);
-                    Accept = PassIsAcceptable(ref filteredPassValues[I].FilteredPass);
+                    Accept = profileCell == null
+                      ? PassIsAcceptable(ref filteredPassValues[I].FilteredPass)
+                      : PassIsAcceptable(ref filteredPassValues[I].FilteredPass) && !((IProfileCell)profileCell).IsInSupersededLayer(filteredPassValues[I].FilteredPass);
 
                     if (Accept)
                     {
@@ -312,9 +310,9 @@ namespace VSS.TRex.Filters
                         return false;
                     }
 
-                    //TODO use this when CellProfile is available
-                    //Accept = CellProfile == null ? PassIsAcceptable : PassIsAcceptable && !cellProfile.IsInSupersededLayer(filteredPassValues[I].FilteredPass);
-                    Accept = PassIsAcceptable(ref filteredPassValues[I].FilteredPass);
+                    Accept = profileCell == null
+                      ? PassIsAcceptable(ref filteredPassValues[I].FilteredPass)
+                      : PassIsAcceptable(ref filteredPassValues[I].FilteredPass) && !((IProfileCell)profileCell).IsInSupersededLayer(filteredPassValues[I].FilteredPass);
 
                     if (Accept)
                     {

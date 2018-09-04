@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Geometry;
+﻿using System;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Filters.Interfaces
 {
@@ -8,6 +9,11 @@ namespace VSS.TRex.Filters.Interfaces
     /// The fence used for polygon based spatial filtering
     /// </summary>
     Fence Fence { get; set; }
+
+    /// <summary>
+    /// The design used as an alignment mask spatial filter
+    /// </summary>
+    Guid AlignmentMaskDesignUID { get; set; }
 
     /// <summary>
     /// The fence used to represent the spatial restriction derived from an alignment filter expressed as a 
@@ -47,22 +53,22 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// The starting station of the parametrically defined alignment spatial filter
     /// </summary>
-    double StartStation { get; set; }
+    double? StartStation { get; set; }
 
     /// <summary>
     /// The ending station of the parametrically defined alignment spatial filter
     /// </summary>
-    double EndStation { get; set; }
+    double? EndStation { get; set; }
 
     /// <summary>
     /// The left offset of the parametrically defined alignment spatial filter
     /// </summary>
-    double LeftOffset { get; set; }
+    double? LeftOffset { get; set; }
 
     /// <summary>
     /// The right offset of the parametrically defined alignment spatial filter
     /// </summary>
-    double RightOffset { get; set; }
+    double? RightOffset { get; set; }
 
     /// <summary>
     /// CoordsAreGrid controls whether the plan (XY/NE) coordinates in the spatial filters are to 
@@ -86,14 +92,15 @@ namespace VSS.TRex.Filters.Interfaces
     bool IsDesignMask { get; set; }
 
     /// <summary>
+    /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
+    /// design recorded in DesignMask will be included
+    /// </summary>
+    Guid SurfaceDesignMaskDesignUid { get; set; }
+
+    /// <summary>
     /// Using a load alignment design to 'mask' the cells that should be included in the filter
     /// </summary>
     bool IsAlignmentMask { get; set; }
-
-    /// <summary>
-    /// Using a design to spatial cut-out the cells to be included in the filter. This appears similar to DesignMask (TODO: Resolve this).
-    /// </summary>
-    bool IsDesignFilter { get; set; }
 
     /// <summary>
     /// Determines if the type of the spatial filter is Spatial or Positional
@@ -117,11 +124,6 @@ namespace VSS.TRex.Filters.Interfaces
     void ClearAlignmentMask();
 
     /// <summary>
-    /// Clear all state related to using a design for a filter
-    /// </summary>
-    void ClearDesignFilter();
-
-    /// <summary>
     /// Removes all state related to an design mask filter and sets the design mask type to off
     /// </summary>
     void ClearDesignMask();
@@ -138,7 +140,7 @@ namespace VSS.TRex.Filters.Interfaces
 
     /// <summary>
     /// Determines if the filter contains sufficient information to adequately describe an active alignment
-    /// or design mask spatial filter
+    /// spatial filter
     /// </summary>
     /// <returns></returns>
     bool HasAlignmentDesignMask();

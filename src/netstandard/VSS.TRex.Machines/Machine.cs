@@ -71,7 +71,7 @@ namespace VSS.TRex.Machines
         /// Determines if the type of this machine is one of the machine tyeps that supports compaction operations
         /// </summary>
         /// <returns></returns>
-        public bool MachineIsConpactorType()
+        public bool MachineIsCompactorType()
         {
             return MachineType == (byte)Types.MachineType.SoilCompactor ||
                    MachineType == (byte)Types.MachineType.AsphaltCompactor ||

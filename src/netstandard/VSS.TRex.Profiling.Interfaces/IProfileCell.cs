@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.Profiling.Interfaces
+﻿using VSS.TRex.Cells;
+
+namespace VSS.TRex.Profiling.Interfaces
 {
   /// <summary>
   /// Currently jsut a generic interface holder for a profile cell. All consumers will need to cast to a ProfileCell concrete implementation to access it
@@ -32,5 +34,13 @@
     /// for an individual layer will contain the passes making up that lift.
     /// </summary>
     IProfileLayers Layers { get; set; }
+
+    /// <summary>
+    /// Determines if the recorded time of a given pass lies within the time range of a layer that is
+    /// deemed to be superceded by another layer
+    /// </summary>
+    /// <param name="Pass"></param>
+    /// <returns></returns>
+    bool IsInSupersededLayer(CellPass Pass);
   }
 }

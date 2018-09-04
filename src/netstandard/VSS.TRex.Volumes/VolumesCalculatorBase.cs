@@ -34,7 +34,8 @@ namespace VSS.TRex.Volumes
         /// <summary>
         /// DI'ed context for access to ExistenceMaps functionality
         /// </summary>
-        private static IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
+        private IExistenceMaps existenceMaps = null;
+        private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
         /// <summary>
         /// The Aggregator to use for calculation volumes statistics
@@ -257,7 +258,7 @@ namespace VSS.TRex.Volumes
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
-                        DesignSubgridOverlayMap = ExistenceMaps.GetSingleExistenceMap(SiteModel.ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
+                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
 
                         if (DesignSubgridOverlayMap == null)
                             return RequestErrorStatus.NoDesignProvided;
