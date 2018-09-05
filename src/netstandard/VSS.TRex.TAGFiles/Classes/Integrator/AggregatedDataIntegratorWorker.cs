@@ -188,7 +188,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     }
 
                     // Decapsulate the cell passes so they are accessible. Perform this after assembling the tasks list to prevent
-                    // depeletion of viable tasks by other aggregator workers between obtaining the first task from the list and completion
+                    // depletion of viable tasks by other aggregator workers between obtaining the first task from the list and completion
                     // of building the similar tasks into a group to be processed.
                     // TODO... HandleDecapsulation(Task.AggregatedCellPasses);
 

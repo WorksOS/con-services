@@ -28,8 +28,7 @@ namespace VSS.TRex.Filters.Models
         public void AddPass(CellPass Pass, bool PassesOrderedInIncreasingTime = true)
         {
       /*TODO convert when C# equivalent of IFOPT C+ is understood
-       * {$IFOPT C+}
-      {$IFDEF MSWINDOWS}
+       {$IFOPT C+}
         if PassesOrderedInIncreasingTime then
           begin
             if (FPassCount > 0) and(FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.Time + OneSecond)) then
@@ -45,7 +44,6 @@ namespace VSS.TRex.Filters.Models
                     (FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.Time - OneSecond))),
                    'Passes not added to filtered pass list in decreasing time order'); {SKIP}
           end;
-      {$ENDIF}
       {$ENDIF}
       */
 
@@ -66,7 +64,6 @@ namespace VSS.TRex.Filters.Models
         {
             /* TODO include when IFOPT C+ equivalent is identified
             {$IFOPT C+}
-            {$IFDEF MSWINDOWS}
             if PassesOrderedInIncreasingTime then
               begin
               if (FPassCount > 0) and(FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.FilteredPass.Time + OneSecond)) then
@@ -78,7 +75,6 @@ namespace VSS.TRex.Filters.Models
               (FilteredPassData[FPassCount - 1].FilteredPass.Time > (Pass.FilteredPass.Time - OneSecond))),
              'Passes not added to filtered pass list in decreasing time order'); { SKIP}
             end;
-            {$ENDIF}
             {$ENDIF}
             */
 

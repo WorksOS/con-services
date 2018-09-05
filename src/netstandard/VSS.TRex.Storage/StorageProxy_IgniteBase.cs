@@ -115,7 +115,7 @@ namespace VSS.TRex.Storage
             }
 
             // Convert from the mutable to the immutable form and store it into the immutable cache
-            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && (immutableStream != null))
+            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && immutableStream != null)
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
@@ -127,10 +127,10 @@ namespace VSS.TRex.Storage
             }
             else
             {
-                // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                // TODO Log the failure
+              // There was no immutable version of the requested information. Allow this to bubble up the stack...
+              Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
 
-                immutableStream = null;
+              immutableStream = null;
             }
 
             if (mutableStream != immutableStream)
@@ -199,10 +199,10 @@ namespace VSS.TRex.Storage
             }
             else
             {
-                // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                // TODO Log the failure
+               // There was no immutable version of the requested information. Allow this to bubble up the stack...
+               Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
 
-                immutableStream = null;
+               immutableStream = null;
             }
 
             return immutableStream;

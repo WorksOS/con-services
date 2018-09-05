@@ -197,7 +197,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       else
             {
                 //{$IFDEF DENSE_TAG_FILE_LOGGING}
-                //SIGLogProcessMessage.Publish(Self, 'DataTime = 0 in SetDesign', slpmcDebug);
+                //Log.LogDebug("DataTime = 0 in SetDesign");
                 //{$ENDIF}
             }
 

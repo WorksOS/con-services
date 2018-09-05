@@ -274,7 +274,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public void WaitForCompletion()
         {
-      /* TODO ????
+      /* TODO: Add logging for peridoc wait time reporting... ?
             // WaitResult            : TWaitResult;
             // bool ShouldAbortDueToCompletedEventSet  = false;
 

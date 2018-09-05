@@ -104,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             // of the cell pass integration
             TargetSubGrid.Dirty = true;
 
-            //   TODO
+            // TODO: CachedMemoryUpdateTrackingActive semantics
             //   TargetSubGrid.CachedMemoryUpdateTrackingActive = true;
             //    try
             // As the integration is into the live database these segments do
@@ -255,7 +255,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 // SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(SourceSubGrid.OriginX, SourceSubGrid.OriginY);
 
                 /*
-                 // TODO...
+                 // TODO: Terminated check for integration processing
                 if (Terminated)
                 {
                     // Service has been shutdown. Abort integration of changes and flag the

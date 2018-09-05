@@ -26,7 +26,7 @@ namespace VSS.TRex.Profiling.Models
     /// or may represent the lifts over a cell, in which case the Passes collection
     /// for an individual layer will contain the passes making up that lift.
     /// </summary>
-    //// Todo public IProfileLayers Layers;
+    //public IProfileLayers Layers; // May need to expose this as a generic object reference when needed
 
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
@@ -71,7 +71,7 @@ namespace VSS.TRex.Profiling.Models
     /// <summary>
     // Passes contains the entire list of passes that all the layers in the layer collection refer to
     /// </summary>
-    //// todo public FilteredMultiplePassInfo Passes;
+    // public FilteredMultiplePassInfo Passes; // May have to expose as a generic object reference when required
 
     public bool[] FilteredPassFlags = new bool[0];
     public int FilteredPassCount;

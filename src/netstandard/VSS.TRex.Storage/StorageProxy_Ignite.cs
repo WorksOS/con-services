@@ -171,9 +171,9 @@ namespace VSS.TRex.Storage
                 {
                     nonSpatialCache.Remove(cacheKey);
                 }
-                catch
+                catch (Exception E)
                 {
-                    // TODO Log the error
+                  Log.LogError($"Exception occurredL {E}");
                 }
 
                 ImmutableProxy?.RemoveStreamFromPersistentStore(DataModelID, StreamName);

@@ -123,7 +123,7 @@ namespace VSS.TRex.Rendering.Executors
 
     private BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
 
-    /* TODO
+    /* TODO ColourPaletteClassType()
      private TICDisplayPaletteBaseClass ColourPaletteClassType()
         {
         case FMode of
@@ -163,7 +163,7 @@ namespace VSS.TRex.Rendering.Executors
       end;
     */
 
-    /* TODO
+    /* TODO: ComputeCCAPalette
       function ComputeCCAPalette :Boolean;
       var
         I, J, K               :Integer;
@@ -233,7 +233,7 @@ namespace VSS.TRex.Rendering.Executors
       end;
     */
 
-    /* TODO
+    /* TODO: CreateAndInitialiseWorkingColourPalette
      function CreateAndInitialiseWorkingColourPalette :Boolean;
      begin
        Result  = True;
@@ -431,7 +431,7 @@ namespace VSS.TRex.Rendering.Executors
         NEECoords = LLHCoords;
       else
       {
-        /* TODO
+        /* TODO: RequestCoordinateConversion
         CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(RequestDescriptor, DataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
         if (CoordConversionResult != csOK)
         {

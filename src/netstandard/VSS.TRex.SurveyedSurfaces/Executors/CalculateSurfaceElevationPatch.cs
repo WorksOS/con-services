@@ -240,7 +240,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
           if (result == null)
           {
-            // TODO: ....
+            // TODO: Handle case of failure to request patch of elevations from design
           }
 
           return result;

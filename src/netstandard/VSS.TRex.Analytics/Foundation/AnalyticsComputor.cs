@@ -63,7 +63,7 @@ namespace VSS.TRex.Analytics.Foundation
       {
         try
         {
-        // TODO: add when lift build setting ssupported
+        // TODO: add when lift build setting supported
         // FAggregateState.LiftBuildSettings := FLiftBuildSettings;
 
           IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
