@@ -97,9 +97,8 @@ namespace VSS.TRex.SubGridTrees.Server
             // TODO: Remove until locking semntics are reviewed
             //if (!Owner.Locked)
             //{
-            //  Log.LogError(
-           //         $"May not perform a segment cleave operation on a subgrid ({Owner.Moniker()}) that is not locked");
-            //    return false;
+            //  Log.LogError($"May not perform a segment cleave operation on a subgrid ({Owner.Moniker()}) that is not locked");
+            //  return false;
             //}
 
             if (!CleavingSegment.HasAllPasses)
@@ -109,9 +108,9 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             // Count up the number of cell passes in total in the segment
-            CleavingSegment.PassesData.CalculateTotalPasses(out uint TotalPassCount, out uint MaximumPassCount);
+            CleavingSegment.PassesData.CalculateTotalPasses(out uint TotalPassCount, out uint _ /*MaximumPassCount*/);
 
-            //todo {$IFDEF DEBUG}
+            //{$IFDEF DEBUG}
             //CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds;
             //{$ENDIF}
 
