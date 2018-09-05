@@ -63,7 +63,8 @@ namespace VSS.TRex.Storage
         /// <param name="values"></param>
         public override void PutAll(IEnumerable<KeyValuePair<TK, TV>> values)
         {
-            foreach (var x in values) Put(x.Key, x.Value);
+            foreach (var x in values)
+              Put(x.Key, x.Value);
         }
 
         /// <summary>
@@ -71,7 +72,8 @@ namespace VSS.TRex.Storage
         /// </summary>
         public override void Commit()
         {
-            foreach (var x in PendingTransactedDeletes) base.Remove(x);
+            foreach (var x in PendingTransactedDeletes)
+              base.Remove(x);
             base.PutAll(PendingTransactedWrites);
 
             Clear();

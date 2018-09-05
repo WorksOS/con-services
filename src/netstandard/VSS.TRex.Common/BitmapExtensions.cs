@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
 using Draw = System.Drawing;
 using System.Drawing.Imaging;
 

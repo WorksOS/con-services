@@ -67,7 +67,7 @@ namespace VSS.TRex.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                // Log.LogInformation(String.Format("Getting key:{0}", StreamName));
+                //Log.LogInformation($"Getting key:{StreamName}");
 
                 try
                 {
@@ -90,7 +90,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.LogInformation(string.Format("Exception occurred: {0}", e));
+                Log.LogInformation($"Exception occurred: {e}");
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -113,7 +113,7 @@ namespace VSS.TRex.Storage
             {
                 NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                // Log.LogInformation(String.Format("Getting key:{0}", cacheKey));
+                //Log.LogInformation($"Getting key:{cacheKey}");
 
                 try
                 {
@@ -132,7 +132,7 @@ namespace VSS.TRex.Storage
             }
             catch (Exception e)
             {
-                Log.LogInformation(string.Format("Exception occurred: {0}", e));
+                Log.LogInformation($"Exception occurred: {e}");
 
                 Stream = null;
                 return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -219,10 +219,10 @@ namespace VSS.TRex.Storage
                 {
                     if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
                     {
-                        PerformSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).SpatialCache, cacheKey, StreamType);
+                        PerformSpatialImmutabilityConversion(Stream, ImmutableProxy.SpatialCache, cacheKey, StreamType);
                     }
                 }
-                catch // (Exception e)
+                catch 
                 {
                     // Ignore any exception here which is typically thrown if the element in the cache does not exist, which is entirely possible
                 }
@@ -259,7 +259,7 @@ namespace VSS.TRex.Storage
                 // Convert the stream to the immutable form and write it to the immutable storage proxy
                 if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
                 {
-                    PerformNonSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).NonSpatialCache, cacheKey, StreamType);
+                    PerformNonSpatialImmutabilityConversion(Stream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType);
                 }
 
                 return FileSystemErrorStatus.OK;
@@ -294,7 +294,7 @@ namespace VSS.TRex.Storage
                 // Convert the stream to the immutable form and write it to the immutable storage proxy
                 if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
                 {
-                    PerformNonSpatialImmutabilityConversion(Stream, (ImmutableProxy as StorageProxy_Ignite).NonSpatialCache, cacheKey, StreamType);
+                    PerformNonSpatialImmutabilityConversion(Stream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType);
                 }
 
                 return FileSystemErrorStatus.OK;
