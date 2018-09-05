@@ -164,7 +164,7 @@ namespace VSS.TRex.SubGrids
             if (Filter == null)
                 return true;
 
-            /* TODO Not yet supported
+            /* TODO: Filter.AttributeFilter.HasElevationRangeFilter Not yet supported
             ErrorCode: TDesignProfilerRequestResult;
 
             if (Filter.AttributeFilter.HasElevationRangeFilter)
@@ -224,7 +224,7 @@ namespace VSS.TRex.SubGrids
 
         private ServerRequestResult PerformDataExtraction()
         {
-            // note there is an assumption you have already checked on a existenance map that there is a subgrid for this address
+            // note there is an assumption you have already checked on a existence map that there is a subgrid for this address
 
             // TICClientSubGridTreeLeaf_CellProfile ClientGridAsCellProfile = null
             // bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime;
@@ -376,7 +376,7 @@ namespace VSS.TRex.SubGrids
 
             bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime = ClientGrid is ClientHeightAndTimeLeafSubGrid;
 
-            //* TODO - cell profiles not yet supported
+            //* TODO - subgrids containing cell profiles not yet supported
             // ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is ClientCellProfileLeafSubGrid; // TICClientSubGridTreeLeaf_CellProfile;
 
             if (!(ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime /* || ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile */))

@@ -707,7 +707,6 @@ namespace VSS.TRex.Profiling
         case ElevationType.Lowest:
           TempHeight = Consts.NullHeight;
           break;
-        default: break;
       }
 
       int FirstPassIdx = -1;
@@ -955,8 +954,7 @@ namespace VSS.TRex.Profiling
 
       if (cellPassIterator == null)
       {
-        NumCellPassesRemainingToFetch =
-          1000; // TODO... = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
+        NumCellPassesRemainingToFetch = 1000; // TODO: = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
         SetCellIterationParameters();
         if (CellPassFastEventLookerUpper != null)
@@ -1096,6 +1094,7 @@ namespace VSS.TRex.Profiling
         // Reverse the order of the selected passes to allow layer analysis to proceed in the
         // standard fashion
         if (Cell.Passes.PassCount > 0)
+        { 
           for (int I = 0; I < Cell.Passes.PassCount / 2; I++)
           {
             TempPass = Cell.Passes.FilteredPassData[I];
@@ -1105,7 +1104,7 @@ namespace VSS.TRex.Profiling
 
             MinMax.Swap(ref Cell.FilteredPassFlags[I], ref Cell.FilteredPassFlags[Cell.Passes.PassCount - I - 1]);
           }
-        //}
+        }
 
         // Todo... if (VLPDSvcLocations.Debug_LogLiftAnalysisCellPassIteratorRestriction)
         //  if (Cell.FilteredPassCount >= NumCellPassesRemainingToFetch) && ReadCellPassIntoTempList)
@@ -1164,6 +1163,7 @@ namespace VSS.TRex.Profiling
       // Check to see if we still need to select a filtered pass... Skip back through the
       // layers avoiding superceded layers for value selection
       if (!Result && returnIndividualFilteredValueSelection && ClientGrid != null)
+      {
         // ReSharper disable once UseMethodAny.0
         if (ValidPassesExist && Cell.Layers.Count() > 0 && AssignmentContext != null)
         {
@@ -1266,6 +1266,7 @@ namespace VSS.TRex.Profiling
             }
           }
         }
+      }
 
       if (ClientGrid != null)
         if (ClientGrid.GridDataType == GridDataType.CCVPercentChange ||

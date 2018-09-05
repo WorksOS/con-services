@@ -312,7 +312,7 @@ namespace VSS.TRex.SiteModels
                 ID = LocalID;
             }
 
-            /* TODO
+            /* TODO: Is there a need for 'active' status in a sitemodel?
             Active = reader.ReadBool();
             if (!Active)
             {
@@ -473,8 +473,7 @@ namespace VSS.TRex.SiteModels
                     Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
                   else
                   {
-                    /* TODO ??
-                     * This type of management is not appropriate for Ignite based cache management as
+                    /* TODO This type of management is not appropriate for Ignite based cache management as
                      *  list updates will cause Ignite level cache invalidation that can then cause messaging
                      *  to trigger reloading of target values/event lists
 

@@ -136,7 +136,7 @@ namespace VSS.TRex.Events
           if (_MachineID == PrevLastMachineID)
           {
             // Todo: Look at if there is a better way of optimising this rather than tracking previous tracking state
-            // TODO: IE: maintain tracking state for each machine (some A/B testing and profilinf required.
+            // IE: maintain tracking state for each machine (some A/B testing and profiling required)
             MinMax.Swap(ref TrackingState, ref PrevTrackingState);
             MinMax.Swap(ref LastMachineID, ref PrevLastMachineID);
           }
@@ -163,16 +163,17 @@ namespace VSS.TRex.Events
                 break;
               }
 
-              // TODO: Validate locking... TrackingState.MachineTargetValues.TargetValueChanges.AcquireReadAccessInterlock;
+              // TODO: Validate locking...
+              // TrackingState.MachineTargetValues.TargetValueChanges.AcquireReadAccessInterlock;
 
-              /* TODO: Validate machine scope context for the UseMachineRMVThreshold and OverrideRMVJumpThreshold
-              // TODO: ie: Is it really a single value per machine configuration...
+              /* TODO: Validate machine scope context for the UseMachineRMVThreshold and OverrideRMVJumpThreshold ie: Is it really a single value per machine configuration...
               if (TrackingState.MachineTargetValues.Machine != null)
               with TICMachine(MachineTargetValues.Machine) do
                 {
                   TrackingState.TrackingUseMachineRMVThreshold = UseMachineRMVThreshold;
                   TrackingState.TrackingOverrideRMVJumpThreshold = OverrideRMVJumpThreshold;
-                }  */
+                }  
+              */
             }
           }
         }
