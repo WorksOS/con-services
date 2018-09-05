@@ -11,8 +11,6 @@ import { Observable } from 'rxjs';
   providers: [GridStatusService]
 })
 export class GridStatusComponent {
-  public status: string = "Unknown";
-  //public selectedGrids: IGrid[] = [];
   public grids: IGrid[];
 
 

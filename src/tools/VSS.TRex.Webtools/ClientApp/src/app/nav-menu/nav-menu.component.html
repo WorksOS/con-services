@@ -21,6 +21,11 @@
           </a>
         </li>
         <li class="nav-item" [routerLinkActive]='["link-active"]'>
+          <a [routerLink]='["/grid-service-deployer"]' class="nav-link" (click)='collapse()'>
+            <span class='fas fa-sort-amount-up'></span> Grid service deployer
+          </a>
+        </li>
+        <li class="nav-item" [routerLinkActive]='["link-active"]'>
           <a [routerLink]='["/upload-data"]' class="nav-link" (click)='collapse()'>
             <span class='fas fa-sort-amount-up'></span> Upload data
           </a>

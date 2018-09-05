@@ -1,18 +1,17 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
-import { UploadDataComponent } from './upload-data/upload-data.component';
 import { FileDropModule } from 'ngx-file-drop';
+import { AppComponent } from './app.component';
+import { GridServiceDeployerComponent } from './grid-service-deployer/grid-service-deployer.component';
 import { GridStatusComponent } from './grid-status/grid-status.component';
-
-
+import { HomeComponent } from './home/home.component';
 import { HttpErrorHandler } from './http-error-handler.service';
 import { MessageService } from './message.service';
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { UploadDataComponent } from './upload-data/upload-data.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +19,8 @@ import { MessageService } from './message.service';
     NavMenuComponent,
     HomeComponent,
     UploadDataComponent,
-    GridStatusComponent
+    GridStatusComponent,
+    GridServiceDeployerComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -30,7 +30,8 @@ import { MessageService } from './message.service';
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'upload-data', component: UploadDataComponent },
-      { path: 'grid-status', component: GridStatusComponent }
+      { path: 'grid-status', component: GridStatusComponent },
+      { path: 'grid-service-deployer', component: GridServiceDeployerComponent }
     ])
   ],
   providers: [
