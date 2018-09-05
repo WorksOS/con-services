@@ -5,6 +5,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.MySql;
 using Hangfire.Storage;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,12 +21,8 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.TCCFileAccess;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
-using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Scheduler.Common.Utilities;
-using VSS.Productivity3D.Scheduler.WebAPI;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 using VSS.Productivity3D.Scheduler.WebAPI.Middleware;
 
@@ -43,7 +40,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// The log file name
     /// </summary>
-    public const string LOGGER_REPO_NAME = "Scheduler";
+    public const string LoggerRepoName = "WebApi";
     private MySqlStorage _storage;
     private IServiceProvider _serviceProvider;
     IServiceCollection _serviceCollection;
@@ -53,24 +50,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// </summary>
     public Startup(IHostingEnvironment env)
     {
-      int webAPIStartupWaitMs = 45000;
-      Console.WriteLine($"Scheduler.Startup: webAPIStartupWaitMs {webAPIStartupWaitMs}");
-
-      // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
-      //    the webapi seems to go ahead anyways..
-      Thread.Sleep(webAPIStartupWaitMs);
-
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LOGGER_REPO_NAME);
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
-
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
     /// <summary>
@@ -88,23 +76,55 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddCommon<Startup>(SERVICE_TITLE);
 
+      // NOTE: despite the webapi definition in the yml having a wait on the scheduler db, 
+      //    the webapi seems to go ahead anyways, although the db isn't up 'enough', yet for ConfigureHangfire().
+      // this sleep is only required when running the full test suite with db creation and acceptance tests.
+      // a localDockerContainer build seems to be 20s is ok
+      // under k8s it needs 45s 
+      // note the delays before running acceptanceTests in .sh files
+      //      also another delay below
+      var serviceProvider = services.BuildServiceProvider();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var configStore = new GenericConfiguration(logger);
+      if (!int.TryParse(configStore.GetValueString("SCHEDULER_WEBAPI_STARTUP_WAIT_MS"), out var startupWaitMs))
+        startupWaitMs = 0;
+      if (startupWaitMs > 0)
+      {
+        Console.WriteLine($"Scheduler: Startup: startupWaitMs {startupWaitMs}");
+        Thread.Sleep(startupWaitMs);
+      }
+      else
+      {
+        Console.WriteLine("Scheduler: Startup: not waiting");
+      }
+
       ConfigureHangfire(services);
+      Console.WriteLine("Scheduler: after ConfigureHangfire");
+
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
-      services.AddTransient<IFileRepository, FileRepository>();
-      services.AddTransient<IFilterRepository, FilterRepository>();
-      services.AddTransient<IImportedFileProxy, ImportedFileProxy>();
       services.AddTransient<IExportJob, ExportJob>();
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
+      services.AddScoped<IErrorCodesProvider, ContractExecutionStatesEnum>();
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+      services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
+        });
+      });
+      
+      services.AddJaeger(SERVICE_TITLE);
+      services.AddOpenTracing();
 
       _serviceCollection = services;
     }
@@ -118,25 +138,36 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
-
       _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       _serviceProvider = _serviceCollection.BuildServiceProvider();
 
       app.UseCommon(SERVICE_TITLE);
+
+      if (Configuration["newrelic"] == "true")
+      {
+        app.UseMiddleware<NewRelicMiddleware>();
+      }
+
       app.UseFilterMiddleware<SchedulerAuthentication>();
       app.UseMvc();
 
       var log = loggerFactory.CreateLogger<Startup>();
 
       ConfigureHangfireUse(app, log);
+      int expirationManagerWaitMs = 2000;
+      Thread.Sleep(expirationManagerWaitMs);
+      log.LogDebug($"Scheduler: after ConfigureHangfireUse. expirationManagerWaitMs waitMs {expirationManagerWaitMs}.");
+      Console.WriteLine($"Scheduler: after ConfigureHangfireUse. expirationManagerWaitMs waitMs {expirationManagerWaitMs}.");
+
+      // shouldn't need this as this projects is no longer adding recurring jobs.
+      // However clean up any from prior versions for a while.
+      // This also verifies that we can call Hangfire.
       try
       {
         List<RecurringJobDto> recurringJobs = JobStorage.Current.GetConnection().GetRecurringJobs();
         log.LogDebug(
-          $"Scheduler.Configure: PreJobsetup count of existing recurring jobs to be deleted {recurringJobs.Count}");
-        recurringJobs.ForEach(delegate(RecurringJobDto job)
+          $"Scheduler.Configure: PreJobsetup count of existing recurring jobs: {recurringJobs.Count}");
+        recurringJobs.ForEach(delegate (RecurringJobDto job)
         {
           RecurringJob.RemoveIfExists(job.Id);
         });
@@ -145,18 +176,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       {
         log.LogError($"Scheduler.Configure: Unable to cleanup existing jobs: {ex.Message}");
         throw;
-      }
-
-      var expectedJobCount = 0;
-      expectedJobCount += ConfigureFilterCleanupTask(log, expectedJobCount);
-      expectedJobCount += ConfigureSyncSurveyedSurfacesTask(log, expectedJobCount);
-      expectedJobCount += ConfigureSyncOtherFilesTask(log, expectedJobCount);
-
-      var recurringJobsPost = JobStorage.Current.GetConnection().GetRecurringJobs();
-      if (recurringJobsPost.Count < expectedJobCount)
-      {
-        log.LogError($"Scheduler.Configure: Incomplete list of recurring jobs {recurringJobsPost.Count}");
-        throw new Exception("Scheduler.Configure: Incorrect # jobs");
       }
     }
 
@@ -173,22 +192,17 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var configStore = new GenericConfiguration(logger);
 
       var hangfireConnectionString = configStore.GetConnectionString("VSPDB");
-      int queuePollIntervalSeconds;
-      int jobExpirationCheckIntervalHours;
-      int countersAggregateIntervalMinutes;
       // queuePollIntervalSeconds needs to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup
       if (!int.TryParse(configStore.GetValueString("SCHEDULER_QUE_POLL_INTERVAL_SECONDS"),
-        out queuePollIntervalSeconds))
+        out var queuePollIntervalSeconds))
         queuePollIntervalSeconds = 60;
       if (!int.TryParse(configStore.GetValueString("SCHEDULER_JOB_EXPIRATION_CHECK_HOURS"),
-        out jobExpirationCheckIntervalHours))
+        out var jobExpirationCheckIntervalHours))
         jobExpirationCheckIntervalHours = 1;
       if (!int.TryParse(configStore.GetValueString("SCHEDULER_COUNTER_AGGREGATE_MINUTES"),
-        out countersAggregateIntervalMinutes))
+        out var countersAggregateIntervalMinutes))
         countersAggregateIntervalMinutes = 55;
 
-      Console.WriteLine(
-        $"Scheduler.ConfigureServices: Scheduler database string: {hangfireConnectionString} queuePollIntervalSeconds {queuePollIntervalSeconds} jobExpirationCheckIntervalHours {jobExpirationCheckIntervalHours} countersAggregateIntervalMinutes {countersAggregateIntervalMinutes}.");
       _storage = new MySqlStorage(hangfireConnectionString,
         new MySqlStorageOptions
         {
@@ -204,7 +218,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"Scheduler.ConfigureServices: AddHangfire failed: {ex.Message}");
+        Console.WriteLine($"Scheduler: ConfigureHangfire: AddHangfire failed: {ex.Message}");
         throw;
       }
       //GlobalJobFilters.Filters.Add(new ExportFailureFilter());
@@ -223,13 +237,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         // WorkerCount will be internally set based on #cores - on prod = 10. For a single scheduled task we need a low number
         // these affect CPU usage and number of db connections
         // things more specific to each task e.g. Hangfire.AutomaticRetryAttribute.DefaultRetryAttempts are attributes on the task
-        int workerCount; // Math.Min(Environment.ProcessorCount * 5, 20)
         // schedulePollingIntervalSeconds may need to be low for acceptance tests of FilterSchedulerTask_WaitForCleanup?
-        int schedulePollingIntervalSeconds; // DelayedJobScheduler.DefaultPollingDelay = 15 seconds
-        if (!int.TryParse(configStore.GetValueString("SCHEDULER_WORKER_COUNT"), out workerCount))
+        if (!int.TryParse(configStore.GetValueString("SCHEDULER_WORKER_COUNT"), out var workerCount))
           workerCount = 2;
         if (!int.TryParse(configStore.GetValueString("SCHEDULER_SCHEDULE_POLLING_INTERVAL_SECONDS"),
-          out schedulePollingIntervalSeconds))
+          out var schedulePollingIntervalSeconds))
           schedulePollingIntervalSeconds = 60;
 
         var options = new BackgroundJobServerOptions
@@ -239,6 +251,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds),
         };
         log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
+
+        // do we need the dashboard?
         app.UseHangfireDashboard(options: new DashboardOptions
         {
           Authorization = new[]
@@ -246,116 +260,15 @@ namespace VSS.Productivity3D.Scheduler.WebApi
             new HangfireAuthorizationFilter()
           }
         });
-        app.UseHangfireServer(options);
 
-        int expirationManagerWaitMs = 2000;
-        Thread.Sleep(expirationManagerWaitMs);
-        log.LogDebug($"Scheduler.Startup: after expirationManagerWaitMs wait, proceed....");
+        app.UseHangfireServer(options);
+        log.LogDebug("Scheduler.Startup: after UseHangfireServer.");
       }
       catch (Exception ex)
       {
-        log.LogError($"Scheduler.Configure: UseHangfireServer failed: {ex.Message}");
+        log.LogError($"Scheduler: ConfigureHangfireUse: UseHangfireServer failed: {ex.Message}");
         throw;
       }
-    }
-
-    /// <summary>
-    /// Configure filter cleanup task
-    /// </summary>
-    private int ConfigureFilterCleanupTask(ILogger<Startup> log, int expectedJobCount)
-    {
-      var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
-      var filterRepo = _serviceProvider.GetRequiredService<IFilterRepository>();
-
-      var filterCleanupTaskToRun = false;
-      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_FILTER_CLEANUP_TASK_RUN"), out filterCleanupTaskToRun))
-      {
-        filterCleanupTaskToRun = false;
-      }
-      log.LogDebug($"Scheduler.Startup: filterCleanupTaskToRun {filterCleanupTaskToRun}");
-      if (filterCleanupTaskToRun)
-      {
-        // stagger startup of 2nd task so the initial runs don't deadlock
-        if (expectedJobCount > 0)
-          Thread.Sleep(2000);
-
-        var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        var filterCleanupTask = new FilterCleanupTask(configStore, loggerFactory, filterRepo);
-        filterCleanupTask.AddTask();
-        return 1;
-      }
-      return 0;
-    }
-
-    /// <summary>
-    /// Configure surveyed surface file sync task
-    /// </summary>
-    private int ConfigureSyncSurveyedSurfacesTask(ILogger<Startup> log, int expectedJobCount)
-    {
-      var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
-
-      var projectFileSyncSSTaskToRun = false;
-      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_SS_TASK_RUN"),
-        out projectFileSyncSSTaskToRun))
-      {
-        projectFileSyncSSTaskToRun = false;
-      }
-      log.LogDebug(
-        $"Scheduler.Startup: importedProjectFileTaskToRun (SurveyedSurface type only) {projectFileSyncSSTaskToRun}");
-      if (projectFileSyncSSTaskToRun)
-      {
-        // stagger startup of 2nd task so the initial runs don't deadlock
-        if (expectedJobCount > 0)
-          Thread.Sleep(2000);
-
-        var raptorProxy = _serviceProvider.GetRequiredService<IRaptorProxy>();
-        var tPaasProxy = _serviceProvider.GetRequiredService<ITPaasProxy>();
-        var impFileProxy = _serviceProvider.GetRequiredService<IImportedFileProxy>();
-        var fileRepo = _serviceProvider.GetRequiredService<IFileRepository>();
-        var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        var importedProjectFileSyncTask = new SurveyedSurfaceFileSyncTask(configStore, loggerFactory, raptorProxy,
-          tPaasProxy, impFileProxy, fileRepo);
-        importedProjectFileSyncTask.AddTask();
-        return 1;
-      }
-      return 0;
-    }
-
-    /// <summary>
-    /// Configure other imported file sync task
-    /// </summary>
-    private int ConfigureSyncOtherFilesTask(ILogger<Startup> log, int expectedJobCount)
-    {
-      var configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
-
-      var projectFileSyncNonSSTaskToRun = false;
-      if (!bool.TryParse(configStore.GetValueString("SCHEDULER_IMPORTEDPROJECTFILES_SYNC_NonSS_TASK_RUN"),
-        out projectFileSyncNonSSTaskToRun))
-      {
-        projectFileSyncNonSSTaskToRun = false;
-      }
-      log.LogDebug(
-        $"Scheduler.Startup: importedProjectFileTaskToRun (nonSurveyedSurface types only) {projectFileSyncNonSSTaskToRun}");
-      if (projectFileSyncNonSSTaskToRun)
-      {
-        // stagger startup of 2nd task so the initial runs don't deadlock
-        if (expectedJobCount > 0)
-          Thread.Sleep(2000);
-
-        var raptorProxy = _serviceProvider.GetRequiredService<IRaptorProxy>();
-        var tPaasProxy = _serviceProvider.GetRequiredService<ITPaasProxy>();
-        var impFileProxy = _serviceProvider.GetRequiredService<IImportedFileProxy>();
-        var fileRepo = _serviceProvider.GetRequiredService<IFileRepository>();
-        var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-        var importedProjectFileSyncTask = new OtherImportedFileSyncTask(configStore, loggerFactory, raptorProxy,
-          tPaasProxy, impFileProxy, fileRepo);
-        importedProjectFileSyncTask.AddTask();
-        return 1;
-      }
-      return 0;
     }
 
     internal class HangfireAuthorizationFilter : IDashboardAuthorizationFilter

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,8 +8,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Scheduler.Common.Utilities;
 
 namespace RepositoryTests
 {
@@ -19,52 +16,42 @@ namespace RepositoryTests
     protected ILoggerFactory LoggerFactory;
     protected IConfigurationStore ConfigStore;
 
-    protected IFilterRepository _filterRepository;
-
     private IServiceProvider _serviceProvider;
     private ILogger _log;
-
-
+    private readonly string loggerRepoName = "UnitTestLogTest";
 
 
     public void SetupDI()
     {
-      const string loggerRepoName = "UnitTestLogTest";
+      var serviceCollection = new ServiceCollection();
+
       Log4NetProvider.RepoName = loggerRepoName;
-      var logPath = Directory.GetCurrentDirectory();
-
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
+      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      var serviceCollection = new ServiceCollection();
       serviceCollection.AddLogging();
-      serviceCollection
-        .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddTransient<IFilterRepository, FilterRepository>();
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       _serviceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
       this.LoggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
       _log = loggerFactory.CreateLogger<TestControllerBase>();
-      _filterRepository = _serviceProvider.GetRequiredService<IFilterRepository>();
 
       Assert.IsNotNull(_serviceProvider.GetService<IConfigurationStore>());
       Assert.IsNotNull(_serviceProvider.GetService<ILoggerFactory>());
-      Assert.IsNotNull(_filterRepository);
     }
 
 
     #region schema
 
-    public void CheckSchema(string dbNameExtension, string tableName, List<string> columnNames)
+    public void CheckSchema(string tableName, List<string> columnNames)
     {
-      string connectionString = string.IsNullOrEmpty(dbNameExtension)
-        ? ConfigStore.GetConnectionString("VSPDB")
-        : ConnectionUtils.GetConnectionStringMySql(ConfigStore, _log, dbNameExtension);
+      string connectionString = ConfigStore.GetConnectionString("VSPDB");
+      Console.WriteLine($"CheckSchema() connectionString: {connectionString}");
+
 
       using (var connection = new MySqlConnection(connectionString))
       {
@@ -73,13 +60,13 @@ namespace RepositoryTests
           connection.Open();
 
           //Check table exists
-          var table = connection.Query(GetQuery(dbNameExtension, tableName, true)).FirstOrDefault();
+          var table = connection.Query(GetQuery(tableName, true)).FirstOrDefault();
 
-          Assert.IsNotNull(table, "Missing " + tableName + " table schema");
+          Assert.IsNotNull(table, $"Missing table schema: {tableName}, on connection: {connectionString}");
           Assert.AreEqual(tableName, table.TABLE_NAME, "Wrong table name");
 
           //Check table columns exist
-          var columns = connection.Query(GetQuery(dbNameExtension, tableName, false)).ToList();
+          var columns = connection.Query(GetQuery(tableName, false)).ToList();
           Assert.IsNotNull(columns, "Missing " + tableName + " table columns");
           Assert.AreEqual(columnNames.Count, columns.Count, "Wrong number of " + tableName + " columns");
           foreach (var columnName in columnNames)
@@ -93,12 +80,12 @@ namespace RepositoryTests
       }
     }
 
-    private string GetQuery(string dbNameExtension, string tableName, bool selectTable)
+    private string GetQuery(string tableName, bool selectTable)
     {
       string what = selectTable ? "TABLE_NAME" : "COLUMN_NAME";
       var query = string.Format(
         "SELECT {0} FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{1}' AND TABLE_NAME ='{2}'",
-        what, ConfigStore.GetValueString("MYSQL_DATABASE_NAME" + dbNameExtension), tableName);
+        what, ConfigStore.GetValueString("MYSQL_DATABASE_NAME"), tableName);
       return query;
     }
 

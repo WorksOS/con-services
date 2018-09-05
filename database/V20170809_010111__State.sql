@@ -1,7 +1,6 @@
 
 CREATE TABLE IF NOT EXISTS `State`
-(
-	Id int(11) NOT NULL AUTO_INCREMENT,
+(	Id int(11) NOT NULL AUTO_INCREMENT,
 	JobId int(11) NOT NULL,
 	Name varchar(20) NOT NULL,
 	Reason varchar(100) NULL,

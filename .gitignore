@@ -23,13 +23,12 @@ lib/
 [Rr]eleases/
 x64/
 x86/
-build/
 bld/
 [Bb]in/
 [Oo]bj/ 
 _ReSharper*/
 [Tt]est[Rr]esult*
-deploy/
+AcceptanceTests/[Dd]eploy/
 
 # Track ToolsFolder
 !tools/x64/
