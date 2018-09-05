@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
+  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
   labels:
     app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
     chart: {{ template "trex.chart" . }}
@@ -16,8 +16,7 @@ spec:
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
-        component: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
-
+        component: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       #volumes:
@@ -33,10 +32,10 @@ spec:
       - name: ignite-node
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.Webtools
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.MutableGateway
         
         command: ["dotnet"]
-        args: ["VSS.TRex.Webtools.dll"]
+        args: ["VSS.TRex.Mutable.Gateway.WebApi.dll"]
 
         #env:
         # Ignite's Docker image parameter. Adding the jar file that

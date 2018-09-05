@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-psn
+  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-psn
   labels:
     app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
     chart: {{ template "trex.chart" . }}
@@ -31,7 +31,7 @@ spec:
       - name: ignite-node
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.PSNode
         
         resources:
 {{ toYaml .Values.resources | indent 10 }}
