@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -15,6 +16,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   public class SummaryDataController : BaseController
   {
     private const short DATA_VALUE_NOT_REQUIRED = 0;
+    private const double TEMPERATURE_TARGET_MIN = 10.5;
+    private const double TEMPERATURE_TARGET_MAX = 150.5;
 
     /// <summary>
     /// Default constructor.
@@ -45,7 +48,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvSummaryRequest) as CMVSummaryResult);
 
-      var cmvSettings = CMVSettings.CreateCMVSettings(
+      var cmvSettings = new CMVSettings(
         cmvSummaryRequest.cmvTarget,
         DATA_VALUE_NOT_REQUIRED,
         cmvSummaryRequest.maxCMVPercent,
@@ -54,7 +57,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         cmvSummaryRequest.overrideTargetCMV
       );
 
-      return CompactionCmvSummaryResult.Create(result, cmvSettings);
+      return new CompactionCmvSummaryResult(result, cmvSettings);
     }
 
     /// <summary>
@@ -75,7 +78,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummaryMDPExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(mdpSummaryRequest) as MDPSummaryResult);
 
-      var mdpSettings = MDPSettings.CreateMDPSettings(
+      var mdpSettings = new MDPSettings(
         mdpSummaryRequest.mdpTarget,
         DATA_VALUE_NOT_REQUIRED,
         mdpSummaryRequest.maxMDPPercent,
@@ -84,7 +87,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         mdpSummaryRequest.overrideTargetMDP
       );
 
-      return CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
+      return new CompactionMdpSummaryResult(result, mdpSettings);
     }
 
     /// <summary>
@@ -105,7 +108,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummaryPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(passCountSummaryRequest) as PassCountSummaryResult);
 
-      return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
+      return new CompactionPassCountSummaryResult(result);
     }
 
     /// <summary>
@@ -126,7 +129,28 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummarySpeedExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(speedSummaryRequest) as SpeedSummaryResult);
 
-      return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);;
+      return new CompactionSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);
+      ;
+    }
+
+    /// <summary>
+    /// Get Temperature summary from production data for the specified project and date range.
+    /// </summary>
+    [Route("api/v1/temperature/summary")]
+    [HttpPost]
+    public CompactionTemperatureSummaryResult PostTemperatureSummary([FromBody] TemperatureSummaryRequest temperatureSummaryRequest,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation($"{nameof(PostTemperatureSummary)}: {Request.QueryString}");
+
+      temperatureSummaryRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<SummaryTemperatureExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(temperatureSummaryRequest) as TemperatureSummaryResult);
+
+      return new CompactionTemperatureSummaryResult(result);
     }
   }
 }
