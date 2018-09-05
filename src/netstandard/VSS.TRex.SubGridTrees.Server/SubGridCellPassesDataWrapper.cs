@@ -110,10 +110,10 @@ namespace VSS.TRex.SubGridTrees.Server
             // Count up the number of cell passes in total in the segment
             CleavingSegment.PassesData.CalculateTotalPasses(out uint TotalPassCount, out uint _ /*MaximumPassCount*/);
 
-            //{$IFDEF DEBUG}
-            //CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds;
-            //{$ENDIF}
-
+            #if DEBUG
+            CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
+            #endif
+         
             if (TotalPassCount < TRexConfig.VLPD_SubGridSegmentPassCountLimit)
             {
                 return false; // There is no need to cleave this segment
@@ -202,45 +202,37 @@ namespace VSS.TRex.SubGridTrees.Server
             NewSegment.Dirty = true;
             NewSegment.SegmentInfo.ExistsInPersistentStore = false;
 
-            /*
-             TODO: In TRex, this non-static information is only maintained in the mutable data grid, segment caching is not well defined for it yet
-            if (Owner.PresentInCache)
-            {
-                // Include the new segment in the cache segment tracking
-                if (!DataStoreInstance.GridDataCache.SubGridSegmentTouched(NewSegment))
-                {
-                     SIGLogMessage.PublishNoODS(Self,
-                        Format('Failed to touch newly created segment in segment cleaving for subgrid %s [%s]', [
-                            CleavingSegment.Owner.Moniker, CleavingSegment.ToString]), slmcException);
-                    return true;
-                }
-            }
-            */
+         /*
+          TODO: In TRex, this non-static information is only maintained in the mutable data grid, segment caching is not well defined for it yet
+         if (Owner.PresentInCache)
+         {
+             // Include the new segment in the cache segment tracking
+             if (!DataStoreInstance.GridDataCache.SubGridSegmentTouched(NewSegment))
+             {
+                  SIGLogMessage.PublishNoODS(Self,
+                     Format('Failed to touch newly created segment in segment cleaving for subgrid %s [%s]', [
+                         CleavingSegment.Owner.Moniker, CleavingSegment.ToString]), slmcException);
+                 return true;
+             }
+         }
+         */
+      
+         // Check everything looks kosher by comparing the time range of the cells
+         // present in the cloven segments with the time range bounds in the segment
+         // information for the segments
+      
+         // Determine the actual time range of the passes within the segment
+         #if DEBUG
+         CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
+         if (CleavingSegment.RequiresCleaving())
+            Log.LogDebug($"Info: After cleave first segment {Owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{CleavingSegment.SegmentInfo.EndTime}) of subgrid {Owner.Moniker()} failed to reduce cell pass count below maximums");
 
-            // Check everything looks kosher by comparing the time range of the cells
-            // present in the cloven segments with the time range bounds in the segment
-            // information for the segments
+          NewSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
+          if (NewSegment.RequiresCleaving())
+            Log.LogDebug($"Info: New cloven segment {Owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{OldEndTime}) (resulting from cleave) of subgrid %s failed to reduce cell pass count below maximums");
+         #endif
 
-            // Determine the actual time range of the passes within the segment
-            //{$IFDEF DEBUG}
-            //    CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds;
-            //    if CleavingSegment.RequiresCleaving then
-            //      SIGLogMessage.PublishNoODS(Self,
-            //                                 Format('Info: After cleave first segment %d (%.6f-%.6f) of subgrid %s failed to reduce cell pass count below maximums', {SKIP}
-            //                                        [Owner.Directory.SegmentDirectory.IndexOf(CleavingSegment), FOwner.Moniker,
-            //                                         CleavingSegment.SegmentInfo.StartTime, CleavingSegment.SegmentInfo.EndTime, FOwner.Moniker]),
-            //                                 slmcDebug);
-            //
-            //    NewSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds;
-            //    if NewSegment.RequiresCleaving then
-            //      SIGLogMessage.PublishNoODS(Self,
-            //                                 Format('Info: New cloven segment %d (%.6f-%.6f) (resulting from cleave) of subgrid %s failed to reduce cell pass count below maximums', {SKIP}
-            //                                        [Owner.Directory.SegmentDirectory.IndexOf(NewSegment), FOwner.Moniker,
-            //                                         NewSegment.SegmentInfo.StartTime, OldEndTime, FOwner.Moniker]),
-            //                                 slmcDebug);
-            //{$ENDIF}
-
-            return true;
+        return true;
         }
 
         public bool MergeSegments(ISubGridCellPassesDataSegment MergeToSegment,

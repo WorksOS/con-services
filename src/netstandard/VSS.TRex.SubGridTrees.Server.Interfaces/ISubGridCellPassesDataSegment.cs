@@ -56,5 +56,11 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// </summary>
     /// <returns></returns>
     bool RequiresCleaving();
+
+    /// <summary>
+    /// Verifies if the segment time range bounds are consistent with the cell passes it contains
+    /// </summary>
+    /// <returns></returns>
+    bool VerifyComputedAndRecordedSegmentTimeRangeBounds();
   }
 }

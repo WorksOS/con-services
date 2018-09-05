@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SubGridTrees.Server.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -132,6 +134,6 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             return Result;
-        }
     }
+  }
 }
