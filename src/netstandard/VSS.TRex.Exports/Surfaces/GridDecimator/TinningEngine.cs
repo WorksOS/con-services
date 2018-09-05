@@ -15,42 +15,42 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <summary>
     /// List of triangles that need adjusting to the new coord
     /// </summary>
-    private TriListNode[] AffectedList;
+    private TriListNode[] affectedList;
 
     /// <summary>
     /// List of triangles that may need adjusting }
     /// </summary>
-    private TriListNode[] CandidateList;
+    private TriListNode[] candidateList;
 
-    private AffSideNode[] AffSideList;
+    private AffSideNode[] affSideList;
 
-    private int NumAffected { get; set; }
-    private int NumCandidates { get; set; }
-    private int NumAffSides { get; set; }
+    private int numAffected { get; set; }
+    private int numCandidates { get; set; }
+    private int numAffSides { get; set; }
 
     /// <summary>
-    /// SuccLastTriangle and SuccSuccLastTriangle represent the one or two new
+    /// succLastTriangle and succSuccLastTriangle represent the one or two new
     /// triangles that will be created when processing triangles affected by the
     /// DeLauney insertion of a new vertex into the surface.
     /// </summary>
-    private Triangle SuccLastTriangle { get; set; }
+    private Triangle succLastTriangle { get; set; }
 
     /// <summary>
-    /// SuccLastTriangle and SuccSuccLastTriangle represent the one or two new
+    /// succLastTriangle and succSuccLastTriangle represent the one or two new
     /// triangles that will be created when processing triangles affected by the
     /// DeLauney insertion of a new vertex into the surface.
     /// </summary>
-    private Triangle SuccSuccLastTriangle { get; set; }
+    private Triangle succSuccLastTriangle { get; set; }
 
-    private long SurfaceWalkOverflowCount;
+    private long surfaceWalkOverflowCount;
 
     public TinningEngine()
     {
       TIN = new TrimbleTINModel();
 
-      AffSideList = new AffSideNode[1000];
-      CandidateList = new TriListNode[1000];
-      AffectedList = new TriListNode[1000];
+      affSideList = new AffSideNode[1000];
+      candidateList = new TriListNode[1000];
+      affectedList = new TriListNode[1000];
     }
 
     /// <summary>
@@ -150,9 +150,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       Triangle result;
 
-      if (SuccLastTriangle != null)
+      if (succLastTriangle != null)
       {
-        result = SuccLastTriangle;
+        result = succLastTriangle;
 
         if (coord1.X == coord2.X && coord1.Y == coord2.Y ||
             coord2.X == coord3.X && coord2.Y == coord3.Y ||
@@ -222,10 +222,10 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         return Result;
       }
 
-      SuccLastTriangle = AddEmptyTriangle(1);
-      SuccSuccLastTriangle = AddEmptyTriangle(2);
+      succLastTriangle = AddEmptyTriangle(1);
+      succSuccLastTriangle = AddEmptyTriangle(2);
 
-      return SuccSuccLastTriangle;
+      return succSuccLastTriangle;
     }
 
     /// <summary>
@@ -241,18 +241,18 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// <returns></returns>
     protected Triangle GetNextSide(int sideIndex, int index, Triangle firstTri)
     {
-      if (AffSideList[sideIndex].Next == -1)
+      if (affSideList[sideIndex].Next == -1)
         return firstTri;
 
-      if (index + 1 < NumAffected)
-        return AffectedList[index + 1].Tri;
+      if (index + 1 < numAffected)
+        return affectedList[index + 1].Tri;
 
-      if (index >= NumAffected)
+      if (index >= numAffected)
       {
-        return SuccSuccLastTriangle;
+        return succSuccLastTriangle;
       }
 
-      return SuccLastTriangle;
+      return succLastTriangle;
     }
 
     protected bool InList(Triangle theTri, TriListNode[] theList, int numEntries)
@@ -273,13 +273,13 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       void LengthenAffSideList()
       {
-        Array.Resize(ref AffSideList, AffSideList.Length + 1000);
+        Array.Resize(ref affSideList, affSideList.Length + 1000);
 
         // Reset all the next pointers in the affected side list
-        for (int I = 0; I < NumAffSides - 2; I++)
-          AffSideList[I].Next = I + 1;
+        for (int I = 0; I < numAffSides - 2; I++)
+          affSideList[I].Next = I + 1;
 
-        AffSideList[NumAffSides - 1].Next = -1;
+        affSideList[numAffSides - 1].Next = -1;
       }
 
       //get Index to point to affectedTri with a side on the edge of the
@@ -288,11 +288,11 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       bool Found = false;
       int SideIdx = 0;
 
-      while (Index < NumAffected)
+      while (Index < numAffected)
       {
         for (int J = 0; J < 3; J++)
         {
-          if (AffectedList[Index].Tri.Neighbours[J] == null || InList(AffectedList[Index].Tri.Neighbours[J], CandidateList, NumCandidates))
+          if (affectedList[Index].Tri.Neighbours[J] == null || InList(affectedList[Index].Tri.Neighbours[J], candidateList, numCandidates))
           {
             SideIdx = J;
             Found = true;
@@ -306,21 +306,21 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         Index++;
       }
 
-      if (NumAffSides >= AffSideList.Length)
+      if (numAffSides >= affSideList.Length)
         LengthenAffSideList();
-      NumAffSides++;
+      numAffSides++;
 
-      AffSideList[NumAffSides - 1].point = AffectedList[Index].Tri.Vertices[SideIdx];
-      AffSideList[NumAffSides - 1].tri = AffectedList[Index].Tri;
-      AffSideList[NumAffSides - 1].side = AffectedList[Index].Tri.Neighbours[SideIdx];
+      affSideList[numAffSides - 1].point = affectedList[Index].Tri.Vertices[SideIdx];
+      affSideList[numAffSides - 1].tri = affectedList[Index].Tri;
+      affSideList[numAffSides - 1].side = affectedList[Index].Tri.Neighbours[SideIdx];
 
-      AffSideList[NumAffSides - 1].Next = -1;
-      if (NumAffSides > 1)
-        AffSideList[NumAffSides - 2].Next = NumAffSides - 1;
+      affSideList[numAffSides - 1].Next = -1;
+      if (numAffSides > 1)
+        affSideList[numAffSides - 2].Next = numAffSides - 1;
 
       // set nextPoint to the clockwise - most point of this side - the next side
       // in the list will share this point }
-      TriVertex nextPoint = AffectedList[Index].Tri.Vertices[XYZ.NextSide(SideIdx)];
+      TriVertex nextPoint = affectedList[Index].Tri.Vertices[XYZ.NextSide(SideIdx)];
 
       bool done = false;
       while (!done)
@@ -330,20 +330,20 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         //  this is repeated until we find a side on the edge of the polygon
         //  that shares nextPoint 
 
-        int TestIndex = getNode(AffectedList, AffectedList[Index].Tri.Neighbours[XYZ.NextSide(SideIdx)], NumAffected);
+        int TestIndex = getNode(affectedList, affectedList[Index].Tri.Neighbours[XYZ.NextSide(SideIdx)], numAffected);
         if (TestIndex != -1)
         {
           Index = TestIndex;
           while (TestIndex != -1)
           {
             for (int j = 0; j < 3; j++)
-              if (AffectedList[Index].Tri.Vertices[j] == nextPoint)
+              if (affectedList[Index].Tri.Vertices[j] == nextPoint)
               {
                 SideIdx = j;
                 break;
               }
 
-            TestIndex = getNode(AffectedList, AffectedList[Index].Tri.Neighbours[SideIdx], NumAffected);
+            TestIndex = getNode(affectedList, affectedList[Index].Tri.Neighbours[SideIdx], numAffected);
             if (TestIndex != -1)
               Index = TestIndex;
           }
@@ -351,22 +351,22 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         else
           SideIdx = XYZ.NextSide(SideIdx);
 
-        if (NumAffSides >= AffSideList.Length)
+        if (numAffSides >= affSideList.Length)
           LengthenAffSideList();
-        NumAffSides++;
+        numAffSides++;
 
-        AffSideList[NumAffSides - 1].tri = AffectedList[Index].Tri;
-        AffSideList[NumAffSides - 1].point = AffectedList[Index].Tri.Vertices[SideIdx];
-        AffSideList[NumAffSides - 1].side = AffectedList[Index].Tri.Neighbours[SideIdx];
+        affSideList[numAffSides - 1].tri = affectedList[Index].Tri;
+        affSideList[numAffSides - 1].point = affectedList[Index].Tri.Vertices[SideIdx];
+        affSideList[numAffSides - 1].side = affectedList[Index].Tri.Neighbours[SideIdx];
 
-        AffSideList[NumAffSides - 1].Next = -1;
-        if (NumAffSides > 1)
-          AffSideList[NumAffSides - 2].Next = NumAffSides - 1;
+        affSideList[numAffSides - 1].Next = -1;
+        if (numAffSides > 1)
+          affSideList[numAffSides - 2].Next = numAffSides - 1;
 
-        nextPoint = AffectedList[Index].Tri.Vertices[XYZ.NextSide(SideIdx)];
+        nextPoint = affectedList[Index].Tri.Vertices[XYZ.NextSide(SideIdx)];
 
         // keep going until we reach the start point 
-        done = nextPoint == AffSideList[0].point;
+        done = nextPoint == affSideList[0].point;
       }
     }
 
@@ -407,20 +407,20 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       if (theTri == null)
         return;
 
-      for (int I = 0; I < NumAffected; I++)
-        if (AffectedList[I].Tri == theTri)
+      for (int I = 0; I < numAffected; I++)
+        if (affectedList[I].Tri == theTri)
           return;
 
-      for (int I = 0; I < NumCandidates; I++)
-        if (CandidateList[I].Tri == theTri)
+      for (int I = 0; I < numCandidates; I++)
+        if (candidateList[I].Tri == theTri)
           return;
 
-      if (NumCandidates >= CandidateList.Length)
-        Array.Resize(ref CandidateList, CandidateList.Length + 1000);
-      NumCandidates++;
+      if (numCandidates >= candidateList.Length)
+        Array.Resize(ref candidateList, candidateList.Length + 1000);
+      numCandidates++;
 
-      CandidateList[NumCandidates - 1].Tri = theTri;
-      CandidateList[NumCandidates - 1].NotAffected = unAffected;
+      candidateList[numCandidates - 1].Tri = theTri;
+      candidateList[numCandidates - 1].NotAffected = unAffected;
     }
 
     /// <summary>
@@ -482,7 +482,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       {
         if (++nSteps > 10000)
         {
-          SurfaceWalkOverflowCount++;
+          surfaceWalkOverflowCount++;
           nSteps = 0;
 
           // Try again from another start triangle
@@ -561,14 +561,14 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       // determine the edge of the polygon -fill affSideList to describe this makeAffSideList
       MakeAffSideList();
 
-      if (NumAffected == 0) // Nothing to do!
+      if (numAffected == 0) // Nothing to do!
         return;
 
       int sidePtr = 0;
       int AffectedIdx = 0;
 
       // First triangle in the affected list 
-      Triangle firstTri = AffectedList[0].Tri;
+      Triangle firstTri = affectedList[0].Tri;
 
       // triangle on side 1 of new/ updated triangle - generally the previously made / updated one
       Triangle lastSide = GetLastSide();
@@ -576,44 +576,44 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       // Make two new triangle
       while (sidePtr != -1) //  more triangles to update/ make 
       {
-        TriVertex nextPoint = AffSideList[sidePtr].Next == -1 ? AffSideList[0].point : AffSideList[AffSideList[sidePtr].Next].point;
+        TriVertex nextPoint = affSideList[sidePtr].Next == -1 ? affSideList[0].point : affSideList[affSideList[sidePtr].Next].point;
 
         // triangle on side 2 of new/ updated triangle - generally the next to be made / updated
         Triangle nextSide = GetNextSide(sidePtr, AffectedIdx, firstTri);
 
-        if (AffectedIdx >= NumAffected)
+        if (AffectedIdx >= numAffected)
         {
           // the last one or two triangles will be new, rather than updated 
-          Debug.Assert(SuccLastTriangle != null, "Cannot use a nil triangle for a new triangle");
+          Debug.Assert(succLastTriangle != null, "Cannot use a nil triangle for a new triangle");
           lastSide = NewTriangle(nextPoint,
             newCoord,
-            AffSideList[sidePtr].point,
+            affSideList[sidePtr].point,
             nextSide,
             lastSide,
-            AffSideList[sidePtr].side);
+            affSideList[sidePtr].side);
 
-          SuccLastTriangle = SuccSuccLastTriangle;
-          SuccSuccLastTriangle = null;
+          succLastTriangle = succSuccLastTriangle;
+          succSuccLastTriangle = null;
         }
         else
         {
           //  update affectedPtr^.tri triangle 
-          makeUpdatedTriangle(AffectedList[AffectedIdx].Tri,
+          makeUpdatedTriangle(affectedList[AffectedIdx].Tri,
             nextPoint,
             newCoord,
-            AffSideList[sidePtr].point,
+            affSideList[sidePtr].point,
             nextSide,
             lastSide,
-            AffSideList[sidePtr].side);
+            affSideList[sidePtr].side);
 
-          lastSide = AffectedList[AffectedIdx].Tri;
+          lastSide = affectedList[AffectedIdx].Tri;
           AffectedIdx++;
         }
 
         // tell the triangles neighbour that the triangle has become its new neighbour 
-        UpdateNeighbour(AffSideList[sidePtr].side, AffSideList[sidePtr].point, lastSide);
+        UpdateNeighbour(affSideList[sidePtr].side, affSideList[sidePtr].point, lastSide);
 
-        sidePtr = AffSideList[sidePtr].Next;
+        sidePtr = affSideList[sidePtr].Next;
       }
 
       /*//Some debugging code useful for tracking down issues when the 1 or 2 empty triangles     
@@ -621,22 +621,22 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
        if (Assigned(SUCCSuccLastTriangle))
       Assert(Not Assigned(SUCCSuccLastTriangle.Vertex[1]), 'SUCCSuccLastTriangle appears to point to non-null vertices');
 
-      if (Assigned(SuccLastTriangle))
-      Assert(Not Assigned(SuccLastTriangle.Vertex[1]), 'SuccLastTriangle appears to point to non-null vertices');
+      if (Assigned(succLastTriangle))
+      Assert(Not Assigned(succLastTriangle.Vertex[1]), 'succLastTriangle appears to point to non-null vertices');
 
-      Assert(not assigned(SuccLastTriangle) and not assigned(SUCCSuccLastTriangle));
+      Assert(not assigned(succLastTriangle) and not assigned(SUCCSuccLastTriangle));
       */
     }
 
     protected void InitLists(Triangle firstTri)
     {
-      NumAffSides = 0;
+      numAffSides = 0;
 
       // Add a dummy node at the head of the affected node list that contains the passed first triangle
-      NumAffected = 1;
-      AffectedList[0].Tri = firstTri;
+      numAffected = 1;
+      affectedList[0].Tri = firstTri;
 
-      NumCandidates = 0;
+      numCandidates = 0;
     }
 
     /// <summary>
@@ -660,24 +660,24 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       // to the candidate list 
 
       int CandidateIdx = 0;
-      while (CandidateIdx < NumCandidates)
+      while (CandidateIdx < numCandidates)
       {
-        if (!CandidateList[CandidateIdx].NotAffected &&
-            Influenced(CandidateList[CandidateIdx].Tri, theCoord))
+        if (!candidateList[CandidateIdx].NotAffected &&
+            Influenced(candidateList[CandidateIdx].Tri, theCoord))
         {
           // remove from candidate list and add to affected list
-          if (NumAffected >= AffectedList.Length)
-            Array.Resize(ref AffectedList, AffectedList.Length + 1000);
-          NumAffected++;
+          if (numAffected >= affectedList.Length)
+            Array.Resize(ref affectedList, affectedList.Length + 1000);
+          numAffected++;
 
-          AffectedList[NumAffected - 1] = CandidateList[CandidateIdx];
-          CandidateList[CandidateIdx].Tri = null;
+          affectedList[numAffected - 1] = candidateList[CandidateIdx];
+          candidateList[CandidateIdx].Tri = null;
 
           // add the current candidate triangle's neighbours to the candidate list 
           for (int j = 0; j < 3; j++)
           {
             // put the triangle into the candidate list, but note that it cannot be affected 
-            AddCandidate(AffectedList[NumAffected - 1].Tri.Neighbours[j], false);
+            AddCandidate(affectedList[numAffected - 1].Tri.Neighbours[j], false);
           }
         }
 
@@ -686,15 +686,15 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       // Note: Candidate list will have holes in it, remove them, but do not remove the first candidate from the list
       int Diff = 0;
-      for (int i = 1; i < NumCandidates; i++)
+      for (int i = 1; i < numCandidates; i++)
       {
-        if (CandidateList[i].Tri == null)
+        if (candidateList[i].Tri == null)
           Diff++;
         else if (Diff > 0)
-          CandidateList[i - Diff] = CandidateList[i];
+          candidateList[i - Diff] = candidateList[i];
       }
 
-      NumCandidates -= Diff;
+      numCandidates -= Diff;
 
       // make appropriate changes to all the affected triangles
       AlterAffected(theCoord);
@@ -718,7 +718,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       AddCoordToModel(theCoord, currentTri);
 
-      Debug.Assert(SuccLastTriangle != null, "Not all created triangles used.");
+      Debug.Assert(succLastTriangle != null, "Not all created triangles used.");
 
       return true;
     }
@@ -759,7 +759,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     {
       AddCoordToModel(theCoord, tri);
 
-      if (SuccLastTriangle != null)
+      if (succLastTriangle != null)
         Debug.Assert(false, "Not all created triangles used.");
 
       return true;
@@ -807,7 +807,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       // Iterate through all the vertices adding them to the surface
       DateTime StartTime = DateTime.Now;
-      SurfaceWalkOverflowCount = 0;
+      surfaceWalkOverflowCount = 0;
 
       // Don't read the 4 vertices we added for the bounding rectangle tris
       int MaxRealVertex = TIN.Vertices.Count - 1 - 4;
@@ -819,7 +819,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       try
       {
         Log.LogInformation($"Coordinate incorporation took {FinishTime - StartTime} to process {TIN.Vertices.Count} vertices into {TIN.Triangles.Count} triangles " +
-                           $"at a rate of {TIN.Vertices.Count / ((FinishTime - StartTime).TotalSeconds)} vertices/sec, encountering {SurfaceWalkOverflowCount} surface walk overflows");
+                           $"at a rate of {TIN.Vertices.Count / ((FinishTime - StartTime).TotalSeconds)} vertices/sec, encountering {surfaceWalkOverflowCount} surface walk overflows");
       }
       catch
       {
