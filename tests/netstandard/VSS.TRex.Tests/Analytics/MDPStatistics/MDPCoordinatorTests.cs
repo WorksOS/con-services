@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     private MDPStatisticsArgument Arg => new MDPStatisticsArgument()
     {
       ProjectID = _siteModel.ID,
-      Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+      Filters = new FilterSet(new CombinedFilter()),
       OverrideMachineMDP = true,
       OverridingMachineMDP = 70
     };

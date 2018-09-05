@@ -216,12 +216,12 @@ namespace VSS.TRex.Volumes
               FilterSet = new FilterSet(new[] {BaseFilter, IntermediaryFilter, TopFilter});
             }
             else
-            FilterSet = new FilterSet(new[] {BaseFilter, TopFilter});
+            FilterSet = new FilterSet(BaseFilter, TopFilter);
           }
           else if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-                FilterSet = new FilterSet(new [] { TopFilter });
+                FilterSet = new FilterSet(TopFilter);
             else
-                FilterSet = new FilterSet(new [] { BaseFilter });
+                FilterSet = new FilterSet(BaseFilter);
 
             PipeLine.FilterSet = FilterSet;
             PipeLine.GridDataType = GridDataType.Height;

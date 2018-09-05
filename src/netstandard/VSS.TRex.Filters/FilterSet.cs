@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters.Interfaces;
 
@@ -25,11 +26,29 @@ namespace VSS.TRex.Filters
 
     /// <summary>
     /// Constructor accepting a single filters to be set into the filter set
+    /// Null filters are not incorporated into the resulting filter set
     /// </summary>
     /// <param name="filter"></param>
     public FilterSet(ICombinedFilter filter)
+    {      
+      Filters = filter != null ? new [] { filter } : new ICombinedFilter[0];
+    }
+
+    /// <summary>
+    /// Constructor accepting a pair of filter to be set into the filter set
+    /// Null filters are not incorporated into the resulting filter set
+    /// </summary>
+    /// <param name="filter1"></param>
+    /// <param name="filter2"></param>
+    public FilterSet(ICombinedFilter filter1, ICombinedFilter filter2)
     {
-      Filters = new [] { filter };
+      Filters = filter1 == null && filter2 == null 
+        ? new ICombinedFilter[0] 
+        : filter2 == null 
+          ? new[] { filter1 } 
+          : filter1 == null 
+            ? new [] {filter2} 
+            : new[] { filter1, filter2 };
     }
 
     /// <summary>
@@ -38,7 +57,10 @@ namespace VSS.TRex.Filters
     /// <param name="filters"></param>
     public FilterSet(ICombinedFilter[] filters)
     {
-      Filters = filters;
+      if (filters == null || filters.Length == 0)
+        Filters = new ICombinedFilter[0];
+      else
+        Filters = filters.Where(x => x != null).ToArray();
     }
 
     /// <summary>

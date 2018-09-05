@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     private CMVSummaryArgument Arg => new CMVSummaryArgument()
     {
       ProjectID = _siteModel.ID,
-      Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+      Filters = new FilterSet(new CombinedFilter()),
       OverrideMachineCMV = true,
       OverridingMachineCMV = 70
     };
