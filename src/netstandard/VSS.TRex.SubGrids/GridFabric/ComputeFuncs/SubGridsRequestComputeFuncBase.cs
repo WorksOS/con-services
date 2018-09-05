@@ -98,9 +98,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         [NonSerialized]
         private IDesign CutFillDesign;
 
-        [NonSerialized]
-        private bool[] PrimaryPartitionMap;
-
         /// <summary>
         /// DI'ed context for designs service
         /// </summary>
@@ -452,13 +449,13 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             addresses = new ISubGridCellAddress[addressBucketSize];
 
             // Obtain the primary partition map to allow this request to determine the elements it needs to process
-            PrimaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+            bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
 
             // Request production data only, or hybrid production data and surveyed surface data subgrids
             ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
                 // Is this subgrid is the responsibility of this server?
-                if (!PrimaryPartitionMap[address.ToSpatialPartitionDescriptor()])
+                if (!primaryPartitionMap[address.ToSpatialPartitionDescriptor()])
                    return;
 
                 // Decorate the address with the production data and surveyed surface flags
@@ -472,7 +469,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
                 // Is this subgrid the responsibility of this server?
-                if (!PrimaryPartitionMap[address.ToSpatialPartitionDescriptor()])
+                if (!primaryPartitionMap[address.ToSpatialPartitionDescriptor()])
                     return;
 
                 // Decorate the address with the production data and surveyed surface flags
