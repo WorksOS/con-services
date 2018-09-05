@@ -140,6 +140,11 @@ namespace VSS.TRex.Servers.Client
       return cfg;
     }
 
+    /// <summary>
+    /// Configures ignite for use locally i.e on developers pc
+    /// </summary>
+    /// <param name="cfg">Ignite configuration that is being built</param>
+    /// <returns></returns>
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
 

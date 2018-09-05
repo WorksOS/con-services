@@ -1,4 +1,4 @@
-using Apache.Ignite.Core;
+﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
@@ -121,6 +121,12 @@ namespace VSS.TRex.Servers.Compute
       return cfg;
     }
 
+
+    /// <summary>
+    /// Configures ignite for use locally i.e on developers pc
+    /// </summary>
+    /// <param name="cfg">Ignite configuration that is being built</param>
+    /// <returns></returns>
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
       //TODO this should not be here but will do for the moment
