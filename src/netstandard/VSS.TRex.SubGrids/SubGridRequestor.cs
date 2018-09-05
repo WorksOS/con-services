@@ -316,8 +316,7 @@ namespace VSS.TRex.SubGrids
                         {
                             if (!AddedSubgridToSubgridCache && !SubgridAlreadyPresentInCache)
                             {
-                                // TODO Add when logging available
-                                // SIGLogMessage.PublishNoODS(Nil, Format('Failed to add subgrid %s, data model %d to subgrid result cache', [ClientGrid.Moniker, SiteModel.ID]), slmcWarning);
+                                Log.LogWarning($"Failed to add subgrid {ClientGrid.Moniker()}, data model {SiteModel.ID} to subgrid result cache");
                             }
 
                             // Create a clone of the client grid that has the filter mask applied to

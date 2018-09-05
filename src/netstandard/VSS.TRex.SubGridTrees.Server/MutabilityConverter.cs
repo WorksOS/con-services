@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
@@ -14,6 +15,8 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public class MutabilityConverter : IMutabilityConverter
     {
+      private static ILogger Log = Logging.Logger.CreateLogger(nameof(MutabilityConverter));
+
         /// <summary>
         /// Converts the structure of the global latext cells structure into an immutable form
         /// </summary>
@@ -101,11 +104,11 @@ namespace VSS.TRex.SubGridTrees.Server
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                immutableStream = mutableStream;
+                immutableStream = null;
 
-                // TODO log failure
+                Log.LogError($"Exception in conversion of subgrid directory mutable data to immutable schema: {e}");
                 return false;
             }
         }
@@ -148,11 +151,11 @@ namespace VSS.TRex.SubGridTrees.Server
 
                 return true;
             }
-            catch
+            catch (Exception e)
             {
-                immutableStream = mutableStream;
+                immutableStream = null;
 
-                // TODO log the failure
+                Log.LogError($"Exception in conversion of subgrid segment mutable data to immutable schema: {e}");
                 return false;
             }
         }
@@ -166,10 +169,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
         {
-            // Note: Some refactoring needs to be done with the read/write serialisation/deserialisation using BinaryFormatters
-            // so that an events list can be read/written without prior knowledge of the type of the event list that is being read.
-
-            // TODO: Implement any conversionlogic here if necessary
             immutableStream = mutableStream;
 
             return true;

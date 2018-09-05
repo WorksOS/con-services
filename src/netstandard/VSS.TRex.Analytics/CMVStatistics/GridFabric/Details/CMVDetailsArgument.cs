@@ -9,7 +9,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Details
   [Serializable]
   public class CMVDetailsArgument : BaseApplicationServiceRequestArgument
   {
-    // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
     /// <summary>
     /// CMV details values.
     /// </summary>

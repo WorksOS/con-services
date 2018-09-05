@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -15,6 +16,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     /// </summary>
     public abstract class SubGridSegmentCellPassIterator_Base : ISubGridSegmentCellPassIterator
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(SubGridSegmentCellPassIterator_Base));
+
         /// <summary>
         /// The subgrid relative cellX ordiante of the cell within which cell passes are being iterated
         /// </summary>
@@ -138,8 +141,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterator.CurrentSubGridSegment == null)
             {
-                // TODO add when logging is available
-                //SIGLogMessage.PublishNoODS(Self, 'No current subgrid segment in iterator to initialise cell enumeration over.', slmcAssert);
+                Log.LogCritical("No current subgrid segment in iterator to initialise cell enumeration over.");
                 return;
             }
 
@@ -173,8 +175,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterator == null)
             {
-                // TODO add when logging available
-                // SIGLogMessage.PublishNoODS(Self, 'No segment iterator assigned', slmcAssert);
+                Log.LogCritical("No segment iterator assigned");
                 return;
             }
 

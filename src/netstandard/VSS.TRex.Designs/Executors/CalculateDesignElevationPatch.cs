@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Designs.GridFabric.Arguments;
+﻿using System;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -8,6 +10,8 @@ namespace VSS.TRex.Designs.Executors
 {
     public class CalculateDesignElevationPatch
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatch>();
+
         /// <summary>
         /// Default no-args constructor
         /// </summary>
@@ -30,8 +34,7 @@ namespace VSS.TRex.Designs.Executors
 
             if (Design == null)
             {
-                // TODO: readd when logging available
-                //SIGLogMessage.PublishNoODS(Nil, Format('Failed to read design file %s', [DesignDescriptor.ToString]), slmcWarning);
+                Log.LogWarning($"Failed to read design file {Args.DesignDescriptor.FullPath}");
                 CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
                 return null;
             }
@@ -108,15 +111,13 @@ namespace VSS.TRex.Designs.Executors
                 }
                 finally
                 {
-                    // TODO: Readd when logging available
                     //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
-                    //  SIGLogMessage.PublishNoODS(Self, Format('#Out# %s.Execute #Result#%s', [Self.ClassName, DPErrorStatusName(Ord(CalcResult))]), slmcMessage);
+                    //Log.LogInformation($"#Out# {nameof(CalculateDesignElevationPatch)}.Execute #Result# {CaleResult}");
                 }
             }
-            catch // (Exception E)
+            catch (Exception E)
             {
-                // TODO: Readd when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Exception "%s"', [Self.ClassName, E.Message]), slmcException);
+                Log.LogError("Execute: Exception {E}");
                 return null;
             }
         }

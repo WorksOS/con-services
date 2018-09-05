@@ -185,9 +185,8 @@ namespace VSS.TRex.Filters
             else
             {
                 Result = false;
-                // TODO Readd when logging available
-                //SIGLogMessage.PublishNoODS(Nil, Format('Call to RequestDesignFilterBoundary in ICRetrieveSubgrid.ConstructSubgridCellFilterMask returned error result %s for %s.',
-                //                                [DesignProfilerErrorStatusName(RequestResult), CellFilter.ReferenceDesign.ToString]), slmcError);
+                SIGLogMessage.PublishNoODS(Nil, Format('Call to RequestDesignFilterBoundary in ICRetrieveSubgrid.ConstructSubgridCellFilterMask returned error result %s for %s.',
+                                                [DesignProfilerErrorStatusName(RequestResult), CellFilter.ReferenceDesign.ToString]), slmcError);
             }
             */
 

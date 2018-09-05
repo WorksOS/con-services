@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees.Client;
@@ -16,6 +18,8 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
   /// </summary>
   public class CalculateSurfaceElevationPatch
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateSurfaceElevationPatch>();
+
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
@@ -103,8 +107,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
             if (Design == null)
             {
-              // TODO: Readd when logging available
-              // SIGLogMessage.PublishNoODS(Self, Format('Failed to read design file %s in %s', [ThisSurveyedSurface.DesignDescriptor.ToString, Self.ClassName]), slmcWarning);
+              Log.LogError($"Failed to read design file {ThisSurveyedSurface.Get_DesignDescriptor()} in {nameof(CalculateSurfaceElevationPatch)}");
               CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
               return null;
             }
@@ -209,13 +212,12 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         finally
         {
           //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
-          //SIGLogMessage.PublishNoODS(Self, Format('Out %s.Execute', [Self.ClassName]), slmcMessage);
+          //Log.LogInformation($"Out {nameof(CalculateSurfaceElevationPatch)}.Execute");
         }
       }
-      catch // (Exception E)
+      catch (Exception E)
       {
-        // TODO readd when logging available
-        // SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Exception "%s"', [Self.ClassName, E.Message]), slmcException);
+        Log.LogError($"Exception: {E}");
       }
 
       return null;
@@ -245,15 +247,13 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         }
         finally
         {
-          // TODO: Readd when logging available
           //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
-          //  SIGLogMessage.PublishNoODS(Self, Format('#Out# %s.Execute #Result#%s', [Self.ClassName, DPErrorStatusName(Ord(CalcResult))]), slmcMessage);
+          // Log.LogInformation($"#Out# {nameof(CalculateSurfaceElevationPatch)}.Execute #Result# {CalcResult}");
         }
       }
-      catch // (Exception E)
+      catch (Exception E)
       {
-        // TODO: Readd when logging available
-        // SIGLogMessage.PublishNoODS(Self, Format('%s.Execute: Exception "%s"', [Self.ClassName, E.Message]), slmcException);
+        Log.LogError($"{nameof(CalculateSurfaceElevationPatch)}.Execute: Exception {E}");
         return null;
       }
     }

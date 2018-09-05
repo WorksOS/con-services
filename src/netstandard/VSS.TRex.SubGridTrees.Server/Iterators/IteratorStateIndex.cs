@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Utilities;
@@ -11,7 +12,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     /// TSubGridSegmentIteratorStateIndex records iteration progress across a subgrid
     /// </summary>
     public class IteratorStateIndex : IIteratorStateIndex
-  {
+    {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(IteratorStateIndex));
+
         public DateTime StartSegmentTime { get; set; } = DateTime.MinValue;
         public DateTime EndSegmentTime { get; set; } = DateTime.MaxValue;
 
@@ -65,19 +68,13 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool NextSegment()
         {
-            //{$IFDEF STATIC_CELL_PASSES}
-            bool HasMachinesOfInterest;
-            //{$ENDIF}
-            ISubGridCellPassesDataSegmentInfo SegmentInfo;
-            bool SegmentIndexInRange;
             // double SegmentMinElev, SegmentMaxElev;
 
             bool Result;
 
             if (InitialNumberOfSegments != _Directory.SegmentDirectory.Count)
             {
-                // TODO add when loging available
-                // SIGLogMessage.PublishNoODS(Nil, 'Number of segments in subgrid has changed since the iterator was initialised', slmcAssert);
+                Log.LogCritical("Number of segments in subgrid has changed since the iterator was initialised");
                 return false;
             }
 
@@ -85,14 +82,14 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             {
                 Idx = IterationDirection == IterationDirection.Forwards ? ++Idx : --Idx;
 
-                SegmentIndexInRange = Range.InRange(Idx, 0, _Directory.SegmentDirectory.Count - 1);
+                bool SegmentIndexInRange = Range.InRange(Idx, 0, _Directory.SegmentDirectory.Count - 1);
 
                 if (!SegmentIndexInRange)
                 {
                     return false;
                 }
 
-                SegmentInfo = _Directory.SegmentDirectory[Idx];
+                ISubGridCellPassesDataSegmentInfo SegmentInfo = _Directory.SegmentDirectory[Idx];
 
                 Result = Range.InRange(SegmentInfo.StartTime, StartSegmentTime, EndSegmentTime) ||
                          Range.InRange(SegmentInfo.EndTime, StartSegmentTime, EndSegmentTime) ||
@@ -113,9 +110,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     else
                       if (SegmentInfo.Segment?.PassesData != null)
                     {
-                        Debug.Assert(false, "Static cell pass information not yet supported");
-
-                        /* TODO
                         // The elevation range information we use here is accessed via
                         // the entropic compression information used to compress the attributes held
                         // in the segment. If the segment has not been loaded yet then this information
@@ -125,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                         // if there is any need to extract cell passes from this segment. If not, just move
                         // to the next segment
 
-                        SegmentInfo.Segment.PassesData.GetSegmentElevationRange(out SegmentMinElev, out SegmentMaxElev);
+                        SegmentInfo.Segment.PassesData.GetSegmentElevationRange(out double SegmentMinElev, out double SegmentMaxElev);
                         if (SegmentMinElev != Consts.NullDouble && SegmentMaxElev != Consts.NullDouble)
                         {
                             // Save the computed elevation range values for this segment
@@ -133,22 +127,22 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             SegmentInfo.MaxElevation = SegmentMaxElev;
 
                             Result = Range.InRange(SegmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
-                                                Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
-                                                Range.InRange(MinIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation) ||
-                                                Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
+                                     Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
+                                     Range.InRange(MinIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation) ||
+                                     Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
                         }
                         else
                         {
                             Result = false;
                         }
-                        */
+                        //*/
                     }
 
                     if (Result && HasMachineRestriction && SegmentInfo.Segment?.PassesData != null)
                     {
                         // Check to see if this segment has any machines that match the
                         // machine restriction. If not, advance to the next segment
-                        HasMachinesOfInterest = false;
+                        bool HasMachinesOfInterest = false;
                         BitArray segmentMachineIDSet = SegmentInfo.Segment.PassesData.GetMachineIDSet();
 
                         if (segmentMachineIDSet != null)
@@ -206,8 +200,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (IterationDirection != IterationDirection.Forwards)
             {
-                // TODO add when logging available
-                //SIGLogMessage.PublishNoODS(Nil, 'Extension of segment list only valid if iterator is travelling forwards through the list', slmcAssert);
+                Log.LogCritical("Extension of segment list only valid if iterator is travelling forwards through the list");
                 return;
             }
 

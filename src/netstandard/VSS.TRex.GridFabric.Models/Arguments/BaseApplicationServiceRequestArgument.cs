@@ -10,6 +10,8 @@ namespace VSS.TRex.GridFabric.Models.Arguments
   [Serializable]
   public class BaseApplicationServiceRequestArgument
   {
+    // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor
+
     /// <summary>
     /// The identifier of the TRex node responsible for issuing a request and to which messages containing responses
     /// should be sent on a message topic contained within the derived request. 

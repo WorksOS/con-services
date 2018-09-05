@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
 { 
   public class SubGridDirectory : ISubGridDirectory
   {
+        private static ILogger Log = Logging.Logger.CreateLogger<SubGridDirectory>();
+
         // SegmentDirectory contains a list of all the segments that are present
         // in this subgrid. The list is time ordered and also contains references
         // to the segments that are currently loaded into memory
@@ -73,8 +76,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (SegmentDirectory.Count != 0)
             {
-                // TODO add when logging available
-                //   SIGLogMessage.PublishNoODS(Self, 'Cannot create default segment if there are already segments in the list', slmcAssert);
+                Log.LogCritical("Cannot create default segment if there are already segments in the list");
                 return;
             }
 

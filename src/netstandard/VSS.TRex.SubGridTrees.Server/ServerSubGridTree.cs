@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Factories;
@@ -8,6 +9,13 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     public class ServerSubGridTree : SubGridTree, IServerSubGridTree
     {
+        private static ILogger Log = Logging.Logger.CreateLogger(nameof(ServerSubGridTree));
+
+        /// <summary>
+        /// Controls emission of subgrid reading activities into the log.
+        /// </summary>
+        public bool RecordSubgridFileReadingToLog { get; set; } = false;
+
         public ServerSubGridTree(Guid siteModelID) :
             base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
                 new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
@@ -110,9 +118,8 @@ namespace VSS.TRex.SubGridTrees.Server
                                     bool loadAllPasses, bool loadLatestPasses,
                                     IServerLeafSubGrid SubGrid)
         {
-            string FullFileName;
-
-            bool Result;
+            string FullFileName = string.Empty;
+            bool Result = false;
 
             /* TODO ... Locking semantics not defined for Ignite - planning to be lock free
             if (!SubGrid.Locked)
@@ -127,8 +134,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 // Load the cells into it from its file
                 if (SubGrid.Dirty)
                 {
-                    // TODO readd when logging available
-                    //SIGLogMessage.PublishNoODS(Self, 'Leaf subgrid directory loads may not be performed while the subgrid is dirty. The information should be taken from the cache instead.', slmcError);
+                    Log.LogError("Leaf subgrid directory loads may not be performed while the subgrid is dirty. The information should be taken from the cache instead.");
                     return false;
                 }
 
@@ -148,16 +154,13 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             finally
             {
-                /* TODO ...
-                if (Result)
-                {
+              if (Result)
+              {
                 if (RecordSubgridFileReadingToLog)
                 {
-                    //SIGLogMessage.PublishNoODS(Self, 'Subgrid file %1 read from persistant store containing %2 segments (Moniker: %3)',      
-                                                 [FullFileName, IntToStr(Subgrid.Directory.SegmentDirectory.Count), SubGrid.Moniker], slmcDebug);
+                  Log.LogDebug($"Subgrid file {FullFileName} read from persistant store containing {SubGrid.Directory.SegmentDirectory.Count} segments (Moniker: {SubGrid.Moniker()}");
                 }
-                }
-                */
+              }
             }
 
             return Result;

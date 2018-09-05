@@ -61,7 +61,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
             ISubGrid Result = null;
 
-            /* TODO Locking semntics not defined for Ignite
+            /* TODO Locking semantics not defined for Ignite
             if (LockToken == -1)
             {
                 SIGLogMessage.Publish(Nil, 'LocateSubGridContaining not given valid lock token. By definition, the requestor of a subgrid must lock that subgrid', slmcError);

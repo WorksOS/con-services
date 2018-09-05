@@ -9,8 +9,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
     [Serializable]
     public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument
     {
-        // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor;
-
         /// <summary>
         /// The set of cut/fill offsets
         /// Current this is always 7 elements in array and assumes grade is set at zero

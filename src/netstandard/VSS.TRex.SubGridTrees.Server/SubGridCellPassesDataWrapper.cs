@@ -36,8 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 if (PassesData.Count != 0)
                 {
-                    // TODO: Add when logging available
-                    //SIGLogMessage.PublishNoODS(Self, Format('Passes segment list for %s is non-empty when the segment info list is empty in TICSubGridCellPassesDataWrapper.SelectSegment', [FOwner.Moniker]), slmcAssert);
+                    Log.LogCritical($"Passes segment list for {Owner.Moniker()} is non-empty when the segment info list is empty in SelectSegment");
                     return null;
                 }
 
@@ -48,8 +47,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             if (PassesData.Count == 0)
             {
-                // TODO: Add when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format('Passes data array empty for %s in TICSubGridCellPassesDataWrapper.SelectSegment', [FOwner.Moniker]), slmcAssert);
+                Log.LogCritical($"Passes data array empty for {Owner.Moniker()} in SelectSegment");
                 return null;
             }
 
@@ -206,15 +204,15 @@ namespace VSS.TRex.SubGridTrees.Server
             NewSegment.SegmentInfo.ExistsInPersistentStore = false;
 
             /*
-             TODO: InTRex, this non-static information is only maintained in themutable data grid, segment caching not well defined for it yet
+             TODO: In TRex, this non-static information is only maintained in the mutable data grid, segment caching is not well defined for it yet
             if (Owner.PresentInCache)
             {
                 // Include the new segment in the cache segment tracking
                 if (!DataStoreInstance.GridDataCache.SubGridSegmentTouched(NewSegment))
                 {
-                    // todo SIGLogMessage.PublishNoODS(Self,
-                    //    Format('Failed to touch newly created segment in segment cleaving for subgrid %s [%s]', [
-                    //        CleavingSegment.Owner.Moniker, CleavingSegment.ToString]), slmcException);
+                     SIGLogMessage.PublishNoODS(Self,
+                        Format('Failed to touch newly created segment in segment cleaving for subgrid %s [%s]', [
+                            CleavingSegment.Owner.Moniker, CleavingSegment.ToString]), slmcException);
                     return true;
                 }
             }

@@ -10,8 +10,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary
   [Serializable]
   public class CMVSummaryArgument : BaseApplicationServiceRequestArgument
   {
-    // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
-
     /// <summary>
     /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
     /// </summary>

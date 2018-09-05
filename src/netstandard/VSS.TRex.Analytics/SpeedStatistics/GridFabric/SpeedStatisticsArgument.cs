@@ -10,8 +10,6 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	[Serializable]
   public class SpeedStatisticsArgument : BaseApplicationServiceRequestArgument
 	{
-    // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor, which should be moved to the base class;
-
 	  /// <summary>
 	  /// Machine speed target record. It contains min/max machine speed target value.
 	  /// </summary>
