@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     [HttpPost]
     public ScheduleJobResult StartExport([FromBody] ScheduleJobRequest request)
     {
-      log.LogInformation($"StartExport: {JsonConvert.SerializeObject(request)}");
+      log.LogInformation($"StartExport: Url {request?.Url}");
       string jobId;
       try
       {
