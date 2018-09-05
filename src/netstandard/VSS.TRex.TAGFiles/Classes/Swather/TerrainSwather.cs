@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Events.Interfaces;
@@ -14,6 +15,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 {
     public class TerrainSwather : SwatherBase
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TerrainSwather>();
+
         /// <summary>
         /// The maximum number of cell passes that may be generated when swathing a single interval between
         /// two measurement epochs
@@ -66,20 +69,14 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                     return true;
                 }
 
-                Debug.Assert((fMinX <= fMaxX) && (fMinY <= fMaxY), "Invalid rectangle for processing cell passes over");
+                Debug.Assert(fMinX <= fMaxX && fMinY <= fMaxY, "Invalid rectangle for processing cell passes over");
 
                 // Check that the swathing of this epoch will not create an inordinate number of cell passes
                 // If so, prevent swathing of this epoch interval
                 long CellCount = (long)(CellExtent.MaxX - CellExtent.MinX) * (long)(CellExtent.MaxY - CellExtent.MinY);
                 if (CellCount > kMaxNumberCellPassesPerSwathingEpoch)
                 {
-                    /* TODO add when logging available
-                       SIGLogMessage.PublishNoODS(Self, Format('Epoch %d cell extents %s (SizeX=%d, SizeY=%d) cover too many cell passes to swath (%d), limit is %d per epoch',
-
-                                                   [ProcessedEpochNumber,
-                                                    CellExtent.AsText, CellExtent.SizeX, CellExtent.SizeY,
-                                                    CellCount, kMaxNumberCellPassesPerSwathingEpoch]), slmcError);
-                    */
+                    Log.LogError($"Epoch {ProcessedEpochNumber} cell extents {CellExtent} (SizeX={CellExtent.SizeX}, SizeY={CellExtent.SizeX}) cover too many cell passes to swath ({CellCount}), limit is {kMaxNumberCellPassesPerSwathingEpoch} per epoch");
                     return true;
                 }
 
@@ -156,7 +153,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                                 {
                                     ProcessedCellPass.MDP = Processor.ICMDPValues.GetMDPValueAtDateTime(_TheTime);
 
-                  //    ProcessedCellPass.CCA = Processor.ICCCAValues.GetCCAValueAtDateTime(_TheTime);
+                                   //    ProcessedCellPass.CCA = Processor.ICCCAValues.GetCCAValueAtDateTime(_TheTime);
 
                                   // CCA values can come from 5 different fields in the TAG files. Earlier versions had a single CCA value for all
                                   // four wheels. As of GCS v13.12, all four wheels have CCA independently reported for each wheel
@@ -208,10 +205,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                     }
                 }
             }
-            catch // (Exception E)
+            catch (Exception E)
             {
-                // TODO add when logging becomes available
-                // SIGLogMessage.Publish(Self, Format('Exception in ICTerrainSwather.PerformSwathing: %s', [E.Message]), slmcDebug);
+                Log.LogError($"Exception in TerrainSwather.PerformSwathing: {E}");
                 return false;
             }
 

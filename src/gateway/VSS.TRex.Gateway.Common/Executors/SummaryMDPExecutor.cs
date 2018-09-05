@@ -66,7 +66,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private SummaryResult ConvertResult(MDPResult summary)
     {
-      return SummaryResult.Create(
+      return new SummaryResult(
         summary.WithinTargetPercent,
         summary.ConstantTargetMDP,
         summary.IsTargetMDPConstant,

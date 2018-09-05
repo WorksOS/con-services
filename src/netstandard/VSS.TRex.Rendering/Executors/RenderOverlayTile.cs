@@ -453,16 +453,6 @@ namespace VSS.TRex.Rendering.Executors
       foreach (XYZ xyz in NEECoords)
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
 
-      // TODO [Put it back]: Temporarily remove tile pruning on intersection test
-      // Intersect the site model extents with the extents requested by the caller
-      /*if (!SpatialExtents.Intersect(RotatedTileBoundingExtents).IsValidPlanExtent)
-      {
-          ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
-  
-          // RenderTransparentTile();
-          return new Bitmap(NPixelsX, NPixelsY);
-      }*/
-
 
       /* TODO Readd when logging available
    {$IFDEF DEBUG}
@@ -490,6 +480,15 @@ namespace VSS.TRex.Rendering.Executors
         ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
         if (SiteModel == null)
           return null;
+
+        // Intersect the site model extents with the extents requested by the caller
+        if (!SiteModel.SiteModelExtent.Intersect(RotatedTileBoundingExtents).IsValidPlanExtent)
+        {
+          ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
+            
+          //RenderTransparentTile();
+          return Renderer.Displayer.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
+        }
 
         // Compute the override cell boundary to be used when processing cells in the subgrids
         // selected as a part of this pipeline

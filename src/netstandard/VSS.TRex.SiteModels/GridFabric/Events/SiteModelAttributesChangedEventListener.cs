@@ -97,7 +97,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ...Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~SiteModelAttributesChangedEventListener() {
         //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
         //   Dispose(false);
@@ -108,7 +108,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
+            // ...uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
         #endregion

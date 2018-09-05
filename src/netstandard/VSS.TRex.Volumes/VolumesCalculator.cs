@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Types;
+﻿using Microsoft.Extensions.Logging;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Volumes
 {
@@ -8,6 +9,8 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public class VolumesCalculator : VolumesCalculatorBase
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(VolumesCalculator));
+      
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
@@ -40,8 +43,7 @@ namespace VSS.TRex.Volumes
         {
             if (VolumeType == VolumeComputationType.None)
             {
-                // TODO Readd when logging available
-                //SIGLogMessage.Publish(Self, 'No report type supplied to TICVolumesCalculator.ComputeVolumeInformation', slmcError);
+                Log.LogError("No report type supplied to ComputeVolumeInformation");
                 return false;
             }
 
@@ -49,9 +51,8 @@ namespace VSS.TRex.Volumes
             {
                 if (RefOriginal == null)
                 {
-                    // TODO Readd when logging available
-                    // SIGLogMessage.Publish(Self, 'No RefOriginal surface supplied', slmcError);
-                    return false;
+                  Log.LogError("No RefOriginal surface supplied");
+                  return false;
                 }
             }
 
@@ -59,9 +60,8 @@ namespace VSS.TRex.Volumes
             {
                 if (RefDesign == null)
                 {
-                    // TODO: Readd when logging available
-                    //SIGLogMessage.Publish(Self, 'No RefDesign surface supplied', slmcError);
-                    return false;
+                  Log.LogError("No RefDesign surface supplied");
+                  return false;
                 }
             }
 

@@ -80,7 +80,7 @@ public class TAGFileTestsDIFixture : IDisposable
                 "Converter execute returned false");
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = new SiteModel("TestName", "TestDesc", TAGFileTestsDIFixture.NewSiteModelGuid, 1.0);
+            SiteModel siteModel = new SiteModel(/*"TestName", "TestDesc", */TAGFileTestsDIFixture.NewSiteModelGuid, 1.0);
             VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), MachineConsts.kNullInternalSiteModelMachineIndex, false);
 
             // Create the integrator and add the processed TAG file to its processing list

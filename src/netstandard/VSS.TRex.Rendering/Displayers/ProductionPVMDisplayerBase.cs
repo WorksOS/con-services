@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Draw = System.Drawing;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -9,6 +10,8 @@ namespace VSS.TRex.Rendering.Displayers
 {
     public class ProductionPVMDisplayerBase
     {
+        private static ILogger Log = Logging.Logger.CreateLogger("ProductionPVMDisplayerBase");
+
         public const int kMaxStepSize = 10000;
 
         // Various quantities useful when displaying a subgrid full of grid data
@@ -52,9 +55,6 @@ namespace VSS.TRex.Rendering.Displayers
         //      FICOptions : TSVOICOptions;
 
         protected bool FDisplayParametersCalculated;
-
-        // FSubgridResult is a reference to the raw subgrid result returned from the PS layer
-//        SubGridTreeLeafSubGridBaseResult SubgridResult; // : TICSubGridTreeLeafSubGridBaseResult;
 
         protected bool FHasRenderedSubgrid;
 
@@ -261,18 +261,15 @@ namespace VSS.TRex.Rendering.Displayers
 
       public bool RenderSubGrid(SubGridTreeLeafSubGridBaseResult subGridResult)
         {
-//            SubgridResult = subGridResult;
-
             if (!(subGridResult.SubGrid is IClientLeafSubGrid))
             {
-                // TODO Readd when logging available
-                //SIGLogMessage.Publish(Self, Format('Subgrid type %s does not derive from TICSubGridTreeLeafSubGridBase', [FSubgridResult.Subgrid.ClassName]), slmcMessage);
+                Log.LogError($"Subgrid type {subGridResult.SubGrid} does not implement IClientLeafSubGrid");
                 return false;
             }
 
             if (!FDisplayParametersCalculated)
             {
-                _CellSize = subGridResult.SubGrid.CellSize; //TICSubGridTreeLeafSubGridBase(FSubgridResult.Subgrid).CellSize;
+                _CellSize = subGridResult.SubGrid.CellSize;
                 CalculateDisplayParameters();
                 FDisplayParametersCalculated = true;
             }

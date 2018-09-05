@@ -49,6 +49,16 @@ namespace VSS.TRex.Common
         /// </summary>
         public static bool Debug_DrawDiagonalCrossOnRenderedTiles = false;
 
+      /// <summary>
+      /// Record the result of each segment cleave operation to the log
+      /// </summary>
+      public static bool RecordSegmentCleavingOperationsToLog = false;
+
+      /// <summary>
+      /// Records meta data about items to the log as they are written into the persistent store
+      /// </summary>
+      public static bool RecordItemsPersistedViaDataPersistorToLog = false;
+
       /*
         /// <summary>
         /// Use TFA service to validate tagfiles

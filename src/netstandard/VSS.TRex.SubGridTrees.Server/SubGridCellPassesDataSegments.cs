@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegments : ISubGridCellPassesDataSegments
   {
+       private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(SubGridCellPassesDataSegments));
+
         public List<ISubGridCellPassesDataSegment> Items { get; set; } = new List<ISubGridCellPassesDataSegment>();
 
         public void Clear()
@@ -56,17 +59,13 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (segmentInfo == null)
             {
-                //TODO add when lgogin available
-                //                SIGLogMessage.PublishNoODS(Self, Format('Null segment info passed to TICSubGridCellPassesDataList.AddNewSegment for subgrid %s', { SKIP}
-                //                                              [SubGrid.Moniker]), slmcAssert);
+                Log.LogCritical($"Null segment info passed to AddNewSegment for subgrid {subGrid.Moniker()}");
                 return null;
             }
 
             if (segmentInfo.Segment != null)
             {
-                // TODO add when logging available
-                //      SIGLogMessage.PublishNoODS(Self, Format('Segment info passed to TICSubGridCellPassesDataList.AddNewSegment for subgrid %s already contains an allocated segment', { SKIP}
-                //        [SubGrid.Moniker]), slmcAssert);
+                Log.LogCritical($"'Segment info passed to AddNewSegment for subgrid {subGrid.Moniker()} already contains an allocated segment");
                 return null;
             }
 

@@ -181,7 +181,7 @@ namespace VSS.TRex.SiteModels
 
             // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
-            grid = new ServerSubGridTree(this.ID);
+            grid = new ServerSubGridTree(ID);
 
             existanceMap = new SubGridTreeSubGridExistenceBitMask();
 
@@ -211,8 +211,8 @@ namespace VSS.TRex.SiteModels
         }
 
         public SiteModel(//AOwner: TICSiteModels;
-                         string name,
-                         string description,
+                         //string name,
+                         //string description,
                          Guid id,
                          double cellSize) : this(id)
         {
@@ -599,6 +599,7 @@ namespace VSS.TRex.SiteModels
             // Start with the data model extents
           BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
+          // Iterate over all non-exluded surveyed surfaces and expand the SpatialExtents as necessary
             if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
             {
                 foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
@@ -612,10 +613,6 @@ namespace VSS.TRex.SiteModels
                         SpatialExtents.Include(surveyedSurface.Extents);
                 }
             }
-
-            // TODO: Surveyed surfaces are not supported yet
-            // Iterate over all non-exluded surveyed surfaces and expand the SpatialExtents as necessary
-            // ...
 
             return SpatialExtents;
         }

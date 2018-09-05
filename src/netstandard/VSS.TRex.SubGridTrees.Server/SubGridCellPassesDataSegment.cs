@@ -57,7 +57,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
-        public bool SegmentMatches(DateTime time) => (time >= SegmentInfo.StartTime) && (time < SegmentInfo.EndTime);
+        public bool SegmentMatches(DateTime time) => time >= SegmentInfo.StartTime && time < SegmentInfo.EndTime;
 
         public void AllocateFullPassStacks()
         {
@@ -72,7 +72,7 @@ namespace VSS.TRex.SubGridTrees.Server
             if (LatestPasses == null)
             {
                 HasLatestData = true;
-                LatestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(); // new SubGridCellLatestPassDataWrapper_NonStatic();
+                LatestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper();
             }
         }
 
@@ -94,10 +94,9 @@ namespace VSS.TRex.SubGridTrees.Server
             {
                 Debug.Assert(false,
                     "Leaf subgrids being written to persistent store must be fully populated with pass stacks and latest pass grid");
-                return false;
+                //return false;
             }
 
-            //bool Result = true;
             int CellStacksOffset = -1;
 
             // Write the cell pass information (latest and historic cell pass stacks)
@@ -121,7 +120,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             writer.BaseStream.Seek(EndPosition, SeekOrigin.Begin);
 
-            return true; // Result;
+            return true;
         }
 
         public bool LoadPayloadFromStream_v2p0(BinaryReader reader,
@@ -169,8 +168,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             if (!Header.IsSubGridSegmentFile)
             {
-                // TODO readd when logging available
-                // SIGLogMessage.Publish(Self, 'Subgrid grid segment file does not identify itself as such in extended header flags', slmcAssert); { SKIP}
+                Log.LogCritical($"Subgrid grid segment file does not identify itself as such in extended header flags");
                 return false;
             }
 
@@ -231,36 +229,24 @@ namespace VSS.TRex.SubGridTrees.Server
                                string FileName,
                                out FileSystemErrorStatus FSError)
         {
-            //  TODO          InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
+            //  TODO  InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
 
             bool Result;
             FSError = FileSystemErrorStatus.OK;
 
             CalculateElevationRangeOfPasses();
 
-            /* todo
-             *   if (RecordSegmentCleavingOperationsToLog)
-               {
-                   CalculateTotalPasses(out int TotalPasses, out int MaxPasses);
-
-                   // TODO ...
-                   if (TotalPasses > VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit)
-                   {
-                       // TODO readd when logging available
-                       //SIGLogMessage.PublishNoODS(this, "Saving segment {0} with {1} cell passes (max:{2}) which violates the maximum number of cell passes within a segment ({4})",        
-                       //                           Filename, TotalPasses, MaxPasses, VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit], slmcDebug);
-                   }
-               }
-            */
-
-            /* TODO...
-            if (VLPDSvcLocations.RecordItemsPersistedViaDataPersistorToLog)
+            if (TRexConfig.RecordSegmentCleavingOperationsToLog || TRexConfig.RecordItemsPersistedViaDataPersistorToLog)
             {
-                SIGLogMessage.PublishNoODS(this, "Saving segment {0} with {1} cell passes (max:{2})',
-                [Filename, IntToStr(TotalPasses), IntToStr(MaxPasses)], slmcDebug);
+              SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out uint TotalPasses, out uint MaxPasses);
+      
+              if (TRexConfig.RecordSegmentCleavingOperationsToLog && TotalPasses > TRexConfig.VLPD_SubGridSegmentPassCountLimit)
+                  Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses}) which violates the maximum number of cell passes within a segment ({TRexConfig.VLPD_SubGridSegmentPassCountLimit})");
+      
+              if (TRexConfig.RecordItemsPersistedViaDataPersistorToLog)
+                Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
             }
-            */
-
+      
             using (MemoryStream MStream = new MemoryStream())
             {
                 using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))

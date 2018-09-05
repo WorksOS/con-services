@@ -56,8 +56,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     }
                     else
                     {
-                        // TODO readd when loggin available
-                        //SIGLogMessage.PublishNoODS(Nil, 'Failed to locate design name in the design change events list', slmcAssert);
+                        Log.LogError("Failed to locate design name in the design change events list");
                         return;
                     }
                 }
@@ -88,8 +87,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     }
                     else
                     {
-                        // TODO readd when loggin available
-                        //SIGLogMessage.PublishNoODS(Nil, 'Failed to locate design name in the map reset events list', slmcAssert);
+                        Log.LogError("Failed to locate design name in the map reset events list");
                         return;
                     }
                 }
@@ -197,8 +195,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         // OR... Just read the whole lot to start with
                         // OR... Don't bother as the caller will have sorted it all out.
 
-                        // TODO add when logging available
-                        //SIGLogMessage.PublishNoODS(Nil, Format('Event list %d not available in IntegrateMachineEvents', [I]), slmcError);
+                        Log.LogError($"Event list {I} not available in IntegrateMachineEvents");
                     }
 
                     if (TargetList != null)

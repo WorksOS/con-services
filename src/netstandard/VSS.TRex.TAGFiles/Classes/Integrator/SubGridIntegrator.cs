@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -20,10 +21,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     public class SubGridIntegrator
     {
-        /// <summary>
-        /// The subgrid tree from which information is being integarted
-        /// </summary>
-        private IServerSubGridTree Source;
+      private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridIntegrator>();
+
+      /// <summary>
+      /// The subgrid tree from which information is being integarted
+      /// </summary>
+      private IServerSubGridTree Source;
 
         /// <summary>
         /// Sitemodel representing the target sub grid tree
@@ -84,8 +87,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             if (TargetSubGrid.Cells.PassesData[0].PassesData == null)
             {
-                // TODO readd when logging available
-                // SIGLogMessage.PublishNoODS(Self, 'No segment passes data in new segment', slmcAssert);
+                Log.LogCritical("No segment passes data in new segment");
                 return;
             }
 
@@ -115,18 +117,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             //      TargetSubGrid.CachedMemoryUpdateTrackingActive = false;
             //    end;
 
-            /*
-            // TODO: Resolve when IFOPT C+ equivalent understood [C+ = ASSERTs emabled]
-            {$IFOPT C+}
-            if (!TargetSubGrid.Locked)
-            {
-              // TODO readd when logging available
-              // SIGLogMessage.PublishNoODS(self, 'Target subgrid not locked after integration operation', slmcAssert);
-              return false;
-            }
-            {$ENDIF}
-            */ 
-
             SubGridChangeNotifier?.Invoke(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
 
             /* TODO...
@@ -134,8 +124,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             {
                 if (TargetSubGrid.Cells.PassesData.Count == 0)
                 {
-                    // TODO add whenlogging available
-                    //SIGLogMessage.PublishNoODS(Self, 'Committing a subgrid with no subgrid segments to the persistent store in TSVOICAggregatedDataIntegrator.IntegrateSubGridTree', slmcException); { SKIP}
+                    Log.LogError("Committing a subgrid with no subgrid segments to the persistent store in IntegrateSubGridTree");
                     return false;
                 }
 
@@ -187,8 +176,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 /* TODO:... FAggregatedDataIntegratorLockToken */);
             if (TargetSubGrid == null)
             {
-                //TODO add when logging available
-                //SIGLogMessage.PublishNoODS(Self, 'Failed to locate subgrid in TSVOICAggregatedDataIntegrator.IntegrateIntoLiveGrid', slmcAssert); { SKIP}
+                Log.LogError("Failed to locate subgrid in IntegrateIntoLiveGrid");
                 return;
             }
 
@@ -196,7 +184,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             {
                 if (!IntegrateIntoLiveDatabase(SegmentIterator))
                 {
-                    return;
+                    Log.LogError("Integration into live database failed");
                 }
             }
             finally
@@ -267,7 +255,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 // SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(SourceSubGrid.OriginX, SourceSubGrid.OriginY);
 
                 /*
-                 * // TODO...
+                 // TODO...
                 if (Terminated)
                 {
                     // Service has been shutdown. Abort integration of changes and flag the
@@ -332,15 +320,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                 if (Result.Cells == null)
                 {
-                    // TODO readd when logging available
-                    // SIGLogMessage.PublishNoODS(Self, Format('LocateSubGridContaining returned a subgrid %s with no allocated cells', [Result.Moniker]), slmcAssert);
+                    Log.LogCritical($"LocateSubGridContaining returned a subgrid {Result.Moniker()} with no allocated cells");
                     return Result;
                 }
 
                 if (Result.Directory.SegmentDirectory.Count == 0)
                 {
-                    // TODO add when logging available
-                    //SIGLogMessage.PublishNoODS(Self, Format('LocateSubGridContaining returned a subgrid %s with no segments in its directory', [Result.Moniker]), slmcAssert);
+                    Log.LogCritical($"LocateSubGridContaining returned a subgrid {Result.Moniker()} with no segments in its directory");
                     return Result;
                 }
 
@@ -350,8 +336,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
             else
             {
-                // TODO add when logging available
-                //SIGLogMessage.PublishNoODS(Self, Format('LocateSubGridContaining failed to return a subgrid (CellX/Y=%d/%d)', [CellX, CellY]), slmcAssert);
+                Log.LogCritical($"LocateSubGridContaining failed to return a subgrid (CellX/Y={CellX}/{CellY})");
             }
 
             return Result;

@@ -137,10 +137,9 @@ namespace VSS.TRex.Filters
           }
         }
       }
-      catch
+      catch (Exception e)
       {
-        // TODO readd when logging available
-        //SIGLogMessage.Publish(Nil, Format('PrepareFilterForUse: Exception ''%s'' raised', [E.Message]), slmcException);
+        Log.LogError($"PrepareFilterForUse: Exception raise: {e}");
         Result = RequestErrorStatus.Unknown;
       }
 
