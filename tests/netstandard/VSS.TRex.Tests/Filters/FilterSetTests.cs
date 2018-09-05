@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Filters
     [Fact]
     public void Test_FilterSet_Creation_SingleNull3a()
     {
-      var f = new FilterSet((ICombinedFilter)null, new CombinedFilter());
+      var f = new FilterSet(null, new CombinedFilter());
 
       Assert.True(f.Filters != null, "Filters in filter set null after creation");
       Assert.True(f.Filters.Length == 1, "Filterset count not one after creation");
@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.Filters
     [Fact]
     public void Test_FilterSet_Creation_SingleNull3b()
     {
-      var f = new FilterSet(new CombinedFilter(), (ICombinedFilter)null);
+      var f = new FilterSet(new CombinedFilter(), null);
 
       Assert.True(f.Filters != null, "Filters in filter set null after creation");
       Assert.True(f.Filters.Length == 1, "Filterset count not one after creation");
@@ -45,7 +45,7 @@ namespace VSS.TRex.Tests.Filters
     [Fact]
     public void Test_FilterSet_Creation_SingleNull4()
     {
-      var f = new FilterSet(new [] {(ICombinedFilter)null, new CombinedFilter(), new CombinedFilter()});
+      var f = new FilterSet(new [] {null, new CombinedFilter(), new CombinedFilter()});
 
       Assert.True(f.Filters != null, "Filters in filter set null after creation");
       Assert.True(f.Filters.Length == 2, "Filterset count not two after creation");
@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.Filters
     [Fact]
     public void Test_FilterSet_Creation_DoubleNull1()
     {
-      var f = new FilterSet(new[] { (ICombinedFilter)null, (ICombinedFilter)null });
+      var f = new FilterSet(new ICombinedFilter[] { null, null });
 
       Assert.True(f.Filters != null, "Filters in filter set null after creation");
       Assert.True(f.Filters.Length == 0, "Filterset count not zero after creation");
@@ -63,7 +63,7 @@ namespace VSS.TRex.Tests.Filters
     [Fact]
     public void Test_FilterSet_Creation_DoubleNull2()
     {
-      var f = new FilterSet(new[] { (ICombinedFilter)null, (ICombinedFilter)null, new CombinedFilter() });
+      var f = new FilterSet(new[] { null, null, new CombinedFilter() });
 
       Assert.True(f.Filters != null, "Filters in filter set null after creation");
       Assert.True(f.Filters.Length == 1, "Filterset count not one after creation");
@@ -72,7 +72,7 @@ namespace VSS.TRex.Tests.Filters
     [Fact]
     public void Test_FilterSet_Creation_AllNull1()
     {
-      var f = new FilterSet((ICombinedFilter)null, (ICombinedFilter)null);
+      var f = new FilterSet(null, null);
 
       Assert.True(f.Filters != null, "Filters in filter set null after creation");
       Assert.True(f.Filters.Length == 0, "Filterset count not zero after creation");
@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.Filters
     [Fact]
     public void Test_FilterSet_Creation_AllNull2()
     {
-      var f = new FilterSet(new[] { (ICombinedFilter)null, (ICombinedFilter)null, (ICombinedFilter)null });
+      var f = new FilterSet(new ICombinedFilter[] { null, null, null });
 
       Assert.True(f.Filters != null, "Filters in filter set null after creation");
       Assert.True(f.Filters.Length == 0, "Filterset count not zero after creation");
