@@ -104,7 +104,7 @@ namespace VSS.TRex.Designs.Executors
 
                     if (result == null)
                     {
-                        // TODO: ....
+                        // TODO: Handle faulre to calculate a design elevation patch result
                     }
 
                     return result;

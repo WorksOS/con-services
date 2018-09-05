@@ -281,20 +281,15 @@ namespace VSS.TRex.SubGrids
       int TopMostLayerCompactionHalfPassCount = 0;
       bool FilteredValueIsFromLatestCellPass;
 
-      // TODO... bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
+      // bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
 
       // Iterate over the cells in the subgrid applying the filter and assigning the requested information into the subgrid
 
-      /* TODO...
-      if (Debug_ExtremeLogSwitchD)
-          SIGLogMessage.PublishNoODS(Nil, Format('Beginning stripe iteration %d at %dx%d', [StripeIndex, CellX, CellY]), slmcDebug);
-      */
+      //if (Debug_ExtremeLogSwitchD)
+      //    Log.LogDebug($"Beginning stripe iteration {StripeIndex} at {CellX}x{CellY}");
 
       try
       {
-
-
-
         /* TODO Readd when LiftBuildSettings is implemented
          &&
          (!(_GridDataType in [icdtCCV, icdtCCVPercent]) && (LiftBuildSettings.CCVSummaryTypes<>[])) &&

@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
     private TemperatureStatisticsArgument Arg => new TemperatureStatisticsArgument()
     {
       ProjectID = _siteModel.ID,
-      Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+      Filters = new FilterSet(new CombinedFilter()),
       OverrideTemperatureWarningLevels = true,
       OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
     };

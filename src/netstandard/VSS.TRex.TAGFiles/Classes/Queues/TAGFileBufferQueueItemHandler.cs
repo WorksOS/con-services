@@ -142,10 +142,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             {
                                 try
                                 {
-                                    // TODO: Determine what to do in this failure more:
-                                    // TODO: - Leave in place?
-                                    // TODO: - Copy to dead letter queue?
-                                    // TODO: - Place in S3 bucket pending downstream handling?
+                                    // TODO: Determine what to do in this failure more: - Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
                                     if (!tagFileResponse.Success)
                                         Log.LogInformation($"Grpr1 TAG file {tagFileResponse.FileName} successfully processed");
                                     else
@@ -259,10 +256,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     try
                     {
-                        // TODO: Determine what to do in this failure mode:
-                        // TODO: - Leave in place?
-                        // TODO: - Copy to dead letter queue?
-                        // TODO: - Place in S3 bucket pending downstream handling?
+                        // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
                         if (tagFileResponse.Success)
                             Log.LogInformation($"Grpr2 TAG file {tagFileResponse.FileName} successfully processed");
                         else

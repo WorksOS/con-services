@@ -511,7 +511,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = NumSubgridsToBeExamined;
 
-                    //TODO: Map the actual response code in to this
+                    //TODO: Map the actual response code into this
                     result.ResponseCode = SubGridRequestsResponseResult.OK;
                 }
                 finally
