@@ -285,5 +285,22 @@ namespace VSS.TRex.SubGridTrees.Server
             return TotalPasses > TRexConfig.VLPD_SubGridSegmentPassCountLimit ||
                    MaxPassCount > TRexConfig.VLPD_SubGridMaxSegmentCellPassesLimit;
         }
+
+        /// <summary>
+        /// Verifies if the segment time range bounds are consistent with the cell passes it contains
+        /// </summary>
+        /// <returns></returns>
+        public bool VerifyComputedAndRecordedSegmentTimeRangeBounds()
+        {
+          // Determine the actual time range of the passes within the segment
+          SegmentTimeRangeCalculator.CalculateTimeRange(PassesData, out DateTime CoveredTimeRangeStart, out DateTime CoveredTimeRangeEnd);
+
+          bool Result = CoveredTimeRangeStart >= SegmentInfo.StartTime && CoveredTimeRangeEnd <= SegmentInfo.EndTime;
+
+          if (!Result)
+            Log.LogCritical($"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+
+          return Result;
+        }
     }
 }

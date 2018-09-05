@@ -59,6 +59,11 @@ namespace VSS.TRex.Common
       /// </summary>
       public static bool RecordItemsPersistedViaDataPersistorToLog = false;
 
+      /// <summary>
+      /// Enforces integrity on segments when they are added
+      /// </summary>
+      public static bool Debug_PerformSegmentAdditionIntegrityChecks = false;
+
       /*
         /// <summary>
         /// Use TFA service to validate tagfiles

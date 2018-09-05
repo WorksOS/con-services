@@ -465,20 +465,23 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 AddSubgridToAddressList(address);      // Assign the address into the group to be processed
             });
 
-            // Request surveyd surface only subgrids
-            SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
-            {
-                // Is this subgrid the responsibility of this server?
-                if (!primaryPartitionMap[address.ToSpatialPartitionDescriptor()])
-                    return;
-
-                // Decorate the address with the production data and surveyed surface flags
-                address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
-                address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
-
-                AddSubgridToAddressList(address);      // Assign the address into the group to be processed
-            });
-
+            if (localArg.IncludeSurveyedSurfaceInformation)
+            {  
+                // Request surveyed surface only subgrids
+                SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
+                {
+                    // Is this subgrid the responsibility of this server?
+                    if (!primaryPartitionMap[address.ToSpatialPartitionDescriptor()])
+                      return;
+                  
+                    // Decorate the address with the production data and surveyed surface flags
+                    address.ProdDataRequested = false; 
+                    address.SurveyedSurfaceDataRequested = true;
+                  
+                    AddSubgridToAddressList(address); // Assign the address into the group to be processed
+                });
+            }
+        
             PerformSubgridRequestList();    // Process the remaining subgrids...
 
             return AcquireComputationResult();

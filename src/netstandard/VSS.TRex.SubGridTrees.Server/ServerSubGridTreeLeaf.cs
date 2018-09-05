@@ -421,8 +421,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Seed the latest value tags for this segment with the latest data from the previous segment
             if (TemporallyPrecedingSegment != null)
             {
-                // TODO: Include with other last pass attributes
-                // Segment.LatestPasses.AssignValuesFromLastPassFlags(TemporallyPrecedingSegment.LatestPasses);
+                 Segment.LatestPasses.AssignValuesFromLastPassFlags(TemporallyPrecedingSegment.LatestPasses);
             }
 
             // Iterate over the values in the child leaf subgrid looking for
@@ -435,8 +434,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     TemporallyPrecedingSegment.LatestPasses.PassDataExistanceMap.BitSet(I, J))
                 {
                     // Seed the latest data for this segment with the latest data from the previous segment
-                    // TODO: Include with other last pass attributes
-                    // Segment.LatestPasses.PassData[I, J] = TemporallyPrecedingSegment.LatestPasses.PassData[I, J];
+                    Segment.LatestPasses[(int)I, (int)J] = TemporallyPrecedingSegment.LatestPasses[(int)I, (int)J];
 
                     UpdatedCell = true;
                 }
@@ -508,8 +506,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
             _GlobalLatestCells.Clear();
             _GlobalLatestCells.Assign(_LatestPasses);
-            //   TODO  _GlobalLatestCells.AssignValuesFromLastPassFlags(_LatestPasses);
-            //   TODO  _GlobalLatestCells.PassDataExistanceMap.Assign(_LatestPasses.PassDataExistanceMap);
 
             Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
         }

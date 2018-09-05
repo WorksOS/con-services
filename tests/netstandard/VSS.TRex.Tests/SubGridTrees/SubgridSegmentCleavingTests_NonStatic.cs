@@ -301,5 +301,25 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.True(totalPassCount1 == segment1.PassesData.SegmentPassCount, $"Total passes for segment 1 {totalPassCount1} is not equal to segmentPassCOunt in that segment {segment1.PassesData.SegmentPassCount}");
             Assert.True(totalPassCount2 == segment2.PassesData.SegmentPassCount, $"Total passes for segment 2 {totalPassCount2} is not equal to segmentPassCOunt in that segment {segment2.PassesData.SegmentPassCount}");
         }
+
+    [Fact]
+    public void Test_SubgridSegment_VerifyComputedAndRecordedSegmentTimeRangeBounds_Success()
+    {
+      // Create a subgrid to hold the segment
+      IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+
+      Assert.True(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Newly created segment fails bounds test");
     }
+
+    [Fact]
+    public void Test_SubgridSegment_VerifyComputedAndRecordedSegmentTimeRangeBounds_Fail()
+    {
+      // Create a subgrid to hold the segment
+      IServerLeafSubGrid subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
+      subGrid.Cells.PassesData[0].SegmentInfo.EndTime = new DateTime(1900, 1, 1);
+
+      Assert.False(subGrid.Cells.PassesData[0].VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Modified invalid segment passes bounds test");
+    }
+
+  }
 }

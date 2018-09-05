@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
       
-      // TODO...
+      // TODO: Configure design and lift build settings
       //var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
       //var liftBuildSettings =
       //  RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
