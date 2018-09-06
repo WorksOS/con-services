@@ -77,7 +77,6 @@ namespace VSS.TRex.SubGrids
 
     // ProductionEventChanges MachineTargetValues = null;
 
-    // bool MachineTargetValuesEventsLocked = false;
     private bool HaveFilteredPass;
     private FilteredPassData CurrentPass;
     private FilteredPassData TempPass;
@@ -503,8 +502,6 @@ namespace VSS.TRex.SubGrids
                 // if (Debug_ExtremeLogSwitchD)
                 //  Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Calling BuildLiftsForCell");
 
-
-
                 if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
                   AssignmentContext, // Place a filtered value into this assignment context
                   CellPassIterator,  // Iterate over the cells using this cell pass iterator
@@ -523,7 +520,6 @@ namespace VSS.TRex.SubGrids
                     {
                       HaveFilteredPass = ( CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
                              Range.InRange(CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature, Filter.AttributeFilter.MaterialTemperatureMin, Filter.AttributeFilter.MaterialTemperatureMax);
-
                     }
                   else
                     HaveFilteredPass = true;
@@ -743,17 +739,13 @@ namespace VSS.TRex.SubGrids
 
         // Create the rotated boundary by 'unrotating' the subgrid world extents into a context
         // where the grid is itself not rotated
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out double _X, out double _Y,
-          AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out double _X, out double _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX,
-          AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX,
-          AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMinY, out _X, out _Y, AreaControlSet.UserOriginX,
-          AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMinY, out _X, out _Y, AreaControlSet.UserOriginX,AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
 
         FirstScanPointEast = Math.Truncate(RotatedSubgridBoundary.MinX / StepX) * StepX + IntraGridOffsetX;
@@ -870,7 +862,7 @@ namespace VSS.TRex.SubGrids
       // liftBuildSettings          : TICLiftBuildSettings;
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask,
-      ClientHeightLeafSubGrid designElevations)
+      IClientHeightLeafSubGrid designElevations)
     {
       ServerRequestResult Result = ServerRequestResult.UnknownError;
 

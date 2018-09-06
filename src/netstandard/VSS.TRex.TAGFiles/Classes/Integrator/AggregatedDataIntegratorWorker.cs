@@ -85,7 +85,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <returns></returns>
         public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks)
         {
-            IProductionEventLists /*EfficientProductionEventChanges*/ SiteModelMachineTargetValues = null;
+            IProductionEventLists SiteModelMachineTargetValues = null;
 
             bool AnyMachineEvents = false;
             bool AnyCellPasses = false;
@@ -282,7 +282,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                             if (SiteModelMachineTargetValues == null)
                             {
-                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists /*EfficientProductionEventChanges*/(SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex /*MachineFromDM.ID*/));
+                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists (SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex /*MachineFromDM.ID*/));
                                 //SiteModelFromDM.MachinesTargetValues.CreateNewMachineTargetValues(MachineFromDM, MachineFromDM.ID);
                             }
 

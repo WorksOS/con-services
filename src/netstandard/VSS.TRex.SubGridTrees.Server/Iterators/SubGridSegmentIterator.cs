@@ -88,13 +88,13 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
                 // TODO There is no caching layer yet. This will function as if ReturnCachedItemsOnly was set to true for now 
                 if (!Result.Dirty && !ReturnCachedItemsOnly && 
-                    ((RetrieveAllPasses && !Result.HasAllPasses) || (RetrieveLatestData && !Result.HasLatestData)))
+                    (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
                   {
                     // This additional check to determine if the required storage classes
                     // are present is necesary to check if an earlier thread through this code has
                     // already allocated them
 
-                    if (!Result.Dirty && ((RetrieveAllPasses && !Result.HasAllPasses) || (RetrieveLatestData && !Result.HasLatestData)))
+                    if (!Result.Dirty && (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
                     {
                         if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
                             (StorageProxy,

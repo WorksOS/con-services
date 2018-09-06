@@ -225,9 +225,8 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
                         if (AcceptSpeculativeReadFailure)
                         {
-                            // Return the otherwise empty subgrid back to the caller and integrate
-                            // it into the cache and lock it ready for use.
-                            // SIGLogMessage.PublishNoODS(Nil, Format('Speculative read failure accepted for subgrid %s. Blank subgrid returned to caller.', [LeafSubGrid.Moniker]), slmcDebug);
+                            // Return the otherwise empty subgrid back to the caller and integrate it into the cache 
+                            Log.LogDebug($"Speculative read failure accepted for subgrid {LeafSubGrid.Moniker()}. Blank subgrid returned to caller.");
                             Result = LeafSubGrid;
                         }
                         else

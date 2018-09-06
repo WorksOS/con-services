@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
@@ -14,16 +13,16 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        private IProductionEventLists /*EfficientProductionEventChanges*/ Source;
-        private IProductionEventLists /*EfficientProductionEventChanges*/ Target;
+        private IProductionEventLists Source;
+        private IProductionEventLists Target;
         private bool IntegratingIntoPersistentDataModel;
 
         public EventIntegrator()
         {
         }
 
-        public EventIntegrator(ProductionEventLists /*EfficientProductionEventChanges*/ Source,
-                               ProductionEventLists /*EfficientProductionEventChanges*/ Target,
+        public EventIntegrator(IProductionEventLists Source,
+                               IProductionEventLists Target,
                                bool IntegratingIntoPersistentDataModel) : this()
         {
             this.Source = Source;
@@ -38,11 +37,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             EventDesignName: TEventDesignName;
             string DesignName;
 
-            if (IntegratingIntoPersistentDataModel)
-                Source.DesignNameIDStateEvents.AcquireExclusiveWriteInterlock;
-
-            try
-            {
                 //  with Source.SiteModel as TICSiteModel do
                 for (int I = 0; I < Source.DesignNameIDStateEvents.Count; I++)
                 {
@@ -60,20 +54,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         return;
                     }
                 }
-            }
-            finally
-            {
-                if IntegratingIntoPersistentDataModel then
-                    Source.DesignNameIDStateEvents.ReleaseExclusiveWriteInterlock;
-            }
 
-            if (IntegratingIntoPersistentDataModel)
-            {
-                Source.MapResets.AcquireExclusiveWriteInterlock;
-            }
-
-            try
-            {
                 // with Source.SiteModel as TICSiteModel do
                 for (int I = 0; I < Source.MapResets.Count; I++)
                 {
@@ -91,14 +72,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         return;
                     }
                 }
-            }
-            finally
-            {
-                if (IntegratingIntoPersistentDataModel)
-                {
-                    Source.MapResets.ReleaseExclusiveWriteInterlock;
-                }
-            }
             */
         }
 
@@ -113,25 +86,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             if (source.Count() > 1)
                 source.Sort();
 
-            if (IntegratingIntoPersistentDataModel)
-            {
-                // TODO revisit when sitemodel locking semantics are defined
-                //Target.AcquireExclusiveWriteInterlock();
-            }
-
-            try
-            {
-                target.CopyEventsFrom(source);
-                target.Collate();
-            }
-            finally
-            {
-                if (IntegratingIntoPersistentDataModel)
-                {
-                    // TODO revisit when sitemodel locking semantics are defined
-                    // Target.ReleaseExclusiveWriteInterlock;
-                }
-            }
+            target.CopyEventsFrom(source);
+            target.Collate();
         }
 
         private void PerformListIntegration(IProductionEvents source,
@@ -140,8 +96,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             IntegrateList(source, target);
         }
 
-        public void IntegrateMachineEvents(IProductionEventLists /*EfficientProductionEventChanges*/ source,
-                                           IProductionEventLists /*EfficientProductionEventChanges*/ target,
+        public void IntegrateMachineEvents(IProductionEventLists source,
+                                           IProductionEventLists target,
                                            bool integratingIntoPersistentDataModel)
         {
             Source = source;

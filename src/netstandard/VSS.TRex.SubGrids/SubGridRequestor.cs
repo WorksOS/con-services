@@ -580,7 +580,7 @@ namespace VSS.TRex.SubGrids
             CellY = subGridAddress.Y << ((SubGridTreeConsts.SubGridTreeLevels - TreeLevel) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
             // if VLPDSvcLocations.Debug_ExtremeLogSwitchB then
-            //    SIGLogMessage.PublishNoODS(Nil, 'About to call RetrieveSubGrid()', slmcDebug);
+            //    Log.LogDebug("About to call RetrieveSubGrid()");
 
             ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
                                                  (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));

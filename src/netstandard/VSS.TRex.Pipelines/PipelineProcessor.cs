@@ -211,7 +211,7 @@ namespace VSS.TRex.Pipelines
 
       if (!SpatialExtents.IsValidPlanExtent)
       {
-        Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // TODO: Or there was no data in the model
+        Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // Or there was no data in the model
         return false;
       }
 

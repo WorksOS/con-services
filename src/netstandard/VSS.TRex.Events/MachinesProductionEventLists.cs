@@ -26,7 +26,7 @@ namespace VSS.TRex.Events
     /// </summary>
     //Removed as internal machine ID are not simple indexes into the site model machines list
     //private Dictionary<short, ProductionEventLists> MachineIDMap = new Dictionary<short, ProductionEventLists>();
-    private IProductionEventLists[] MachineIDMap = new IProductionEventLists[0];
+    private IProductionEventLists[] MachineIDMap;
     private object[] MachinelockInterlocks = new object[0];
 
     /// <summary>
@@ -42,15 +42,6 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Default (guid) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
-    /// events lists for that machine.
-    /// </summary>
-    /// <param name="MachineID"></param>
-    /// <returns></returns>
-    //public ProductionEventLists this[Guid MachineID] => MachineIDMap.TryGetValue(MachineID, out ProductionEventLists result) ? result : null;
-
-
-    /// <summary>
     /// </summary>
     /// <param name="machineID"></param>
     /// <returns></returns>
@@ -62,7 +53,7 @@ namespace VSS.TRex.Events
       if (MachineIDMap[machineID] == null)
       {
         // The machine events need to be loaded...
-        // Lock the list using a proxy object to prevent concurren requestors loading events simultaneously
+        // Lock the list using a proxy object to prevent concurrent requestors loading events simultaneously
         lock (MachinelockInterlocks[machineID])
         {
           // If the map is still null then this requestor 'won the lock'
@@ -90,7 +81,7 @@ namespace VSS.TRex.Events
     /// Default (short) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
     /// events lists for that machine.
     /// </summary>
-    /// <param name="MachineID"></param>
+    /// <param name="machineID"></param>
     /// <returns></returns>
     public IProductionEventLists this[short machineID] => machineID >= MachineIDMap.Length ? null : GetMachineEventLists(machineID);
 
