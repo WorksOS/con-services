@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
@@ -13,13 +14,13 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
+using System.Threading.Tasks;
 
 namespace VSS.TRex.Server.MutableData
 {
   class Program
   {
-
-    static public IConfiguration Configuration { get; set; }
+    public static IConfiguration Configuration { get; set; }
 
     private static void DependencyInjection()
     {
@@ -75,12 +76,12 @@ namespace VSS.TRex.Server.MutableData
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       // Load settings for Mutabledata
 
       Configuration = new ConfigurationBuilder()
-       //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
+          //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
           .AddEnvironmentVariables() // can also come from environment variables which will override json file
           .Build();
@@ -100,8 +101,14 @@ namespace VSS.TRex.Server.MutableData
 
 
       var server = new TagProcComputeServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      {
+        Console.WriteLine("Exiting");
+        cancelTokenSource.Cancel();
+      };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }

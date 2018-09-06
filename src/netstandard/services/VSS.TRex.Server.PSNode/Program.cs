@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -79,15 +81,21 @@ namespace VSS.TRex.Server.PSNode
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static void Main(string[] args)
-    { 
+    static async Task<int> Main(string[] args)
+    {
       DependencyInjection();
 
       EnsureAssemblyDependenciesAreLoaded();
 
       var server = new SubGridProcessingServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      {
+        Console.WriteLine("Exiting");
+        cancelTokenSource.Cancel();
+      };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }

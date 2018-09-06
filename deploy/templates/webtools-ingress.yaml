@@ -1,0 +1,21 @@
+{{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
+{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
+  labels:
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  annotations:
+  {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  rules:
+    - host: trex-webtools.{{ $fdqn }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ $serviceName }}-webtools 
+              servicePort: 80
+

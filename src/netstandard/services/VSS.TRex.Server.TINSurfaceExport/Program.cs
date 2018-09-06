@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -48,21 +50,21 @@ namespace VSS.TRex.Server.TINSurfaceExport
 
     private static void DependencyInjection()
     {
-        DIBuilder.New()
-        .AddLogging()
-        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
-        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
-        .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
-        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
-        .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
-        .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
-        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
-        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
+      DIBuilder.New()
+      .AddLogging()
+      .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+      .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+      .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
+      .Build()
+      .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+      .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+      .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+      .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
+      .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
+      .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
+      .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
 
-        .Complete();
+      .Complete();
     }
 
     private static void EnsureAssemblyDependenciesAreLoaded(ILogger Log)
@@ -106,7 +108,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
           Log.LogError($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       DependencyInjection();
 
@@ -117,9 +119,16 @@ namespace VSS.TRex.Server.TINSurfaceExport
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");
 
+
       var server = new TINSurfaceExportRequestServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      {
+        Console.WriteLine("Exiting");
+        cancelTokenSource.Cancel();
+      };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }
