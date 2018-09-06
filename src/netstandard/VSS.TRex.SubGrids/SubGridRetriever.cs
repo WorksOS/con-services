@@ -279,7 +279,6 @@ namespace VSS.TRex.SubGrids
     {
       int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
-      bool FilteredValueIsFromLatestCellPass;
 
       // bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
 
@@ -439,7 +438,7 @@ namespace VSS.TRex.SubGrids
                   continue;
                 }
 
-                FilteredValueIsFromLatestCellPass = false;
+                bool FilteredValueIsFromLatestCellPass = false;
 
                 if (ClientGrid.WantsLiftProcessingResults())
                 {
@@ -871,7 +870,6 @@ namespace VSS.TRex.SubGrids
       // liftBuildSettings          : TICLiftBuildSettings;
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask,
-      // subgridLockToken          : Integer;
       ClientHeightLeafSubGrid designElevations)
     {
       ServerRequestResult Result = ServerRequestResult.UnknownError;
@@ -918,8 +916,6 @@ namespace VSS.TRex.SubGrids
 
       try
       {
-        try
-        {
           // Ensure passtype filter is set correctly
           if (Filter.AttributeFilter.HasPassTypeFilter)
             if ((Filter.AttributeFilter.PassTypeSet & (PassTypeSet.Front | PassTypeSet.Rear)) == PassTypeSet.Front)
@@ -944,14 +940,7 @@ namespace VSS.TRex.SubGrids
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
           // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
-          _SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0, false, false);
-
-          /* TODO ???: TRex locking not finalised
-          if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)
-          {
-              SIGLogMessage.PublishNoODS(Nil, Format('Returned, locked, subgrid has incorrect lock token (%d vs expected %d)', [_SubGrid.LockToken, ASubGridLockToken]), slmcAssert); {SKIP}
-              return Result;
-          } */
+          _SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, false, false);
 
           //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
@@ -1047,15 +1036,6 @@ namespace VSS.TRex.SubGrids
         }
 
           Result = ServerRequestResult.NoError;
-        }
-        finally
-        {
-          /* TODO... TRex locking not finalised
-          if (_SubGrid != null)
-              _SubGrid.ReleaseLock(ASubGridLockToken);
-          */
-          // Log.LogDebug("Completed RetrieveSubGrid operation");
-        }
       }
       catch (Exception e)
       {

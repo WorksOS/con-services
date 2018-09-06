@@ -40,14 +40,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// </summary>
     ISubGrid Parent { get; set; }
 
-    /// <summary>
-    /// Locked denotes if an actore has placed an exclusive lock on the subgrid
-    /// </summary>
-    bool Locked { get; set; }
-
-    bool AcquireLock(int LockToken);
-    void ReleaseLock(int LockToken);
-
     uint AxialCellCoverageByThisSubgrid();
     uint AxialCellCoverageByChildSubgrid();
     bool ContainsOTGCell(uint CellX, uint CellY);

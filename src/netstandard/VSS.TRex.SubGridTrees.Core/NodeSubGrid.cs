@@ -67,24 +67,20 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// DeleteSubgrod removes the subgrid present at the cell coordinates given
+        /// DeleteSubgrid removes the subgrid present at the cell coordinates given
         /// by SubGridX and SubGridY within this subgrid. The removed subgrid is freed.
         /// This operation is by definition only relevant to node subgrids. Leaf
         /// subgrids do not contain child subgrids
         /// </summary>
         /// <param name="SubGridX"></param>
         /// <param name="SubGridY"></param>
-        /// <param name="DeleteIfLocked"></param>
-        public void DeleteSubgrid(byte SubGridX, byte SubGridY, bool DeleteIfLocked)
+        public void DeleteSubgrid(byte SubGridX, byte SubGridY)
         {
             ISubGrid Subgrid = GetSubGrid(SubGridX, SubGridY);
 
             if (Subgrid != null)
             {
                 SetSubGrid(SubGridX, SubGridY, null);
-
-                //      if DeleteIfLocked and Subgrid.Locked then
-                //        Subgrid.ReleaseLock(Subgrid.LockToken);
             }
         }
 

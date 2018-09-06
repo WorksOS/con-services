@@ -24,9 +24,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         /// <param name="subGrid"></param>
         public static void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid)
         {
-            // TODO Need to determine locking semantics governing this
-            // Debug.Assert(subGrid.Locked, "May not calculate latest pass information if the subgrid is not locked");
-
             SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
             {
                 IterationDirection = IterationDirection.Forwards,

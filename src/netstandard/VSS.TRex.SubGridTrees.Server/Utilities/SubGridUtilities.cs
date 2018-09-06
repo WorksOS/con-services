@@ -32,42 +32,31 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             //         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this subgrid");
         }
 
-        /// <summary>
-        /// Locates the subgrid in the subgrid tree that contains the cell identified by CellX and CellY in the global 
-        /// sub grid tree cell address space. The tree level for the subgrid returned is specified in Level.
-        /// </summary>
-        /// <param name="ForSubGridTree"></param>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <param name="Level"></param>
-        /// <param name="LockToken"></param>
-        /// <param name="LookInCacheOnly"></param>
-        /// <param name="AcceptSpeculativeReadFailure"></param>
-        /// <returns></returns>
-        public static ISubGrid LocateSubGridContaining(IStorageProxy storageProxy,
+      /// <summary>
+      /// Locates the subgrid in the subgrid tree that contains the cell identified by CellX and CellY in the global 
+      /// sub grid tree cell address space. The tree level for the subgrid returned is specified in Level.
+      /// </summary>
+      /// <param name="storageProxy"></param>
+      /// <param name="ForSubGridTree"></param>
+      /// <param name="CellX"></param>
+      /// <param name="CellY"></param>
+      /// <param name="Level"></param>
+      /// <param name="LookInCacheOnly"></param>
+      /// <param name="AcceptSpeculativeReadFailure"></param>
+      /// <returns></returns>
+      public static ISubGrid LocateSubGridContaining(IStorageProxy storageProxy,
                                  IServerSubGridTree ForSubGridTree,
                                  //const GridDataCache : TICDataStoreCache;
                                  uint CellX,
                                  uint CellY,
                                  byte Level,
-                                 int LockToken,
                                  bool LookInCacheOnly,
                                  bool AcceptSpeculativeReadFailure)
         {
             IServerLeafSubGrid LeafSubGrid = null;
-            // bool SubGridLockAcquired = false;
-            // bool IntentionLockCounterWound = false;
             bool CreatedANewSubgrid = false;
 
             ISubGrid Result = null;
-
-            /* TODO Locking semantics not defined for Ignite
-            if (LockToken == -1)
-            {
-                SIGLogMessage.Publish(Nil, 'LocateSubGridContaining not given valid lock token. By definition, the requestor of a subgrid must lock that subgrid', slmcError);
-                return null;
-            }
-            */
 
             try
             {
@@ -75,62 +64,35 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
                 // Use a subgrid tree specific interlock to permit multiple threads accessing
                 // different subgrid trees to operate concurrently
+                // TODO: Look at whether tree level locks may be dispensed with
                 ISubGrid SubGrid;
-                lock (ForSubGridTree) //  ForSubGridTree.AcquireExternalAccessInterlock;
+                lock (ForSubGridTree) 
                 {
-                    try
-                    {
-                        // First check to see if the requested cell is present in a leaf subgrid
-                        SubGrid = ForSubGridTree.LocateClosestSubGridContaining(CellX, CellY, Level);
+                    // First check to see if the requested cell is present in a leaf subgrid
+                    SubGrid = ForSubGridTree.LocateClosestSubGridContaining(CellX, CellY, Level);
 
-                        if (SubGrid == null) // Something bad happened
+                    if (SubGrid == null) // Something bad happened
+                    {
+                        Log.LogWarning($"Failed to locate subgrid at {CellX}:{CellY}, level {Level}, data model ID:{ForSubGridTree.ID}");
+                        return null;
+                    }
+
+                    if (!SubGrid.IsLeafSubGrid() && !LookInCacheOnly && Level == ForSubGridTree.NumLevels)
+                    {
+                        // Create the leaf subgrid that will be used to read in the subgrid from the disk.
+                        // In the case where the subgrid isn't present on the disk this reference will
+                        // be destroyed
+                        SubGrid = ForSubGridTree.ConstructPathToCell(CellX, CellY, Types.SubGridPathConstructionType.CreateLeaf);
+
+                        if (SubGrid != null)
                         {
-                            Log.LogWarning($"Failed to locate subgrid at {CellX}:{CellY}, level {Level}, data model ID:{ForSubGridTree.ID}");
+                            CreatedANewSubgrid = true;
+                        }
+                        else
+                        {
+                            Log.LogError($"Failed to create leaf subgrid in LocateSubGridContaining for subgrid at {CellX}x{CellY}");
                             return null;
                         }
-
-                        if (!SubGrid.IsLeafSubGrid() && !LookInCacheOnly && Level == ForSubGridTree.NumLevels)
-                        {
-                            // Create the leaf subgrid that will be used to read in the subgrid from the disk.
-                            // In the case where the subgrid isn't present on the disk this reference will
-                            // be destroyed
-                            SubGrid = ForSubGridTree.ConstructPathToCell(CellX, CellY, Types.SubGridPathConstructionType.CreateLeaf);
-
-                            if (SubGrid != null)
-                            {
-                                CreatedANewSubgrid = true;
-
-                                /* TODO ... Locking semantics not defined for Ignite
-                                SubGridLockAcquired = SubGrid.AcquireLock(LockToken);
-                                if (!SubGridLockAcquired)
-                                {
-                                    SIGLogMessage.PublishNoODS(Nil, 'Failed to acquire subgrid lock in LocateSubGridContaining for newly created subgrid (Moniker: %2)', [SubGrid.Moniker], slmcError);
-                                    return null;
-                                }
-                                */
-                            }
-                            else
-                            {
-                                //SIGLogMessage.PublishNoODS(Nil, 'Failed to create leaf subgrid in LocateSubGridContaining (Moniker: %2)', [SubGrid.Moniker], slmcError);
-                                Log.LogError($"Failed to create leaf subgrid in LocateSubGridContaining (Moniker: {SubGrid.Moniker()})");
-
-                                return null;
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        /* TODO ... Locking semantics not defined for Ingite
-                        if (SubGrid != null && !SubGridLockAcquired && SubGrid.IsLeafSubGrid())
-                        {
-                            // Don't lock the subgrid until the Subgridtree ExternalAccessInterlock is released
-                            // as this will block all threads rather than just the thread that wants
-                            // to lock the subgrid.
-                            SubGrid.WindIntentionLock(); // Ensure that the subgrid will not be removed in the meantime before locking it
-
-                            IntentionLockCounterWound = true;
-                        }
-                        */
                     }
                 }
 
@@ -150,38 +112,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     Log.LogError($"Subgrid request result for {CellX}:{CellY} is not a leaf subgrid, it is a {SubGrid.GetType().Name}.");
                     return null;
                 }
-
-                /* TODO... Locking semantics not defined yet when using Ignite
-                if (LeafSubGrid != null)
-                {
-                    try
-                    {
-                        if (!SubGridLockAcquired)
-                        {
-                            SubGridLockAcquired = LeafSubGrid.AcquireLock(LockToken);
-                        }
-
-                        if (!SubGridLockAcquired)
-                        {
-                            SIGLogMessage.Publish(Nil, 'Failed to acquire subgrid lock in TICServer.LocateSubGridContaining', slmcError);
-                            return null;
-                        }
-                    }
-                    finally
-                    {
-                        if (IntentionLockCounterWound)
-                        {
-                            LeafSubGrid.UnwindIntentionLock();
-                        }
-                    }
-                }
-
-                if (!LeafSubGrid.Locked)
-                {
-                    SIGLogMessage.Publish(Nil, 'LocateSubGridContaining: SubGrid not locked after primary index lookup and/or subgrid creation', slmcAssert);
-                    return null;
-                }
-                */
 
                 if (!CreatedANewSubgrid)
                 {
@@ -261,13 +191,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     {
                         // We've loaded it - get the reference to the new subgrid and return it
                         Result = LeafSubGrid;
-
-                        /* TODO ... Locking semantics not defined for Ignite
-                        if (!Result.Locked)
-                        {
-                            SIGLogMessage.PublishNoODS(Nil, 'LeafSubGrid not locked after loading by LoadLeafSubGrid', slmcAssert);
-                        }
-                        */
                     }
                     else
                     {
@@ -335,41 +258,27 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             }
             finally
             {
-                /* TODO ... locking and caching semantics
-                if (Result != null && Result.IsLeafSubgrid)
+                if (Result != null && Result.IsLeafSubGrid())
                 {
-                    // Add the subgrid we just read to the cache manager, even if the read failed
-                    if (!Result.PresentInCache)
-                    {
-                        if (!GridDataCache.AddSubGridToCache(Result as TSubGridTreeSubGridBase))
-                        {
-                            SIGLogMessage.PublishNoODS(Nil, Format('Failed to add subgrid %s to the cache', [Result.Moniker]), slmcAssert);
-                        }
-                    }
-
-                    if (!SubGridLockAcquired)
-                    {
-                        SIGLogMessage.PublishNoODS(Nil, 'Failed to acquire subgrid lock in TICServer.LocateSubGridContaining', slmcError);
-                    }
-
-                    if (VLPDSvcLocations.VLPDPSNode_TouchSubgridAndSegmentsInCacheDuringAccessOperations)
-                    {
-                        GridDataCache.SubGridTouched(Result as TSubGridTreeSubGridBase);
-                    }
-                }
-                else
-                {
-                    // Ensure that no ghost locks are created if we failed to read data for this subgrid
-                    // and are passing back a null result to indicate the failure
-                    if (Result == null && LeafSubGrid != null && LeafSubGrid.Locked)
-                    {
-                        LeafSubGrid.ReleaseLock(LockToken);
-                    }
-                }
-                */
+                  /* TODO ... caching semantics
+                      // Add the subgrid we just read to the cache manager, even if the read failed
+                      if (!Result.PresentInCache)
+                      {
+                          if (!GridDataCache.AddSubGridToCache(Result as TSubGridTreeSubGridBase))
+                          {
+                              SIGLogMessage.PublishNoODS(Nil, Format('Failed to add subgrid %s to the cache', [Result.Moniker]), slmcAssert);
+                          }
+                      }
+        
+                      if (VLPDSvcLocations.VLPDPSNode_TouchSubgridAndSegmentsInCacheDuringAccessOperations)
+                      {
+                          GridDataCache.SubGridTouched(Result as TSubGridTreeSubGridBase);
+                      }
+                      */
+                  }
             }
 
-            return Result;
+        return Result;
         }
     }
 }

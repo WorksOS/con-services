@@ -512,16 +512,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy)
         {
-            //            SubGridCellPassesDataSegment Segment;
-
-            /* Locking for TRex not yet defined
-            if (!Locked)
-            {
-                Log.LogCritical($"May not calculate latest pass information if the subgrid {Moniker()} is not locked");
-                return;
-            }
-            */
-
             if (!Dirty)
             {
                 Log.LogCritical($"Subgrid {Moniker()} not marked as dirty when computing lastest pass information");
@@ -568,7 +558,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // has been read from the store
 
             if (SeedSegmentInfo != null && SeedSegmentInfo.ExistsInPersistentStore &&
-               ((SeedSegmentInfo.Segment == null) || !SeedSegmentInfo.Segment.HasLatestData))
+               (SeedSegmentInfo.Segment == null || !SeedSegmentInfo.Segment.HasLatestData))
             {
                 if (SeedSegmentInfo.Segment == null)
                 {

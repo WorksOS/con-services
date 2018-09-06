@@ -172,24 +172,16 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         private void IntegrateIntoLiveGrid(SubGridSegmentIterator SegmentIterator)
         {
-            TargetSubGrid = LocateOrCreateAndLockSubgrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY, 0
-                /* TODO:... FAggregatedDataIntegratorLockToken */);
+            TargetSubGrid = LocateOrCreateAndLockSubgrid(Target, SourceSubGrid.OriginX, SourceSubGrid.OriginY);
             if (TargetSubGrid == null)
             {
                 Log.LogError("Failed to locate subgrid in IntegrateIntoLiveGrid");
                 return;
             }
 
-            try
+            if (!IntegrateIntoLiveDatabase(SegmentIterator))
             {
-                if (!IntegrateIntoLiveDatabase(SegmentIterator))
-                {
-                    Log.LogError("Integration into live database failed");
-                }
-            }
-            finally
-            {
-                TargetSubGrid.ReleaseLock(0 /* TODO ... FAggregatedDataIntegratorLockToken */);
+                Log.LogError("Integration into live database failed");
             }
         }
 
@@ -282,8 +274,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
 
         public IServerLeafSubGrid LocateOrCreateAndLockSubgrid(IServerSubGridTree Grid,
-                                                               uint CellX, uint CellY,
-                                                               int LockToken)
+                                                               uint CellX, uint CellY)
         {
             IServerLeafSubGrid Result = SubGridUtilities.LocateSubGridContaining(
                                     StorageProxy,
@@ -291,19 +282,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                     // DataStoreInstance.GridDataCache,
                                     CellX, CellY,
                                     Grid.NumLevels,
-                                    LockToken, false, true) as IServerLeafSubGrid;
+                                    false, true) as IServerLeafSubGrid;
 
             // Ensure the cells and segment directory are initialised if this is a new subgrid
             if (Result != null)
             {
-                /* TODO ... Locking semantics not defined for Ignite
-                if (LockToken != -1 && !Result.Locked)
-                {
-                    SIGLogMessage.PublishNoODS(Self, Format('LocateSubGridContaining returned a subgrid %s that was not locked as requested', [Result.Moniker]), slmcAssert);
-                    return Result;
-                }
-                */
-
                 // By definition, any new subgrid we create here is dirty, even if we
                 // ultimately do not add any cell passes to it. This is necessary to
                 // enourage even otherwise empty subgrids to be persisted to disk if
@@ -331,8 +314,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 }
 
                 // Removed the cache memory size out of date check in favour of the cache manager thread performing its recalculations
-                //      if Result.CachedMemorySizeOutOfDate then
-                //        DataStoreInstance.GridDataCache.ApplyCacheSizeDelta(Result, -(Result.CachedInMemorySize - Result.InMemorySize));
+                // if Result.CachedMemorySizeOutOfDate then
+                //   DataStoreInstance.GridDataCache.ApplyCacheSizeDelta(Result, -(Result.CachedInMemorySize - Result.InMemorySize));
             }
             else
             {

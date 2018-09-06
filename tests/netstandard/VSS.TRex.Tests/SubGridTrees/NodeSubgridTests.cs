@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // Iterate over all subgrids deleting them one at a time
             for (int i = 0; i < SubGridTreeConsts.CellsPerSubgrid; i++)
             {
-                parentSubgrid.DeleteSubgrid((byte)(i / SubGridTreeConsts.SubGridTreeDimension), (byte)(i % SubGridTreeConsts.SubGridTreeDimension), false);
+                parentSubgrid.DeleteSubgrid((byte)(i / SubGridTreeConsts.SubGridTreeDimension), (byte)(i % SubGridTreeConsts.SubGridTreeDimension));
             }
 
             Assert.Equal(0, parentSubgrid.CountChildren());

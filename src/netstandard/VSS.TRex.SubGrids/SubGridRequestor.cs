@@ -298,7 +298,6 @@ namespace VSS.TRex.SubGrids
                                                    // LiftBuildSettings,
                                                    ClientGrid,
                                                    CellOverrideMask,
-                                                   // ASubgridLockToken,
                                                    DesignElevations);
 
                 /* TODO: General subgrid result caching not yet supported
@@ -559,7 +558,6 @@ namespace VSS.TRex.SubGrids
         public ServerRequestResult RequestSubGridInternal(// SubgridCache : TDataModelContextSubgridResultCache;
                                                           SubGridCellAddress subGridAddress,
                                                           // LiftBuildSettings: TICLiftBuildSettings;
-                                                          // ASubgridLockToken : Integer;
                                                           bool prodDataRequested,
                                                           bool surveyedSurfaceDataRequested,
                                                           IClientLeafSubGrid clientGrid
