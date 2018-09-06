@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
   </ItemGroup>
 
   <ItemGroup>

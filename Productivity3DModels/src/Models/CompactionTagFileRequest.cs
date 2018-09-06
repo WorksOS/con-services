@@ -39,7 +39,9 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public override void Validate()
     {
-      base.Validate();
+      // The below validation is not required for this request 
+      // as direct submission tag files include neither project ID nor project UID.
+      //base.Validate();
 
       if (Data == null || !Data.Any())
       {
