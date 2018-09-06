@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.Common.Proxies
         var parts = point.Trim().Split(' ');
         var lng = double.Parse(parts[0]);
         var lat = double.Parse(parts[1]);
-        latlngs.Add(WGSPoint.CreatePoint(lat * DEGREES_TO_RADIANS, lng * DEGREES_TO_RADIANS));
+        latlngs.Add(new WGSPoint(lat * DEGREES_TO_RADIANS, lng * DEGREES_TO_RADIANS));
       }
       return latlngs;
     }
@@ -95,8 +95,8 @@ namespace VSS.Productivity3D.Common.Proxies
 
         for (int i = 0; i < palettes.Count; i++)
         {
-          result.Transitions[i].Colour = palettes[i].color;
-          result.Transitions[i].Value = palettes[i].value;
+          result.Transitions[i].Colour = palettes[i].Color;
+          result.Transitions[i].Value = palettes[i].Value;
         }
       }
 
@@ -161,39 +161,42 @@ namespace VSS.Productivity3D.Common.Proxies
           List<int> colors = ElevationPalette();
 
           List<ColorPalette> paletteList = new List<ColorPalette>();
-          paletteList.Add(ColorPalette.CreateColorPalette(cs.elevationBelowColor, -1));
+          paletteList.Add(new ColorPalette(cs.elevationBelowColor, -1));
           for (int i = 0; i < colors.Count; i++)
           {
-            paletteList.Add(ColorPalette.CreateColorPalette((uint)colors[i], cs.elevationMinimum.value + i * step));
+            paletteList.Add(new ColorPalette((uint)colors[i], cs.elevationMinimum.value + i * step));
           }
-          paletteList.Add(ColorPalette.CreateColorPalette(cs.elevationAboveColor, -1));
+          paletteList.Add(new ColorPalette(cs.elevationAboveColor, -1));
 
           palettes = paletteList;
           break;
 
         case DisplayMode.CCV:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.cmvMinimum.color, cs.cmvMinimum.value ),
-                                                        ColorPalette.CreateColorPalette(cs.cmvTarget.color, 0.9 * cs.cmvTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.cmvTarget.color, 1.1 * cs.cmvTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.cmvMaximum.color, cs.cmvMaximum.value ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.cmvMinimum.color, cs.cmvMinimum.value ),
+            new ColorPalette(cs.cmvTarget.color, 0.9 * cs.cmvTarget.value ),
+            new ColorPalette(cs.cmvTarget.color, 1.1 * cs.cmvTarget.value ),
+            new ColorPalette(cs.cmvMaximum.color, cs.cmvMaximum.value ) };
           break;
 
         case DisplayMode.CCVPercentChange:
 
         case DisplayMode.CCVPercent:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.cmvPercentMinimum.color, cs.cmvPercentMinimum.value ),
-                                                        ColorPalette.CreateColorPalette(cs.cmvPercentTarget.color, 0.9 * cs.cmvPercentTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.cmvPercentTarget.color, 1.1 * cs.cmvPercentTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.cmvPercentMaximum.color, cs.cmvPercentMaximum.value ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.cmvPercentMinimum.color, cs.cmvPercentMinimum.value ),
+            new ColorPalette(cs.cmvPercentTarget.color, 0.9 * cs.cmvPercentTarget.value ),
+            new ColorPalette(cs.cmvPercentTarget.color, 1.1 * cs.cmvPercentTarget.value ),
+            new ColorPalette(cs.cmvPercentMaximum.color, cs.cmvPercentMaximum.value ) };
           break;
 
         case DisplayMode.CMVChange:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(0, 0  ),
-                                                        ColorPalette.CreateColorPalette(65280, 10),
-                                                        ColorPalette.CreateColorPalette(16776960, 20 ),
-                                                        ColorPalette.CreateColorPalette(16744192, 40 ),
-                                                        ColorPalette.CreateColorPalette(16711935, 80 ),
-                                                        ColorPalette.CreateColorPalette(16711680, double.MaxValue )
+          palettes = new List<ColorPalette> {
+            new ColorPalette(0, 0  ),
+            new ColorPalette(65280, 10),
+            new ColorPalette(16776960, 20 ),
+            new ColorPalette(16744192, 40 ),
+            new ColorPalette(16711935, 80 ),
+            new ColorPalette(16711680, double.MaxValue )
                     };
           break;
 
@@ -204,13 +207,14 @@ namespace VSS.Productivity3D.Common.Proxies
           palettes = new List<ColorPalette>();
 
           for (int i = cs.passCountDetailColors.Count - 1; i >= 0; i--)
-            palettes.Insert(cs.passCountDetailColors.Count - i - 1, ColorPalette.CreateColorPalette(cs.passCountDetailColors[i].color, cs.passCountDetailColors[i].value));
+            palettes.Insert(cs.passCountDetailColors.Count - i - 1, new ColorPalette(cs.passCountDetailColors[i].color, cs.passCountDetailColors[i].value));
           break;
 
         case DisplayMode.PassCountSummary:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.passCountMinimum.color, cs.passCountMinimum.value ),
-                                                        ColorPalette.CreateColorPalette(cs.passCountTarget .color, cs.passCountTarget .value ),
-                                                        ColorPalette.CreateColorPalette(cs.passCountMaximum.color, cs.passCountMaximum.value ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.passCountMinimum.color, cs.passCountMinimum.value ),
+            new ColorPalette(cs.passCountTarget .color, cs.passCountTarget .value ),
+            new ColorPalette(cs.passCountMaximum.color, cs.passCountMaximum.value ) };
           break;
 
         case DisplayMode.RMV:
@@ -224,7 +228,7 @@ namespace VSS.Productivity3D.Common.Proxies
           // TODO This needs to be completed to define the sets of cut/fill shells defined in the settings.
           palettes = new List<ColorPalette>();
           for (int i = 0; i < cs.cutFillColors.Count; i++)
-            palettes.Add(ColorPalette.CreateColorPalette(cs.cutFillColors[i].color, cs.cutFillColors[i].value));
+            palettes.Add(new ColorPalette(cs.cutFillColors[i].color, cs.cutFillColors[i].value));
           break;
 
         case DisplayMode.Moisture:
@@ -232,9 +236,10 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.TemperatureSummary:
           // ajr14976
 
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.temperatureMinimumColor, 0 ),
-                                                        ColorPalette.CreateColorPalette(cs.temperatureTargetColor, 1 ),
-                                                        ColorPalette.CreateColorPalette(cs.temperatureMaximumColor, 2 ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.temperatureMinimumColor, 0 ),
+            new ColorPalette(cs.temperatureTargetColor, 1 ),
+            new ColorPalette(cs.temperatureMaximumColor, 2 ) };
 
           break;
         case DisplayMode.GPSMode:
@@ -243,64 +248,64 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.CCVPercentSummary:
           // Hard code the summary Colors into a transitions palette for now to push it through the current pallete transfer machanism in 
           // the tile requests. The tile processor will unpack it into an appropriate structure on the Raptor side.
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.ccvSummaryCompleteLayerColor, 0 ),
-                                                        ColorPalette.CreateColorPalette(cs.ccvSummaryWorkInProgressLayerColor, 1 ),
-                                                        ColorPalette.CreateColorPalette(cs.ccvSummaryUndercompactedLayerColor, 2 ),
-                                                        ColorPalette.CreateColorPalette(cs.ccvSummaryOvercompactedLayerColor, 3 ),
-                                                        ColorPalette.CreateColorPalette(cs.ccvSummaryTooThickLayerColor, 4 ),
-                                                        ColorPalette.CreateColorPalette(cs.ccvSummaryApprovedLayerColor, 5 )};
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.ccvSummaryCompleteLayerColor, 0 ),
+            new ColorPalette(cs.ccvSummaryWorkInProgressLayerColor, 1 ),
+            new ColorPalette(cs.ccvSummaryUndercompactedLayerColor, 2 ),
+            new ColorPalette(cs.ccvSummaryOvercompactedLayerColor, 3 ),
+            new ColorPalette(cs.ccvSummaryTooThickLayerColor, 4 ),
+            new ColorPalette(cs.ccvSummaryApprovedLayerColor, 5 )};
           break;
         case DisplayMode.CompactionCoverage:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.coverageColor, 0 ),
-                                                        ColorPalette.CreateColorPalette(cs.surveyedSurfaceColor, 1 ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.coverageColor, 0 ),
+            new ColorPalette(cs.surveyedSurfaceColor, 1 ) };
           break;
         case DisplayMode.TargetThicknessSummary:
         case DisplayMode.VolumeCoverage:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.volumeSummaryCoverageColor, 0 ),
-                                                        ColorPalette.CreateColorPalette(cs.volumeSummaryVolumeColor, 1 ),
-                                                        ColorPalette.CreateColorPalette(cs.volumeSummaryNoChangeColor, 2 ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.volumeSummaryCoverageColor, 0 ),
+            new ColorPalette(cs.volumeSummaryVolumeColor, 1 ),
+            new ColorPalette(cs.volumeSummaryNoChangeColor, 2 ) };
           break;
-
-
-
         case DisplayMode.MDP:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.mdpMinimum.color, cs.mdpMinimum.value ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpTarget.color, 0.9 * cs.mdpTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpTarget.color, 1.1 * cs.mdpTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpMaximum.color, cs.mdpMaximum.value ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.mdpMinimum.color, cs.mdpMinimum.value ),
+            new ColorPalette(cs.mdpTarget.color, 0.9 * cs.mdpTarget.value ),
+            new ColorPalette(cs.mdpTarget.color, 1.1 * cs.mdpTarget.value ),
+            new ColorPalette(cs.mdpMaximum.color, cs.mdpMaximum.value ) };
           break;
-
         case DisplayMode.MDPPercent:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.mdpPercentMinimum.color, cs.mdpPercentMinimum.value ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpPercentTarget.color, 0.9 * cs.mdpPercentTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpPercentTarget.color, 1.1 * cs.mdpPercentTarget.value ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpPercentMaximum.color, cs.mdpPercentMaximum.value ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.mdpPercentMinimum.color, cs.mdpPercentMinimum.value ),
+            new ColorPalette(cs.mdpPercentTarget.color, 0.9 * cs.mdpPercentTarget.value ),
+            new ColorPalette(cs.mdpPercentTarget.color, 1.1 * cs.mdpPercentTarget.value ),
+            new ColorPalette(cs.mdpPercentMaximum.color, cs.mdpPercentMaximum.value ) };
           break;
-
         case DisplayMode.MDPSummary:
         case DisplayMode.MDPPercentSummary:
           // Hard code the summary Colors into a transitions palette for now to push it through the current pallete transfer machanism in 
           // the tile requests. The tile processor will unpack it into an appropriate structure on the Raptor side.
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.mdpSummaryCompleteLayerColor, 0 ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpSummaryWorkInProgressLayerColor, 1 ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpSummaryUndercompactedLayerColor, 2 ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpSummaryOvercompactedLayerColor, 3 ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpSummaryTooThickLayerColor, 4 ),
-                                                        ColorPalette.CreateColorPalette(cs.mdpSummaryApprovedLayerColor, 5 )};
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.mdpSummaryCompleteLayerColor, 0 ),
+            new ColorPalette(cs.mdpSummaryWorkInProgressLayerColor, 1 ),
+            new ColorPalette(cs.mdpSummaryUndercompactedLayerColor, 2 ),
+            new ColorPalette(cs.mdpSummaryOvercompactedLayerColor, 3 ),
+            new ColorPalette(cs.mdpSummaryTooThickLayerColor, 4 ),
+            new ColorPalette(cs.mdpSummaryApprovedLayerColor, 5 )};
           break;
         case DisplayMode.MachineSpeed:
           palettes = new List<ColorPalette>();
 
           for (int i = cs.machineSpeedColors.Count - 1; i >= 0; i--)
-            palettes.Insert(cs.machineSpeedColors.Count - i - 1, ColorPalette.CreateColorPalette(cs.machineSpeedColors[i].color, cs.machineSpeedColors[i].value));
+            palettes.Insert(cs.machineSpeedColors.Count - i - 1, new ColorPalette(cs.machineSpeedColors[i].color, cs.machineSpeedColors[i].value));
           break;
         case DisplayMode.TargetSpeedSummary:
-          palettes = new List<ColorPalette> { ColorPalette.CreateColorPalette(cs.machineSpeedMinimumColor, 0 ),
-                                                        ColorPalette.CreateColorPalette(cs.machineSpeedTargetColor, 1 ),
-                                                        ColorPalette.CreateColorPalette(cs.machineSpeedMaximumColor, 2 ) };
+          palettes = new List<ColorPalette> {
+            new ColorPalette(cs.machineSpeedMinimumColor, 0 ),
+            new ColorPalette(cs.machineSpeedTargetColor, 1 ),
+            new ColorPalette(cs.machineSpeedMaximumColor, 2 ) };
           break;
-
-
       }
 
       return palettes;
@@ -663,12 +668,12 @@ namespace VSS.Productivity3D.Common.Proxies
         if (pdf.DesignFile != null)
         {
           filter.DesignFilter = VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(
-            pdf.DesignFile.id,
+            pdf.DesignFile.Id,
             fileSpaceName,
-            pdf.DesignFile.file.filespaceId,
-            pdf.DesignFile.file.path,
-            pdf.DesignFile.file.fileName,
-            pdf.DesignFile.offset);
+            pdf.DesignFile.File.filespaceId,
+            pdf.DesignFile.File.path,
+            pdf.DesignFile.File.fileName,
+            pdf.DesignFile.Offset);
 
           filter.SetDesignFilterMaskCellSelectionState(true);
         }
@@ -719,30 +724,30 @@ namespace VSS.Productivity3D.Common.Proxies
       new TSVOICOptions().GetLiftBuildSettings(layerMethod) :
       new TICLiftBuildSettings
       {
-        CCVRange = ConvertCCVRange(settings.cCVRange),
-        CCVSummarizeTopLayerOnly = settings.cCVSummarizeTopLayerOnly,
-        DeadBandLowerBoundary = settings.deadBandLowerBoundary,
-        DeadBandUpperBoundary = settings.deadBandUpperBoundary,
-        FirstPassThickness = settings.firstPassThickness,
-        LiftDetectionType = ConvertLiftDetectionType(settings.liftDetectionType),
-        LiftThicknessType = ConvertLiftThicknessType(settings.liftThicknessType),
-        MDPRange = ConvertMDPRange(settings.mDPRange),
-        MDPSummarizeTopLayerOnly = settings.mDPSummarizeTopLayerOnly,
-        OverrideMachineCCV = settings.overridingMachineCCV.HasValue,
-        OverrideMachineMDP = settings.overridingMachineMDP.HasValue,
-        OverrideTargetPassCount = settings.overridingTargetPassCountRange != null,
-        OverrideTemperatureWarningLevels = settings.overridingTemperatureWarningLevels != null,
-        OverridingLiftThickness = settings.overridingLiftThickness.HasValue ? settings.overridingLiftThickness.Value : 0f,
-        OverridingMachineCCV = settings.overridingMachineCCV.HasValue ? settings.overridingMachineCCV.Value : (short)0,
-        OverridingMachineMDP = settings.overridingMachineMDP.HasValue ? settings.overridingMachineMDP.Value : (short)0,
-        OverridingTargetPassCountRange = ConvertTargetPassCountRange(settings.overridingTargetPassCountRange),
-        OverridingTemperatureWarningLevels = ConvertTemperatureWarningLevels(settings.overridingTemperatureWarningLevels),
-        IncludeSuperseded = settings.includeSupersededLifts ?? false,
-        TargetLiftThickness = settings.liftThicknessTarget != null ? settings.liftThicknessTarget.TargetLiftThickness : SVOICDecls.__Global.kICNullHeight,
-        AboveToleranceLiftThickness = settings.liftThicknessTarget != null ? settings.liftThicknessTarget.AboveToleranceLiftThickness : 0,
-        BelowToleranceLiftThickness = settings.liftThicknessTarget != null ? settings.liftThicknessTarget.BelowToleranceLiftThickness : 0,
-        TargetMaxMachineSpeed = settings.machineSpeedTarget != null ? (ushort)settings.machineSpeedTarget.MaxTargetMachineSpeed : (ushort)0,
-        TargetMinMachineSpeed = settings.machineSpeedTarget != null ? (ushort)settings.machineSpeedTarget.MinTargetMachineSpeed : (ushort)0,
+        CCVRange = ConvertCCVRange(settings.CCVRange),
+        CCVSummarizeTopLayerOnly = settings.CCVSummarizeTopLayerOnly,
+        DeadBandLowerBoundary = settings.DeadBandLowerBoundary,
+        DeadBandUpperBoundary = settings.DeadBandUpperBoundary,
+        FirstPassThickness = settings.FirstPassThickness,
+        LiftDetectionType = ConvertLiftDetectionType(settings.LiftDetectionType),
+        LiftThicknessType = ConvertLiftThicknessType(settings.LiftThicknessType),
+        MDPRange = ConvertMDPRange(settings.MDPRange),
+        MDPSummarizeTopLayerOnly = settings.MDPSummarizeTopLayerOnly,
+        OverrideMachineCCV = settings.OverridingMachineCCV.HasValue,
+        OverrideMachineMDP = settings.OverridingMachineMDP.HasValue,
+        OverrideTargetPassCount = settings.OverridingTargetPassCountRange != null,
+        OverrideTemperatureWarningLevels = settings.OverridingTemperatureWarningLevels != null,
+        OverridingLiftThickness = settings.OverridingLiftThickness.HasValue ? settings.OverridingLiftThickness.Value : 0f,
+        OverridingMachineCCV = settings.OverridingMachineCCV.HasValue ? settings.OverridingMachineCCV.Value : (short)0,
+        OverridingMachineMDP = settings.OverridingMachineMDP.HasValue ? settings.OverridingMachineMDP.Value : (short)0,
+        OverridingTargetPassCountRange = ConvertTargetPassCountRange(settings.OverridingTargetPassCountRange),
+        OverridingTemperatureWarningLevels = ConvertTemperatureWarningLevels(settings.OverridingTemperatureWarningLevels),
+        IncludeSuperseded = settings.IncludeSupersededLifts ?? false,
+        TargetLiftThickness = settings.LiftThicknessTarget != null ? settings.LiftThicknessTarget.TargetLiftThickness : SVOICDecls.__Global.kICNullHeight,
+        AboveToleranceLiftThickness = settings.LiftThicknessTarget != null ? settings.LiftThicknessTarget.AboveToleranceLiftThickness : 0,
+        BelowToleranceLiftThickness = settings.LiftThicknessTarget != null ? settings.LiftThicknessTarget.BelowToleranceLiftThickness : 0,
+        TargetMaxMachineSpeed = settings.MachineSpeedTarget != null ? (ushort)settings.MachineSpeedTarget.MaxTargetMachineSpeed : (ushort)0,
+        TargetMinMachineSpeed = settings.MachineSpeedTarget != null ? (ushort)settings.MachineSpeedTarget.MinTargetMachineSpeed : (ushort)0,
       };
       if (settings != null)
         if (settings.CCvSummaryType != null)
@@ -753,17 +758,17 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TCCVRangePercentage ConvertCCVRange(CCVRangePercentage range)
     {
-      return range == null ? new TCCVRangePercentage { Min = 0, Max = 100 } : new TCCVRangePercentage { Min = range.min, Max = range.max };
+      return range == null ? new TCCVRangePercentage { Min = 0, Max = 100 } : new TCCVRangePercentage { Min = range.Min, Max = range.Max };
     }
 
     public static TMDPRangePercentage ConvertMDPRange(MDPRangePercentage range)
     {
-      return range == null ? new TMDPRangePercentage { Min = 0, Max = 100 } : new TMDPRangePercentage { Min = range.min, Max = range.max };
+      return range == null ? new TMDPRangePercentage { Min = 0, Max = 100 } : new TMDPRangePercentage { Min = range.Min, Max = range.Max };
     }
 
     public static TTargetPassCountRange ConvertTargetPassCountRange(TargetPassCountRange range)
     {
-      return range == null ? new TTargetPassCountRange { Min = 1, Max = ushort.MaxValue } : new TTargetPassCountRange { Min = range.min, Max = range.max };
+      return range == null ? new TTargetPassCountRange { Min = 1, Max = ushort.MaxValue } : new TTargetPassCountRange { Min = range.Min, Max = range.Max };
     }
 
     public static TICLiftDetectionType ConvertLiftDetectionType(LiftDetectionType type)
@@ -791,7 +796,7 @@ namespace VSS.Productivity3D.Common.Proxies
 
     public static TTemperatureWarningLevels ConvertTemperatureWarningLevels(TemperatureWarningLevels levels)
     {
-      return levels == null ? new TTemperatureWarningLevels { Min = 0, Max = 100 } : new TTemperatureWarningLevels { Min = levels.min, Max = levels.max };
+      return levels == null ? new TTemperatureWarningLevels { Min = 0, Max = 100 } : new TTemperatureWarningLevels { Min = levels.Min, Max = levels.Max };
     }
 
     public static TICElevationType ConvertElevationType(ElevationType type)
@@ -837,9 +842,9 @@ namespace VSS.Productivity3D.Common.Proxies
         return EmptyDesignDescriptor;
       }
 
-      return dd.file == null
-        ? DesignDescriptor(dd.id, string.Empty, string.Empty, string.Empty, dd.offset)
-        : DesignDescriptor(dd.id, dd.file.filespaceId, dd.file.path, dd.file.fileName, dd.offset);
+      return dd.File == null
+        ? DesignDescriptor(dd.Id, string.Empty, string.Empty, string.Empty, dd.Offset)
+        : DesignDescriptor(dd.Id, dd.File.filespaceId, dd.File.path, dd.File.fileName, dd.Offset);
     }
 
     /// <summary>
@@ -941,14 +946,14 @@ namespace VSS.Productivity3D.Common.Proxies
         // e.g. a user cmv override target setting value of 100 is actually has a value of 1000 in raptor
         // therefore some settings get multiplied by 10. Ideally it would have been stored in that precision but it's too late now
 
-        options.AbsoluteTargetCCV = liftSettings.overridingMachineCCV.HasValue ? liftSettings.overridingMachineCCV.Value : (short)0;
+        options.AbsoluteTargetCCV = liftSettings.OverridingMachineCCV.HasValue ? liftSettings.OverridingMachineCCV.Value : (short)0;
         ////(short)Math.Round(liftSettings.overridingMachineCCV.Value * 10);
 
         options.CCVDecouplingColour = (int)Colors.Black;
-        options.CCVRange = ConvertCCVRange(liftSettings.cCVRange);
-        options.CCVSummarizeTopLayerOnly = liftSettings.cCVSummarizeTopLayerOnly;
+        options.CCVRange = ConvertCCVRange(liftSettings.CCVRange);
+        options.CCVSummarizeTopLayerOnly = liftSettings.CCVSummarizeTopLayerOnly;
         options.CCVTargetColour = (int)Colors.Green;
-        options.FirstPassThickness = (float)liftSettings.firstPassThickness;
+        options.FirstPassThickness = (float)liftSettings.FirstPassThickness;
         switch (filterLayerMethod)
         {
           case FilterLayerMethod.None:
@@ -968,29 +973,29 @@ namespace VSS.Productivity3D.Common.Proxies
             options.LiftDetectionType = TICLiftDetectionType.icldtAutoMapReset;
             break;
         }
-        options.LiftThicknessMachine = !liftSettings.overridingLiftThickness.HasValue;
-        options.LiftThicknessType = ConvertLiftThicknessType(liftSettings.liftThicknessType);
-        options.MaximumLiftThickness = liftSettings.overridingLiftThickness.HasValue ? liftSettings.overridingLiftThickness.Value : 0f;
+        options.LiftThicknessMachine = !liftSettings.OverridingLiftThickness.HasValue;
+        options.LiftThicknessType = ConvertLiftThicknessType(liftSettings.LiftThicknessType);
+        options.MaximumLiftThickness = liftSettings.OverridingLiftThickness.HasValue ? liftSettings.OverridingLiftThickness.Value : 0f;
 
         options.PassTargetColour = (int)Colors.Green;
-        options.TargetPassCountRange = ConvertTargetPassCountRange(liftSettings.overridingTargetPassCountRange);
-        options.UseMachineTargetCCV = !liftSettings.overridingMachineCCV.HasValue;
-        options.UseMachineTargetPass = liftSettings.overridingTargetPassCountRange == null;
+        options.TargetPassCountRange = ConvertTargetPassCountRange(liftSettings.OverridingTargetPassCountRange);
+        options.UseMachineTargetCCV = !liftSettings.OverridingMachineCCV.HasValue;
+        options.UseMachineTargetPass = liftSettings.OverridingTargetPassCountRange == null;
 
         options.SetCCVSummaryTypeWIP(colorSettingsFlags.ccvSummaryWorkInProgressLayerVisible);
         options.SetCCVSummaryTypeThickness(colorSettingsFlags.ccvSummaryTooThickLayerVisible);
 
         if (mode == DisplayMode.TargetThicknessSummary)
         {
-          options.TargetLiftThickness = liftSettings.liftThicknessTarget.TargetLiftThickness;
-          options.AboveToleranceLiftThickness = liftSettings.liftThicknessTarget.AboveToleranceLiftThickness;
-          options.BelowToleranceLiftThickness = liftSettings.liftThicknessTarget.BelowToleranceLiftThickness;
+          options.TargetLiftThickness = liftSettings.LiftThicknessTarget.TargetLiftThickness;
+          options.AboveToleranceLiftThickness = liftSettings.LiftThicknessTarget.AboveToleranceLiftThickness;
+          options.BelowToleranceLiftThickness = liftSettings.LiftThicknessTarget.BelowToleranceLiftThickness;
         }
         else
           options.TargetLiftThickness = SVOICDecls.__Global.kICNullHeight;
 
-        options.MinSpeedTarget = mode == DisplayMode.TargetSpeedSummary ? liftSettings.machineSpeedTarget.MinTargetMachineSpeed : SVOICDecls.__Global.kICNullMachineSpeed;
-        options.MaxSpeedTarget = mode == DisplayMode.TargetSpeedSummary ? liftSettings.machineSpeedTarget.MaxTargetMachineSpeed : SVOICDecls.__Global.kICNullMachineSpeed;
+        options.MinSpeedTarget = mode == DisplayMode.TargetSpeedSummary ? liftSettings.MachineSpeedTarget.MinTargetMachineSpeed : SVOICDecls.__Global.kICNullMachineSpeed;
+        options.MaxSpeedTarget = mode == DisplayMode.TargetSpeedSummary ? liftSettings.MachineSpeedTarget.MaxTargetMachineSpeed : SVOICDecls.__Global.kICNullMachineSpeed;
 
         switch (mode) // for summary modes make sure at least compaction is set
         {
@@ -1007,26 +1012,26 @@ namespace VSS.Productivity3D.Common.Proxies
 
         options.NoChangeVolumeTolerance = (float)volumesNoChangeTolerance;
 
-        options.UseMachineTempWarningLevels = liftSettings.overridingTemperatureWarningLevels == null;
-        if (liftSettings.overridingTemperatureWarningLevels != null)
+        options.UseMachineTempWarningLevels = liftSettings.OverridingTemperatureWarningLevels == null;
+        if (liftSettings.OverridingTemperatureWarningLevels != null)
         {
           options.TemperatureWarningLevels =
-              ConvertTemperatureWarningLevels(liftSettings.overridingTemperatureWarningLevels);
+              ConvertTemperatureWarningLevels(liftSettings.OverridingTemperatureWarningLevels);
         }
 
-        options.AbsoluteTargetMDP = liftSettings.overridingMachineMDP.HasValue ? liftSettings.overridingMachineMDP.Value : (short)0;
+        options.AbsoluteTargetMDP = liftSettings.OverridingMachineMDP.HasValue ? liftSettings.OverridingMachineMDP.Value : (short)0;
         //(short)Math.Round(liftSettings.overrideTargetMDPValue.Value * 10);
-        options.MDPRange = ConvertMDPRange(liftSettings.mDPRange);
-        options.MDPSummarizeTopLayerOnly = liftSettings.mDPSummarizeTopLayerOnly;
+        options.MDPRange = ConvertMDPRange(liftSettings.MDPRange);
+        options.MDPSummarizeTopLayerOnly = liftSettings.MDPSummarizeTopLayerOnly;
         options.MDPTargetColour = (int)Colors.Green;
-        options.UseMachineTargetMDP = !liftSettings.overridingMachineMDP.HasValue;
+        options.UseMachineTargetMDP = !liftSettings.OverridingMachineMDP.HasValue;
         options.SetMDPSummaryTypeWIP(colorSettingsFlags.mdpSummaryWorkInProgressLayerVisible);
         options.SetMDPSummaryTypeThickness(colorSettingsFlags.mdpSummaryTooThickLayerVisible);
 
-        options.DeadBandLowerBoundary = liftSettings.deadBandLowerBoundary;
-        options.DeadBandUpperBoundary = liftSettings.deadBandUpperBoundary;
+        options.DeadBandLowerBoundary = liftSettings.DeadBandLowerBoundary;
+        options.DeadBandUpperBoundary = liftSettings.DeadBandUpperBoundary;
 
-        options.IncludeSupersededLayers = liftSettings.includeSupersededLifts ?? false;
+        options.IncludeSupersededLayers = liftSettings.IncludeSupersededLifts ?? false;
       }
 
       return options;
@@ -1038,13 +1043,13 @@ namespace VSS.Productivity3D.Common.Proxies
       coordsAreGrid = grid != null;
       if (coordsAreGrid)
       {
-        bl = TWGS84Point.PointXY(grid.bottomLeftX, grid.bottomleftY);
-        tr = TWGS84Point.PointXY(grid.topRightX, grid.topRightY);
+        bl = TWGS84Point.PointXY(grid.BottomLeftX, grid.BottomleftY);
+        tr = TWGS84Point.PointXY(grid.TopRightX, grid.TopRightY);
       }
       else if (ll != null)
       {
-        bl = TWGS84Point.Point(ll.bottomLeftLon, ll.bottomLeftLat);
-        tr = TWGS84Point.Point(ll.topRightLon, ll.topRightLat);
+        bl = TWGS84Point.Point(ll.BottomLeftLon, ll.BottomLeftLat);
+        tr = TWGS84Point.Point(ll.TopRightLon, ll.TopRightLat);
       }
       else
       {

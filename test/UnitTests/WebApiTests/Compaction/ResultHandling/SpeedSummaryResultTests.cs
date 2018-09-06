@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [DataRow(10.234, true)]
     public void HasData_Should_return_expected_result_From_coverage_value(double coverageArea, bool expectedResult)
     {
-      var obj = SpeedSummaryResult.Create(0, 0, 0, coverageArea);
+      var obj = new SpeedSummaryResult(0, 0, 0, coverageArea);
 
       Assert.AreEqual(expectedResult, obj.HasData());
     }

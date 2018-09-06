@@ -117,23 +117,23 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 
     private const long projectId = 1234;
     private readonly Guid callId = new Guid();
-    private readonly LiftBuildSettings liftSettings = LiftBuildSettings.CreateLiftBuildSettings(
-      CCVRangePercentage.CreateCcvRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
-      MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);
+    private readonly LiftBuildSettings liftSettings = new LiftBuildSettings(
+      new CCVRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
+      new MDPRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);
 
     private List<ColorPalette> palettes = new List<ColorPalette>
                                          {
-                                           ColorPalette.CreateColorPalette(Colors.Red, 0.0),
-                                           ColorPalette.CreateColorPalette(Colors.Lime, 90.0),
-                                           ColorPalette.CreateColorPalette(Colors.Blue, 120.0)
+                                           new ColorPalette(Colors.Red, 0.0),
+                                           new ColorPalette(Colors.Lime, 90.0),
+                                           new ColorPalette(Colors.Blue, 120.0)
                                          };
 
     private List<ColorPalette> invalidPalettes = new List<ColorPalette>
                                          {
-                                           ColorPalette.CreateColorPalette(Colors.Lime, 90.0),
-                                           ColorPalette.CreateColorPalette(Colors.Red, 0.0),
-                                           ColorPalette.CreateColorPalette(Colors.Blue, 120.0)
+                                           new ColorPalette(Colors.Lime, 90.0),
+                                           new ColorPalette(Colors.Red, 0.0),
+                                           new ColorPalette(Colors.Blue, 120.0)
                                          };
-    private DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(1, null, 0);
+    private DesignDescriptor design = new DesignDescriptor(1, null, 0);
   }
 }

@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -68,15 +66,16 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     {
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
-      
-      var legacyProjectId = GetLegacyProjectId(request.ProjectUid).Result;
+
       WGS84Fence boundary = null;
-      if (legacyProjectId != VelociraptorConstants.NO_PROJECT_ID)
+      if (request.ProjectUid != null)
       {
-        boundary = await GetProjectBoundary(legacyProjectId);
+        request.ProjectId = GetLegacyProjectId(request.ProjectUid).Result;
+        boundary = await GetProjectBoundary(request.ProjectUid.Value);
       }
+
       var requestExt =
-        CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, legacyProjectId, boundary);
+        CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, boundary);
 
       var responseObj = await RequestExecutorContainerFactory
         .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, customHeaders)
@@ -86,7 +85,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         ? (IActionResult)Ok(responseObj)
         : BadRequest(responseObj);
     }
-
+    
     /// <summary>
     /// For the direct submission of tag files from GNSS capable machines.
     /// </summary>
@@ -132,13 +131,13 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <summary>
     /// Gets the WGS84 project boundary geofence for a given project Id.
     /// </summary>
-    private async Task<WGS84Fence> GetProjectBoundary(long legacyProjectId)
+    private async Task<WGS84Fence> GetProjectBoundary(Guid projectUid)
     {
-      var projectData = await ((RaptorPrincipal)User).GetProject(legacyProjectId);
+      var projectData = await ((RaptorPrincipal)User).GetProject(projectUid);
 
       return projectData.ProjectGeofenceWKT == null
         ? null
-        : WGS84Fence.CreateWGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
+        : new WGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
 
   }

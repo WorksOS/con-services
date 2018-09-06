@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     [TestMethod]
     public void CS_CoordinateSystemControllerGetSuccessful()
     {
-      ProjectID request = ProjectID.Create(PD_MODEL_ID);
+      ProjectID request = new ProjectID(PD_MODEL_ID);
 
       // Create the mock PDSClient with successful result...
       var mockRaptorClient = new Mock<IASNodeClient>();
@@ -192,7 +192,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
     [TestMethod]
     public void CS_CoordinateSystemControllerGettFailed()
     {
-      ProjectID request = ProjectID.Create(PD_MODEL_ID);
+      ProjectID request = new ProjectID(PD_MODEL_ID);
 
       // Create the mock PDSClient with unsuccessful result...
       var mockRaptorClient = new Mock<IASNodeClient>();

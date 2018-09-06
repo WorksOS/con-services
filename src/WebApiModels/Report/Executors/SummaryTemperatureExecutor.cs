@@ -6,10 +6,10 @@ using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     private TemperatureSummaryResult ConvertResult(TTemperature summary)
     {
-      return TemperatureSummaryResult.Create(
+      return new TemperatureSummaryResult(
                 summary.MinimumTemperature,
                 summary.MaximumTemperature,
                 summary.IsTargetTemperatureConstant,
@@ -86,9 +86,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       return new TTemperatureSettings
       {
-        MaximumTemperatureRange = settings.maxTemperature,
-        MinimumTemperatureRange = settings.minTemperature,
-        OverrideMachineTarget = settings.overrideTemperatureRange
+        MaximumTemperatureRange = settings.MaxTemperature,
+        MinimumTemperatureRange = settings.MinTemperature,
+        OverrideMachineTarget = settings.OverrideTemperatureRange
       };
     }
 

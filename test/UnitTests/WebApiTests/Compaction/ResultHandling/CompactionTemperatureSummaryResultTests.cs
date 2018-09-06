@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
 {
@@ -11,8 +10,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateTemperatureSummaryResult_Should_return_null_object_When_TotalAreaCoveredSqMeters_is_null()
     {
-      var temperatureSummaryResult = TemperatureSummaryResult.Create(1, 2, false, 3, 0, 5, 6, 7);
-      var result = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(temperatureSummaryResult);
+      var temperatureSummaryResult = new TemperatureSummaryResult(1, 2, false, 3, 0, 5, 6, 7);
+      var result = new CompactionTemperatureSummaryResult(temperatureSummaryResult);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);
@@ -22,8 +21,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateTemperatureSummaryResult_Should_return_full_object_When_TotalAreaCoveredSqMeters_is_not_null()
     {
-      var temperatureSummaryResult = TemperatureSummaryResult.Create(1, 2, false, 3, 3256.4, 4, 5, 6);
-      var result = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(temperatureSummaryResult);
+      var temperatureSummaryResult = new TemperatureSummaryResult(1, 2, false, 3, 3256.4, 4, 5, 6);
+      var result = new CompactionTemperatureSummaryResult(temperatureSummaryResult);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);

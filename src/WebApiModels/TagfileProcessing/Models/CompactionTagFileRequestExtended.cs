@@ -9,15 +9,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
   /// </summary>
   public class CompactionTagFileRequestExtended : CompactionTagFileRequest
   {
-    public long? ProjectId { get; private set; }
-    
-    /// <summary>
-    /// The boundary of the project to process the TAG file into. If the location of the data in the TAG file is outside of this boundary it will not be processed into the project.
-    /// May be null.
-    /// </summary>
-    [JsonProperty]
     public WGS84Fence Boundary { get; private set; }
-    
+
+    public bool includeTrexIfConfigured { get; private set; }
+
     /// <summary>
     /// Default private constructor.
     /// </summary>
@@ -29,16 +24,17 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models
     /// </summary>
     public static CompactionTagFileRequestExtended CreateCompactionTagFileRequestExtended(
       CompactionTagFileRequest compactionTagFileRequest,
-        long projectId,
-        WGS84Fence boundary)
+        WGS84Fence boundary,
+        bool includeTrexIfConfigured = true)
     {
       return new CompactionTagFileRequestExtended
       {
         FileName = compactionTagFileRequest.FileName,
         Data = compactionTagFileRequest.Data,
         OrgId = compactionTagFileRequest.OrgId,
-        ProjectId = projectId,
-        Boundary = boundary
+        ProjectId = compactionTagFileRequest.ProjectId,
+        Boundary = boundary,
+        includeTrexIfConfigured = includeTrexIfConfigured
       };
     }
 

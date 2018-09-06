@@ -11,9 +11,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateSpeedSummaryResult_Should_return_null_object_When_CoverageArea_is_null()
     {
-      var summarySpeedResult = SpeedSummaryResult.Create(1, 2, 3, 0);
-      var machineSpeedTarget = MachineSpeedTarget.CreateMachineSpeedTarget(5, 6);
-      var result = CompactionSpeedSummaryResult.CreateSpeedSummaryResult(summarySpeedResult, machineSpeedTarget);
+      var summarySpeedResult = new SpeedSummaryResult(1, 2, 3, 0);
+      var machineSpeedTarget = new MachineSpeedTarget(5, 6);
+      var result = new CompactionSpeedSummaryResult(summarySpeedResult, machineSpeedTarget);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);
@@ -23,9 +23,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateSpeedSummaryResult_Should_return_full_object_When_CoverageArea_is_not_null()
     {
-      var summarySpeedResult = SpeedSummaryResult.Create(1, 2, 3, 8976.4);
-      var machineSpeedTarget = MachineSpeedTarget.CreateMachineSpeedTarget(4, 5);
-      var result = CompactionSpeedSummaryResult.CreateSpeedSummaryResult(summarySpeedResult, machineSpeedTarget);
+      var summarySpeedResult = new SpeedSummaryResult(1, 2, 3, 8976.4);
+      var machineSpeedTarget = new MachineSpeedTarget(4, 5);
+      var result = new CompactionSpeedSummaryResult(summarySpeedResult, machineSpeedTarget);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);

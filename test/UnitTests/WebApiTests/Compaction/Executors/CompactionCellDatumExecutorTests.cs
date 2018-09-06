@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     public void CompactionCellDatumExecutorSuccessNoNECoordinates()
     {
       var request =
-        CellDatumRequest.CreateCellDatumRequest(0, DisplayMode.CCV, WGSPoint3D.CreatePoint(0.84, -1.75), null, null, -1, null, null);
+        CellDatumRequest.CreateCellDatumRequest(0, DisplayMode.CCV, new WGSPoint3D(0.84, -1.75), null, null, -1, null, null);
 
       TCellProductionData data = new TCellProductionData
       {

@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
         }
       }
 
-      return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
+      return new BoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
   }
 }

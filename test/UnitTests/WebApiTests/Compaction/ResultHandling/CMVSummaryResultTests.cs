@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [DataRow(10.234, true)]
     public void HasData_Should_return_expected_result_From_coverage_value(double totalAreaCovered, bool expectedResult)
     {
-      var obj = CMVSummaryResult.Create(0, 0, false, 0, 0, totalAreaCovered, 0);
+      var obj = new CMVSummaryResult(0, 0, false, 0, 0, totalAreaCovered, 0);
 
       Assert.AreEqual(expectedResult, obj.HasData());
     }

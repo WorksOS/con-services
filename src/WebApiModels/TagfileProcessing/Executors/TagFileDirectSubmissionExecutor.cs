@@ -35,6 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
       if (useTrexGateway)
       {
+        // todo for Direct, this will fail as ProjectID validation requires one of ID or UID
         request.Validate();
 
         // gobbles any exception

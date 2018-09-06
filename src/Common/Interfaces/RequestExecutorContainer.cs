@@ -66,7 +66,6 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected IDictionary<string, string> customHeaders;
 
-    protected RaptorPrincipal User;
 
     /// <summary>
     /// Gets the available contract execution error states.

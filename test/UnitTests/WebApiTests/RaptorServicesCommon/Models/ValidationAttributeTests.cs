@@ -32,13 +32,13 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
             MoreThanTwoPointsAttribute attribute = new MoreThanTwoPointsAttribute();
             List<WGSPoint3D> list = new List<WGSPoint3D>();
             for (int i=0;i<5;i++)
-                list.Add(WGSPoint3D.CreatePoint(3,3));
+                list.Add(new WGSPoint3D(3,3));
             List<WGSPoint3D> list2 = new List<WGSPoint3D>();
             for (int i = 0; i < 55; i++)
-                list2.Add(WGSPoint3D.CreatePoint(3, 3));
+                list2.Add(new WGSPoint3D(3, 3));
             List<WGSPoint3D> list3 = new List<WGSPoint3D>();
             for (int i = 0; i < 1; i++)
-                list3.Add(WGSPoint3D.CreatePoint(3, 3));
+                list3.Add(new WGSPoint3D(3, 3));
 
             Assert.IsTrue(attribute.IsValid(list.ToArray()));
             Assert.IsFalse(attribute.IsValid(list2.ToArray()));

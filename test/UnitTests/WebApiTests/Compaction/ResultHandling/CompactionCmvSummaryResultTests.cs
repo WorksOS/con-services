@@ -11,10 +11,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateCmvSummaryResult_Should_return_null_object_When_TotalAreaCoveredSqMeters_is_null()
     {
-      var summaryResult = CMVSummaryResult.Create(1, 2, true, 3, 4, 0, 6);
-      var settings = CMVSettings.CreateCMVSettings(1, 2, 3, 4, 5, true);
+      var summaryResult = new CMVSummaryResult(1, 2, true, 3, 4, 0, 6);
+      var settings = new CMVSettings(1, 2, 3, 4, 5, true);
 
-      var result = CompactionCmvSummaryResult.Create(summaryResult, settings);
+      var result = new CompactionCmvSummaryResult(summaryResult, settings);
 
       Assert.IsNotNull(result);
       Assert.IsNull(result.SummaryData);
@@ -24,10 +24,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [TestMethod]
     public void CreateCmvSummaryResult_Should_return_full_object_When_TotalAreaCoveredSqMeters_is_not_null()
     {
-      var summaryResult = CMVSummaryResult.Create(1, 2, true, 3, 4, 5, 6);
-      var settings = CMVSettings.CreateCMVSettings(1, 2, 3, 4, 5, true);
+      var summaryResult = new CMVSummaryResult(1, 2, true, 3, 4, 5, 6);
+      var settings = new CMVSettings(1, 2, 3, 4, 5, true);
 
-      var result = CompactionCmvSummaryResult.Create(summaryResult, settings);
+      var result = new CompactionCmvSummaryResult(summaryResult, settings);
 
       Assert.IsNotNull(result);
       Assert.AreEqual(ContractExecutionResult.DefaultMessage, result.Message);

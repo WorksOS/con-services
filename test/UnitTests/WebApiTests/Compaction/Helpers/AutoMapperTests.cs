@@ -26,12 +26,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       );
 
       var cmv = AutoMapperUtility.Automapper.Map<CMVSettings>(ps);
-      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetCmv, cmv.cmvTarget, "cmvTarget not mapped correctly");
-      Assert.AreEqual(ps.CmvMinimum, cmv.minCMV, "minCMV not mapped correctly");
-      Assert.AreEqual(ps.CmvMaximum, cmv.maxCMV, "maxCMV not mapped correctly");
-      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.minCMVPercent, "minCMVPercent not mapped correctly");
-      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.maxCMVPercent, "maxCMVPercent not mapped correctly");
+      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.OverrideTargetCMV, "overrideTargetCMV not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetCmv, cmv.CmvTarget, "cmvTarget not mapped correctly");
+      Assert.AreEqual(ps.CmvMinimum, cmv.MinCMV, "minCMV not mapped correctly");
+      Assert.AreEqual(ps.CmvMaximum, cmv.MaxCMV, "maxCMV not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.MinCMVPercent, "minCMVPercent not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.MaxCMVPercent, "maxCMVPercent not mapped correctly");
 
       // The useDefaultTargetRangeCmvPercent is set to "true".
       ps = CompactionProjectSettings.CreateProjectSettings(
@@ -39,12 +39,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       );
 
       cmv = AutoMapperUtility.Automapper.Map<CMVSettings>(ps);
-      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetCmv, cmv.cmvTarget, "cmvTarget not mapped correctly");
-      Assert.AreEqual(ps.CmvMinimum, cmv.minCMV, "minCMV not mapped correctly");
-      Assert.AreEqual(ps.CmvMaximum, cmv.maxCMV, "maxCMV not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum, cmv.minCMVPercent, "minCMVPercent not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum, cmv.maxCMVPercent, "maxCMVPercent not mapped correctly");
+      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.OverrideTargetCMV, "overrideTargetCMV not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetCmv, cmv.CmvTarget, "cmvTarget not mapped correctly");
+      Assert.AreEqual(ps.CmvMinimum, cmv.MinCMV, "minCMV not mapped correctly");
+      Assert.AreEqual(ps.CmvMaximum, cmv.MaxCMV, "maxCMV not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum, cmv.MinCMVPercent, "minCMVPercent not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum, cmv.MaxCMVPercent, "maxCMVPercent not mapped correctly");
     }
 
     [TestMethod]
@@ -57,13 +57,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         useDefaultCMVTargets: false, customCMVTargets: new List<int> { 0, 40, 80, 120, 170 });
 
       var cmv = AutoMapperUtility.Automapper.Map<CMVSettingsEx>(ps);
-      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetCmv, cmv.cmvTarget, "cmvTarget not mapped correctly");
-      Assert.AreEqual(ps.CmvMinimum, cmv.minCMV, "minCMV not mapped correctly");
-      Assert.AreEqual(ps.CmvMaximum, cmv.maxCMV, "maxCMV not mapped correctly");
-      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.minCMVPercent, "minCMVPercent not mapped correctly");
-      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.maxCMVPercent, "maxCMVPercent not mapped correctly");
-      Assert.AreNotEqual(ps.customCMVTargets, cmv.customCMVDetailTargets, "customCMVDetailTargets not mapped correctly");
+      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.OverrideTargetCMV, "overrideTargetCMV not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetCmv, cmv.CmvTarget, "cmvTarget not mapped correctly");
+      Assert.AreEqual(ps.CmvMinimum, cmv.MinCMV, "minCMV not mapped correctly");
+      Assert.AreEqual(ps.CmvMaximum, cmv.MaxCMV, "maxCMV not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.MinCMVPercent, "minCMVPercent not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.MaxCMVPercent, "maxCMVPercent not mapped correctly");
+      Assert.AreNotEqual(ps.customCMVTargets, cmv.CustomCMVDetailTargets, "customCMVDetailTargets not mapped correctly");
 
       // The useDefaultCMVTargets is set to "true".
       ps = CompactionProjectSettings.CreateProjectSettings(
@@ -72,13 +72,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         useDefaultCMVTargets: true, customCMVTargets: new List<int> { 0, 40, 80, 120, 170 });
 
       cmv = AutoMapperUtility.Automapper.Map<CMVSettingsEx>(ps);
-      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.overrideTargetCMV, "overrideTargetCMV not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetCmv, cmv.cmvTarget, "cmvTarget not mapped correctly");
-      Assert.AreEqual(ps.CmvMinimum, cmv.minCMV, "minCMV not mapped correctly");
-      Assert.AreEqual(ps.CmvMaximum, cmv.maxCMV, "maxCMV not mapped correctly");
-      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.minCMVPercent, "minCMVPercent not mapped correctly");
-      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.maxCMVPercent, "maxCMVPercent not mapped correctly");
-      Assert.AreNotEqual(CompactionProjectSettings.DefaultSettings.customCMVTargets, cmv.customCMVDetailTargets, "customCMVDetailTargets not mapped correctly");
+      Assert.AreNotEqual(ps.useMachineTargetCmv, cmv.OverrideTargetCMV, "overrideTargetCMV not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetCmv, cmv.CmvTarget, "cmvTarget not mapped correctly");
+      Assert.AreEqual(ps.CmvMinimum, cmv.MinCMV, "minCMV not mapped correctly");
+      Assert.AreEqual(ps.CmvMaximum, cmv.MaxCMV, "maxCMV not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMinimum, cmv.MinCMVPercent, "minCMVPercent not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.MaxCMVPercent, "maxCMVPercent not mapped correctly");
+      Assert.AreNotEqual(CompactionProjectSettings.DefaultSettings.customCMVTargets, cmv.CustomCMVDetailTargets, "customCMVDetailTargets not mapped correctly");
 
     }
 
@@ -91,12 +91,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       );
 
       var mdp = AutoMapperUtility.Automapper.Map<MDPSettings>(ps);
-      Assert.AreNotEqual(ps.useMachineTargetMdp, mdp.overrideTargetMDP, "overrideTargetMDP not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetMdp, mdp.mdpTarget, "mdpTarget not mapped correctly");
-      Assert.AreEqual(ps.MdpMinimum, mdp.minMDP, "minMDP not mapped correctly");
-      Assert.AreEqual(ps.MdpMaximum, mdp.maxMDP, "maxMDP not mapped correctly");
-      Assert.AreEqual(ps.customTargetMdpPercentMinimum, mdp.minMDPPercent, "minMDPPercent not mapped correctly");
-      Assert.AreEqual(ps.customTargetMdpPercentMaximum, mdp.maxMDPPercent, "maxMDPPercent not mapped correctly");
+      Assert.AreNotEqual(ps.useMachineTargetMdp, mdp.OverrideTargetMDP, "overrideTargetMDP not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetMdp, mdp.MdpTarget, "mdpTarget not mapped correctly");
+      Assert.AreEqual(ps.MdpMinimum, mdp.MinMDP, "minMDP not mapped correctly");
+      Assert.AreEqual(ps.MdpMaximum, mdp.MaxMDP, "maxMDP not mapped correctly");
+      Assert.AreEqual(ps.customTargetMdpPercentMinimum, mdp.MinMDPPercent, "minMDPPercent not mapped correctly");
+      Assert.AreEqual(ps.customTargetMdpPercentMaximum, mdp.MaxMDPPercent, "maxMDPPercent not mapped correctly");
 
       // The useDefaultTargetRangeMdpPercent is set to "true".
       ps = CompactionProjectSettings.CreateProjectSettings(
@@ -104,12 +104,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       );
 
       mdp = AutoMapperUtility.Automapper.Map<MDPSettings>(ps);
-      Assert.AreNotEqual(ps.useMachineTargetMdp, mdp.overrideTargetMDP, "overrideTargetMDP not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetMdp, mdp.mdpTarget, "mdpTarget not mapped correctly");
-      Assert.AreEqual(ps.MdpMinimum, mdp.minMDP, "minMDP not mapped correctly");
-      Assert.AreEqual(ps.MdpMaximum, mdp.maxMDP, "maxMDP not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum, mdp.minMDPPercent, "minMDPPercent not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum, mdp.maxMDPPercent, "maxMDPPercent not mapped correctly");
+      Assert.AreNotEqual(ps.useMachineTargetMdp, mdp.OverrideTargetMDP, "overrideTargetMDP not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetMdp, mdp.MdpTarget, "mdpTarget not mapped correctly");
+      Assert.AreEqual(ps.MdpMinimum, mdp.MinMDP, "minMDP not mapped correctly");
+      Assert.AreEqual(ps.MdpMaximum, mdp.MaxMDP, "maxMDP not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum, mdp.MinMDPPercent, "minMDPPercent not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum, mdp.MaxMDPPercent, "maxMDPPercent not mapped correctly");
     }
 
     [TestMethod]
@@ -120,9 +120,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       );
 
       var temp = AutoMapperUtility.Automapper.Map<TemperatureSettings>(ps);
-      Assert.AreNotEqual(ps.useMachineTargetTemperature, temp.overrideTemperatureRange, "overrideTemperatureRange not mapped correctly");
-      Assert.AreEqual(ps.customTargetTemperatureMinimum, temp.minTemperature, "minTemperature not mapped correctly");
-      Assert.AreEqual(ps.customTargetTemperatureMaximum, temp.maxTemperature, "maxTemperature not mapped correctly");
+      Assert.AreNotEqual(ps.useMachineTargetTemperature, temp.OverrideTemperatureRange, "overrideTemperatureRange not mapped correctly");
+      Assert.AreEqual(ps.customTargetTemperatureMinimum, temp.MinTemperature, "minTemperature not mapped correctly");
+      Assert.AreEqual(ps.customTargetTemperatureMaximum, temp.MaxTemperature, "maxTemperature not mapped correctly");
     }
 
     [TestMethod]
@@ -177,49 +177,49 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       var ps = CompactionProjectSettings.CreateProjectSettings(false, 3, 11, false, 35, 129, false, 43, false, 44, false, 55, 103, false, 56, 102, false, 4, 8, null, null, null, null, null, false, new List<int> { 1, 2, 3, 5, 7, 9, 12, 16 });
 
       var lbs = AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
-      Assert.IsNotNull(lbs.cCVRange, "cCVRange should not be null");
-      Assert.AreEqual(ps.customTargetCmvPercentMinimum, lbs.cCVRange.min, "cCVRange.min not mapped correctly");
-      Assert.AreEqual(ps.customTargetCmvPercentMaximum, lbs.cCVRange.max, "cCVRange.max not mapped correctly");
-      Assert.AreEqual(LiftDetectionType.None, lbs.liftDetectionType, "liftDetectionType not mapped correctly");
-      Assert.AreEqual(LiftThicknessType.Compacted, lbs.liftThicknessType, "liftThicknessType not mapped correctly");
-      Assert.IsNotNull(lbs.mDPRange, "mDPRange should not be null");
-      Assert.AreEqual(ps.customTargetMdpPercentMinimum, lbs.mDPRange.min, "mDPRange.min not mapped correctly");
-      Assert.AreEqual(ps.customTargetMdpPercentMaximum, lbs.mDPRange.max, "mDPRange.max not mapped correctly");
-      Assert.AreEqual(ps.NullableCustomTargetCmv, lbs.overridingMachineCCV, "overridingMachineCCV not mapped correctly");
-      Assert.AreEqual(ps.NullableCustomTargetMdp, lbs.overridingMachineMDP, "overridingMachineMDP not mapped correctly");
-      Assert.IsNotNull(lbs.overridingTargetPassCountRange, "overridingTargetPassCountRange should not be null");
-      Assert.AreEqual(ps.customTargetPassCountMinimum, lbs.overridingTargetPassCountRange.min, "overridingTargetPassCountRange.min not mapped correctly");
-      Assert.AreEqual(ps.customTargetPassCountMaximum, lbs.overridingTargetPassCountRange.max, "overridingTargetPassCountRange.max not mapped correctly");
-      Assert.IsNotNull(lbs.overridingTemperatureWarningLevels, "overridingTemperatureWarningLevels should not be null");
-      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMinimum, lbs.overridingTemperatureWarningLevels.min, "overridingTemperatureWarningLevels.min not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMaximum, lbs.overridingTemperatureWarningLevels.max, "overridingTemperatureWarningLevels.max not mapped correctly");
-      Assert.IsNotNull(lbs.machineSpeedTarget, "machineSpeedTarget should not be null");
-      Assert.AreEqual(ps.CustomTargetSpeedMinimum, lbs.machineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetSpeedMaximum, lbs.machineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
+      Assert.IsNotNull(lbs.CCVRange, "cCVRange should not be null");
+      Assert.AreEqual(ps.customTargetCmvPercentMinimum, lbs.CCVRange.Min, "cCVRange.Min not mapped correctly");
+      Assert.AreEqual(ps.customTargetCmvPercentMaximum, lbs.CCVRange.Max, "cCVRange.Max not mapped correctly");
+      Assert.AreEqual(LiftDetectionType.None, lbs.LiftDetectionType, "liftDetectionType not mapped correctly");
+      Assert.AreEqual(LiftThicknessType.Compacted, lbs.LiftThicknessType, "liftThicknessType not mapped correctly");
+      Assert.IsNotNull(lbs.MDPRange, "mDPRange should not be null");
+      Assert.AreEqual(ps.customTargetMdpPercentMinimum, lbs.MDPRange.Min, "mDPRange.Min not mapped correctly");
+      Assert.AreEqual(ps.customTargetMdpPercentMaximum, lbs.MDPRange.Max, "mDPRange.Max not mapped correctly");
+      Assert.AreEqual(ps.NullableCustomTargetCmv, lbs.OverridingMachineCCV, "overridingMachineCCV not mapped correctly");
+      Assert.AreEqual(ps.NullableCustomTargetMdp, lbs.OverridingMachineMDP, "overridingMachineMDP not mapped correctly");
+      Assert.IsNotNull(lbs.OverridingTargetPassCountRange, "overridingTargetPassCountRange should not be null");
+      Assert.AreEqual(ps.customTargetPassCountMinimum, lbs.OverridingTargetPassCountRange.Min, "overridingTargetPassCountRange.Min not mapped correctly");
+      Assert.AreEqual(ps.customTargetPassCountMaximum, lbs.OverridingTargetPassCountRange.Max, "overridingTargetPassCountRange.Max not mapped correctly");
+      Assert.IsNotNull(lbs.OverridingTemperatureWarningLevels, "overridingTemperatureWarningLevels should not be null");
+      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMinimum, lbs.OverridingTemperatureWarningLevels.Min, "overridingTemperatureWarningLevels.Min not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMaximum, lbs.OverridingTemperatureWarningLevels.Max, "overridingTemperatureWarningLevels.Max not mapped correctly");
+      Assert.IsNotNull(lbs.MachineSpeedTarget, "machineSpeedTarget should not be null");
+      Assert.AreEqual(ps.CustomTargetSpeedMinimum, lbs.MachineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetSpeedMaximum, lbs.MachineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
 
       // The useDefaultTargetRangeCmvPercent and useDefaultTargetRangeMdpPercent are set to "true".
       ps = CompactionProjectSettings.CreateProjectSettings(false, 3, 11, false, 35, 129, false, 43, false, 44, true, 55, 103, true, 56, 102, false, 4, 8, null, null, null, null, null, false, new List<int> { 1, 2, 3, 5, 7, 9, 12, 16 });
 
       lbs = AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
-      Assert.IsNotNull(lbs.cCVRange, "cCVRange should not be null");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum, lbs.cCVRange.min, "cCVRange.min not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum, lbs.cCVRange.max, "cCVRange.max not mapped correctly");
-      Assert.AreEqual(LiftDetectionType.None, lbs.liftDetectionType, "liftDetectionType not mapped correctly");
-      Assert.AreEqual(LiftThicknessType.Compacted, lbs.liftThicknessType, "liftThicknessType not mapped correctly");
-      Assert.IsNotNull(lbs.mDPRange, "mDPRange should not be null");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum, lbs.mDPRange.min, "mDPRange.min not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum, lbs.mDPRange.max, "mDPRange.max not mapped correctly");
-      Assert.AreEqual(ps.NullableCustomTargetCmv, lbs.overridingMachineCCV, "overridingMachineCCV not mapped correctly");
-      Assert.AreEqual(ps.NullableCustomTargetMdp, lbs.overridingMachineMDP, "overridingMachineMDP not mapped correctly");
-      Assert.IsNotNull(lbs.overridingTargetPassCountRange, "overridingTargetPassCountRange should not be null");
-      Assert.AreEqual(ps.customTargetPassCountMinimum, lbs.overridingTargetPassCountRange.min, "overridingTargetPassCountRange.min not mapped correctly");
-      Assert.AreEqual(ps.customTargetPassCountMaximum, lbs.overridingTargetPassCountRange.max, "overridingTargetPassCountRange.max not mapped correctly");
-      Assert.IsNotNull(lbs.overridingTemperatureWarningLevels, "overridingTemperatureWarningLevels should not be null");
-      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMinimum, lbs.overridingTemperatureWarningLevels.min, "overridingTemperatureWarningLevels.min not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMaximum, lbs.overridingTemperatureWarningLevels.max, "overridingTemperatureWarningLevels.max not mapped correctly");
-      Assert.IsNotNull(lbs.machineSpeedTarget, "machineSpeedTarget should not be null");
-      Assert.AreEqual(ps.CustomTargetSpeedMinimum, lbs.machineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
-      Assert.AreEqual(ps.CustomTargetSpeedMaximum, lbs.machineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
+      Assert.IsNotNull(lbs.CCVRange, "cCVRange should not be null");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum, lbs.CCVRange.Min, "cCVRange.Min not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum, lbs.CCVRange.Max, "cCVRange.Max not mapped correctly");
+      Assert.AreEqual(LiftDetectionType.None, lbs.LiftDetectionType, "liftDetectionType not mapped correctly");
+      Assert.AreEqual(LiftThicknessType.Compacted, lbs.LiftThicknessType, "liftThicknessType not mapped correctly");
+      Assert.IsNotNull(lbs.MDPRange, "mDPRange should not be null");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum, lbs.MDPRange.Min, "mDPRange.Min not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum, lbs.MDPRange.Max, "mDPRange.Max not mapped correctly");
+      Assert.AreEqual(ps.NullableCustomTargetCmv, lbs.OverridingMachineCCV, "overridingMachineCCV not mapped correctly");
+      Assert.AreEqual(ps.NullableCustomTargetMdp, lbs.OverridingMachineMDP, "overridingMachineMDP not mapped correctly");
+      Assert.IsNotNull(lbs.OverridingTargetPassCountRange, "overridingTargetPassCountRange should not be null");
+      Assert.AreEqual(ps.customTargetPassCountMinimum, lbs.OverridingTargetPassCountRange.Min, "overridingTargetPassCountRange.Min not mapped correctly");
+      Assert.AreEqual(ps.customTargetPassCountMaximum, lbs.OverridingTargetPassCountRange.Max, "overridingTargetPassCountRange.Max not mapped correctly");
+      Assert.IsNotNull(lbs.OverridingTemperatureWarningLevels, "overridingTemperatureWarningLevels should not be null");
+      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMinimum, lbs.OverridingTemperatureWarningLevels.Min, "overridingTemperatureWarningLevels.Min not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetTemperatureWarningLevelMaximum, lbs.OverridingTemperatureWarningLevels.Max, "overridingTemperatureWarningLevels.Max not mapped correctly");
+      Assert.IsNotNull(lbs.MachineSpeedTarget, "machineSpeedTarget should not be null");
+      Assert.AreEqual(ps.CustomTargetSpeedMinimum, lbs.MachineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
+      Assert.AreEqual(ps.CustomTargetSpeedMaximum, lbs.MachineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
     }
 
     [TestMethod]
@@ -228,21 +228,21 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       var ps = CompactionProjectSettings.CreateProjectSettings(true, 3, 11, true, 35, 129, true, 43, true, 44, true, 55, 103, true, 56, 102, true, 4, 8, null, null, null, null, null, true, new List<int> { 1, 2, 3, 5, 7, 9, 12, 16 });
 
       var lbs = AutoMapperUtility.Automapper.Map<LiftBuildSettings>(ps);
-      Assert.IsNotNull(lbs.cCVRange, "cCVRange should not be null");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum, lbs.cCVRange.min, "cCVRange.min not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum, lbs.cCVRange.max, "cCVRange.max not mapped correctly");
-      Assert.AreEqual(LiftDetectionType.None, lbs.liftDetectionType, "liftDetectionType not mapped correctly");
-      Assert.AreEqual(LiftThicknessType.Compacted, lbs.liftThicknessType, "liftThicknessType not mapped correctly");
-      Assert.IsNotNull(lbs.mDPRange, "mDPRange should not be null");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum, lbs.mDPRange.min, "mDPRange.min not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum, lbs.mDPRange.max, "mDPRange.max not mapped correctly");
-      Assert.IsNull(lbs.overridingMachineCCV, "overridingMachineCCV should be null");
-      Assert.IsNull(lbs.overridingMachineMDP, "overridingMachineMDP should be null");
-      Assert.IsNull(lbs.overridingTargetPassCountRange, "overridingTargetPassCountRange should be null");
-      Assert.IsNull(lbs.overridingTemperatureWarningLevels, "overridingTemperatureWarningLevels should be null");
-      Assert.IsNotNull(lbs.machineSpeedTarget, "machineSpeedTarget should not be null");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.CustomTargetSpeedMinimum, lbs.machineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
-      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.CustomTargetSpeedMaximum, lbs.machineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
+      Assert.IsNotNull(lbs.CCVRange, "cCVRange should not be null");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum, lbs.CCVRange.Min, "cCVRange.Min not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum, lbs.CCVRange.Max, "cCVRange.Max not mapped correctly");
+      Assert.AreEqual(LiftDetectionType.None, lbs.LiftDetectionType, "liftDetectionType not mapped correctly");
+      Assert.AreEqual(LiftThicknessType.Compacted, lbs.LiftThicknessType, "liftThicknessType not mapped correctly");
+      Assert.IsNotNull(lbs.MDPRange, "mDPRange should not be null");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum, lbs.MDPRange.Min, "mDPRange.Min not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum, lbs.MDPRange.Max, "mDPRange.Max not mapped correctly");
+      Assert.IsNull(lbs.OverridingMachineCCV, "overridingMachineCCV should be null");
+      Assert.IsNull(lbs.OverridingMachineMDP, "overridingMachineMDP should be null");
+      Assert.IsNull(lbs.OverridingTargetPassCountRange, "overridingTargetPassCountRange should be null");
+      Assert.IsNull(lbs.OverridingTemperatureWarningLevels, "overridingTemperatureWarningLevels should be null");
+      Assert.IsNotNull(lbs.MachineSpeedTarget, "machineSpeedTarget should not be null");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.CustomTargetSpeedMinimum, lbs.MachineSpeedTarget.MinTargetMachineSpeed, "machineSpeedTarget.MinTargetMachineSpeed not mapped correctly");
+      Assert.AreEqual(CompactionProjectSettings.DefaultSettings.CustomTargetSpeedMaximum, lbs.MachineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
     }
   }
 }

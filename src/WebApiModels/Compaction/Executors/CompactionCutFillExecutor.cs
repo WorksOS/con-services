@@ -24,10 +24,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ContractExecutionResult result;
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
-      var filter = RaptorConverters.ConvertFilter(null, request.filter, request.ProjectId);
-      var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
+      var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
+      var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
       var liftBuildSettings =
-        RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 
       bool success = raptorClient.GetCutFillDetails(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (success)
       {
-        result = CompactionCutFillDetailedResult.CreateCutFillDetailedResult(cutFillDetails.Percents);
+        result = new CompactionCutFillDetailedResult(cutFillDetails.Percents);
       }
       else
       {

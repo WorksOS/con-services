@@ -56,8 +56,10 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     public async Task DirectTagFileSubmitter_RaptorAndTRex_Successfull()
     {
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      long legacyProjectId = 1;
       var request = new CompactionTagFileRequest()
       {
+        ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
         Data = tagFileContent,
@@ -103,8 +105,10 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // trex result is ignored in overall result to final return is the Raptor success
 
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      long legacyProjectId = 1;
       var request = new CompactionTagFileRequest()
       {
+        ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
         Data = tagFileContent,
@@ -149,8 +153,10 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     public async Task DirectTagFileSubmitter_Raptor_Unsuccessfull()
     {
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      long legacyProjectId = 1;
       var request = new CompactionTagFileRequest()
       {
+        ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
         Data = tagFileContent,
@@ -195,8 +201,10 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     public async Task DirectTagFileSubmitter_TRex_ThrowsException()
     {
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      long legacyProjectId = 1;
       var request = new CompactionTagFileRequest()
       {
+        ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
         Data = tagFileContent,
@@ -237,9 +245,12 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     [TestMethod]
     public async Task DirectTagFileSubmitter_Raptor_ThrowsException()
     {
+      long legacyProjectId = 1; //  todo projectID validation rejects  0 and -1. Also projectId or UID MUST have a valid value;
+                                //   VelociraptorConstants.NO_PROJECT_ID = -1
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       var request = new CompactionTagFileRequest()
       {
+        ProjectId = legacyProjectId, 
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
         Data = tagFileContent,
@@ -289,12 +300,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       (
         new CompactionTagFileRequest()
         {
+          ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,
           FileName = "Machine Name--whatever --161230235959",
           Data = tagFileContent,
           OrgId = string.Empty
         },
-        resolvedLegacyProjectId, CreateAFence()
+        CreateAFence()
       );
 
       // create the mock PDSClient with successful result
@@ -336,12 +348,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       (
         new CompactionTagFileRequest()
         {
+          ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,
           FileName = "Machine Name--whatever --161230235959",
           Data = tagFileContent,
           OrgId = string.Empty
         },
-        resolvedLegacyProjectId, CreateAFence()
+        CreateAFence()
       );
 
       // create the mock PDSClient with successful result
@@ -384,12 +397,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       (
         new CompactionTagFileRequest()
         {
+          ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,
           FileName = "Machine Name--whatever --161230235959",
           Data = tagFileContent,
           OrgId = string.Empty
         },
-        resolvedLegacyProjectId, CreateAFence()
+        CreateAFence()
       );
 
       // create the mock PDSClient with Unsuccessful result
@@ -433,12 +447,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       (
         new CompactionTagFileRequest()
         {
+          ProjectId  = resolvedLegacyProjectId,
           ProjectUid = projectUid,
           FileName = "Machine Name--whatever --161230235959",
           Data = tagFileContent,
           OrgId = string.Empty
         },
-        resolvedLegacyProjectId, CreateAFence()
+        CreateAFence()
       );
 
       // create the mock PDSClient with Unsuccessful result
@@ -497,12 +512,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       (
         new CompactionTagFileRequest()
         {
+          ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,
           FileName = "Machine Name--whatever --161230235959",
           Data = tagFileContent,
           OrgId = string.Empty
         },
-        resolvedLegacyProjectId, createFence ? CreateAFence() : null
+        createFence ? CreateAFence() : null
       );
 
       var mockTagProcessor = new Mock<ITagProcessor>();
@@ -528,13 +544,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       var points = new List<WGSPoint3D>
       {
-        WGSPoint3D.CreatePoint(0.631986074660308, -2.00757760231466),
-        WGSPoint3D.CreatePoint(0.631907507374149, -2.00758733949739),
-        WGSPoint3D.CreatePoint(0.631904485465203, -2.00744352879854),
-        WGSPoint3D.CreatePoint(0.631987283352491, -2.00743753668608)
+        new WGSPoint3D(0.631986074660308, -2.00757760231466),
+        new WGSPoint3D(0.631907507374149, -2.00758733949739),
+        new WGSPoint3D(0.631904485465203, -2.00744352879854),
+        new WGSPoint3D(0.631987283352491, -2.00743753668608)
       };
 
-      return WGS84Fence.CreateWGS84Fence(points.ToArray());
+      return new WGS84Fence(points.ToArray());
     }
   }
 }
