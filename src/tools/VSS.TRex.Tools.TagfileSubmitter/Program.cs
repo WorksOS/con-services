@@ -196,7 +196,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         }
 
         // Obtain a TAGFileProcessing client server
-        TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
+//        TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
 
         ProcessTAGFilesInFolder(projectID, folderPath);
 
