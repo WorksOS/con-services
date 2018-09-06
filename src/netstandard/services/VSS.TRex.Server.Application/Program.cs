@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
@@ -25,6 +27,7 @@ namespace VSS.TRex.Server.Application
 {
   class Program
   {
+
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       switch (key)
@@ -117,7 +120,7 @@ namespace VSS.TRex.Server.Application
           Log.LogError($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       DependencyInjection();
 
@@ -136,8 +139,14 @@ namespace VSS.TRex.Server.Application
         ServerRoles.ANALYTICS_NODE,
       });
 
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      {
+        Console.WriteLine("Exiting");
+        cancelTokenSource.Cancel();
+      };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }

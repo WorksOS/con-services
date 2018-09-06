@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
+spec:
+  selector:
+    component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP

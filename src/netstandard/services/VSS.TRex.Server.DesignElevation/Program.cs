@@ -1,11 +1,13 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Designs.Servers.Client;
+using System.Threading;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Storage.Models;
+using System.Threading.Tasks;
 
 namespace VSS.TRex.Server.DesignElevation
 {
@@ -46,15 +48,21 @@ namespace VSS.TRex.Server.DesignElevation
         if (asmType.Assembly == null)
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       DependencyInjection();
 
       EnsureAssemblyDependenciesAreLoaded();
 
       var server = new CalculateDesignElevationsServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      {
+        Console.WriteLine("Exiting");
+        cancelTokenSource.Cancel();
+      };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }
