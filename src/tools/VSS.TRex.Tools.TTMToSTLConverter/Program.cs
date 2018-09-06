@@ -34,7 +34,7 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
             {
               writer.WriteLine($"facet normal 0, 0, 0");
               writer.WriteLine("outer loop");
-              foreach (int vertex in new int[] { tri.Vertex0, tri.Vertex1, tri.Vertex2 })
+              foreach (int vertex in new [] { tri.Vertex0, tri.Vertex1, tri.Vertex2 })
                 writer.WriteLine($"Vertex {tin.Vertices.Items[vertex].X}, {tin.Vertices.Items[vertex].Y}, {tin.Vertices.Items[vertex].Z}");
               writer.WriteLine("endloop");
               writer.WriteLine("endfacet");
@@ -62,7 +62,7 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
               writer.Write((int)0);
 
               // Vertices
-              foreach (int vertex in new int[] {tri.Vertex0, tri.Vertex1, tri.Vertex2})
+              foreach (int vertex in new [] {tri.Vertex0, tri.Vertex1, tri.Vertex2})
               {
                 writer.Write(tin.Vertices.Items[vertex].X);
                 writer.Write(tin.Vertices.Items[vertex].Y);
