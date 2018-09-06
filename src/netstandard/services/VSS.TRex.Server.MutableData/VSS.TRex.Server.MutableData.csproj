@@ -40,7 +40,7 @@
     <None Update="immutablePersistence .xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="mutablePersistence .xml">
+    <None Update="mutablePersistence.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ignitePersistantMutableKubeConfig.xml">
