@@ -71,6 +71,7 @@
         UnableToAcquireGranuleReadInterlock,
         FailedToCreateAllConcurrentHandles,
         FailedToLockFileRegion,
-        InvalidRequest
+        InvalidRequest,
+        MutableToImmutableConversionError
     }
 }

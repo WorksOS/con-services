@@ -194,7 +194,7 @@ namespace VSS.TRex.Storage
             }
 
             // Convert from the mutable to the immutable form and store it into the immutable cache
-            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && (immutableStream != null))
+            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && immutableStream != null)
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {

@@ -18,7 +18,7 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The Sitemodel instance that owns this set of machines target values
     /// </summary>
-    private ISiteModel Owner;
+    private readonly ISiteModel Owner;
 
     /// <summary>
     /// Maps machine IDs (currently as 16 bit integers) to the instance containing all the event lists for all the machines
@@ -27,7 +27,8 @@ namespace VSS.TRex.Events
     //Removed as internal machine ID are not simple indexes into the site model machines list
     //private Dictionary<short, ProductionEventLists> MachineIDMap = new Dictionary<short, ProductionEventLists>();
     private IProductionEventLists[] MachineIDMap;
-    private object[] MachinelockInterlocks = new object[0];
+
+    private readonly object[] MachinelockInterlocks;
 
     /// <summary>
     /// Constructor for the machines events within the sitemodel supplier as owner
@@ -59,8 +60,8 @@ namespace VSS.TRex.Events
           // If the map is still null then this requestor 'won the lock'
           if (MachineIDMap[machineID] == null)
           {
-            // Create a temp var for the events so consurrent requestors wont grab a reference to
-            // an event lsit being loaded
+            // Create a temp var for the events so concurrent requestors wont grab a reference to
+            // an event list being loaded
             ProductionEventLists temp = new ProductionEventLists(Owner, machineID);
             
             if (temp.LoadEventsForMachine(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy()))

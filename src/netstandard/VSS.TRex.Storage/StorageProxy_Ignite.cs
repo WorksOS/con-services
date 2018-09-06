@@ -81,10 +81,6 @@ namespace VSS.TRex.Storage
                 {
                     return FileSystemErrorStatus.GranuleDoesNotExist;
                 }
-                catch (Exception)
-                {
-                    throw;
-                }
 
                 return FileSystemErrorStatus.OK;
             }
@@ -210,7 +206,6 @@ namespace VSS.TRex.Storage
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
                     // Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
-
                     spatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
@@ -222,9 +217,10 @@ namespace VSS.TRex.Storage
                         PerformSpatialImmutabilityConversion(Stream, ImmutableProxy.SpatialCache, cacheKey, StreamType);
                     }
                 }
-                catch 
+                catch (Exception e)
                 {
-                    // Ignore any exception here which is typically thrown if the element in the cache does not exist, which is entirely possible
+                  Log.LogError($"Exception performing mutability conversion: {e}");
+                  return FileSystemErrorStatus.MutableToImmutableConversionError;
                 }
 
                 return FileSystemErrorStatus.OK;
@@ -252,17 +248,24 @@ namespace VSS.TRex.Storage
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
                     // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
-
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
-                // Convert the stream to the immutable form and write it to the immutable storage proxy
-                if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
+                try
+                {            
+                    // Convert the stream to the immutable form and write it to the immutable storage proxy
+                    if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
+                    {
+                      PerformNonSpatialImmutabilityConversion(Stream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType);
+                    }
+                }
+                catch (Exception e)
                 {
-                    PerformNonSpatialImmutabilityConversion(Stream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType);
+                    Log.LogError($"Exception performing mutability conversion: {e}");
+                    return FileSystemErrorStatus.MutableToImmutableConversionError;
                 }
 
-                return FileSystemErrorStatus.OK;
+              return FileSystemErrorStatus.OK;
             }
             catch
             {
@@ -287,17 +290,24 @@ namespace VSS.TRex.Storage
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
                     // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
-
                     nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
                 }
 
-                // Convert the stream to the immutable form and write it to the immutable storage proxy
-                if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
-                {
+              try
+              {
+                  // Convert the stream to the immutable form and write it to the immutable storage proxy
+                  if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
+                  {
                     PerformNonSpatialImmutabilityConversion(Stream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType);
-                }
+                  }
+              }
+              catch (Exception e)
+              {
+                  Log.LogError($"Exception performing mutability conversion: {e}");
+                  return FileSystemErrorStatus.MutableToImmutableConversionError;
+              }
 
-                return FileSystemErrorStatus.OK;
+              return FileSystemErrorStatus.OK;
             }
             catch
             {

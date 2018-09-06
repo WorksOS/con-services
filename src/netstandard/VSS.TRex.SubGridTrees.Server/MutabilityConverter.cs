@@ -92,7 +92,6 @@ namespace VSS.TRex.SubGridTrees.Server
                     }
                 };
 
-
                 // Load the mutable stream of information
                 mutableStream.Position = 0;
                 leaf.LoadDirectoryFromStream(mutableStream);
