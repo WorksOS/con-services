@@ -55,6 +55,7 @@ namespace VSS.TRex.Profiling
     /// relevant to the profiling query
     /// </summary>
     private ClientCompositeHeightsLeafSubgrid CompositeHeightsGrid;
+
     private IClientLeafSubGrid CompositeHeightsGridIntf;
 
     /// <summary>
@@ -83,6 +84,7 @@ namespace VSS.TRex.Profiling
     /// The argument to be used when requesting composite elevation subgrids to support profiel analysis
     /// </summary>
     public SurfaceElevationPatchArgument SurfaceElevationPatchArg;
+
     private SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
 
     /// <summary>
@@ -119,7 +121,7 @@ namespace VSS.TRex.Profiling
         // Filter out any surveyed surfaces which don't match current filter (if any)
         // - realistically, this is time filters we're thinking of here
 
-        FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>(); 
+        FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
         SiteModel.SurveyedSurfaces?.FilterSurveyedSurfaceDetails(PassFilter.HasTimeFilter, PassFilter.StartTime,
           PassFilter.EndTime, PassFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
@@ -436,7 +438,7 @@ namespace VSS.TRex.Profiling
       uint CellX = ProfileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
       uint CellY = ProfileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
       bool HaveCompositeSurfaceForCell = CompositeHeightsGrid?.ProdDataMap.BitSet(CellX, CellY) ?? false;
-      
+
       if (HaveCompositeSurfaceForCell)
       {
         if ((CompositeHeightsGrid.Cells[CellX, CellY].LastHeightTime == 0) ||
@@ -502,123 +504,107 @@ namespace VSS.TRex.Profiling
 //      FilterDesignElevations = null;
       bool IgnoreSubgrid = false;
 
-      try
+      for (int I = 0; I < ProfileCells.Count; I++)
       {
-        try
+        ProfileCell = (ProfileCell) ProfileCells[I];
+
+        // get subgrid setup iterator and set cell address
+        // get sugbrid origin for cell address
+        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+          ProfileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+
+        if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin)) // if we have a new subgrid to fetch
         {
-          for (int I = 0; I < ProfileCells.Count; I++)
+          IgnoreSubgrid = false;
+          CurrentSubgridOrigin = ThisSubgridOrigin;
+          SubGrid = null;
+
+          // Does the subgridtree contain this node in it's existance map?
+          if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
+            SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY,
+              SiteModel.Grid.NumLevels);
+
+          _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
+          if (_SubGridAsLeaf == null)
+            continue;
+
+          cellPassIterator.SegmentIterator.SubGrid = _SubGridAsLeaf;
+          cellPassIterator.SegmentIterator.Directory = _SubGridAsLeaf.Directory;
+
+          if (CompositeHeightsGrid != null)
           {
-            ProfileCell = (ProfileCell)ProfileCells[I];
+            ClientLeafSubGridFactory.ReturnClientSubGrid(ref CompositeHeightsGridIntf);
+            CompositeHeightsGrid = null;
+          }
 
-            // get subgrid setup iterator and set cell address
-            // get sugbrid origin for cell address
-            SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-              ProfileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+          if (LiftFilterMask.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
+            ProfileCells, ref FilterMask, I, CellFilter))
+            continue;
 
-            if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin)) // if we have a new subgrid to fetch
+          if (FilteredSurveyedSurfaces != null)
+          {
+            // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
+            SurfaceElevationPatchArg.OTGCellBottomLeftX = _SubGridAsLeaf.OriginX;
+            SurfaceElevationPatchArg.OTGCellBottomLeftY = _SubGridAsLeaf.OriginY;
+            SurfaceElevationPatchArg.ProcessingMap = FilterMask;
+
+            CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
+            CompositeHeightsGrid = CompositeHeightsGridIntf as ClientCompositeHeightsLeafSubgrid;
+
+            if (CompositeHeightsGrid == null)
             {
-              IgnoreSubgrid = false;
-              CurrentSubgridOrigin = ThisSubgridOrigin;
-              SubGrid = null;
-
-              // Does the subgridtree contain this node in it's existance map?
-              if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
-                SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY,
-                  SiteModel.Grid.NumLevels);
-
-              _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
-              if (_SubGridAsLeaf == null)
-                continue;
-
-              cellPassIterator.SegmentIterator.SubGrid = _SubGridAsLeaf;
-              cellPassIterator.SegmentIterator.Directory = _SubGridAsLeaf.Directory;
-
-              if (CompositeHeightsGrid != null)
-              {
-                ClientLeafSubGridFactory.ReturnClientSubGrid(ref CompositeHeightsGridIntf);
-                CompositeHeightsGrid = null;
-              }
-
-              if (LiftFilterMask.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
-                ProfileCells, ref FilterMask, I, CellFilter))
-                continue;
-
-              if (FilteredSurveyedSurfaces != null)
-              {
-                // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-                SurfaceElevationPatchArg.OTGCellBottomLeftX = _SubGridAsLeaf.OriginX;
-                SurfaceElevationPatchArg.OTGCellBottomLeftY = _SubGridAsLeaf.OriginY;
-                SurfaceElevationPatchArg.ProcessingMap = FilterMask;
-
-                CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
-                CompositeHeightsGrid = CompositeHeightsGridIntf as ClientCompositeHeightsLeafSubgrid;
-
-                if (CompositeHeightsGrid == null)
-                {
-                  Log.LogError("Call(B) to SurfaceElevationPatchRequest failed to return a composite profile grid.");
-                  continue;
-                }
-              }
-
-              if (!LiftFilterMask.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
-                CellPassFilter_ElevationRangeDesign, out DesignProfilerRequestResult FilterDesignErrorCode))
-              {
-                if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-                  IgnoreSubgrid = true;
-                else
-                  Log.LogError("Call to RequestDesignElevationPatch in TICServerProfiler for filter failed to return an elevation patch.");
-                continue;
-              }
+              Log.LogError("Call(B) to SurfaceElevationPatchRequest failed to return a composite profile grid.");
+              continue;
             }
+          }
 
-            if (SubGrid != null && !IgnoreSubgrid)
-            {
-              if (_SubGridAsLeaf != null)
-              {
-                if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasCCVData())
-                  ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasCCVData;
-
-                if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasMDPData())
-                  ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasMDPData;
-
-                if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasCCAData())
-                  ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasCCAData;
-
-                if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasTemperatureData())
-                  ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasTemperatureData;
-              }
-
-              // get cell address relative to subgrid and SetCellCoordinatesInSubgrid
-              cellPassIterator.SetCellCoordinatesInSubgrid(
-                (byte) (ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
-                (byte) (ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
-              PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
-
-              if (CellLiftBuilder.Build(ProfileCell, /*todo Dummy_LiftBuildSettings, */ null, null, cellPassIterator, false))
-              {
-                TopMostLayerPassCount = CellLiftBuilder.FilteredPassCountOfTopMostLayer;
-                TopMostLayerCompactionHalfPassCount = CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
-                ProfileCell.IncludesProductionData = true;
-              }
-              else
-                ProfileCell.ClearLayers();
-            }
+          if (!LiftFilterMask.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
+            CellPassFilter_ElevationRangeDesign, out DesignProfilerRequestResult FilterDesignErrorCode))
+          {
+            if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+              IgnoreSubgrid = true;
             else
-              ProfileCell.ClearLayers();
-
-            CalculateSummaryCellAttributeData();
+              Log.LogError("Call to RequestDesignElevationPatch in TICServerProfiler for filter failed to return an elevation patch.");
+            continue;
           }
         }
-        finally
+
+        if (SubGrid != null && !IgnoreSubgrid)
         {
-          // release last subgrid
-          //if (SubGrid != null && SubGrid.Locked && SubGrid.LockToken == FLockToken)
-          //SubGrid.ReleaseLock(FLockToken);
+          if (_SubGridAsLeaf != null)
+          {
+            if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasCCVData())
+              ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasCCVData;
+
+            if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasMDPData())
+              ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasMDPData;
+
+            if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasCCAData())
+              ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasCCAData;
+
+            if (_SubGridAsLeaf.Directory.GlobalLatestCells.HasTemperatureData())
+              ProfileCell.AttributeExistenceFlags |= ProfileCellAttributeExistenceFlags.HasTemperatureData;
+          }
+
+          // get cell address relative to subgrid and SetCellCoordinatesInSubgrid
+          cellPassIterator.SetCellCoordinatesInSubgrid(
+            (byte) (ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
+            (byte) (ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
+          PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
+
+          if (CellLiftBuilder.Build(ProfileCell, /*todo Dummy_LiftBuildSettings, */ null, null, cellPassIterator, false))
+          {
+            TopMostLayerPassCount = CellLiftBuilder.FilteredPassCountOfTopMostLayer;
+            TopMostLayerCompactionHalfPassCount = CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
+            ProfileCell.IncludesProductionData = true;
+          }
+          else
+            ProfileCell.ClearLayers();
         }
-      }
-      finally
-      {
-        //LockTokenManager.ReleaseToken(FLockTokenName);
+        else
+          ProfileCell.ClearLayers();
+
+        CalculateSummaryCellAttributeData();
       }
 
       return true;

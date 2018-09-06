@@ -125,7 +125,7 @@ namespace VSS.TRex.SiteModels
                 if (!SurveyedSurfacesLoaded)
                 {
                     SurveyedSurfaceService proxy = new SurveyedSurfaceService(StorageMutability.Immutable, TRexCaches.ImmutableNonSpatialCacheName());
-                    proxy.Init(null); // TODO: Not needed when this moves to Ignite deployed service model
+                    proxy.Init(null); // Note: Not needed when this moves to Ignite deployed service model
                     ISurveyedSurfaces ss = proxy.ListDirect(ID);
 
                     lock (this)
@@ -426,11 +426,8 @@ namespace VSS.TRex.SiteModels
 
         public FileSystemErrorStatus LoadFromPersistentStore(IStorageProxy StorageProxy)
         {
-            FileSystemErrorStatus Result; // = FileSystemErrorStatus.UnknownErrorReadingFromFS;
-
             Guid SavedID = ID;
-
-            Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+            FileSystemErrorStatus Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
             if (Result == FileSystemErrorStatus.OK)
             {

@@ -298,7 +298,6 @@ namespace VSS.TRex.SubGrids
                                                    // LiftBuildSettings,
                                                    ClientGrid,
                                                    CellOverrideMask,
-                                                   // ASubgridLockToken,
                                                    DesignElevations);
 
                 /* TODO: General subgrid result caching not yet supported
@@ -559,7 +558,6 @@ namespace VSS.TRex.SubGrids
         public ServerRequestResult RequestSubGridInternal(// SubgridCache : TDataModelContextSubgridResultCache;
                                                           SubGridCellAddress subGridAddress,
                                                           // LiftBuildSettings: TICLiftBuildSettings;
-                                                          // ASubgridLockToken : Integer;
                                                           bool prodDataRequested,
                                                           bool surveyedSurfaceDataRequested,
                                                           IClientLeafSubGrid clientGrid
@@ -582,7 +580,7 @@ namespace VSS.TRex.SubGrids
             CellY = subGridAddress.Y << ((SubGridTreeConsts.SubGridTreeLevels - TreeLevel) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
             // if VLPDSvcLocations.Debug_ExtremeLogSwitchB then
-            //    SIGLogMessage.PublishNoODS(Nil, 'About to call RetrieveSubGrid()', slmcDebug);
+            //    Log.LogDebug("About to call RetrieveSubGrid()");
 
             ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
                                                  (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));

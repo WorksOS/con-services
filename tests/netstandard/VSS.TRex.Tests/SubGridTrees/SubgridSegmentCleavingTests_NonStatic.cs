@@ -213,26 +213,14 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             ISubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
 
-            // Check cleacing is not permitted if the owning subgrid is not locked
-            // Lock requirement currently removed
-            //Assert.False(subGrid.Cells.CleaveSegment(segment), "Segment managed to cleave with no active subgrid lock");
+            // Instruct the segment container to cleave the segment
+            // Modify the cleaving limit to 100000 to force the segment not to be cloven = the cleave result should be false
+            TRexConfig.VLPD_SubGridSegmentPassCountLimit = 100000;
+            Assert.False(subGrid.Cells.CleaveSegment(segment), "Segment was cloven when cell pass count was below limit");
 
-            // Instruct the segment container to cleave the segment, locking the owner while it occurs
-            subGrid.AcquireLock(0);
-            try
-            {
-                // Modify the cleaving limit to 100000 to force the segment not to be cloven = the cleave result should be false
-                TRexConfig.VLPD_SubGridSegmentPassCountLimit = 100000;
-                Assert.False(subGrid.Cells.CleaveSegment(segment), "Segment was cloven when cell pass count was below limit");
-
-                // Modify the cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
-                TRexConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
-                Assert.True(subGrid.Cells.CleaveSegment(segment), "Segment failed to cleave with pass count above limit");
-            }
-            finally
-            {
-                subGrid.ReleaseLock(0);
-            }
+            // Modify the cleaving limit to 10000 to force the segment not to be cloven = the cleave result should be true
+            TRexConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
+            Assert.True(subGrid.Cells.CleaveSegment(segment), "Segment failed to cleave with pass count above limit");
 
             //Check there are now two segments in total
             Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
@@ -263,28 +251,20 @@ namespace VSS.TRex.Tests.SubGridTrees
             TRexConfig.VLPD_SubGridSegmentPassCountLimit = 10000;
 
             // Exercise the cleaver!
-            // Instruct the segment container to cleave the segment, locking the owner while it occurs
-            subGrid.AcquireLock(0);
-            try
-            {
-                // Set the segment to not dirty - it shoudl be ignored
-                subGrid.Cells.PassesData[0].Dirty = false;
+            // Instruct the segment container to cleave the segment
+            // Set the segment to not dirty - it shoudl be ignored
+            subGrid.Cells.PassesData[0].Dirty = false;
 
-                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
+            SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
 
-                Assert.True(1 == subGrid.Cells.PassesData.Count, $"After cleaving with no dirty segments there are {subGrid.Cells.PassesData.Count} segments instead of the expected one segments");
+            Assert.True(1 == subGrid.Cells.PassesData.Count, $"After cleaving with no dirty segments there are {subGrid.Cells.PassesData.Count} segments instead of the expected one segments");
 
-                // Set the segment to not dirty - it shoudl be ignored
-                subGrid.Cells.PassesData[0].Dirty = true;
-                SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
+            // Set the segment to not dirty - it shoudl be ignored
+            subGrid.Cells.PassesData[0].Dirty = true;
+            SubGridSegmentCleaver.PerformSegmentCleaving(StorageProxy.Instance(StorageMutability.Mutable), subGrid);
 
-                //Check there are now two segments in total
-                Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
-            }
-            finally
-            {
-                subGrid.ReleaseLock(0);
-            }
+            //Check there are now two segments in total
+            Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");
 
             //Check the total number of passes across the two segments is 10240, and the maximum pass count is 5
             ISubGridCellPassesDataSegment segment1 = subGrid.Cells.PassesData[0];

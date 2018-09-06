@@ -18,8 +18,8 @@ namespace VSS.TRex.Storage
     {
       switch (mutability)
       {
-        case StorageMutability.Mutable: return Factory?.Storage(StorageMutability.Mutable); // ?? StorageProxyFactory.Storage(StorageMutability.Mutable);
-        case StorageMutability.Immutable: return Factory?.Storage(StorageMutability.Immutable); // ?? StorageProxyFactory.Storage(StorageMutability.Immutable);
+        case StorageMutability.Mutable: return Factory?.Storage(StorageMutability.Mutable);
+        case StorageMutability.Immutable: return Factory?.Storage(StorageMutability.Immutable); 
         default:
           throw new ArgumentException($"{mutability} is an unknown mutability type");
       }

@@ -77,7 +77,6 @@ namespace VSS.TRex.SubGrids
 
     // ProductionEventChanges MachineTargetValues = null;
 
-    // bool MachineTargetValuesEventsLocked = false;
     private bool HaveFilteredPass;
     private FilteredPassData CurrentPass;
     private FilteredPassData TempPass;
@@ -279,7 +278,6 @@ namespace VSS.TRex.SubGrids
     {
       int TopMostLayerPassCount = 0;
       int TopMostLayerCompactionHalfPassCount = 0;
-      bool FilteredValueIsFromLatestCellPass;
 
       // bool Debug_ExtremeLogSwitchD = VLPDSvcLocations.Debug_ExtremeLogSwitchD;
 
@@ -439,7 +437,7 @@ namespace VSS.TRex.SubGrids
                   continue;
                 }
 
-                FilteredValueIsFromLatestCellPass = false;
+                bool FilteredValueIsFromLatestCellPass = false;
 
                 if (ClientGrid.WantsLiftProcessingResults())
                 {
@@ -504,8 +502,6 @@ namespace VSS.TRex.SubGrids
                 // if (Debug_ExtremeLogSwitchD)
                 //  Log.LogDebug{$"SI@{StripeIndex}/{J} at {CellX}x{CellY}: Calling BuildLiftsForCell");
 
-
-
                 if (Profiler.CellLiftBuilder.Build(CellProfile, ClientGrid,
                   AssignmentContext, // Place a filtered value into this assignment context
                   CellPassIterator,  // Iterate over the cells using this cell pass iterator
@@ -524,7 +520,6 @@ namespace VSS.TRex.SubGrids
                     {
                       HaveFilteredPass = ( CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
                              Range.InRange(CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature, Filter.AttributeFilter.MaterialTemperatureMin, Filter.AttributeFilter.MaterialTemperatureMax);
-
                     }
                   else
                     HaveFilteredPass = true;
@@ -744,17 +739,13 @@ namespace VSS.TRex.SubGrids
 
         // Create the rotated boundary by 'unrotating' the subgrid world extents into a context
         // where the grid is itself not rotated
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out double _X, out double _Y,
-          AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out double _X, out double _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX,
-          AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX,
-          AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMaxY, out _X, out _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
-        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMinY, out _X, out _Y, AreaControlSet.UserOriginX,
-          AreaControlSet.UserOriginY);
+        GeometryHelper.RotatePointAbout(Rotation, SubgridMaxX, SubgridMinY, out _X, out _Y, AreaControlSet.UserOriginX,AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
 
         FirstScanPointEast = Math.Truncate(RotatedSubgridBoundary.MinX / StepX) * StepX + IntraGridOffsetX;
@@ -871,8 +862,7 @@ namespace VSS.TRex.SubGrids
       // liftBuildSettings          : TICLiftBuildSettings;
       IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask,
-      // subgridLockToken          : Integer;
-      ClientHeightLeafSubGrid designElevations)
+      IClientHeightLeafSubGrid designElevations)
     {
       ServerRequestResult Result = ServerRequestResult.UnknownError;
 
@@ -918,8 +908,6 @@ namespace VSS.TRex.SubGrids
 
       try
       {
-        try
-        {
           // Ensure passtype filter is set correctly
           if (Filter.AttributeFilter.HasPassTypeFilter)
             if ((Filter.AttributeFilter.PassTypeSet & (PassTypeSet.Front | PassTypeSet.Rear)) == PassTypeSet.Front)
@@ -944,14 +932,7 @@ namespace VSS.TRex.SubGrids
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
           // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
-          _SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, 0, false, false);
-
-          /* TODO ???: TRex locking not finalised
-          if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)
-          {
-              SIGLogMessage.PublishNoODS(Nil, Format('Returned, locked, subgrid has incorrect lock token (%d vs expected %d)', [_SubGrid.LockToken, ASubGridLockToken]), slmcAssert); {SKIP}
-              return Result;
-          } */
+          _SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, false, false);
 
           //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
@@ -1047,15 +1028,6 @@ namespace VSS.TRex.SubGrids
         }
 
           Result = ServerRequestResult.NoError;
-        }
-        finally
-        {
-          /* TODO... TRex locking not finalised
-          if (_SubGrid != null)
-              _SubGrid.ReleaseLock(ASubGridLockToken);
-          */
-          // Log.LogDebug("Completed RetrieveSubGrid operation");
-        }
       }
       catch (Exception e)
       {

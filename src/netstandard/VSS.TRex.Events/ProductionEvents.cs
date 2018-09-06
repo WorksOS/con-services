@@ -18,7 +18,7 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <typeparam name="V"></typeparam>
     [Serializable]
-    public class ProductionEvents<V> : IProductionEvents, IProductionEvents<V>
+    public class ProductionEvents<V> : IProductionEvents<V>
   {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -26,7 +26,7 @@ namespace VSS.TRex.Events
         private const int MajorVersion = 1;
         private const int MinorVersion = 0;
 
-        public bool EventsChanged { get; set; } = false;
+        public bool EventsChanged { get; set; }
 
         /// <summary>
         /// The structure that contains all information about this type of event.
@@ -383,32 +383,8 @@ namespace VSS.TRex.Events
         // Function InMemorySize : Integer; InLine;
         // Procedure EnsureEventListLoaded; Inline;
         // Procedure MarkEventListAsInMemoryOnly; Inline;
-        // Procedure AcquireSharedReadInterlock; Inline;
-        // Procedure ReleaseSharedReadInterlock; Inline;
-        // Procedure AcquireExclusiveWriteInterlock; Inline;
-        // Procedure ReleaseExclusiveWriteInterlock; Inline;
 
 /*
-        /// <summary>
-        /// Writes a binary serialisation of the content of the list
-        /// </summary>
-        /// <param name="writer"></param>
-        public void Write(BinaryWriter writer)
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(writer.BaseStream, this);
-        }
-
-        /// <summary>
-        /// Reads a binary serialisation of the content of the list
-        /// </summary>
-        /// <param name="reader"></param>
-        public static ProductionEvents<V> Read(BinaryReader reader)
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            return (ProductionEvents<V>)formatter.Deserialize(reader.BaseStream);
-        }
-
         /// <summary>
         /// Serialises the contents of the event list using a binary writer
         /// </summary>
@@ -452,15 +428,6 @@ namespace VSS.TRex.Events
             }
 
             EventsChanged = false;
-
-            /*
-            using (MemoryStream MS = new MemoryStream())
-            {
-                SaveToStream(MS);
-
-                storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, MS);
-            }
-            */
         }
 
         /// <summary>
@@ -543,7 +510,7 @@ namespace VSS.TRex.Events
         /// <param name="stateChangeIndex"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default(V))
+        public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default)
         {
             if (Events.Count == 0)
             {

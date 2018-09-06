@@ -27,28 +27,6 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public ISubGrid Parent { get; set; }
 
-        public bool Locked { get; set; }
-        public int LockToken { get; set; } = -1;
-
-        public bool AcquireLock(int lockToken)
-        {
-            lock (this)
-            {
-                if (Locked)
-                    return false;
-
-                Locked = true;
-                LockToken = lockToken;
-
-                return true;
-            }
-        }
-
-        public void ReleaseLock(int lockToken)
-        {
-            LockToken = -1;
-        }
-
         /// <summary>
         /// ‘Level’ in the subgridtree in which this subgrid resides. Level 1 is the root node in the tree, level 0 is invalid
         /// </summary>

@@ -22,7 +22,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 
         void CurrentSubgridSegmentDestroyed();
         void InitialiseIterator();
-        void MarkCacheStamp();
         bool MoveNext();
         bool MoveToFirstSubGridSegment();
         bool MoveToNextSubGridSegment();

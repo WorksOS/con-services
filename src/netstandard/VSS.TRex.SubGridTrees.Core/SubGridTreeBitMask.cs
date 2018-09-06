@@ -270,7 +270,7 @@ namespace VSS.TRex.SubGridTrees
         {
             SubGridTreeLeafBitmapSubGrid bitMapSubGrid;
 
-            /* Previus implementation iterated across the source, when only iteration across 'this' is required as
+            /* Previous implementation iterated across the source, when only iteration across 'this' is required as
              * subgrids not present in this tree are implicitly 'false' so will never generate any true bits needing storing.
              * Similarly, subgrids in source that are not present in this will never generate any true bits requiring storing
             Source.ScanAllSubGrids(x =>
@@ -293,7 +293,6 @@ namespace VSS.TRex.SubGridTrees
                 return true; // Keep the scan going
             });
             */
-
 
             // This implementation will be much more performant!
             ScanAllSubGrids(x =>
