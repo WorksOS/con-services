@@ -27,7 +27,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     //                 but got BadRequest instead.
     //                 Message was {"Code":2018,"Message":"Failed to process tagfile with error: OnProcessTAGFile. TAG file already exists in data model's processing archival queue."}
 
-    private long _legacyAssetId = 796620067684243; 
+    private long _legacyAssetId = 1219470261494388; 
     private GetMachinesResult firstDotMachineStatus;
 
     [Given(@"the Tag service URI ""(.*)"", Tag request repo file ""(.*)""")]
@@ -66,7 +66,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       // Need to ignore assetID in validation
       GetMachinesResult expectedFirstDotMachineStatus = machineStatusGetter.ResponseRepo[resultName];
-      expectedFirstDotMachineStatus.MachineStatuses[0].AssetId = firstDotMachineStatus.MachineStatuses[0].AssetId;
+      // expectedFirstDotMachineStatus.MachineStatuses[0].AssetId = firstDotMachineStatus.MachineStatuses[0].AssetId;
 
       Assert.AreEqual(expectedFirstDotMachineStatus, firstDotMachineStatus);
     }
