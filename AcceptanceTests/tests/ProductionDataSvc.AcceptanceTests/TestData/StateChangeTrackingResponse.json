@@ -1,0 +1,20 @@
+{
+  "FirstDot": {
+    "MachineStatuses": [
+      {
+        "lastKnownDesignName": "Trimble Road 29 10 2012",
+        "lastKnownLayerId": null,
+        "lastKnownTimeStamp": "2012-11-03T18:19:35.457",
+        "lastKnownLatitude": 0.63193216728491708,
+        "lastKnownLongitude": -2.0074580906832495,
+        "lastKnownX": 2858.7552295914852,
+        "lastKnownY": 1174.2239880692926,
+        "assetID": 1219470261494388,
+        "machineName": "JD 764 CV",
+        "isJohnDoe": false
+      }
+    ],
+    "Code": 0,
+    "Message": "success"
+  }
+}

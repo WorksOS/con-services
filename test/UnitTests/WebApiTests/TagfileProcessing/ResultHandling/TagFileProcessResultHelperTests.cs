@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.ResultHandling
     }
 
     [TestMethod]
-    [DataRow(TTAGProcServerProcessResult.tpsprOK, Type.PERMANENT, true, "Success.")]
+    [DataRow(TTAGProcServerProcessResult.tpsprOK, Type.PERMANENT, true, "success")]
     [DataRow(TTAGProcServerProcessResult.tpsprUnknown, Type.TEMPORARY, false, "Tagfile Unknown error.")]
     [DataRow(TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure, Type.TEMPORARY, true, "OnSubmissionBase. Connection Failure.")]
     [DataRow(TTAGProcServerProcessResult.tpsprOnSubmissionVerbConnectionFailure, Type.TEMPORARY, true, "OnSubmissionVerb. Connection Failure.")]
