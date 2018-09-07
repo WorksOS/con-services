@@ -35,11 +35,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.Ignite, Version=2.4.0.27085, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Apache.Ignite.2.4.0\lib\net40\Apache.Ignite.exe</HintPath>
+    <Reference Include="Apache.Ignite, Version=2.6.0.30134, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.6.0\lib\net40\Apache.Ignite.exe</HintPath>
     </Reference>
-    <Reference Include="Apache.Ignite.Core, Version=2.4.0.27085, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Apache.Ignite.2.4.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    <Reference Include="Apache.Ignite.Core, Version=2.6.0.30134, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.6.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
     </Reference>
     <Reference Include="log4net.netcore, Version=1.2.15.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\log4net.netcore.3.0.0\lib\net45\log4net.netcore.dll</HintPath>
@@ -221,6 +221,8 @@
   <PropertyGroup>
     <PostBuildEvent>
 if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.4.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.4.0\libs\*.*" "$(TargetDir)libs"
+if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
   </PropertyGroup>
 </Project>
