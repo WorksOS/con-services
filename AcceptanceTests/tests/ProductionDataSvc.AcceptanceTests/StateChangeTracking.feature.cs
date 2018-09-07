@@ -94,22 +94,15 @@ this.ScenarioSetup(scenarioInfo);
 testRunner.Given("the Tag service URI \"/api/v2/tagfiles\", Tag request repo file \"StateChangeTrackingRequest" +
                     ".json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
-testRunner.And("the Machine service URI \"/api/v2/projects/b14bb927-3c10-47b2-b958-4ce7aabbc594/machines/\", Machine result repo" +
+testRunner.And("the Machine service URI \"/api/v2/projects/ff91dd40-1569-4765-a2bc-014321f76ace/machines/\", Machine result repo" +
                     " file \"StateChangeTrackingResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
 testRunner.When("I post Tag file \"FirstDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 8
 testRunner.And("I get and save the machine detail in one place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
-testRunner.And("I post Tag file \"SecondDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 10
-testRunner.And("I get and save the machine detail in another place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 11
 testRunner.Then("the first saved machine detail should match \"FirstDot\" result from the Machine re" +
                     "sult repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 12
-testRunner.And("the second saved machine detail should match \"SecondDot\" result from the Machine " +
-                    "result repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

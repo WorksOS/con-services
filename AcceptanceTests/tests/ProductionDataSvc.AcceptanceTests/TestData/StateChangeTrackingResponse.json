@@ -2,33 +2,15 @@
   "FirstDot": {
     "MachineStatuses": [
       {
-        "lastKnownDesignName": "Pound Road_SubBase_140213",
-        "lastKnownLayerId": 3,
-        "lastKnownTimeStamp": "2014-11-25T00:30:40.764",
-        "lastKnownLatitude": -0.7597169345114859,
-        "lastKnownLongitude": 3.0106446878689255,
-        "lastKnownX": 381430.56405808247,
-        "lastKnownY": 806860.7476664805,
-        "assetID": 1111,
-        "machineName": "COMPACTOR",
-        "isJohnDoe": false
-      }
-    ],
-    "Code": 0,
-    "Message": "success"
-  },
-  "SecondDot": {
-    "MachineStatuses": [
-      {
-        "lastKnownDesignName": "Pound Road_BaseCourse_140213",
-        "lastKnownLayerId": 1,
-        "lastKnownTimeStamp": "2014-11-25T00:35:40.827",
-        "lastKnownLatitude": -0.7597157838976566,
-        "lastKnownLongitude": 3.010641326432008,
-        "lastKnownX": 381414.97453135636,
-        "lastKnownY": 806868.0291519845,
-        "assetID": 1111,
-        "machineName": "COMPACTOR",
+        "lastKnownDesignName": "OGL",
+        "lastKnownLayerId": null,
+        "lastKnownTimeStamp": "2012-11-03T18:19:35.457",
+        "lastKnownLatitude": 0.63193216728491708,
+        "lastKnownLongitude": -2.0074580906832495,
+        "lastKnownX": 2858.7552295914852,
+        "lastKnownY": 1174.2239880692926,
+        "assetID": 796620067684243,
+        "machineName": "JD 764 CV",
         "isJohnDoe": false
       }
     ],

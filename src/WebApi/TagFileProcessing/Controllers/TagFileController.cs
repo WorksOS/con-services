@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<IActionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
+    public async Task<IActionResult> PostTagFileNonDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
