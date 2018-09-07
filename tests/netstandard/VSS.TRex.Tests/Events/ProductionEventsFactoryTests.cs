@@ -22,13 +22,13 @@ namespace VSS.TRex.Tests.Events
       int actualCount = Enum.GetValues(typeof(ProductionEventType)).Length;
 
       Assert.True(actualCount == expectedCount, 
-        $"Number of production event types is {actualCount }, not {expectedCount} as exptected");
+        $"Number of production event types is {actualCount }, not {expectedCount} as expected");
     }
 
     [Fact]
     public void Test_ProductionEventsFactory_ExpectedNumberOfCreatableEventTypes()
     {
-      const int expectedCount = 24;
+      const int expectedCount = 21;
       int actualCount = 0;
 
       ProductionEventsFactory factory = new ProductionEventsFactory();
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Events
           actualCount++;
 
       Assert.True(actualCount == expectedCount,
-        $"Number of production event types is {actualCount}, not {expectedCount} as exptected");
+        $"Number of production event types is {actualCount}, not {expectedCount} as expected");
     }
 
     [Theory]
