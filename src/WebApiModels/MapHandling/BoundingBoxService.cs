@@ -379,12 +379,22 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns></returns>
     private CoordinateConversionResult GetProductionDataExtents(long projectId, FilterResult filter)
     {
+      return GetProductionDataExtents(projectId, filter?.SurveyedSurfaceExclusionList);
+    }
+
+    /// <summary>
+    /// Get the production data extents for the project.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="excludedIds"></param>
+    /// <returns></returns>
+    public CoordinateConversionResult GetProductionDataExtents(long projectId, List<long> excludedIds)
+    {
       ProjectStatisticsResult statsResult = null;
       try
       {
         ProjectStatisticsRequest statsRequest =
-          ProjectStatisticsRequest.CreateStatisticsParameters(projectId,
-            filter?.SurveyedSurfaceExclusionList?.ToArray());
+          ProjectStatisticsRequest.CreateStatisticsParameters(projectId, excludedIds?.ToArray());
         statsResult =
           RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(logger, raptorClient)
             .Process(statsRequest) as ProjectStatisticsResult;
@@ -620,5 +630,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     List<List<WGSPoint>> GetDesignBoundaryPolygons(long projectId, DesignDescriptor designDescriptor);
 
     AlignmentStationResult GetAlignmentStationRange(long projectId, DesignDescriptor alignDescriptor);
+
+    CoordinateConversionResult GetProductionDataExtents(long projectId, List<long> excludedIds);
   }
 }

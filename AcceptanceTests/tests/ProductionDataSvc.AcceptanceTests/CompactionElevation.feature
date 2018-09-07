@@ -27,6 +27,17 @@ Examples:
 | RequestName | ProjectUID                           | ResultName      |
 |             | ff91dd40-1569-4765-a2bc-014321f76ace | GoodRequest_PRS |
 
+######################################################## Project Extents #####################################################
+Scenario Outline: Compaction Get Project Extents - Good Request
+Given the Compaction service URI "/api/v2/productiondataextents" for operation "ProjectExtents"  
+And the result file "CompactionGetElevationAndProjectStatisticsDataResponse.json"	
+And projectUid "<ProjectUID>"
+When I request result
+Then the result should match the "<ResultName>" from the repository
+Examples: 
+| RequestName | ProjectUID                           | ResultName      |
+|             | ff91dd40-1569-4765-a2bc-014321f76ace | GoodReq_Extents |
+
 #######################################################Alignment offset test####################################################
 Scenario Outline: Compaction Get Alignment Station Range - Good request
 Given the Compaction service URI "/api/v2/alignmentstationrange" for operation "GetAlignmentStationRange"   

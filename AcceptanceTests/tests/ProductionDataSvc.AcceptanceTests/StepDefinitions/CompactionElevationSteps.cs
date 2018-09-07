@@ -11,6 +11,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class CompactionElevationSteps : BaseCompactionSteps
   {
     private Getter<ProjectStatistics> projectStatisticsRequester;
+    private Getter<ProjectExtents> projectExtentsRequester;
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
     private Getter<AlignmentStationRangeResult> alignmentRequester;
 
@@ -34,6 +35,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         case "GetAlignmentStationRange": alignmentRequester = new Getter<AlignmentStationRangeResult>(url, resultFileName); break;
         case "ElevationRange": elevationRangeRequester = new Getter<ElevationStatisticsResult>(url, resultFileName); break;
         case "ProjectStatistics": projectStatisticsRequester = new Getter<ProjectStatistics>(url, resultFileName); break;
+        case "ProjectExtents": projectExtentsRequester = new Getter<ProjectExtents>(url, resultFileName); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
@@ -45,7 +47,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       {
         case "GetAlignmentStationRange": alignmentRequester.QueryString.Add("ProjectUid", projectUid); break;
         case "ElevationRange": elevationRangeRequester.QueryString.Add("ProjectUid", projectUid); break;
-        case "ProjectStatistics": projectStatisticsRequester.QueryString.Add("ProjectUid", projectUid); break;// statsRequest = new StatisticsParameters { projectUid = projectUid }; break;
+        case "ProjectStatistics": projectStatisticsRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "ProjectExtents": projectExtentsRequester.QueryString.Add("ProjectUid", projectUid); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
@@ -79,6 +82,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         case "GetAlignmentStationRange": Assert.AreEqual(alignmentRequester.ResponseRepo[resultName], alignmentRequester.CurrentResponse); break;
         case "ElevationRange": Assert.AreEqual(elevationRangeRequester.ResponseRepo[resultName], elevationRangeRequester.CurrentResponse); break;
         case "ProjectStatistics": Assert.AreEqual(projectStatisticsRequester.ResponseRepo[resultName], projectStatisticsRequester.CurrentResponse); break;
+        case "ProjectExtents": Assert.AreEqual(projectExtentsRequester.ResponseRepo[resultName], projectExtentsRequester.CurrentResponse); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
@@ -91,6 +95,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         case "GetAlignmentStationRange": alignmentRequester.DoValidRequest(url); break;
         case "ElevationRange": elevationRangeRequester.DoValidRequest(url); break;
         case "ProjectStatistics": projectStatisticsRequester.DoValidRequest(url); break;
+        case "ProjectExtents": projectExtentsRequester.DoValidRequest(url); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }

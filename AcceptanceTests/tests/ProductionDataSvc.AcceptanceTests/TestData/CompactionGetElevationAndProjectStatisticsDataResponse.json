@@ -72,6 +72,14 @@
     "Code": 0,
     "Message": "success"
   },
+  "GoodReq_Extents": {
+    "minLat": 36.206604688828079,
+    "minLng": -115.02502164741648,
+    "maxLat": 36.207735146259026,
+    "maxLng": -115.01826973325758,
+    "Code": 0,
+    "Message": "success"
+  },
   "AlignmentFilter": {
     "BoundingExtents": {
       "maxX": -115.01824137935459,

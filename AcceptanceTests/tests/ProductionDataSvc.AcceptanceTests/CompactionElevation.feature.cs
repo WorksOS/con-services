@@ -197,23 +197,56 @@ this.CompactionGetProjectStatistics_GoodRequest("", "ff91dd40-1569-4765-a2bc-014
 #line hidden
         }
         
-        public virtual void CompactionGetAlignmentStationRange_GoodRequest(string resultName, string fileUID, string projectUID, string[] exampleTags)
+        public virtual void CompactionGetProjectExtents_GoodRequest(string requestName, string projectUID, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Alignment Station Range - Good request", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Project Extents - Good Request", exampleTags);
 #line 31
 this.ScenarioSetup(scenarioInfo);
 #line 32
-testRunner.Given("the Compaction service URI \"/api/v2/alignmentstationrange\" for operation \"GetAlig" +
-                    "nmentStationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+testRunner.Given("the Compaction service URI \"/api/v2/productiondataextents\" for operation \"Project" +
+                    "Extents\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 33
 testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 34
 testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 35
-testRunner.And(string.Format("fileUid \"{0}\"", fileUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 36
 testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 37
+#line 36
+testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Project Extents - Good Request: ")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionElevation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodReq_Extents")]
+        public virtual void CompactionGetProjectExtents_GoodRequest_()
+        {
+#line 31
+this.CompactionGetProjectExtents_GoodRequest("", "ff91dd40-1569-4765-a2bc-014321f76ace", "GoodReq_Extents", ((string[])(null)));
+#line hidden
+        }
+        
+        public virtual void CompactionGetAlignmentStationRange_GoodRequest(string resultName, string fileUID, string projectUID, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Alignment Station Range - Good request", exampleTags);
+#line 42
+this.ScenarioSetup(scenarioInfo);
+#line 43
+testRunner.Given("the Compaction service URI \"/api/v2/alignmentstationrange\" for operation \"GetAlig" +
+                    "nmentStationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 44
+testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 45
+testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 46
+testRunner.And(string.Format("fileUid \"{0}\"", fileUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 47
+testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 48
 testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -228,7 +261,7 @@ testRunner.Then(string.Format("the result should match the \"{0}\" from the repo
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         public virtual void CompactionGetAlignmentStationRange_GoodRequest_Large_Sites_Align_Good()
         {
-#line 31
+#line 42
 this.CompactionGetAlignmentStationRange_GoodRequest("Large_Sites_Align_Good", "6ece671b-7959-4a14-86fa-6bfe6ef4dd62", "ff91dd40-1569-4765-a2bc-014321f76ace", ((string[])(null)));
 #line hidden
         }
@@ -242,7 +275,7 @@ this.CompactionGetAlignmentStationRange_GoodRequest("Large_Sites_Align_Good", "6
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         public virtual void CompactionGetAlignmentStationRange_GoodRequest_TopCon_Align_Good()
         {
-#line 31
+#line 42
 this.CompactionGetAlignmentStationRange_GoodRequest("TopCon_Align_Good", "c6662be1-0f94-4897-b9af-28aeeabcd09b", "ff91dd40-1569-4765-a2bc-014321f76ace", ((string[])(null)));
 #line hidden
         }
@@ -256,7 +289,7 @@ this.CompactionGetAlignmentStationRange_GoodRequest("TopCon_Align_Good", "c6662b
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         public virtual void CompactionGetAlignmentStationRange_GoodRequest_Milling_Align_Good()
         {
-#line 31
+#line 42
 this.CompactionGetAlignmentStationRange_GoodRequest("Milling_Align_Good", "3ead0c55-1e1f-4d30-aaf8-873526a2ab82", "ff91dd40-1569-4765-a2bc-014321f76ace", ((string[])(null)));
 #line hidden
         }
@@ -264,20 +297,20 @@ this.CompactionGetAlignmentStationRange_GoodRequest("Milling_Align_Good", "3ead0
         public virtual void CompactionGetAlignmentStationRange_BadRequest(string message, string fileUID, string projectUID, string errorCode, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Alignment Station Range - Bad request", exampleTags);
-#line 44
+#line 55
 this.ScenarioSetup(scenarioInfo);
-#line 45
+#line 56
 testRunner.Given("the Compaction service URI \"/api/v2/alignmentstationrange\" for operation \"GetAlig" +
                     "nmentStationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 46
+#line 57
 testRunner.And("the result file \"CompactionGetElevationAndProjectStatisticsDataResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 47
+#line 58
 testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 48
+#line 59
 testRunner.And(string.Format("fileUid \"{0}\"", fileUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 49
+#line 60
 testRunner.When("I request a Station Range Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 50
+#line 61
 testRunner.Then(string.Format("I should get error code \"{0}\" and message \"{1}\"", errorCode, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -294,7 +327,7 @@ testRunner.Then(string.Format("I should get error code \"{0}\" and message \"{1}
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
         public virtual void CompactionGetAlignmentStationRange_BadRequest_FailedToGetStationRangeForAlignmentFile()
         {
-#line 44
+#line 55
 this.CompactionGetAlignmentStationRange_BadRequest("Failed to get station range for alignment file", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "ff91dd40-1569-4765-a2bc-014321f76ace", "-4", ((string[])(null)));
 #line hidden
         }
@@ -310,7 +343,7 @@ this.CompactionGetAlignmentStationRange_BadRequest("Failed to get station range 
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
         public virtual void CompactionGetAlignmentStationRange_BadRequest_UnableToAccessDesignFile_()
         {
-#line 44
+#line 55
 this.CompactionGetAlignmentStationRange_BadRequest("Unable to access design file.", "dcb41fbd-7d43-4b36-a144-e22bbccc24a8", "ff91dd40-1569-4765-a2bc-014321f76ace", "-1", ((string[])(null)));
 #line hidden
         }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -160,6 +161,48 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       finally
       {
         Log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
+      }
+    }
+
+    /// <summary>
+    /// Gets production data extents from Raptor in lat/lng.
+    /// </summary>
+    /// <returns>Project statistics</returns>
+    [ProjectVerifier]
+    [Route("api/v2/productiondataextents")]
+    [HttpGet]
+    public async Task<ProjectExtentsResult> GetProjectExtents(
+      [FromQuery] Guid projectUid,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetProjectExtents: " + Request.QueryString);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
+      var projectId = await GetLegacyProjectId(projectUid);
+
+      try
+      {
+        var result = boundingBoxService.GetProductionDataExtents(projectId, excludedIds);
+
+        var returnResult = new ProjectExtentsResult
+        {
+          minLat = result.conversionCoordinates[0].y.LatRadiansToDegrees(),
+          minLng = result.conversionCoordinates[0].x.LonRadiansToDegrees(),
+          maxLat = result.conversionCoordinates[1].y.LatRadiansToDegrees(),
+          maxLng = result.conversionCoordinates[1].x.LonRadiansToDegrees()
+        };
+ 
+        Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
+      }
+      catch (ServiceException se)
+      {
+        //Change FailedToGetResults to 204
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, se.Message));
+      }
+      finally
+      {
+        Log.LogInformation("GetProjectExtents returned: " + Response.StatusCode);
       }
     }
   }

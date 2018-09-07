@@ -171,6 +171,7 @@
     <Compile Include="Models\CompactionCellDatumResult.cs" />
     <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\PatchResult.cs" />
+    <Compile Include="Models\ProjectExtents.cs" />
     <Compile Include="Patch.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
