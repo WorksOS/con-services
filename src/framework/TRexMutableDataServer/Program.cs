@@ -6,6 +6,8 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.SiteModels;
@@ -38,6 +40,7 @@ namespace TRexMutableDataServer
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(factory => new ProductionEventsFactory()))
         .Complete();
     }
 

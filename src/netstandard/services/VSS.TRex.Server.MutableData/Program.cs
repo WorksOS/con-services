@@ -15,6 +15,8 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using System.Threading.Tasks;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -38,6 +40,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(factory => new ProductionEventsFactory()))
        .Complete();
     }
 
