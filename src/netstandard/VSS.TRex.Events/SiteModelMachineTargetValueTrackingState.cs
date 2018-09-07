@@ -13,7 +13,7 @@ namespace VSS.TRex.Events
     public int Index;
     public int Stamp;
     public T ThisEvent;
-    public T NextEvent; // : TICProductionEventChangeBase;
+    public T NextEvent; 
 
     public void Initialise()
     {

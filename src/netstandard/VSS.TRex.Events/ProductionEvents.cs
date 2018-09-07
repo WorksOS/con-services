@@ -364,7 +364,6 @@ namespace VSS.TRex.Events
 
         // Function CalculateInMemorySize : Integer; Virtual;
         // Function InMemorySize : Integer; InLine;
-        // Procedure EnsureEventListLoaded; Inline;
         // Procedure MarkEventListAsInMemoryOnly; Inline;
 
 /*
@@ -451,32 +450,6 @@ namespace VSS.TRex.Events
                     }
                 }
             }
-
-            /*
-            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(),
-                FileSystemStreamType.Events, out MemoryStream MS);
-
-            if (MS != null)
-            {
-                MS.Position = 0;
-                using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
-                {
-                    Result = Read(reader);
-                }
-            }
-            */
-
-            /*
-             * if (Result != null)
-             
-            {
-                // Copy the serialisation lambdas into the new instance as these are not serialised into the persistent store
-                Result.SerialiseStateOut = SerialiseStateOut;
-                Result.SerialiseStateIn = SerialiseStateIn;
-            }
-
-            return Result ?? this;
-            */
         }
 
     /// <summary>

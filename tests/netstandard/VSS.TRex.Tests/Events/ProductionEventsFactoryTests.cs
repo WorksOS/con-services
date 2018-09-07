@@ -46,13 +46,13 @@ namespace VSS.TRex.Tests.Events
     [InlineData(ProductionEventType.StartEndRecordedData, typeof(StartEndProductionEvents))]
     [InlineData(ProductionEventType.MachineStartupShutdown, typeof(StartEndProductionEvents))]
     [InlineData(ProductionEventType.DesignChange, typeof(ProductionEvents<int>))]
-    public void Test_ProductionEventsFactory_EventListCreation(ProductionEventType eventType, Type type)
+    public void Test_ProductionEventsFactory_EventListCreation(ProductionEventType eventType, Type listType)
     {
       ProductionEventsFactory factory = new ProductionEventsFactory();
 
       var list = factory.NewEventList(-1, Guid.Empty, eventType);
 
-      Assert.True(list.GetType() == type, $"Event list created by factory for {eventType} is of type {list.GetType()} not {type}");
+      Assert.True(list.GetType() == listType, $"Event list created by factory for {eventType} is of type {list.GetType()} not {listType}");
     }
   }
 }
