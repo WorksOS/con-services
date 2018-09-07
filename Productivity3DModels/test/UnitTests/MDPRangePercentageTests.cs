@@ -14,19 +14,19 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void CanCreateMdpRangePercentageTest()
     {
       var validator = new DataAnnotationsValidator();
-      MDPRangePercentage range = MDPRangePercentage.CreateMdpRangePercentage(35.0, 72.5);
+      MDPRangePercentage range = new MDPRangePercentage(35.0, 72.5);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(range, out results));
 
       //too big max
-      range = MDPRangePercentage.CreateMdpRangePercentage(35.0, 1000.0);
+      range = new MDPRangePercentage(35.0, 1000.0);
       Assert.IsFalse(validator.TryValidate(range, out results));
     }
 
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      MDPRangePercentage range = MDPRangePercentage.CreateMdpRangePercentage(35.0, 72.5);
+      MDPRangePercentage range = new MDPRangePercentage(35.0, 72.5);
       range.Validate();
     }
 
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailTest()
     {
       //min > max
-      MDPRangePercentage range = MDPRangePercentage.CreateMdpRangePercentage(85.0, 40.0);
+      MDPRangePercentage range = new MDPRangePercentage(85.0, 40.0);
       Assert.ThrowsException<ServiceException>(() => range.Validate());
     }
   }

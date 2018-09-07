@@ -14,19 +14,19 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void CanCreateTargetPassCountRangeTest()
     {
       var validator = new DataAnnotationsValidator();
-      TargetPassCountRange range = TargetPassCountRange.CreateTargetPassCountRange(1, 10);
+      TargetPassCountRange range = new TargetPassCountRange(1, 10);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(range, out results));
 
       //too small min
-      range = TargetPassCountRange.CreateTargetPassCountRange(0, 100);
+      range = new TargetPassCountRange(0, 100);
       Assert.IsFalse(validator.TryValidate(range, out results));
     }
 
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      TargetPassCountRange range = TargetPassCountRange.CreateTargetPassCountRange(5, 200);
+      TargetPassCountRange range = new TargetPassCountRange(5, 200);
       range.Validate();
     }
 
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailTest()
     {
       //min > max
-      TargetPassCountRange range = TargetPassCountRange.CreateTargetPassCountRange(100, 2);
+      TargetPassCountRange range = new TargetPassCountRange(100, 2);
       Assert.ThrowsException<ServiceException>(() => range.Validate());
     }
   }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
@@ -38,7 +40,7 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"GetMockProductionDataTileRaw: {Request.QueryString}");
 
-      using (Bitmap bitmap = new Bitmap(width, height))
+      using (Image<Rgba32> bitmap = new Image<Rgba32>(width, height))
       {
         if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
         {
@@ -96,16 +98,14 @@ namespace MockProjectWebApi.Controllers
               break;
           }
 
-          using (Graphics g = Graphics.FromImage(bitmap))
-          {
-            Brush brush = new SolidBrush(Color.FromArgb(0xFF, Color.FromArgb((int) color)));
-            g.FillRectangle(brush, x, y, w, h);
-          }
+          var rect = new RectangleF(x, y, w, h);
+          bitmap.Mutate(ctx => ctx.Fill(new Rgba32(color), rect));
+          
         }
         //else return Empty tile
  
         var bitmapStream = new MemoryStream();
-        bitmap.Save(bitmapStream, ImageFormat.Png);
+        bitmap.SaveAsPng(bitmapStream);
         bitmapStream.Position = 0;
         return new FileStreamResult(bitmapStream, "image/png");        
       }

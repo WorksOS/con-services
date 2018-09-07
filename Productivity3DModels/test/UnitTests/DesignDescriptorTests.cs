@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void CanCreateDesignDescriptorTest()
     {
       var validator = new DataAnnotationsValidator();
-      DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(1234, null, 0);
+      DesignDescriptor design = new DesignDescriptor(1234, null, 0);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(design, out results));
     }
@@ -24,10 +24,10 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(1234, null, 0);
+      DesignDescriptor design = new DesignDescriptor(1234, null, 0);
       design.Validate();
 
-      design = DesignDescriptor.CreateDesignDescriptor(0,
+      design = new DesignDescriptor(0,
         FileDescriptor.CreateFileDescriptor("u72003136-d859-4be8-86de-c559c841bf10",
           "BC Data/Sites/Integration10/Designs", "Cycleway.ttm"), 0);
       design.Validate();
@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailEmptyTest()
     {
       //empty design descriptor
-      DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(0, null, 0);
+      DesignDescriptor design = new DesignDescriptor(0, null, 0);
       Assert.ThrowsException<ServiceException>(() => design.Validate());
     }
   }
