@@ -18,14 +18,14 @@ namespace ProductionDataSvc.AcceptanceTests
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.3.2.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute()]
-    public partial class DotOnTheMapFeature
+    public partial class StateChangeTrackingFeature
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
         
         private Microsoft.VisualStudio.TestTools.UnitTesting.TestContext _testContext;
         
-#line 1 "DotOnTheMap.feature"
+#line 1 "StateChangeTracking.feature"
 #line hidden
         
         public virtual Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext
@@ -44,7 +44,7 @@ namespace ProductionDataSvc.AcceptanceTests
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner(null, 0);
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "DotOnTheMap", "\tI should be able to track machines.", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "StateChangeTracking", "\tI should be able to track machines.", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -59,9 +59,9 @@ namespace ProductionDataSvc.AcceptanceTests
         public virtual void TestInitialize()
         {
             if (((testRunner.FeatureContext != null) 
-                        && (testRunner.FeatureContext.FeatureInfo.Title != "DotOnTheMap")))
+                        && (testRunner.FeatureContext.FeatureInfo.Title != "StateChangeTracking")))
             {
-                global::ProductionDataSvc.AcceptanceTests.DotOnTheMapFeature.FeatureSetup(null);
+                global::ProductionDataSvc.AcceptanceTests.StateChangeTrackingFeature.FeatureSetup(null);
             }
         }
         
@@ -83,33 +83,26 @@ namespace ProductionDataSvc.AcceptanceTests
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("DotOnTheMap - Track a Machine")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "DotOnTheMap")]
-        public virtual void DotOnTheMap_TrackAMachine()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("StateChangeTracking - Track a Machine")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "StateChangeTracking")]
+        public virtual void StateChangeTracking_TrackAMachine()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("DotOnTheMap - Track a Machine", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("StateChangeTracking - Track a Machine", ((string[])(null)));
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
-testRunner.Given("the Tag service URI \"/api/v1/tagfiles\", Tag request repo file \"DotOnTheMapRequest" +
+testRunner.Given("the Tag service URI \"/api/v2/tagfiles\", Tag request repo file \"StateChangeTrackingRequest" +
                     ".json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
-testRunner.And("the Machine service URI \"/api/v1/projects/1001210/machines/\", Machine result repo" +
-                    " file \"DotOnTheMapResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("the Machine service URI \"/api/v2/projects/ff91dd40-1569-4765-a2bc-014321f76ace/machines/\", Machine result repo" +
+                    " file \"StateChangeTrackingResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
 testRunner.When("I post Tag file \"FirstDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 8
 testRunner.And("I get and save the machine detail in one place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
-testRunner.And("I post Tag file \"SecondDot\" from the Tag request repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 10
-testRunner.And("I get and save the machine detail in another place", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 11
 testRunner.Then("the first saved machine detail should match \"FirstDot\" result from the Machine re" +
                     "sult repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 12
-testRunner.And("the second saved machine detail should match \"SecondDot\" result from the Machine " +
-                    "result repo", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
