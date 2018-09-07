@@ -71,7 +71,7 @@ namespace TRexApplicationServer
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new VSS.TRex.ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))

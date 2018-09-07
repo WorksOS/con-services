@@ -414,7 +414,7 @@ namespace VSS.TRex.Events
         }
 
         /// <summary>
-        /// Loads the event list by requesting it's serialised representation from the persistent store and 
+        /// Loads the event list by requesting its serialised representation from the persistent store and 
         /// deserialising it into the event list
         /// </summary>
         /// <param name="storageProxy"></param>

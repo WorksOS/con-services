@@ -14,13 +14,17 @@ namespace VSS.TRex.SiteModels
   {
     //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
 
-
-    private IStorageProxy _ImmutableStorageProxy;
+    //private IStorageProxy _ImmutableStorageProxy;
+    private IStorageProxy _StorageProxy;
 
     /// <summary>
-    /// The default immutable storage proxy to be used for requests
+    /// The default storage proxy to be used for requests
     /// </summary>
-    public IStorageProxy ImmutableStorageProxy() => _ImmutableStorageProxy ?? (_ImmutableStorageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage());
+    //public IStorageProxy ImmutableStorageProxy() => _ImmutableStorageProxy ?? (_ImmutableStorageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage());
+    public IStorageProxy StorageProxy
+    {
+      get => _StorageProxy;
+    }
 
     /// <summary>
     /// Default no-arg constructor
@@ -29,9 +33,17 @@ namespace VSS.TRex.SiteModels
     {
     }
 
-    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy(), ID, false);
+    /// <summary>
+    /// Default no-arg constructor
+    /// </summary>
+    public SiteModels(IStorageProxy storageProxy) : this()
+    {
+      _StorageProxy = storageProxy;
+    }
 
-    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy(), ID, CreateIfNotExist);
+    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(StorageProxy, ID, false);
+
+    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(StorageProxy, ID, CreateIfNotExist);
 
     public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
 

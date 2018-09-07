@@ -172,9 +172,17 @@
       <Project>{A614210E-B1A6-4E02-96FC-1FF78A86C5A9}</Project>
       <Name>VSS.TRex.SiteModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj">
+      <Project>{06B93475-A235-4F5D-A226-48E4205F9BA1}</Project>
+      <Name>VSS.TRex.Storage.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
       <Project>{6C9C0264-67A6-4035-BBC2-6AB380A51C30}</Project>
       <Name>VSS.TRex.Storage.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
+      <Project>{E9FFB4FA-AAF2-4EA3-93FB-82B0B38B7FA5}</Project>
+      <Name>VSS.TRex.Storage</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>

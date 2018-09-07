@@ -20,7 +20,7 @@ using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Server.MutableData
 {
-  class Program
+  public class Program
   {
     public static IConfiguration Configuration { get; set; }
 
@@ -34,7 +34,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModels.SiteModel()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))

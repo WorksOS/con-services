@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Events
@@ -225,7 +226,7 @@ namespace VSS.TRex.Events
           if (allEventsForMachine[(int) eventType] == null) // This thread won the lock
           {
             allEventsForMachine[(int) eventType] = DIContext.Obtain<IProductionEventsFactory>().NewEventList(MachineID, SiteModel.ID, eventType);
-            allEventsForMachine[(int) eventType].LoadFromStore(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy());
+            allEventsForMachine[(int) eventType].LoadFromStore(DIContext.Obtain<ISiteModels>().StorageProxy);
           }
         }
       }
@@ -256,24 +257,24 @@ namespace VSS.TRex.Events
     /// <summary>
     /// Saves the event lists for this machine to the persistent store
     /// </summary>
-    public void SaveMachineEventsToPersistentStore()
+    public void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy)
     {
       foreach (IProductionEvents list in allEventsForMachine)
         if (list != null && list.EventsChanged)
         {
           Log.LogDebug($"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
 
-          list.SaveToStore(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy());
+          list.SaveToStore(storageProxy);
         }
     }
 
-    public bool LoadEventsForMachine()
+    public bool LoadEventsForMachine(IStorageProxy storageProxy)
     {
       foreach (ProductionEventType evt in Enum.GetValues(typeof(ProductionEventType)))
       {
         Log.LogDebug($"Loading {evt} events for machine {MachineID} in project {SiteModel.ID}");
 
-        GetEventList(evt)?.LoadFromStore(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy());
+        GetEventList(evt)?.LoadFromStore(storageProxy);
       }
 
       return true;

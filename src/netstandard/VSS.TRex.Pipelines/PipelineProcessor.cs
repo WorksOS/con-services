@@ -216,7 +216,7 @@ namespace VSS.TRex.Pipelines
       }
 
       // Get the current production data existance map from the sitemodel
-      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy());
+      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(DIContext.Obtain<ISiteModels>().StorageProxy);
       
       if (ProdDataExistenceMap == null)
       {
