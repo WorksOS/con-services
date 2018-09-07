@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -165,19 +166,35 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets production data extents from Raptor in lat/lng.
+    /// Gets production data extents from Raptor in lat/lng degrees.
     /// </summary>
-    /// <returns>Project statistics</returns>
+    /// <returns>Production data extents</returns>
     [ProjectVerifier]
     [Route("api/v2/productiondataextents")]
     [HttpGet]
-    public async Task<ProjectExtentsResult> GetProjectExtents(
+    public async Task<ProjectExtentsResult> GetProjectExtentsV2(
       [FromQuery] Guid projectUid,
       [FromServices] IBoundingBoxService boundingBoxService)
     {
-      Log.LogInformation("GetProjectExtents: " + Request.QueryString);
-      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid);
+      Log.LogInformation("GetProjectExtents V2: " + Request.QueryString);
       var projectId = await GetLegacyProjectId(projectUid);
+      return await GetProjectExtentsV1(projectId, boundingBoxService);
+    }
+
+    /// <summary>
+    /// Gets production data extents from Raptor in lat/lng degrees.
+    /// </summary>
+    /// <returns>Production data extents</returns>
+    [ProjectVerifier]
+    [Route("api/v1/productiondataextents")]
+    [HttpGet]
+    public async Task<ProjectExtentsResult> GetProjectExtentsV1(
+      [FromQuery] long projectId,
+      [FromServices] IBoundingBoxService boundingBoxService)
+    {
+      Log.LogInformation("GetProjectExtents V1: " + Request.QueryString);
+      var project = await ((RaptorPrincipal) User).GetProject(projectId);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(Guid.Parse(project.ProjectUid));
 
       try
       {
@@ -190,7 +207,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           maxLat = result.conversionCoordinates[1].y.LatRadiansToDegrees(),
           maxLng = result.conversionCoordinates[1].x.LonRadiansToDegrees()
         };
- 
+
         Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
       }
