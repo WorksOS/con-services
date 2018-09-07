@@ -20,7 +20,7 @@ namespace VSS.TRex.Events
         case ProductionEventType.TargetCCV: return new ProductionEvents<short>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadInt16());
         case ProductionEventType.TargetPassCount: return new ProductionEvents<ushort>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadUInt16());
 
-        case ProductionEventType.MachineMapReset: throw new NotImplementedException("ProductionEventType.MachineMapReset not implemented");
+        case ProductionEventType.MachineMapReset: return null; //throw new NotImplementedException("ProductionEventType.MachineMapReset not implemented");
 
         case ProductionEventType.TargetLiftThickness: return new ProductionEvents<float>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadSingle());
         case ProductionEventType.GPSModeChange: return new ProductionEvents<GPSMode>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (GPSMode)r.ReadByte());
@@ -43,8 +43,8 @@ namespace VSS.TRex.Events
         case ProductionEventType.TargetMDP: return new ProductionEvents<short>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadInt16());
         case ProductionEventType.LayerID: return new ProductionEvents<ushort>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadUInt16());
 
-        case ProductionEventType.DesignOverride: throw new NotImplementedException("ProductionEventType.DesignOverride not implemented");
-        case ProductionEventType.LayerOverride: throw new NotImplementedException("ProductionEventType.LayerOverride not implemented");
+        case ProductionEventType.DesignOverride: return null; //throw new NotImplementedException("ProductionEventType.DesignOverride not implemented");
+        case ProductionEventType.LayerOverride: return null; // throw new NotImplementedException("ProductionEventType.LayerOverride not implemented");
 
         case ProductionEventType.TargetCCA: return new ProductionEvents<byte>(machineID, siteModelID, eventType, (w, s) => w.Write(s), r => r.ReadByte());
         case ProductionEventType.StartEndRecordedData: return new StartEndProductionEvents(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (ProductionEventType)r.ReadByte());
