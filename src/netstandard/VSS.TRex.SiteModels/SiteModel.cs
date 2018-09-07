@@ -80,7 +80,12 @@ namespace VSS.TRex.SiteModels
           if (csib != null)
             return csib;
 
-          FileSystemErrorStatus readResult = DIContext.Obtain<ISiteModels>().ImmutableStorageProxy().ReadStreamFromPersistentStore(ID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB, out MemoryStream csibStream);
+          FileSystemErrorStatus readResult = 
+            DIContext.Obtain<ISiteModels>().ImmutableStorageProxy().
+              ReadStreamFromPersistentStore(ID, 
+                                            CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, 
+                                            FileSystemStreamType.CoordinateSystemCSIB, 
+                                            out MemoryStream csibStream);
 
           if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
             return null;
@@ -98,8 +103,8 @@ namespace VSS.TRex.SiteModels
         // that record how the cofigured target CCV and pass count settings on each
         // machine has changed over time.
         [NonSerialized]
-        private /*EfficientMachinesTargetValuesList*/ IMachinesProductionEventLists machinesTargetValues;
-        public /*EfficientMachinesTargetValuesList*/ IMachinesProductionEventLists MachinesTargetValues
+        private IMachinesProductionEventLists machinesTargetValues;
+        public IMachinesProductionEventLists MachinesTargetValues
         {
           get => machinesTargetValues;
           set => machinesTargetValues = value;
@@ -158,7 +163,6 @@ namespace VSS.TRex.SiteModels
 
         public SiteModel()
         {
-            // FTransient = false
         }
 
         public SiteModel(Guid id) : this()
@@ -174,7 +178,7 @@ namespace VSS.TRex.SiteModels
 
             Machines = new MachinesList(id);
 
-            MachinesTargetValues = new MachinesProductionEventLists(this); //EfficientMachinesTargetValuesList(this);
+            MachinesTargetValues = new MachinesProductionEventLists(this);
 
             LastModifiedDate = DateTime.MinValue;
 
@@ -200,8 +204,6 @@ namespace VSS.TRex.SiteModels
 
             // FSiteModelPersistenceSerialisationInterlock:= TCriticalSection.Create;
             // FMachineEventsPersistenceSerialisationInterlock:= TCriticalSection.Create;
-
-            // SetLength(FTransientMachineTargetsLocks, 0);
 
             // {$IFDEF DATAMODEL_WRITES_SUPPORTED}
             // FPendingSubgridWritesMap:= TSubGridTreeBitMask.Create(FGrid.NumLevels - 1, FGrid.CellSize * kSubGridTreeDimension);

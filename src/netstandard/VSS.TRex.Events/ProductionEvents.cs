@@ -79,12 +79,6 @@ namespace VSS.TRex.Events
         /// </summary>
         public long MachineID { get; set; }
 
-        /// <summary>
-        /// The container of event changes lists for a machine in a project that this event list is a member of
-        /// </summary>
-        [NonSerialized]
-        public IProductionEventLists Container;
-
 //        [NonSerialized]
 //        private DateTime lastUpdateTimeUTC = DateTime.MinValue;
 
@@ -126,8 +120,7 @@ namespace VSS.TRex.Events
         public ProductionEvents()
         {}
 
-        public ProductionEvents(IProductionEventLists container,
-            long machineID, Guid siteModelID,
+        public ProductionEvents(long machineID, Guid siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, V> serialiseStateOut,
             Func<BinaryReader, V> serialiseStateIn)
@@ -135,7 +128,6 @@ namespace VSS.TRex.Events
             MachineID = machineID;
             SiteModelID = siteModelID;
             EventListType = eventListType;
-            Container = container;
 
             // Machines created with the max machine ID are treated as transient and never
             // stored in or loaded from the FS file. 
@@ -270,19 +262,10 @@ namespace VSS.TRex.Events
         }
 
         /// <summary>
-        /// Sets the state of the owning 'container' of event list (the production event changes) that this list is a member of
-        /// </summary>
-        /// <param name="container"></param>
-        public void SetContainer(IProductionEventLists container)
-        {
-            Container = container;
-        }
-
-        /// <summary>
         /// Collates a series of events within an event list by aggregating consecutive events where there is no change
         /// in the underlying event state
         /// </summary>
-        public virtual void Collate()
+        public virtual void Collate(IProductionEventLists container)
         {
             bool HaveStartEndEventPair = false;
 
@@ -306,7 +289,7 @@ namespace VSS.TRex.Events
                 if (!HaveStartEndEventPair ||
                      !Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date))
                 {
-                    if (!Container.GetStartEndRecordedDataEvents().FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
+                    if (!container.GetStartEndRecordedDataEvents().FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
                     {
                         FirstIdx = SecondIdx;
                         SecondIdx = FirstIdx + 1;

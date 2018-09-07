@@ -21,14 +21,6 @@ namespace VSS.TRex.Events.Interfaces
       /// Implements collation semantics for event lists that do not contain homogenous lists of events. Machine start/stop and 
       /// data recording start/end are examples
       /// </summary>
-      new void Collate();
-
-      /// <summary>
-      /// Provides business logic for adding start/end production event types where events define contiguous ranges rather
-      /// then singular state changes at points in time
-      /// </summary>
-      /// <param name="Event"></param>
-      /// <returns></returns>
-      //void PutValueAtDate(ProductionEvents<ProductionEventType>.Event Event);
+      new void Collate(IProductionEventLists container);
   }
 }
