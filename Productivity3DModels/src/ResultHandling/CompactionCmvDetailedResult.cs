@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
@@ -14,8 +15,21 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// </summary>
     [JsonProperty(PropertyName = "percents")]
     public double[] Percents { get; private set; }
-
-    public static CompactionCmvDetailedResult CreateEmptyResult() => new CompactionCmvDetailedResult();
+    /// <summary>
+    /// CMV machine target and whether it is constant or varies.
+    /// </summary>
+    [JsonProperty(PropertyName = "cmvTarget")]
+    public CmvTargetData CmvTarget { get; set; }
+    /// <summary>
+    /// The minimum percentage the measured CMV may be compared to the cmvTarget from the machine
+    /// </summary>
+    [JsonProperty(PropertyName = "minCMVPercent", Required = Required.Default)]
+    public double MinCMVPercent { get; set; }
+    /// <summary>
+    /// The maximum percentage the measured CMV may be compared to the cmvTarget from the machine
+    /// </summary>
+    [JsonProperty(PropertyName = "maxCMVPercent")]
+    public double MaxCMVPercent { get; set; }
 
     /// <summary>
     /// Default private constructor.
@@ -24,19 +38,28 @@ namespace VSS.Productivity3D.Models.ResultHandling
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CompactionCmvDetailedResult CreateCmvDetailedResult(CMVDetailedResult result)
+    /// <param name="result1"></param>
+    /// <param name="result2"></param>
+    /// <param name="settings"></param>
+    public CompactionCmvDetailedResult(CMVDetailedResult result1, CMVSummaryResult result2, CMVSettings settings)
     {
-      if (result == null || !result.HasData())
+      if (result1 != null && result1.HasData())
       {
-        return CreateEmptyResult();
-      }
+        Percents = result1.Percents;
 
-      return new CompactionCmvDetailedResult
-      {
-        Percents = result.Percents
-      };
+        if (result2 == null || !result2.HasData()) return;
+
+        MinCMVPercent = settings.MinCMVPercent;
+        MaxCMVPercent = settings.MaxCMVPercent;
+        CmvTarget = new CmvTargetData
+        {
+          CmvMachineTarget = result2.ConstantTargetCmv / 10,
+          TargetVaries = !result2.IsTargetCmvConstant
+        };
+      }
     }
+
   }
 }

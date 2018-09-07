@@ -17,39 +17,48 @@ namespace VSS.Productivity3D.Models.Models
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
     /// </summary>
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings LiftBuildSettings { get; private set; }
 
     /// <summary>
     /// The descriptor for the design for which to to generate the cut-fill data.
     /// </summary>
-    public DesignDescriptor designDescriptor { get; private set; }
+    public DesignDescriptor DesignDescriptor { get; private set; }
 
-    public static CutFillDetailsRequest CreateCutFillDetailsRequest(long projectId, double[] tolerances, FilterResult filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
+    /// <summary>
+    /// Overload constructor with parameters.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="tolerances"></param>
+    /// <param name="filter"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="designDescriptor"></param>
+    public CutFillDetailsRequest(long projectId, double[] tolerances, FilterResult filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
     {
-      return new CutFillDetailsRequest
-      {
-        ProjectId = projectId,
-        CutFillTolerances = tolerances,
-        filter = filter,
-        liftBuildSettings = liftBuildSettings,
-        designDescriptor = designDescriptor
-      };
+      ProjectId = projectId;
+      CutFillTolerances = tolerances;
+      Filter = filter;
+      LiftBuildSettings = liftBuildSettings;
+      DesignDescriptor = designDescriptor;
     }
 
-    public static CutFillDetailsRequest CreateCutFillDetailsRequest(Guid projectUid, double[] tolerances, FilterResult filter, DesignDescriptor designDescriptor)
+    /// <summary>
+    /// Overload constructor with parameters.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="tolerances"></param>
+    /// <param name="filter"></param>
+    /// <param name="designDescriptor"></param>
+    public CutFillDetailsRequest(Guid projectUid, double[] tolerances, FilterResult filter, DesignDescriptor designDescriptor)
     {
-      return new CutFillDetailsRequest
-      {
-        ProjectUid = projectUid,
-        CutFillTolerances = tolerances,
-        filter = filter,
-        designDescriptor = designDescriptor
-      };
+      ProjectUid = projectUid;
+      CutFillTolerances = tolerances;
+      Filter = filter;
+      DesignDescriptor = designDescriptor;
     }
 
     /// <summary>
@@ -59,16 +68,13 @@ namespace VSS.Productivity3D.Models.Models
     {
       base.Validate();
 
-      if (filter != null)
-      {
-        filter.Validate();  
-      }
+      Filter?.Validate();  
 
-      liftBuildSettings?.Validate();
+      LiftBuildSettings?.Validate();
 
-      if (designDescriptor != null)
+      if (DesignDescriptor != null)
       {
-        designDescriptor.Validate();
+        DesignDescriptor.Validate();
       }
       else
       {

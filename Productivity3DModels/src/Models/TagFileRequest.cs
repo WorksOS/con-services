@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
@@ -71,26 +69,33 @@ namespace VSS.Productivity3D.Models.Models
     }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static TagFileRequest CreateTagFile(string fileName,
-        byte[] data,
-        Guid? ProjectUID,
-        WGS84Fence boundary,
-        long machineId,
-        bool convertToCsv,
-        bool convertToDxf,
-        string tccOrgId = null)
+    /// <param name="fileName"></param>
+    /// <param name="data"></param>
+    /// <param name="projectUID"></param>
+    /// <param name="boundary"></param>
+    /// <param name="machineId"></param>
+    /// <param name="convertToCsv"></param>
+    /// <param name="convertToDxf"></param>
+    /// <param name="tccOrgId"></param>
+    public TagFileRequest
+    (
+      string fileName,
+      byte[] data,
+      Guid? projectUID,
+      WGS84Fence boundary,
+      long machineId,
+      bool convertToCsv,
+      bool convertToDxf,
+      string tccOrgId = null)
     {
-      return new TagFileRequest
-             {
-                 FileName = fileName,
-                 Data = data,
-                 ProjectUID = ProjectUID,
-                 Boundary = boundary,
-                 MachineId = machineId,
-                 TccOrgId = tccOrgId
-             };
+      FileName = fileName;
+      Data = data;
+      ProjectUID = projectUID;
+      Boundary = boundary;
+      MachineId = machineId;
+      TccOrgId = tccOrgId;
     }
 
     /// <summary>

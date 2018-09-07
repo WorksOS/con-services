@@ -33,14 +33,12 @@ namespace VSS.Productivity3D.Models.ResultHandling
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVDetailedResult Create(double[] percents)
+    /// <param name="percents"></param>
+    public CMVDetailedResult(double[] percents)
     {
-      return new CMVDetailedResult
-      {
-        Percents = percents
-      };
+      Percents = percents;
     }
 
     /// <summary>

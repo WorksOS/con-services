@@ -61,9 +61,16 @@ namespace VSS.Productivity3D.Models.ResultHandling
     {}
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVSummaryResult Create(
+    /// <param name="compactedPercent"></param>
+    /// <param name="constantTargetCmv"></param>
+    /// <param name="isTargetCmvConstant"></param>
+    /// <param name="overCompactedPercent"></param>
+    /// <param name="returnCode"></param>
+    /// <param name="totalAreaCoveredSqMeters"></param>
+    /// <param name="underCompactedPercent"></param>
+    public CMVSummaryResult(
       double compactedPercent,
       short constantTargetCmv,
       bool isTargetCmvConstant,
@@ -73,16 +80,13 @@ namespace VSS.Productivity3D.Models.ResultHandling
       double underCompactedPercent
       )
     {
-      return new CMVSummaryResult
-      {
-        CompactedPercent = compactedPercent,
-        ConstantTargetCmv = constantTargetCmv,
-        IsTargetCmvConstant = isTargetCmvConstant,
-        OverCompactedPercent = overCompactedPercent,
-        ReturnCode = returnCode,
-        TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters,
-        UnderCompactedPercent = underCompactedPercent
-      };
+      CompactedPercent = compactedPercent;
+      ConstantTargetCmv = constantTargetCmv;
+      IsTargetCmvConstant = isTargetCmvConstant;
+      OverCompactedPercent = overCompactedPercent;
+      ReturnCode = returnCode;
+      TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters;
+      UnderCompactedPercent = underCompactedPercent;
     }
   }
 }

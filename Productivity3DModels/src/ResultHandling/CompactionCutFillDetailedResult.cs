@@ -21,14 +21,12 @@ namespace VSS.Productivity3D.Models.ResultHandling
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CompactionCutFillDetailedResult CreateCutFillDetailedResult(double[] result)
+    /// <param name="result"></param>
+    public CompactionCutFillDetailedResult(double[] result)
     {
-      return new CompactionCutFillDetailedResult
-      {
-        Percents = result
-      };
+      Percents = result;
     }
   }
 }

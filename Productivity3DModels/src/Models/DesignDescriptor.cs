@@ -16,47 +16,48 @@ namespace VSS.Productivity3D.Models.Models
     /// The unique id of the design file
     /// </summary>
     [JsonProperty(PropertyName = "uid", Required = Required.Default)]
-    public Guid? uid { get; private set; }
+    public Guid? Uid { get; private set; }
 
     /// <summary>
     /// The id of the design file
     /// </summary>
     [JsonProperty(PropertyName = "id", Required = Required.Default)]
-    public long id { get; private set; }
+    public long Id { get; private set; }
 
     /// <summary>
     /// The description of where the file is located.
     /// </summary>
     [JsonProperty(PropertyName = "file", Required = Required.Default)]
-    public FileDescriptor file { get; private set; }
+    public FileDescriptor File { get; }
 
     /// <summary>
     /// The offset in meters to use for a reference surface. The surface in the file will be offset by this amount.
     /// Only applicable when the file is a surface design file.
     /// </summary>
     [JsonProperty(PropertyName = "offset", Required = Required.Default)]
-    public double offset { get; private set; }
+    public double Offset { get; }
 
-    public bool ShouldSerializeuid() => uid.HasValue;
+    public bool ShouldSerializeuid() => Uid.HasValue;
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private DesignDescriptor()
     { }
 
     /// <summary>
-    /// Create instance of FileDescriptor
+    /// Overload constructor with parameters.
     /// </summary>
-    public static DesignDescriptor CreateDesignDescriptor(long id, FileDescriptor file, double offset, Guid? uid = null)
+    /// <param name="id"></param>
+    /// <param name="file"></param>
+    /// <param name="offset"></param>
+    /// <param name="uid"></param>
+    public DesignDescriptor(long id, FileDescriptor file, double offset, Guid? uid = null)
     {
-      return new DesignDescriptor
-      {
-        id = id,
-        file = file,
-        offset = offset,
-        uid = uid
-      };
+      Id = id;
+      File = file;
+      Offset = offset;
+      Uid = uid;
     }
 
     /// <summary>
@@ -64,17 +65,17 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (uid != null )
+      if (Uid != null )
         return;
 
-      if (id <= 0 && file == null)
+      if (Id <= 0 && File == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Either the design id or file location is required"));
       }
 
-      file?.Validate();
+      File?.Validate();
     }
 
     #region IEquatable
@@ -82,7 +83,7 @@ namespace VSS.Productivity3D.Models.Models
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return id.Equals(other.id) && (file == null ? other.file == null : file.Equals(other.file)) && offset.Equals(other.offset);
+      return Id.Equals(other.Id) && (File == null ? other.File == null : File.Equals(other.File)) && Offset.Equals(other.Offset);
     }
 
     public override bool Equals(object obj)
@@ -97,9 +98,9 @@ namespace VSS.Productivity3D.Models.Models
     {
       unchecked
       {
-        var hashCode = id.GetHashCode();
-        hashCode = (hashCode * 397) ^ offset.GetHashCode();
-        hashCode = (hashCode * 397) ^ (file != null ? file.GetHashCode() : 0);
+        var hashCode = Id.GetHashCode();
+        hashCode = (hashCode * 397) ^ Offset.GetHashCode();
+        hashCode = (hashCode * 397) ^ (File != null ? File.GetHashCode() : 0);
         return hashCode;
       }
     }

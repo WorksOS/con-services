@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -307,10 +308,10 @@ namespace VSS.MasterData.Proxies
 
       var request = new GracefulWebRequest(logger, configurationStore);
       var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", $"{queryParameters1}{queryParameters2}{queryParameters3}");
-      var result = await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
+      var stream = await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
       using (var ms = new MemoryStream())
       {
-        await result.CopyToAsync(ms);
+        await stream.CopyToAsync(ms);
         return ms.ToArray();
       }
     }

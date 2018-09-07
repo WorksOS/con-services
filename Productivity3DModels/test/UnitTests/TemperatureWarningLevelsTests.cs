@@ -14,12 +14,12 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void CanCreateTemperatureWarningLevelsTest()
     {
       var validator = new DataAnnotationsValidator();
-      TemperatureWarningLevels range = TemperatureWarningLevels.CreateTemperatureWarningLevels(300, 700);
+      TemperatureWarningLevels range = new TemperatureWarningLevels(300, 700);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(range, out results));
 
       //too big max
-      range = TemperatureWarningLevels.CreateTemperatureWarningLevels(0, 10000);
+      range = new TemperatureWarningLevels(0, 10000);
       Assert.IsFalse(validator.TryValidate(range, out results));
     }
 
@@ -27,14 +27,14 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateSuccessTest()
     {
       //min > max
-      TemperatureWarningLevels range = TemperatureWarningLevels.CreateTemperatureWarningLevels(300, 700);
+      TemperatureWarningLevels range = new TemperatureWarningLevels(300, 700);
       range.Validate();
     }
 
     [TestMethod]
     public void ValidateFailTest()
     {
-      TemperatureWarningLevels range = TemperatureWarningLevels.CreateTemperatureWarningLevels(700, 300);
+      TemperatureWarningLevels range = new TemperatureWarningLevels(700, 300);
       Assert.ThrowsException<ServiceException>(() => range.Validate());
     }
   }

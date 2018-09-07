@@ -236,6 +236,7 @@ namespace MockProjectWebApi.Controllers
         ProjectType = ProjectType.LandFill
       },
       new ProjectData {
+        LegacyProjectId = 1111111,
         ProjectUid = "b7f4af55-2fdb-4878-b3d0-ce748d5dde08",
         ProjectType = ProjectType.Standard,
         IsArchived = true
