@@ -129,9 +129,9 @@ namespace VSS.TRex.Events.Interfaces
     /// <summary>
     /// Saves the event lists for this machine to the persistent store
     /// </summary>
-    void SaveMachineEventsToPersistentStore();
+    void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy);
 
-    bool LoadEventsForMachine();
+    bool LoadEventsForMachine(IStorageProxy storageProxy);
 
     /// <summary>
     /// Provides a refernece to the TAG file processing start/end events list
