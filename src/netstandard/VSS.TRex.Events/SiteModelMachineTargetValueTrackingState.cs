@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Events
@@ -8,15 +9,22 @@ namespace VSS.TRex.Events
   /// </summary>
   public struct SiteModelMachineTargetValueTrackingState<T>
   {
+    /// <summary>
+    /// A reference to the particular event list for this machine to be used in the processing of the current request
+    /// </summary>
+    private IProductionEvents<T> EventList;
+
     public DateTime StartDate;
     public DateTime EndDate;
     public int Index;
     public int Stamp;
     public T ThisEvent;
-    public T NextEvent; 
-
-    public void Initialise()
+    public T NextEvent;
+   
+    public SiteModelMachineTargetValueTrackingState(short machineID, Guid siteModelID, ProductionEventType eventType)
     {
+      EventList = (IProductionEvents<T>)DIContext.Obtain<IProductionEventsFactory>().NewEventList(machineID, siteModelID, eventType);
+        
       StartDate = DateTime.MinValue;
       EndDate = DateTime.MinValue;
       Index = -1;
@@ -32,14 +40,12 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public bool IsCurrentEventSuitable(DateTime _Time) => Index >= 0 && _Time >= StartDate && _Time < EndDate;
 
-    public bool IsNextEventSuitable(int stamp, DateTime _time, IProductionEvents<T> eventList)
+    public bool IsNextEventSuitable(int stamp, DateTime _time)
     {
       if (Stamp != stamp || Index < 0)
         return false;
 
-      ProductionEvents<T> _prodEvents = (ProductionEvents<T>) eventList;
-
-      int EventListCount = _prodEvents.Events.Count;
+      int EventListCount = EventList.Count();
 
       int NewIndex = Index + 1;
       if (NewIndex < EventListCount)
@@ -50,8 +56,7 @@ namespace VSS.TRex.Events
         int NewNextEventIndex = NewIndex + 1;
         if (NewNextEventIndex < EventListCount)
         {
-          NewNextEvent = _prodEvents.Events[NewNextEventIndex].State;
-          NewEndDate = _prodEvents.Events[NewNextEventIndex].Date;
+          EventList.GetStateAtIndex(NewNextEventIndex, out NewEndDate, out NewNextEvent);
         }
         else
         {
@@ -75,12 +80,11 @@ namespace VSS.TRex.Events
       return false;
     }
 
-    public void RecordEventState(int stamp, IProductionEvents<T> eventList)
+    public void RecordEventState(int stamp)
     {
       Stamp = stamp;
 
-      ProductionEvents<T> _prodEvents = (ProductionEvents<T>)eventList;
-      int EventListCount = _prodEvents.Events.Count;
+      int EventListCount = EventList.Count();
 
       if (Index < 0)
       {
@@ -89,8 +93,7 @@ namespace VSS.TRex.Events
 
         if (EventListCount > 0)
         {
-          ThisEvent = _prodEvents.Events[0].State;
-          EndDate = _prodEvents.Events[0].Date;
+          EventList.GetStateAtIndex(0, out EndDate, out ThisEvent);
         }
         else
         {
@@ -104,13 +107,11 @@ namespace VSS.TRex.Events
 
       if (Index < EventListCount)
       {
-        ThisEvent = _prodEvents.Events[Index].State;
-        StartDate = _prodEvents.Events[Index].Date;
+        EventList.GetStateAtIndex(Index, out StartDate, out ThisEvent);
 
         if (Index < EventListCount - 1)
         {
-          NextEvent = _prodEvents.Events[Index + 1].State;
-          EndDate = _prodEvents.Events[Index + 1].Date;
+          EventList.GetStateAtIndex(Index + 1, out EndDate, out NextEvent);
         }
         else
         {
@@ -137,9 +138,8 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <param name="stamp"></param>
     /// <param name="_Time"></param>
-    /// <param name="events"></param>
     /// <returns></returns>
-    public T DetermineTrackingStateValue(int stamp, DateTime _Time, IProductionEvents<T> events)
+    public T DetermineTrackingStateValue(int stamp, DateTime _Time)
     {
       T result = default;
 
@@ -147,12 +147,12 @@ namespace VSS.TRex.Events
       {
         if (_Time >= EndDate)
         {
-          if (IsNextEventSuitable(Stamp, _Time, events))
+          if (IsNextEventSuitable(Stamp, _Time))
             result = ThisEvent;
           else
           {
-            result = events.GetValueAtDate(_Time, out int _);
-            RecordEventState(Stamp, events);
+            result = EventList.GetValueAtDate(_Time, out int _);
+            RecordEventState(Stamp);
           }
         }
       }
@@ -160,8 +160,8 @@ namespace VSS.TRex.Events
         Stamp = stamp;
       else
       {
-        result = events.GetValueAtDate(_Time, out int _);
-        RecordEventState(Stamp, events);
+        result = EventList.GetValueAtDate(_Time, out int _);
+        RecordEventState(Stamp);
       }
 
       return result;

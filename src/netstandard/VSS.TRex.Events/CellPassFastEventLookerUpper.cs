@@ -80,10 +80,8 @@ namespace VSS.TRex.Events
       TrackingState = null;
     }
 
-    public void PopulateFilteredValues(FilteredPassData[] passes,
-      int firstPassIndex, int lastPassIndex,
-      IFilteredValuePopulationControl populationControl,
-      bool ignoreBussinessRulesRules)
+    public void PopulateFilteredValues(FilteredPassData[] passes, int firstPassIndex, int lastPassIndex, 
+      IFilteredValuePopulationControl populationControl, bool ignoreBussinessRulesRules)
     {
       if (firstPassIndex == -1 || lastPassIndex == -1)
         return; // Nothing to do
@@ -113,7 +111,7 @@ namespace VSS.TRex.Events
 
           if (TrackingState == null)
           {
-            TrackingState = new SiteModelMachineTargetValuesTrackingState();
+            TrackingState = new SiteModelMachineTargetValuesTrackingState(_MachineID, SiteModel.ID);
             MachinesValuesTrackingState[_MachineID] = TrackingState;
 
             TrackingState.Initialise(populationControl);
@@ -176,53 +174,43 @@ namespace VSS.TRex.Events
 
         if (populationControl.WantsTargetCCVValues)
         {
-          TrackingState.TargetCCV = TrackingState.TargetCCV_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-            TrackingState.MachineTargetValues.TargetCCVStateEvents);
+          TrackingState.TargetCCV = TrackingState.TargetCCV_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].TargetValues.TargetCCV = TrackingState.TargetCCV;
         }
 
         if (populationControl.WantsTargetMDPValues)
         {
-          TrackingState.TargetMDP = TrackingState.TargetMDP_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-            TrackingState.MachineTargetValues.TargetMDPStateEvents);
+          TrackingState.TargetMDP = TrackingState.TargetMDP_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].TargetValues.TargetMDP = TrackingState.TargetMDP;
         }
 
         if (populationControl.WantsTargetCCAValues)
         {
-          TrackingState.TargetCCA = TrackingState.TargetCCA_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-            TrackingState.MachineTargetValues.TargetCCAStateEvents);
+          TrackingState.TargetCCA = TrackingState.TargetCCA_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].TargetValues.TargetCCA = TrackingState.TargetCCA;
         }
 
         if (populationControl.WantsTargetPassCountValues)
         {
-          TrackingState.TargetPassCount = TrackingState.TargetPassCount_Tracking.DetermineTrackingStateValue(Stamp,
-            _Time, TrackingState.MachineTargetValues.TargetPassCountStateEvents);
+          TrackingState.TargetPassCount = TrackingState.TargetPassCount_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].TargetValues.TargetPassCount = TrackingState.TargetPassCount;
         }
 
         if (populationControl.WantsTargetLiftThicknessValues)
         {
-          TrackingState.TargetLiftThickness =
-            TrackingState.TargetLiftThickness_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.TargetLiftThicknessStateEvents);
+          TrackingState.TargetLiftThickness = TrackingState.TargetLiftThickness_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].TargetValues.TargetLiftThickness = TrackingState.TargetLiftThickness;
         }
 
         if (populationControl.WantsTempWarningLevelMinValues)
         {
-          TrackingState.TempWarningLevelMin =
-            TrackingState.TempWarningLevelMin_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.TargetMinMaterialTemperature);
+          TrackingState.TempWarningLevelMin = TrackingState.TempWarningLevelMin_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].TargetValues.TempWarningLevelMin = TrackingState.TempWarningLevelMin;
         }
 
         if (populationControl.WantsTempWarningLevelMaxValues)
         {
-          TrackingState.TempWarningLevelMax =
-            TrackingState.TempWarningLevelMax_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.TargetMaxMaterialTemperature);
+          TrackingState.TempWarningLevelMax = TrackingState.TempWarningLevelMax_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].TargetValues.TempWarningLevelMax = TrackingState.TempWarningLevelMax;
         }
 
@@ -232,17 +220,13 @@ namespace VSS.TRex.Events
 
         if (populationControl.WantsEventDesignNameValues)
         {
-          TrackingState.EventDesignNameID =
-            TrackingState.EventDesignNameID_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.DesignNameIDStateEvents);
+          TrackingState.EventDesignNameID = TrackingState.EventDesignNameID_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventDesignNameID = TrackingState.EventDesignNameID;
         }
 
         if (populationControl.WantsEventVibrationStateValues)
         {
-          TrackingState.EventVibrationState =
-            TrackingState.EventVibrationState_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.VibrationStateEvents);
+          TrackingState.EventVibrationState = TrackingState.EventVibrationState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventVibrationState = TrackingState.EventVibrationState;
 
           if (!ignoreBussinessRulesRules && passes[I].EventValues.EventVibrationState != VibrationState.On)
@@ -251,49 +235,38 @@ namespace VSS.TRex.Events
 
         if (populationControl.WantsEventAutoVibrationStateValues)
         {
-          TrackingState.EventAutoVibrationState =
-            TrackingState.EventAutoVibrationState_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.AutoVibrationStateEvents);
+          TrackingState.EventAutoVibrationState = TrackingState.EventAutoVibrationState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventAutoVibrationState = TrackingState.EventAutoVibrationState;
         }
 
         if (populationControl.WantsEventMinElevMappingValues)
         {
-          TrackingState.MinElevMappingState =
-            TrackingState.MinElevMappingState_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.MinElevMappingStateEvents);
+          TrackingState.MinElevMappingState = TrackingState.MinElevMappingState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventMinElevMapping = TrackingState.MinElevMappingState;
         }
 
         if (populationControl.WantsEventGPSAccuracyValues)
         {
-          TrackingState.GPSAccuracyAndTolerance =
-            TrackingState.GPSAccuracyState_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.GPSAccuracyAndToleranceStateEvents);
+          TrackingState.GPSAccuracyAndTolerance = TrackingState.GPSAccuracyState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.GPSAccuracy = TrackingState.GPSAccuracyAndTolerance.GPSAccuracy;
           passes[I].EventValues.GPSTolerance = TrackingState.GPSAccuracyAndTolerance.GPSTolerance;
         }
 
         if (populationControl.WantsEventPositioningTechValues)
         {
-          TrackingState.PositioningTechState =
-            TrackingState.PositioningTechState_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.PositioningTechStateEvents);
+          TrackingState.PositioningTechState = TrackingState.PositioningTechState_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.PositioningTechnology = TrackingState.PositioningTechState;
         }
 
         if (populationControl.WantsEventICFlagsValues)
         {
-          TrackingState.EventICFlag =
-            TrackingState.EventICFlag_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.ICFlagsStateEvents);
+          TrackingState.EventICFlag = TrackingState.EventICFlag_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventFlags = TrackingState.EventICFlag;
         }
 
         if (populationControl.WantsEventMachineGearValues)
         {
-          TrackingState.EventMachineGear = TrackingState.EventMachineGear_Tracking.DetermineTrackingStateValue(Stamp,
-            _Time, TrackingState.MachineTargetValues.MachineGearStateEvents);
+          TrackingState.EventMachineGear = TrackingState.EventMachineGear_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventMachineGear = TrackingState.EventMachineGear;
         }
 
@@ -301,9 +274,7 @@ namespace VSS.TRex.Events
         {
           if (TrackingState.TrackingUseMachineRMVThreshold)
           {
-            TrackingState.EventMachineRMVThreshold =
-              TrackingState.EventMachineRMVThreshold_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-                TrackingState.MachineTargetValues.RMVJumpThresholdEvents);
+            TrackingState.EventMachineRMVThreshold = TrackingState.EventMachineRMVThreshold_Tracking.DetermineTrackingStateValue(Stamp, _Time);
             passes[I].EventValues.EventMachineRMVThreshold = TrackingState.EventMachineRMVThreshold;
           }
           else
@@ -312,17 +283,13 @@ namespace VSS.TRex.Events
 
         if (populationControl.WantsEventMachineAutomaticsValues)
         {
-          TrackingState.EventMachineAutomatics =
-            TrackingState.EventMachineAutomatics_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.MachineAutomaticsStateEvents);
+          TrackingState.EventMachineAutomatics = TrackingState.EventMachineAutomatics_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.EventMachineAutomatics = TrackingState.EventMachineAutomatics;
         }
 
         if (populationControl.WantsLayerIDValues)
         {
-          TrackingState.EventLayerID =
-            TrackingState.EventLayerID_Tracking.DetermineTrackingStateValue(Stamp, _Time,
-              TrackingState.MachineTargetValues.LayerIDStateEvents);
+          TrackingState.EventLayerID = TrackingState.EventLayerID_Tracking.DetermineTrackingStateValue(Stamp, _Time);
           passes[I].EventValues.LayerID = TrackingState.EventLayerID;
         }
 

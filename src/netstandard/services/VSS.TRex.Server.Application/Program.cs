@@ -66,7 +66,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))

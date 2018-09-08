@@ -27,7 +27,7 @@ namespace VSS.TRex.Events
     /// The collection of concrete event lists for a machine. Each element in the array is indexed by the
     /// ProductionEventType for that collection of events;
     /// </summary>
-    private IProductionEvents[] allEventsForMachine = null;
+    private readonly IProductionEvents[] allEventsForMachine;
 
     /// <summary>
     /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID

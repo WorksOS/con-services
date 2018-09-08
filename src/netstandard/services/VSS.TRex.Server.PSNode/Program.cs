@@ -31,7 +31,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))

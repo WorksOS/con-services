@@ -70,6 +70,10 @@ namespace VSS.TRex.Tests.Events
       var list = factory.NewEventList(-1, Guid.Empty, eventType);
 
       Assert.True(list.GetType() == listType, $"Event list created by factory for {eventType} is of type {list.GetType()} not {listType}");
+
+      Assert.True(list.Count() == 0, "Events list not empty after construction");
+
+      Assert.True(list.EventsChanged == false, "Events changed after construction");
     }
   }
 }

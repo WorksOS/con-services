@@ -16,6 +16,7 @@ namespace VSS.TRex.SiteModels
 
     //private IStorageProxy _ImmutableStorageProxy;
     private IStorageProxy _StorageProxy;
+    private Func<IStorageProxy> StorageProxyFactory;
 
     /// <summary>
     /// The default storage proxy to be used for requests
@@ -23,22 +24,30 @@ namespace VSS.TRex.SiteModels
     //public IStorageProxy ImmutableStorageProxy() => _ImmutableStorageProxy ?? (_ImmutableStorageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage());
     public IStorageProxy StorageProxy
     {
-      get => _StorageProxy;
+      get => _StorageProxy ?? (_StorageProxy = StorageProxyFactory());
     }
 
     /// <summary>
-    /// Default no-arg constructor
+    /// Default no-arg constructor. Made private to enforce prpvision of storage proxy
     /// </summary>
-    public SiteModels()
-    {
-    }
+    private SiteModels() {}
 
     /// <summary>
-    /// Default no-arg constructor
+    /// Constructs a SiteModels instance taking a pre-prepared storage proxy instance
     /// </summary>
-    public SiteModels(IStorageProxy storageProxy) : this()
+//    public SiteModels(IStorageProxy storageProxy) : this()
+//    {
+//      _StorageProxy = storageProxy;
+//    }
+
+    /// <summary>
+    /// Constructs a SiteModels instance taking a storageProxyFactory delegate that will create the
+    /// proorpoate primary storage proxy
+    /// </summary>
+    /// <param name="storageProxyFactory"></param>
+    public SiteModels(Func<IStorageProxy> storageProxyFactory) : this()
     {
-      _StorageProxy = storageProxy;
+      StorageProxyFactory = storageProxyFactory;
     }
 
     public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(StorageProxy, ID, false);

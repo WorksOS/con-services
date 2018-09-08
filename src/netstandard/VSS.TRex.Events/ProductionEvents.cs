@@ -180,10 +180,21 @@ namespace VSS.TRex.Events
         //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;
 
         // protected void InvalidateEventList() => eventsListIsOutOfDate = true;
-
         // public bool EventsListIsOutOfDate() => eventsListIsOutOfDate;
 
         // protected bool LoadedFromPersistentStore = false;
+
+        /// <summary>
+        /// Retrieves the event state and date at a specific location in the events list
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="dateTime"></param>
+        /// <param name="state"></param>
+        public void GetStateAtIndex(int index, out DateTime dateTime, out V state)
+        {
+            dateTime = Events[index].Date;
+            state = Events[index].State;
+        }
 
         /// <summary>
         /// Adds an event of type T with the given date into the list. If the event is a duplicate

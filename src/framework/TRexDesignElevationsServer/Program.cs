@@ -23,7 +23,7 @@ namespace TRexDesignElevationsServer
         .AddLogging()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
         .Complete();

@@ -38,7 +38,8 @@ namespace VSS.TRex.Events.Interfaces
     V LastStateValue();
     DateTime LastStateDate();
 
-    void PutValueAtDate(DateTime dateTime, V value);
-  }
+    void GetStateAtIndex(int index, out DateTime dateTime, out V state);
 
+    void PutValueAtDate(DateTime dateTime, V state);
+  }
 }

@@ -11,7 +11,6 @@ namespace VSS.TRex.Events.Interfaces
     /// </summary>
     short MachineID { get; set; }
 
-
     IStartEndProductionEvents MachineStartupShutdownEvents { get; }
 
     /// <summary>
@@ -74,6 +73,7 @@ namespace VSS.TRex.Events.Interfaces
     /// Records the selected design on the machine at the time the measurements were made
     /// </summary>
 //        public ProductionEvents<string> DesignNameStateEvents;
+
     /// <summary>
     /// ICFlags control flags change events
     /// </summary>
@@ -118,7 +118,6 @@ namespace VSS.TRex.Events.Interfaces
     /// Records the Resonance Meter Value jump threshold configured on the machine control system
     /// </summary>
     IProductionEvents<short> RMVJumpThresholdEvents { get; }
-
 
     /// <summary>
     /// Returns an array containing all the event lists for a machine

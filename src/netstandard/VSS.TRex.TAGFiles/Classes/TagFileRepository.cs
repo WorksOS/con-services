@@ -39,7 +39,7 @@ namespace VSS.TRex.TAGFiles.Classes
       IConfiguration config = DIContext.Obtain<IConfiguration>();
       string TagFileArchiveFolder = config.GetValue<string>("TAGFILE_ARCHIVE_FOLDER", String.Empty);
 
-      if (TagFileArchiveFolder != String.Empty)
+      if (TagFileArchiveFolder != string.Empty)
         return Path.Combine(TagFileArchiveFolder, td.projectId.ToString(), td.assetId.ToString());
       else
         return Path.Combine(Path.GetTempPath(), "TRexIgniteData", "TagFileArchive", td.projectId.ToString(), td.assetId.ToString());
@@ -118,7 +118,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
     public static bool MoveToUnableToProcess(TagFileDetail tagDetail)
     {
-      // todo Should be moved to a common location. To preserve state I sugest saving all details as a json file which includes the state and binary content. 
+      // todo: Should be moved to a common location. To preserve state we could save all details as a json file which includes the state and binary content. 
       return true;
     }
 
@@ -158,6 +158,7 @@ namespace VSS.TRex.TAGFiles.Classes
         tagDetail.assetId = tmd.assetId;
         tagDetail.tagFileName = tmd.tagFileName;
         tagDetail.tccOrgId = tmd.tccOrgId;
+
         // Cleanup
         ReadFileStream.Close();
       }
