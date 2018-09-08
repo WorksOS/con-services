@@ -163,20 +163,20 @@ namespace VSS.TRex.SubGridTrees
             if (numLevels < 1 || numLevels > SubGridTreeConsts.SubGridTreeLevels)
             {
                 // Invalid number of tree levels
-                throw new ArgumentException(string.Format("Number of levels must be between 1 and {0}", SubGridTreeConsts.SubGridTreeLevels), "numLevels");
+                throw new ArgumentException($"Number of levels must be between 1 and {SubGridTreeConsts.SubGridTreeLevels}", nameof(numLevels));
             }
 
             if (cellSize < 0.01 || cellSize > 1000000)
             {
                 // Invalid cell size
-                throw new ArgumentException("CellSize must be between 0.01 and 1000000", "cellSize");
+                throw new ArgumentException("CellSize must be between 0.01 and 1000000", nameof(cellSize));
             }
 
             NumLevels = numLevels;
             SetCellSize(cellSize);
             IndexOriginOffset = (uint)1 << (NumBitsInKeys - 1);
 
-            SubgridFactory = subGridfactory ?? throw new ArgumentException("A subgrid factory must be specified", "subGridfactory");
+            SubgridFactory = subGridfactory ?? throw new ArgumentException("A subgrid factory must be specified", nameof(subGridfactory));
 
             // Construct the root node for the tree
             InitialiseRoot();

@@ -89,10 +89,10 @@ namespace VSS.TRex.SubGridTrees
             // Assert there is an owning tree (things don't work well without one!)
             if (owner == null)
             {
-              //  throw new ArgumentException("Owner cannot be null when creating a subgrid", "owner");
-            }
+        //  throw new ArgumentException("Owner cannot be null when creating a subgrid", nameof(owner));
+      }
 
-            Owner = owner;
+      Owner = owner;
             Parent = parent;
             Level = level;
         }

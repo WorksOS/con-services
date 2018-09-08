@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGridTrees.Factories
             if (treeLevel < 1 || treeLevel > tree.NumLevels)
             {
                 throw new ArgumentException(
-                  $"Invalid treeLevel in subgrid factory: {treeLevel}, range is 1-{tree.NumLevels}", "treeLevel");
+                  $"Invalid treeLevel in subgrid factory: {treeLevel}, range is 1-{tree.NumLevels}", nameof(treeLevel));
             }
 
             //Type NodeType = (treeLevel < tree.NumLevels) ? typeof(Node) : typeof(Leaf);

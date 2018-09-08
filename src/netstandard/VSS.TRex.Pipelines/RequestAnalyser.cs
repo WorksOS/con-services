@@ -153,13 +153,13 @@ namespace VSS.TRex.Pipelines
     public bool Execute()
     {
       if (Pipeline == null)
-        throw new ArgumentException("No owning pipeline", "Pipeline");
+        throw new ArgumentException("No owning pipeline", nameof(Pipeline));
 
       if (Pipeline.FilterSet == null)
-        throw new ArgumentException("No filters in pipeline", "Filters");
+        throw new ArgumentException("No filters in pipeline", nameof(Pipeline.FilterSet));
 
       if (Pipeline.ProdDataExistenceMap == null)
-        throw new ArgumentException("Production Data Existance Map should have been specified", "ProdDataExistenceMap");
+        throw new ArgumentException("Production Data Existance Map should have been specified", nameof(Pipeline.ProdDataExistenceMap));
 
       PerformScanning();
 

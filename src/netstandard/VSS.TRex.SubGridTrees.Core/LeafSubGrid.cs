@@ -22,7 +22,7 @@ namespace VSS.TRex.SubGridTrees
         {
             // Assert level = tree.NumLevels (leaves are only at the tips)
             if (owner != null && level != owner.NumLevels)
-                throw new ArgumentException("Requested level for leaf subgrid <> number of levels in tree", "level");
+                throw new ArgumentException("Requested level for leaf subgrid <> number of levels in tree", nameof(level));
         }
 
         public override bool IsEmpty()
