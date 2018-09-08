@@ -29,6 +29,14 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientMachineSpeedLeafSubGrid() : base()
+    {
+    }
+
+    /// <summary>
     /// Constructor. Set the grid to MachineSpeed.
     /// </summary>
     /// <param name="owner"></param>

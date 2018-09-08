@@ -40,7 +40,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
-        .Add(x => x.AddSingleton<IProductionEventsFactory>(factory => new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
        .Complete();
     }
 

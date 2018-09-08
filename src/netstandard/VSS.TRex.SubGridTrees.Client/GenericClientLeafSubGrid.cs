@@ -28,6 +28,14 @@ namespace VSS.TRex.SubGridTrees.Client
         public abstract T NullCell(); // => default(T);
 
         /// <summary>
+        /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+        /// and using the default cell size and index origin offset
+        /// </summary>
+        public GenericClientLeafSubGrid() : base(null, null, SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset)
+        {
+        }
+
+        /// <summary>
         /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
         /// </summary>
         /// <param name="owner"></param>

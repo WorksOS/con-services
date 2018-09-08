@@ -37,6 +37,14 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool WantsLiftProcessingResults() => true;
 
     /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientPassCountLeafSubGrid() : base()
+    {
+    }
+
+    /// <summary>
     /// Constructor. Set the grid to Pass Count.
     /// </summary>
     /// <param name="owner"></param>

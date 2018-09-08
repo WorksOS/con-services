@@ -32,7 +32,13 @@ namespace VSS.TRex.Profiling
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileLiftBuilder>();
 
-    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+    /// <summary>
+    /// Local reference to the client subgrid factory
+    /// </summary>
+    private IClientLeafSubgridFactory clientLeafSubGridFactory;
+
+    private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
     /// <summary>
     /// The number of passes identified in the top-most (most recent) layer
@@ -533,7 +539,7 @@ namespace VSS.TRex.Profiling
 
           if (CompositeHeightsGrid != null)
           {
-            ClientLeafSubGridFactory.ReturnClientSubGrid(ref CompositeHeightsGridIntf);
+            ClientLeafSubGridFactory().ReturnClientSubGrid(ref CompositeHeightsGridIntf);
             CompositeHeightsGrid = null;
           }
 

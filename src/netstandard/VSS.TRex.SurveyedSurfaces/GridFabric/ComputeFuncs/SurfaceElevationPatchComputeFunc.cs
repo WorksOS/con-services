@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
-using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Executors;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
@@ -10,7 +10,7 @@ using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 {
   [Serializable]
-  public class SurfaceElevationPatchComputeFunc : /*BaseComputeFunc,*/
+  public class SurfaceElevationPatchComputeFunc :
     IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
   {
     [NonSerialized]
@@ -20,7 +20,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     /// Local reference to the client subgrid factory
     /// </summary>
     [NonSerialized]
-    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+    private IClientLeafSubgridFactory clientLeafSubGridFactory;
+
+    private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
     /// <summary>
     /// Invokes the surface elevation patch computation function on the server nodes the request has been sent to
@@ -46,7 +49,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
         }
         finally
         {
-          ClientLeafSubGridFactory.ReturnClientSubGrid(ref result);
+          ClientLeafSubGridFactory().ReturnClientSubGrid(ref result);
         }
       }
       catch (Exception E)

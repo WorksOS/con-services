@@ -37,6 +37,14 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = Consts.NullHeight);
     }
+    
+    /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientHeightLeafSubGrid() : base()
+    {
+    }
 
     /// <summary>
     /// Constructor. Set the grid to HeightAndTime.

@@ -40,7 +40,7 @@ namespace TRexMutableDataServer
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
-        .Add(x => x.AddSingleton<IProductionEventsFactory>(factory => new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Complete();
     }
 

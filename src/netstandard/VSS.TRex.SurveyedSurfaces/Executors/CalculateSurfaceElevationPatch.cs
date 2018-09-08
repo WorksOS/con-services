@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -23,7 +24,11 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
-    private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+    [NonSerialized]
+    private IClientLeafSubgridFactory clientLeafSubGridFactory;
+
+    private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
     /// <summary>
     /// Private reference to the arguments provided to the executor
@@ -66,7 +71,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
         try
         {
-          IClientLeafSubGrid Patch = ClientLeafSubGridFactory.GetSubGrid(
+          IClientLeafSubGrid Patch = ClientLeafSubGridFactory().GetSubGrid(
             Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations
               ? GridDataType.CompositeHeights
               : GridDataType.HeightAndTime);

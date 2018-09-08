@@ -16,6 +16,8 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
@@ -38,7 +40,8 @@ namespace TRexImmutableDataServer
         .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
-        .Add(x => x.AddSingleton<IProductionEventsFactory>(factory => new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
 
         .Complete();
     }
