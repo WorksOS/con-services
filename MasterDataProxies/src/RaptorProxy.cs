@@ -297,17 +297,36 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.GetProductionDataTile: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
 
-      string filterParam = filterUid.HasValue ? $"&filterUid={filterUid}" : string.Empty;
-      string cutFillDesignParam = cutFillDesignUid.HasValue ? $"&cutFillDesignUid={cutFillDesignUid}" : string.Empty;
-      string baseParam = baseUid.HasValue ? $"&volumeBaseUid={baseUid}" : string.Empty;
-      string topParam = topUid.HasValue ? $"&volumeTopUid={topUid}" : string.Empty;
-      string volCalcTypeParam = volCalcType.HasValue ? $"&volumeCalcType={volCalcType}" : string.Empty;
-      string queryParameters1 = $"?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=Layers&CRS=EPSG:4326&STYLES=";
-      string queryParameters2 = $"&projectUid={projectUid}{filterParam}{baseParam}{topParam}{volCalcTypeParam}";
-      string queryParameters3 = $"&mode={mode}&width={width}&height={height}&bbox={bbox}{cutFillDesignParam}";
+      Dictionary<string, string> parameters = new Dictionary<string, string>
+      {
+        {"SERVICE", "WMS" }, {"VERSION" , "1.3" }, {"REQUEST", "GetMap" }, {"FORMAT", "image/png"}, {"TRANSPARENT", "true"},
+        { "LAYERS", "Layers"}, {"CRS", "EPSG:4326" }, {"STYLES", string.Empty}, {"projectUid", projectUid.ToString()},
+        { "mode", mode.ToString()}, {"width", width.ToString()}, {"height", height.ToString()}, {"bbox", bbox}
+      };
+      if (filterUid.HasValue)
+      {
+        parameters.Add("filterUid", filterUid.ToString());
+      }
+      if (cutFillDesignUid.HasValue)
+      {
+        parameters.Add("cutFillDesignUid", cutFillDesignUid.ToString());
+      }
+      if (baseUid.HasValue)
+      {
+        parameters.Add("volumeBaseUid", baseUid.ToString());
+      }
+      if (topUid.HasValue)
+      {
+        parameters.Add("volumeTopUid", topUid.ToString());
+      }
+      if (volCalcType.HasValue)
+      {
+        parameters.Add("volumeCalcType", volCalcType.ToString());
+      }
+      var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
       var request = new GracefulWebRequest(logger, configurationStore);
-      var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", $"{queryParameters1}{queryParameters2}{queryParameters3}");
+      var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", queryParams);
       var stream = await request.ExecuteRequest(url, "GET", customHeaders, null, null, 3);
       using (var ms = new MemoryStream())
       {
