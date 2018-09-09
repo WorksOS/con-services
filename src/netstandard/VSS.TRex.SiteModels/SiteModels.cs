@@ -115,8 +115,8 @@ namespace VSS.TRex.SiteModels
     /// <param name="SiteModelID"></param>
     public void SiteModelAttributesHaveChanged(Guid SiteModelID)
     {
-      // Remove or updtae if necessary the Sitemodel from any cached storage in this context
-      //GetSiteModel(ImmutableStorageProxy, SiteModelID, false)?.LoadFromPersistentStore(ImmutableStorageProxy);
+      // Remove or update if necessary the Sitemodel from any cached storage in this context
+      GetSiteModel(StorageProxy, SiteModelID, false)?.LoadFromPersistentStore(StorageProxy);
     }
   }
 }

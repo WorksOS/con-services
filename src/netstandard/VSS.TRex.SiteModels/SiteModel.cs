@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -12,6 +13,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Services.SurveyedSurfaces;
+using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
@@ -27,7 +29,6 @@ using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SiteModels
 {
-//  [Serializable]
     public class SiteModel : ISiteModel
     {
         [NonSerialized]
@@ -152,8 +153,7 @@ namespace VSS.TRex.SiteModels
 
         // Machines contains a list of compactor machines that this site model knows
         // about. Each machine contains a link to the machine hardware ID for the
-        // appropriate machine, and may also reference a wireless machine looked
-        // after by METScomms
+        // appropriate machine
 
         public IMachinesList Machines { get; set; }
 
@@ -171,7 +171,6 @@ namespace VSS.TRex.SiteModels
 
             // FCreationDate:= Now;
             // FMarkedForRemoval:= False;
-
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';
             // FActive:= True;
@@ -189,19 +188,12 @@ namespace VSS.TRex.SiteModels
             existanceMap = new SubGridTreeSubGridExistenceBitMask();
 
             // FProofingRuns:= TICSiteProofingRuns.Create;
-
             // FMaxInterEpochDist:= kMaxEpochInterval;
-
             // FWorkingSiteModelExtent.SetInverted;
-
             // FGroundSurfacesInterlock:= TCriticalSection.Create;
-
             // FLoadFromPersistentStoreInterlock:= TCriticalSection.Create;
-
             // FIsNewlyCreated:= False;
-
             // FAttributesChangedNotificationCount:= 0;
-
             // FSiteModelPersistenceSerialisationInterlock:= TCriticalSection.Create;
             // FMachineEventsPersistenceSerialisationInterlock:= TCriticalSection.Create;
 
@@ -217,7 +209,7 @@ namespace VSS.TRex.SiteModels
                          Guid id,
                          double cellSize) : this(id)
         {
-            //        FName := AName;
+            //  FName := AName;
             //  FDescription := ADescription;
             Grid.CellSize = cellSize;
 
@@ -291,7 +283,7 @@ namespace VSS.TRex.SiteModels
 
         public bool Read(BinaryReader reader)
         {
-            // Write the SiteModel attributes
+            // Read the SiteModel attributes
             int MajorVersion = reader.ReadInt32();
             int MinorVersion = reader.ReadInt32();
 
@@ -330,7 +322,7 @@ namespace VSS.TRex.SiteModels
             if (SiteModelGridCellSize < 0.001)
             {
                 Log.LogError($"'SiteModelGridCellSize is suspicious: {SiteModelGridCellSize} for datamodel {ID}, setting to default");
-                SiteModelGridCellSize = SubGridTreeConsts.DefaultCellSize; // VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
+                SiteModelGridCellSize = SubGridTreeConsts.DefaultCellSize; 
             }
             Grid.CellSize = SiteModelGridCellSize;
 
@@ -370,13 +362,11 @@ namespace VSS.TRex.SiteModels
 
             if (Result)
             {
-                //if (VLPDSvcLocations.VLPDTagProc_AdviseOtherServicesOfDataModelChanges)
-                // {
-                // Notify the SiteModel that it's attributes have changed
-              //  SiteModelAttributesChangedEventSender.ModelAttributesChanged(ID);
-
-                //        SIG_SiteModelStateEventControl.Publish(Self, sig_smscAttributesModified, FID);
-                //}
+                if (TRexConfig.AdviseOtherServicesOfDataModelChanges)
+                {
+                  // Notify the site model in all contents in the grid that it's attributes have changed
+                  SiteModelAttributesChangedEventSender.ModelAttributesChanged(ID);
+                }
             }
             else
             {
@@ -386,45 +376,15 @@ namespace VSS.TRex.SiteModels
             return Result;
         }
 
-    private bool CreateMachinesTargetValues()
-    {
-      // Recreate the array and alloow lazt loading of the machien event lists to occur organically
-      MachinesTargetValues = new MachinesProductionEventLists(this);
-
-      return true;
-
-      /*
-       This method is the raptor approach of recreating all the machine event lists at once. TRex will defer this
-       by simply recreating the null list of machines events
-      try
-      {
-        foreach (var machine in Machines) 
+        private bool CreateMachinesTargetValues()
         {
-          if (MachinesTargetValues[machine.InternalSiteModelMachineIndex] == null)
-            MachinesTargetValues.CreateNewMachineTargetValues(machine, machine.ID);
-          else
-          {
-            // Update the machine reference in the target values with the newly created
-            // machine instance. If this is not done then code processing cell passes
-            // and referencing the machine instance in the machine target values
-            // (such as in ICCellPassFastEventLookUps) will reference invalid
-            // machine references causing exceptions such as reported in bug 22872
-            // and bug 27799
-            MachinesTargetValues[machine.InternalSiteModelMachineIndex).UpdateMachineReference(machine);
-          }
+            // Recreate the array and allow lazy loading of the machine event lists to occur organically.
+            // Any requests holding references to events lists will continue to do so as the lists themselves
+            // wont be garbage collected until all request references to them are relinquished
+            MachinesTargetValues = new MachinesProductionEventLists(this);
+
+            return true;
         }
-
-        return true;
-      }
-      catch (Exception e)
-      {
-        Log.LogError($"Exception in .CreateMachinesTargetValues: {e}");
-      }
-
-      return false;
-      */
-    }
-
 
         public FileSystemErrorStatus LoadFromPersistentStore(IStorageProxy StorageProxy)
         {
@@ -448,14 +408,6 @@ namespace VSS.TRex.SiteModels
                         ID = SavedID;
                     }
 
-                    // Prior to reading the site model from the stream, ensure that we have
-                    // acquired locks to prevent access of the machine target values while the
-                    // machines list is destroyed and recreated. LockMachinesTargetValues creates
-                    // a list of items it obtains locks of and UnLockMachinesTargetValues releases
-                    // locks against that list. This is necessary as rereading the machines may cause
-                    // new machines to be created due to TAG file processing, and these new machines
-                    // will not have targets values participating in the lock.
-
                     MS.Position = 0;
                     using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
                     {
@@ -463,26 +415,17 @@ namespace VSS.TRex.SiteModels
                         {
                             Read(reader);
 
-                            // Now read in the existance map
+                            // Now read in the existance map, replacing any currently loaded map. Requests holding 
+                            // references to the current map will continute to be able to reference it until
+                            // all such reqeusts are completed.
                             Result = LoadProductionDataExistanceMapFromStorage(StorageProxy);
                         }
                     }
 
-                  if (!CreateMachinesTargetValues())
-                    Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
-                  else
-                  {
-                    /* TODO This type of management is not appropriate for Ignite based cache management as
-                     *  list updates will cause Ignite level cache invalidation that can then cause messaging
-                     *  to trigger reloading of target values/event lists
+                    if (!CreateMachinesTargetValues())
+                      Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
 
-                        //Mark override lists dirty
-                        for I := 0 to MachinesTargetValues.Count - 1 do
-                                MachinesTargetValues.Items[I].TargetValueChanges.MarkOverrideEventListsAsOutOfDate;
-                    */
-                  }
-
-                  if (Result == FileSystemErrorStatus.OK)
+                    if (Result == FileSystemErrorStatus.OK)
                     {
                         Log.LogDebug($"Site model read from FS file (ID:{ID}) succeeded");
                         Log.LogDebug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
@@ -537,8 +480,9 @@ namespace VSS.TRex.SiteModels
                     }
                 }
             }
-            catch // (Exception E)
+            catch (Exception e)
             {
+                Log.LogDebug($"Exception occurred: {e}");
                 return FileSystemErrorStatus.UnknownErrorWritingToFS;
             }
 
@@ -553,7 +497,7 @@ namespace VSS.TRex.SiteModels
         {
             try
             {
-        // Create the new existance map instance
+                // Create the new existance map instance
                 ISubGridTreeBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
 
                 // Read its content from storage 
@@ -594,9 +538,9 @@ namespace VSS.TRex.SiteModels
                 return SiteModelExtent;
 
             // Start with the data model extents
-          BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
+            BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
-          // Iterate over all non-exluded surveyed surfaces and expand the SpatialExtents as necessary
+            // Iterate over all non-exluded surveyed surfaces and expand the SpatialExtents as necessary
             if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
             {
                 foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)

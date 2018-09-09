@@ -24,7 +24,6 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// Ignite instance to be used in the server
         /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
         /// </summary>
-        //[InstanceResource]
         private readonly IIgnite ignite;
 
         /// <summary>
