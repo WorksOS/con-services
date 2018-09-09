@@ -196,6 +196,10 @@
       <Project>{f1b8058c-7136-4f12-92ca-7db3ad7d548c}</Project>
       <Name>VSS.TRex.Filters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj">
+      <Project>{64FFE4BC-BC5F-42A7-9D71-7F726F1B08C9}</Project>
+      <Name>VSS.TRex.GridFabric.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj">
       <Project>{7a68abbe-5cbb-4b54-ba85-93d4603fb0cb}</Project>
       <Name>VSS.TRex.GridFabric.Models</Name>

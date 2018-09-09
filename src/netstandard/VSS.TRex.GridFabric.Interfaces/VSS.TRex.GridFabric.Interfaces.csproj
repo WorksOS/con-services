@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
   </ItemGroup>
 
 </Project>

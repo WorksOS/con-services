@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridClientLeafFactory_Reuse()
         {
-            IClientLeafSubgridFactory factory = new ClientLeafSubGridFactory();
+            IClientLeafSubgridFactory factory = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory();
 
             Assert.NotNull(factory);
 

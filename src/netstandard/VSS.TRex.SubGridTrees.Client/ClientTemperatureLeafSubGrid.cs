@@ -22,12 +22,20 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
+        private void Initialise()
+        {
+          EventPopulationFlags |= PopulationControlFlags.WantsTempWarningLevelMinValues | PopulationControlFlags.WantsTempWarningLevelMaxValues;
+
+          _gridDataType = GridDataType.Temperature;
+        }
+
         /// <summary>
         /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
         /// and using the default cell size and index origin offset
         /// </summary>
         public ClientTemperatureLeafSubGrid() : base()
         {
+          Initialise();
         }
     
         /// <summary>
@@ -48,9 +56,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="indexOriginOffset"></param>
         public ClientTemperatureLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
-          EventPopulationFlags |= PopulationControlFlags.WantsTempWarningLevelMinValues | PopulationControlFlags.WantsTempWarningLevelMaxValues;
-
-          _gridDataType = GridDataType.Temperature;
+           Initialise();
         }
 
         /// <summary>

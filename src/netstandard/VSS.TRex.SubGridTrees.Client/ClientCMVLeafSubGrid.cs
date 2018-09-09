@@ -44,27 +44,11 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
 
-    /// <summary>
-    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
-    /// and using the default cell size and index origin offset
-    /// </summary>
-    public ClientCMVLeafSubGrid() : base()
+    private void Initialise()
     {
-    }
-
-    /// <summary>
-    /// Constructor. Set the grid to CCV.
-    /// </summary>
-    /// <param name="owner"></param>
-    /// <param name="parent"></param>
-    /// <param name="level"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="indexOriginOffset"></param>
-    public ClientCMVLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
-    {
-      EventPopulationFlags |= 
-        PopulationControlFlags.WantsTargetCCAValues | 
-        PopulationControlFlags.WantsTargetThicknessValues | 
+      EventPopulationFlags |=
+        PopulationControlFlags.WantsTargetCCAValues |
+        PopulationControlFlags.WantsTargetThicknessValues |
         PopulationControlFlags.WantsEventVibrationStateValues |
         PopulationControlFlags.WantsEventDesignNameValues |
         PopulationControlFlags.WantsEventGPSAccuracyValues |
@@ -91,6 +75,28 @@ namespace VSS.TRex.SubGridTrees.Client
 
       _sWantsPreviousCCVValue = WantsPreviousCCVValue;
       _sIgnoresNullValueForLastCMV = IgnoresNullValueForLastCMV;
+    }
+
+    /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientCMVLeafSubGrid() : base()
+    {
+      Initialise();
+    }
+
+    /// <summary>
+    /// Constructor. Set the grid to CCV.
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="parent"></param>
+    /// <param name="level"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="indexOriginOffset"></param>
+    public ClientCMVLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    {
+      Initialise();
     }
 
     /// <summary>

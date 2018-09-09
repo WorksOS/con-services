@@ -7,6 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
@@ -52,6 +53,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
     {
       DIBuilder.New()
       .AddLogging()
+      .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
       .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))

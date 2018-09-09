@@ -619,7 +619,7 @@ namespace TRexIgniteTest
 		{
 				try
 				{
-						IIgnite ignite = TRexGridFactory.Grid(TRexGrids.GridName(mutability));
+						IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
 
 						if (ignite == null)
 						{
@@ -764,7 +764,7 @@ namespace TRexIgniteTest
 			{
 			  PriorProcessingMessage();
 
-        IIgnite ignite = TRexGridFactory.Grid(TRexGrids.MutableGridName());
+			  IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
 
         textBoxTest.Text = String.Empty;
 			  
@@ -781,7 +781,7 @@ namespace TRexIgniteTest
 				else
 					AppendTextBoxWithNewLine("No Ignite referece for mutable Statistics");
 
-				ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+			  ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 				if (ignite != null)
 				{
 				  string result1 = CalculateCacheStatistics(TRexCaches.ImmutableNonSpatialCacheName(), ignite.GetCache<object, byte[]>(TRexCaches.ImmutableNonSpatialCacheName()));

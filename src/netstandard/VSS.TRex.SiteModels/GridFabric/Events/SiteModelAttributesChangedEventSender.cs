@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
@@ -20,7 +22,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         {
           try
           {
-            TRexGridFactory.Grid(TRexGrids.ImmutableGridName())?.GetMessaging().Send(new SiteModelAttributesChangedEvent
+            DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetMessaging().Send
+            (new SiteModelAttributesChangedEvent
             {
                 SiteModelID = siteModelID
             });

@@ -5,7 +5,9 @@ using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.GridFabric.NodeFilters;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
@@ -39,7 +41,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public TAGFileBufferQueueServiceProxy()
         {
-            IIgnite _ignite = TRexGridFactory.Grid(TRexGrids.MutableGridName());
+            IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
 
             //var cacheGroup = _ignite.GetCluster().ForCacheNodes(TRexCaches.TAGFileBufferQueueCacheName());
 

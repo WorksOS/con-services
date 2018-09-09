@@ -18,7 +18,6 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       var clientSubGridFactory = new ClientLeafSubGridFactory();
 
-      // Hardwiring registration of client data types here. May want to make this more dependency injection controlled....
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.Height, () => new ClientHeightLeafSubGrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.HeightAndTime, () => new ClientHeightAndTimeLeafSubGrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CompositeHeights, () => new ClientCompositeHeightsLeafSubgrid());

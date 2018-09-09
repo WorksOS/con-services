@@ -71,7 +71,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            Debug.Assert(false, "Generic BinaryWriter based implementation not provided. Override to implement if needed.");
+          throw new NotImplementedException("Generic BinaryWriter based implementation not provided. Override to implement if needed.");
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte[] buffer)
         {
-          Debug.Assert(false, "Generic BinaryReader based implementation not provided. Override to implement if needed.");
+          throw new NotImplementedException("Generic BinaryReader based implementation not provided. Override to implement if needed.");
         }
     }
 }
