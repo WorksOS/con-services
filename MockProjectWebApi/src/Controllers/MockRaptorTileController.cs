@@ -97,7 +97,8 @@ namespace MockProjectWebApi.Controllers
               color = Colors.Orange;
               break;
           }
-
+          //Add in the alpha
+          color = (uint)(color | (0xFF << 24));
           var rect = new RectangleF(x, y, w, h);
           bitmap.Mutate(ctx => ctx.Fill(new Rgba32(color), rect));
           
