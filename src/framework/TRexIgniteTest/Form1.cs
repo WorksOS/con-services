@@ -497,7 +497,7 @@ namespace TRexIgniteTest
 				}
 
 				MessageBox.Show($"Results:\n{results.ToString()}");
-				//MessageBox.Show(String.Format("Images:{0}, Time:{1}", nImages, sw.Elapsed));
+				//MessageBox.Show($"Images:{nImages}, Time:{sw.Elapsed}");
 		}
 
 		private void writeCacheMetrics(StreamWriter writer, ICacheMetrics metrics)
@@ -1132,7 +1132,7 @@ namespace TRexIgniteTest
 						}
 
 						var res = request.Execute(arg);
-						MessageBox.Show(String.Format("Submission Result:{0}, File:{1}, ErrorMessage:{2}", res.Success,res.FileName, res.Message));
+						MessageBox.Show($"Submission Result:{res.Success}, File:{res.FileName}, ErrorMessage:{res.Message}");
 
 				}
 				catch (Exception exception)
@@ -1199,8 +1199,7 @@ namespace TRexIgniteTest
                                   };
 
                 td = TagFileRepository.GetTagfile(td);
-                MessageBox.Show(String.Format("ProjectID:{0}, Asset:{1}, TCCOrg:{2},IsJohnDoe:{3}, FileLenght:{4}",
-                        td.projectId, td.assetId,td.tccOrgId,td.IsJohnDoe,td.tagFileContent.Length));
+                MessageBox.Show($"ProjectID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
 
             }
             catch (Exception exception)

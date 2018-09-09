@@ -70,7 +70,7 @@ namespace VSS.TRex.Cells
             }
           default:
             {
-              throw new ArgumentException(string.Format("Unknown pass type supplied to SetPassType {0}", _passType), "_passType");
+              throw new ArgumentException($"Unknown pass type supplied to SetPassType {_passType}", "_passType");
             }
         }
 
