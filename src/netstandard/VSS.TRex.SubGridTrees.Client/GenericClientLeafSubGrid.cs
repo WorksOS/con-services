@@ -5,9 +5,9 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
-  [Serializable]
+    [Serializable]
     public abstract class GenericClientLeafSubGrid<T> : ClientLeafSubGrid, IGenericClientLeafSubGrid<T>
-  {
+    {
         private static ILogger Log = Logging.Logger.CreateLogger("GenericClientLeafSubGrid");
 
         /// <summary>

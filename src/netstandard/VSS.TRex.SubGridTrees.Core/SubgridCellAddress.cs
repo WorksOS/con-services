@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(ISubGridCellAddress other) => (X == other.X) && (Y == other.Y);
+        public bool Equals(ISubGridCellAddress other) => X == other.X && Y == other.Y;
 
         /// <summary>
         /// Constructs a single long quantity that encodes both the X & Y elements of the subgrid address.
@@ -133,7 +133,7 @@ namespace VSS.TRex.SubGridTrees
         /// Produce a human readable form of the cell address information
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => string.Format("{0}:{1}", X, Y);
+        public override string ToString() => $"{X}:{Y}";
 
         /// <summary>
         /// Sets the state of a cell address struct

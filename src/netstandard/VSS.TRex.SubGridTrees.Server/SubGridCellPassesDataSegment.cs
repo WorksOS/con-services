@@ -168,7 +168,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             if (!Header.IsSubGridSegmentFile)
             {
-                Log.LogCritical($"Subgrid grid segment file does not identify itself as such in extended header flags");
+                Log.LogCritical("Subgrid grid segment file does not identify itself as such in extended header flags");
                 return false;
             }
 
@@ -229,7 +229,7 @@ namespace VSS.TRex.SubGridTrees.Server
                                string FileName,
                                out FileSystemErrorStatus FSError)
         {
-            //  TODO  InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
+            // TODO  InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
 
             bool Result;
             FSError = FileSystemErrorStatus.OK;
@@ -255,7 +255,7 @@ namespace VSS.TRex.SubGridTrees.Server
                         return false;
                 }
 
-                //  TODO          SetLength(InvalidatedSpatialStreams, 0);
+                // TODO          SetLength(InvalidatedSpatialStreams, 0);
                 FSError = storage.WriteSpatialStreamToPersistentStore(
                     Owner.Owner.ID,
                     FileName,

@@ -1,9 +1,4 @@
 ﻿using VSS.TRex.SubGridTrees.Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees

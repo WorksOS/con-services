@@ -150,7 +150,7 @@ namespace VSS.TRex.GridFabric.Requests
                         ProdDataMaskBytes = ProdDataMS.ToArray(),
                         SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceMS.ToArray(),
                         Filters = Filters,
-                        MessageTopic = string.Format("SubGridRequest:{0}", RequestID),
+                        MessageTopic = $"SubGridRequest:{RequestID}",
                         TRexNodeID = TRexNodeId,
                         CutFillDesignID = CutFillDesignID
                     };
