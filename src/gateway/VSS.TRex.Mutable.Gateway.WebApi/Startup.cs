@@ -69,7 +69,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
-
     }
 
     /// <summary>

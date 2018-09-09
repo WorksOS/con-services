@@ -244,7 +244,7 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The count of the number of possible production event types
     /// </summary>
-    private static int NumEventListTypes = Enum.GetValues(typeof(ProductionEventType)).Cast<int>().Max(x => x);
+    private static int NumEventListTypes = Enum.GetValues(typeof(ProductionEventType)).Cast<int>().Max(x => x) + 1;
 
     public ProductionEventLists(ISiteModel siteModel, short machineID)
     {
