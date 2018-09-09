@@ -6,8 +6,8 @@ using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  [Binding, Scope(Feature = "CompactionMachineLiftIds")]
-  public class CompactionMachineLiftIdsSteps : BaseCompactionSteps
+  [Binding, Scope(Feature = "CompactionLiftIds")]
+  public class CompactionLiftIdsSteps : BaseCompactionSteps
   {
     private Getter<JObject> requestHandler;
 

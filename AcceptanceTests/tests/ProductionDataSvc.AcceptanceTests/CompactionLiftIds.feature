@@ -1,9 +1,9 @@
 ﻿Feature: CompactionMachineLiftIds
     I should be able to request all lift Ids of a project
 
-Scenario Outline: CompactionMachineLiftIds
+Scenario Outline: CompactionLiftIds
     Given the Compaction service URI "/api/v2/projects/{projectUid}/liftids" for operation "All"
-    And the result file "CompactionMachineLiftIdsResponse.json"
+    And the result file "CompactionLiftIdsResponse.json"
     And projectUid "<ProjectUid>"
     When I send the request with expected HTTP status code "<HttpCode>"
     Then the result should match the "<ResultName>" result from the repository
