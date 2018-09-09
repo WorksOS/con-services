@@ -5,6 +5,7 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -21,6 +22,7 @@ namespace TRexDesignElevationsServer
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))

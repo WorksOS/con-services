@@ -8,6 +8,7 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Storage.Models;
 using System.Threading.Tasks;
+using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.Server.DesignElevation
 {
@@ -18,6 +19,7 @@ namespace VSS.TRex.Server.DesignElevation
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Complete();

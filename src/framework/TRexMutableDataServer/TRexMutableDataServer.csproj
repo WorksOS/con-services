@@ -175,6 +175,10 @@
       <Project>{920b5030-74c9-48a9-85b2-8c09113025c2}</Project>
       <Name>VSS.TRex.ExistenceMaps</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj">
+      <Project>{64FFE4BC-BC5F-42A7-9D71-7F726F1B08C9}</Project>
+      <Name>VSS.TRex.GridFabric.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
       <Project>{0BF0BCD0-F93C-4A2E-BCB2-3D80B587E858}</Project>
       <Name>VSS.TRex.GridFabric</Name>
