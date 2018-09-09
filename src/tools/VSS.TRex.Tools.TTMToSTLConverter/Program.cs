@@ -16,23 +16,25 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
         return;
       }
 
-      string type = args[0].ToLower();
-      string name = args[1];
-
-      TrimbleTINModel tin = new TrimbleTINModel();
-      tin.LoadFromFile(name);
-
-      Console.WriteLine("Stating conversion...");
-      DateTime startTime = DateTime.Now;
       try
       {
-        using (FileStream stl = new FileStream(name + ".stl", FileMode.CreateNew))
+        string type = args[0].ToLower();
+        string fileName = args[1];
+        string outputFileName = fileName + ".stl";
+
+        TrimbleTINModel tin = new TrimbleTINModel();
+        tin.LoadFromFile(fileName);
+
+        Console.WriteLine("Starting conversion...");
+        DateTime startTime = DateTime.Now;
+
+        using (FileStream stl = new FileStream(outputFileName, FileMode.CreateNew))
         {
           if (type == "text")
           {
             using (StreamWriter writer = new StreamWriter(stl))
             {
-              writer.WriteLine($"solid {name}");
+              writer.WriteLine($"solid {fileName}");
 
               foreach (var tri in tin.Triangles.Items)
               {
@@ -44,10 +46,8 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
                 writer.WriteLine("endfacet");
               }
 
-              writer.WriteLine($"endsolid {name}");
+              writer.WriteLine($"endsolid {fileName}");
             }
-
-            return;
           }
 
           if (type == "binary")
@@ -82,11 +82,16 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
           }
         }
 
-      }
-      finally
-      {
         Console.WriteLine($"Conversion complete in {DateTime.Now - startTime}");
+        Console.WriteLine($"{fileName} [{new FileInfo(fileName).Length} bytes] -> {outputFileName} [{new FileInfo(outputFileName).Length} bytes]");
       }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Error: {e.Message}");
+      }
+
+      Console.WriteLine("Press any key to continue");
+      Console.ReadLine();
     }
   }
 }
