@@ -303,12 +303,12 @@ namespace VSS.TRex.SubGridTrees
                 cellExtent = new BoundingIntegerExtent2D();
                 return false;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw; // For now, just throw it until we have logging sorted out
-                // SIGLogMessage.PublishNoODS(Self, Format('Exception in SubGridTree.CalculateRegionGridCoverage: %s', [E.Message]), slmcDebug);
-                // Something bad happened...
-                //                return false;
+              // Something bad happened...
+              Log.LogDebug($"Exception in SubGridTree.CalculateRegionGridCoverage: {e}");
+              cellExtent = BoundingIntegerExtent2D.Inverted();
+              return false;
             }
         }
 
@@ -407,7 +407,6 @@ namespace VSS.TRex.SubGridTrees
                                             SubGridPathConstructionType pathType)
         {
             byte subGridCellX, subGridCellY;
-            ISubGrid newSubGrid;
 
             ISubGrid result = null;
             INodeSubGrid subGrid = Root;
@@ -431,7 +430,7 @@ namespace VSS.TRex.SubGridTrees
                     }
 
                     // We need to create a new subgrid
-                    newSubGrid = CreateNewSubgrid((byte)(I + 1));
+                    ISubGrid newSubGrid = CreateNewSubgrid((byte)(I + 1));
 
                     // ... and add it into this subgrid as the subgrid cell coordinates
                     // returned by GetSubGridContainingCell ...

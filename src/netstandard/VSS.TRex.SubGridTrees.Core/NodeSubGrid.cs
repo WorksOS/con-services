@@ -172,8 +172,7 @@ namespace VSS.TRex.SubGridTrees
             if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
-                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range", 
-                                             "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
+                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range");
             }
 
             // Make use of the three parameter functor verion of ForEachSubgrid and ignore the subgrid location paramters.
@@ -208,8 +207,7 @@ namespace VSS.TRex.SubGridTrees
             if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
-                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range",
-                                             "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
+                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range");
             }
 
             if (Cells != null)

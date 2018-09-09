@@ -41,15 +41,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="owner"></param>
         /// <param name="parent"></param>
         /// <param name="level"></param>
-        public SubGridTreeNodeBitmapSubGrid(ISubGridTree owner,
-            SubGrid parent,
-            byte level /*,
-            double cellSize,
-            int indexOriginOffset*/) : base(owner, parent, level /*, cellSize, indexOriginOffset*/)
+        public SubGridTreeNodeBitmapSubGrid(ISubGridTree owner, ISubGrid parent, byte level) : base(owner, parent, level)
         {
             Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         }
-
-//      Function NonInstanceMemorySize : Integer; Override;
     }
 }
