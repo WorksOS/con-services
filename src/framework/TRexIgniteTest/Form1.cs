@@ -75,8 +75,6 @@ namespace TRexIgniteTest
 	{
 		BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
-	  private ImmutableClientServer clientIgniteContext;
-
 	  private byte[] tileData;
 	  private string tileParamsTemplate;
 
@@ -270,8 +268,6 @@ namespace TRexIgniteTest
 				// Set the display modes in the combo box
 				displayMode.Items.AddRange(Enum.GetNames(typeof(DisplayMode)));
 				displayMode.SelectedIndex = (int)DisplayMode.Height;
-
-        clientIgniteContext = new ImmutableClientServer("TRexIgniteClient-Framework");
 
 				// Instantiate a site model changed listener to catch changes to site model attributes
 				SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());

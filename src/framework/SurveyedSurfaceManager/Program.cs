@@ -30,6 +30,7 @@ namespace SurveyedSurfaceManager
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
+        .Add(x => x.AddSingleton(new ImmutableClientServer("SurveyedSurfaceManager")))
         .Complete();
     }
 
@@ -40,8 +41,6 @@ namespace SurveyedSurfaceManager
 
       // Make sure all our assemblies are loaded...
       AssembliesHelper.LoadAllAssembliesForExecutingContext();
-
-      ImmutableClientServer server = new ImmutableClientServer("SurveyedSurfaceManager");
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);

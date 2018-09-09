@@ -11,6 +11,7 @@ using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -18,6 +19,7 @@ using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Implementations.Framework;
+using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -83,6 +85,14 @@ namespace TRexApplicationServer
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+
+        .Add(x => x.AddSingleton(new ApplicationServiceServer(new[] {
+          ApplicationServiceServer.DEFAULT_ROLE,
+          ServerRoles.ASNODE_PROFILER,
+          ServerRoles.PATCH_REQUEST_ROLE,
+          ServerRoles.TILE_RENDERING_NODE,
+          ServerRoles.ANALYTICS_NODE})))
+
         .Complete();
     }
 

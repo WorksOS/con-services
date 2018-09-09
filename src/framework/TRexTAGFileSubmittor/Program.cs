@@ -163,6 +163,7 @@ namespace TRexTAGFileSubmittor
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddSingleton(new TAGFileProcessingClientServer()))
         .Complete();
     }
 
@@ -216,11 +217,6 @@ namespace TRexTAGFileSubmittor
           Console.WriteLine($"Invalid Asset ID {args[2]}");
           return;
         }
-
-
-
-        // Obtain a TAGFileProcessing client server
-        TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
 
         ProcessTAGFilesInFolder(projectID, folderPath);
 

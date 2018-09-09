@@ -68,6 +68,8 @@ namespace VSS.TRex.DI
     public DIBuilder Build()
     {
       ServiceProvider = ServiceCollection.BuildServiceProvider();
+      Inject();
+
       return this;
     }
 
@@ -88,6 +90,6 @@ namespace VSS.TRex.DI
     /// <summary>
     /// A handly shorthand version of .Build().Inject()
     /// </summary>
-    public DIBuilder Complete() => Build().Inject();
+    public DIBuilder Complete() => Build(); //.Inject();
   }
 }

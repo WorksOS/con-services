@@ -11,6 +11,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Servers.Compute;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
@@ -43,6 +44,7 @@ namespace TRexMutableDataServer
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton(new TagProcComputeServer()))
         .Complete();
     }
 

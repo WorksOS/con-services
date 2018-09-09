@@ -31,6 +31,7 @@ namespace VSS.TRex.Server.PSNode
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Build()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
@@ -38,10 +39,12 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
-        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+        .Build()
+        .Add(x => x.AddSingleton(new SubGridProcessingServer()))
+        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();
     }
 
@@ -91,11 +94,9 @@ namespace VSS.TRex.Server.PSNode
 
     static async Task<int> Main(string[] args)
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
-      EnsureAssemblyDependenciesAreLoaded();
-
-      var server = new SubGridProcessingServer();
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {

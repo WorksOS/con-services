@@ -23,15 +23,13 @@ namespace VSS.TRex.Service.Deployer
         DIBuilder.New()
           .AddLogging()
           .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+          .Add(x => x.AddSingleton(new MutableClientServer("ServiceDeployer")))
           .Complete();
       }
 
       static void Main(string[] args)
         {
             DependencyInjection();
-
-            // Make sure all our assemblies are loaded...
-            AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
             Log = Logger.CreateLogger<Program>();
 

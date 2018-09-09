@@ -43,6 +43,8 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton(new TagProcComputeServer()))
+
        .Complete();
     }
 
@@ -83,8 +85,9 @@ namespace VSS.TRex.Server.MutableData
 
     static async Task<int> Main(string[] args)
     {
-      // Load settings for Mutabledata
+      EnsureAssemblyDependenciesAreLoaded();
 
+      // Load settings for Mutabledata
       Configuration = new ConfigurationBuilder()
           //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -92,8 +95,6 @@ namespace VSS.TRex.Server.MutableData
           .Build();
 
       DependencyInjection();
-
-      EnsureAssemblyDependenciesAreLoaded();
 
       if (Configuration.GetSection("EnableTFAService").Value == null)
         Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g EnableTFAService");
@@ -104,8 +105,6 @@ namespace VSS.TRex.Server.MutableData
         Console.WriteLine($"{env.Key}:{env.Value}");
       }
 
-
-      var server = new TagProcComputeServer();
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {

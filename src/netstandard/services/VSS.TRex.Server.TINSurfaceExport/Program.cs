@@ -59,18 +59,19 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
       .Build()
       .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
-      .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
       .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
       .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
       .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
       .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+      .Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
+      .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
 
       .Complete();
     }
 
-    private static void EnsureAssemblyDependenciesAreLoaded(ILogger Log)
+    private static void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -108,22 +109,19 @@ namespace VSS.TRex.Server.TINSurfaceExport
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Log.LogError($"Assembly for type {asmType} has not been loaded.");
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
     static async Task<int> Main(string[] args)
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
       ILogger Log = Logging.Logger.CreateLogger<Program>();
 
-      EnsureAssemblyDependenciesAreLoaded(Log);
-
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");
 
-
-      var server = new TINSurfaceExportRequestServer();
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {

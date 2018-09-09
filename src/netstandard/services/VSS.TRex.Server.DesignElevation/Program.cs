@@ -20,8 +20,9 @@ namespace VSS.TRex.Server.DesignElevation
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
+        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();
     }
 
@@ -52,11 +53,10 @@ namespace VSS.TRex.Server.DesignElevation
     }
     static async Task<int> Main(string[] args)
     {
-      DependencyInjection();
-
       EnsureAssemblyDependenciesAreLoaded();
 
-      var server = new CalculateDesignElevationsServer();
+      DependencyInjection();
+
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {

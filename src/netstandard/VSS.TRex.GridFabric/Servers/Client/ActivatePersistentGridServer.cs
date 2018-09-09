@@ -22,7 +22,7 @@ namespace VSS.TRex.Servers.Client
         /// Default constructor with role
         /// </summary>
         /// <param name="role"></param>
-        public ActivatePersistentGridServer(string role) //: base(role)
+        public ActivatePersistentGridServer(string role) 
         {
         }
 

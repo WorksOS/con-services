@@ -159,6 +159,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddSingleton(new TAGFileProcessingClientServer()))
         .Complete();
     }
 
@@ -199,9 +200,6 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         {
           return;
         }
-
-        // Obtain a TAGFileProcessing client server
-//        TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
 
         ProcessTAGFilesInFolder(projectID, folderPath);
 

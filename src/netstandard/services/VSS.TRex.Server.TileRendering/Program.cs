@@ -72,12 +72,13 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+        .Add(x => x.AddSingleton(new TileRenderingServer()))
 
         .Complete();
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    private static void EnsureAssemblyDependenciesAreLoaded(ILogger Log)
+    private static void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -110,22 +111,20 @@ namespace VSS.TRex.Server.TileRendering
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Log.LogError($"Assembly for type {asmType} has not been loaded.");
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
 
     static async Task<int> Main(string[] args)
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
       ILogger Log = Logging.Logger.CreateLogger<Program>();
 
-      EnsureAssemblyDependenciesAreLoaded(Log);
-
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");
 
-      var server = new TileRenderingServer();
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {

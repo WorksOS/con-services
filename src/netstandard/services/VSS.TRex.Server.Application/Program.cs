@@ -83,7 +83,7 @@ namespace VSS.TRex.Server.Application
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    private static void EnsureAssemblyDependenciesAreLoaded(ILogger Log)
+    private static void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -122,16 +122,15 @@ namespace VSS.TRex.Server.Application
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Log.LogError($"Assembly for type {asmType} has not been loaded.");
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
     static async Task<int> Main(string[] args)
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
       ILogger Log = Logging.Logger.CreateLogger<Program>();
-
-      EnsureAssemblyDependenciesAreLoaded(Log);
 
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");
