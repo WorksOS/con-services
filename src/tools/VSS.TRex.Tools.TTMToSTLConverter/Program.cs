@@ -16,64 +16,76 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
         return;
       }
 
-      string type = args[0];
+      string type = args[0].ToLower();
       string name = args[1];
 
       TrimbleTINModel tin = new TrimbleTINModel();
       tin.LoadFromFile(name);
 
-      using (FileStream stl = new FileStream(name+".stl", FileMode.CreateNew))
+      Console.WriteLine("Stating conversion...");
+      DateTime startTime = DateTime.Now;
+      try
       {
-        if (type == "text")
+        using (FileStream stl = new FileStream(name + ".stl", FileMode.CreateNew))
         {
-          using (StreamWriter writer = new StreamWriter(stl))
+          if (type == "text")
           {
-            writer.WriteLine($"solid {name}");
-
-            foreach (var tri in tin.Triangles.Items)
+            using (StreamWriter writer = new StreamWriter(stl))
             {
-              writer.WriteLine($"facet normal 0, 0, 0");
-              writer.WriteLine("outer loop");
-              foreach (int vertex in new [] { tri.Vertex0, tri.Vertex1, tri.Vertex2 })
-                writer.WriteLine($"Vertex {tin.Vertices.Items[vertex].X}, {tin.Vertices.Items[vertex].Y}, {tin.Vertices.Items[vertex].Z}");
-              writer.WriteLine("endloop");
-              writer.WriteLine("endfacet");
-            }
+              writer.WriteLine($"solid {name}");
 
-            writer.WriteLine($"endsolid {name}");
-          }
-        }
-
-        if (type == "binary")
-        {
-          using (BinaryWriter writer = new BinaryWriter(stl))
-          {
-            // Header
-            byte[] buffer = new byte[80];
-            writer.Write(buffer);
-
-            // Number of triangles
-            writer.Write((int)tin.Triangles.Items.Length);
-            foreach (var tri in tin.Triangles.Items)
-            {
-              // Normal vector
-              writer.Write((int)0);
-              writer.Write((int)0);
-              writer.Write((int)0);
-
-              // Vertices
-              foreach (int vertex in new [] {tri.Vertex0, tri.Vertex1, tri.Vertex2})
+              foreach (var tri in tin.Triangles.Items)
               {
-                writer.Write(tin.Vertices.Items[vertex].X);
-                writer.Write(tin.Vertices.Items[vertex].Y);
-                writer.Write(tin.Vertices.Items[vertex].Z);
+                writer.WriteLine("facet normal 0, 0, 0");
+                writer.WriteLine("outer loop");
+                foreach (int vertex in new[] {tri.Vertex0, tri.Vertex1, tri.Vertex2})
+                  writer.WriteLine($"Vertex {tin.Vertices.Items[vertex].X}, {tin.Vertices.Items[vertex].Y}, {tin.Vertices.Items[vertex].Z}");
+                writer.WriteLine("endloop");
+                writer.WriteLine("endfacet");
               }
+
+              writer.WriteLine($"endsolid {name}");
             }
 
-            // Attribute byte count
-            writer.Write((ushort)0);
+            return;
+          }
+
+          if (type == "binary")
+          {
+            using (BinaryWriter writer = new BinaryWriter(stl))
+            {
+              // Header
+              byte[] buffer = new byte[80];
+              writer.Write(buffer);
+
+              // Number of triangles
+              writer.Write((int) tin.Triangles.Items.Length);
+              foreach (var tri in tin.Triangles.Items)
+              {
+                // Normal vector
+                writer.Write((int) 0);
+                writer.Write((int) 0);
+                writer.Write((int) 0);
+
+                // Vertices
+                foreach (int vertex in new[] {tri.Vertex0, tri.Vertex1, tri.Vertex2})
+                {
+                  writer.Write(tin.Vertices.Items[vertex].X);
+                  writer.Write(tin.Vertices.Items[vertex].Y);
+                  writer.Write(tin.Vertices.Items[vertex].Z);
+                }
+              }
+
+              // Attribute byte count
+              writer.Write((ushort) 0);
+            }
           }
         }
+
+      }
+      finally
+      {
+        Console.WriteLine($"Conversion complete in {DateTime.Now - startTime}");
       }
     }
   }
