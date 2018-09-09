@@ -38,6 +38,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     {
       // Add framework services.
       var storageProxyFactory = new StorageProxyFactory();
+
+      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.MutableGridStorage()));
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();

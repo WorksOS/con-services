@@ -37,6 +37,8 @@ namespace VSS.TRex.Gateway.WebApi
     {
       // Add framework services.
       var storageProxyFactory = new StorageProxyFactory();
+
+      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.ImmutableGridStorage()));
       services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
