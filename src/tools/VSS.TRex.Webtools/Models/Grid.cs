@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.Webtools.Models
@@ -15,12 +16,12 @@ namespace VSS.TRex.Webtools.Models
     {
       get
       {
-        IIgnite ignite = TRexGridFactory.Grid(Name);
+        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(Name);
         return ignite != null ? ignite.GetCluster().IsActive() : false;
       }
       set
       {
-        IIgnite ignite = TRexGridFactory.Grid(Name);
+        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(Name);
         ignite?.GetCluster().SetActive(value);
       }
     }

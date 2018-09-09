@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Client;
 
 namespace VSS.TRex.Webtools
@@ -34,6 +35,9 @@ namespace VSS.TRex.Webtools
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
+
+      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
+      serviceProvider = services.BuildServiceProvider();
 
       services.AddSingleton(new ImmutableClientServer("Webtools-Immutable"));
       services.AddSingleton(new MutableClientServer("Webtools-Mutable"));
