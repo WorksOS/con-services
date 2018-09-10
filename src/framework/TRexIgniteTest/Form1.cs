@@ -249,7 +249,13 @@ namespace TRexIgniteTest
 		{
         ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
-				if (siteModel != null)
+		  if (siteModel == null)
+		  {
+		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    return null;
+		  }
+
+		  if (siteModel != null)
 				{
 						Guid[] SurveyedSurfaceExclusionList = (siteModel.SurveyedSurfaces == null || chkIncludeSurveyedSurfaces.Checked) ? new Guid[0] : siteModel.SurveyedSurfaces.Select(x => x.ID).ToArray();
 
@@ -343,9 +349,9 @@ namespace TRexIgniteTest
 
 		private void DoUpdateLabels()
 		{
-				lblViewHeight.Text = $"View height: {extents.SizeY:F3}m";
-				lblViewWidth.Text = $"View width: {extents.SizeX:F3}m";
-				lblCellsPerPixel.Text = $"Cells Per Pixel (X): {(extents.SizeX / pictureBox1.Width) / 0.34:F3}";
+				lblViewHeight.Text = $"View height: {extents?.SizeY:F3}m";
+				lblViewWidth.Text = $"View width: {extents?.SizeX:F3}m";
+				lblCellsPerPixel.Text = $"Cells Per Pixel (X): {(extents?.SizeX / pictureBox1.Width) / 0.34:F3}";
 		}
 
 		private void DoUpdateDesignsAndSurveyedSurfaces()
@@ -806,12 +812,18 @@ namespace TRexIgniteTest
 		/// <returns></returns>
 		private SimpleVolumesResponse PerformVolume(bool useScreenExtents)
 		{
-				// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
-				// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
-            ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
+			// Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
+			// SiteModel siteModel = GenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
+      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
-				try
-				{
+		  if (siteModel == null)
+		  {
+		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    return null;
+		  }
+
+      try
+      {
 						// Create the two filters
 						ICombinedFilter FromFilter = new CombinedFilter()
 						{
@@ -946,7 +958,13 @@ namespace TRexIgniteTest
 			var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 			var offsets = new [] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 };
 
-			Stopwatch sw = new Stopwatch();
+		  if (siteModel == null)
+		  {
+		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    return;
+		  }
+
+		  Stopwatch sw = new Stopwatch();
 			sw.Start();
 
       PriorProcessingMessage();
@@ -979,7 +997,13 @@ namespace TRexIgniteTest
 		{
 			var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
-			Stopwatch sw = new Stopwatch();
+		  if (siteModel == null)
+		  {
+		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    return;
+		  }
+
+      Stopwatch sw = new Stopwatch();
 			sw. Start();
 			try
 			{
@@ -1265,6 +1289,12 @@ namespace TRexIgniteTest
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
+      if (siteModel == null)
+      {
+        MessageBox.Show($"Site model {ID()} is unavailable");
+        return;
+      }
+
       Stopwatch sw = new Stopwatch();
       sw.Start();
       try
@@ -1305,6 +1335,12 @@ namespace TRexIgniteTest
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
+      if (siteModel == null)
+      {
+        MessageBox.Show($"Site model {ID()} is unavailable");
+        return;
+      }
+
       Stopwatch sw = new Stopwatch();
       sw.Start();
       try
@@ -1314,9 +1350,9 @@ namespace TRexIgniteTest
         CMVSummaryOperation operation = new CMVSummaryOperation();
 
         CMVSummaryResult result = operation.Execute(
-          new CMVSummaryArgument(){
+          new CMVSummaryArgument{
             ProjectID = siteModel.ID,
-            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            Filters = new FilterSet(new CombinedFilter()),
             CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
             OverrideMachineCMV = false,
             OverridingMachineCMV = 50
@@ -1346,6 +1382,12 @@ namespace TRexIgniteTest
     private void MDPSummaryButton_Click(object sender, EventArgs e)
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
+
+      if (siteModel == null)
+      {
+        MessageBox.Show($"Site model {ID()} is unavailable");
+        return;
+      }
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1389,6 +1431,12 @@ namespace TRexIgniteTest
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
+      if (siteModel == null)
+      {
+        MessageBox.Show($"Site model {ID()} is unavailable");
+        return;
+      }
+
       Stopwatch sw = new Stopwatch();
       sw.Start();
       try
@@ -1431,6 +1479,12 @@ namespace TRexIgniteTest
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
       var cmvBands = new[] { 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700 };
 
+      if (siteModel == null)
+      {
+        MessageBox.Show($"Site model {ID()} is unavailable");
+        return;
+      }
+
       Stopwatch sw = new Stopwatch();
       sw.Start();
       try
@@ -1470,6 +1524,12 @@ namespace TRexIgniteTest
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
       var passCountBands = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+      if (siteModel == null)
+      {
+        MessageBox.Show($"Site model {ID()} is unavailable");
+        return;
+      }
 
       Stopwatch sw = new Stopwatch();
       sw.Start();
@@ -1534,7 +1594,7 @@ namespace TRexIgniteTest
 
       if (siteModel == null)
       {
-        AppendTextBoxWithNewLine($"Project {ID()} does not exist");
+        MessageBox.Show($"Site model {ID()} is unavailable");
         return;
       }
 
