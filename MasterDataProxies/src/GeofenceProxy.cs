@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
@@ -53,7 +54,10 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<List<GeofenceData>> GetGeofences(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
+      //Get all types of geofence except Project=1 and Import=8/Export=9
+      List<int> geofenceTypeIds = new List<int>{0, 2, 3, 4, 5, 6, 7, 10};
+      var queryParams = $"?geofenceTypedIds={string.Join("&geofenceTypeIds=", geofenceTypeIds)}";
+      var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders, queryParams);
       return result.Geofences;
     }
 
