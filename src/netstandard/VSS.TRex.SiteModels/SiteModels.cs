@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -12,7 +13,10 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteModels : ISiteModels
   {
-    //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
+    /// <summary>
+    /// The cached set of sitemodels that are currently 'open' in TRex
+    /// </summary>
+    private Dictionary<Guid, ISiteModel> CachedModels = new Dictionary<Guid, ISiteModel>();
 
     //private IStorageProxy _ImmutableStorageProxy;
     private IStorageProxy _StorageProxy;
@@ -33,14 +37,6 @@ namespace VSS.TRex.SiteModels
     private SiteModels() {}
 
     /// <summary>
-    /// Constructs a SiteModels instance taking a pre-prepared storage proxy instance
-    /// </summary>
-//    public SiteModels(IStorageProxy storageProxy) : this()
-//    {
-//      _StorageProxy = storageProxy;
-//    }
-
-    /// <summary>
     /// Constructs a SiteModels instance taking a storageProxyFactory delegate that will create the
     /// proorpoate primary storage proxy
     /// </summary>
@@ -58,54 +54,46 @@ namespace VSS.TRex.SiteModels
 
     public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist)
     {
-      SiteModel result = new SiteModel(ID);
+      ISiteModel result;
+
+      lock (CachedModels)
+      {
+        if (CachedModels.TryGetValue(ID, out result))
+          return result;
+      }
+
+      result = DIContext.Obtain<ISiteModel>();
+      result.ID = ID;
 
       if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
       {
-        return result;
+        lock (CachedModels)
+        {
+          // Check if another thread managed to get in before this thread. If so discard
+          // the one just created in favour of the one in the dictionary
+          if (CachedModels.TryGetValue(ID, out ISiteModel result2))
+            return result2;
+
+          CachedModels.Add(ID, result);
+          return result;
+        }
       }
-      else
+
+      if (CreateIfNotExist)
       {
-        // The SiteModel does not exist - create a new one if requested
-        return CreateIfNotExist ? result : null;
+        lock (CachedModels)
+        {
+          // Check if another thread managed to get in before this thread. If so discard
+          // the one just created in favour of the one in the dictionary
+          if (CachedModels.TryGetValue(ID, out ISiteModel result2))
+            return result2;
+
+          CachedModels.Add(ID, result);
+          return result;
+        }
       }
 
-      /*
-       // The commented out code in this block operates by maintaining a dictionary if sitemodels. In Raptor
-          this was supported by significant locking mechanisms. In TRex, the code above simple creates a new sitemodel
-          each time on demand, however, it may be useful for performance reasons to revert to the dictionary approach
-          but clear the element in the dictionary whenever the processing layer advises the sitemodel has changed.
-          In order to support performant 'create once per access', the sitemodel itself shoudl ahve minimal serialisaed
-          content delagating non trivial blocks of information to additional cache elements that are loaded on demand
-          in the context of the operating request.
-
-          lock (this)
-          {
-              if (!CachedModels.TryGetValue(ID, out result))
-              {
-                  result = new SiteModel(ID);
-
-                  if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
-                  {
-                      CachedModels.Add(ID, result);
-                  }
-                  else
-                  {
-                      // The SiteModel does not exist in the store - create a new one if requested
-                      if (CreateIfNotExist)
-                      {
-                          CachedModels.Add(ID, result);
-                      }
-                      else
-                      {
-                          result = null;
-                      }
-                  }
-              }
-          }
-
-      return result;
-      */
+      return null;
     }
 
     /// <summary>
