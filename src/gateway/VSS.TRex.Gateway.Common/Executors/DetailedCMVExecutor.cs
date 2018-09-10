@@ -5,8 +5,8 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Analytics.CMVStatistics.Details;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric.Details;
+using VSS.TRex.Analytics.CMVStatistics;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
@@ -39,8 +39,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.filter, siteModel);
 
-      CMVDetailsOperation operation = new CMVDetailsOperation();
-      DetailsAnalyticsResult cmvDetailsResult = operation.Execute(new CMVDetailsArgument()
+      CMVStatisticsOperation operation = new CMVStatisticsOperation();
+      CMVStatisticsResult cmvDetailsResult = operation.Execute(new CMVStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),

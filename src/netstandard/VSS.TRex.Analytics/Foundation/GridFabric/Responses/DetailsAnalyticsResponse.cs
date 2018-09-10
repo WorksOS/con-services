@@ -8,7 +8,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
   /// <summary>
   /// The response state returned from a CMV details request
   /// </summary>
-  public class DetailsAnalyticsResponse : StatisticAnalyticsResponse, IAggregateWith<DetailsAnalyticsResponse>, IAnalyticsOperationResponseResultConversion<DetailsAnalyticsResult>
+  public class DetailsAnalyticsResponse : StatisticsAnalyticsResponse, IAggregateWith<DetailsAnalyticsResponse>, IAnalyticsOperationResponseResultConversion<DetailsAnalyticsResult>
   {
     /// <summary>
     /// An array values representing the counts of cells within each of the CMV details bands defined in the request.
@@ -26,7 +26,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticsAnalyticsResponse other)
     {
       base.AggregateBaseDataWith(other);
 

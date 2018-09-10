@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     [Fact]
     public void Test_MDPAggregator_Creation()
     {
-      var aggregator = new MDPAggregator();
+      var aggregator = new MDPStatisticsAggregator();
 
       Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
       Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
@@ -35,7 +35,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     [Fact]
     public void Test_MDPAggregator_ProcessResult_NoAggregation()
     {
-      var aggregator = new MDPAggregator();
+      var aggregator = new MDPStatisticsAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
 
@@ -62,7 +62,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     [Fact]
     public void Test_MDPAggregator_ProcessResult_WithAggregation()
     {
-      var aggregator = new MDPAggregator();
+      var aggregator = new MDPStatisticsAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
 
@@ -80,7 +80,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
       aggregator.ProcessSubgridResult(subGrids);
 
       // Other aggregator...
-      var otherAggregator = new MDPAggregator();
+      var otherAggregator = new MDPStatisticsAggregator();
 
       otherAggregator.CellSize = CELL_SIZE;
       otherAggregator.OverrideMachineMDP = true;

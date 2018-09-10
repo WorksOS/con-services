@@ -25,7 +25,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticsAnalyticsResponse other)
     {
       base.AggregateBaseDataWith(other);
 

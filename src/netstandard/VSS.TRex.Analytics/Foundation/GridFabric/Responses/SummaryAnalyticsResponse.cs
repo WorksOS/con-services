@@ -5,7 +5,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
 	/// <summary>
 	/// Base class for summary analytics response.
 	/// </summary>
-  public class SummaryAnalyticsResponse : StatisticAnalyticsResponse, IAggregateWith<SummaryAnalyticsResponse>
+  public class SummaryAnalyticsResponse : StatisticsAnalyticsResponse, IAggregateWith<SummaryAnalyticsResponse>
   {
 	  /// <summary>
 	  /// The cell size of the site model the aggregation is being performed over
@@ -65,7 +65,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     /// Aggregate a set of generic data statistics into this set and return the result.
     /// </summary>
     /// <param name="other"></param>
-    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticsAnalyticsResponse other)
     {
       var otherResponse = (SummaryAnalyticsResponse) other;
 
