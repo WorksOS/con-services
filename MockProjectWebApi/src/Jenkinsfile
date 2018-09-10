@@ -37,12 +37,6 @@ node ('jenkinsslave-pod') {
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
 	
-	sh "ls -la"
-	
-    dir ('./MockProjectWebApi/src')
-	{
-	
-	sh "ls -la"
 	stage("Prebuild Checks") {
 		if (params.VSTS_BUILD_NUMBER == null) {
 			currentBuild.result = 'ABORTED'
@@ -53,10 +47,19 @@ node ('jenkinsslave-pod') {
 			error("Build stopping, no valid branch supplied")
 		}
 	}
+
+	stage("Checkout") {
+		checkout scm
+	}
+
+	
+    dir ('./MockProjectWebApi/src')
+	{
+	
+	sh "ls-la"
 	
     stage('Build Solution') {
-        checkout scm
-		
+	
 	    def build_container = docker.build(container, "-f ./Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
