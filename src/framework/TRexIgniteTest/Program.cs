@@ -27,7 +27,7 @@ namespace TRexIgniteTest
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
-        .Add(x => x.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModel(id)))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-Framework")))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();

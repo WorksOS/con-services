@@ -43,8 +43,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.ImmutableGridStorage()));
-      services.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModel(id));
-      services.AddTransient<ISiteModel>(factory => new SiteModel());
+      services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
       services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -37,8 +38,7 @@ namespace VSS.TRex.Server.MutableData
         .Build()
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
-        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModels.SiteModel()))
-        .Add(x => x.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModels.SiteModel(id)))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
