@@ -18,14 +18,12 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     private Dictionary<Guid, ISiteModel> CachedModels = new Dictionary<Guid, ISiteModel>();
 
-    //private IStorageProxy _ImmutableStorageProxy;
     private IStorageProxy _StorageProxy;
     private Func<IStorageProxy> StorageProxyFactory;
 
     /// <summary>
     /// The default storage proxy to be used for requests
     /// </summary>
-    //public IStorageProxy ImmutableStorageProxy() => _ImmutableStorageProxy ?? (_ImmutableStorageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage());
     public IStorageProxy StorageProxy
     {
       get => _StorageProxy ?? (_StorageProxy = StorageProxyFactory());
@@ -52,18 +50,26 @@ namespace VSS.TRex.SiteModels
 
     public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
 
-    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist)
+    /// <summary>
+    /// Retrieves a sitemodel from the persistent store ready for use. If the site model does not
+    /// exist it will be created if CreateIfNotExist is true.
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <param name="iD"></param>
+    /// <param name="createIfNotExist"></param>
+    /// <returns></returns>
+    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid id, bool createIfNotExist)
     {
       ISiteModel result;
 
       lock (CachedModels)
       {
-        if (CachedModels.TryGetValue(ID, out result))
+        if (CachedModels.TryGetValue(id, out result))
           return result;
       }
 
       result = DIContext.Obtain<ISiteModel>();
-      result.ID = ID;
+      result.ID = id;
 
       if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
       {
@@ -71,24 +77,24 @@ namespace VSS.TRex.SiteModels
         {
           // Check if another thread managed to get in before this thread. If so discard
           // the one just created in favour of the one in the dictionary
-          if (CachedModels.TryGetValue(ID, out ISiteModel result2))
+          if (CachedModels.TryGetValue(id, out ISiteModel result2))
             return result2;
 
-          CachedModels.Add(ID, result);
+          CachedModels.Add(id, result);
           return result;
         }
       }
 
-      if (CreateIfNotExist)
+      if (createIfNotExist)
       {
         lock (CachedModels)
         {
           // Check if another thread managed to get in before this thread. If so discard
           // the one just created in favour of the one in the dictionary
-          if (CachedModels.TryGetValue(ID, out ISiteModel result2))
+          if (CachedModels.TryGetValue(id, out ISiteModel result2))
             return result2;
 
-          CachedModels.Add(ID, result);
+          CachedModels.Add(id, result);
           return result;
         }
       }
