@@ -13,8 +13,6 @@ using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
-//using VSS.TRex.Rendering.Implementations.Core2;
-
 namespace TRexIgniteTest
 {
   static class Program
@@ -29,7 +27,7 @@ namespace TRexIgniteTest
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
-        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModel()))
+        .Add(x => x.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModel(id)))
         .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-Framework")))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();

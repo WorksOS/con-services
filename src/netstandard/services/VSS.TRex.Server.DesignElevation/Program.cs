@@ -8,6 +8,8 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Storage.Models;
 using System.Threading.Tasks;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -28,7 +30,9 @@ namespace VSS.TRex.Server.DesignElevation
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModel()))
+        .Add(x => x.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModels.SiteModel(id)))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();

@@ -78,7 +78,7 @@ namespace TRexApplicationServer
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
-        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModel()))
+        .Add(x => x.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModel(id)))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new VSS.TRex.ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))

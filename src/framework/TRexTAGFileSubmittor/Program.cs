@@ -163,6 +163,7 @@ namespace TRexTAGFileSubmittor
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Build()
         .Add(x => x.AddSingleton(new TAGFileProcessingClientServer()))
         .Complete();
     }
@@ -204,8 +205,6 @@ namespace TRexTAGFileSubmittor
         {
           return;
         }
-
-
 
         try
         {

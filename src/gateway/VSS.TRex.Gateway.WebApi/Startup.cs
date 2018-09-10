@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.ImmutableGridStorage()));
+      services.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModel(id));
       services.AddTransient<ISiteModel>(factory => new SiteModel());
       services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
