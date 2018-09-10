@@ -16,7 +16,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         /// <summary>
         ///  Message group the listener has been added to
         /// </summary>
-        [NonSerialized] private IMessaging MsgGroup;
+        [NonSerialized]
+        private IMessaging MsgGroup;
 
         [NonSerialized]
         private string MessageTopicName = "SiteModelAttributesChangedEventListener";

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
@@ -7,6 +8,9 @@ namespace VSS.TRex.Storage.Interfaces
 {
     public interface IStorageProxy
     {
+        IStorageProxyCache<NonSpatialAffinityKey, byte[]> NonSpatialCache { get; }
+        IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
+
         StorageMutability Mutability { get; set; }
 
         FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID,

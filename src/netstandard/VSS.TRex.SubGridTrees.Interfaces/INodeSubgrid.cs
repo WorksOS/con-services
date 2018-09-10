@@ -6,7 +6,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 {
     public interface INodeSubGrid : ISubGrid
     {
-        void DeleteSubgrid(byte SubGridX, byte SubGridY, bool DeleteIfLocked);
+        void DeleteSubgrid(byte SubGridX, byte SubGridY);
 
         new ISubGrid GetSubGrid(byte X, byte Y);
 

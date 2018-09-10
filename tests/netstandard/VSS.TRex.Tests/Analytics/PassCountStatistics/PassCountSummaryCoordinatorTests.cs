@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     private PassCountSummaryArgument Arg => new PassCountSummaryArgument()
     {
       ProjectID = _siteModel.ID,
-      Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+      Filters = new FilterSet(new CombinedFilter()),
       OverrideTargetPassCount = true,
       OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10)
     };

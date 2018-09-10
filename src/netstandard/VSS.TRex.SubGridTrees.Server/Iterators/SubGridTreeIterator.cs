@@ -91,12 +91,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // for each subgrid in the iteration
         //   FStorageClasses : TICSubGridCellStorageClasses;
 
-        // FLockToken is an optional locktoken supplied by the owner of the iterator.
-        // If supplied, the iterator will lock each subgrid returned as a part of the
-        // iteration set until the next subgrid is selected in the iteration, or the
-        // iterator is destroyed
-        //    FLockToken : Integer;
-
         // SubGridsInServerDiskStore indicates that the subgrid tree we are iterating
         // over is persistently stored on disk. In this case we must use the server
         // interface for accessing these subgrids. If this property is false then the
@@ -112,28 +106,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public bool ReturnedFirstItemInIteration;
 
         //    FDataStoreCache: TICDataStoreCache;
-
-        private void SetCurrentSubGrid(ISubGrid Value)
-        {
-            /* TODO ... Locking semantics not defined for Ignite
-            if (FLockToken != -1 && CurrentSubGrid != null &&
-            CurrentSubGrid.Locked && CurrentSubGrid.LockToken == FLockToken)
-            {
-            //      SIGLogMessage.PublishNoODS(Self, Format('TSubGridTreeIteratorBase.SetCurrentSubGrid: Unlocking %s with lock token %d (%d)', [FCurrentSubGrid.Moniker, FCurrentSubGrid.LockToken, FLockToken]), slmcDebug);
-            CurrentSubGrid.ReleaseLock(FLockToken);
-            }
-            */
-
-            CurrentSubGrid = Value;
-
-            /*
-            if (FLockToken != -1 && CurrentSubGrid != null)
-              {
-                //      SIGLogMessage.PublishNoODS(Self, Format('TSubGridTreeIteratorBase.SetCurrentSubGrid: Locking %s with lock token %d (%d)', [FCurrentSubGrid.Moniker, FCurrentSubGrid.LockToken, FLockToken]), slmcDebug);
-                CurrentSubGrid.AcquireLock(FLockToken);
-            }
-            */
-        }
 
         protected void InitialiseIterator()
         {
@@ -161,15 +133,14 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
 //        protected virtual ISubGrid GetCurrentSubGrid() => CurrentSubGrid;
 
-        public SubGridTreeIterator(IStorageProxy storageProxy, //IStorageProxy[] spatialStorageProxy,
+        public SubGridTreeIterator(IStorageProxy storageProxy, 
                                    bool subGridsInServerDiskStore)
         {
-            //            FDataStoreCache = ADataStoreCache;
-            //          FStorageClasses = [icsscAllPasses];
-            //          FLockToken = -1;
+            // FDataStoreCache = ADataStoreCache;
+            // FStorageClasses = [icsscAllPasses];
 
             SubGridsInServerDiskStore = subGridsInServerDiskStore;
-            StorageProxy = storageProxy; // SpatialStorageProxy = spatialStorageProxy;
+            StorageProxy = storageProxy;
         }
 
 //        public void CurrentSubgridDestroyed() => CurrentSubGrid = null;
@@ -224,7 +195,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                                             //null, //FDataStoreCache,
                                             CellX, CellY,
                                             SubGridTreeConsts.SubGridTreeLevels,
-                                            -1 /*FLockToken*/, false, false);
+                                            false, false);
                             }
                         }
                         else
@@ -313,8 +284,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             if (!ReturnedFirstItemInIteration)
             {
-                MoveToFirstSubGrid();
-                return CurrentSubGrid != null;
+                return MoveToFirstSubGrid() && CurrentSubGrid != null;
             }
 
             do

@@ -5,7 +5,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Events
 {
@@ -24,7 +23,7 @@ namespace VSS.TRex.Events
     A complicating factor is that multiple machines may have contributed to the
     cell passes being processed. To handle this a tracking state containing an
     array of sets of state information, where each set of information tracks the most recent
-    values lookup for with particular events for that machine.
+    values looked up for particular events for that machine.
 
     In this way, a single linear pass of the cell passes is sufficient to perform all
     required loopkups in a way that minimises the number of required full event lookups.
@@ -61,8 +60,6 @@ namespace VSS.TRex.Events
 
     private short LastMachineID;
     public SiteModelMachineTargetValuesTrackingState TrackingState;
-    private short PrevLastMachineID;
-    public SiteModelMachineTargetValuesTrackingState PrevTrackingState;
 
     protected void IncrementStamp() => Stamp++;
 
@@ -81,29 +78,7 @@ namespace VSS.TRex.Events
     {
       LastMachineID = -2;
       TrackingState = null;
-      PrevLastMachineID = -3;
-      PrevTrackingState = null;
     }
-
-    /*
-    destructor TICCellPassFastEventLookerUpper.Destroy;
-    var
-      I : Integer;
-    begin
-    //  SIGLogMessage.PublishNoODS(Self, Format('Freeing TICCellPassFastEventLookerUpper instance with %d tracking states', [FMachinesValuesTrackingState.Count]), slmcDebug);
-      for I := 0 to FMachinesValuesTrackingState.Count - 1 do
-        with TICSiteModelMachineTargetValuesTrackingState(FMachinesValuesTrackingState.MappedItems[I]) do
-          begin
-            if Assigned(MachineTargetValues) then
-              MachineTargetValues.TargetValueChanges.ReleaseReadAccessInterlock;
-            Free;
-          end;
-
-      FreeAndNil(FMachinesValuesTrackingState);
-
-      inherited;
-    end;
-     */
 
     public void PopulateFilteredValues(FilteredPassData[] passes,
       int firstPassIndex, int lastPassIndex,
@@ -133,48 +108,33 @@ namespace VSS.TRex.Events
 
         if (_MachineID != LastMachineID)
         {
-          if (_MachineID == PrevLastMachineID)
-          {
-            // Todo: Look at if there is a better way of optimising this rather than tracking previous tracking state
-            // TODO: IE: maintain tracking state for each machine (some A/B testing and profilinf required.
-            MinMax.Swap(ref TrackingState, ref PrevTrackingState);
-            MinMax.Swap(ref LastMachineID, ref PrevLastMachineID);
-          }
-          else
-          {
-            PrevLastMachineID = LastMachineID;
-            PrevTrackingState = TrackingState;
+          LastMachineID = _MachineID;
+          TrackingState = MachinesValuesTrackingState[_MachineID];
 
-            LastMachineID = _MachineID;
-            TrackingState = MachinesValuesTrackingState[_MachineID];
+          if (TrackingState == null)
+          {
+            TrackingState = new SiteModelMachineTargetValuesTrackingState();
+            MachinesValuesTrackingState[_MachineID] = TrackingState;
 
-            if (TrackingState == null)
+            TrackingState.Initialise(populationControl);
+
+            TrackingState.MachineTargetValues = SiteModel.MachinesTargetValues[_MachineID];
+
+            if (TrackingState.MachineTargetValues == null)
             {
-              TrackingState = new SiteModelMachineTargetValuesTrackingState();
-              MachinesValuesTrackingState[_MachineID] = TrackingState;
-
-              TrackingState.Initialise(populationControl);
-
-              TrackingState.MachineTargetValues = SiteModel.MachinesTargetValues[_MachineID];
-
-              if (TrackingState.MachineTargetValues == null)
-              {
-                Log.LogWarning($"Warning MachineTargetValues not assigned on lookup. MachineID:{_MachineID}");
-                break;
-              }
-
-              // TODO: Validate locking... TrackingState.MachineTargetValues.TargetValueChanges.AcquireReadAccessInterlock;
-
-              /* TODO: Validate machine scope context for the UseMachineRMVThreshold and OverrideRMVJumpThreshold
-              // TODO: ie: Is it really a single value per machine configuration...
-              if (TrackingState.MachineTargetValues.Machine != null)
-              with TICMachine(MachineTargetValues.Machine) do
-                {
-                  TrackingState.TrackingUseMachineRMVThreshold = UseMachineRMVThreshold;
-                  TrackingState.TrackingOverrideRMVJumpThreshold = OverrideRMVJumpThreshold;
-                }  */
+              Log.LogWarning($"Warning MachineTargetValues not assigned on lookup. MachineID:{_MachineID}");
+              break;
             }
-          }
+
+            /* TODO: Validate machine scope context for the UseMachineRMVThreshold and OverrideRMVJumpThreshold ie: Is it really a single value per machine configuration...
+            if (TrackingState.MachineTargetValues.Machine != null)
+            with TICMachine(MachineTargetValues.Machine) do
+              {
+                TrackingState.TrackingUseMachineRMVThreshold = UseMachineRMVThreshold;
+                TrackingState.TrackingOverrideRMVJumpThreshold = OverrideRMVJumpThreshold;
+              }  
+            */
+          }          
         }
 
         if (TrackingState.MachineTargetValues == null)

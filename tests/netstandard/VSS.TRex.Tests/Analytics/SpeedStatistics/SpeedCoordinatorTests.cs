@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
     private SpeedStatisticsArgument Arg => new SpeedStatisticsArgument()
     {
       ProjectID = _siteModel.ID,
-      Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+      Filters = new FilterSet(new CombinedFilter()),
       TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 100)
     };
 

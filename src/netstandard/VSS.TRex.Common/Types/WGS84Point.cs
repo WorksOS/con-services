@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.TRex.Common;
+﻿using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
 {
@@ -22,7 +19,7 @@ namespace VSS.TRex.Types
     {
       var otherPoint = obj as WGS84Point;
       if (otherPoint == null) return false;
-      return otherPoint.Lat == this.Lat && otherPoint.Lon == this.Lon && otherPoint.Height == this.Height;
+      return otherPoint.Lat == Lat && otherPoint.Lon == Lon && otherPoint.Height == Height;
     }
 
     public override int GetHashCode() => 0;

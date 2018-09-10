@@ -29,7 +29,7 @@ namespace VSS.TRex.SiteModels
 {
 //  [Serializable]
     public class SiteModel : ISiteModel
-  {
+    {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
@@ -91,8 +91,7 @@ namespace VSS.TRex.SiteModels
           }
         }
   
-        // ProofingRuns is the set of proofing runs that have been collected in this
-        // site model
+        // ProofingRuns is the set of proofing runs that have been collected in this site model
         // public SiteProofingRuns ProofingRuns;
 
         // MachinesTargetValues stores a list of target values, one list per machine,
@@ -126,7 +125,7 @@ namespace VSS.TRex.SiteModels
                 if (!SurveyedSurfacesLoaded)
                 {
                     SurveyedSurfaceService proxy = new SurveyedSurfaceService(StorageMutability.Immutable, TRexCaches.ImmutableNonSpatialCacheName());
-                    proxy.Init(null); // TODO: Not needed when this moves to Ignite deployed service model
+                    proxy.Init(null); // Note: Not needed when this moves to Ignite deployed service model
                     ISurveyedSurfaces ss = proxy.ListDirect(ID);
 
                     lock (this)
@@ -227,19 +226,19 @@ namespace VSS.TRex.SiteModels
 
         public void Include(ISiteModel Source)
         {
-            // Index: Integer;
-
             // SiteModel extents
             SiteModelExtent.Include(Source.SiteModelExtent);
-            // TODO...       FWorkingSiteModelExtent.Include(Source.WorkingSiteModelExtent);
 
+            // TODO: FWorkingSiteModelExtent needed
+            // FWorkingSiteModelExtent.Include(Source.WorkingSiteModelExtent);
+        
             // Proofing runs
-            /* TODO...
+            /* TODO: Proofing runs
             for (int I = 0; I < Source.ProofingRuns.ProofingRuns.Count; I++)
               with Source.ProofingRuns.ProofingRuns[I] do
                 begin
                   Index := FProofingRuns.IndexOf(Name, MachineID, StartTime, EndTime);
-
+        
                   if Index = -1 then
                     FProofingRuns.CreateNew(Name, MachineID, StartTime, EndTime, Extents)
                   else
@@ -254,7 +253,7 @@ namespace VSS.TRex.SiteModels
              */
             // Designs
             // Note: Design names are handled as a part of integration of machine events
-
+        
             LastModifiedDate = Source.LastModifiedDate;
         }
 
@@ -313,7 +312,7 @@ namespace VSS.TRex.SiteModels
                 ID = LocalID;
             }
 
-            /* TODO
+            /* TODO: Is there a need for 'active' status in a sitemodel?
             Active = reader.ReadBool();
             if (!Active)
             {
@@ -427,11 +426,8 @@ namespace VSS.TRex.SiteModels
 
         public FileSystemErrorStatus LoadFromPersistentStore(IStorageProxy StorageProxy)
         {
-            FileSystemErrorStatus Result; // = FileSystemErrorStatus.UnknownErrorReadingFromFS;
-
             Guid SavedID = ID;
-
-            Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+            FileSystemErrorStatus Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
             if (Result == FileSystemErrorStatus.OK)
             {
@@ -474,8 +470,7 @@ namespace VSS.TRex.SiteModels
                     Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
                   else
                   {
-                    /* TODO ??
-                     * This type of management is not appropriate for Ignite based cache management as
+                    /* TODO This type of management is not appropriate for Ignite based cache management as
                      *  list updates will cause Ignite level cache invalidation that can then cause messaging
                      *  to trigger reloading of target values/event lists
 

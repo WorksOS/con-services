@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         SubGridTreeBitmapSubGridBits CCAValuesAreFromLastPass { get; set; }
 
         void Clear();
-//        void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source);
+        void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source);
 
         void Assign(ISubGridCellLatestPassDataWrapper Source);
 

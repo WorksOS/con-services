@@ -159,9 +159,6 @@ namespace VSS.TRex.Volumes
             IClientHeightLeafSubGrid DesignHeights = null;
             DesignProfilerRequestResult ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
 
-//            double BelowToleranceToCheck, AboveToleranceToCheck;
-//            double ElevationDiff;
-
             // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
             double CellArea = CellSize * CellSize;
 
@@ -307,50 +304,47 @@ namespace VSS.TRex.Volumes
                 }
             }
 
-            // const bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
+      // const bool TargetLiftThicknessCalculationsRequired = false; // TODO: Should be -> (LiftBuildSettings.TargetLiftThickness != Consts.NullHeight && LiftBuildSettings.TargetLiftThickness > 0)
 
-            //If we are interested in thickness calculations do them
-            /* todo Uncomment when the constant above becomes... not constant
-            if (TargetLiftThicknessCalculationsRequired)
-            {
-                BelowToleranceToCheck = LiftBuildSettings.TargetLiftThickness - LiftBuildSettings.BelowToleranceLiftThickness;
-                AboveToleranceToCheck = LiftBuildSettings.TargetLiftThickness + LiftBuildSettings.AboveToleranceLiftThickness;
+      //If we are interested in thickness calculations do them
+      /* todo Uncomment when the constant above becomes... not constant
+      if (TargetLiftThicknessCalculationsRequired)
+      {
+          double BelowToleranceToCheck = LiftBuildSettings.TargetLiftThickness - LiftBuildSettings.BelowToleranceLiftThickness;
+          double AboveToleranceToCheck = LiftBuildSettings.TargetLiftThickness + LiftBuildSettings.AboveToleranceLiftThickness;
 
-                BelowToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
-                AboveToleranceToCheck = 0; // Assign value for PCO to keep compiler happy
+          SubGridUtilities.SubGridDimensionalIterator((I, J) =>
+          {
+              BaseZ = BaseScanSubGrid.Cells[I, J];
+              TopZ = TopScanSubGrid.Cells[I, J];
 
-                SubGridUtilities.SubGridDimensionalIterator((I, J) =>
-                {
-                    BaseZ = BaseScanSubGrid.Cells[I, J];
-                    TopZ = TopScanSubGrid.Cells[I, J];
+              if (BaseZ != Consts.NullHeight || TopZ != Consts.NullHeight)
+                  CellsScanned++;
 
-                    if (BaseZ != Consts.NullHeight || TopZ != Consts.NullHeight)
-                        CellsScanned++;
+                  //Test if we don't have NULL values and carry on
+              if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
+              {
+                  Bits.SetBit(I, J);
+                  double ElevationDiff = TopZ - BaseZ;
 
-                        //Test if we don't have NULL values and carry on
-                    if (BaseZ != Consts.NullHeight && TopZ != Consts.NullHeight)
-                    {
-                        Bits.SetBit(I, J);
-                        ElevationDiff = TopZ - BaseZ;
+                  if (ElevationDiff <= AboveToleranceToCheck && ElevationDiff >= BelowToleranceToCheck)
+                      CellsUsed++;
+                  else
+                      if (ElevationDiff > AboveToleranceToCheck)
+                          CellsUsedFill++;
+                      else
+                          if (ElevationDiff < BelowToleranceToCheck)
+                              CellsUsedCut++;
+              }
+              else
+                  CellsDiscarded++;
+          });
+      }
+      */
 
-                        if (ElevationDiff <= AboveToleranceToCheck && ElevationDiff >= BelowToleranceToCheck)
-                            CellsUsed++;
-                        else
-                            if (ElevationDiff > AboveToleranceToCheck)
-                                CellsUsedFill++;
-                            else
-                                if (ElevationDiff < BelowToleranceToCheck)
-                                    CellsUsedCut++;
-                    }
-                    else
-                        CellsDiscarded++;
-                });
-            }
-            */
-
-            // Record the bits for this subgrid in the coverage map by requesting the whole subgrid
-            // of bits from the leaf level and setting it in one operation under an exclusive lock
-            if (!Bits.IsEmpty())
+      // Record the bits for this subgrid in the coverage map by requesting the whole subgrid
+      // of bits from the leaf level and setting it in one operation under an exclusive lock
+      if (!Bits.IsEmpty())
             {
                 if (RequiresSerialisation)
                     Monitor.Enter(CoverageMap);

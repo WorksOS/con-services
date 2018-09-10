@@ -111,7 +111,7 @@ namespace VSS.TRex.TAGFiles.Classes
 
       catch (System.Exception e)
       {
-        Log.LogWarning(String.Format("Exception occured saving {0}. error:{1}", fType, e.Message));
+        Log.LogWarning($"Exception occured saving {fType}. error:{e.Message}");
         return false;
       }
     }

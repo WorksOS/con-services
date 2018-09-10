@@ -15,7 +15,7 @@ namespace VSS.TRex.SiteModels
     //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
 
 
-    private IStorageProxy _ImmutableStorageProxy = null;
+    private IStorageProxy _ImmutableStorageProxy;
 
     /// <summary>
     /// The default immutable storage proxy to be used for requests

@@ -18,7 +18,7 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The Sitemodel instance that owns this set of machines target values
     /// </summary>
-    private ISiteModel Owner;
+    private readonly ISiteModel Owner;
 
     /// <summary>
     /// Maps machine IDs (currently as 16 bit integers) to the instance containing all the event lists for all the machines
@@ -26,8 +26,9 @@ namespace VSS.TRex.Events
     /// </summary>
     //Removed as internal machine ID are not simple indexes into the site model machines list
     //private Dictionary<short, ProductionEventLists> MachineIDMap = new Dictionary<short, ProductionEventLists>();
-    private IProductionEventLists[] MachineIDMap = new IProductionEventLists[0];
-    private object[] MachinelockInterlocks = new object[0];
+    private IProductionEventLists[] MachineIDMap;
+
+    private readonly object[] MachinelockInterlocks;
 
     /// <summary>
     /// Constructor for the machines events within the sitemodel supplier as owner
@@ -42,15 +43,6 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Default (guid) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
-    /// events lists for that machine.
-    /// </summary>
-    /// <param name="MachineID"></param>
-    /// <returns></returns>
-    //public ProductionEventLists this[Guid MachineID] => MachineIDMap.TryGetValue(MachineID, out ProductionEventLists result) ? result : null;
-
-
-    /// <summary>
     /// </summary>
     /// <param name="machineID"></param>
     /// <returns></returns>
@@ -62,14 +54,14 @@ namespace VSS.TRex.Events
       if (MachineIDMap[machineID] == null)
       {
         // The machine events need to be loaded...
-        // Lock the list using a proxy object to prevent concurren requestors loading events simultaneously
+        // Lock the list using a proxy object to prevent concurrent requestors loading events simultaneously
         lock (MachinelockInterlocks[machineID])
         {
           // If the map is still null then this requestor 'won the lock'
           if (MachineIDMap[machineID] == null)
           {
-            // Create a temp var for the events so consurrent requestors wont grab a reference to
-            // an event lsit being loaded
+            // Create a temp var for the events so concurrent requestors wont grab a reference to
+            // an event list being loaded
             ProductionEventLists temp = new ProductionEventLists(Owner, machineID);
             
             if (temp.LoadEventsForMachine(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy()))
@@ -90,7 +82,7 @@ namespace VSS.TRex.Events
     /// Default (short) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
     /// events lists for that machine.
     /// </summary>
-    /// <param name="MachineID"></param>
+    /// <param name="machineID"></param>
     /// <returns></returns>
     public IProductionEventLists this[short machineID] => machineID >= MachineIDMap.Length ? null : GetMachineEventLists(machineID);
 

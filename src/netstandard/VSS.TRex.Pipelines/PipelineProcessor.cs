@@ -211,7 +211,7 @@ namespace VSS.TRex.Pipelines
 
       if (!SpatialExtents.IsValidPlanExtent)
       {
-        Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // TODO: Or there was no data in the model
+        Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // Or there was no data in the model
         return false;
       }
 
@@ -326,7 +326,7 @@ namespace VSS.TRex.Pipelines
       Pipeline.DataModelID = DataModelID;
 
       //TODO Readd when lift build settings are supported
-      //todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+      // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
 
       // If summaries of compaction information (both CMV and MDP) are being displayed,
       // and the lift build settings requires all layers to be examined (so the
@@ -337,16 +337,14 @@ namespace VSS.TRex.Pipelines
       /* Todo: Delegate this kind of specialised configuration to the client of the pipeline processor
       if (Mode == DisplayMode.CCVSummary || Mode == DisplayMode.CCVPercentSummary)
       {
-        // TODO... if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
-        //    PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-        //
+        if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
+           PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
       }
 
       if (Mode == DisplayMode.MDPSummary || Mode == DisplayMode.MDPPercentSummary)
       {
-        // TODO... if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
-        //  PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-        //
+        if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
+          PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
       }
       */
 

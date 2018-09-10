@@ -238,8 +238,8 @@ namespace VSS.TRex.Profiling
     /// <returns></returns>
     private bool SelectCurrentCellPassInScan()
     {
-      // todo ... if Debug_ExtremeLogSwitchG then
-      // SIGLogMessage.PublishNoODS(Nil, Format('In SelectCurrentCellPassInScan', []), slmcDebug);
+      // if (Debug_ExtremeLogSwitchG)
+      //   Log.LogDebug("In SelectCurrentCellPassInScan");
 
       //Select only those cellpasses which satisfy applied filter
       bool Result;
@@ -277,8 +277,8 @@ namespace VSS.TRex.Profiling
         }
       }
 
-      // todo ...if Debug_ExtremeLogSwitchG then
-      // SIGLogMessage.PublishNoODS(Nil, Format('Out SelectCurrentCellPassInScan', []), slmcDebug);
+      // if (Debug_ExtremeLogSwitchG)
+      //   Log.LogDebug("Out SelectCurrentCellPassInScan");
 
       return Result;
     }
@@ -707,7 +707,6 @@ namespace VSS.TRex.Profiling
         case ElevationType.Lowest:
           TempHeight = Consts.NullHeight;
           break;
-        default: break;
       }
 
       int FirstPassIdx = -1;
@@ -920,8 +919,8 @@ namespace VSS.TRex.Profiling
       ISubGridSegmentCellPassIterator cellPassIterator,
       bool returnIndividualFilteredValueSelection)
     {
-      // todo if Debug_ExtremeLogSwitchE then
-      //  SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d callerID:%s', [Cell.OTGCellX, Cell.OTGCellY, GetEnumName(TypeInfo(TCallerIDs), ord(CallerId))]), slmcDebug);
+      // if (Debug_ExtremeLogSwitchE)
+      //  Log.LogDebug($"In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}");
 
       bool Result = false;
       NumCellPassesRemainingToFetch = 1000;
@@ -955,8 +954,7 @@ namespace VSS.TRex.Profiling
 
       if (cellPassIterator == null)
       {
-        NumCellPassesRemainingToFetch =
-          1000; // TODO... = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
+        NumCellPassesRemainingToFetch = 1000; // TODO: = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
         SetCellIterationParameters();
         if (CellPassFastEventLookerUpper != null)
@@ -982,8 +980,8 @@ namespace VSS.TRex.Profiling
       // determine the superced status of cell pass layers to aid in the filtered value
       // selection).
 
-      // todo... if Debug_ExtremeLogSwitchE 
-      //  SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: {CellPassIteration', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+      // if (Debug_ExtremeLogSwitchE)
+      //  Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}");
 
       if (cellPassIterator != null)
       {
@@ -1051,13 +1049,13 @@ namespace VSS.TRex.Profiling
           }
 
           // Extract all events for pre-filtered list
-          // todo ... if Debug_ExtremeLogSwitchF 
-          //   SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: About to PopulateFilteredValues', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+          // if (Debug_ExtremeLogSwitchF)
+          //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: About to PopulateFilteredValues");
 
           CellPassFastEventLookerUpper.PopulateFilteredValues(TempPasses, TempPassCount - 1, 0, PopulationControl, false);
 
-          // todo ... if Debug_ExtremeLogSwitchF 
-          //   SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: PopulateFilteredValues complete', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+          // if (Debug_ExtremeLogSwitchF)
+          //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: PopulateFilteredValues complete");
 
           // Construct the list of filtered cell passes ready to have layer analysis performed on them
           // filter them on any required machine events in the process
@@ -1090,12 +1088,13 @@ namespace VSS.TRex.Profiling
           }
         } while (!(!ReadCellPassIntoTempList || Cell.FilteredPassCount >= NumCellPassesRemainingToFetch));
 
-        // todo... if Debug_ExtremeLogSwitchE
-        // SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell TotalPasses:%d Valid:%d', [TempPassCount, FilteredHalfPassCount div 2 ]), slmcDebug);
+        // if Debug_ExtremeLogSwitchE
+        // Log.LogDebug($"In BuildLiftsForCell TotalPasses:{TempPassCount} Valid:{FilteredHalfPassCount div 2");
 
         // Reverse the order of the selected passes to allow layer analysis to proceed in the
         // standard fashion
         if (Cell.Passes.PassCount > 0)
+        { 
           for (int I = 0; I < Cell.Passes.PassCount / 2; I++)
           {
             TempPass = Cell.Passes.FilteredPassData[I];
@@ -1105,7 +1104,7 @@ namespace VSS.TRex.Profiling
 
             MinMax.Swap(ref Cell.FilteredPassFlags[I], ref Cell.FilteredPassFlags[Cell.Passes.PassCount - I - 1]);
           }
-        //}
+        }
 
         // Todo... if (VLPDSvcLocations.Debug_LogLiftAnalysisCellPassIteratorRestriction)
         //  if (Cell.FilteredPassCount >= NumCellPassesRemainingToFetch) && ReadCellPassIntoTempList)
@@ -1128,42 +1127,43 @@ namespace VSS.TRex.Profiling
 
       BeginCellPassIteration();
 
-      // Todo ...if (Debug_ExtremeLogSwitchF)
-      //SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: Entering main loop', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+      // if (Debug_ExtremeLogSwitchF)
+      //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Entering main loop");
 
       while (SelectCurrentCellPassInScan())
       {
-        // todo ... if (Debug_ExtremeLogSwitchF)
-        //  SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: CheckLayerCompleted', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+        // if (Debug_ExtremeLogSwitchF)
+        //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: CheckLayerCompleted");
 
         CheckLayerCompleted(); // closes layer if true
 
-        // todo ... if (Debug_ExtremeLogSwitchF)
-        //  SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: AddValidatedPassToLayer', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+        // if (Debug_ExtremeLogSwitchF)
+        //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: AddValidatedPassToLayer");
 
         AddValidatedPassToLayer();
 
-        // todo ... if (Debug_ExtremeLogSwitchF)
-        //  SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: MoveToNextCurrentPass', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+        // if (Debug_ExtremeLogSwitchF)
+        //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: MoveToNextCurrentPass");
 
         MoveToNextCurrentPass();
       }
 
-      // todo ... if (Debug_ExtremeLogSwitchE)
-      // SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: Adding final layer', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+      // if (Debug_ExtremeLogSwitchE)
+      //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Adding final layer");
 
       // If we haven't added the lift we've been working on to the profile cell,  do so now
       if (CurrentLayerNotAddedToCell)
         AddFinishedLayer();
 
-      // todo ... if (Debug_ExtremeLogSwitchE)
-      //SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: Checking if need to select filtered pass', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+      // if (Debug_ExtremeLogSwitchE)
+      //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Checking if need to select filtered pass");
 
       MainValueAquired = false;
 
       // Check to see if we still need to select a filtered pass... Skip back through the
       // layers avoiding superceded layers for value selection
       if (!Result && returnIndividualFilteredValueSelection && ClientGrid != null)
+      {
         // ReSharper disable once UseMethodAny.0
         if (ValidPassesExist && Cell.Layers.Count() > 0 && AssignmentContext != null)
         {
@@ -1266,6 +1266,7 @@ namespace VSS.TRex.Profiling
             }
           }
         }
+      }
 
       if (ClientGrid != null)
         if (ClientGrid.GridDataType == GridDataType.CCVPercentChange ||
@@ -1275,8 +1276,8 @@ namespace VSS.TRex.Profiling
       if (MainValueAquired)
         Result = true;
 
-      // todo ...if (Debug_ExtremeLogSwitchE)
-      // SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: Calcing superceded etc', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+      // if (Debug_ExtremeLogSwitchE)
+      //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Calcing superceded etc");
 
       // Result is not true (ie: earlier processing has not decided that everything is all good)
       // then check to see if there were valid passes in the computed profile. This is tempered
@@ -1304,8 +1305,8 @@ namespace VSS.TRex.Profiling
         // ComputeLayerThicknessForLayers();
       }
 
-      // todo ...if (Debug_ExtremeLogSwitchE)
-      // SIGLogMessage.PublishNoODS(Nil, Format('In BuildLiftsForCell at %dx%d: Handling passcount check', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+      // if (Debug_ExtremeLogSwitchE)
+      //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Handling passcount check");
 
 
       ApplyPassCountRangeFilter();
@@ -1358,20 +1359,19 @@ namespace VSS.TRex.Profiling
         }
       }
 
-      /* todo ...
+      /* todo ... use VLPDSvcLocations.VLPDPSNode_EmitSubgridCellPassCounts
       if (VLPDSvcLocations.VLPDPSNode_EmitSubgridCellPassCounts)
       {
         if (MaxCellPassListAggregationSize < Cell.Passes.PassCount)
         {
           MaxCellPassListAggregationSize = Cell.Passes.PassCount;
-          SIGLogMessage.PublishNoODS(Nil,
-            Format('Max cell pass aggregation count: %d', [MaxCellPassListAggregationSize]), slmcDebug);
+          Log.LogDebug($"Max cell pass aggregation count: {MaxCellPassListAggregationSize}");
         }
       }
       */
 
-      // Todo ... if Debug_ExtremeLogSwitchE
-      // SIGLogMessage.PublishNoODS(Nil, Format('Out BuildLiftsForCell at %dx%d', [Cell.OTGCellX, Cell.OTGCellY]), slmcDebug);
+      // if Debug_ExtremeLogSwitchE
+      //   Log.LogDebug($"Out BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}");
 
       return true;
     }

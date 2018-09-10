@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         /// <summary>
         /// Adds a segment to the persistent list of cloven segments. The underlying list is created
-        /// on demand under a subgrid lock
+        /// on demand under a transient lock against this subgrid
         /// </summary>
         /// <param name="segment"></param>
         public void AddPersistedClovenSegment(ISubGridCellPassesDataSegmentInfo segment)

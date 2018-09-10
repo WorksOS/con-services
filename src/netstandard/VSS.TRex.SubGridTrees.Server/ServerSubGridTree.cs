@@ -121,14 +121,6 @@ namespace VSS.TRex.SubGridTrees.Server
             string FullFileName = string.Empty;
             bool Result = false;
 
-            /* TODO ... Locking semantics not defined for Ignite - planning to be lock free
-            if (!SubGrid.Locked)
-            {
-             SIGLogMessage.PublishNoODS(Self, 'TICServerSubGridTree.LoadLeafSubGrid (Subgrid not locked on request for reading)', slmcAssert);
-            return false;
-            }
-            */
-
             try
             {
                 // Load the cells into it from its file
