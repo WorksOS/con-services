@@ -36,9 +36,13 @@ node ('jenkinsslave-pod') {
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
+	
+	sh "ls -la"
+	
     dir ('./MockProjectWebApi/src')
 	{
 	
+	sh "ls -la"
 	stage("Prebuild Checks") {
 		if (params.VSTS_BUILD_NUMBER == null) {
 			currentBuild.result = 'ABORTED'
