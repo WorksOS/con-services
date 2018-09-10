@@ -29,12 +29,11 @@ node('Jenkins-Win2016-Raptor') {
 
     stage ('Checkout') {
       checkout scm
+	  currentBuild.result = 'SUCCESS'
       dir('./MockProjectWebApi/src') {
         stage ('Build MockApis') {
           bat "./mockapis.bat"
         }
-        //currentBuild.result = 'SUCCESS'
-  
         echo "Build result is ${currentBuild.result}"
         if (currentBuild.result=='SUCCESS') {
           //Rebuild Image, tag & push to AWS Docker Repo
