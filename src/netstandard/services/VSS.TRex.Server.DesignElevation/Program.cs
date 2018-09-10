@@ -9,6 +9,10 @@ using VSS.TRex.Services.Designs;
 using VSS.TRex.Storage.Models;
 using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Server.DesignElevation
 {
@@ -20,6 +24,10 @@ namespace VSS.TRex.Server.DesignElevation
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Build()
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModel()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))

@@ -16,6 +16,7 @@ using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
@@ -42,6 +43,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.MutableGridStorage()));
+      services.AddTransient<ISiteModel>(factory => new SiteModel());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();

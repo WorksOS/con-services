@@ -17,6 +17,7 @@ using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Rendering.Servers.Client;
+using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
@@ -61,6 +62,7 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModel()))
 
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))

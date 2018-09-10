@@ -23,6 +23,7 @@ namespace VSS.TRex.Service.Deployer
         DIBuilder.New()
           .AddLogging()
           .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+          .Build()
           .Add(x => x.AddSingleton(new MutableClientServer("ServiceDeployer")))
           .Complete();
       }
