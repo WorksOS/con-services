@@ -33,5 +33,6 @@ EXPOSE 80
 
 COPY --from=builder /build/artifacts/MockProjectWebApi .
 
+RUN ls -la /app
 
-ENTRYPOINT ["dotnet", "VSS.MockApi.dll"]
+ENTRYPOINT ["dotnet", "src.dll"]

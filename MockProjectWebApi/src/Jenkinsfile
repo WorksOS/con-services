@@ -25,8 +25,8 @@ node ('jenkinsslave-pod') {
 	def containerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
     def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
 	//his is required for backwards compatibility
-    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-webapi:${versionNumber}"
-	def legacyfinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-webapi:latest-linux"
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+	def legacyfinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:latest-linux"
 	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	
     def vars = []
