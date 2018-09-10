@@ -7,6 +7,12 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Models.Responses;
+using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
@@ -26,6 +32,28 @@ namespace VSS.TRex.Server.PSNode
 {
   class Program
   {
+    private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    {
+      switch (key)
+      {
+        case PipelineProcessorPipelineStyle.DefaultAggregative:
+          return new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>();
+        default:
+          return null;
+      }
+    }
+
+    private static ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    {
+      switch (key)
+      {
+        case PipelineProcessorTaskStyle.AggregatedPipelined:
+          return new AggregatedPipelinedSubGridTask();
+        default:
+          return null;
+      }
+    }
+
     private static void DependencyInjection()
     {
       DIBuilder
@@ -38,10 +66,14 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
-        .Add(x => x.AddSingleton<Func<Guid, ISiteModel>>(provider => id => new SiteModels.SiteModel(id)))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
         .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
+        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
