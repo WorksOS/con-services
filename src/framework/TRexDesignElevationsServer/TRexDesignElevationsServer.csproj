@@ -202,8 +202,7 @@
   <PropertyGroup>
     <PostBuildEvent>
 if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.4.0\libs\*.*" "$(TargetDir)libs"
-if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"
+xcopy /y "$(SolutionDir)build\ignite-corex.jar " "$(TargetDir)libs"</PostBuildEvent>
   </PropertyGroup>
 </Project>
