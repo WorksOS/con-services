@@ -56,7 +56,7 @@ node ('jenkinsslave-pod') {
     dir ('./MockProjectWebApi/src')
 	{
 	
-	sh "ls-la"
+	sh "ls -la"
 	
     stage('Build Solution') {
 	
