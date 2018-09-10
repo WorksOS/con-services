@@ -1,29 +1,37 @@
-# escape=`
-FROM microsoft/windowsservercore:10.0.14393.2068
-RUN powershell Invoke-WebRequest -Uri "https://download.microsoft.com/download/9/E/6/9E63300C-0941-4B45-A0EC-0008F96DD480/NDP471-KB4033342-x86-x64-AllOS-ENU.exe" -OutFile dotnet-framework-installer.exe & `
-    .\dotnet-framework-installer.exe /q & `
-    del .\dotnet-framework-installer.exe & `
-    set COMPLUS_NGenProtectedProcess_FeatureEnabled=0 & `
-    \Windows\Microsoft.NET\Framework64\v4.0.30319\ngen update & `
-    \Windows\Microsoft.NET\Framework\v4.0.30319\ngen update
+FROM microsoft/dotnet:2.0-sdk as builder
 
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
-RUN set-itemproperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name ServerPriorityTimeLimit -Value 0 -Type DWord
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-RUN choco install dotnetcore-runtime -y
+COPY . /build/
+WORKDIR /build
 
-# Set the Working Directory
+RUN chmod 777 *.sh
+
+RUN ["/bin/sh", "build.sh"]
+
+FROM microsoft/dotnet:2.0-runtime
+
+#This is required for the webpi to run properly
+RUN apt-get update && apt-get install -y \
+    libunwind8 \
+    && rm -rf /var/lib/apt/lists/*
+
+
+ENV CORECLR_ENABLE_PROFILING=1 \
+    CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
+    CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
+    CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so 
+
+COPY ./newrelic /newrelic/
+
+RUN dpkg -i /newrelic/newrelic-netcore20*.deb
+
+RUN ls -la /usr/local/newrelic-netcore20-agent
+
 WORKDIR /app
 
-# Configure the listening port to 80
-ENV ASPNETCORE_URLS http://*:5001
-EXPOSE 5001
+ENV ASPNETCORE_URLS http://*:80
+EXPOSE 80
 
-# Copy the app
-COPY . /app
+COPY --from=builder /build/artifacts/MockProjectWebApi .
 
-# Create the mount point to hold volume from host for logs
-#VOLUME logs
 
-# Start the app
-ENTRYPOINT .\\src.exe
+ENTRYPOINT ["dotnet", "VSS.MockApi.dll"]

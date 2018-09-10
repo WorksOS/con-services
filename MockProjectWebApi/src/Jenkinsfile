@@ -1,110 +1,77 @@
-properties([disableConcurrentBuilds(), pipelineTriggers([])])
+node ('jenkinsslave-pod') {
 
-node('Ubuntu_Slave') {
-  def branch = env.BRANCH_NAME
-  def buildNumber = env.BUILD_NUMBER
-  def versionPrefix = ""
-  def suffix = ""
-  def branchName = ""
+	// adds job parameters
+	properties([
+		parameters([
+			string(
+				defaultValue: null,
+				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
+				name: 'VSTS_BUILD_NUMBER'
+			),
+			string(
+				defaultValue: null,
+				description: 'The branch name to build',
+				name: 'BRANCH_NAME'
+			),
+		])
+	])
 
-  if (branch.contains("QA")) {
-     versionPrefix = "1.0."
-     branchName = "QA"
-  } else if (branch.contains("Dev")) {
-     versionPrefix = "0.99."
-     branchName = "Dev"
-  } else {
-     branchName = branch.substring(branch.lastIndexOf("/") + 1)
-     suffix = "-" + branchName
-     versionPrefix = "0.98."
-  }
-    
-  def versionNumber = versionPrefix + buildNumber
-  def fullVersion = versionNumber + suffix
-  def workspacePath =""
-  currentBuild.displayName = versionNumber + suffix
+	// We may need to rename the branch to conform to DNS name spec
+    def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
+	def jobnameparts = JOB_NAME.tokenize('/') as String[]
+	def project_name = jobnameparts[0].toLowerCase() 	
+    def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
+    def container = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+	def containerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
+    def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
+	//his is required for backwards compatibility
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-webapi:${versionNumber}"
+	def legacyfinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-webapi:latest-linux"
+	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
+	
+    def vars = []
+    def acceptance_testing_yaml
+	def runtimeImage
+	def dbRuntimeImage
 
-  stage ('Checkout') {
-    checkout scm
-    }
+	//Set the build name so it is consistant with VSTS
+	currentBuild.displayName = versionNumber
 
-  dir('./MockProjectWebApi/src') {
+	stage("Prebuild Checks") {
+		if (params.VSTS_BUILD_NUMBER == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid build number supplied")
+		}
+		if (params.BRANCH_NAME == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid branch supplied")
+		}
+	}
+	
+    stage('Build Solution') {
+        checkout scm
+		
+	    def build_container = docker.build(container, "-f ./build/Dockerfile.build .")
 
-    stage ('Build MockApis') {
-       sh "bash ./mockapis.sh"
-       }
-
-    
-    currentBuild.result = 'SUCCESS'
- 
-    echo "Build result is ${currentBuild.result}"
-    stage ('Get ecr login, push image to Repo') {
-      //sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
-	    sh "bash ./awslogin.sh"
-    }
-      
-    if (currentBuild.result=='SUCCESS') {
-    //Rebuild Image, tag & push to AWS Docker Repo
-      stage ('Build Images') {
-        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
-        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux ./Artifacts/MockProjectWebApi"
-        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}-${branch}"
-        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux"
-        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}-${branch}"
-        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux"
-      }
-    }
-  }
-}
-
-node('Jenkins-Win2016-Raptor') {
-    //Apply version number
-    //We will later use it to tag images
-
-    def branch = env.BRANCH_NAME
-    def buildNumber = env.BUILD_NUMBER
-    def versionPrefix = ""
-    def suffix = ""
-    def branchName = ""
-
-    if (branch.contains("QA")) {
-       versionPrefix = "1.0."
-       branchName = "QA"
-    } else if (branch.contains("Dev")) {
-       versionPrefix = "0.99."
-       branchName = "Dev"
-    } else {
-       branchName = branch.substring(branch.lastIndexOf("/") + 1)
-       suffix = "-" + branchName
-       versionPrefix = "0.98."
-    }
-    
-    def versionNumber = versionPrefix + buildNumber
-    def fullVersion = versionNumber + suffix
-    def workspacePath =""
-    currentBuild.displayName = versionNumber + suffix
-
-    stage ('Checkout') {
-      checkout scm
-      dir('./MockProjectWebApi/src') {
-        stage ('Build MockApis') {
-          bat "./mockapis.bat"
-        }
-        //currentBuild.result = 'SUCCESS'
-  
-        echo "Build result is ${currentBuild.result}"
-        if (currentBuild.result=='SUCCESS') {
-          //Rebuild Image, tag & push to AWS Docker Repo
-          stage ('Build Images') {
-            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
-            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest ./Artifacts/MockProjectWebApi"
-          }
-
-          //Publish to AWS Repo
-          stage ('Get ecr login, push image to Repo') {
-            bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
-          }
-        }
-      }
-    }
+        // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+        // the volume to the bare metal host        
+	}
+	
+	stage('Preparing runtime image') {
+		//runtimeImage = docker.build(container, "-f ./build/Dockerfile .")
+        runtimeImage = docker.build(container, "-f ./build/Dockerfile --build-arg BUILD_CONTAINER=${container} .")
+		runtimeImage.push()
+	}
+	    
+	
+	stage ('Publish results') {
+	    if (currentBuild.result=='SUCCESS') { 
+			sh "docker tag ${container} ${finalImage}"
+			sh "docker tag ${container} ${legacyfinalImage}"
+			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
+			sh "docker push ${finalImage}"
+			sh "docker push ${legacyfinalImage}"
+			archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+		}
+	}
 }
