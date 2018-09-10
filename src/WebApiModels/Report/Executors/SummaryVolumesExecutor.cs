@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        SummaryVolumesRequest request = item as SummaryVolumesRequest;
+        var request = item as SummaryVolumesRequest;
         if (request == null)
         {
           throw new ServiceException(
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         var baseDesignDescriptor = RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor);
         var topDesignDescriptor = RaptorConverters.DesignDescriptor(request.TopDesignDescriptor);
 
-        TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
+        var volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
         {
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         if (request.CutTolerance != null && request.FillTolerance != null)
         {
-          raptorResult = this.raptorClient.GetSummaryVolumes(request.ProjectId ?? -1,
+          raptorResult = raptorClient.GetSummaryVolumes(request.ProjectId ?? -1,
             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
               TASNodeCancellationDescriptorType.cdtVolumeSummary),
             volType,
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         }
         else
         {
-          raptorResult = this.raptorClient.GetSummaryVolumes(request.ProjectId ?? -1,
+          raptorResult = raptorClient.GetSummaryVolumes(request.ProjectId ?? -1,
             ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
               TASNodeCancellationDescriptorType.cdtVolumeSummary),
             volType,
@@ -107,10 +107,22 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(result);
         }
 
+        // This is temporary until FirstNameWithOffset() is fixed to not throw if Raptor error code isn't found in the generic error enum.
+        // See story #74870 Refactor Models::GenericEnum to not throw exceptions.
+        string errorName;
+        try
+        {
+          errorName = ContractExecutionStates.FirstNameWithOffset((int)raptorResult);
+        }
+        catch (Exception exception)
+        {
+          errorName = exception.Message;
+        }
+
         throw new ServiceException(
           HttpStatusCode.BadRequest,
-          new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested volumes summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+          new ContractExecutionResult((int)raptorResult,
+            $"Failed to get requested volumes summary data with error: {errorName}"));
       }
       finally
       {

@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         throw new ServiceException(
           HttpStatusCode.BadRequest,
-          new ContractExecutionResult((int) raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          new ContractExecutionResult((int) raptorResult,
             $"Failed to get requested volumes summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally

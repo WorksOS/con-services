@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
