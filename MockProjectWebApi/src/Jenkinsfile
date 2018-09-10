@@ -36,7 +36,9 @@ node ('jenkinsslave-pod') {
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
-
+    dir ('./MockProjectWebApi/src')
+	{
+	
 	stage("Prebuild Checks") {
 		if (params.VSTS_BUILD_NUMBER == null) {
 			currentBuild.result = 'ABORTED'
@@ -73,5 +75,6 @@ node ('jenkinsslave-pod') {
 			sh "docker push ${legacyfinalImage}"
 			archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
 		}
+	}
 	}
 }
