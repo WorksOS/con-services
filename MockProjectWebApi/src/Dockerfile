@@ -1,5 +1,8 @@
 FROM microsoft/dotnet:2.0-sdk as builder
 
+COPY . /build/
+WORKDIR /build
+
 RUN chmod 777 *.sh
 
 RUN ["/bin/sh", "build.sh"]
