@@ -141,10 +141,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CompactionCellDatum.feature</DependentUpon>
     </Compile>
-    <Compile Include="CompactionMachineLiftIds.feature.cs">
-      <DependentUpon>CompactionMachineLiftIds.feature</DependentUpon>
+    <Compile Include="CompactionLiftIds.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionLiftIds.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CompactionMachineLiftIds.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionMachineLiftIds.feature</DependentUpon>
     </Compile>
     <Compile Include="CompactionPatch.feature.cs">
       <AutoGen>True</AutoGen>
@@ -467,6 +472,7 @@
     <Compile Include="StepDefinitions\CompactionCutFillSteps.cs" />
     <Compile Include="StepDefinitions\CompactionElevationSteps.cs" />
     <Compile Include="StepDefinitions\CompactionMachineLiftIdsSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionLiftIdsSteps.cs" />
     <Compile Include="StepDefinitions\CompactionMdpSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPaletteSteps.cs" />
     <Compile Include="StepDefinitions\CompactionPassCountSteps.cs" />
@@ -585,6 +591,14 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CompactionElevation.feature.cs</LastGenOutput>
     </None>
+    <None Include="CompactionMachineLiftIds.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionMachineLiftIds.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionLiftIds.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionLiftIds.feature.cs</LastGenOutput>
+    </None>
     <None Include="CompactionMdp.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CompactionMdp.feature.cs</LastGenOutput>
@@ -676,10 +690,6 @@
     <None Include="GetDesignBoundaries.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetDesignBoundaries.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionMachineLiftIds.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionMachineLiftIds.feature.cs</LastGenOutput>
     </None>
     <None Include="GetLifts.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -850,6 +860,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionMachineLiftIdsResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CompactionLiftIdsResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CompactionReportTileResponse.json">

@@ -18,14 +18,14 @@ namespace ProductionDataSvc.AcceptanceTests
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.3.2.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute()]
-    public partial class CompactionLiftIdsFeature
+    public partial class CompactionMachineLiftIdsFeature
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
         
         private Microsoft.VisualStudio.TestTools.UnitTesting.TestContext _testContext;
         
-#line 1 "CompactionLiftIds.feature"
+#line 1 "CompactionMachineLiftIds.feature"
 #line hidden
         
         public virtual Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext
@@ -44,7 +44,7 @@ namespace ProductionDataSvc.AcceptanceTests
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner(null, 0);
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "CompactionLiftIds", "    I should be able to request all lift Ids of a project", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "CompactionMachineLiftIds", "  I should be able to request all machine lift Ids of a project", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -59,9 +59,9 @@ namespace ProductionDataSvc.AcceptanceTests
         public virtual void TestInitialize()
         {
             if (((testRunner.FeatureContext != null) 
-                        && (testRunner.FeatureContext.FeatureInfo.Title != "CompactionLiftIds")))
+                        && (testRunner.FeatureContext.FeatureInfo.Title != "CompactionMachineLiftIds")))
             {
-                global::ProductionDataSvc.AcceptanceTests.CompactionLiftIdsFeature.FeatureSetup(null);
+                global::ProductionDataSvc.AcceptanceTests.CompactionMachineLiftIdsFeature.FeatureSetup(null);
             }
         }
         
@@ -82,68 +82,68 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void CompactionLiftIds(string requestName, string projectUid, string httpCode, string resultName, string[] exampleTags)
+        public virtual void CompactionMachineLiftIds(string requestName, string projectUid, string httpCode, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CompactionLiftIds", exampleTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CompactionMachineLiftIds", exampleTags);
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
-    testRunner.Given("the Compaction service URI \"/api/v2/projects/{projectUid}/liftids\" for operation " +
-                    "\"All\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+  testRunner.Given("the Compaction service URI \"/api/v2/projects/{projectUid}/machinelifts\" for opera" +
+                    "tion \"All\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 6
-    testRunner.And("the result file \"CompactionLiftIdsResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("the result file \"CompactionMachineLiftIdsResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
-    testRunner.And(string.Format("projectUid \"{0}\"", projectUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUid), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
-    testRunner.When(string.Format("I send the request with expected HTTP status code \"{0}\"", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When(string.Format("I send the request with expected HTTP status code \"{0}\"", httpCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
-    testRunner.Then(string.Format("the result should match the \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the result should match the \"{0}\" result from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionLiftIds: LiftIdsOneAsset")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionLiftIds")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "LiftIdsOneAsset")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "LiftIdsOneAsset")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionMachineLiftIds: MachineLiftsOneAsset")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionMachineLiftIds")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MachineLiftsOneAsset")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "MachineLiftsOneAsset")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "04c94921-6343-4ffb-9d35-db9d281743fc")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "LiftIdsOneAsset")]
-        public virtual void CompactionLiftIds_LiftIdsOneAsset()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "MachineLiftsOneAsset")]
+        public virtual void CompactionMachineLiftIds_MachineLiftsOneAsset()
         {
 #line 4
-this.CompactionLiftIds("LiftIdsOneAsset", "04c94921-6343-4ffb-9d35-db9d281743fc", "200", "LiftIdsOneAsset", ((string[])(null)));
+this.CompactionMachineLiftIds("MachineLiftsOneAsset", "04c94921-6343-4ffb-9d35-db9d281743fc", "200", "MachineLiftsOneAsset", ((string[])(null)));
 #line hidden
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionLiftIds: LiftIdsTwoAssets")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionLiftIds")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "LiftIdsTwoAssets")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "LiftIdsTwoAssets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionMachineLiftIds: MachineLiftsTwoAssets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionMachineLiftIds")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "MachineLiftsTwoAssets")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "MachineLiftsTwoAssets")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "ff91dd40-1569-4765-a2bc-014321f76ace")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "200")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "LiftIdsTwoAssets")]
-        public virtual void CompactionLiftIds_LiftIdsTwoAssets()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "MachineLiftsTwoAssets")]
+        public virtual void CompactionMachineLiftIds_MachineLiftsTwoAssets()
         {
 #line 4
-this.CompactionLiftIds("LiftIdsTwoAssets", "ff91dd40-1569-4765-a2bc-014321f76ace", "200", "LiftIdsTwoAssets", ((string[])(null)));
+this.CompactionMachineLiftIds("MachineLiftsTwoAssets", "ff91dd40-1569-4765-a2bc-014321f76ace", "200", "MachineLiftsTwoAssets", ((string[])(null)));
 #line hidden
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionLiftIds: InvalidProjectUid")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionLiftIds")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CompactionMachineLiftIds: InvalidProjectUid")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionMachineLiftIds")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "InvalidProjectUid")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "InvalidProjectUid")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUid", "02c94921-6343-4ffb-9d35-db9d281743fc")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "401")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidProjectUid")]
-        public virtual void CompactionLiftIds_InvalidProjectUid()
+        public virtual void CompactionMachineLiftIds_InvalidProjectUid()
         {
 #line 4
-this.CompactionLiftIds("InvalidProjectUid", "02c94921-6343-4ffb-9d35-db9d281743fc", "401", "InvalidProjectUid", ((string[])(null)));
+this.CompactionMachineLiftIds("InvalidProjectUid", "02c94921-6343-4ffb-9d35-db9d281743fc", "401", "InvalidProjectUid", ((string[])(null)));
 #line hidden
         }
     }

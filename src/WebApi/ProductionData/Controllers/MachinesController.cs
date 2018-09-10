@@ -289,9 +289,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
       //Posts on the internet suggets using JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc
       //and IsoDateTimeConverter but that didn't fix the problem.
-      DateTime? beginUtc;
-      DateTime? finishUtc;
-      ValidateDates(startUtc, endUtc, out beginUtc, out finishUtc);
+      ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
 
       var layerIdsResult = RequestExecutorContainerFactory.Build<GetLayerIdsExecutor>(logger, raptorClient).Process(id) as LayerIdsExecutionResult;
       var machineResult = RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(logger, raptorClient).Process(id) as MachineExecutionResult;
@@ -299,16 +297,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var liftDetailsList = new List<MachineLiftDetails>();
       foreach (var machine in machineResult.MachineStatuses)
       {
-        var filteredLayers =
-            layerIdsResult.LayerIdDetailsArray.Where(
-                layer =>
-                    layer.AssetId == machine.AssetId &&
-                    IsDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
+        var filteredLayers = layerIdsResult.LayerIdDetailsArray.Where(
+          layer => layer.AssetId == machine.AssetId &&
+                   IsDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
+
         if (filteredLayers.Count > 0)
         {
           liftDetailsList.Add(MachineLiftDetails.CreateMachineLiftDetails(
-              machine.AssetId, machine.MachineName, machine.IsJohnDoe,
-              filteredLayers.Select(f => new LiftDetails { LayerId = f.LayerId, EndUtc = f.EndDate }).ToArray()));
+            machine.AssetId, machine.MachineName, machine.IsJohnDoe,
+            filteredLayers.Select(f => new LiftDetails
+            {
+              DesignId = f.DesignId,
+              LayerId = f.LayerId,
+              EndUtc = f.EndDate
+            }).ToArray()));
         }
       }
 

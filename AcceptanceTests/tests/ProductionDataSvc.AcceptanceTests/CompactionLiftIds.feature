@@ -1,4 +1,4 @@
-﻿Feature: CompactionMachineLiftIds
+﻿Feature: CompactionLiftIds
     I should be able to request all lift Ids of a project
 
 Scenario Outline: CompactionLiftIds
