@@ -55,7 +55,7 @@ namespace VSS.TRex.SiteModels
     /// exist it will be created if CreateIfNotExist is true.
     /// </summary>
     /// <param name="storageProxy"></param>
-    /// <param name="iD"></param>
+    /// <param name="id"></param>
     /// <param name="createIfNotExist"></param>
     /// <returns></returns>
     public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid id, bool createIfNotExist)
@@ -68,8 +68,7 @@ namespace VSS.TRex.SiteModels
           return result;
       }
 
-      result = DIContext.Obtain<ISiteModel>();
-      result.ID = id;
+      result = DIContext.Obtain<Func<Guid, ISiteModel>>()(id);
 
       if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
       {

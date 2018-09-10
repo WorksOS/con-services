@@ -226,8 +226,12 @@ namespace VSS.TRex.Events
           if (allEventsForMachine[(int) eventType] == null) // This thread won the lock
           {
             IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(MachineID, SiteModel.ID, eventType);
-            temp.LoadFromStore(DIContext.Obtain<ISiteModels>().StorageProxy);
-            allEventsForMachine[(int) eventType] = temp;
+
+            if (temp != null) // The event is supported
+            {
+              temp.LoadFromStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+              allEventsForMachine[(int) eventType] = temp;
+            }
           }
         }
       }
