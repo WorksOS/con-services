@@ -32,7 +32,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
       OverridingMachineMDP = argument.OverridingMachineMDP,
       MDPPercentageRange = argument.MDPPercentageRange,
       DetailsDataValues = argument.MDPDetailValues,
-      Counts = new long[argument.MDPDetailValues.Length]
+      Counts = argument.MDPDetailValues != null ? new long[argument.MDPDetailValues.Length] : null
     };
 
     /// <summary>
@@ -58,7 +58,7 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// <param name="response"></param>
     public override void ReadOutResults(AggregatorBase aggregator, MDPStatisticsResponse response)
     {
-      var tempAggregator = (SummaryDataAggregator)aggregator;
+      var tempAggregator = (DataStatisticsAggregator)aggregator;
 
       response.CellSize = tempAggregator.CellSize;
       response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;

@@ -12,7 +12,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	/// Computes Speed statistics. Executes in the 'application service' layer and acts as the coordinator
 	/// for the request onto the cluster compute layer.
 	/// </summary>
-  public class SpeedCoordinator : BaseAnalyticsCoordinator<SpeedStatisticsArgument, SpeedStatisticsResponse>
+  public class SpeedStatisticsCoordinator : BaseAnalyticsCoordinator<SpeedStatisticsArgument, SpeedStatisticsResponse>
   {
 		private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
@@ -22,7 +22,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		/// </summary>
 		/// <param name="argument"></param>
 		/// <returns></returns>
-		public override AggregatorBase ConstructAggregator(SpeedStatisticsArgument argument) => new SpeedAggregator
+		public override AggregatorBase ConstructAggregator(SpeedStatisticsArgument argument) => new SpeedStatisticsAggregator
 		{
 			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
@@ -54,7 +54,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, SpeedStatisticsResponse response)
 		{
-		  var tempAggregator = (SummaryDataAggregator)aggregator;
+		  var tempAggregator = (DataStatisticsAggregator)aggregator;
 
       response.CellSize = tempAggregator.CellSize;
 		  response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;

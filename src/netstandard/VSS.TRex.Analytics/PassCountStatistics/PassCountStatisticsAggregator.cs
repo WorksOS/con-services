@@ -39,7 +39,10 @@ namespace VSS.TRex.Analytics.PassCountStatistics
 
     private void IncrementCountOfTransition(double passCountValue)
     {
-      Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
+      if (DetailsDataValues == null || Counts == null)
+        return;
+
+        Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
 
       for (int i = 0; i < DetailsDataValues.Length; i++)
       {

@@ -8,7 +8,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// <summary>
 	/// The response state returned from a Temperature statistics request
 	/// </summary>
-	public class TemperatureStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>, IAnalyticsOperationResponseResultConversion<TemperatureResult>
+	public class TemperatureStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>, IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>
   {
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
@@ -33,9 +33,9 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 			LastTempRangeMax = ((TemperatureStatisticsResponse) other).LastTempRangeMax;
 		}
 
-    public TemperatureResult ConstructResult()
+    public TemperatureStatisticsResult ConstructResult()
     {
-      return new TemperatureResult
+      return new TemperatureStatisticsResult
       {
         MinimumTemperature = LastTempRangeMin,
         MaximumTemperature = LastTempRangeMax,

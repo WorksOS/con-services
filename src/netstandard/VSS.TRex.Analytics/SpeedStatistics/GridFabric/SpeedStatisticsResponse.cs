@@ -7,7 +7,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	/// <summary>
 	/// The response state returned from a Speed statistics request
 	/// </summary>
-  public class SpeedStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<SpeedStatisticsResponse>, IAnalyticsOperationResponseResultConversion<SpeedResult>
+  public class SpeedStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<SpeedStatisticsResponse>, IAnalyticsOperationResponseResultConversion<SpeedStatisticsResult>
 	{
 		/// <summary>
 		/// Aggregate a set of Speed statistics into this set and return the result.
@@ -23,9 +23,9 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
     /// Construct the result for the speed statistics
     /// </summary>
     /// <returns></returns>
-	  public SpeedResult ConstructResult()
+	  public SpeedStatisticsResult ConstructResult()
 	  {
-	    return new SpeedResult
+	    return new SpeedStatisticsResult
 	    {
 	      BelowTargetPercent = ValueUnderTargetPercent,
 	      WithinTargetPercent = ValueAtTargetPercent,

@@ -12,7 +12,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 	/// Computes Temperature statistics. Executes in the 'application service' layer and acts as the coordinator
 	/// for the request onto the cluster compute layer.
 	/// </summary>
-	public class TemperatureCoordinator : BaseAnalyticsCoordinator<TemperatureStatisticsArgument, TemperatureStatisticsResponse>
+	public class TemperatureStatisticsCoordinator : BaseAnalyticsCoordinator<TemperatureStatisticsArgument, TemperatureStatisticsResponse>
 	{
 		private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
@@ -22,7 +22,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// </summary>
 		/// <param name="argument"></param>
 		/// <returns></returns>
-		public override AggregatorBase ConstructAggregator(TemperatureStatisticsArgument argument) => new TemperatureAggregator
+		public override AggregatorBase ConstructAggregator(TemperatureStatisticsArgument argument) => new TemperatureStatisticsAggregator
 		{
 			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
@@ -55,7 +55,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <param name="response"></param>
 		public override void ReadOutResults(AggregatorBase aggregator, TemperatureStatisticsResponse response)
 		{
-		  var tempAggregator = (SummaryDataAggregator)aggregator;
+		  var tempAggregator = (DataStatisticsAggregator)aggregator;
 
       response.CellSize = tempAggregator.CellSize;
       response.SummaryCellsScanned = tempAggregator.SummaryCellsScanned;
@@ -67,8 +67,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
       response.IsTargetValueConstant = tempAggregator.IsTargetValueConstant;
       response.MissingTargetValue = tempAggregator.MissingTargetValue;
 
-			response.LastTempRangeMin = ((TemperatureAggregator) aggregator).LastTempRangeMin;
-			response.LastTempRangeMax = ((TemperatureAggregator)aggregator).LastTempRangeMax;
+			response.LastTempRangeMin = ((TemperatureStatisticsAggregator) aggregator).LastTempRangeMin;
+			response.LastTempRangeMax = ((TemperatureStatisticsAggregator)aggregator).LastTempRangeMax;
 		}
 	}
 }

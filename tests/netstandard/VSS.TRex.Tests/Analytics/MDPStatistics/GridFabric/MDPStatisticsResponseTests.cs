@@ -7,7 +7,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
 {
-  public class MDPResponseTests : BaseTests
+  public class MDPStatisticsResponseTests : BaseTests
   {
     private MDPStatisticsResponse _response => new MDPStatisticsResponse()
     {
@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
     };
 
     [Fact]
-    public void Test_MDPResponse_Creation()
+    public void Test_MDPStatisticsResponse_Creation()
     {
       var response = new MDPStatisticsResponse();
 
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_MDPResponse_ConstructResult_Successful()
+    public void Test_MDPStatisticsResponse_ConstructResult_Successful()
     {
       Assert.True(_response.ResultStatus == RequestErrorStatus.OK, "Invalid initial result status");
 
@@ -55,7 +55,7 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_MDPResponse_AgregateWith_Successful()
+    public void Test_MDPStatisticsResponse_AgregateWith_Successful()
     {
       var responseClone = new MDPStatisticsResponse()
       {

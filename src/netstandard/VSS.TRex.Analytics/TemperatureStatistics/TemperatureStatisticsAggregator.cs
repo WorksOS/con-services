@@ -7,10 +7,10 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics
 {
-	/// <summary>
-	/// Implements the specific business rules for calculating a Temperature summary
-	/// </summary>
-	public class TemperatureAggregator : SummaryDataAggregator
+  /// <summary>
+  /// Implements the specific business rules for calculating a Temperature statistics
+  /// </summary>
+  public class TemperatureStatisticsAggregator : DataStatisticsAggregator
 	{
 		/// <summary>
 		/// The flag is to indicate wehther or not the temperature warning levels to be user overrides.
@@ -35,14 +35,14 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <summary>
 		/// Default no-arg constructor
 		/// </summary>
-		public TemperatureAggregator()
+		public TemperatureStatisticsAggregator()
 		{
 			OverridingTemperatureWarningLevels.Clear();
 		}
 
 		protected override void DataCheck(DataStatisticsAggregator other)
 		{
-			var aggregator = (TemperatureAggregator) other;
+			var aggregator = (TemperatureStatisticsAggregator) other;
 
 			if (IsTargetValueConstant && aggregator.SummaryCellsScanned > 0) // if we need to check for a difference
 			{

@@ -57,11 +57,9 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for TotalAreaCoveredSqMeters.");
       Assert.True(result.IsTargetPassCountConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetPassCountConstant.");
 
-      //Assert.True(result.Counts.Length == _response.Counts.Length, "Invalid value for Counts.");
-      //for (int i = 0; i < result.Counts.Length; i++)
-      //  Assert.True(result.Counts[i] > _response.Counts[i], $"Invalid initial value for Counts[{i}].");
-
-      Assert.True(result.Counts == null, "Invalid value for Counts.");
+      Assert.True(result.Counts.Length == _response.Counts.Length, "Invalid value for Counts.");
+      for (int i = 0; i < result.Counts.Length; i++)
+        Assert.True(result.Counts[i] == _response.Counts[i], $"Invalid initial value for Counts[{i}].");
     }
 
     [Fact]

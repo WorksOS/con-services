@@ -32,7 +32,7 @@ namespace VSS.TRex.Analytics.CMVStatistics
       OverridingMachineCMV = argument.OverridingMachineCMV,
       CMVPercentageRange = argument.CMVPercentageRange,
       DetailsDataValues = argument.CMVDetailValues,
-      Counts = new long[argument.CMVDetailValues.Length]
+      Counts = argument.CMVDetailValues != null ? new long[argument.CMVDetailValues.Length] : null
     };
 
     /// <summary>

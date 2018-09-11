@@ -88,12 +88,15 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
       CellSize = other.CellSize;
 
       // Details...
-      Counts = Counts ?? new long[other.Counts.Length];
+      if (Counts != null && other.Counts != null)
+      {
+        Counts = Counts ?? new long[other.Counts.Length];
 
-      Debug.Assert(Counts.Length == other.Counts.Length);
+        Debug.Assert(Counts.Length == other.Counts.Length);
 
-      for (int i = 0; i < Counts.Length; i++)
-        Counts[i] += other.Counts[i];
+        for (int i = 0; i < Counts.Length; i++)
+          Counts[i] += other.Counts[i];
+      }
 
       // Summary...
       SummaryCellsScanned += other.SummaryCellsScanned;

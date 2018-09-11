@@ -30,7 +30,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics
       OverrideTargetPassCount = argument.OverrideTargetPassCount,
       OverridingTargetPassCountRange = argument.OverridingTargetPassCountRange,
       DetailsDataValues = argument.PassCountDetailValues,
-      Counts = new long[argument.PassCountDetailValues.Length]
+      Counts = argument.PassCountDetailValues != null ? new long[argument.PassCountDetailValues.Length] : null
     };
 
     /// <summary>

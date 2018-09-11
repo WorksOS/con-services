@@ -12,7 +12,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.MDPStatistics
 {
-  public class MDPAggregatorTests : BaseTests
+  public class MDPStatisticsAggregatorTests : BaseTests
   {
     [Fact]
     public void Test_MDPAggregator_Creation()
@@ -30,10 +30,37 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
       Assert.True(!aggregator.OverrideMachineMDP, "Invalid initial value for OverrideTemperatureWarningLevels.");
       Assert.True(aggregator.OverridingMachineMDP == CellPassConsts.NullMDP, "Invalid initial value for OverridingMachineMDP.");
       Assert.True(aggregator.LastTargetMDP == CellPassConsts.NullMDP, "Invalid initial value for LastTargetMDP.");
+
+      Assert.True(aggregator.DetailsDataValues == null, "Invalid initial value for DetailsDataValues.");
+      Assert.True(aggregator.Counts == null, "Invalid initial value for Counts.");
     }
 
     [Fact]
-    public void Test_MDPAggregator_ProcessResult_NoAggregation()
+    public void Test_MDPAggregator_ProcessResult_NoAggregation_Details()
+    {
+      var aggregator = new MDPStatisticsAggregator();
+
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+
+      clientGrid.FillWithTestPattern();
+
+      var dLength = clientGrid.Cells.Length;
+      var length = (short)Math.Sqrt(dLength);
+      aggregator.CellSize = CELL_SIZE;
+      aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
+      aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
+
+      IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
+
+      aggregator.ProcessSubgridResult(subGrids);
+
+      Assert.True(aggregator.Counts.Length == aggregator.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
+      for (int i = 0; i < aggregator.Counts.Length; i++)
+        Assert.True(aggregator.Counts[i] > 0, $"Invalid value for Counts[{i}].");
+    }
+
+    [Fact]
+    public void Test_MDPAggregator_ProcessResult_NoAggregation_Summary()
     {
       var aggregator = new MDPStatisticsAggregator();
 
@@ -60,7 +87,42 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     }
 
     [Fact]
-    public void Test_MDPAggregator_ProcessResult_WithAggregation()
+    public void Test_MDPAggregator_ProcessResult_WithAggregation_Details()
+    {
+      var aggregator = new MDPStatisticsAggregator();
+
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+
+      clientGrid.FillWithTestPattern();
+
+      var dLength = clientGrid.Cells.Length;
+      var length = (short)Math.Sqrt(dLength);
+      aggregator.CellSize = CELL_SIZE;
+      aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
+      aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
+
+      IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
+
+      aggregator.ProcessSubgridResult(subGrids);
+
+      // Other aggregator...
+      var otherAggregator = new MDPStatisticsAggregator();
+
+      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
+      otherAggregator.Counts = new long[aggregator.DetailsDataValues.Length];
+
+      otherAggregator.ProcessSubgridResult(subGrids);
+
+      aggregator.AggregateWith(otherAggregator);
+
+      Assert.True(aggregator.Counts.Length == aggregator.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
+      for (int i = 0; i < aggregator.Counts.Length; i++)
+        Assert.True(aggregator.Counts[i] == otherAggregator.Counts[i] * 2, $"Invalid aggregated value for Counts[{i}].");
+    }
+
+    [Fact]
+    public void Test_MDPAggregator_ProcessResult_WithAggregation_Summary()
     {
       var aggregator = new MDPStatisticsAggregator();
 

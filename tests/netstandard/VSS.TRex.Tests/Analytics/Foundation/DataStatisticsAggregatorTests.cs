@@ -4,11 +4,11 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.Foundation
 {
-  public class SummaryAggregatorTests
+  public class DataStatisticsAggregatorTests
   {
     private const double Epsilon = 0.00001;
 
-    private bool AggregatorStateIsDefault(SummaryDataAggregator Aggregator)
+    private bool AggregatorStateIsDefault(DataStatisticsAggregator Aggregator)
     {
       return Math.Abs(Aggregator.CellSize) < Epsilon &&
               Aggregator.CellsScannedAtTarget == 0 &&
@@ -22,23 +22,25 @@ namespace VSS.TRex.Tests.Analytics.Foundation
               Math.Abs(Aggregator.SummaryProcessedArea) < Epsilon &&
               Math.Abs(Aggregator.ValueAtTargetPercent) < Epsilon &&
               Math.Abs(Aggregator.ValueOverTargetPercent) < Epsilon &&
-              Math.Abs(Aggregator.ValueUnderTargetPercent) < Epsilon;
+              Math.Abs(Aggregator.ValueUnderTargetPercent) < Epsilon &&
+              Aggregator.DetailsDataValues == null &&
+              Aggregator.Counts == null;
     }
 
     [Fact]
-    public void Test_AggregatorBase_Creation()
+    public void Test_DataStatisticsAggregator_Creation()
     {
-      SummaryDataAggregator aggregator = new SummaryDataAggregator();
+      DataStatisticsAggregator aggregator = new DataStatisticsAggregator();
 
       Assert.True(AggregatorStateIsDefault(aggregator), "Unexpected initialisation state");               
     }
 
     [Fact]
-    public void Test_AggregatorBase_Aggregation()
+    public void Test_DataStatisticsAggregator_WithAggregation()
     {
       // Test base level aggregation
-      SummaryDataAggregator aggregator1 = new SummaryDataAggregator();
-      SummaryDataAggregator aggregator2 = new SummaryDataAggregator();
+      DataStatisticsAggregator aggregator1 = new DataStatisticsAggregator();
+      DataStatisticsAggregator aggregator2 = new DataStatisticsAggregator();
 
       aggregator1.AggregateWith(aggregator2);
       Assert.True(AggregatorStateIsDefault(aggregator1), "Unexpected state after default aggregation on default state");
@@ -51,6 +53,8 @@ namespace VSS.TRex.Tests.Analytics.Foundation
       aggregator2.SummaryCellsScanned = 60;
       aggregator2.IsTargetValueConstant = false;
       aggregator2.MissingTargetValue = true;
+      aggregator2.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+      aggregator2.Counts = new long[aggregator2.DetailsDataValues.Length];
 
       aggregator1.AggregateWith(aggregator2);
 
@@ -67,6 +71,10 @@ namespace VSS.TRex.Tests.Analytics.Foundation
       Assert.True(Math.Abs(aggregator1.ValueAtTargetPercent - (10 / 60.0) * 100) < Epsilon, "ValueAtTargetPercent  incorrect");
       Assert.True(Math.Abs(aggregator1.ValueOverTargetPercent - (20 / 60.0) * 100) < Epsilon, "ValueOverTargetPercent incorrect");
       Assert.True(Math.Abs(aggregator1.ValueUnderTargetPercent - (30 / 60.0) * 100) < Epsilon, "ValueUnderTargetPercent incorrect");
+
+      Assert.True(aggregator2.Counts.Length == aggregator2.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
+      for (int i = 0; i < aggregator2.Counts.Length; i++)
+        Assert.True(aggregator2.Counts[i] == 0, $"Invalid aggregated value for aggregator2.Counts[{i}].");
     }
   }
 }

@@ -8,10 +8,10 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Analytics.SpeedStatistics
 {
 	/// <summary>
-	/// Implements the specific business rules for calculating a Speed summary
+	/// Implements the specific business rules for calculating a Speed statistics
 	/// </summary>
-	public class SpeedAggregator : SummaryDataAggregator
-	{
+	public class SpeedStatisticsAggregator : DataStatisticsAggregator
+  {
 	  /// <summary>
 	  /// Machine speed target record. It contains min/max machine speed target value.
 	  /// </summary>
@@ -20,7 +20,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics
 	  /// <summary>
 	  /// Default no-arg constructor
 	  /// </summary>
-	  public SpeedAggregator()
+	  public SpeedStatisticsAggregator()
 	  {
 			TargetMachineSpeed.Clear();
 	  }

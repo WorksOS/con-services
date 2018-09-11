@@ -46,6 +46,9 @@ namespace VSS.TRex.Analytics.MDPStatistics
 
     private void IncrementCountOfTransition(double mdpValue)
     {
+      if (DetailsDataValues == null || Counts == null)
+        return;
+
       Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
 
       for (int i = 0; i < DetailsDataValues.Length; i++)

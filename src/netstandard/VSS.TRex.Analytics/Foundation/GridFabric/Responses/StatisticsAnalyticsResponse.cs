@@ -10,7 +10,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
   {
     /// <summary>
     /// An array values representing the counts of cells within each of the details bands defined in the request.
-    /// The array's size is the same as the number of the CMV details bands.
+    /// The array's size is the same as the number of the data details bands. For Cut/Fill data it is always 7.
     /// </summary>
     public long[] Counts { get; set; }
 
@@ -77,12 +77,15 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     protected virtual void AggregateBaseDataWith(StatisticsAnalyticsResponse other)
     {
       // Details...
-      Counts = Counts ?? new long[other.Counts.Length];
+      if (Counts != null && other.Counts != null)
+      {
+        Counts = Counts ?? new long[other.Counts.Length];
 
-      Debug.Assert(Counts.Length == other.Counts.Length);
+        Debug.Assert(Counts.Length == other.Counts.Length);
 
-      for (int i = 0; i < Counts.Length; i++)
-        Counts[i] += other.Counts[i];
+        for (int i = 0; i < Counts.Length; i++)
+          Counts[i] += other.Counts[i];
+      }
 
       // Summary...
       CellSize = other.CellSize;

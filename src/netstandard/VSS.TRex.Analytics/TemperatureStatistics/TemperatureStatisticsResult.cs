@@ -4,9 +4,9 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Analytics.TemperatureStatistics
 {
   /// <summary>
-  /// The result obtained from performing a temperature analytics request
+  /// The result obtained from performing a temperature statistics analytics request
   /// </summary>
-  public class TemperatureResult : SummaryAnalyticsResult
+  public class TemperatureStatisticsResult : StatisticsAnalyticsResult
 	{
 		/// <summary>
 		/// If the temperature value is constant, this is the minimum constant value of all temperature targets in the processed data.

@@ -984,8 +984,8 @@ namespace TRexIgniteTest
 			{
         PriorProcessingMessage();
 
-				TemperatureOperation operation = new TemperatureOperation();
-				TemperatureResult result = operation.Execute(
+				TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
+				TemperatureStatisticsResult result = operation.Execute(
 					new TemperatureStatisticsArgument()
 					{
 					  ProjectID = siteModel.ID, 
@@ -1271,8 +1271,8 @@ namespace TRexIgniteTest
       {
         PriorProcessingMessage();
 
-        SpeedOperation operation = new SpeedOperation();
-        SpeedResult result = operation.Execute(
+        SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
+        SpeedStatisticsResult result = operation.Execute(
           new SpeedStatisticsArgument()
           {
             ProjectID = siteModel.ID,

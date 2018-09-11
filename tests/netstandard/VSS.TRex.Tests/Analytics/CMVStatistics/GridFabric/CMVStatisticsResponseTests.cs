@@ -55,7 +55,9 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       Assert.True(Math.Abs(result.TotalAreaCoveredSqMeters - _response.SummaryProcessedArea) < Consts.TOLERANCE_DIMENSION, "Invalid initial result value for TotalAreaCoveredSqMeters.");
       Assert.True(result.IsTargetCMVConstant == _response.IsTargetValueConstant, "Invalid initial result value for IsTargetCMVConstant.");
 
-      Assert.True(result.Counts == null, "Invalid value for Counts.");
+      Assert.True(result.Counts.Length == _response.Counts.Length, "Invalid value for Counts.");
+      for (int i = 0; i < result.Counts.Length; i++)
+        Assert.True(result.Counts[i] == _response.Counts[i], $"Invalid value for Counts[{i}].");
     }
 
     [Fact]

@@ -36,7 +36,31 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     }
 
     [Fact]
-    public void Test_PassCountStatisticsAggregator_ProcessResult_NoAggregation()
+    public void Test_PassCountStatisticsAggregator_ProcessResult_NoAggregation_Details()
+    {
+      var aggregator = new PassCountStatisticsAggregator();
+
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
+
+      clientGrid.FillWithTestPattern();
+
+      var dLength = clientGrid.Cells.Length;
+      var length = (short)Math.Sqrt(dLength);
+      aggregator.CellSize = CELL_SIZE;
+      aggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+      aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
+
+      IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
+
+      aggregator.ProcessSubgridResult(subGrids);
+
+      Assert.True(aggregator.Counts.Length == aggregator.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
+      for (int i = 0; i < aggregator.Counts.Length; i++)
+        Assert.True(aggregator.Counts[i] > 0, $"Invalid value for Counts[{i}].");
+    }
+
+    [Fact]
+    public void Test_PassCountStatisticsAggregator_ProcessResult_NoAggregation_Summary()
     {
       var aggregator = new PassCountStatisticsAggregator();
 
@@ -49,8 +73,6 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       aggregator.CellSize = CELL_SIZE;
       aggregator.OverrideTargetPassCount = true;
       aggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
-      aggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-      aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
       IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
 
@@ -61,14 +83,10 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       Assert.True(aggregator.CellsScannedAtTarget == length, "Invalid value for CellsScannedAtTarget.");
       Assert.True(aggregator.CellsScannedOverTarget == 0, "Invalid value for CellsScannedOverTarget.");
       Assert.True(aggregator.CellsScannedUnderTarget == dLength - length, "Invalid value for CellsScannedUnderTarget.");
-
-      Assert.True(aggregator.Counts.Length == aggregator.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
-      for (int i = 0; i < aggregator.Counts.Length; i++)
-        Assert.True(aggregator.Counts[i] > 0, $"Invalid aggregated value for Counts[{i}].");
     }
 
     [Fact]
-    public void Test_PassCountStatisticsAggregator_ProcessResult_WithAggregation()
+    public void Test_PassCountStatisticsAggregator_ProcessResult_WithAggregation_Details()
     {
       var aggregator = new PassCountStatisticsAggregator();
 
@@ -79,8 +97,6 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       var dLength = clientGrid.Cells.Length;
       var length = (short)Math.Sqrt(dLength);
       aggregator.CellSize = CELL_SIZE;
-      aggregator.OverrideTargetPassCount = true;
-      aggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
       aggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
 
@@ -92,10 +108,43 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       var otherAggregator = new PassCountStatisticsAggregator();
 
       otherAggregator.CellSize = CELL_SIZE;
-      otherAggregator.OverrideTargetPassCount = true;
-      otherAggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
       otherAggregator.DetailsDataValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
       otherAggregator.Counts = new long[aggregator.DetailsDataValues.Length];
+
+      otherAggregator.ProcessSubgridResult(subGrids);
+
+      aggregator.AggregateWith(otherAggregator);
+
+      Assert.True(aggregator.Counts.Length == aggregator.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
+      for (int i = 0; i < aggregator.Counts.Length; i++)
+        Assert.True(aggregator.Counts[i] == otherAggregator.Counts[i] * 2, $"Invalid aggregated value for Counts[{i}].");
+    }
+
+    [Fact]
+    public void Test_PassCountStatisticsAggregator_ProcessResult_WithAggregation_Summary()
+    {
+      var aggregator = new PassCountStatisticsAggregator();
+
+      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
+
+      clientGrid.FillWithTestPattern();
+
+      var dLength = clientGrid.Cells.Length;
+      var length = (short)Math.Sqrt(dLength);
+      aggregator.CellSize = CELL_SIZE;
+      aggregator.OverrideTargetPassCount = true;
+      aggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
+
+      IClientLeafSubGrid[][] subGrids = new[] { new[] { clientGrid } };
+
+      aggregator.ProcessSubgridResult(subGrids);
+
+      // Other aggregator...
+      var otherAggregator = new PassCountStatisticsAggregator();
+
+      otherAggregator.CellSize = CELL_SIZE;
+      otherAggregator.OverrideTargetPassCount = true;
+      otherAggregator.OverridingTargetPassCountRange = new PassCountRangeRecord((ushort)length, (ushort)length);
 
       otherAggregator.ProcessSubgridResult(subGrids);
 
@@ -106,10 +155,6 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
       Assert.True(aggregator.CellsScannedAtTarget == length * 2, "Invalid value for CellsScannedAtTarget.");
       Assert.True(aggregator.CellsScannedOverTarget == 0, "Invalid value for CellsScannedOverTarget.");
       Assert.True(aggregator.CellsScannedUnderTarget == (dLength - length) * 2, "Invalid value for CellsScannedUnderTarget.");
-
-      Assert.True(aggregator.Counts.Length == aggregator.DetailsDataValues.Length, "Invalid value for DetailsDataValues.");
-      for (int i = 0; i < aggregator.Counts.Length; i++)
-        Assert.True(aggregator.Counts[i] == otherAggregator.Counts[i] * 2, $"Invalid aggregated value for Counts[{i}].");
     }
   }
 }
