@@ -24,7 +24,6 @@ namespace XnaFan.ImageComparison.Netcore
           }
         }
 
-
         /// <summary>
         /// Gets the difference between two images as a percentage
         /// </summary>
@@ -236,6 +235,7 @@ namespace XnaFan.ImageComparison.Netcore
         public static Image<Rgba32> GetGrayScaleVersion(this Image<Rgba32> original)
         {
             Image<Rgba32> newBitmap = new Image<Rgba32>(original.Width, original.Height);
+            newBitmap.Mutate(ctx => ctx.DrawImage(original, 1f));
             newBitmap.Mutate(ctx => ctx.Grayscale());
             return newBitmap;
         }

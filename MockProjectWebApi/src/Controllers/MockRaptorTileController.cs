@@ -45,7 +45,7 @@ namespace MockProjectWebApi.Controllers
         if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
         {
           //Just do a fixed block of color to represent production data
-          uint color = 0x000000;
+          Rgba32 color = Rgba32.Black;
           const int w = 100;
           const int h = 100;
           int x = (width - w) / 2;
@@ -53,56 +53,52 @@ namespace MockProjectWebApi.Controllers
           switch (mode)
           {
             case DisplayMode.Height:
-              color = Colors.Red;
+              color = Rgba32.Red;
               break;
             case DisplayMode.CCV:
-              color = Colors.Aqua;
+              color = Rgba32.Aqua;
               break;
             case DisplayMode.PassCount:
-              color = Colors.Fuchsia;
+              color = Rgba32.Fuchsia;
               break;
             case DisplayMode.PassCountSummary:
-              color = Colors.Green;
+              color = Rgba32.Green;
               break;
             case DisplayMode.CutFill:
               switch (volumeCalcType)
               {
                 case VolumeCalcType.None:
-                  color = Colors.Yellow;
+                  color = Rgba32.Yellow;
                   break;
                 case VolumeCalcType.DesignToGround:
-                  color = Colors.Maroon;
+                  color = Rgba32.Maroon;
                   break;
                 case VolumeCalcType.GroundToDesign:
-                  color = Colors.Teal;
+                  color = Rgba32.Teal;
                   break;
                 case VolumeCalcType.GroundToGround:
-                  color = Colors.Navy;
+                  color = Rgba32.Navy;
                   break;
               }
               break;
             case DisplayMode.TemperatureSummary:
-              color = Colors.Purple;
+              color = Rgba32.Purple;
               break;
             case DisplayMode.CCVPercentSummary:
-              color = Colors.Blue;
+              color = Rgba32.Blue;
               break;
             case DisplayMode.MDPPercentSummary:
-              color = Colors.Lime;
+              color = Rgba32.Lime;
               break;
             case DisplayMode.TargetSpeedSummary:
-              color = Colors.Brown;
+              color = Rgba32.Brown;
               break;
             case DisplayMode.CMVChange:
-              color = Colors.Orange;
+              color = Rgba32.Orange;
               break;
           }
-          var red = (color >> 16) & 255;
-          var green = (color >> 8) & 255;
-          var blue = color & 255;
           var rect = new RectangleF(x, y, w, h);
-          bitmap.Mutate(ctx => ctx.Fill(new Rgba32(red, green, blue, 0xFF), rect));
-          
+          bitmap.Mutate(ctx => ctx.Fill(color, rect));          
         }
         //else return Empty tile
  
