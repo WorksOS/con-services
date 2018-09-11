@@ -13,21 +13,21 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        private IProductionEventLists Source;
-        private IProductionEventLists Target;
+        private IProductionEventLists SourceLists;
+        private IProductionEventLists TargetLists;
         private bool IntegratingIntoPersistentDataModel;
 
         public EventIntegrator()
         {
         }
 
-        public EventIntegrator(IProductionEventLists Source,
-                               IProductionEventLists Target,
-                               bool IntegratingIntoPersistentDataModel) : this()
+        public EventIntegrator(IProductionEventLists sourceLists,
+                               IProductionEventLists targetLists,
+                               bool integratingIntoPersistentDataModel) : this()
         {
-            this.Source = Source;
-            this.Target = Target;
-            this.IntegratingIntoPersistentDataModel = IntegratingIntoPersistentDataModel;
+            SourceLists = sourceLists;
+            TargetLists = targetLists;
+            IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
         }
 
         private void IntegrateMachineDesignEventNames()
@@ -87,38 +87,40 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 source.Sort();
 
             target.CopyEventsFrom(source);
-            target.Collate();
+            target.Collate(TargetLists);
         }
 
-        private void PerformListIntegration(IProductionEvents source,
-                                            IProductionEvents target)
+        private void PerformListIntegration(IProductionEvents source, IProductionEvents target)
         {
             IntegrateList(source, target);
         }
 
-        public void IntegrateMachineEvents(IProductionEventLists source,
-                                           IProductionEventLists target,
+        public void IntegrateMachineEvents(IProductionEventLists sourceLists,
+                                           IProductionEventLists targetLists,
                                            bool integratingIntoPersistentDataModel)
         {
-            Source = source;
-            Target = target;
+            SourceLists = sourceLists;
+            TargetLists = targetLists;
             IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
 
             IntegrateMachineEvents();
         }
 
+        /// <summary>
+        /// Integrate together all the events lists for a machine between the source and target lists of machine events
+        /// </summary>
         public void IntegrateMachineEvents()
         {
             IntegrateMachineDesignEventNames();
 
-            IProductionEvents SourceStartEndRecordedDataList = Source.StartEndRecordedDataEvents; // EventStartEndRecordedData;
+            IProductionEvents SourceStartEndRecordedDataList = SourceLists.StartEndRecordedDataEvents;
 
             // Always integrate the machine recorded data start/stop events first, as collation
             // of the other events depends on collation of these events
-            PerformListIntegration(SourceStartEndRecordedDataList, Target.StartEndRecordedDataEvents); // EventStartEndRecordedData);
+            PerformListIntegration(SourceStartEndRecordedDataList, TargetLists.StartEndRecordedDataEvents); 
 
-            var sourceEventLists = Source.GetEventLists();
-            var targetEventLists = Target.GetEventLists();
+            var sourceEventLists = SourceLists.GetEventLists();
+            var targetEventLists = TargetLists.GetEventLists();
 
             // Integrate all remaining event lists and collate them wrt the machine start/stop recording events
             for (int I = 0; I < sourceEventLists.Length; I++)

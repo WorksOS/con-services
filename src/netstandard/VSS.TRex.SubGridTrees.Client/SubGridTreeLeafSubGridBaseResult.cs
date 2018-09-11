@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
@@ -6,7 +7,7 @@ namespace VSS.TRex.SubGridTrees.Client
 {
     public class SubGridTreeLeafSubGridBaseResult
     {
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+        private static readonly IClientLeafSubgridFactory ClientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>();
 
         public IClientLeafSubGrid SubGrid;
         public int SubgridResultCode;

@@ -2,6 +2,8 @@
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Servers.Client;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -10,8 +12,6 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-
-//using VSS.TRex.Rendering.Implementations.Core2;
 
 namespace TRexIgniteTest
 {
@@ -22,10 +22,13 @@ namespace TRexIgniteTest
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-Framework")))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();
     }
@@ -52,9 +55,9 @@ namespace TRexIgniteTest
     [STAThread]
     static void Main()
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
-      EnsureAssemblyDependenciesAreLoaded();
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
       Application.Run(new Form1());

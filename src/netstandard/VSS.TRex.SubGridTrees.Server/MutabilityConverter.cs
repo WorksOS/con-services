@@ -30,10 +30,16 @@ namespace VSS.TRex.SubGridTrees.Server
 
             SubGridCellLatestPassDataWrapper_NonStatic oldItem = LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
 
+            if (oldItem == null)
+            {
+              Log.LogDebug("LastPasses is not a SubGridCellLatestPassDataWrapper_NonStatic instance");
+              return null;
+            }
+
             LatestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
             LatestPasses.Assign(oldItem);
 
-            (LatestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed).PerformEncodingForInternalCache(oldItem.PassData);
+            (LatestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed)?.PerformEncodingForInternalCache(oldItem.PassData);
 
             return LatestPasses;
         }

@@ -39,6 +39,20 @@ namespace VSS.TRex.SubGridTrees.Client
       SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = nullValue);
     }
 
+    private void Initialise()
+    {
+      _gridDataType = TRex.Types.GridDataType.HeightAndTime;
+    }
+
+    /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientHeightAndTimeLeafSubGrid() : base()
+    {
+      Initialise();
+    }
+
     /// <summary>
     /// Constructor. Set the grid to HeightAndTime.
     /// </summary>
@@ -49,8 +63,8 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="indexOriginOffset"></param>
     public ClientHeightAndTimeLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
-      _gridDataType = TRex.Types.GridDataType.HeightAndTime;
-  }
+      Initialise();
+    }
 
   /// <summary>
   /// Assign filtered height value from a filtered pass to a cell

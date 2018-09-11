@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 
@@ -13,7 +12,7 @@ namespace VSS.TRex.Events
   /// </summary>
   public class MachinesProductionEventLists : IMachinesProductionEventLists
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger< MachinesProductionEventLists>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<MachinesProductionEventLists>();
 
     /// <summary>
     /// The Sitemodel instance that owns this set of machines target values
@@ -24,11 +23,7 @@ namespace VSS.TRex.Events
     /// Maps machine IDs (currently as 16 bit integers) to the instance containing all the event lists for all the machines
     /// that have contributed to the owner SiteModel
     /// </summary>
-    //Removed as internal machine ID are not simple indexes into the site model machines list
-    //private Dictionary<short, ProductionEventLists> MachineIDMap = new Dictionary<short, ProductionEventLists>();
     private IProductionEventLists[] MachineIDMap;
-
-    private readonly object[] MachinelockInterlocks;
 
     /// <summary>
     /// Constructor for the machines events within the sitemodel supplier as owner
@@ -37,9 +32,8 @@ namespace VSS.TRex.Events
     public MachinesProductionEventLists(ISiteModel owner)
     {
       Owner = owner;
-      MachineIDMap = new IProductionEventLists[owner.Machines.Count];
-      if (owner.Machines.Count > 0)
-        MachinelockInterlocks = Enumerable.Range(0, owner.Machines.Count).Select(x => new object()).ToArray();
+
+      MachineIDMap = Enumerable.Range(0, owner.Machines.Count).Select(x => new ProductionEventLists(owner, (short)x) as IProductionEventLists).ToArray();
     }
 
     /// <summary>
@@ -48,31 +42,13 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     private IProductionEventLists GetMachineEventLists(short machineID)
     {
-      if (machineID >= MachineIDMap.Length)
+      if (machineID < 0 || machineID >= MachineIDMap.Length)
         return null;
 
       if (MachineIDMap[machineID] == null)
       {
-        // The machine events need to be loaded...
-        // Lock the list using a proxy object to prevent concurrent requestors loading events simultaneously
-        lock (MachinelockInterlocks[machineID])
-        {
-          // If the map is still null then this requestor 'won the lock'
-          if (MachineIDMap[machineID] == null)
-          {
-            // Create a temp var for the events so concurrent requestors wont grab a reference to
-            // an event list being loaded
-            ProductionEventLists temp = new ProductionEventLists(Owner, machineID);
-            
-            if (temp.LoadEventsForMachine(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy()))
-            {
-              // Everything is good, provide access to the loaded machine event lists.
-              MachineIDMap[machineID] = temp;
-            }
-            else
-              Log.LogError($"Failed to load event target lists for machine {machineID}");
-          }
-        }
+        Log.LogCritical($"Sitemodel {Owner.ID} asked for non existent machine events at index {machineID}");
+        return null;
       }
 
       return MachineIDMap[machineID];
@@ -84,7 +60,7 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <param name="machineID"></param>
     /// <returns></returns>
-    public IProductionEventLists this[short machineID] => machineID >= MachineIDMap.Length ? null : GetMachineEventLists(machineID);
+    public IProductionEventLists this[short machineID] => GetMachineEventLists(machineID);
 
     /// <summary>
     /// Overrides the base List T Add() method to add the item to the local machine ID map dictionary as well as add it to the list

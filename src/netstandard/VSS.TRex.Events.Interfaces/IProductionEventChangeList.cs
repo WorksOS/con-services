@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Events.Interfaces
@@ -10,11 +9,9 @@ namespace VSS.TRex.Events.Interfaces
 
         void Sort();
 
-        void Collate();
+        void Collate(IProductionEventLists container);
 
         void SaveToStore(IStorageProxy storageProxy);
-
-        void SetContainer(IProductionEventLists container);
 
         ProductionEventType EventListType { get; }
 
@@ -41,7 +38,8 @@ namespace VSS.TRex.Events.Interfaces
     V LastStateValue();
     DateTime LastStateDate();
 
-    void PutValueAtDate(DateTime dateTime, V value);
-  }
+    void GetStateAtIndex(int index, out DateTime dateTime, out V state);
 
+    void PutValueAtDate(DateTime dateTime, V state);
+  }
 }

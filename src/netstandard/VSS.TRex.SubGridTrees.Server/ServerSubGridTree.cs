@@ -58,7 +58,6 @@ namespace VSS.TRex.SubGridTrees.Server
                                            IServerLeafSubGrid SubGrid,
                                            ISubGridCellPassesDataSegment Segment)
         {
-            string FullFileName;
             bool FileLoaded;
             bool needToLoadLatestData, needToLoadAllPasses;
 
@@ -89,7 +88,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             // Locate the segment file and load the data from it
-            FullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, Segment.SegmentInfo);
+            string FullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, Segment.SegmentInfo);
 
             // Debug.Assert(false, "SubGrid.LoadFromFile not implemented (should usee direct serialisation from Ignite, or serialisation of dumb dinary data from same");
             // Load the cells into it from its file

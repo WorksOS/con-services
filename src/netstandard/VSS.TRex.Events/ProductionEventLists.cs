@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -8,337 +10,285 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Events
 {
+  /// <summary>
+  /// A wrapper for all the event information related to a particular machine's activities within a particular
+  /// site model.co
+  /// </summary>
+  public class ProductionEventLists : IProductionEventLists
+  {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
     /// <summary>
-    /// A wrapper for all the event information related to a particular machine's activities within a particular
-    /// site model.co
+    /// The SiteModel these events relate to
     /// </summary>
-    public class ProductionEventLists : IProductionEventLists
+    private ISiteModel SiteModel { get; set; }
+
+    /// <summary>
+    /// The collection of concrete event lists for a machine. Each element in the array is indexed by the
+    /// ProductionEventType for that collection of events;
+    /// </summary>
+    private readonly IProductionEvents[] allEventsForMachine;
+
+    /// <summary>
+    /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
+    /// used within the data model, not the GUID descriptor for the machine
+    /// </summary>
+    public short MachineID { get; set; }
+
+    public IStartEndProductionEvents MachineStartupShutdownEvents
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+      get => (IStartEndProductionEvents) GetEventList(ProductionEventType.MachineStartupShutdown);
+    }
 
-        /// <summary>
-        /// The SiteModel these events relate to
-        /// </summary>
-        private ISiteModel SiteModel { get; set; }
+    /// <summary>
+    /// Events recording the Start and Stop events for recording production data on a machine
+    /// </summary>
+    public IStartEndProductionEvents StartEndRecordedDataEvents
+    {
+      get => (IStartEndProductionEvents) GetEventList(ProductionEventType.StartEndRecordedData);
+    }
 
-        /// <summary>
-        /// The ID of the machine these events were recorded by. The ID is the (short) internal machine ID
-        /// used within the data model, not the GUID descriptor for the machine
-        /// </summary>
-        public short MachineID { get; set; }
+    /// <summary>
+    /// Events recording vibration state changes for vibratory drum compactor operation
+    /// </summary>
+    public IProductionEvents<VibrationState> VibrationStateEvents
+    {
+      get => (IProductionEvents<VibrationState>) GetEventList(ProductionEventType.VibrationStateChange);
+    }
 
-        public IStartEndProductionEvents MachineStartupShutdownEvents { get; set; }
+    /// <summary>
+    /// Events recording automatics vibration state changes for vibratory drum compactor operation
+    /// </summary>
+    public IProductionEvents<AutoVibrationState> AutoVibrationStateEvents
+    {
+      get => (IProductionEvents<AutoVibrationState>) GetEventList(ProductionEventType.AutoVibrationStateChange);
+    }
 
-        /// <summary>
-        /// Events recording the Start and Stop events for recording production data on a machine
-        /// </summary>
-        public IStartEndProductionEvents StartEndRecordedDataEvents { get; set; }
-     
-        /// <summary>
-        /// Events recording vibration state changes for vibratory drum compactor operation
-        /// </summary>
-        public IProductionEvents<VibrationState> VibrationStateEvents { get; set; }
-     
-        /// <summary>
-        /// Events recording automatics vibration state changes for vibratory drum compactor operation
-        /// </summary>
-        public IProductionEvents<AutoVibrationState> AutoVibrationStateEvents { get; set; }
-     
-        /// <summary>
-        /// Events recording changes to the prevailing GPSMode (eg: RTK Fixed, RTK Float, Differential etc) at the time 
-        /// production measurements were being made
-        /// </summary>
-        public IProductionEvents<GPSMode> GPSModeStateEvents { get; set; }
-     
-        /// <summary>
-        /// Records the positioning technology (eg: GPS or UTS) being used at the time production measurements were being made
-        /// </summary>
-        public IProductionEvents<PositioningTech> PositioningTechStateEvents { get; set; }
+    /// <summary>
+    /// Events recording changes to the prevailing GPSMode (eg: RTK Fixed, RTK Float, Differential etc) at the time 
+    /// production measurements were being made
+    /// </summary>
+    public IProductionEvents<GPSMode> GPSModeStateEvents
+    {
+      get => (IProductionEvents<GPSMode>) GetEventList(ProductionEventType.GPSModeChange);
+    }
 
-        /// <summary>
-        /// Records the IDs of the designs selected on a machine at the time production measurements were being made
-        /// </summary>
-        public IProductionEvents<int> DesignNameIDStateEvents { get; set; }
+    /// <summary>
+    /// Records the positioning technology (eg: GPS or UTS) being used at the time production measurements were being made
+    /// </summary>
+    public IProductionEvents<PositioningTech> PositioningTechStateEvents
+    {
+      get => (IProductionEvents<PositioningTech>) GetEventList(ProductionEventType.PositioningTech);
+    }
 
-        /// <summary>
-        /// Records the state of the automatic machine control on the machine at the time measurements were being made.
-        /// </summary>
-        public IProductionEvents<MachineAutomaticsMode> MachineAutomaticsStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the state of the selected machine gear at the time measurements were being made
-        /// </summary>
-        public IProductionEvents<MachineGear> MachineGearStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the state of minimum elevation mapping on the machine at the time measurements were being made
-        /// </summary>
-        public IProductionEvents<bool> MinElevMappingStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the state of GPSAccuracy and accompanying GPSTolerance on the machine at the time measurements were being made
-        /// </summary>
-        public IProductionEvents<GPSAccuracyAndTolerance> GPSAccuracyAndToleranceStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the selected Layer ID on the machine at the time measurements were being made
-        /// </summary>
-        public IProductionEvents<ushort> LayerIDStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the selected design on the machine at the time the measurements were made
-        /// </summary>
-        //        public ProductionEvents<string> DesignNameStateEvents;
-      
-        /// <summary>
-        /// ICFlags control flags change events
-        /// </summary>
-        public IProductionEvents<byte> ICFlagsStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the target CCV value configured on the machine control system
-        /// </summary>
-        public IProductionEvents<short> TargetCCVStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the target CCA value configured on the machine control system
-        /// </summary>
-        public IProductionEvents<byte> TargetCCAStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the target MDP value configured on the machine control system
-        /// </summary>
-        public IProductionEvents<short> TargetMDPStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the target MDP value configured on the machine control system
-        /// </summary>
-        public IProductionEvents<ushort> TargetPassCountStateEvents { get; set; }
-      
-      /// <summary>
-      /// Records the target minimum temperature value configured on the machine control system
-      /// </summary>
-      public IProductionEvents<ushort> TargetMinMaterialTemperature { get; set; }
-      
-        /// <summary>
-        /// Records the target maximum temperature value configured on the machine control system
-        /// </summary>
-        public IProductionEvents<ushort> TargetMaxMaterialTemperature { get; set; }
-      
-        /// <summary>
-        /// Records the target lift thickness value configured on the machine control system
-        /// </summary>
-        public IProductionEvents<float> TargetLiftThicknessStateEvents { get; set; }
-      
-        /// <summary>
-        /// Records the Resonance Meter Value jump threshold configured on the machine control system
-        /// </summary>
-        public IProductionEvents<short> RMVJumpThresholdEvents { get; set; }
+    /// <summary>
+    /// Records the IDs of the designs selected on a machine at the time production measurements were being made
+    /// </summary>
+    public IProductionEvents<int> DesignNameIDStateEvents
+    {
+      get => (IProductionEvents<int>) GetEventList(ProductionEventType.DesignChange);
+    }
 
-        /// <summary>
-        /// Create all defined event lists in one operation.
-        /// </summary>
-        private void CreateEventLists()
+    /// <summary>
+    /// Records the state of the automatic machine control on the machine at the time measurements were being made.
+    /// </summary>
+    public IProductionEvents<MachineAutomaticsMode> MachineAutomaticsStateEvents
+    {
+      get => (IProductionEvents<MachineAutomaticsMode>) GetEventList(ProductionEventType.MachineAutomaticsChange);
+    }
+
+    /// <summary>
+    /// Records the state of the selected machine gear at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<MachineGear> MachineGearStateEvents
+    {
+      get => (IProductionEvents<MachineGear>) GetEventList(ProductionEventType.MachineGearChange);
+    }
+
+    /// <summary>
+    /// Records the state of minimum elevation mapping on the machine at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<bool> MinElevMappingStateEvents
+    {
+      get => (IProductionEvents<bool>) GetEventList(ProductionEventType.MinElevMappingStateChange);
+    }
+
+    /// <summary>
+    /// Records the state of GPSAccuracy and accompanying GPSTolerance on the machine at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<GPSAccuracyAndTolerance> GPSAccuracyAndToleranceStateEvents
+    {
+      get => (IProductionEvents<GPSAccuracyAndTolerance>) GetEventList(ProductionEventType.GPSAccuracyChange);
+    }
+
+    /// <summary>
+    /// Records the selected Layer ID on the machine at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<ushort> LayerIDStateEvents
+    {
+      get => (IProductionEvents<ushort>) GetEventList(ProductionEventType.LayerID);
+    }
+
+    /// <summary>
+    /// Records the selected design on the machine at the time the measurements were made
+    /// </summary>
+    //public IProductionEvents<string> DesignNameStateEvents
+    //{
+    //  get => (IProductionEvents<string>)GetEventList(ProductionEventType.DesignChange);
+    //}
+
+    /// <summary>
+    /// ICFlags control flags change events
+    /// </summary>
+    public IProductionEvents<byte> ICFlagsStateEvents
+    {
+      get => (IProductionEvents<byte>) GetEventList(ProductionEventType.ICFlagsChange);
+    }
+
+    /// <summary>
+    /// Records the target CCV value configured on the machine control system
+    /// </summary>
+    public IProductionEvents<short> TargetCCVStateEvents
+    {
+      get => (IProductionEvents<short>) GetEventList(ProductionEventType.TargetCCV);
+    }
+
+    /// <summary>
+    /// Records the target CCA value configured on the machine control system
+    /// </summary>
+    public IProductionEvents<byte> TargetCCAStateEvents
+    {
+      get => (IProductionEvents<byte>) GetEventList(ProductionEventType.TargetCCA);
+    }
+
+    /// <summary>
+    /// Records the target MDP value configured on the machine control system
+    /// </summary>
+    public IProductionEvents<short> TargetMDPStateEvents
+    {
+      get => (IProductionEvents<short>) GetEventList(ProductionEventType.TargetMDP);
+    }
+
+    /// <summary>
+    /// Records the target MDP value configured on the machine control system
+    /// </summary>
+    public IProductionEvents<ushort> TargetPassCountStateEvents
+    {
+      get => (IProductionEvents<ushort>) GetEventList(ProductionEventType.TargetPassCount);
+    }
+
+    /// <summary>
+    /// Records the target minimum temperature value configured on the machine control system
+    /// </summary>
+    public IProductionEvents<ushort> TargetMinMaterialTemperature
+    {
+      get => (IProductionEvents<ushort>) GetEventList(ProductionEventType.TempWarningLevelMinChange);
+    }
+
+    /// <summary>
+    /// Records the target maximum temperature value configured on the machine control system
+    /// </summary>
+    public IProductionEvents<ushort> TargetMaxMaterialTemperature
+    {
+      get => (IProductionEvents<ushort>) GetEventList(ProductionEventType.TempWarningLevelMaxChange);
+    }
+
+    /// <summary>
+    /// Records the target lift thickness value configured on the machine control system
+    /// </summary>
+    public IProductionEvents<float> TargetLiftThicknessStateEvents
+    {
+      get => (IProductionEvents<float>) GetEventList(ProductionEventType.TargetLiftThickness);
+    }
+
+    /// <summary>
+    /// Records the Resonance Meter Value jump threshold configured on the machine control system
+    /// </summary>
+    public IProductionEvents<short> RMVJumpThresholdEvents
+    {
+      get => (IProductionEvents<short>) GetEventList(ProductionEventType.MachineRMVJumpValueChange);
+    }
+
+    /// <summary>
+    /// Retrieves the requested event list for this meachine in this sitemodel
+    /// Event lists are lazy loaded at the point they are requested.
+    /// </summary>
+    /// <param name="eventType"></param>
+    /// <returns></returns>
+    public IProductionEvents GetEventList(ProductionEventType eventType)
+    {
+      // Check if the request event list type has been instantiated and loaded
+      if (allEventsForMachine[(int) eventType] == null)
+      {
+        // It is not... Instantiate and load the events
+        lock (this)
         {
-            MachineStartupShutdownEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
-                ProductionEventType.MachineStartupShutdown,
-                (w, s) => w.Write((byte) s), r => (ProductionEventType) r.ReadByte());
+          if (allEventsForMachine[(int) eventType] == null) // This thread won the lock
+          {
+            IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(MachineID, SiteModel.ID, eventType);
 
-            StartEndRecordedDataEvents = new StartEndProductionEvents(this, MachineID, SiteModel.ID,
-                ProductionEventType.StartEndRecordedData,
-                (w, s) => w.Write((byte) s), r => (ProductionEventType) r.ReadByte());
+            if (temp != null) // The event is supported
+            {
+              temp.LoadFromStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+              allEventsForMachine[(int) eventType] = temp;
+            }
+          }
+        }
+      }
 
-            VibrationStateEvents = new ProductionEvents<VibrationState>(this, MachineID, SiteModel.ID,
-                ProductionEventType.VibrationStateChange,
-                (w, s) => w.Write((byte) s), r => (VibrationState) r.ReadByte());
-
-            AutoVibrationStateEvents = new ProductionEvents<AutoVibrationState>(this, MachineID, SiteModel.ID,
-                ProductionEventType.AutoVibrationStateChange,
-                (w, s) => w.Write((byte) s), r => (AutoVibrationState) r.ReadByte());
-
-            GPSModeStateEvents = new ProductionEvents<GPSMode>(this, MachineID, SiteModel.ID,
-                ProductionEventType.GPSModeChange,
-                (w, s) => w.Write((byte) s), r => (GPSMode) r.ReadByte());
-
-            PositioningTechStateEvents = new ProductionEvents<PositioningTech>(this, MachineID, SiteModel.ID,
-                ProductionEventType.PositioningTech,
-                (w, s) => w.Write((byte) s), r => (PositioningTech) r.ReadByte());
-
-            DesignNameIDStateEvents = new ProductionEvents<int>(this, MachineID, SiteModel.ID,
-                ProductionEventType.DesignChange,
-                (w, s) => w.Write(s), r => r.ReadInt32());
-
-            MachineAutomaticsStateEvents = new ProductionEvents<MachineAutomaticsMode>(this, MachineID, SiteModel.ID,
-                ProductionEventType.MachineAutomaticsChange,
-                (w, s) => w.Write((byte) s), r => (MachineAutomaticsMode) r.ReadByte());
-
-            MachineGearStateEvents = new ProductionEvents<MachineGear>(this, MachineID, SiteModel.ID,
-                ProductionEventType.MachineGearChange,
-                (w, s) => w.Write((byte) s), r => (MachineGear) r.ReadByte());
-
-            MinElevMappingStateEvents = new ProductionEvents<bool>(this, MachineID, SiteModel.ID,
-                ProductionEventType.MinElevMappingStateChange,
-                (w, s) => w.Write(s), r => r.ReadBoolean());
-
-            GPSAccuracyAndToleranceStateEvents = new ProductionEvents<GPSAccuracyAndTolerance>(this, MachineID,
-                SiteModel.ID, ProductionEventType.GPSAccuracyChange,
-                (w, s) =>
-                {
-                    w.Write(s.GPSTolerance);
-                    w.Write((byte) s.GPSAccuracy);
-                },
-                r => new GPSAccuracyAndTolerance((GPSAccuracy) r.ReadByte(), r.ReadUInt16()));
-
-            LayerIDStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
-                ProductionEventType.LayerID,
-                (w, s) => w.Write(s), r => r.ReadUInt16());
-
-            //            DesignNameStateEvents = new ProductionEvents<string>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
-
-            ICFlagsStateEvents = new ProductionEvents<byte>(this, MachineID, SiteModel.ID,
-                ProductionEventType.ICFlagsChange,
-                (w, s) => w.Write(s), r => r.ReadByte());
-
-            TargetCCVStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
-                ProductionEventType.TargetCCV,
-                (w, s) => w.Write(s), r => r.ReadInt16());
-
-            TargetCCAStateEvents = new ProductionEvents<byte>(this, MachineID, SiteModel.ID,
-                ProductionEventType.TargetCCA,
-                (w, s) => w.Write(s), r => r.ReadByte());
-
-            TargetMDPStateEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
-                ProductionEventType.TargetMDP,
-                (w, s) => w.Write(s), r => r.ReadInt16());
-
-            TargetPassCountStateEvents = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
-                ProductionEventType.TargetPassCount,
-                (w, s) => w.Write(s), r => r.ReadUInt16());
-
-            TargetMinMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
-                ProductionEventType.TempWarningLevelMinChange,
-                (w, s) => w.Write(s), r => r.ReadUInt16());
-
-            TargetMaxMaterialTemperature = new ProductionEvents<ushort>(this, MachineID, SiteModel.ID,
-                ProductionEventType.TempWarningLevelMaxChange,
-                (w, s) => w.Write(s), r => r.ReadUInt16());
-
-            TargetLiftThicknessStateEvents = new ProductionEvents<float>(this, MachineID, SiteModel.ID,
-                ProductionEventType.TargetLiftThickness,
-                (w, s) => w.Write(s), r => r.ReadSingle());
-
-            RMVJumpThresholdEvents = new ProductionEvents<short>(this, MachineID, SiteModel.ID,
-                ProductionEventType.MachineRMVJumpValueChange,
-                (w, s) => w.Write(s), r => r.ReadInt16());
+      return allEventsForMachine[(int) eventType];
     }
 
     /// <summary>
     /// Returns an array containing all the event lists for a machine
     /// </summary>
     /// <returns></returns>
-    public IProductionEvents[] GetEventLists()
-        {
-            return new IProductionEvents[]
-            {
-                MachineStartupShutdownEvents,
-                StartEndRecordedDataEvents,
-                VibrationStateEvents,
-                AutoVibrationStateEvents,
-                GPSModeStateEvents,
-                PositioningTechStateEvents,
-                DesignNameIDStateEvents,
-                MachineAutomaticsStateEvents,
-                MachineGearStateEvents,
-                MinElevMappingStateEvents,
-                GPSAccuracyAndToleranceStateEvents,
-                LayerIDStateEvents,
+    public IProductionEvents[] GetEventLists() => allEventsForMachine;
 
-//                DesignNameStateEvents,
+    /// <summary>
+    /// The count of the number of possible production event types
+    /// </summary>
+    private static int NumEventListTypes = Enum.GetValues(typeof(ProductionEventType)).Cast<int>().Max(x => x) + 1;
 
-                ICFlagsStateEvents,
-                TargetCCVStateEvents,
-                TargetCCAStateEvents,
-                TargetMDPStateEvents,
-                TargetPassCountStateEvents,
-                TargetMinMaterialTemperature,
-                TargetMaxMaterialTemperature,
-                TargetLiftThicknessStateEvents,
-                RMVJumpThresholdEvents
-            };
-        }
+    public ProductionEventLists(ISiteModel siteModel, short machineID)
+    {
+      SiteModel = siteModel;
+      MachineID = machineID;
 
-        /// <summary>
-        /// Primary constructor for events recorded by a single machine within a single site model
-        /// </summary>
-        /// <param name="siteModel"></param>
-        /// <param name="machineID"></param>
-        public ProductionEventLists(ISiteModel siteModel, short machineID)
-        {
-            SiteModel = siteModel;
-
-            MachineID = machineID;
-
-            CreateEventLists();
-        }
-
-        /// <summary>
-        /// Saves the event lists for this machine to the persistent store
-        /// </summary>
-        /// <param name="storageProxy"></param>
-        public void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy)
-        {
-            foreach (IProductionEvents list in GetEventLists().Where(x => x.EventsChanged))
-            {
-                Log.LogDebug(
-                    $"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
-
-                list.SaveToStore(storageProxy);
-            }
-        }
-
-        public bool LoadEventsForMachine(IStorageProxy storageProxy)
-        {
-            MachineStartupShutdownEvents.LoadFromStore(storageProxy);
-            StartEndRecordedDataEvents.LoadFromStore(storageProxy);
-            VibrationStateEvents.LoadFromStore(storageProxy);
-            AutoVibrationStateEvents.LoadFromStore(storageProxy);
-            GPSModeStateEvents.LoadFromStore(storageProxy);
-            PositioningTechStateEvents.LoadFromStore(storageProxy);
-            DesignNameIDStateEvents.LoadFromStore(storageProxy);
-            MachineAutomaticsStateEvents.LoadFromStore(storageProxy);
-            MachineGearStateEvents.LoadFromStore(storageProxy);
-            MinElevMappingStateEvents.LoadFromStore(storageProxy);
-            GPSAccuracyAndToleranceStateEvents.LoadFromStore(storageProxy);
-            LayerIDStateEvents.LoadFromStore(storageProxy);
-
-            // DesignNameStateEvents.LoadFromStore(storageProxy);
-
-            ICFlagsStateEvents.LoadFromStore(storageProxy);
-
-            TargetCCVStateEvents.LoadFromStore(storageProxy);
-            TargetCCAStateEvents.LoadFromStore(storageProxy);
-            TargetMDPStateEvents.LoadFromStore(storageProxy);
-            TargetPassCountStateEvents.LoadFromStore(storageProxy);
-            TargetMinMaterialTemperature.LoadFromStore(storageProxy);
-            TargetMaxMaterialTemperature.LoadFromStore(storageProxy);
-            TargetLiftThicknessStateEvents.LoadFromStore(storageProxy);
-
-            RMVJumpThresholdEvents.LoadFromStore(storageProxy);
-
-            // Wire the container (this object) into the list jsut read...
-            GetEventLists().All(x =>
-            {
-                x.SetContainer(this);
-                return true;
-            });
-
-            return true;
-        }
-
-        /// <summary>
-        /// Provides a refernece to the TAG file processing start/end events list
-        /// </summary>
-        /// <returns></returns>
-        public IProductionEventPairs GetStartEndRecordedDataEvents() => StartEndRecordedDataEvents;
+      // Create an array large enough to hold all the possible enumeration values for production events
+      allEventsForMachine = new IProductionEvents[NumEventListTypes];
     }
+
+    /// <summary>
+    /// Saves the event lists for this machine to the persistent store
+    /// </summary>
+    public void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy)
+    {
+      foreach (IProductionEvents list in allEventsForMachine)
+        if (list != null && list.EventsChanged)
+        {
+          Log.LogDebug($"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
+
+          list.SaveToStore(storageProxy);
+        }
+    }
+
+    public bool LoadEventsForMachine(IStorageProxy storageProxy)
+    {
+      foreach (ProductionEventType evt in Enum.GetValues(typeof(ProductionEventType)))
+      {
+        Log.LogDebug($"Loading {evt} events for machine {MachineID} in project {SiteModel.ID}");
+
+        GetEventList(evt)?.LoadFromStore(storageProxy);
+      }
+
+      return true;
+    }
+
+    /// <summary>
+    /// Provides a refernece to the TAG file processing start/end events list
+    /// </summary>
+    /// <returns></returns>
+    public IProductionEventPairs GetStartEndRecordedDataEvents() => StartEndRecordedDataEvents;
+  }
 }

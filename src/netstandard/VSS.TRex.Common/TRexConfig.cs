@@ -64,6 +64,8 @@ namespace VSS.TRex.Common
       /// </summary>
       public static bool Debug_PerformSegmentAdditionIntegrityChecks = false;
 
+      public static bool AdviseOtherServicesOfDataModelChanges = true;
+
       /*
         /// <summary>
         /// Use TFA service to validate tagfiles

@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
     {
       var aggregator = new SpeedAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
     {
       var aggregator = new SpeedAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 

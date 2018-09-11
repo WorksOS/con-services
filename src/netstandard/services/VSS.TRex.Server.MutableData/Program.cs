@@ -15,10 +15,14 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using System.Threading.Tasks;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Server.MutableData
 {
-  class Program
+  public class Program
   {
     public static IConfiguration Configuration { get; set; }
 
@@ -27,17 +31,21 @@ namespace VSS.TRex.Server.MutableData
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Build()
         .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
-        .Add(x => x.AddTransient<ISiteModel>(factory => new SiteModels.SiteModel()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton(new TagProcComputeServer()))
+
        .Complete();
     }
 
@@ -78,8 +86,9 @@ namespace VSS.TRex.Server.MutableData
 
     static async Task<int> Main(string[] args)
     {
-      // Load settings for Mutabledata
+      EnsureAssemblyDependenciesAreLoaded();
 
+      // Load settings for Mutabledata
       Configuration = new ConfigurationBuilder()
           //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -87,8 +96,6 @@ namespace VSS.TRex.Server.MutableData
           .Build();
 
       DependencyInjection();
-
-      EnsureAssemblyDependenciesAreLoaded();
 
       if (Configuration.GetSection("EnableTFAService").Value == null)
         Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g EnableTFAService");
@@ -99,8 +106,6 @@ namespace VSS.TRex.Server.MutableData
         Console.WriteLine($"{env.Key}:{env.Value}");
       }
 
-
-      var server = new TagProcComputeServer();
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
       {

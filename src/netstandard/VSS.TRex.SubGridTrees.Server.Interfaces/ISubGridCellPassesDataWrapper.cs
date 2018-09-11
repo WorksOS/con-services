@@ -4,7 +4,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridCellPassesDataWrapper
   {
-    IServerLeafSubGrid Owner { get; set; } // FOwner : TICServerSubGridTreeLeaf;
+    IServerLeafSubGrid Owner { get; set; } 
     ISubGridCellPassesDataSegments PassesData { get; set; }
     void Clear();
     void Initialise();

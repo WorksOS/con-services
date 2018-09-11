@@ -42,11 +42,17 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
+        /// <summary>
+        /// Local reference to the client subgrid factory
+        /// </summary>
         [NonSerialized]
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
+          => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         // private static int requestCount = 0;
-
+     
         /// <summary>
         /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
         /// ProdDataMaskBytes member of the argument. It is only used during processing of the request.
@@ -435,7 +441,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             // Construct the set of requestors to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
-                                           siteModels.ImmutableStorageProxy(),
+                                           siteModels.StorageProxy,
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),

@@ -18,7 +18,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var cell = new SubGridCellPassDataPassCountEntryRecord();
       cell.Clear();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Equals(cell)));
     }
   }

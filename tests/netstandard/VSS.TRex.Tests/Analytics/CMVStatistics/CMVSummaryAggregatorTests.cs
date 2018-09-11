@@ -36,8 +36,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     public void Test_CMVSummaryAggregator_ProcessResult_NoAggregation()
     {
       var aggregator = new CMVSummaryAggregator();
-
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
+      var clientGrid = new ClientCMVLeafSubGrid(); 
 
       clientGrid.FillWithTestPattern();
 
@@ -63,8 +62,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
     public void Test_CMVSummaryAggregator_ProcessResult_WithAggregation()
     {
       var aggregator = new CMVSummaryAggregator();
-
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
+      var clientGrid = new ClientCMVLeafSubGrid(); 
 
       clientGrid.FillWithTestPattern();
 

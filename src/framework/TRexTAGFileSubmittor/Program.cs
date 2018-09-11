@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using Tests.Common;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Servers.Client;
@@ -158,7 +160,12 @@ namespace TRexTAGFileSubmittor
 
     private static void DependencyInjection()
     {
-      DIBuilder.New().AddLogging().Complete();
+      DIBuilder.New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Build()
+        .Add(x => x.AddSingleton(new TAGFileProcessingClientServer()))
+        .Complete();
     }
 
     static void Main(string[] args)
@@ -199,8 +206,6 @@ namespace TRexTAGFileSubmittor
           return;
         }
 
-
-
         try
         {
           if (args.Length > 2)
@@ -211,11 +216,6 @@ namespace TRexTAGFileSubmittor
           Console.WriteLine($"Invalid Asset ID {args[2]}");
           return;
         }
-
-
-
-        // Obtain a TAGFileProcessing client server
-        TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
 
         ProcessTAGFilesInFolder(projectID, folderPath);
 

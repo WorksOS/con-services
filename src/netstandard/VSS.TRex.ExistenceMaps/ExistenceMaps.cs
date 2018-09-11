@@ -7,7 +7,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.ExistenceMaps
 {
     /// <summary>
-    /// A static class facade around the existence map requests
+    /// A static class facade around requests for existence maps related to designs and surveyed surfaces
     /// </summary>
     public class ExistenceMaps : IExistenceMaps
   {

@@ -32,6 +32,11 @@ namespace VSS.TRex.SubGrids
     {
       ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
 
+      if (design == null)
+      {
+        return false;
+      }
+
       if (design.GetDesignHeights(DataModelID, SubGrid.OriginAsCellAddress(), SubGrid.CellSize,
             out IClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult) == false)
       {

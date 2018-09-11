@@ -141,7 +141,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -153,7 +155,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj">
@@ -195,6 +199,10 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Filters\VSS.TRex.Filters.csproj">
       <Project>{f1b8058c-7136-4f12-92ca-7db3ad7d548c}</Project>
       <Name>VSS.TRex.Filters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj">
+      <Project>{64FFE4BC-BC5F-42A7-9D71-7F726F1B08C9}</Project>
+      <Name>VSS.TRex.GridFabric.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj">
       <Project>{7a68abbe-5cbb-4b54-ba85-93d4603fb0cb}</Project>
@@ -314,9 +322,8 @@
   <PropertyGroup>
     <PostBuildEvent>
 if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.4.0\libs\*.*" "$(TargetDir)libs"
-if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"
+xcopy /y "$(SolutionDir)build\ignite-corex.jar " "$(TargetDir)libs"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

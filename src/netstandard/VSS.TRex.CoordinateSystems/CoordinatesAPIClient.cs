@@ -176,7 +176,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception x)
       {
-        Log.LogError($"Failed to get LLH for east={nee.East}, north={nee.North}, elevation={nee.Elevation}, Excpetion: {x}");
+        Log.LogError($"Failed to get LLH for east={nee.East}, north={nee.North}, elevation={nee.Elevation}, Exception: {x}");
       }
 
       return new LLH()

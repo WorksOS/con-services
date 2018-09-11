@@ -39,7 +39,7 @@ namespace VSS.TRex.Geometry
     /// Produce as human readable form of the state in this bounding extent
     /// </summary>
     /// <returns></returns>
-    public override string ToString() => string.Format("MinX: {0}, MinY:{1}, MaxX: {2}, MaxY:{3}", MinX, MinY, MaxX, MaxY);
+    public override string ToString() => $"MinX: {MinX}, MinY:{MinY}, MaxX: {MaxX}, MaxY:{MaxY}";
 
     /// <summary>
     /// Construct a 2D bounding extent from the supplied parameters

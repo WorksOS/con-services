@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridTreeBitmapSubGridBitsTests_Creation()
         {
             // Test the default constructor produces an AV as the bits array will be null
-            bool SawAnExcpetion = false;
+            bool SawAnException = false;
             try
             {
                 SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits();
@@ -22,11 +22,11 @@ namespace VSS.TRex.Tests.SubGridTrees
             }
             catch (Exception E)
             {
-                SawAnExcpetion = true;
+              SawAnException = true;
                 Assert.True(E is NullReferenceException, "Unexpected exception, should be NullReferenceException");
             }
 
-            Assert.True(SawAnExcpetion, "Did not see an exception as expected.");
+            Assert.True(SawAnException, "Did not see an exception as expected.");
 
             // Test the constructor with filled false produces bitmask with all bits set to off
             SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);

@@ -86,12 +86,6 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="level"></param>
         public SubGrid(ISubGridTree owner, ISubGrid parent, byte level)
         {
-            // Assert there is an owning tree (things don't work well without one!)
-            if (owner == null)
-            {
-              //  throw new ArgumentException("Owner cannot be null when creating a subgrid", "owner");
-            }
-
             Owner = owner;
             Parent = parent;
             Level = level;
@@ -202,7 +196,7 @@ namespace VSS.TRex.SubGridTrees
         /// Returns a moniker string comprised of the X and Y origin ordinates in the sub greid cell address space
         /// separated by a colon, eg: in the form 1234:5678
         /// </summary>
-        public string Moniker() => string.Format("{0}:{1}", OriginX, OriginY);
+        public string Moniker() => $"{OriginX}:{OriginY}";
 
         /// <summary>
         /// A virtual method representing an access mechanism to request a child subgrid at the X/Y location in this subgrid

@@ -12,6 +12,6 @@
         /// <param name="tree"></param>
         /// <param name="treeLevel"></param>
         /// <returns></returns>
-        ISubGrid GetSubGrid(ISubGridTree tree,  byte treeLevel);
+        ISubGrid GetSubGrid(ISubGridTree tree, byte treeLevel);
     }
 }

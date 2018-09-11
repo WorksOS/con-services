@@ -737,7 +737,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             // operations bounds the cell center points and does not take into account that cells have
             // an area. Expand the computed site model extent by half a cell size to ensure the reported
             // site model extent covers the extent of the cells created by swathing the TAG file.
-            SiteModel.SiteModelExtent.Expand(SiteModel.Grid.CellSize / 2, SiteModel.Grid.CellSize / 2);
+            SiteModel.SiteModelExtent.Expand(SiteModelGridAggregator.CellSize / 2, SiteModelGridAggregator.CellSize / 2);
 
             // Update the design extent...
             if (Design != string.Empty)

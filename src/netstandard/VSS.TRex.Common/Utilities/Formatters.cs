@@ -12,7 +12,7 @@ namespace VSS.TRex.Utilities
         /// <param name="offset"></param>
         public static string FormatCellPassTime(DateTime dateTime, bool offset = true)
         {
-            return string.Format("{0:yyyy/MMM/dd HH:mm:ss.zzz}", offset ? dateTime + Time.GPS.GetLocalGMTOffset() : dateTime);
+            return $"{(offset ? dateTime + Time.GPS.GetLocalGMTOffset() : dateTime):yyyy/MMM/dd HH:mm:ss.zzz}";
         }
     }
 }
