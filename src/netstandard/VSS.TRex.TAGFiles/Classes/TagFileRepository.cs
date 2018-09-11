@@ -9,12 +9,10 @@ using VSS.TRex.TAGFiles.Classes.Validator;
 
 namespace VSS.TRex.TAGFiles.Classes
 {
-
   /// <summary>
   /// Archiving will intially write tagfiles toa local folder before another process either internal or external will move the files to a S3 bucket on Amazon
   /// Ideas. Add functions like get all tagfiles for productid
   /// </summary>
-
 
   [Serializable]
   public class TagfileMetaData
@@ -39,10 +37,10 @@ namespace VSS.TRex.TAGFiles.Classes
       IConfiguration config = DIContext.Obtain<IConfiguration>();
       string TagFileArchiveFolder = config.GetValue<string>("TAGFILE_ARCHIVE_FOLDER", String.Empty);
 
-      if (TagFileArchiveFolder != string.Empty)
+      if (!string.IsNullOrEmpty(TagFileArchiveFolder))
         return Path.Combine(TagFileArchiveFolder, td.projectId.ToString(), td.assetId.ToString());
-      else
-        return Path.Combine(Path.GetTempPath(), "TRexIgniteData", "TagFileArchive", td.projectId.ToString(), td.assetId.ToString());
+
+      return Path.Combine(Path.GetTempPath(), "TRexIgniteData", "TagFileArchive", td.projectId.ToString(), td.assetId.ToString());
     }
 
     /// <summary>

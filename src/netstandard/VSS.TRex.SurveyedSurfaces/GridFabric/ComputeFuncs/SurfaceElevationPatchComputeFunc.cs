@@ -20,9 +20,9 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     /// Local reference to the client subgrid factory
     /// </summary>
     [NonSerialized]
-    private IClientLeafSubgridFactory clientLeafSubGridFactory;
+    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
 
-    private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+    private IClientLeafSubgridFactory ClientLeafSubGridFactory
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
     /// <summary>
@@ -49,7 +49,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
         }
         finally
         {
-          ClientLeafSubGridFactory().ReturnClientSubGrid(ref result);
+          ClientLeafSubGridFactory.ReturnClientSubGrid(ref result);
         }
       }
       catch (Exception E)

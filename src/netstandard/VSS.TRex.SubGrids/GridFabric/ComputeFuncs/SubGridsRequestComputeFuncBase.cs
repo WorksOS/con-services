@@ -46,9 +46,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// Local reference to the client subgrid factory
         /// </summary>
         [NonSerialized]
-        private IClientLeafSubgridFactory clientLeafSubGridFactory;
+        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
 
-        private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         // private static int requestCount = 0;
@@ -125,7 +125,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             if (SubgridResultArray != null)
             {
-                ClientLeafSubGridFactory().ReturnClientSubGrids(SubgridResultArray, SubgridResultArray.Length);
+                ClientLeafSubGridFactory.ReturnClientSubGrids(SubgridResultArray, SubgridResultArray.Length);
             }
         }
 
@@ -196,7 +196,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                                     break;
 
                                 case GridDataType.Height:
-                                    NewClientGrids[I] = ClientLeafSubGridFactory().GetSubGrid(GridDataType.Height);
+                                    NewClientGrids[I] = ClientLeafSubGridFactory.GetSubGrid(GridDataType.Height);
                                     NewClientGrids[I].CellSize = siteModel.Grid.CellSize;
 
                                     /*
@@ -295,7 +295,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             {
                 // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
-                clientGrid = ClientLeafSubGridFactory().GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
+                clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
 
                 clientGrid.CellSize = siteModel.Grid.CellSize;
                 clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
@@ -402,7 +402,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 finally
                 {
                     // Return the client grid to the factory for recycling now its role is complete here...
-                    ClientLeafSubGridFactory().ReturnClientSubGrids(clientGrids, resultCount);
+                    ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, resultCount);
                 }
             }
         }

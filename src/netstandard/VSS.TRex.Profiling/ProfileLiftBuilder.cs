@@ -35,9 +35,9 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
-    private IClientLeafSubgridFactory clientLeafSubGridFactory;
+    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
 
-    private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+    private IClientLeafSubgridFactory ClientLeafSubGridFactory
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
     /// <summary>
@@ -539,7 +539,7 @@ namespace VSS.TRex.Profiling
 
           if (CompositeHeightsGrid != null)
           {
-            ClientLeafSubGridFactory().ReturnClientSubGrid(ref CompositeHeightsGridIntf);
+            ClientLeafSubGridFactory.ReturnClientSubGrid(ref CompositeHeightsGridIntf);
             CompositeHeightsGrid = null;
           }
 

@@ -31,9 +31,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
         /// Local reference to the client subgrid factory
         /// </summary>
         [NonSerialized]
-        private IClientLeafSubgridFactory clientLeafSubGridFactory;
+        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
    
-        private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
         => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 
                         for (int j = 0; j < subgridCount; j++)
                         {
-                            clientGrids[i][j] = ClientLeafSubGridFactory().GetSubGrid(Task.GridDataType);
+                            clientGrids[i][j] = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
                             clientGrids[i][j].Read(reader, buffer);
                         }
 
@@ -123,7 +123,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
                     // ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrid);
 
                     // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
-                    ClientLeafSubGridFactory().ReturnClientSubGrids(clientGrids, responseCount);
+                    ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, responseCount);
                 }
             }
         }

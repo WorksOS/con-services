@@ -86,13 +86,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="level"></param>
         public SubGrid(ISubGridTree owner, ISubGrid parent, byte level)
         {
-            // Assert there is an owning tree (things don't work well without one!)
-            if (owner == null)
-            {
-        //  throw new ArgumentException("Owner cannot be null when creating a subgrid", nameof(owner));
-      }
-
-      Owner = owner;
+            Owner = owner;
             Parent = parent;
             Level = level;
         }

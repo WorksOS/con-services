@@ -26,9 +26,9 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         /// Local reference to the client subgrid factory
         /// </summary>
         [NonSerialized]
-        private IClientLeafSubgridFactory clientLeafSubGridFactory;
+        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
 
-        private IClientLeafSubgridFactory ClientLeafSubGridFactory()
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
                 return null;
             }
 
-            IClientLeafSubGrid clientResult = ClientLeafSubGridFactory().GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
+            IClientLeafSubGrid clientResult = ClientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
             clientResult.FromBytes(result);
 
             // Fow now, only cache non-composite elevation subgrids

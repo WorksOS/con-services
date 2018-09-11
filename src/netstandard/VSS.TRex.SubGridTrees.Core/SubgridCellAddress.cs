@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(ISubGridCellAddress other) => X == other.X && Y == other.Y;
+        public bool Equals(ISubGridCellAddress other) => other != null && X == other.X && Y == other.Y;
 
         /// <summary>
         /// Constructs a single long quantity that encodes both the X & Y elements of the subgrid address.
