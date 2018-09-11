@@ -25,7 +25,7 @@ else
  {
    if (!(branchc.contains("release")||branchc.contains("master"))) 
     {
-     load './MockProjectWebApi/src/Jenkinsfile'
+     load './MockProjectWebApi/src/Jenkinsfile_win'
     }
   }
 }

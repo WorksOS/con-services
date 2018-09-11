@@ -10,4 +10,4 @@ dotnet publish MockProjectWebApi.csproj  -o ./Artifacts/MockProjectWebApi -f net
 if ERRORLEVEL 1 exit /b 1
 
 copy appsettings.json Artifacts\MockProjectWebApi\
-copy Dockerfile Artifacts\MockProjectWebApi\
+copy Dockerfile_win Artifacts\MockProjectWebApi\Dockerfile
