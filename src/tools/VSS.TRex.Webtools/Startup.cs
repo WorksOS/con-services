@@ -38,6 +38,7 @@ namespace VSS.TRex.Webtools
 
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       serviceProvider = services.BuildServiceProvider();
+      DIContext.Inject(serviceProvider);
 
       services.AddSingleton(new ImmutableClientServer("Webtools-Immutable"));
       services.AddSingleton(new MutableClientServer("Webtools-Mutable"));
