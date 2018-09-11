@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterData.Models.Local.ResultHandling
+namespace VSS.MasterData.Models.ResultHandling
 {
   public class FilterDataResult : BaseDataResult
   {

@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Common;
 using MockProjectWebApi.Utils;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 // Mocking the Tagfile Auth Service
@@ -9,7 +12,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 namespace MockProjectWebApi.Controllers
 {
 
-  // Mock GetProjectID
   public class MockTagFileAuthController : Controller
   {
     [Route("api/v1/project/getId")]
@@ -47,15 +49,6 @@ namespace MockProjectWebApi.Controllers
       return TagFileUtilsHelper.LookupBoundaries(request.assetId);
     }
 
-    [Route("api/v2/notification/tagFileProcessingError")]
-    [HttpPost]
-    public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
-    {
-      TagFileUtilsHelper.Init();
-      request.Validate();
-      return TagFileUtilsHelper.ReportError();
-    }
-
     /// <summary>
     /// Posts the application alarm.
     /// </summary>
@@ -66,5 +59,35 @@ namespace MockProjectWebApi.Controllers
       request.Validate();
       return new ContractExecutionResult();
     }
+
+    [Route("api/v2/notification/tagFileProcessingError")]
+    [HttpPost]
+    public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
+    {
+      TagFileUtilsHelper.Init();
+      request.Validate();
+      return TagFileUtilsHelper.ReportError();
+    }
+
+    [Route("api/v2/project/getUid")]
+    [HttpPost]
+    public GetProjectUidResult GetProjectUid([FromBody] GetProjectUidRequest request)
+    {
+      var result = GetProjectUidResult.CreateGetProjectUidResult(Guid.NewGuid().ToString());
+      var message = $"DummyTagFileAuth_GetProjectUid:  request: {request} result: {result}";
+      Console.WriteLine(message);
+      return result;
+    }
+
+    [Route("api/v2/project/getUids")]
+    [HttpPost]
+    public GetProjectAndAssetUidsResult GetProjectAndAssetUids([FromBody] GetProjectAndAssetUidsRequest request)
+    {
+      var result = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(request.ProjectUid, Guid.NewGuid().ToString());
+      var message = $"DummyTagFileAuth_GetProjectAndAssetUids:  request: {request} result: {result}";
+      Console.WriteLine(message);
+      return result;
+    }
+
   }
 }
