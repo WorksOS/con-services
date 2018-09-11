@@ -169,9 +169,9 @@ namespace XnaFan.ImageComparison.Netcore
                     var rect = new RectangleF(x * cellsize, y * cellsize, cellsize, cellsize);
                     img.Mutate(ctx => ctx.Fill(brushes[colorIndex], rect).Draw(Graphics.BluePen, rect));
                     SizeF size = TextMeasurer.Measure(cellText, new RendererOptions(DefaultFont));
-                    PointF point = new PointF(x * cellsize + cellsize / 2 - size.Width / 2 + 1, y * cellsize + cellsize / 2 - size.Height / 2 + 1);
+                    PointF point = new PointF((int)(x * cellsize + cellsize / 2 - size.Width / 2 + 1), (int)(y * cellsize + cellsize / 2 - size.Height / 2 + 1));
                     img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.Black, point));
-                    point = new PointF(x * cellsize + cellsize / 2 - size.Width / 2, y * cellsize + cellsize / 2 - size.Height / 2);
+                    point = new PointF((int)(x * cellsize + cellsize / 2 - size.Width / 2), (int)(y * cellsize + cellsize / 2 - size.Height / 2));
                     img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.White, point));
                 }
             }
