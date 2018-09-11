@@ -54,7 +54,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <param name="cache"></param>
         public AffinityPartitionMap(ICache<TK, TV> cache)
         {
-            Cache = cache ?? throw new ArgumentException("Supplied cache cannot be null", "cache");
+            Cache = cache ?? throw new ArgumentException("Supplied cache cannot be null", nameof(cache));
 
             Affinity = Cache.Ignite.GetAffinity(Cache.Name);
             LocalNode = Cache.Ignite.GetCluster().GetLocalNode();

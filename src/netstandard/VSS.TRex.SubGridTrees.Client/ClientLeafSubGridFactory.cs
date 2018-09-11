@@ -13,9 +13,9 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientLeafSubGridFactory : IClientLeafSubgridFactory
   {
     /// <summary>
-    /// Simple array to hold client leaf subgrid type map
+    /// Simple array to hold client leaf subgrid type constructor map
     /// </summary>
-    private static Type[] typeMap;
+    private Func<IClientLeafSubGrid>[] typeMap;
 
     /// <summary>
     /// Stores of cached client grids to reduce the object instantation and garbage collection overhead
@@ -23,12 +23,9 @@ namespace VSS.TRex.SubGridTrees.Client
 //        private ConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new ConcurrentBag<IClientLeafSubGrid>()).ToArray();
     private SimpleConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new SimpleConcurrentBag<IClientLeafSubGrid>()).ToArray();
 
-    /// <summary>
-    /// Static class constructor to initialise types
-    /// </summary>
-    static ClientLeafSubGridFactory()
+    public ClientLeafSubGridFactory()
     {
-      typeMap = new Type[]
+      typeMap = new Func<IClientLeafSubGrid>[] //Type[]
       {
         null, // All = $00000000;
         null, // CCV = $00000001;
@@ -71,18 +68,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// create on demand
     /// </summary>
     /// <param name="gridDataType"></param>
-    /// <param name="type"></param>
-    public void RegisterClientLeafSubGridType(GridDataType gridDataType, Type type)
+    /// <param name="constructor"></param>
+    public void RegisterClientLeafSubGridType(GridDataType gridDataType, Func<IClientLeafSubGrid> constructor)
     {
-      // Check that the type being passed in meets the requirement for 
-      // implementing the IClienLeafSubGrid interface
-      if (!(typeof(IClientLeafSubGrid).IsAssignableFrom(type)))
-        throw new ArgumentException("ClientLeafSubGridFactory requires a type that implements IClientLeafSubGrid", "type");
-
       if ((int) gridDataType > typeMap.Length)
-        throw new ArgumentException("Unknown grid data type in RegisterClientLeafSubgridType", "gridDataType");
+        throw new ArgumentException("Unknown grid data type in RegisterClientLeafSubgridType", nameof(gridDataType));
 
-      typeMap[(int) gridDataType] = type;
+      typeMap[(int) gridDataType] = constructor;
     }
 
     /// <summary>
@@ -98,14 +90,18 @@ namespace VSS.TRex.SubGridTrees.Client
       if (!ClientLeaves[(int) gridDataType].TryTake(out IClientLeafSubGrid result))
       {
         if (typeMap[(int) gridDataType] != null)
-          result = (IClientLeafSubGrid) Activator.CreateInstance(
-            typeMap[(int) gridDataType], // IClientLeafSubGrid type
-            null, // Subgrid tree owner
-            null, // Subgrid parent
-            SubGridTreeConsts.SubGridTreeLevels, // Level, default to standard tree levels
-            SubGridTreeConsts.DefaultCellSize, // Cell Size
-            SubGridTreeConsts.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
-          );
+          result = typeMap[(int) gridDataType]();
+
+        /*        
+        result = (IClientLeafSubGrid) Activator.CreateInstance(
+          typeMap[(int) gridDataType], // IClientLeafSubGrid type
+          null, // Subgrid tree owner
+          null, // Subgrid parent
+          SubGridTreeConsts.SubGridTreeLevels, // Level, default to standard tree levels
+          SubGridTreeConsts.DefaultCellSize, // Cell Size
+          SubGridTreeConsts.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
+        );
+        */
       }
 
       result?.Clear();
@@ -139,7 +135,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public void ReturnClientSubGrids(IClientLeafSubGrid[] clientGrids, int count)
     {
       if (count < 0 || count > clientGrids.Length)
-        throw new ArgumentException("Invalid count of subgrids to return", "count");
+        throw new ArgumentException("Invalid count of subgrids to return", nameof(count));
 
       for (int i = 0; i < count; i++)
         ReturnClientSubGrid(ref clientGrids[i]);
@@ -153,7 +149,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public void ReturnClientSubGrids(IClientLeafSubGrid[][] clientGrids, int count)
     {
       if (count < 0 || count > clientGrids.Length)
-        throw new ArgumentException("Invalid count of subgrids to return", "count");
+        throw new ArgumentException("Invalid count of subgrids to return", nameof(count));
 
       for (int i = 0; i < count; i++)
       {

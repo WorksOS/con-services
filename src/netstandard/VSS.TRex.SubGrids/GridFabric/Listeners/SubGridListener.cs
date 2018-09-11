@@ -4,8 +4,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
-using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.SubGrids.GridFabric.Listeners
@@ -27,8 +27,14 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
         [NonSerialized]
         private int responseCounter;
 
+        /// <summary>
+        /// Local reference to the client subgrid factory
+        /// </summary>
         [NonSerialized]
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+   
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
+        => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         /// <summary>
         /// The reference to the task responsible for handling the returned subgrid information from the processing cluster

@@ -2,12 +2,16 @@
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs.Servers.Client;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
 namespace TRexDesignElevationsServer
@@ -19,9 +23,14 @@ namespace TRexDesignElevationsServer
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels()))
-        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Build()
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))
+        .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
+        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();
     }
 

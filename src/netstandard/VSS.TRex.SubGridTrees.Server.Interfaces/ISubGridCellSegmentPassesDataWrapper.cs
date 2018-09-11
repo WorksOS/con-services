@@ -159,7 +159,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <summary>
         /// Calculates the time range covering all the cell passes within the given subgrid segment
         /// </summary>
-        /// <param name="segment"></param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         void CalculateTimeRange(out DateTime startTime, out DateTime endTime);

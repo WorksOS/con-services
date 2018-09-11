@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
@@ -22,21 +23,13 @@ namespace VSS.TRex.SubGridTrees
         {
             // Assert level = tree.NumLevels (leaves are only at the tips)
             if (owner != null && level != owner.NumLevels)
-                throw new ArgumentException("Requested level for leaf subgrid <> number of levels in tree", "level");
+                throw new ArgumentException("Requested level for leaf subgrid <> number of levels in tree", nameof(level));
         }
 
-        public override bool IsEmpty()
-        {
-            for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
-            {
-                for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
-                {
-                    if (CellHasValue(I, J))
-                        return false;
-                }
-            }
-
-            return true;
-        }
+        /// <summary>
+        /// Determines if all the values in the subgrid are null values.
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsEmpty() => SubGridUtilities.SubGridDimensionalIterator((x, y) => !CellHasValue((byte)x, (byte)y));
     }
 }

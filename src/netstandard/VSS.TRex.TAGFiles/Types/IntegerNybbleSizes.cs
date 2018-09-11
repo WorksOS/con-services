@@ -37,7 +37,7 @@ namespace VSS.TRex.TAGFiles.Types
                     return 8;
 
                 default:
-                    throw new ArgumentOutOfRangeException(string.Format("Unknown integer TAG field type {0}", field), "field");
+                    throw new ArgumentOutOfRangeException($"Unknown integer TAG field type {field}", "field");
             }
         }
     }

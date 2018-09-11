@@ -30,14 +30,17 @@ namespace VSS.TRex.Events
         MinElevMappingStateChange = 0x00000011,
         GPSAccuracyChange = 0x00000012,
         PositioningTech = 0x00000013,
-        InAvoidZone2DStateChange = 0x00000014,
-        InAvoidZoneUSStateChange = 0x00000015,
+        // Avoidance zones not supported
+        // InAvoidZone2DStateChange = 0x00000014,
+        // InAvoidZoneUSStateChange = 0x00000015,
         //BladeOnGroundStateChange = 0x00000016, Obsolete, not used and removed
         TempWarningLevelMinChange = 0x00000017,
         TempWarningLevelMaxChange = 0x00000018,
         TargetMDP = 0x00000019,
         LayerID = 0x0000001A,
-        Sonic3DChange = 0x0000001B,
+
+        // Somic 3D not supported
+        // Sonic3DChange = 0x0000001B,
         DesignOverride = 0x0000001C,
         LayerOverride = 0x0000001D,
         TargetCCA = 0x0000001E,

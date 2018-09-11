@@ -159,6 +159,14 @@
       <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
       <Name>VSS.TRex.DI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj">
+      <Project>{EF32DB67-FBBC-48D4-A36F-41847C013A97}</Project>
+      <Name>VSS.TRex.Events.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj">
+      <Project>{763A4E8F-9C42-4D3F-8188-5C7F34C0C583}</Project>
+      <Name>VSS.TRex.Events</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj">
       <Project>{be38b653-ad52-4ac6-b12c-b5caeb18b4d3}</Project>
       <Name>VSS.TRex.ExistenceMaps.Interfaces</Name>
@@ -166,6 +174,10 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj">
       <Project>{920b5030-74c9-48a9-85b2-8c09113025c2}</Project>
       <Name>VSS.TRex.ExistenceMaps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj">
+      <Project>{64FFE4BC-BC5F-42A7-9D71-7F726F1B08C9}</Project>
+      <Name>VSS.TRex.GridFabric.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
       <Project>{0BF0BCD0-F93C-4A2E-BCB2-3D80B587E858}</Project>
@@ -221,8 +233,7 @@
   <PropertyGroup>
     <PostBuildEvent>
 if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.4.0\libs\*.*" "$(TargetDir)libs"
-if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"
+xcopy /y "$(SolutionDir)build\ignite-corex.jar " "$(TargetDir)libs"</PostBuildEvent>
   </PropertyGroup>
 </Project>

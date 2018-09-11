@@ -44,7 +44,7 @@ namespace VSS.TRex.Storage
         {
             Mutability = mutability;
 
-            ignite = TRexGridFactory.Grid(TRexGrids.GridName(Mutability));
+            ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Services;
 using System;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.NodeFilters;
@@ -36,7 +37,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         /// </summary>
         public SurveyedSurfaceServiceProxy()
         {
-            IIgnite _ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+          IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetCluster().GetServices();

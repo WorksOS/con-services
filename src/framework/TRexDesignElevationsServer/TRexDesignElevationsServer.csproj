@@ -152,6 +152,10 @@
       <Project>{920b5030-74c9-48a9-85b2-8c09113025c2}</Project>
       <Name>VSS.TRex.ExistenceMaps</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj">
+      <Project>{64FFE4BC-BC5F-42A7-9D71-7F726F1B08C9}</Project>
+      <Name>VSS.TRex.GridFabric.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
       <Project>{0bf0bcd0-f93c-4a2e-bcb2-3d80b587e858}</Project>
       <Name>VSS.TRex.GridFabric</Name>
@@ -172,9 +176,17 @@
       <Project>{A614210E-B1A6-4E02-96FC-1FF78A86C5A9}</Project>
       <Name>VSS.TRex.SiteModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj">
+      <Project>{06B93475-A235-4F5D-A226-48E4205F9BA1}</Project>
+      <Name>VSS.TRex.Storage.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
       <Project>{6C9C0264-67A6-4035-BBC2-6AB380A51C30}</Project>
       <Name>VSS.TRex.Storage.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
+      <Project>{E9FFB4FA-AAF2-4EA3-93FB-82B0B38B7FA5}</Project>
+      <Name>VSS.TRex.Storage</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
@@ -190,8 +202,7 @@
   <PropertyGroup>
     <PostBuildEvent>
 if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.4.0\libs\*.*" "$(TargetDir)libs"
-if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
-xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"
+xcopy /y "$(SolutionDir)build\ignite-corex.jar " "$(TargetDir)libs"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var factory = new ClientLeafSubGridFactory();
 
-      factory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
+      factory.RegisterClientLeafSubGridType(GridDataType.Height, () => new ClientHeightLeafSubGrid());
 
       var newClient = factory.GetSubGrid(GridDataType.Height);
 
@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var factory = new ClientLeafSubGridFactory();
 
-      factory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
+      factory.RegisterClientLeafSubGridType(GridDataType.Height, () => new ClientHeightLeafSubGrid());
 
       var newClient = factory.GetSubGrid(GridDataType.Height);
 
@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var factory = new ClientLeafSubGridFactory();
 
-      factory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
+      factory.RegisterClientLeafSubGridType(GridDataType.Height, () => new ClientHeightLeafSubGrid());
 
       var newClient = factory.GetSubGrid(GridDataType.Height);
       factory.ReturnClientSubGrid(ref newClient);
@@ -63,7 +63,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var factory = new ClientLeafSubGridFactory();
 
-      factory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
+      factory.RegisterClientLeafSubGridType(GridDataType.Height, () => new ClientHeightLeafSubGrid());
 
       IClientLeafSubGrid[] newClients = new []
       {
@@ -86,7 +86,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var factory = new ClientLeafSubGridFactory();
 
-      factory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
+      factory.RegisterClientLeafSubGridType(GridDataType.Height, () => new ClientHeightLeafSubGrid());
 
       IClientLeafSubGrid[][] newClients = new[]
       {

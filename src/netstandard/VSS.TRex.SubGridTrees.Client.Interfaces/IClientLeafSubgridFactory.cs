@@ -16,8 +16,8 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
         /// create on demand
         /// </summary>
         /// <param name="gridDataType"></param>
-        /// <param name="type"></param>
-        void RegisterClientLeafSubGridType(GridDataType gridDataType, Type type);
+        /// <param name="constructor"></param>
+        void RegisterClientLeafSubGridType(GridDataType gridDataType, Func<IClientLeafSubGrid> constructor);
 
         /// <summary>
         /// Construct a concrete instance of a subgrid implementing the IClientLeafSubGrid interface based

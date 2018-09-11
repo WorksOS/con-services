@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var cell = new SubGridCellPassDataTemperatureEntryRecord();
       cell.Clear();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Equals(cell)));
     }
   }

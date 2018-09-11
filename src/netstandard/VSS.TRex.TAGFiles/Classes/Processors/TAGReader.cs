@@ -66,7 +66,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
             if ((nybblePosition < 0) || (nybblePosition / 2 > GetSize()))
             {
-                throw new IndexOutOfRangeException(string.Format("NybblePosition {0} in file is out of range (size = {1})", nybblePosition, GetSize()));
+                throw new IndexOutOfRangeException($"NybblePosition {nybblePosition} in file is out of range (size = {GetSize()})");
             }
 
             if (nybblePosition % 2 == 0)

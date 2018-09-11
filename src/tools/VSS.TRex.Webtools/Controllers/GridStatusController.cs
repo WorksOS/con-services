@@ -4,6 +4,7 @@ using System.Reflection;
 using Apache.Ignite.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Logging;
 using VSS.TRex.Webtools.Models;
@@ -42,7 +43,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       try
       {
-        IIgnite ignite = TRexGridFactory.Grid(gridName);
+        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(gridName);
         return ignite.GetCluster().IsActive().ToString();
       }
       catch (NullReferenceException ex)
@@ -62,7 +63,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       try
       {
-        IIgnite ignite = TRexGridFactory.Grid(gridName);
+        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(gridName);
         ignite.GetCluster().SetActive(status);
       }
       catch (ArgumentException ex)
