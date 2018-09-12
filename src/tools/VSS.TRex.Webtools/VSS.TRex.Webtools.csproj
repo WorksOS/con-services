@@ -36,6 +36,7 @@
     <None Remove="ClientApp\src\app\sandbox\sandbox-component.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-model.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-service.ts" />
+    <None Remove="ClientApp\src\app\sandbox\tiledata-model.ts" />
     <None Remove="ClientApp\src\app\upload-data\tagfile-request.ts" />
     <None Remove="ClientApp\src\app\upload-data\upload-data.service.ts" />
   </ItemGroup>
@@ -63,6 +64,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\sandbox\tiledata-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\upload-data\tagfile-request.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\upload-data\upload-data.service.ts" />
   </ItemGroup>

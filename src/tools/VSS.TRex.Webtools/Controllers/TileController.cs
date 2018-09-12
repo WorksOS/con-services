@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Logging;
@@ -45,8 +46,6 @@ namespace VSS.TRex.Webtools.Controllers
         [FromQuery] ushort pixelsX,
         [FromQuery] ushort pixelsY)
       {
-        ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
-
         var request = new TileRenderRequest();
         TileRenderResponse_Core2 response = request.Execute(new TileRenderRequestArgument(
           siteModelID: Guid.Parse(siteModelID),
@@ -55,8 +54,8 @@ namespace VSS.TRex.Webtools.Controllers
           pixelsY: pixelsY,
           extents: new BoundingWorldExtent3D(minX, minY, maxX, maxY),
           mode: (DisplayMode) mode,
-          filter1: null,
-          filter2: null,
+          filter1: new CombinedFilter(), 
+          filter2: new CombinedFilter(),
           cutFillDesignID: Guid.Empty
         )) as TileRenderResponse_Core2;
 
