@@ -31,24 +31,33 @@ export class ProjectExtents {
   public centerY(): number { return this.minY + (this.maxY + this.minY) / 2; }
 
   public shrink(factor: number) {
-    this.minX += this.sizeX() * (factor / 2);
-    this.minY += this.sizeY() * (factor / 2);
-    this.maxX -= this.sizeX() * (factor / 2);
-    this.maxY -= this.sizeY() * (factor / 2);
+    let curSizeX = this.sizeX();
+    let curSizeY = this.sizeY();
+
+    this.minX += curSizeX * (factor / 2);
+    this.minY += curSizeY * (factor / 2);
+    this.maxX -= curSizeX * (factor / 2);
+    this.maxY -= curSizeY * (factor / 2);
   }
 
   public expand(factor: number) {
-    this.minX -= this.sizeX() * (factor / 2);
-    this.minY -= this.sizeY() * (factor / 2);
-    this.maxX += this.sizeX() * (factor / 2);
-    this.maxY += this.sizeY() * (factor / 2);
+    let curSizeX = this.sizeX();
+    let curSizeY = this.sizeY();
+
+    this.minX -= curSizeX * (factor / 2);
+    this.minY -= curSizeY * (factor / 2);
+    this.maxX += curSizeX * (factor / 2);
+    this.maxY += curSizeY * (factor / 2);
   }
 
   public pan(dx_factor: number, dy_factor: number) : void {
-    this.minX += dx_factor * this.sizeX();
-    this.minY += dy_factor * this.sizeY();
-    this.maxX += dx_factor * this.sizeX();
-    this.maxY += dy_factor * this.sizeY();
+    let curSizeX = this.sizeX();
+    let curSizeY = this.sizeY();
+
+    this.minX += dx_factor * curSizeX;
+    this.minY += dy_factor * curSizeY;
+    this.maxX += dx_factor * curSizeX;
+    this.maxY += dy_factor * curSizeY;
   }
 }
 
