@@ -32,7 +32,10 @@
     <None Remove="ClientApp\src\app\grid-status\grid-status.service.ts" />
     <None Remove="ClientApp\src\app\http-error-handler.service.ts" />
     <None Remove="ClientApp\src\app\message.service.ts" />
-    <None Remove="ClientApp\src\app\sandbox\file.ts" />
+    <None Remove="ClientApp\src\app\project\project-component.ts" />
+    <None Remove="ClientApp\src\app\project\project-model.ts" />
+    <None Remove="ClientApp\src\app\project\project-service.ts" />
+    <None Remove="ClientApp\src\app\project\project-tiledata-model.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-component.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-model.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-service.ts" />
@@ -60,7 +63,10 @@
     <TypeScriptCompile Include="ClientApp\src\app\grid-status\grid-status.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\http-error-handler.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\message.service.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\sandbox\file.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-tiledata-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-service.ts" />

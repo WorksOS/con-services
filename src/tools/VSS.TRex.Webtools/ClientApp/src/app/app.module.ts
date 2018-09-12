@@ -13,6 +13,7 @@ import { MessageService } from './message.service';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { UploadDataComponent } from './upload-data/upload-data.component';
 import { SandboxComponent } from './sandbox/sandbox-component';
+import { ProjectComponent } from './project/project-component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SandboxComponent } from './sandbox/sandbox-component';
     UploadDataComponent,
     GridStatusComponent,
     GridServiceDeployerComponent,
-    SandboxComponent
+    SandboxComponent,
+    ProjectComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -34,6 +36,7 @@ import { SandboxComponent } from './sandbox/sandbox-component';
       { path: 'upload-data', component: UploadDataComponent },
       { path: 'grid-status', component: GridStatusComponent },
       { path: 'grid-service-deployer', component: GridServiceDeployerComponent },
+      { path: 'project', component: ProjectComponent },
       { path: 'sandbox', component: SandboxComponent }
     ])
   ],
