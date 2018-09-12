@@ -5,11 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -46,7 +44,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (assetDevice == null)
       {
         log.LogDebug("ProjectUidExecutor: Unable to find device-asset association.");
-        return GetProjectUidResult.CreateGetProjectUidResult(projectUid, 33);
+        return ProjectUidHelper.FormatResult(projectUid, 33);
       }
 
       log.LogDebug($"ProjectUidExecutor: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
@@ -127,12 +125,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       try
       {
-        return GetProjectUidResult.CreateGetProjectUidResult(projectUid, uniqueCode);
+        return ProjectUidHelper.FormatResult(projectUid, uniqueCode);
       }
       catch
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          GetProjectUidResult.CreateGetProjectUidResult(projectUid, 35));
+          ProjectUidHelper.FormatResult(projectUid, 35));
       }
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)

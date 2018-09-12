@@ -44,8 +44,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected ServiceTypeMappings serviceTypeMappings = new ServiceTypeMappings();
 
     protected static DataRepository dataRepository = null;
-
     
+
     /// <summary>
     ///   Generates the errorlist for instantiated executor.
     /// </summary>

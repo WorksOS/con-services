@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.Loca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local", "..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj", "{DBA319F5-13EF-401A-A9E7-302C2CF79EFF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models.Local", "..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj", "{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,18 @@ Global
 		{DBA319F5-13EF-401A-A9E7-302C2CF79EFF}.Release|x64.Build.0 = Release|Any CPU
 		{DBA319F5-13EF-401A-A9E7-302C2CF79EFF}.Release|x86.ActiveCfg = Release|Any CPU
 		{DBA319F5-13EF-401A-A9E7-302C2CF79EFF}.Release|x86.Build.0 = Release|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Debug|x64.Build.0 = Debug|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Debug|x86.Build.0 = Debug|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Release|x64.ActiveCfg = Release|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Release|x64.Build.0 = Release|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Release|x86.ActiveCfg = Release|Any CPU
+		{5F78F0B9-AADA-435B-B1B4-E92E3AD403FC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,16 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Net;
-using VSS.Common.Exceptions;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.MasterData.Models.Models;
 
 namespace WebApiTests.Models
 {
   [TestClass]
   public class ProjectAndAssetUidsRequestTests : ModelBaseTests
   {
-    private string projectUidPrefix = @"{{""ProjectUid"":"""",""AssetUid"":"""",";
-
     [TestMethod]
     [DataRow("", 999, "rs45", "", 89, 179, 30)] // invalid deviceType
     [DataRow("", 6, "rs45", "", 91, 179, 21)] // invalid lat
@@ -26,13 +22,8 @@ namespace WebApiTests.Models
         GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
         (projectUid, deviceType, radioSerial, tccOrgUid, 
           latitude, longitude, timeOfPosition);
-      var ex = Assert.ThrowsException<ServiceException>(() => projectAndAssetUidsRequest.Validate());
-      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
-
-      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(errorCode);
-      var internalCode = contractExecutionStatesEnum.GetErrorNumberwithOffset(errorCode);
-      var exceptionMessage = string.Format(projectUidPrefix + TrexExceptionTemplate, internalCode, errorMessage);
-      Assert.AreEqual(exceptionMessage, ex.GetContent);
+      var errorCodeResult = projectAndAssetUidsRequest.Validate();
+      Assert.AreEqual(errorCode, errorCodeResult);
     }
 
     [TestMethod]
@@ -47,7 +38,8 @@ namespace WebApiTests.Models
       GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
         GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial,
           tccOrgUid, latitude, longitude, timeOfPosition);
-      projectAndAssetUidsRequest.Validate();
+      var errorCodeResult = projectAndAssetUidsRequest.Validate();
+      Assert.AreEqual(errorCode, errorCodeResult);
     }
   }
 }

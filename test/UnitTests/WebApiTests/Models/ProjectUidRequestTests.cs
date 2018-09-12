@@ -1,16 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Net;
-using VSS.Common.Exceptions;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.MasterData.Models.Models;
 
 namespace WebApiTests.Models
 {
   [TestClass]
   public class ProjectUidRequestTests : ModelBaseTests
   {
-    private string projectUidPrefix = @"{{""ProjectUid"":"""",";
-
     [TestMethod]
     [DataRow(1, "rs45", 89, 179, 30)]
     [DataRow(6, "", 89, 179, 10)]
@@ -21,13 +17,8 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       GetProjectUidRequest projectUidRequest = GetProjectUidRequest.CreateGetProjectUidRequest(deviceType, radioSerial, latitude, longitude, timeOfPosition);
-      var ex = Assert.ThrowsException<ServiceException>(() => projectUidRequest.Validate());
-      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
-
-      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(errorCode);
-      var internalCode = contractExecutionStatesEnum.GetErrorNumberwithOffset(errorCode);
-      var exceptionMessage = string.Format(projectUidPrefix + TrexExceptionTemplate, internalCode, errorMessage);
-      Assert.AreEqual(exceptionMessage, ex.GetContent);
+      var errorCodeResult = projectUidRequest.Validate();
+      Assert.AreEqual(errorCode, errorCodeResult);
     }
 
    [TestMethod]
@@ -37,7 +28,8 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       GetProjectUidRequest projectUidRequest = GetProjectUidRequest.CreateGetProjectUidRequest(deviceType, radioSerial, latitude, longitude, timeOfPosition);
-      projectUidRequest.Validate();
+      var errorCodeResult = projectUidRequest.Validate();
+      Assert.AreEqual(errorCode, errorCodeResult);
     }
   }
 }
