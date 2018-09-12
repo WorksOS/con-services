@@ -3,9 +3,6 @@
 <button (click)="selectProject()">Select</button>
 <p>Project Extents: {{projectExtents}}</p>
 
-<p>Tile, Extents: {{tileExtents}}</p><div></div>
-<p>Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p><div></div>
-
 <button (click)="getTile()">Render</button>
 <button (click)="zoomAll()">Zoom All</button>
 <button (click)="zoomIn()">Zoom In</button>
@@ -16,4 +13,12 @@
 <button (click)="panDown()">Down</button>
 
 <div></div>
+
 <img src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
+
+<div></div>
+
+<p>Tile, Extents: {{tileExtents}}</p>
+<div></div>
+<p>Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
+<div></div>
