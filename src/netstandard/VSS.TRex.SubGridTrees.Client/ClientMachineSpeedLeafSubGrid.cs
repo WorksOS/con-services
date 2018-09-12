@@ -28,6 +28,20 @@ namespace VSS.TRex.SubGridTrees.Client
       SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = CellPassConsts.NullMachineSpeed);
     }
 
+    private void Initialise()
+    {
+      _gridDataType = GridDataType.MachineSpeed;
+    }
+
+    /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientMachineSpeedLeafSubGrid() : base()
+    {
+      Initialise();
+    }
+
     /// <summary>
     /// Constructor. Set the grid to MachineSpeed.
     /// </summary>
@@ -38,7 +52,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="indexOriginOffset"></param>
     public ClientMachineSpeedLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
-      _gridDataType = GridDataType.MachineSpeed;
+      Initialise();
     }
 
     /// <summary>

@@ -18,7 +18,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var cell = new SubGridCellPassDataMDPEntryRecord();
       cell.Clear();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MDP) as ClientMDPLeafSubGrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Equals(cell)));
     }
   }

@@ -88,7 +88,7 @@ namespace VSS.TRex.TAGFiles.Executors
         // Note: Intermediary TAG file processing contexts don't store their data to any persistence context
         // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
         // storage proxy assigned to it
-        SiteModel = DIContext.Obtain<ISiteModel>();
+        SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
 
         // Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
         Machine = new Machine()

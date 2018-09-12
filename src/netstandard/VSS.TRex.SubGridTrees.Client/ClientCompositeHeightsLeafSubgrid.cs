@@ -18,6 +18,20 @@ namespace VSS.TRex.SubGridTrees.Client
        ForEachStatic((x, y) => NullCells[x, y] = SubGridCellCompositeHeightsRecord.NullValue);
     }
 
+    private void Initialise()
+    {
+      _gridDataType = TRex.Types.GridDataType.CompositeHeights;
+    }
+
+    /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientCompositeHeightsLeafSubgrid() : base()
+    {
+      Initialise();
+    }
+
     /// <summary>
     /// Constructor. Set the grid to HeightAndTime.
     /// </summary>
@@ -29,7 +43,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public ClientCompositeHeightsLeafSubgrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize,
       uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
-      _gridDataType = TRex.Types.GridDataType.CompositeHeights;
+      Initialise();
     }
 
     /// <summary>

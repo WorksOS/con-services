@@ -43,7 +43,7 @@ namespace VSS.TRex.Designs.TTM
         }
         catch (Exception E)
         {
-          throw new Exception(string.Format("Failed to read edge {0}\n{1}", i + 1, E));
+          throw new Exception($"Failed to read edge {i + 1}\n{E}");
         }
       }
     }

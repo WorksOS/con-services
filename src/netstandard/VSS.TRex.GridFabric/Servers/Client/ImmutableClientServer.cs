@@ -19,6 +19,7 @@ using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Servers.Client
 {
@@ -48,7 +49,7 @@ namespace VSS.TRex.Servers.Client
       {
         // Attempt to attach to an already existing Ignite instance
         Log.LogInformation("Getting Immmutable grid");
-        immutableTRexGrid = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+        immutableTRexGrid = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
         Log.LogInformation($"Got {immutableTRexGrid?.Name}");
 
         // If there was no connection obtained, attempt to create a new instance
@@ -147,7 +148,6 @@ namespace VSS.TRex.Servers.Client
     /// <returns></returns>
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
-
       //TODO this should not be here but will do for the moment
       TRexConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
 

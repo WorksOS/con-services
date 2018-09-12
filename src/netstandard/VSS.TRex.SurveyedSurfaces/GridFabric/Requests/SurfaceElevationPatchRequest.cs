@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
@@ -25,7 +26,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         /// Local reference to the client subgrid factory
         /// </summary>
         [NonSerialized]
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
+          => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         /// <summary>
         /// Default no-arg constructor

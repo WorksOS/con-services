@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -13,7 +14,10 @@ namespace VSS.TRex.GridActivator
 
     private static void DependencyInjection()
     {
-      DIBuilder.New().AddLogging().Complete();
+      DIBuilder.New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Complete();
     }
 
     static void Main(string[] args)

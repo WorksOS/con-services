@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Affinity;
@@ -200,7 +201,7 @@ namespace VSS.TRex.Servers.Compute
     public static bool SetGridActive(string gridName)
     {
       // Get an ignite reference to the named grid
-      IIgnite ignite = TRexGridFactory.Grid(gridName);
+      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(gridName);
 
       // If the grid exists, and it is not active, then set it to active
       if (ignite != null && !ignite.GetCluster().IsActive())

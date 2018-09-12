@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
     {
       var aggregator = new TemperatureStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -66,7 +66,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
     {
       var aggregator = new TemperatureStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 

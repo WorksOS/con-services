@@ -18,7 +18,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var cell = new SubGridCellPassDataCMVEntryRecord();
       cell.Clear();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CCV) as ClientCMVLeafSubGrid;
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Assert.True(clientGrid.Cells[x, y].Equals(cell)));
     }
   }

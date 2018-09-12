@@ -88,7 +88,7 @@ namespace VSS.TRex.Types
         case DisplayMode.ThreeDDesign: return GridDataType.Height;
 
         default:
-          Debug.Assert(false, string.Format("Unknown mode ({0}) in ICGridDataTypeForDisplayMode", Mode));
+          Debug.Assert(false, $"Unknown mode ({Mode}) in ICGridDataTypeForDisplayMode");
           return GridDataType.Height; // For modes that are not supported yet, we will use heights
       }
     }

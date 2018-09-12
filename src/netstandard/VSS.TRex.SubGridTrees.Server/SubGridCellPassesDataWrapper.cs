@@ -11,7 +11,7 @@ namespace VSS.TRex.SubGridTrees.Server
   {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        public IServerLeafSubGrid Owner { get; set; }   // FOwner : TICServerSubGridTreeLeaf;
+        public IServerLeafSubGrid Owner { get; set; }   
 
         public void Clear()
         {

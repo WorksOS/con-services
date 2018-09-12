@@ -9,6 +9,7 @@ using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Models.Servers;
@@ -17,9 +18,12 @@ using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Servers.Client;
+using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
@@ -62,23 +66,26 @@ namespace VSS.TRex.Server.Application
     {
       DIBuilder.New()
         .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
+        .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
 
         .Complete();
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    private static void EnsureAssemblyDependenciesAreLoaded(ILogger Log)
+    private static void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -117,16 +124,15 @@ namespace VSS.TRex.Server.Application
 
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
-          Log.LogError($"Assembly for type {asmType} has not been loaded.");
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
     static async Task<int> Main(string[] args)
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
       ILogger Log = Logging.Logger.CreateLogger<Program>();
-
-      EnsureAssemblyDependenciesAreLoaded(Log);
 
       Log.LogInformation("Creating service");
       Log.LogDebug("Creating service");

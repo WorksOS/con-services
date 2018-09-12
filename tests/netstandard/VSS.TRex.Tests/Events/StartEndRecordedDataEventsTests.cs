@@ -11,7 +11,7 @@ namespace VSS.TRex.Tests.Events
         [Fact]
         public void Test_StartEndRecordedDataEvents_Creation()
         {
-            StartEndProductionEvents events = new StartEndProductionEvents(null, -1, Guid.Empty,
+            StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty,
                 ProductionEventType.StartEndRecordedData,
                 (w, s) => w.Write((byte)s),
                 r => (ProductionEventType)r.ReadByte());
@@ -21,7 +21,6 @@ namespace VSS.TRex.Tests.Events
             Assert.True(0 == events.Events.Count, "New list is not empty");
             Assert.True(-1 == events.MachineID, "Machine ID not -1");
             Assert.True(Guid.Empty == events.SiteModelID, "Site model ID is not null");
-            Assert.True(null == events.Container, "Container is not null");
             Assert.True(null != events.SerialiseStateIn, "SerialiseStateIn is null");
             Assert.True(null != events.SerialiseStateOut, "SerialiseStateOut is null");
         }
@@ -30,7 +29,7 @@ namespace VSS.TRex.Tests.Events
         public void Test_StartEndRecordedDataEvents_SimpleStartEndAndCollation()
         {
             StartEndProductionEvents events =
-                new StartEndProductionEvents(null, -1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
+                new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
             var firstEventDate = new DateTime(2000, 1, 1, 0, 0, 0);
             var secondEventDate = new DateTime(2000, 1, 1, 1, 0, 0);
@@ -54,7 +53,7 @@ namespace VSS.TRex.Tests.Events
             CheckEvents();
 
             // Collate the events and ensure nothing changes
-            events.Collate();
+            events.Collate(null);
 
             // Check the state is still good
             CheckEvents();
@@ -83,7 +82,7 @@ namespace VSS.TRex.Tests.Events
             DateTime innerSecondEventDate, DateTime outerSecondEventDate)
         {
             StartEndProductionEvents events =
-                new StartEndProductionEvents(null, -1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
+                new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
 
             void CheckEventsBefore(int count)
             {
@@ -145,7 +144,7 @@ namespace VSS.TRex.Tests.Events
             CheckEventsBefore(4);
 
             // Collate the events and ensure nothing changes
-            events.Collate();
+            events.Collate(null);
 
             // Check the resulting 2 elements are as expected
             CheckEventsAfter();

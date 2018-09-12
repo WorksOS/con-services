@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     {
       var aggregator = new PassCountStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -125,7 +125,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics
     {
       var aggregator = new PassCountStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.PassCount) as ClientPassCountLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 

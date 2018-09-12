@@ -33,7 +33,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception in SiteModelAttributesChangedEventListener.Invvoke:\n{E}");
+                Log.LogError($"Exception in SiteModelAttributesChangedEventListener.Invoke:\n{E}");
             }
 
             return true;

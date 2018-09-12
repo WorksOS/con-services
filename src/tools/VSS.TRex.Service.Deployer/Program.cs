@@ -1,7 +1,9 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Logging;
 using VSS.TRex.TAGFiles.GridFabric.Services;
 using VSS.TRex.Servers.Client;
@@ -18,15 +20,17 @@ namespace VSS.TRex.Service.Deployer
 
       private static void DependencyInjection()
       {
-        DIBuilder.New().AddLogging().Complete();
+        DIBuilder.New()
+          .AddLogging()
+          .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+          .Build()
+          .Add(x => x.AddSingleton(new MutableClientServer("ServiceDeployer")))
+          .Complete();
       }
 
       static void Main(string[] args)
         {
             DependencyInjection();
-
-            // Make sure all our assemblies are loaded...
-            AssembliesHelper.LoadAllAssembliesForExecutingContext();
 
             Log = Logger.CreateLogger<Program>();
 
