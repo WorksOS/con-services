@@ -12,7 +12,7 @@ export class ProjectExtents {
   }
 
   public toString(): string {
-    return `MinX:${this.minX}, MaxX:${this.maxX}, MinY:${this.minY}, MaxY:${this.maxY}`;
+    return `MinX:${this.minX.toFixed(3)}, MaxX:${this.maxX.toFixed(3)}, MinY:${this.minY.toFixed(3)}, MaxY:${this.maxY.toFixed(3)}`;
   }
 
   public Set(minX : number, minY : number, maxX: number, maxY:number): void {

@@ -26,9 +26,14 @@ export class ProjectComponent {
   public projectExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public tileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 
+  public selectProject(): void {
+    this.getProjectExtents();
+  }
+
   public getProjectExtents(): void {
     this.projectService.getProjectExtents(this.projectUid).subscribe(extent => {
-      this.projectExtents = new ProjectExtents(extent.minX, extent.minY, extent.maxX, extent.maxY)
+      this.projectExtents = new ProjectExtents(extent.minX, extent.minY, extent.maxX, extent.maxY);
+      this.zoomAll();
     });
   }
 

@@ -2,18 +2,3 @@
 <p>Project UID:</p><input [(ngModel)]="projectUid" type="text" value="" />
 <button (click)="getProjectExtents()">Get Project Extents</button>
 <p>Project Extents: {{projectExtents}}</p>
-
-<p>Tile, Extents: {{tileExtents}}</p><div></div>
-<p>Width: {{tileExtents.sizeX()}} Height: {{tileExtents.sizeY()}} </p><div></div>
-
-<button (click)="getTile()">Render</button>
-<button (click)="zoomAll()">Zoom All</button>
-<button (click)="zoomIn()">Zoom In</button>
-<button (click)="zoomOut()">Zoom Out</button>
-<button (click)="panLeft()">Left</button>
-<button (click)="panRight()">Right</button>
-<button (click)="panUp()">Up</button>
-<button (click)="panDown()">Down</button>
-
-<div></div>
-<img src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
