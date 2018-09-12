@@ -1345,7 +1345,7 @@ namespace TRexIgniteTest
         CMVStatisticsOperation operation = new CMVStatisticsOperation();
 
         CMVStatisticsResult result = operation.Execute(
-          new CMVSummaryArgument(){
+          new CMVStatisticsArgument(){
             ProjectID = siteModel.ID,
             Filters = new FilterSet(new CombinedFilter()),
             CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
