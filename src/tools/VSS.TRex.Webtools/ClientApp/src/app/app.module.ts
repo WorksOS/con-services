@@ -12,6 +12,7 @@ import { HttpErrorHandler } from './http-error-handler.service';
 import { MessageService } from './message.service';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { UploadDataComponent } from './upload-data/upload-data.component';
+import { SandboxComponent } from './sandbox/sandbox-component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { UploadDataComponent } from './upload-data/upload-data.component';
     HomeComponent,
     UploadDataComponent,
     GridStatusComponent,
-    GridServiceDeployerComponent
+    GridServiceDeployerComponent,
+    SandboxComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -31,7 +33,8 @@ import { UploadDataComponent } from './upload-data/upload-data.component';
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'upload-data', component: UploadDataComponent },
       { path: 'grid-status', component: GridStatusComponent },
-      { path: 'grid-service-deployer', component: GridServiceDeployerComponent }
+      { path: 'grid-service-deployer', component: GridServiceDeployerComponent },
+      { path: 'sandbox', component: SandboxComponent }
     ])
   ],
   providers: [
