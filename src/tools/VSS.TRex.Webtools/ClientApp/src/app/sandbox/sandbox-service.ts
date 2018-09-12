@@ -29,4 +29,10 @@ export class SandboxService {
     console.log(url);
     return this.http.get<ProjectExtents>(url);
   }
+
+  public getTile(projectUid:string, mode: number, pixelsX: number, pixelsY:number, extents: ProjectExtents) {
+    let url = `${this.baseUrl}api/tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`;
+    console.log(url);
+    return this.http.get<string>(url);
+  }
 }

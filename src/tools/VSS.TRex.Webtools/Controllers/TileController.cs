@@ -12,6 +12,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Logging;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
+using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
@@ -36,10 +37,10 @@ namespace VSS.TRex.Webtools.Controllers
       /// <returns></returns>
       [HttpGet("{siteModelID}")]
       public JsonResult GridStatus(string siteModelID, 
-        [FromQuery] int minX,
-        [FromQuery] int minY,
-        [FromQuery] int maxX,
-        [FromQuery] int maxY,
+        [FromQuery] double minX,
+        [FromQuery] double minY,
+        [FromQuery] double maxX,
+        [FromQuery] double maxY,
         [FromQuery] int mode,
         [FromQuery] ushort pixelsX,
         [FromQuery] ushort pixelsY)
@@ -47,7 +48,7 @@ namespace VSS.TRex.Webtools.Controllers
         ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
 
         var request = new TileRenderRequest();
-        var response = request.Execute(new TileRenderRequestArgument(
+        TileRenderResponse_Core2 response = request.Execute(new TileRenderRequestArgument(
           siteModelID: Guid.Parse(siteModelID),
           coordsAreGrid: true,
           pixelsX: pixelsX,
@@ -57,9 +58,9 @@ namespace VSS.TRex.Webtools.Controllers
           filter1: null,
           filter2: null,
           cutFillDesignID: Guid.Empty
-        ));
+        )) as TileRenderResponse_Core2;
 
-        return new JsonResult(TileResult.CreateTileResult(response.));
+        return new JsonResult(TileResult.CreateTileResult(response.TileBitmapData));
       }
   }
 }
