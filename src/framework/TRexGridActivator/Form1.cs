@@ -39,11 +39,11 @@ namespace TRexGridActivator
     {
       try
       {
-        MessageBox.Show($"Activation process completed: Mutable = {ActivateImmutable()}, Immutable = {ActivateMutable()}");
+        MessageBox.Show($@"Activation process completed: Mutable = {ActivateImmutable()}, Immutable = {ActivateMutable()}");
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Activation exception: {ex}");
+        MessageBox.Show($@"Activation exception: {ex}");
       }
     }
 
@@ -51,11 +51,11 @@ namespace TRexGridActivator
     {
       try
       {
-        MessageBox.Show($"Activation process completed: Immutable = {ActivateImmutable()}");
+        MessageBox.Show($@"Activation process completed: Immutable = {ActivateImmutable()}");
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Activation exception: {ex}");
+        MessageBox.Show($@"Activation exception: {ex}");
       }
     }
 
@@ -63,11 +63,11 @@ namespace TRexGridActivator
     {
       try
       {
-        MessageBox.Show($"Activation process completed: Mutable = {ActivateMutable()}");
+        MessageBox.Show($@"Activation process completed: Mutable = {ActivateMutable()}");
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Activation exception: {ex}");
+        MessageBox.Show($@"Activation exception: {ex}");
       }
     }
   }
