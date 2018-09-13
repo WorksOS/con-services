@@ -57,6 +57,12 @@ namespace VSS.TRex.Pipelines.Interfaces
     bool RequestRequiresAccessToDesignFileExistanceMap { get; set; }
 
     /// <summary>
+    /// Any override world coordinate spatial entent imposed by the client context.
+    /// For example, this might be the rectangular border of a tile being requested
+    /// </summary>
+    BoundingWorldExtent3D OverrideSpatialExtents { get; set; }
+
+    /// <summary>
     /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
     /// </summary>
     BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }

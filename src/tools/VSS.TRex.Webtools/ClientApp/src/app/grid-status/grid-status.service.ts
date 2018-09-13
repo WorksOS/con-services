@@ -31,7 +31,7 @@ export class GridStatusService {
     this.http.get<IGrid[]>(url).subscribe((grids) => {
       grids.forEach((grid) => result.push(grid))
     });
-
+     
     return result;
   }
 
