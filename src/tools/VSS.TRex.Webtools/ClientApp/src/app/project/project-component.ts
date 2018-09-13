@@ -37,6 +37,10 @@ export class ProjectComponent {
     this.getProjectExtents();
   }
 
+  public setProjectToZero(): void {
+    this.projectUid = "00000000-0000-0000-0000-000000000000";
+  }
+
   public getProjectExtents(): void {
     this.projectService.getProjectExtents(this.projectUid).subscribe(extent => {
       this.projectExtents = new ProjectExtents(extent.minX, extent.minY, extent.maxX, extent.maxY);
