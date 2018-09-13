@@ -356,13 +356,14 @@ namespace VSS.TRex.Pipelines
       Pipeline.FilterSet = Filters;
 
       Log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
-      Pipeline.WorldExtents.Assign(SpatialExtents);
 
       Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExludedViaTimeFiltering;
 
       Pipeline.OverrideSpatialCellRestriction = OverrideSpatialCellRestriction;
 
       //PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
+
+      Pipeline.RequestAnalyser = RequestAnalyser;
     }
 
     /// <summary>

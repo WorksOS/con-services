@@ -118,11 +118,6 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
-        /// <summary>
-        /// The world coordinate bounding box that restricts the spatial area within which the query should consider data
-        /// </summary>
-        public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
-
         public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
 
         /// <summary>
@@ -134,7 +129,7 @@ namespace VSS.TRex.Pipelines
         /// The request anaylser to be used to identify the set of subgrids required for the request.
         /// If no analyser is supplied then a default analyser will be created as need by the pipeline
         /// </summary>
-        public RequestAnalyser RequestAnalyser { get; set; }
+        public IRequestAnalyser RequestAnalyser { get; set; }
 
         private void AllSubgridsProcessed()
         {
@@ -224,19 +219,17 @@ namespace VSS.TRex.Pipelines
         public virtual bool Initiate()
         {
             // First analyse the request to determine the set of subgrids that will need to be requested
-            RequestAnalyser analyser = RequestAnalyser ?? new RequestAnalyser(this, WorldExtents);
-
-            if (!analyser.Execute())
+            if (!RequestAnalyser.Execute())
             {
                 // Leave gracefully...
                 return false;
             }
 
-            SubgridsRemainingToProcess = analyser.TotalNumberOfSubgridsToRequest;
+            SubgridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubgridsToRequest;
 
-            Log.LogInformation($"Request analyser counts {analyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existance map");
+            Log.LogInformation($"Request analyser counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existance map");
 
-            if (analyser.TotalNumberOfSubgridsToRequest == 0)
+            if (RequestAnalyser.TotalNumberOfSubgridsToRequest == 0)
             {
                 // There are no subgrids to be requested, leave quietly
                 Log.LogInformation("No subgrids analysed from request to be submitted to processing engine");
@@ -244,7 +237,7 @@ namespace VSS.TRex.Pipelines
                 return false;
             }
 
-            Log.LogInformation($"START: Request for {analyser.TotalNumberOfSubgridsToRequest} subgrids");
+            Log.LogInformation($"START: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
             TSubGridRequestor gridFabricRequest = new TSubGridRequestor()
@@ -255,15 +248,15 @@ namespace VSS.TRex.Pipelines
                 TRexNodeId = PipelineTask.TRexNodeID,
                 RequestedGridDataType = GridDataType,
                 IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
-                ProdDataMask = analyser.ProdDataMask,
-                SurveyedSurfaceOnlyMask = analyser.SurveydSurfaceOnlyMask,
+                ProdDataMask = RequestAnalyser.ProdDataMask,
+                SurveyedSurfaceOnlyMask = RequestAnalyser.SurveydSurfaceOnlyMask,
                 Filters = FilterSet,
                 CutFillDesignID = CutFillDesignID
             };
 
             ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
 
-            Log.LogInformation($"COMPLETED: Request for {analyser.TotalNumberOfSubgridsToRequest } subgrids");
+            Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest } subgrids");
 
             return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
         }
