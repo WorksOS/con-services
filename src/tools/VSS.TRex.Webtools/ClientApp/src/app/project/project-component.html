@@ -1,6 +1,6 @@
 <h1>Projects</h1>
 <p>Project UID:</p><input [(ngModel)]="projectUid" type="text" value="" />
-<button (click)="selectProject()">Select</button>
+<button (click)="selectProject()">Select</button><button (click)="setProjectToZero()">Zero</button>
 <p>Project Extents: {{projectExtents}}</p>
 
 <select id="displayMode" name="displayMode" [(ngModel)]="displayMode" (change)="displayModeChanged($event)">
