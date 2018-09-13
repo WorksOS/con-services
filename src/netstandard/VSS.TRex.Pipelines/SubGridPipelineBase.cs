@@ -40,8 +40,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         private long SubgridsRemainingToProcess;
 
-//        public int ID;
-        public ITask /*PipelinedSubGridTask*/ PipelineTask { get; set; }
+        public ITask PipelineTask { get; set; }
 
         public bool Aborted { get; set; }
 
@@ -118,12 +117,18 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
-        public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
+        /// <summary>
+        /// The world coordinate bounding box that restricts the spatial area within which the query should consider data
+        /// </summary>
+        public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
 
+
+        // public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
+     
         /// <summary>
         /// Have all subgrids in the request been returned and processed?
         /// </summary>
-        public bool AllFinished;
+         public bool AllFinished;
 
         /// <summary>
         /// The request anaylser to be used to identify the set of subgrids required for the request.

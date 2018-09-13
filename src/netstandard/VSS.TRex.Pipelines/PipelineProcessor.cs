@@ -357,9 +357,11 @@ namespace VSS.TRex.Pipelines
 
       Log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
 
+      Pipeline.WorldExtents.Assign(SpatialExtents);
+
       Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExludedViaTimeFiltering;
 
-      Pipeline.OverrideSpatialCellRestriction = OverrideSpatialCellRestriction;
+//      Pipeline.OverrideSpatialCellRestriction = OverrideSpatialCellRestriction;
 
       //PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
