@@ -1,10 +1,5 @@
 # Default values for trex.
 # This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-#replicaCount: 1
-
-psNodeReplicaCount: 1
 
 environment: dev
 
@@ -28,55 +23,73 @@ ingress:
 service:
   type: ClusterIP
 
-application:
+application-server:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 1.6Gi
 
 design-elevation:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 1Gi
 
 gateway:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 512Mi
 
 immutable-data:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 1.6Gi
+  storageSize: 10Gi
 
 mutable-data:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 1.6Gi
+  storageSize: 10Gi
 
 mutable-gateway:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 512Mi
 
 psnode:
+  replicaCount: 1
+  resources: 
+    requests:
+      cpu: 300m
+      memory: 1.6Gi
+
+tile-server:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 1.6Gi
 
 utilities:
+  replicaCount: 0
   resources: 
     requests:
       cpu: 200m
       memory: 256Mi
 
 webtools:
+  replicaCount: 1
   resources: 
     requests:
       cpu: 300m
