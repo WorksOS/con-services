@@ -13,14 +13,14 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
         {
             // Composite the bitmap held in this response with the bitmap held in 'other'
 
-            //            throw new NotImplementedException("Bitmap compositing not implemented");
+            // throw new NotImplementedException("Bitmap compositing not implemented");
 
             return null;
         }
 
         public override void SetBitmap(object bitmap)
         {
-            TileBitmapData = ((Draw.Bitmap) bitmap).BitmapToByteArray();
+            TileBitmapData = ((Draw.Bitmap) bitmap)?.BitmapToByteArray();
         }
     }
 }

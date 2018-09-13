@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ProjectExtents } from './project-model';
 import { ProjectService } from './project-service';
+import { DisplayMode } from './project-displaymode-model';
 
 @Component({
   selector: 'project',
@@ -9,22 +10,28 @@ import { ProjectService } from './project-service';
 })
 
 export class ProjectComponent {
-
- // title = 'sandbox';
-
-  constructor(
-    private projectService: ProjectService
-  ) { }
-
   public projectUid: string;
   public mode: number = 0;
   public pixelsX: number = 500;
   public pixelsY: number = 500;
 
-  public base64EncodedTile:string = '';
-  
+  public base64EncodedTile: string = '';
+
+  public displayModes: DisplayMode[] = [];
+  public displayMode: DisplayMode = new DisplayMode();
+
   public projectExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public tileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
+
+  constructor(
+    private projectService: ProjectService
+  ) { }
+
+  ngOnInit() { 
+    this.projectService.getDisplayModes().subscribe((modes) => {
+       modes.forEach(mode => this.displayModes.push(mode))
+    });
+  }
 
   public selectProject(): void {
     this.getProjectExtents();
@@ -35,6 +42,11 @@ export class ProjectComponent {
       this.projectExtents = new ProjectExtents(extent.minX, extent.minY, extent.maxX, extent.maxY);
       this.zoomAll();
     });
+  }
+
+  public displayModeChanged(event : any): void {
+    this.mode = this.displayMode.item1;
+    this.getTile();
   }
 
   //00000000-0000-0000-0000-000000000011

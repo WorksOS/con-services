@@ -3,7 +3,14 @@
 <button (click)="selectProject()">Select</button>
 <p>Project Extents: {{projectExtents}}</p>
 
-<button (click)="getTile()">Render</button>
+<select id="displayMode" name="displayMode" [(ngModel)]="displayMode" (change)="displayModeChanged($event)">
+  <option *ngFor="let displayMode of displayModes" [ngValue]="displayMode" [selected]="displayMode.item1==0">
+    {{ displayMode.item2 }}
+  </option>
+</select>
+
+
+<button  (click)="getTile()">Render</button>
 <button (click)="zoomAll()">Zoom All</button>
 <button (click)="zoomIn()">Zoom In</button>
 <button (click)="zoomOut()">Zoom Out</button>
@@ -12,13 +19,13 @@
 <button (click)="panUp()">Up</button>
 <button (click)="panDown()">Down</button>
 
-<div></div>
+<br />
 
 <img src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
 
-<div></div>
+<br />
 
 <p>Tile, Extents: {{tileExtents}}</p>
-<div></div>
+<br />
 <p>Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
-<div></div>
+<br />

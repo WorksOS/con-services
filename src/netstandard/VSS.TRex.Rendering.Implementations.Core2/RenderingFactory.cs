@@ -32,7 +32,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
         {
           return new TileRenderResponse_Core2
           {
-            TileBitmapData = ((Draw.Bitmap)bmp).BitmapToByteArray()
+            TileBitmapData = ((Draw.Bitmap)bmp)?.BitmapToByteArray()
           }; ;
         }
     }
