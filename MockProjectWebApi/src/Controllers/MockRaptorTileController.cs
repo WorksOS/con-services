@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MockProjectWebApi.Utils;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -11,6 +12,7 @@ using SixLabors.Primitives;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
+using System.Security.Cryptography;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -104,8 +106,27 @@ namespace MockProjectWebApi.Controllers
  
         var bitmapStream = new MemoryStream();
         bitmap.SaveAsPng(bitmapStream);
+        Console.WriteLine($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
         bitmapStream.Position = 0;
-        return new FileStreamResult(bitmapStream, "image/png");        
+        return new FileStreamResult(bitmapStream, "image/png");
+      }
+    }
+
+    private string CreateMD5(MemoryStream ms)
+    {
+      //Create MD5 hash
+      using (MD5 md5 = MD5.Create())
+      {
+        ms.Position = 0;
+        byte[] hashBytes = md5.ComputeHash(ms.ToArray());
+
+        // Convert the hash byte array to hexadecimal string
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < hashBytes.Length; i++)
+        {
+          sb.Append(hashBytes[i].ToString("X2"));
+        }
+        return sb.ToString();
       }
     }
 
