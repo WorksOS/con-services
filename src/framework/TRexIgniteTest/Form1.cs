@@ -964,8 +964,8 @@ namespace TRexIgniteTest
 
       PriorProcessingMessage();
 
-			CutFillOperation operation = new CutFillOperation();
-			CutFillResult result = operation.Execute(new CutFillStatisticsArgument()
+			CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
+			CutFillStatisticsResult result = operation.Execute(new CutFillStatisticsArgument()
 			{
 			    ProjectID = siteModel.ID,
 					Filters = new FilterSet {Filters = new [] { new CombinedFilter() } },

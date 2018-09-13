@@ -44,24 +44,9 @@ namespace VSS.TRex.Analytics.MDPStatistics
       MDPPercentageRange.Clear();
     }
 
-    private void IncrementCountOfTransition(double mdpValue)
+    protected override int GetMaximumValue()
     {
-      if (DetailsDataValues == null || Counts == null)
-        return;
-
-      Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
-
-      for (int i = 0; i < DetailsDataValues.Length; i++)
-      {
-        var startTransitionValue = DetailsDataValues[i];
-        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPassConsts.NullMDP;
-
-        if (mdpValue >= startTransitionValue && mdpValue < endTransitionValue)
-        {
-          Counts[i]++;
-          break;
-        }
-      }
+      return CellPassConsts.NullMDP;
     }
 
     protected override void DataCheck(DataStatisticsAggregator other)
