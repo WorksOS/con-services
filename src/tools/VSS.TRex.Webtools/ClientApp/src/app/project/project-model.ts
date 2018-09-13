@@ -30,24 +30,24 @@ export class ProjectExtents {
 
   public centerY(): number { return this.minY + (this.maxY + this.minY) / 2; }
 
-  public shrink(factor: number) {
+  public shrink(factorX: number, factorY: number) {
     let curSizeX = this.sizeX();
     let curSizeY = this.sizeY();
 
-    this.minX += curSizeX * (factor / 2);
-    this.minY += curSizeY * (factor / 2);
-    this.maxX -= curSizeX * (factor / 2);
-    this.maxY -= curSizeY * (factor / 2);
+    this.minX += curSizeX * (factorX / 2);
+    this.minY += curSizeY * (factorY / 2);
+    this.maxX -= curSizeX * (factorX / 2);
+    this.maxY -= curSizeY * (factorY / 2);
   }
 
-  public expand(factor: number) {
+  public expand(factorX: number, factorY: number) {
     let curSizeX = this.sizeX();
     let curSizeY = this.sizeY();
 
-    this.minX -= curSizeX * (factor / 2);
-    this.minY -= curSizeY * (factor / 2);
-    this.maxX += curSizeX * (factor / 2);
-    this.maxY += curSizeY * (factor / 2);
+    this.minX -= curSizeX * (factorX / 2);
+    this.minY -= curSizeY * (factorY / 2);
+    this.maxX += curSizeX * (factorX / 2);
+    this.maxY += curSizeY * (factorY / 2);
   }
 
   public pan(dx_factor: number, dy_factor: number) : void {
