@@ -7,8 +7,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.Foundation.Models;
-using VSS.TRex.Analytics.PassCountStatistics.Details;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details;
+using VSS.TRex.Analytics.PassCountStatistics;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
 
@@ -44,8 +44,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.filter, siteModel);
 
-      PassCountDetailsOperation operation = new PassCountDetailsOperation();
-      DetailsAnalyticsResult passCountDetailsResult = operation.Execute(new PassCountDetailsArgument()
+      PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
+      PassCountStatisticsResult passCountDetailsResult = operation.Execute(new PassCountStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),

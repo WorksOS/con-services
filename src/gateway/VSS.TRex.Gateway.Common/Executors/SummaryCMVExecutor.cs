@@ -4,12 +4,12 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
-using VSS.TRex.Analytics.CMVStatistics.Summary;
+using VSS.TRex.Analytics.CMVStatistics;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
-using CMVSummaryResult = VSS.TRex.Analytics.CMVStatistics.Summary.CMVSummaryResult;
+using CMVStatisticsResult = VSS.TRex.Analytics.CMVStatistics.CMVStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.CMVSummaryResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -40,10 +40,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.filter, siteModel);
 
-      CMVSummaryOperation operation = new CMVSummaryOperation();
+      CMVStatisticsOperation operation = new CMVStatisticsOperation();
 
-      CMVSummaryResult cmvSummaryResult = operation.Execute(
-        new CMVSummaryArgument()
+      CMVStatisticsResult cmvSummaryResult = operation.Execute(
+        new CMVStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
@@ -60,7 +60,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         "Failed to get requested CMV summary data"));
     }
 
-    private SummaryResult ConvertResult(CMVSummaryResult summary)
+    private SummaryResult ConvertResult(CMVStatisticsResult summary)
     {
       return new SummaryResult(
         summary.WithinTargetPercent,

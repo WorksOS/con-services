@@ -11,19 +11,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using VSS.TRex.Analytics.CMVStatistics.Details;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric.Details;
-using VSS.TRex.Analytics.CMVStatistics.GridFabric.Summary;
-using VSS.TRex.Analytics.CMVStatistics.Summary;
+using VSS.TRex.Analytics.CMVStatistics;
+using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Analytics.CutFillStatistics;
-using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
-using VSS.TRex.Analytics.PassCountStatistics.Details;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Details;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
-using VSS.TRex.Analytics.PassCountStatistics.Summary;
+using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
@@ -42,6 +36,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -1009,8 +1004,8 @@ namespace TRexIgniteTest
 			{
         PriorProcessingMessage();
 
-				TemperatureOperation operation = new TemperatureOperation();
-				TemperatureResult result = operation.Execute(
+				TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
+				TemperatureStatisticsResult result = operation.Execute(
 					new TemperatureStatisticsArgument()
 					{
 					  ProjectID = siteModel.ID, 
@@ -1301,8 +1296,8 @@ namespace TRexIgniteTest
       {
         PriorProcessingMessage();
 
-        SpeedOperation operation = new SpeedOperation();
-        SpeedResult result = operation.Execute(
+        SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
+        SpeedStatisticsResult result = operation.Execute(
           new SpeedStatisticsArgument()
           {
             ProjectID = siteModel.ID,
@@ -1347,10 +1342,10 @@ namespace TRexIgniteTest
       {
         PriorProcessingMessage();
 
-        CMVSummaryOperation operation = new CMVSummaryOperation();
+        CMVStatisticsOperation operation = new CMVStatisticsOperation();
 
-        CMVSummaryResult result = operation.Execute(
-          new CMVSummaryArgument{
+        CMVStatisticsResult result = operation.Execute(
+          new CMVStatisticsArgument(){
             ProjectID = siteModel.ID,
             Filters = new FilterSet(new CombinedFilter()),
             CMVPercentageRange = new CMVRangePercentageRecord(80, 120),
@@ -1395,8 +1390,8 @@ namespace TRexIgniteTest
       {
         PriorProcessingMessage();
 
-        MDPOperation operation = new MDPOperation();
-        MDPResult result = operation.Execute(
+        MDPStatisticsOperation operation = new MDPStatisticsOperation();
+        MDPStatisticsResult result = operation.Execute(
           new MDPStatisticsArgument()
           {
             ProjectID = siteModel.ID,
@@ -1443,9 +1438,9 @@ namespace TRexIgniteTest
       {
         PriorProcessingMessage();
 
-        PassCountSummaryOperation operation = new PassCountSummaryOperation();
-        PassCountSummaryResult result = operation.Execute(
-          new PassCountSummaryArgument()
+        PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
+        PassCountStatisticsResult result = operation.Execute(
+          new PassCountStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
@@ -1491,9 +1486,9 @@ namespace TRexIgniteTest
       {
         PriorProcessingMessage();
 
-        CMVDetailsOperation operation = new CMVDetailsOperation();
-        DetailsAnalyticsResult result = operation.Execute(
-          new CMVDetailsArgument()
+        CMVStatisticsOperation operation = new CMVStatisticsOperation();
+        CMVStatisticsResult result = operation.Execute(
+          new CMVStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
@@ -1537,9 +1532,9 @@ namespace TRexIgniteTest
       {
         PriorProcessingMessage();
 
-        PassCountDetailsOperation operation = new PassCountDetailsOperation();
-        DetailsAnalyticsResult result = operation.Execute(
-          new PassCountDetailsArgument()
+        PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
+        PassCountStatisticsResult result = operation.Execute(
+          new PassCountStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },

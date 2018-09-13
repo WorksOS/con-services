@@ -9,8 +9,8 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     /// <summary>
     /// Implements the specific business rules for calculating a cut fill summary
     /// </summary>
-    public class CutFillAggregator : SummaryDataAggregator
-    {
+    public class CutFillAggregator : DataStatisticsAggregator
+  {
         /// <summary>
         /// The array of height offsets representing the cut and fill bands of the cut-fill isopac surface being analysed
         /// </summary>

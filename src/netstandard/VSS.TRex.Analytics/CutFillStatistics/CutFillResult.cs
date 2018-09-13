@@ -5,7 +5,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
   /// <summary>
   /// The result obtained from performing a CutFill analytics request
   /// </summary>
-  public class CutFillResult : DetailsAnalyticsResult
+  public class CutFillResult : StatisticsAnalyticsResult
   {
     /// <summary>
     /// Default no-arg constructor
