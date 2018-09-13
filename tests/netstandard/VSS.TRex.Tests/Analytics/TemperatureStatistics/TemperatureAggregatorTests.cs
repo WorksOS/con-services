@@ -18,7 +18,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
 		[Fact]
 		public void Test_TemperatureAggregator_Creation()
 		{
-			var aggregator = new TemperatureAggregator();
+			var aggregator = new TemperatureStatisticsAggregator();
 
 			Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
 			Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
     [Fact]
     public void Test_TemperatureAggregator_ProcessResult_NoAggregation()
     {
-      var aggregator = new TemperatureAggregator();
+      var aggregator = new TemperatureStatisticsAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
 
@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
     [Fact]
     public void Test_TemperatureAggregator_ProcessResult_WithAggregation()
     {
-      var aggregator = new TemperatureAggregator();
+      var aggregator = new TemperatureStatisticsAggregator();
 
       var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
 
@@ -82,7 +82,7 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
       aggregator.ProcessSubgridResult(subGrids);
 
       // Other aggregator...
-      var otherAggregator = new TemperatureAggregator();
+      var otherAggregator = new TemperatureStatisticsAggregator();
 
       otherAggregator.CellSize = CELL_SIZE;
       otherAggregator.OverrideTemperatureWarningLevels = true;

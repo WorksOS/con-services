@@ -19,22 +19,22 @@ namespace VSS.TRex.Tests.Analytics.TemperatureStatistics
       OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
     };
 
-    private TemperatureCoordinator _getCoordinator()
+    private TemperatureStatisticsCoordinator _getCoordinator()
     {
-      return new TemperatureCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new TemperatureStatisticsCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
-    private TemperatureAggregator _getTemperatureAggregator()
+    private TemperatureStatisticsAggregator _getTemperatureAggregator()
     {
       var coordinator = _getCoordinator();
 
-      return coordinator.ConstructAggregator(Arg) as TemperatureAggregator;
+      return coordinator.ConstructAggregator(Arg) as TemperatureStatisticsAggregator;
     }
 
     [Fact]
     public void Test_TemperatureCoordinator_Creation()
     {
-      var coordinator = new TemperatureCoordinator();
+      var coordinator = new TemperatureStatisticsCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
       Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");

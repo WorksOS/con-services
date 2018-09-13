@@ -43,8 +43,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.filter, siteModel);
 
-      TemperatureOperation operation = new TemperatureOperation();
-      TemperatureResult temperatureSummaryResult = operation.Execute(
+      TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
+      TemperatureStatisticsResult temperatureSummaryResult = operation.Execute(
         new TemperatureStatisticsArgument()
         {
           ProjectID = siteModel.ID,
@@ -63,7 +63,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         "Failed to get requested material temperature summary data"));
     }
 
-    private TemperatureSummaryResult ConvertResult(TemperatureResult summary)
+    private TemperatureSummaryResult ConvertResult(TemperatureStatisticsResult summary)
     {
       return new TemperatureSummaryResult(
         summary.MinimumTemperature,

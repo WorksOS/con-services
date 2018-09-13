@@ -29,6 +29,7 @@ namespace TRexIgniteTest
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-Framework")))
+        .Add(x => x.AddSingleton(new MutableClientServer("TRexIgniteClient-Framework")))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();
     }
@@ -41,7 +42,6 @@ namespace TRexIgniteTest
       {
         typeof(VSS.TRex.Rendering.Implementations.Framework.RenderingFactory),
         typeof(VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses.TileRenderResponse_Framework)
-//        typeof(VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses.TileRenderResponse_Framework)
       };
 
       foreach (var asmType in AssemblyDependencies)

@@ -13,7 +13,7 @@ using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
-using MDPSummaryResult = VSS.TRex.Analytics.MDPStatistics.MDPResult;
+using MDPSummaryResult = VSS.TRex.Analytics.MDPStatistics.MDPStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.MDPSummaryResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -44,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.filter, siteModel);
 
-      MDPOperation operation = new MDPOperation();
+      MDPStatisticsOperation operation = new MDPStatisticsOperation();
 
       MDPSummaryResult mdpSummaryResult = operation.Execute(
         new MDPStatisticsArgument()
@@ -64,7 +64,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         "Failed to get requested MDP summary data"));
     }
 
-    private SummaryResult ConvertResult(MDPResult summary)
+    private SummaryResult ConvertResult(MDPStatisticsResult summary)
     {
       return new SummaryResult(
         summary.WithinTargetPercent,
