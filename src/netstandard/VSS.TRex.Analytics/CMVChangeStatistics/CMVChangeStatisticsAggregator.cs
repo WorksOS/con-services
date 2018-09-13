@@ -1,13 +1,12 @@
-﻿using System.Diagnostics;
-using VSS.TRex.Analytics.Foundation.Aggregators;
+﻿using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 
-namespace VSS.TRex.Analytics.CMVPercentChangeStatistics
+namespace VSS.TRex.Analytics.CMVChangeStatistics
 {
-  public class CMVPercentChangeStatisticsAggregator : DataStatisticsAggregator
+  public class CMVChangeStatisticsAggregator : DataStatisticsAggregator
   {
     /// <summary>
     /// Details data values.
@@ -20,7 +19,7 @@ namespace VSS.TRex.Analytics.CMVPercentChangeStatistics
     }
 
     /// <summary>
-    /// Processes a CMV % change subgrid into a CMV isopach and calculate the counts of cells where the CMV value matches the requested target.
+    /// Processes a CMV change subgrid into a CMV isopach and calculate the counts of cells where the CMV value matches the requested target.
     /// </summary>
     /// <param name="subGrids"></param>
     public override void ProcessSubgridResult(IClientLeafSubGrid[][] subGrids)
