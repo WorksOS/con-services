@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using App.Metrics;
 using App.Metrics.AspNetCore;
 using App.Metrics.AspNetCore.Health;
@@ -125,5 +126,26 @@ namespace VSS.WebApi.Common
 
       return collection;
     }
+
+    public static IWebHost BuildHostWithReflectionException(this IWebHostBuilder builder, Func<IWebHostBuilder, IWebHost> build)
+    {
+      IWebHost result = null;
+      try
+      {
+         result = build.Invoke(builder);
+      }
+      catch (ReflectionTypeLoadException ex)
+      {
+        foreach (var item in ex.LoaderExceptions)
+        {
+          Console.WriteLine(item.Message);
+        }
+
+        Environment.Exit(1);
+      }
+
+      return result;
+    }
+
   }
 }
