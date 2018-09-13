@@ -32,11 +32,27 @@
     <None Remove="ClientApp\src\app\grid-status\grid-status.service.ts" />
     <None Remove="ClientApp\src\app\http-error-handler.service.ts" />
     <None Remove="ClientApp\src\app\message.service.ts" />
+    <None Remove="ClientApp\src\app\project\project-component.ts" />
+    <None Remove="ClientApp\src\app\project\project-displaymode-model.ts" />
+    <None Remove="ClientApp\src\app\project\project-model.ts" />
+    <None Remove="ClientApp\src\app\project\project-service.ts" />
+    <None Remove="ClientApp\src\app\project\project-tiledata-model.ts" />
+    <None Remove="ClientApp\src\app\sandbox\sandbox-component.ts" />
+    <None Remove="ClientApp\src\app\sandbox\sandbox-model.ts" />
+    <None Remove="ClientApp\src\app\sandbox\sandbox-service.ts" />
     <None Remove="ClientApp\src\app\upload-data\tagfile-request.ts" />
     <None Remove="ClientApp\src\app\upload-data\upload-data.service.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\gateway\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
@@ -47,6 +63,14 @@
     <TypeScriptCompile Include="ClientApp\src\app\grid-status\grid-status.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\http-error-handler.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\message.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-displaymode-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-tiledata-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\upload-data\tagfile-request.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\upload-data\upload-data.service.ts" />
   </ItemGroup>

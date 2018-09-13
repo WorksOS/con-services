@@ -486,7 +486,7 @@ namespace VSS.TRex.Rendering.Executors
           ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
             
           //RenderTransparentTile();
-          return Renderer.Displayer.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
+          return Renderer.Displayer?.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
         }
 
         // Compute the override cell boundary to be used when processing cells in the subgrids

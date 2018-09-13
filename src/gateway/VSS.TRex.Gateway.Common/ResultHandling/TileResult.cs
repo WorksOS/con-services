@@ -15,7 +15,7 @@ namespace VSS.TRex.Gateway.Common.ResultHandling
     {
       return new TileResult
       {
-        TileData = data,
+        TileData = data
       };
     }
 

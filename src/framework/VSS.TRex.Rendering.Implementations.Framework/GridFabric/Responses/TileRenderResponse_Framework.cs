@@ -19,7 +19,7 @@ namespace VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses
 
         public override void SetBitmap(object bitmap)
         {
-            TileBitmapData = ((Draw.Bitmap) bitmap).BitmapToByteArray();
+            TileBitmapData = ((Draw.Bitmap) bitmap)?.BitmapToByteArray();
         }
     }
 }
