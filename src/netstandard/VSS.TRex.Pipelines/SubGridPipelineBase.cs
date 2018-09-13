@@ -117,12 +117,6 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
-        /// <summary>
-        /// The world coordinate bounding box that restricts the spatial area within which the query should consider data
-        /// </summary>
-        public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
-
-
         // public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
      
         /// <summary>

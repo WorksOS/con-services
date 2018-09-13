@@ -52,6 +52,12 @@ namespace VSS.TRex.Pipelines
     public BoundingWorldExtent3D SpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
 
     /// <summary>
+    /// Any override world coordinate spatial entent imposed by the client context.
+    /// For example, this might be the rectangular border of a tile being requested
+    /// </summary>
+    public BoundingWorldExtent3D OverrideSpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
+
+    /// <summary>
     /// The response used as the return from the pipeline request
     /// </summary>
     public ISubGridsPipelinedReponseBase Response { get; set; }
@@ -181,10 +187,6 @@ namespace VSS.TRex.Pipelines
       Pipeline.PipelineTask = Task;
       Task.PipeLine = Pipeline;
 
-      // Introduce the Request analyser to the pipeline and spatial extents it requires
-      RequestAnalyser.Pipeline = Pipeline;
-      RequestAnalyser.WorldExtents = SpatialExtents;
-
       // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
       foreach (var filter in Filters.Filters)
       {
@@ -305,6 +307,13 @@ namespace VSS.TRex.Pipelines
         DesignSubgridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize;
       }
 
+      // Impose the final restriction on the spatial extents from the client context
+      SpatialExtents = SpatialExtents.Intersect(OverrideSpatialExtents);
+
+      // Introduce the Request analyser to the pipeline and spatial extents it requires
+      RequestAnalyser.Pipeline = Pipeline;
+      RequestAnalyser.WorldExtents = SpatialExtents;
+
       ConfigurePipeline();
 
       return true;
@@ -356,8 +365,6 @@ namespace VSS.TRex.Pipelines
       Pipeline.FilterSet = Filters;
 
       Log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
-
-      Pipeline.WorldExtents.Assign(SpatialExtents);
 
       Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExludedViaTimeFiltering;
 

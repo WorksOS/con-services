@@ -30,11 +30,6 @@ namespace VSS.TRex.Pipelines.Interfaces
         Guid RequestDescriptor { get; set; }
 
         /// <summary>
-        /// The world coordinate bounding box that restricts the spatial area within which the query should consider data
-        /// </summary>
-        BoundingWorldExtent3D WorldExtents { get; set; }
-
-        /// <summary>
         /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
         /// </summary>
         // BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
