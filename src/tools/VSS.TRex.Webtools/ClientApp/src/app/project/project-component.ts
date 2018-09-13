@@ -32,7 +32,8 @@ export class ProjectComponent {
 
   ngOnInit() { 
     this.projectService.getDisplayModes().subscribe((modes) => {
-       modes.forEach(mode => this.displayModes.push(mode))
+      modes.forEach(mode => this.displayModes.push(mode));
+      this.displayMode = this.displayModes[0];
     });
   }
 
