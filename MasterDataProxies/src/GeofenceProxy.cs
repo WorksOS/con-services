@@ -12,6 +12,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories.DBModels;
 
 namespace VSS.MasterData.Proxies
 {
@@ -55,8 +56,11 @@ namespace VSS.MasterData.Proxies
     public async Task<List<GeofenceData>> GetGeofences(string customerUid, IDictionary<string, string> customHeaders = null)
     {
       //Get all types of geofence except Project=1 and Import=8/Export=9
-      List<int> geofenceTypeIds = new List<int>{0, 2, 3, 4, 5, 6, 7, 10};
-      var queryParams = $"?geofenceTypedIds={string.Join("&geofenceTypeIds=", geofenceTypeIds)}";
+      List<int> geofenceTypeIds = new List<int>
+        { (int)GeofenceType.Generic, (int)GeofenceType.Borrow, (int)GeofenceType.Waste, (int)GeofenceType.AvoidanceZone,
+          (int)GeofenceType.Stockpile, (int)GeofenceType.CutZone, (int)GeofenceType.Filter, (int)GeofenceType.Landfill
+        };
+      var queryParams = $"?geofenceTypeIds={string.Join("&geofenceTypeIds=", geofenceTypeIds)}";
       var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders, queryParams);
       return result.Geofences;
     }

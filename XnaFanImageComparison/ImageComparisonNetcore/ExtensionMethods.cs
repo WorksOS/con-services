@@ -177,9 +177,8 @@ namespace XnaFan.ImageComparison.Netcore
                 {
                   img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.Black, point));
                 }
-                catch (Exception e)
+                catch (ArgumentOutOfRangeException e)
                 {
-
                 }
                 point = new PointF((int) (x * cellsize + cellsize / 2 - size.Width / 2),
                   (int) (y * cellsize + cellsize / 2 - size.Height / 2));
@@ -187,7 +186,7 @@ namespace XnaFan.ImageComparison.Netcore
                 {
                   img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.White, point));
                 }
-                catch (Exception e)
+                catch (ArgumentOutOfRangeException e)
                 {
                 }
               }
