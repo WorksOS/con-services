@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories.DBModels;
 
 namespace VSS.MasterData.Proxies
 {
@@ -53,7 +55,13 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<List<GeofenceData>> GetGeofences(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
+      //Get all types of geofence except Project=1 and Import=8/Export=9
+      List<int> geofenceTypeIds = new List<int>
+        { (int)GeofenceType.Generic, (int)GeofenceType.Borrow, (int)GeofenceType.Waste, (int)GeofenceType.AvoidanceZone,
+          (int)GeofenceType.Stockpile, (int)GeofenceType.CutZone, (int)GeofenceType.Filter, (int)GeofenceType.Landfill
+        };
+      var queryParams = $"?geofenceTypeIds={string.Join("&geofenceTypeIds=", geofenceTypeIds)}";
+      var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders, queryParams);
       return result.Geofences;
     }
 

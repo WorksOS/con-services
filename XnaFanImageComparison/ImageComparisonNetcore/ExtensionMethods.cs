@@ -10,7 +10,7 @@ namespace XnaFan.ImageComparison.Netcore
     public static class ExtensionMethods
     {
         //the font to use for the DifferenceImages
-        private static readonly Font DefaultFont = SystemFonts.CreateFont("Arial", 8);
+        private static readonly Font DefaultFont = SystemFonts.CreateFont("Arial", 6);
 
         //the brushes to use for the DifferenceImages
         private static Rgba32[] brushes = new Rgba32[256];
@@ -23,7 +23,6 @@ namespace XnaFan.ImageComparison.Netcore
             brushes[i] = new Rgba32(i, i / 3, i / 2, 255);
           }
         }
-
 
         /// <summary>
         /// Gets the difference between two images as a percentage
@@ -150,31 +149,47 @@ namespace XnaFan.ImageComparison.Netcore
         {
             for (int y = 0; y < differences.GetLength(1); y++)
             {
-                for (int x = 0; x < differences.GetLength(0); x++)
+              for (int x = 0; x < differences.GetLength(0); x++)
+              {
+                byte cellValue = differences[x, y];
+                string cellText = null;
+
+                if (absoluteText)
                 {
-                    byte cellValue = differences[x, y];
-                    string cellText = null;
-
-                    if (absoluteText)
-                    {
-                        cellText = cellValue.ToString();
-                    }
-                    else
-                    {
-                        cellText = string.Format("{0}%", (int)cellValue);
-                    }
-
-                    float percentageDifference = (float)differences[x, y] / maxDifference;
-                    int colorIndex = (int)(255 * percentageDifference);
-
-                    var rect = new RectangleF(x * cellsize, y * cellsize, cellsize, cellsize);
-                    img.Mutate(ctx => ctx.Fill(brushes[colorIndex], rect).Draw(Graphics.BluePen, rect));
-                    SizeF size = TextMeasurer.Measure(cellText, new RendererOptions(DefaultFont));
-                    PointF point = new PointF(x * cellsize + cellsize / 2 - size.Width / 2 + 1, y * cellsize + cellsize / 2 - size.Height / 2 + 1);
-                    img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.Black, point));
-                    point = new PointF(x * cellsize + cellsize / 2 - size.Width / 2, y * cellsize + cellsize / 2 - size.Height / 2);
-                    img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.White, point));
+                  cellText = cellValue.ToString();
                 }
+                else
+                {
+                  cellText = string.Format("{0}%", (int) cellValue);
+                }
+
+                float percentageDifference = (float) differences[x, y] / maxDifference;
+                int colorIndex = (int) (255 * percentageDifference);
+
+                var rect = new RectangleF(x * cellsize, y * cellsize, cellsize, cellsize);
+                img.Mutate(ctx => ctx.Fill(brushes[colorIndex], rect).Draw(Graphics.BluePen, rect));
+                SizeF size = TextMeasurer.Measure(cellText, new RendererOptions(DefaultFont));
+                PointF point = new PointF((int) (x * cellsize + cellsize / 2 - size.Width / 2 + 1),
+                  (int) (y * cellsize + cellsize / 2 - size.Height / 2 + 1));
+                //Sometimes the string is too long to fit and gives an exception. 
+                //Font reduced from 8 to 6 to lessen chance of it happening but for safety we'll ignore.
+                try
+                {
+                  img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.Black, point));
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                }
+                point = new PointF((int) (x * cellsize + cellsize / 2 - size.Width / 2),
+                  (int) (y * cellsize + cellsize / 2 - size.Height / 2));
+                try
+                {
+                  img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.White, point));
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                }
+              }
             }
         }
 
@@ -236,6 +251,7 @@ namespace XnaFan.ImageComparison.Netcore
         public static Image<Rgba32> GetGrayScaleVersion(this Image<Rgba32> original)
         {
             Image<Rgba32> newBitmap = new Image<Rgba32>(original.Width, original.Height);
+            newBitmap.Mutate(ctx => ctx.DrawImage(original, 1f));
             newBitmap.Mutate(ctx => ctx.Grayscale());
             return newBitmap;
         }
