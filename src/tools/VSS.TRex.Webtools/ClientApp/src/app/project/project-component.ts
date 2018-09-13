@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ProjectExtents } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
+import { VolumeResult } from "../project/project-volume-model"
 
 @Component({
   selector: 'project',
@@ -22,6 +23,8 @@ export class ProjectComponent {
 
   public projectExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public tileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
+
+  public projectVolume: VolumeResult = new VolumeResult(0, 0, 0, 0, 0);
 
   constructor(
     private projectService: ProjectService
@@ -96,5 +99,11 @@ export class ProjectComponent {
     this.tileExtents.pan(0, -0.2);
     this.getTile();
   }
+
+  public getSimpleFullVolume() : void {
+    this.projectService.getSimpleFullVolume(this.projectUid).subscribe(volume =>
+      this.projectVolume = new VolumeResult(volume.cut, volume.cutArea, volume.fillArea, volume.fillArea, volume.totalCoverageArea));
+  }
+
 }
 

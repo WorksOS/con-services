@@ -9,6 +9,7 @@ import { strict } from 'assert';
 import { ProjectExtents } from "../project/project-model"
 import { DisplayMode } from "../project/project-displaymode-model"
 import { TileData } from "../project/project-tiledata-model"
+import { VolumeResult } from "../project/project-volume-model"
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -41,6 +42,12 @@ export class ProjectService {
     public getTile(projectUid:string, mode: number, pixelsX: number, pixelsY:number, extents: ProjectExtents) {
     let url = `${this.baseUrl}api/tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`;
     console.log(url);
-    return this.http.get<TileData>(url);
+      return this.http.get<TileData>(url);
+    }
+
+  public getSimpleFullVolume(projectUid: string): Observable<VolumeResult> {
+    let url = `${this.baseUrl}api/volumes/${projectUid}`;
+    console.log(url);
+    return this.http.get<VolumeResult>(url);
   }
 }
