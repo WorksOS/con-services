@@ -106,12 +106,13 @@ namespace MockProjectWebApi.Controllers
  
         var bitmapStream = new MemoryStream();
         bitmap.SaveAsPng(bitmapStream);
-        Console.WriteLine($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
+        //Console.WriteLine($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
         bitmapStream.Position = 0;
         return new FileStreamResult(bitmapStream, "image/png");
       }
     }
 
+    /*
     private string CreateMD5(MemoryStream ms)
     {
       //Create MD5 hash
@@ -129,6 +130,7 @@ namespace MockProjectWebApi.Controllers
         return sb.ToString();
       }
     }
+    */
 
     [Route("api/v2/raptor/boundingbox")]
     [HttpGet]
