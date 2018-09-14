@@ -1,8 +1,8 @@
-TCCBASEURL: mock
+TCCBASEURL: https://www.myconnectedsite.com
 TCCORG: vldev
 TCCUSERNAME: vldev
 TCCPWD: vldev_key
-TCCFILESPACEID: mock
+TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
 JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const
