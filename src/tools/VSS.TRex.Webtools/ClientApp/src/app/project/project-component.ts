@@ -11,9 +11,11 @@ import { VolumeResult } from '../project/project-volume-model';
 })
 
 export class ProjectComponent {
+  private zoomFactor: number = 0.2;
+
   public projectUid: string;
   public mode: number = 0;
-  public pixelsX: number = 500;
+  public pixelsX: number = 850;
   public pixelsY: number = 500;
 
   public base64EncodedTile: string = '';
@@ -28,6 +30,9 @@ export class ProjectComponent {
 
   public mousePixelLocation : string;
   public mouseWorldLocation: string;
+
+  private mouseWorldX: number = 0;
+  private mouseWorldY: number = 0;
 
     constructor(
     private projectService: ProjectService
@@ -60,8 +65,6 @@ export class ProjectComponent {
     this.getTile();
   }
 
-  //00000000-0000-0000-0000-000000000011
-
   public getTile(): void {
     // Make sure the displayed tile extents is updated
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
@@ -92,32 +95,32 @@ export class ProjectComponent {
   }
 
   public zoomIn(): void {
-    this.tileExtents.shrink(0.2, 0.2);
+    this.tileExtents.shrink(this.zoomFactor, this.zoomFactor);
     this.getTile();
   }
 
   public zoomOut(): void {
-    this.tileExtents.expand(0.2, 0.2);
+    this.tileExtents.expand(this.zoomFactor, this.zoomFactor);
     this.getTile();
   }
 
   public panLeft(): void {
-    this.tileExtents.pan(-0.2, 0.0);
+    this.tileExtents.panByFactor(-this.zoomFactor, 0.0);
     this.getTile();
   }
 
   public panRight(): void {
-    this.tileExtents.pan(0.2, 0.0);
+    this.tileExtents.panByFactor(this.zoomFactor, 0.0);
     this.getTile();
   }
 
   public panUp(): void {
-    this.tileExtents.pan(0, 0.2);
+    this.tileExtents.panByFactor(0, this.zoomFactor);
     this.getTile();
   }
 
   public panDown(): void {
-    this.tileExtents.pan(0, -0.2);
+    this.tileExtents.panByFactor(0, -this.zoomFactor);
     this.getTile();
   }
 
@@ -130,11 +133,11 @@ export class ProjectComponent {
     let localX = offsetX;
     let localY = this.pixelsY - offsetY;
 
-    let worldX = (offsetX * this.tileExtents.sizeX()) / this.pixelsX;
-    let worldY = ((this.pixelsY - offsetY) * this.tileExtents.sizeY()) / this.pixelsY;
+    this.mouseWorldX = this.tileExtents.minX + offsetX * (this.tileExtents.sizeX() / this.pixelsX);
+    this.mouseWorldY = this.tileExtents.minY + (this.pixelsY - offsetY) * (this.tileExtents.sizeY() / this.pixelsY);
 
     this.mousePixelLocation = `${localX}, ${localY}`;
-    this.mouseWorldLocation = `${worldX.toFixed(3)}, ${worldY.toFixed(3)}`;
+    this.mouseWorldLocation = `${this.mouseWorldX.toFixed(3)}, ${this.mouseWorldY.toFixed(3)}`;
   }
 
   public onMouseOver(event: any): void {
@@ -145,5 +148,19 @@ export class ProjectComponent {
     this.updateMouseLocationDetails(event.offsetX, event.offsetY);
   }
 
+  public onMouseWheel(event: any): void {
+    let panDeltaX = this.zoomFactor * (this.mouseWorldX - this.tileExtents.centerX());
+    let panDeltaY = this.zoomFactor * (this.mouseWorldY - this.tileExtents.centerY());
+
+    if (event.deltaY < 0) {
+      // Zooming in 
+      this.tileExtents.panByDelta(panDeltaX, panDeltaY);
+      this.zoomIn();
+    } else if (event.deltaY > 0) {
+      // Zooming out
+      this.tileExtents.panByDelta(-panDeltaX, -panDeltaY);
+      this.zoomOut();
+    }
+  }
 }
 
