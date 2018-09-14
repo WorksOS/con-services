@@ -1,7 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +13,9 @@ using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.FileAccess.WebAPI
 {
+  /// <summary>
+  /// Application startup class.
+  /// </summary>
   public class Startup
   {
     /// <summary>
@@ -24,27 +26,25 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
     /// <summary>
     /// Log4net repository logger name.
     /// </summary>
-    public const string LoggerRepoName = "WebApi";
-    private IServiceCollection serviceCollection;
+    public const string LOGGER_REPO_NAME = "WebApi";
 
-    /// <summary>
-    /// Gets the default configuration object.
-    /// </summary>
+    private IServiceCollection serviceCollection;
+    private readonly ILoggerFactory loggerFactory;
     private IConfigurationRoot Configuration { get; }
    
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="env"></param>
-    public Startup(IHostingEnvironment env)
+    public Startup(IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
+      env.ConfigureLog4Net(repoName: LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
+
+      this.loggerFactory = loggerFactory;
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
@@ -55,13 +55,17 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
     /// </summary>
     public void ConfigureServices(IServiceCollection services)
     {
+      var logger = loggerFactory.CreateLogger<Startup>();
+
       services.AddCommon<Startup>(SERVICE_TITLE);
 
-      services
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
       var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";
+      
+      logger.LogInformation($"Application initialized with TCCBASEURL={tccUrl}, UseMock={useMock}");
+
       if (useMock)
         services.AddTransient<IFileRepository, MockFileRepository>();
       else
@@ -77,7 +81,6 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
       });
 
       services.AddJaeger(SERVICE_TITLE);
-
       services.AddOpenTracing();
 
       serviceCollection = services;

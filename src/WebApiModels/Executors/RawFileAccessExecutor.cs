@@ -16,29 +16,19 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="configStore"></param>
-    /// <param name="fileAccess"></param>
     public RawFileAccessExecutor(ILoggerFactory logger, IConfigurationStore configStore, IFileRepository fileAccess)
       : base(logger, configStore, fileAccess)
-    {
-      // ...
-    }
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public RawFileAccessExecutor()
-    {
-      // ...
-    }
+    { }
 
     /// <summary>
     /// Processes the raw file access request by getting the file from TCC and returning its contents as bytes.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a RawFileAccessResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       bool success = false;

@@ -10,14 +10,19 @@ using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.FileAccess.WebAPI
 {
+  /// <summary>
+  /// Application entry point.
+  /// </summary>
   public class Program
   {
+    /// <summary>
+    /// Default constructor for application entry point.
+    /// </summary>
     public static void Main(string[] args)
     {
       var kestrelConfig = new ConfigurationBuilder()
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
-
 
       var host = new WebHostBuilder()
         .UseKestrel()
@@ -30,7 +35,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
         .UseConfiguration(kestrelConfig)
         .ConfigureLogging(builder =>
         {
-          Log4NetProvider.RepoName = Startup.LoggerRepoName;
+          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Debug);
           builder.AddConfiguration(kestrelConfig);

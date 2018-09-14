@@ -18,15 +18,18 @@
     },
     "WebApi": {
       "commandName": "Project",
-      "launchBrowser": false,
       "launchUrl": "http://localhost:5000/api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Docker": {
-      "executablePath": "%WINDIR%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-      "commandLineArgs": "-ExecutionPolicy RemoteSigned .\\DockerTask.ps1 -Run -Environment $(Configuration) -Machine '$(DockerMachineName)'"
+      "commandName": "Docker",
+      "launchUrl": "http://localhost:5000/api/values",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   }
 }

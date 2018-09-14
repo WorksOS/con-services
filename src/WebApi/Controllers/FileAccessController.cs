@@ -35,13 +35,11 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="fileAccess">TCC file repository</param>
     public FileAccessController(ILoggerFactory logger,
         IFileRepository fileAccess)
     {
       this.logger = logger;
-      this.log = logger.CreateLogger<FileAccessController>();
+      log = logger.CreateLogger<FileAccessController>();
       this.fileAccess = fileAccess;
     }
 
@@ -51,17 +49,16 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
     /// <param name="request">Details of the requested file</param>
     /// <returns>File contents as an image/png.
     /// </returns>
-    /// <executor>RawFileAccessExecutor</executor>
     [Route("api/v1/rawfiles")]
     [HttpPost]
     public FileResult PostRaw([FromBody] FileDescriptor request)
     {
       log.LogInformation("Get file from TCC as an image/png: " + JsonConvert.SerializeObject(request));
+
       try
       {
         request.Validate();
-        var result = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) as RawFileAccessResult;
-        if (result != null)
+        if (RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) is RawFileAccessResult result)
         {
           return new FileStreamResult(new MemoryStream(result.fileContents), "image/png");
         }

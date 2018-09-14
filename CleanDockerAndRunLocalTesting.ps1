@@ -27,7 +27,15 @@ Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-wes
 $Env:COMPOSE_CONVERT_WINDOWS_PATHS=1
 
 WriteMsg "Building solution"
-& .\RunLocalTesting.bat
+Invoke-Expression "& .\build.ps1"
+Set-Location AcceptanceTests\scripts
+Invoke-Expression ".\deploy_win.bat"
+
+WriteMsg "Composing containers"
+Set-Location $PSScriptRoot
+Invoke-Expression "docker-compose rm -f"
+Invoke-Expression "docker-compose -f docker-compose-local.yml pull"
+Invoke-Expression "docker-compose -f docker-compose-local.yml up --build | Tee-Object -FilePath c:\temp\Productivity3D.FileAccess.WebApi.log"
 
 if (-not $?) {
     WriteMsg "Error: Environment failed to start" "red"
