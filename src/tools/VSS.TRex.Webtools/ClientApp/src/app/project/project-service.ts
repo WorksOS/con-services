@@ -42,7 +42,7 @@ export class ProjectService {
 
   public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents) {
     let url = `${this.baseUrl}api/tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`;
-    return this.executeRequest<TileData[]>('getTile', url);
+    return this.executeRequest<TileData>('getTile', url);
   }
 
   public getSimpleFullVolume(projectUid: string): Observable<VolumeResult> {
