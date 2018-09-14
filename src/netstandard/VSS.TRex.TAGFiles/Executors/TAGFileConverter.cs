@@ -90,13 +90,12 @@ namespace VSS.TRex.TAGFiles.Executors
         // storage proxy assigned to it
         SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
 
-        // Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
-        Machine = new Machine()
-        {
-          TargetValueChanges = Events
-        };
-        Events = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-
+        // Todo(?): Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
+        Machine = new Machine();
+//        {
+//          TargetValueChanges = Events
+//        };
+//        Events = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
         SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
         if (SiteModel.Grid != null)
