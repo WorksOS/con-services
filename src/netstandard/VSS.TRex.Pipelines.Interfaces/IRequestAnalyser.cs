@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Pipelines.Interfaces
 {
@@ -8,6 +9,16 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// The pipeline that has initiated this request analysis
     /// </summary>
     ISubGridPipelineBase Pipeline { get; set; }
+
+    /// <summary>
+    /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+    /// </summary>
+    ISubGridTreeBitMask ProdDataMask { get; set; }
+
+    /// <summary>
+    /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
+    /// </summary>
+    ISubGridTreeBitMask SurveydSurfaceOnlyMask { get; set; }
 
     /// <summary>
     /// Indicates if only a single page of subgrid requests will be processed
@@ -41,5 +52,9 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// </summary>
     /// <returns></returns>
     long CountOfSubgridsThatWillBeSubmitted();
+
+    long TotalNumberOfSubgridsAnalysed { get; set; }
+    long TotalNumberOfSubgridsToRequest { get; set; }
+    long TotalNumberOfCandidateSubgrids { get; set; }
   }
 }

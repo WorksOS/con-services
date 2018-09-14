@@ -26,38 +26,43 @@ export class ProjectExtents {
 
   public sizeY(): number { return this.maxY - this.minY; }
 
-  public centerX(): number { return this.minX + (this.maxX + this.minX) / 2; }
+  public centerX(): number { return (this.maxX + this.minX) / 2; }
 
-  public centerY(): number { return this.minY + (this.maxY + this.minY) / 2; }
+  public centerY(): number { return (this.maxY + this.minY) / 2; }
 
-  public shrink(factor: number) {
+  public shrink(factorX: number, factorY: number) {
     let curSizeX = this.sizeX();
     let curSizeY = this.sizeY();
 
-    this.minX += curSizeX * (factor / 2);
-    this.minY += curSizeY * (factor / 2);
-    this.maxX -= curSizeX * (factor / 2);
-    this.maxY -= curSizeY * (factor / 2);
+    this.minX += curSizeX * (factorX / 2);
+    this.minY += curSizeY * (factorY / 2);
+    this.maxX -= curSizeX * (factorX / 2);
+    this.maxY -= curSizeY * (factorY / 2);
   }
 
-  public expand(factor: number) {
+  public expand(factorX: number, factorY: number) {
     let curSizeX = this.sizeX();
     let curSizeY = this.sizeY();
 
-    this.minX -= curSizeX * (factor / 2);
-    this.minY -= curSizeY * (factor / 2);
-    this.maxX += curSizeX * (factor / 2);
-    this.maxY += curSizeY * (factor / 2);
+    this.minX -= curSizeX * (factorX / 2);
+    this.minY -= curSizeY * (factorY / 2);
+    this.maxX += curSizeX * (factorX / 2);
+    this.maxY += curSizeY * (factorY / 2);
   }
 
-  public pan(dx_factor: number, dy_factor: number) : void {
-    let curSizeX = this.sizeX();
-    let curSizeY = this.sizeY();
+  public panByFactor(dx_factor: number, dy_factor: number) : void {
+    this.panByDelta(dx_factor * this.sizeX(), dy_factor * this.sizeY());
+  }
 
-    this.minX += dx_factor * curSizeX;
-    this.minY += dy_factor * curSizeY;
-    this.maxX += dx_factor * curSizeX;
-    this.maxY += dy_factor * curSizeY;
+  public panByDelta(dx: number, dy: number): void {
+    this.minX += dx;
+    this.minY += dy;
+    this.maxX += dx;
+    this.maxY += dy;
+  }
+
+  public setCenterPosition(cx: number, cy: number) {
+    this.panByDelta(cx - this.centerX(), cy - this.centerY());  
   }
 }
 

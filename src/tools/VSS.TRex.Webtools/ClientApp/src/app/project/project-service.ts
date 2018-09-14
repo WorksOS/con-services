@@ -6,9 +6,10 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents } from "../project/project-model"
-import { DisplayMode } from "../project/project-displaymode-model"
-import { TileData } from "../project/project-tiledata-model"
+import { ProjectExtents } from '../project/project-model';
+import { DisplayMode } from '../project/project-displaymode-model';
+import { TileData } from '../project/project-tiledata-model';
+import { VolumeResult } from '../project/project-volume-model';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -26,21 +27,25 @@ export class ProjectService {
     this.baseUrl = baseUrl;
   }
 
+  private executeRequest<T>(label: string, url: string): Observable<T> {
+    console.log(`{$label}: url=${url}`);
+    return this.http.get<T>(url);
+  }
+
   public getProjectExtents(projectUid: string): Observable<ProjectExtents> {
-    let url = `${this.baseUrl}api/sitemodels/${projectUid}/extents`;
-    console.log(url);
-    return this.http.get<ProjectExtents>(url);
+    return this.executeRequest<ProjectExtents>('getProjectExtents', `${this.baseUrl}api/sitemodels/${projectUid}/extents`);
   }
 
   public getDisplayModes(): Observable<DisplayMode[]> {
-    let url = `${this.baseUrl}api/tiles/modes`;
-    console.log(url);
-    return this.http.get<DisplayMode[]>(url);
+    return this.executeRequest<DisplayMode[]>('getDisplayModes', `${this.baseUrl}api/tiles/modes`);
   }
 
-    public getTile(projectUid:string, mode: number, pixelsX: number, pixelsY:number, extents: ProjectExtents) {
+  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents) {
     let url = `${this.baseUrl}api/tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`;
-    console.log(url);
-    return this.http.get<TileData>(url);
+    return this.executeRequest<TileData>('getTile', url);
+  }
+
+  public getSimpleFullVolume(projectUid: string): Observable<VolumeResult> {
+    return this.executeRequest<VolumeResult>('getSimpleFullVolume', `${this.baseUrl}api/volumes/${projectUid}`);
   }
 }
