@@ -37,6 +37,7 @@
     <None Remove="ClientApp\src\app\project\project-model.ts" />
     <None Remove="ClientApp\src\app\project\project-service.ts" />
     <None Remove="ClientApp\src\app\project\project-tiledata-model.ts" />
+    <None Remove="ClientApp\src\app\project\project-volume-model.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-component.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-model.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-service.ts" />
@@ -54,6 +55,7 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
@@ -68,6 +70,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\project\project-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\project\project-service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\project\project-tiledata-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-volume-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\sandbox\sandbox-service.ts" />

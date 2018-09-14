@@ -38,7 +38,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="maxX"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}")]
-    public JsonResult GridStatus(string siteModelID,
+    public JsonResult GetTile(string siteModelID,
       [FromQuery] double minX,
       [FromQuery] double minY,
       [FromQuery] double maxX,
