@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -10,7 +11,7 @@ namespace XnaFan.ImageComparison.Netcore
     public static class ExtensionMethods
     {
         //the font to use for the DifferenceImages
-        private static readonly Font DefaultFont = SystemFonts.CreateFont("Arial", 6);
+        private static readonly Font DefaultFont = SystemFonts.CreateFont(SystemFonts.Collection.Families.First().Name, 6);
 
         //the brushes to use for the DifferenceImages
         private static Rgba32[] brushes = new Rgba32[256];
