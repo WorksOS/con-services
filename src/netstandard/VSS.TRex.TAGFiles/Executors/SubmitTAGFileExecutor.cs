@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -68,12 +69,12 @@ namespace VSS.TRex.TAGFiles.Executors
 
           // Validate tagfile submission
 
-          var result = TagfileValidator.ValidSubmission(td,out string tfaMessage, out int tfaCode);
-          response.Code = tfaCode;
-          response.Message = tfaMessage;
+          var result = TagfileValidator.ValidSubmission(td).Result;
+          response.Code = result.Code;
+          response.Message = result.Message;
 
           
-          if (result == ValidationResult.Valid && td.projectId != null) // If OK add to process queue
+          if (result.Code == (int) ValidationResult.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tagfile
             IConfiguration config = DIContext.Obtain<IConfiguration>();

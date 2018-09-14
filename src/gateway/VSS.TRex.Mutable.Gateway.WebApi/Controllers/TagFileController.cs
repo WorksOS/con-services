@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
@@ -48,7 +49,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     // [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<IActionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
+    public async Task<ContractExecutionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
     {
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("PostTagFile: " + serializedRequest);
@@ -61,7 +62,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
    // [PostRequestVerifier]
     [Route("api/v2/tagfiles/direct")]
     [HttpPost]
-    public async Task<IActionResult> PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
+    public async Task<ContractExecutionResult> PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
 
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
@@ -69,22 +70,23 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
       return await ExecuteRequest(request);
     }
 
-    private async Task<IActionResult> ExecuteRequest(CompactionTagFileRequest tfRequest)
+    private async Task<ContractExecutionResult> ExecuteRequest(CompactionTagFileRequest tfRequest)
     {
 
       var tagfileResult = WithServiceExceptionTryExecute(() => RequestExecutorContainer
                                                      .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
                                                      .Process(tfRequest)) as TagFileResult;
 
-      // todo we probably need to return some proper return codes to determine further course of action
-      if (tagfileResult != null)
-      {
-        return tagfileResult.Code == 0 ? (IActionResult)Ok(tagfileResult) : BadRequest(tagfileResult);
-      }
-      else
-      {
-        return BadRequest(TagFileResult.Create(1, "Unexpected failure"));
-      }
+      //// todo we probably need to return some proper return codes to determine further course of action
+      //if (tagfileResult != null)
+      //{
+      //  return tagfileResult.Code == 0 ? (IActionResult)Ok(tagfileResult) : BadRequest(tagfileResult);
+      //}
+      //else
+      //{
+      //  return BadRequest(TagFileResult.Create(1, "Unexpected failure"));
+      //}
+      return tagfileResult;
     }
 
     public class JsonContractPropertyResolver : DefaultContractResolver
