@@ -38,4 +38,3 @@ This is actually the name we are going to use we append the actual service name 
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s-%s" $name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 58 | trimSuffix "-" -}}
 {{- end -}}
-{{- end -}}

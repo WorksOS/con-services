@@ -8,7 +8,7 @@ metadata:
     chart: {{ template "trex.chart" . }}
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
-  replicas: {{ .Values.mutable-gateway.replicaCount }}
+  replicas: {{ .Values.mutableGateway.replicaCount }}
   template:
     metadata:
       labels:
@@ -19,7 +19,7 @@ spec:
         component: {{ template "trex.deployname" . }}-mgateway
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
-      
+
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
@@ -28,7 +28,7 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.MutableGateway
         
         resources:
-{{ toYaml .Values.mutable-gateway.resources | indent 10 }}
+{{ toYaml .Values.mutableGateway.resources | indent 10 }}
         command: ["dotnet"]
         args: ["VSS.TRex.Mutable.Gateway.WebApi.dll"]
 

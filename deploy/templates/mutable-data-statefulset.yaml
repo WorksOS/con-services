@@ -13,7 +13,7 @@ spec:
       #this must match one of metadata.labels above
       component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
   # A number of Ignite pods to be started by Kubernetes initially.
-  replicas: {{ .Values.mutable-data.replicaCount }}
+  replicas: {{ .Values.mutableData.replicaCount }}
   template:
     metadata:
       labels:
@@ -34,7 +34,7 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.MutableData
         
         resources:
-{{ toYaml .Values.mutable-data.resources | indent 10 }}
+{{ toYaml .Values.mutableData.resources | indent 10 }}
 
         command: ["dotnet"]
         args: ["VSS.TRex.Server.MutableData.dll"]
@@ -78,4 +78,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.mutable-data.storageSize }}
+          storage: {{ .Values.mutableData.storageSize }}
