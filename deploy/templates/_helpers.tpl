@@ -30,3 +30,12 @@ Create chart name and version as used by the chart label.
 {{- define "trex.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+This is actually the name we are going to use we append the actual service name in the chart so needs to be less than 63 
+*/}}
+{{- define "trex.deployname" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s-%s" $name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 58 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}

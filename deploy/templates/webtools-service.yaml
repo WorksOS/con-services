@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
+  name: {{ template "trex.deployname" . }}-webtools
 spec:
   selector:
-    component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
+    component: {{ template "trex.deployname" . }}-webtools
   ports:
   - protocol: TCP
     port: 80

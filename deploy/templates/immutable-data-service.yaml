@@ -1,8 +1,8 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-immutable-data
+  name: {{ template "trex.deployname" . }}-immutable-data
 spec:
   selector:
-      component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-psn
+      component: {{ template "trex.deployname" . }}-psn
   clusterIP: None # custom value.

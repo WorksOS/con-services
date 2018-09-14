@@ -23,14 +23,14 @@ ingress:
 service:
   type: ClusterIP
 
-application-server:
+applicationServer:
   replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 1.6Gi
 
-design-elevation:
+designElevation:
   replicaCount: 1
   resources: 
     requests:
@@ -44,7 +44,7 @@ gateway:
       cpu: 300m
       memory: 512Mi
 
-immutable-data:
+immutableData:
   replicaCount: 1
   resources: 
     requests:
@@ -52,7 +52,7 @@ immutable-data:
       memory: 1.6Gi
   storageSize: 10Gi
 
-mutable-data:
+mutableData:
   replicaCount: 1
   resources: 
     requests:
@@ -60,7 +60,7 @@ mutable-data:
       memory: 1.6Gi
   storageSize: 10Gi
 
-mutable-gateway:
+mutableGateway:
   replicaCount: 1
   resources: 
     requests:
@@ -74,7 +74,7 @@ psnode:
       cpu: 300m
       memory: 1.6Gi
 
-tile-server:
+tileServer:
   replicaCount: 1
   resources: 
     requests:

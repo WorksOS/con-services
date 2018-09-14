@@ -2,9 +2,9 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
+  name: {{ template "trex.deployname" . }}-mgateway
   labels:
-    app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
@@ -15,18 +15,11 @@ spec:
         # This label has to be added to the selector's section of 
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
-        app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
-        component: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
+        app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-mgateway
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
-      #volumes:
-        # Custom name for the storage that holds Ignite's configuration
-        # which is example-kube.xml.
-        # TODO Workout peristance!
-        #- name: ignite-storage
-        #  persistentVolumeClaim:
-        #   # Must be equal to the PersistentVolumeClaim created before.
-        #   claimName: ignite-volume-claim	
+      
       containers:
         # Custom Ignite pod name.
       - name: ignite-node

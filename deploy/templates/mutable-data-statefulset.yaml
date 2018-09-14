@@ -4,7 +4,7 @@ kind: StatefulSet
 metadata:
   name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-mds
   labels:
-    app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
     component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
 spec:
@@ -20,7 +20,7 @@ spec:
         # This label has to be added to the selector's section of 
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
-        app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+        app: {{ template "trex.deployname" . }}
         component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
     spec:
       terminationGracePeriodSeconds: 10
@@ -70,7 +70,7 @@ spec:
         # Mounting the persistant storage - currently this is in temp which will change when we sort config
         - mountPath: "/persist/"
           name: trex-mutable-storage
-          
+
   volumeClaimTemplates:
   - metadata:
       name: trex-mutable-storage

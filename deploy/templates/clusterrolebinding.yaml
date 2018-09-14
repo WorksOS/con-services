@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: {{ template "trex.fullname" . }}-clusterrolebinding
   labels:
-    app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
 subjects:
   - kind: ServiceAccount
