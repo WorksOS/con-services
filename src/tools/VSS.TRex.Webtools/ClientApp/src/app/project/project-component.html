@@ -20,7 +20,7 @@
 <button (click)="panUp()">Up</button>
 <button (click)="panDown()">Down</button>
 <br />
-<img style="border:1px solid black" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" />
+<img style="border:1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" />
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
 <p><button (click)="getSimpleFullVolume()">Compute Full Volume</button> Volume: {{projectVolume}}</p>

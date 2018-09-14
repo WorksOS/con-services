@@ -8,12 +8,13 @@ import { VolumeResult } from '../project/project-volume-model';
   selector: 'project',
   templateUrl: './project-component.html',
   providers: [ProjectService]
+//  styleUrls: ['./project.component.less']
 })
 
 export class ProjectComponent {
   private zoomFactor: number = 0.2;
 
-  public projectUid: string;
+  public projectUid: string; 
   public mode: number = 0;
   public pixelsX: number = 850;
   public pixelsY: number = 500;
