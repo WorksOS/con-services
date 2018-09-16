@@ -32,13 +32,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jaeger" Version="0.1.1" />
+    <PackageReference Include="Jaeger" Version="0.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.1985401" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
-    <PackageReference Include="NewRelic.Agent.Api" Version="8.3.360" />
-    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
+    <PackageReference Include="NewRelic.Agent.Api" Version="8.6.45" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.5.0" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
   </ItemGroup>
 
   <ItemGroup>

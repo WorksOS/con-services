@@ -12,8 +12,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
-	    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.27.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.16" />
+	    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.5" />
 	    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.2" />
   </ItemGroup>
 
