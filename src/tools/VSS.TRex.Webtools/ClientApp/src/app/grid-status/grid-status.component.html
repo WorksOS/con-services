@@ -2,4 +2,4 @@
 
 <p>TREX GRIDS!</p>
 
-<button *ngFor="let grid of grids" (click)="activateGrid(grid)">{{ grid.isActive ? "Deactivate" : "Activate"  }} {{ grid.name }}</button>
+<button *ngFor="let grid of grids" (click)="toggleGridActivation(grid)">{{ grid.isActive ? "Deactivate" : "Activate"  }} {{ grid.name }}</button>
