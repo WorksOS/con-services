@@ -135,8 +135,18 @@ export class ProjectComponent {
     this.getTile();
   }
 
-  public getSimpleFullVolume() : void {
-    this.projectService.getSimpleFullVolume(this.projectUid).subscribe(volume =>
+  public getSimpleFullVolume(): void {
+    var filter = new CombinedFilter();
+
+    if (this.applyToViewOnly) {
+      filter.spatialFilter.isRectangle = true;
+      filter.spatialFilter.minX = this.tileExtents.minX;
+      filter.spatialFilter.minY = this.tileExtents.minY;
+      filter.spatialFilter.maxX = this.tileExtents.maxX;
+      filter.spatialFilter.maxY = this.tileExtents.maxY;
+    }
+
+    this.projectService.getSimpleFullVolume(this.projectUid, filter).subscribe(volume =>
       this.projectVolume = new VolumeResult(volume.cut, volume.cutArea, volume.fillArea, volume.fillArea, volume.totalCoverageArea));
   }
 
@@ -200,10 +210,7 @@ export class ProjectComponent {
     filter.spatialFilter = new SpatialFilter();
     filter.attributeFilter = new AttributeFilter();
 
-    filter.spatialFilter.field1 = "bob";
-    filter.attributeFilter.field2 = "mary";
-
-    this.projectService.testJSONParameter(filter);
+    this.projectService.testJSONParameter(filter).subscribe(x => x);
   }
 }
 

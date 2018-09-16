@@ -9,29 +9,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.TRex.DI;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Geometry;
-using VSS.TRex.Logging;
-using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Types;
-using VSS.TRex.Volumes;
-using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Volumes.GridFabric.Requests;
 
 namespace VSS.TRex.Webtools.Controllers
 {
   [Route("api/sandbox")]
-  public class SandboxController : Controller
+  public class SandboxController : ControllerBase
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
-
     [HttpGet("jsonparameter")]
-    public JsonResult GetJSONPameter([FromQuery] string param)
+    public JsonResult GetJSONParameter([FromQuery] string param)
     {
       var arg = Encoding.ASCII.GetString(Convert.FromBase64String(param));
       CombinedFilter filter = JsonConvert.DeserializeObject<CombinedFilter>(arg);
