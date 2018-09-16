@@ -45,7 +45,7 @@ spec:
         - name: ENABLE_TFA_SERVICE
           value: "true"
         - name: TFA_SERVICE_BASEURL
-          value: "http://tagfileauth.dev.k8s.vspengg.com/"
+          value: "http://tagfileauth.alpha.k8s.vspengg.com/"
         - name: IS_KUBERNETES
           value: "true"
 
