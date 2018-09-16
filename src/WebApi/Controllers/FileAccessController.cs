@@ -35,8 +35,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
-    public FileAccessController(ILoggerFactory logger,
-        IFileRepository fileAccess)
+    public FileAccessController(ILoggerFactory logger, IFileRepository fileAccess)
     {
       this.logger = logger;
       log = logger.CreateLogger<FileAccessController>();
@@ -44,32 +43,30 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets requested file for Raptor from TCC and returns it as an image/png. 
+    /// Gets requested file from TCC.
     /// </summary>
-    /// <param name="request">Details of the requested file</param>
-    /// <returns>File contents as an image/png.
-    /// </returns>
     [Route("api/v1/rawfiles")]
     [HttpPost]
     public FileResult PostRaw([FromBody] FileDescriptor request)
     {
-      log.LogInformation("Get file from TCC as an image/png: " + JsonConvert.SerializeObject(request));
+      log.LogInformation($"Get file from TCC: {JsonConvert.SerializeObject(request)}");
 
       try
       {
         request.Validate();
+
         if (RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) is RawFileAccessResult result)
         {
-          return new FileStreamResult(new MemoryStream(result.fileContents), "image/png");
+          return new FileStreamResult(new MemoryStream(result.fileContents), "application/octet-stream");
         }
 
         throw new ServiceException(HttpStatusCode.NoContent,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Raptor failed to return a file"));
+                $"Failed to return a file '{request.FilespaceId}/{request.FileName}'"));
       }
       finally
       {
-        log.LogInformation("Get file from TCC as an image/png: " + Response.StatusCode);
+        log.LogInformation($"Get file from TCC, response code: {Response.StatusCode}");
       }
     }
   }

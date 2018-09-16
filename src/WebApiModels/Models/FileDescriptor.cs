@@ -14,6 +14,9 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Models
   /// </summary>
   public class FileDescriptor : IValidatable
   {
+    private const int MAX_FILE_NAME = 1024;
+    private const int MAX_PATH = 2048;
+
     /// <summary>
     /// The id of the filespace in TCC where the file is located.
     /// </summary>
@@ -37,49 +40,23 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Models
     [Required]
     public string FileName { get; private set; }
 
-   /// <summary>
+    /// <summary>
     /// Private constructor
     /// </summary>
     private FileDescriptor()
-    {}
+    { }
 
     /// <summary>
     /// Create instance of FileDescriptor
     /// </summary>
-    public static FileDescriptor CreateFileDescriptor
-        (
-          string filespaceId,
-          string path,
-          string fileName
-        )
+    public static FileDescriptor CreateFileDescriptor(string filespaceId, string path, string fileName)
     {
       return new FileDescriptor
-             {
-               FilespaceId = filespaceId,
-               Path = path,
-               FileName = fileName
-             };
-    }
-
-    public static FileDescriptor EmptyFileDescriptor
-    {
-      get { return emptyDescriptor; }
-    }
-
-    /// <summary>
-    /// Create example instance of FileDescriptor to display in Help documentation.
-    /// </summary>
-    public static FileDescriptor HelpSample
-    {
-      get
       {
-        return new FileDescriptor()
-        {
-          FilespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
-          Path = "BC Data/Sites/Integration10/Designs",
-          FileName = "Cycleway.ttm"
-        };
-      }
+        FilespaceId = filespaceId,
+        Path = path,
+        FileName = fileName
+      };
     }
 
     /// <summary>
@@ -87,14 +64,14 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (string.IsNullOrEmpty(this.FilespaceId) || string.IsNullOrEmpty(this.Path) ||
-          string.IsNullOrEmpty(this.FileName))
+      if (string.IsNullOrEmpty(FilespaceId) ||
+          string.IsNullOrEmpty(Path) ||
+          string.IsNullOrEmpty(FileName))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  "Filespace Id, filespace name, path and file name are all required"));           
+                  "Filespace Id, filespace name, path and file name are all required"));
       }
-        
     }
 
     /// <summary>
@@ -102,23 +79,12 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Models
     /// </summary>
     public override string ToString()
     {
-      return String.Format("{0}: {1}, {2}", FileName, FilespaceId, Path);
+      return $"{FileName}: {FilespaceId}, {Path}";
     }
 
     public void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
       throw new NotImplementedException();
     }
-
-
-    private const int MAX_FILE_NAME = 1024;
-    private const int MAX_PATH = 2048;
-
-    private static FileDescriptor emptyDescriptor = new FileDescriptor
-                                                    {
-                                                        FilespaceId = string.Empty,
-                                                        Path = string.Empty,
-                                                        FileName = string.Empty
-                                                    };
   }
 }
