@@ -3,7 +3,7 @@ import { ProjectExtents } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
-import { CombinedFilter, SpatialFilter, AttributeFilter} from '../project/project-filter-model';
+import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../project/project-filter-model';
 
 @Component({
   selector: 'project',
@@ -139,11 +139,16 @@ export class ProjectComponent {
     var filter = new CombinedFilter();
 
     if (this.applyToViewOnly) {
-      filter.spatialFilter.isRectangle = true;
-      filter.spatialFilter.minX = this.tileExtents.minX;
-      filter.spatialFilter.minY = this.tileExtents.minY;
-      filter.spatialFilter.maxX = this.tileExtents.maxX;
-      filter.spatialFilter.maxY = this.tileExtents.maxY;
+      filter.spatialFilter.coordsAreGrid = true;
+
+      filter.spatialFilter.isSpatial = true;
+      filter.spatialFilter.Fence.isRectangle = true;
+
+      filter.spatialFilter.Fence.Points = [];
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.minX, this.tileExtents.minY));
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.minX, this.tileExtents.maxY));
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.maxX, this.tileExtents.maxY));
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.maxX, this.tileExtents.minY));
     }
 
     this.projectService.getSimpleFullVolume(this.projectUid, filter).subscribe(volume =>

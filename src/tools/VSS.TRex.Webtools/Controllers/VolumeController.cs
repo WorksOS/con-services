@@ -43,10 +43,11 @@ namespace VSS.TRex.Webtools.Controllers
 
       var baseFilter = JsonConvert.DeserializeObject<CombinedFilter>(filterJson);
       baseFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
-
+      baseFilter.SpatialFilter.Fence?.UpdateExtents();
       var topFilter = JsonConvert.DeserializeObject<CombinedFilter>(filterJson);
+      topFilter.SpatialFilter.Fence?.UpdateExtents();
 
-       var request = new SimpleVolumesRequest_ApplicationService();
+      var request = new SimpleVolumesRequest_ApplicationService();
        var response = request.Execute(new SimpleVolumesRequestArgument
        {
          SiteModelID = Guid.Parse(siteModelID),

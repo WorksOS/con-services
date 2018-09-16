@@ -22,6 +22,21 @@
 "hasSurfaceDesignMask":false,"hasSpatialOrPostionalFilters":false}}
 */
 
+export class FencePoint {
+  public X: number;
+  public Y: number;
+
+  public constructor(x: number, y: number) {
+    this.X = x;
+    this.Y = y;
+  }
+}
+
+export class Fence {
+  public Points: FencePoint[];
+  public isRectangle: boolean = false;
+}
+
 export class AttributeFilter {
   public startTime: string;//"startTime": "0001-01-01T00:00:00"
   public endTime: string; //"endTime": "9999-12-31T23:59:59.9999999"
@@ -30,9 +45,9 @@ export class AttributeFilter {
 }
 
 export class SpatialFilter {
+  public coordsAreGrid: boolean = false;
   public isSpatial: boolean = false;
   public isPositional: boolean = false;
-  public isRectangle: boolean = false;
   public isSquare: boolean = false;
   public minX: number = 0;
   public minY: number = 0;
@@ -41,6 +56,8 @@ export class SpatialFilter {
   public positionX:number = 0;
   public positionY: number = 0;
   public positionRadius: number = 0;
+
+  public Fence: Fence = new Fence();
 }
 
 export class CombinedFilter {
