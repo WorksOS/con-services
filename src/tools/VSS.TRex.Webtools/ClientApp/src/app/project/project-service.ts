@@ -48,4 +48,10 @@ export class ProjectService {
   public getSimpleFullVolume(projectUid: string): Observable<VolumeResult> {
     return this.executeRequest<VolumeResult>('getSimpleFullVolume', `${this.baseUrl}api/volumes/${projectUid}`);
   }
+
+  public testJSONParameter(param: any): Observable<string> {
+    var paramString : string = encodeURI(btoa(JSON.stringify(param)));
+
+    return this.executeRequest<string>('testJSONParameter', `${this.baseUrl}api/sandbox/jsonparameter?param=${paramString}`);
+  }
 }
