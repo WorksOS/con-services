@@ -195,6 +195,8 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public override void FillWithTestPattern()
     {
+      const short DUMMY_CMV_VALUE = 1;
+
       ForEach((x, y) =>
       {
         Cells[x, y] = new SubGridCellPassDataCMVEntryRecord
@@ -209,11 +211,13 @@ namespace VSS.TRex.SubGridTrees.Client
           Cells[x, y].PreviousTargetCMV = Cells[x, y - 1].TargetCMV;
         }
 
+        // The PreviousMeasuredCMV and PreviousTargetCMV values below are set to non-zero values as
+        // these cannot be zeros.
         if (Cells[x, y].PreviousMeasuredCMV == 0)
-          Cells[x, y].PreviousMeasuredCMV = 1;
+          Cells[x, y].PreviousMeasuredCMV = DUMMY_CMV_VALUE;
 
         if (Cells[x, y].PreviousTargetCMV == 0)
-          Cells[x, y].PreviousTargetCMV = 1;
+          Cells[x, y].PreviousTargetCMV = DUMMY_CMV_VALUE;
       });
     }
 

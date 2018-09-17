@@ -7,6 +7,10 @@ using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.Analytics.CMVChangeStatistics
 {
+  /// <summary>
+  /// Implements the specific business rules for calculating a CMV change statistics.
+  /// The CMV change is exposed on the client as CMV % change.
+  /// </summary>
   public class CMVChangeStatisticsAggregator : DataStatisticsAggregator
   {
     /// <summary>

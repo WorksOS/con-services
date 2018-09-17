@@ -5,7 +5,8 @@ using VSS.TRex.GridFabric.Interfaces;
 namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
 {
   /// <summary>
-  /// The response state returned from a CMV change statistics request
+  /// The response state returned from a CMV change statistics request.
+  /// The CMV change is exposed on the client as CMV % change.
   /// </summary>
   public class CMVChangeStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<CMVChangeStatisticsResponse>, IAnalyticsOperationResponseResultConversion<CMVChangeStatisticsResult>
   {

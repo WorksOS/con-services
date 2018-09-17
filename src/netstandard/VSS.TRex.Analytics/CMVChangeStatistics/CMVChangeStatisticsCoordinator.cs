@@ -11,6 +11,7 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
   /// <summary>
   /// Computes CMV change statistics. Executes in the 'application service' layer and acts as the coordinator
   /// for the request onto the cluster compute layer.
+  /// The CMV change is exposed on the client as CMV % change.
   /// </summary>
   public class CMVChangeStatisticsCoordinator : BaseAnalyticsCoordinator<CMVChangeStatisticsArgument, CMVChangeStatisticsResponse>
   {
