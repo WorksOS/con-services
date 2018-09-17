@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.TRex.Analytics.CMVChangeStatistics;
+using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Analytics.CutFillStatistics;
@@ -132,7 +134,7 @@ namespace TRexIgniteTest
       }
       catch (Exception ex)
 	    {
-	      MessageBox.Show($"GatewayRender Error:{ex.Message}");
+	      MessageBox.Show($@"GatewayRender Error:{ex.Message}");
 	      return 1;
 	    }
 
@@ -149,7 +151,7 @@ namespace TRexIgniteTest
 
 				if (siteModel == null)
 				{
-						MessageBox.Show($"Site model {ID()} is unavailable");
+						MessageBox.Show($@"Site model {ID()} is unavailable");
 						return null;
 				}
 
@@ -207,7 +209,7 @@ namespace TRexIgniteTest
 				}
 				catch (Exception E)
 				{
-						MessageBox.Show($"Exception: {E}");
+						MessageBox.Show($@"Exception: {E}");
 						return null;
 				}
 		}
@@ -232,12 +234,12 @@ namespace TRexIgniteTest
 	    ProfileRequestResponse Response = request.Execute(arg);
 
 	    if (Response == null)
-	      MessageBox.Show("Profile response is null");
+	      MessageBox.Show(@"Profile response is null");
 	    else
 	    if (Response.ProfileCells == null)
-	      MessageBox.Show("Profile response contains no profile cells");
+	      MessageBox.Show(@"Profile response contains no profile cells");
 	    else
-	      MessageBox.Show($"Profile line returned a profile result of {Response?.ResultStatus} and {Response?.ProfileCells?.Count ?? 0} cells");
+	      MessageBox.Show($@"Profile line returned a profile result of {Response?.ResultStatus} and {Response?.ProfileCells?.Count ?? 0} cells");
 	  }
 
 	  private BoundingWorldExtent3D GetZoomAllExtents()
@@ -246,7 +248,7 @@ namespace TRexIgniteTest
 
 		  if (siteModel == null)
 		  {
-		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    MessageBox.Show($@"Site model {ID()} is unavailable");
 		    return null;
 		  }
 
@@ -493,7 +495,8 @@ namespace TRexIgniteTest
 						results.Append($"Run {i}: Images:{nImages}, Time:{sw.Elapsed}\n");
 				}
 
-				MessageBox.Show($"Results:\n{results.ToString()}");
+				MessageBox.Show($@"Results:
+{results.ToString()}");
 				//MessageBox.Show($"Images:{nImages}, Time:{sw.Elapsed}");
 		}
 
@@ -620,7 +623,7 @@ namespace TRexIgniteTest
 
 						if (ignite == null)
 						{
-								MessageBox.Show($"No ignite reference for {TRexGrids.GridName(mutability)} grid");
+								MessageBox.Show($@"No ignite reference for {TRexGrids.GridName(mutability)} grid");
 								return;
 						}
 
@@ -813,7 +816,7 @@ namespace TRexIgniteTest
 
 		  if (siteModel == null)
 		  {
-		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    MessageBox.Show($@"Site model {ID()} is unavailable");
 		    return null;
 		  }
 
@@ -915,11 +918,11 @@ namespace TRexIgniteTest
 
 				if (result?.Count() > 0)
 				{
-						MessageBox.Show($"Items: {result.Aggregate("", (accumulator, item) => accumulator + item.Value + " ")}");
+						MessageBox.Show($@"Items: {result.Aggregate("", (accumulator, item) => accumulator + item.Value + " ")}");
 				}
 				else
 				{
-						MessageBox.Show("Query result is null or empty");
+						MessageBox.Show(@"Query result is null or empty");
 				}
 		}
 
@@ -943,7 +946,7 @@ namespace TRexIgniteTest
 				}
 				catch (Exception ex)
 				{
-						MessageBox.Show($"Exception: {ex}");
+						MessageBox.Show($@"Exception: {ex}");
 				}
 		}
 
@@ -955,7 +958,7 @@ namespace TRexIgniteTest
 
 		  if (siteModel == null)
 		  {
-		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    MessageBox.Show($@"Site model {ID()} is unavailable");
 		    return;
 		  }
 
@@ -964,8 +967,8 @@ namespace TRexIgniteTest
 
       PriorProcessingMessage();
 
-			CutFillOperation operation = new CutFillOperation();
-			CutFillResult result = operation.Execute(new CutFillStatisticsArgument()
+			CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
+			CutFillStatisticsResult result = operation.Execute(new CutFillStatisticsArgument()
 			{
 			    ProjectID = siteModel.ID,
 					Filters = new FilterSet {Filters = new [] { new CombinedFilter() } },
@@ -994,7 +997,7 @@ namespace TRexIgniteTest
 
 		  if (siteModel == null)
 		  {
-		    MessageBox.Show($"Site model {ID()} is unavailable");
+		    MessageBox.Show($@"Site model {ID()} is unavailable");
 		    return;
 		  }
 
@@ -1057,7 +1060,7 @@ namespace TRexIgniteTest
 					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTreeConsts.DefaultCellSize, 0);
 			}
 
-			MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
+			MessageBox.Show($@"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
 
 			Design ttmDesign = new Design(Guid.Empty, new DesignDescriptor(Guid.Empty, "", "", @"C:\Temp\", "Bug36372.ttm", 0.0), extents);
 			sw.Reset();
@@ -1068,7 +1071,7 @@ namespace TRexIgniteTest
 					bool result = design.InterpolateHeights(Patch, 247500.0, 193350.0, SubGridTreeConsts.DefaultCellSize, 0);
 			}
 
-			MessageBox.Show($"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
+			MessageBox.Show($@"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
 		}
 
 		private void btnRedraw_Click_1(object sender, EventArgs e)
@@ -1113,7 +1116,7 @@ namespace TRexIgniteTest
 
 				if (this.edtTagfile.Text == string.Empty)
 				{
-						MessageBox.Show("Missing tagfile");
+						MessageBox.Show(@"Missing tagfile");
 						return;
 				}
 				try
@@ -1147,7 +1150,7 @@ namespace TRexIgniteTest
 						}
 
 						var res = request.Execute(arg);
-						MessageBox.Show($"Submission Result:{res.Success}, File:{res.FileName}, ErrorMessage:{res.Message}");
+						MessageBox.Show($@"Submission Result:{res.Success}, File:{res.FileName}, ErrorMessage:{res.Message}");
 
 				}
 				catch (Exception exception)
@@ -1194,7 +1197,7 @@ namespace TRexIgniteTest
 
             if (this.edtTagfile.Text == string.Empty)
             {
-                MessageBox.Show("Missing tagfile");
+                MessageBox.Show(@"Missing tagfile");
                 return;
             }
             try
@@ -1214,7 +1217,7 @@ namespace TRexIgniteTest
                                   };
 
                 td = TagFileRepository.GetTagfile(td);
-                MessageBox.Show($"ProjectID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
+                MessageBox.Show($@"ProjectID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
 
             }
             catch (Exception exception)
@@ -1245,7 +1248,7 @@ namespace TRexIgniteTest
         Filters = new FilterSet(new [] {new CombinedFilter() })
       });
 
-      MessageBox.Show($"Patch response: Total pages required: {result.TotalNumberOfPagesToCoverFilteredData}, PageSize: {result.MaxPatchSize}, Page number {result.PatchNumber}, Number of subgrids in patch: {result.Patch.Length}");
+      MessageBox.Show($@"Patch response: Total pages required: {result.TotalNumberOfPagesToCoverFilteredData}, PageSize: {result.MaxPatchSize}, Page number {result.PatchNumber}, Number of subgrids in patch: {result.Patch.Length}");
 	}
 
     private void btnKill_Click(object sender, EventArgs e)
@@ -1286,7 +1289,7 @@ namespace TRexIgniteTest
 
       if (siteModel == null)
       {
-        MessageBox.Show($"Site model {ID()} is unavailable");
+        MessageBox.Show($@"Site model {ID()} is unavailable");
         return;
       }
 
@@ -1332,7 +1335,7 @@ namespace TRexIgniteTest
 
       if (siteModel == null)
       {
-        MessageBox.Show($"Site model {ID()} is unavailable");
+        MessageBox.Show($@"Site model {ID()} is unavailable");
         return;
       }
 
@@ -1374,13 +1377,13 @@ namespace TRexIgniteTest
       }
     }
 
-    private void MDPSummaryButton_Click(object sender, EventArgs e)
+	  private void MDPSummaryButton_Click(object sender, EventArgs e)
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
 
       if (siteModel == null)
       {
-        MessageBox.Show($"Site model {ID()} is unavailable");
+        MessageBox.Show($@"Site model {ID()} is unavailable");
         return;
       }
 
@@ -1428,7 +1431,7 @@ namespace TRexIgniteTest
 
       if (siteModel == null)
       {
-        MessageBox.Show($"Site model {ID()} is unavailable");
+        MessageBox.Show($@"Site model {ID()} is unavailable");
         return;
       }
 
@@ -1476,7 +1479,7 @@ namespace TRexIgniteTest
 
       if (siteModel == null)
       {
-        MessageBox.Show($"Site model {ID()} is unavailable");
+        MessageBox.Show($@"Site model {ID()} is unavailable");
         return;
       }
 
@@ -1515,6 +1518,52 @@ namespace TRexIgniteTest
       }
     }
 
+	  private void CMVChangeButton_Click(object sender, EventArgs e)
+	  {
+	    var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
+	    var cmvPercentBands = new double[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 };
+
+	    if (siteModel == null)
+	    {
+	      MessageBox.Show($@"Site model {ID()} is unavailable");
+	      return;
+	    }
+
+	    Stopwatch sw = new Stopwatch();
+	    sw.Start();
+	    try
+	    {
+	      PriorProcessingMessage();
+
+	      CMVChangeStatisticsOperation operation = new CMVChangeStatisticsOperation();
+	      CMVChangeStatisticsResult result = operation.Execute(
+	        new CMVChangeStatisticsArgument()
+	        {
+	          ProjectID = siteModel.ID,
+	          Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+	          CMVChangeDetailsDatalValues = cmvPercentBands
+	        }
+	      );
+
+	      textBoxTest.Text = String.Empty;
+
+	      if (result != null)
+	      {
+	        AppendTextBoxWithNewLine($"CMV Change Details Results (in {sw.Elapsed}) :");
+	        AppendTextBoxWithNewLine("================================================");
+
+	        for (int i = 0; i < cmvPercentBands.Length; i++)
+	          AppendTextBoxWithNewLine($"{cmvPercentBands[i]} - {result.Percents[i]:##0.#0}%");
+	      }
+	      else
+	        textBoxTest.AppendText("No result");
+      }
+	    finally
+	    {
+	      sw.Stop();
+	    }
+    }
+
     private void PassCountDetailsButton_Click(object sender, EventArgs e)
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
@@ -1522,7 +1571,7 @@ namespace TRexIgniteTest
 
       if (siteModel == null)
       {
-        MessageBox.Show($"Site model {ID()} is unavailable");
+        MessageBox.Show($@"Site model {ID()} is unavailable");
         return;
       }
 
@@ -1589,7 +1638,7 @@ namespace TRexIgniteTest
 
       if (siteModel == null)
       {
-        MessageBox.Show($"Site model {ID()} is unavailable");
+        MessageBox.Show($@"Site model {ID()} is unavailable");
         return;
       }
 

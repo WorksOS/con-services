@@ -34,7 +34,7 @@ namespace SurveyedSurfaceManager
             if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) ||
                 (DIContext.Obtain<IDesignsService>() == null))
             {
-                MessageBox.Show("Not connected to service");
+                MessageBox.Show(@"Not connected to service");
                 return false;
             }
             else
@@ -53,14 +53,14 @@ namespace SurveyedSurfaceManager
             // Get the site model ID
             if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
             {
-                MessageBox.Show("Invalid Site Model ID");
+                MessageBox.Show(@"Invalid Site Model ID");
                 return;
             }
 
             // Get the offset
             if (!double.TryParse(txtOffset.Text, out double offset))
             {
-                MessageBox.Show("Invalid design offset");
+                MessageBox.Show(@"Invalid design offset");
                 return;
             }
 
@@ -73,7 +73,7 @@ namespace SurveyedSurfaceManager
                 DesignLoadResult result = TTM.LoadFromFile(fileName);
                 if (result != DesignLoadResult.Success)
                 {
-                    MessageBox.Show($"Unable to load '{fileName}, with error = {result}");
+                    MessageBox.Show($@"Unable to load '{fileName}, with error = {result}");
                     return;
                 }
 
@@ -104,7 +104,7 @@ namespace SurveyedSurfaceManager
             }
             catch (Exception E)
             {
-                MessageBox.Show($"Exception: {E}");
+                MessageBox.Show($@"Exception: {E}");
             }
         }
 
@@ -124,7 +124,7 @@ namespace SurveyedSurfaceManager
             }
             catch (Exception E)
             {
-                MessageBox.Show($"Exception: {E}");
+                MessageBox.Show($@"Exception: {E}");
             }
         }
 
@@ -140,20 +140,20 @@ namespace SurveyedSurfaceManager
                 // Get the site model ID
                 if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
                 {
-                    MessageBox.Show("Invalid Site Model ID");
+                    MessageBox.Show(@"Invalid Site Model ID");
                     return;
                 }
 
                 ISurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
 
                 if (ss == null || ss.Count == 0)
-                    MessageBox.Show("No surveyed surfaces");
+                    MessageBox.Show(@"No surveyed surfaces");
                 else
                     MessageBox.Show("Surveyed Surfaces:\n" + ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
             }
             catch (Exception E)
             {
-                MessageBox.Show($"Exception: {E}");
+                MessageBox.Show($@"Exception: {E}");
             }
         }
 
@@ -178,14 +178,14 @@ namespace SurveyedSurfaceManager
             // Get the site model ID
             if (!Guid.TryParse(txtSiteModelID.Text, out Guid SiteModelID))
             {
-                MessageBox.Show("Invalid Site Model ID");
+                MessageBox.Show(@"Invalid Site Model ID");
                 return;
             }
 
             // Get the site model ID
             if (!Guid.TryParse(txtSurveyedSurfaceID.Text, out Guid SurveydSurfaceID))
             {
-                MessageBox.Show("Invalid Surveyed Surface ID");
+                MessageBox.Show(@"Invalid Surveyed Surface ID");
                 return;
             }
 
@@ -203,11 +203,11 @@ namespace SurveyedSurfaceManager
                     result = SurveyedSurfaceService.RemoveDirect(SiteModelID, SurveydSurfaceID);
                 }
 
-                MessageBox.Show($"Result for removing surveyed surface ID {SurveydSurfaceID} from Site Model {SiteModelID}: {result}");
+                MessageBox.Show($@"Result for removing surveyed surface ID {SurveydSurfaceID} from Site Model {SiteModelID}: {result}");
             }
             catch (Exception E)
             {
-                MessageBox.Show($"Exception: {E}");
+                MessageBox.Show($@"Exception: {E}");
             }
         }
 
@@ -221,14 +221,14 @@ namespace SurveyedSurfaceManager
             // Get the site model ID
             if (!Guid.TryParse(txtSiteModelID.Text, out Guid SiteModelID))
             {
-                MessageBox.Show("Invalid Site Model ID");
+                MessageBox.Show(@"Invalid Site Model ID");
                 return;
             }
 
             // Get the design ID
             if (!Guid.TryParse(txtDesignID.Text, out Guid DesignID))
             {
-                MessageBox.Show("Invalid design ID");
+                MessageBox.Show(@"Invalid design ID");
                 return;
             }
 
@@ -237,11 +237,11 @@ namespace SurveyedSurfaceManager
             {
                 bool result = DIContext.Obtain<IDesignsService>().RemoveDirect(SiteModelID, DesignID);
 
-                MessageBox.Show($"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
+                MessageBox.Show($@"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
             }
             catch (Exception E)
             {
-                MessageBox.Show($"Exception: {E}");
+                MessageBox.Show($@"Exception: {E}");
             }
         }
 
@@ -257,20 +257,20 @@ namespace SurveyedSurfaceManager
                 // Get the site model ID
                 if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
                 {
-                    MessageBox.Show("Invalid Site Model ID");
+                    MessageBox.Show(@"Invalid Site Model ID");
                     return;
                 }
 
                 IDesigns designList = DIContext.Obtain<IDesignsService>().ListDirect(ID);
 
                 if (designList == null || designList.Count == 0)
-                    MessageBox.Show("No designs");
+                    MessageBox.Show(@"No designs");
                 else
                     MessageBox.Show("Designs:\n" + designList.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
             }
             catch (Exception E)
             {
-                MessageBox.Show($"Exception: {E}");
+                MessageBox.Show($@"Exception: {E}");
             }
         }
 
@@ -284,14 +284,14 @@ namespace SurveyedSurfaceManager
             // Get the site model ID
             if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
             {
-                MessageBox.Show("Invalid Site Model ID");
+                MessageBox.Show(@"Invalid Site Model ID");
                 return;
             }
 
             // Get the offset
             if (!double.TryParse(txtOffset.Text, out double offset))
             {
-                MessageBox.Show("Invalid design offset");
+                MessageBox.Show(@"Invalid design offset");
                 return;
             }
 
@@ -317,7 +317,7 @@ namespace SurveyedSurfaceManager
             }
             catch (Exception E)
             {
-                MessageBox.Show($"Exception: {E}");
+                MessageBox.Show($@"Exception: {E}");
             }
         }
 

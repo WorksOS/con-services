@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace VSS.TRex.Analytics.Foundation.Aggregators
 {
@@ -115,6 +116,31 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
     protected virtual void DataCheck(DataStatisticsAggregator other)
     {
       // Nothing to implement...
+    }
+
+    protected virtual void IncrementCountOfTransition(double value)
+    {
+      if (DetailsDataValues == null || Counts == null)
+        return;
+
+      Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
+
+      for (int i = 0; i < DetailsDataValues.Length; i++)
+      {
+        var startTransitionValue = DetailsDataValues[i];
+        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : GetMaximumValue();
+
+        if (value >= startTransitionValue && value < endTransitionValue)
+        {
+          Counts[i]++;
+          break;
+        }
+      }
+    }
+
+    protected virtual int GetMaximumValue()
+    {
+      throw new NotImplementedException();
     }
   }
 }

@@ -5,7 +5,6 @@ using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -44,8 +43,6 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       clientGrid.FillWithTestPattern();
 
-      var dLength = clientGrid.Cells.Length;
-      var length = (short) Math.Sqrt(dLength);
       aggregator.CellSize = CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];
@@ -94,8 +91,6 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics
 
       clientGrid.FillWithTestPattern();
 
-      var dLength = clientGrid.Cells.Length;
-      var length = (short)Math.Sqrt(dLength);
       aggregator.CellSize = CELL_SIZE;
       aggregator.DetailsDataValues = new[] { 1, 5, 10, 15, 20, 25, 31 };
       aggregator.Counts = new long[aggregator.DetailsDataValues.Length];

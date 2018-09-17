@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     /// <summary>
     /// Implements the specific business rules for calculating a cut fill summary
     /// </summary>
-    public class CutFillAggregator : DataStatisticsAggregator
+    public class CutFillStatisticsAggregator : DataStatisticsAggregator
   {
         /// <summary>
         /// The array of height offsets representing the cut and fill bands of the cut-fill isopac surface being analysed
@@ -17,14 +17,9 @@ namespace VSS.TRex.Analytics.CutFillStatistics
         public double[] Offsets { get; set; }
 
         /// <summary>
-        /// The set of counters relevant to the supplied cut fill offsets
-        /// </summary>
-        public long[] Counts { get; set; }
-
-        /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public CutFillAggregator()
+        public CutFillStatisticsAggregator()
         {
             Counts = new long[7];
         }
