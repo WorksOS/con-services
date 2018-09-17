@@ -329,11 +329,11 @@ this.TagFileDirectSubmission_BadRequest("FilenameTooLong", "-1", ((string[])(nul
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTagFile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullProjectUid")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "NullProjectUid")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "8")]
         public virtual void TagFileDirectSubmission_BadRequest_NullProjectUid()
         {
 #line 41
-this.TagFileDirectSubmission_BadRequest("NullProjectUid", "-1", ((string[])(null)));
+this.TagFileDirectSubmission_BadRequest("NullProjectUid", "8", ((string[])(null)));
 #line hidden
         }
         

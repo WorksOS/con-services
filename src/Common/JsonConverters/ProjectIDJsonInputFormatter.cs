@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -31,11 +30,12 @@ namespace VSS.Productivity3D.Common.JsonConverters
         {
           if (!projectId.ProjectUid.HasValue)
           {
-            throw new ArgumentException("Project identifier cannot be null");
+            return result;
           }
 
-          projectId.ProjectId = await ((RaptorPrincipal) context.HttpContext.User).GetLegacyProjectId(projectId.ProjectUid.Value);
+          projectId.ProjectId = await ((RaptorPrincipal)context.HttpContext.User).GetLegacyProjectId(projectId.ProjectUid.Value);
         }
+
       }
 
       return result;
