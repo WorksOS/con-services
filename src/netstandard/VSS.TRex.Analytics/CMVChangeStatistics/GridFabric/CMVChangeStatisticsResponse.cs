@@ -28,7 +28,8 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
       return new CMVChangeStatisticsResult
       {
         ResultStatus = ResultStatus,
-        Counts = Counts
+        Counts = Counts,
+        TotalAreaCoveredSqMeters = SummaryProcessedArea
       };
     }
   }

@@ -1541,7 +1541,7 @@ namespace TRexIgniteTest
 	        {
 	          ProjectID = siteModel.ID,
 	          Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-	          CMVChangeDatalValues = cmvPercentBands
+	          CMVChangeDetailsDatalValues = cmvPercentBands
 	        }
 	      );
 

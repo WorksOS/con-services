@@ -10,6 +10,6 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
     /// <summary>
     /// CMV change details values.
     /// </summary>
-    public double[] CMVChangeDatalValues { get; set; }
+    public double[] CMVChangeDetailsDatalValues { get; set; }
   }
 }

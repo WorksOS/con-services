@@ -21,8 +21,8 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
       RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.Grid.CellSize,
-      CMVPercentChangeDetailsDataValues = argument.CMVChangeDatalValues,
-      Counts = argument.CMVChangeDatalValues != null ? new long[argument.CMVChangeDatalValues.Length] : null
+      CMVChangeDetailsDataValues = argument.CMVChangeDetailsDatalValues,
+      Counts = argument.CMVChangeDetailsDatalValues != null ? new long[argument.CMVChangeDetailsDatalValues.Length] : null
     };
 
     public override AnalyticsComputor ConstructComputor(CMVChangeStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
@@ -32,7 +32,7 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.CCVPercentChange
+      RequestedGridDataType = GridDataType.CCV
     };
 
     public override void ReadOutResults(AggregatorBase aggregator, CMVChangeStatisticsResponse response)

@@ -118,7 +118,7 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
       // Nothing to implement...
     }
 
-    protected void IncrementCountOfTransition(double value)
+    protected virtual void IncrementCountOfTransition(double value)
     {
       if (DetailsDataValues == null || Counts == null)
         return;

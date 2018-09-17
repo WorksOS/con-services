@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Analytics.Foundation.Aggregators;
+﻿using System.Diagnostics;
+using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -11,11 +12,26 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
     /// <summary>
     /// Details data values.
     /// </summary>
-    public double[] CMVPercentChangeDetailsDataValues { get; set; }
+    public double[] CMVChangeDetailsDataValues { get; set; }
 
-    protected override int GetMaximumValue()
+    protected override void IncrementCountOfTransition(double value)
     {
-      return CellPassConsts.NullCCV;
+      if (CMVChangeDetailsDataValues == null || Counts == null)
+        return;
+
+      Debug.Assert(CMVChangeDetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
+
+      for (int i = 0; i < CMVChangeDetailsDataValues.Length; i++)
+      {
+        var startTransitionValue = CMVChangeDetailsDataValues[i];
+        var endTransitionValue = i < CMVChangeDetailsDataValues.Length - 1 ? CMVChangeDetailsDataValues[i + 1] : CellPassConsts.NullCCV;
+
+        if (value >= startTransitionValue && value < endTransitionValue)
+        {
+          Counts[i]++;
+          break;
+        }
+      }
     }
 
     /// <summary>
