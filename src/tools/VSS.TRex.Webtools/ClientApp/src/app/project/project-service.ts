@@ -38,6 +38,10 @@ export class ProjectService {
     return this.executeRequest<ProjectExtents>('getProjectExtents', `sitemodels/${projectUid}/extents`);
   }
 
+  public getProjectDateRange(projectUid: string): Observable<any> {
+    return this.executeRequest<any>('getProjectDateRange', `sitemodels/${projectUid}/daterange`);
+  }
+
   public getDisplayModes(): Observable<DisplayMode[]> {
     return this.executeRequest<DisplayMode[]>('getDisplayModes', `tiles/modes`);
   }

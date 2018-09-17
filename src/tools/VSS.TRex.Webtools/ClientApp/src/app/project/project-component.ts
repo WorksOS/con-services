@@ -28,6 +28,9 @@ export class ProjectComponent {
   public projectExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public tileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 
+  public projectStartDate: Date = new Date();
+  public projectEndDate: Date = new Date();
+
   public projectVolume: VolumeResult = new VolumeResult(0, 0, 0, 0, 0);
 
   public mousePixelLocation : string;
@@ -65,6 +68,11 @@ export class ProjectComponent {
     this.projectService.getProjectExtents(this.projectUid).subscribe(extent => {
       this.projectExtents = new ProjectExtents(extent.minX, extent.minY, extent.maxX, extent.maxY);
       this.zoomAll();
+    });
+
+    this.projectService.getProjectDateRange(this.projectUid).subscribe(dateRange => {
+      this.projectStartDate = dateRange.item1;
+      this.projectEndDate = dateRange.item1;
     });
   }
 

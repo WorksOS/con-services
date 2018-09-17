@@ -49,10 +49,10 @@ export class SpatialFilter {
   public isSpatial: boolean = false;
   public isPositional: boolean = false;
   public isSquare: boolean = false;
-  public minX: number = 0;
-  public minY: number = 0;
-  public maxX: number = 0;
-  public maxY: number = 0;
+//  public minX: number = 0;
+//  public minY: number = 0;
+//  public maxX: number = 0;
+//  public maxY: number = 0;
   public positionX:number = 0;
   public positionY: number = 0;
   public positionRadius: number = 0;
@@ -66,8 +66,4 @@ export class CombinedFilter {
 
   // The filter responsible for selection of cells based on spatial filtering criteria related to cell location
   public spatialFilter: SpatialFilter = new SpatialFilter();
-
-//  public constructor() {
-//    this.attributeFilter = new AttributeFilter();
-//  }
 }
