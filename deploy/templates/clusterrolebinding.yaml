@@ -8,7 +8,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.serviceAccountName }}
-    namespace: trex
+    namespace: {{ .Values.environment }}
 roleRef:
   kind: ClusterRole
   name: {{ template "trex.name" . }}-clusterrole
