@@ -3,17 +3,19 @@ import { ProjectExtents } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
+import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../project/project-filter-model';
 
 @Component({
   selector: 'project',
   templateUrl: './project-component.html',
   providers: [ProjectService]
+//  styleUrls: ['./project.component.less']
 })
 
 export class ProjectComponent {
   private zoomFactor: number = 0.2;
 
-  public projectUid: string;
+  public projectUid: string; 
   public mode: number = 0;
   public pixelsX: number = 850;
   public pixelsY: number = 500;
@@ -26,6 +28,9 @@ export class ProjectComponent {
   public projectExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public tileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 
+  public projectStartDate: Date = new Date();
+  public projectEndDate: Date = new Date();
+
   public projectVolume: VolumeResult = new VolumeResult(0, 0, 0, 0, 0);
 
   public mousePixelLocation : string;
@@ -34,6 +39,12 @@ export class ProjectComponent {
   private mouseWorldX: number = 0;
   private mouseWorldY: number = 0;
 
+  public timerStartTime: number = performance.now();
+  public timerEndTime: number = performance.now();
+  public timerTotalTime: number = 0;
+
+  public applyToViewOnly: boolean = false;
+    
     constructor(
     private projectService: ProjectService
   ) { }
@@ -58,6 +69,11 @@ export class ProjectComponent {
       this.projectExtents = new ProjectExtents(extent.minX, extent.minY, extent.maxX, extent.maxY);
       this.zoomAll();
     });
+
+    this.projectService.getProjectDateRange(this.projectUid).subscribe(dateRange => {
+      this.projectStartDate = dateRange.item1;
+      this.projectEndDate = dateRange.item1;
+    });
   }
 
   public displayModeChanged(event : any): void {
@@ -69,7 +85,10 @@ export class ProjectComponent {
     // Make sure the displayed tile extents is updated
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
     this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents)
-      .subscribe(tile => this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData);
+      .subscribe(tile => {
+        this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
+        this.updateTimerCompletionTime();      
+      });
   }
 
   public zoomAll(): void {
@@ -124,8 +143,23 @@ export class ProjectComponent {
     this.getTile();
   }
 
-  public getSimpleFullVolume() : void {
-    this.projectService.getSimpleFullVolume(this.projectUid).subscribe(volume =>
+  public getSimpleFullVolume(): void {
+    var filter = new CombinedFilter();
+
+    if (this.applyToViewOnly) {
+      filter.spatialFilter.coordsAreGrid = true;
+
+      filter.spatialFilter.isSpatial = true;
+      filter.spatialFilter.Fence.isRectangle = true;
+
+      filter.spatialFilter.Fence.Points = [];
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.minX, this.tileExtents.minY));
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.minX, this.tileExtents.maxY));
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.maxX, this.tileExtents.maxY));
+      filter.spatialFilter.Fence.Points.push(new FencePoint(this.tileExtents.maxX, this.tileExtents.minY));
+    }
+
+    this.projectService.getSimpleFullVolume(this.projectUid, filter).subscribe(volume =>
       this.projectVolume = new VolumeResult(volume.cut, volume.cutArea, volume.fillArea, volume.fillArea, volume.totalCoverageArea));
   }
 
@@ -161,6 +195,35 @@ export class ProjectComponent {
       this.tileExtents.panByDelta(-panDeltaX, -panDeltaY);
       this.zoomOut();
     }
+  }
+
+  public timeSomething(doSomething: () => void): void {
+    this.timerStartTime = performance.now();
+    doSomething();
+    this.updateTimerCompletionTime();
+  }
+
+  public performNTimes(doSomething: () => void, count: number): void {
+    for (var i = 0; i < 10; i++) {
+      doSomething();
+    }
+  }
+
+  public getTile10x(): void {
+    this.timeSomething(() => this.performNTimes(() => this.getTile(), 10));
+  }
+
+  private updateTimerCompletionTime() : void {
+    this.timerEndTime = performance.now();
+    this.timerTotalTime = this.timerEndTime - this.timerStartTime;
+  }
+
+  public testJSONParameter(): void {
+    var filter: CombinedFilter = new CombinedFilter();
+    filter.spatialFilter = new SpatialFilter();
+    filter.attributeFilter = new AttributeFilter();
+
+    this.projectService.testJSONParameter(filter).subscribe(x => x);
   }
 }
 

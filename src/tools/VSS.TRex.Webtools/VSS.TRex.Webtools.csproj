@@ -34,6 +34,7 @@
     <None Remove="ClientApp\src\app\message.service.ts" />
     <None Remove="ClientApp\src\app\project\project-component.ts" />
     <None Remove="ClientApp\src\app\project\project-displaymode-model.ts" />
+    <None Remove="ClientApp\src\app\project\project-filter-model.ts" />
     <None Remove="ClientApp\src\app\project\project-model.ts" />
     <None Remove="ClientApp\src\app\project\project-service.ts" />
     <None Remove="ClientApp\src\app\project\project-tiledata-model.ts" />
@@ -67,6 +68,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\message.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\project\project-component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\project\project-displaymode-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\project\project-filter-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\project\project-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\project\project-service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\project\project-tiledata-model.ts" />

@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels;
@@ -48,6 +50,8 @@ namespace VSS.TRex.Webtools
 
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()));
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
+      services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
+
 
       services.AddSingleton(new ImmutableClientServer("Webtools-Immutable"));
       services.AddSingleton(new MutableClientServer("Webtools-Mutable"));

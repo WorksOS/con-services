@@ -225,6 +225,8 @@ namespace VSS.TRex.Events
             }
 
             Events.Insert(EventIndex, Event);
+
+            EventsChanged = true;
         }
 
         /// <summary>

@@ -23,11 +23,40 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return status for</param>
     /// <returns></returns>
     [HttpGet("{siteModelID}/extents")]
-    public JsonResult GridStatus(string siteModelID)
+    public JsonResult GetExtents(string siteModelID)
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
 
       return new JsonResult(siteModel?.SiteModelExtent);
+    }
+
+    /// <summary>
+    /// Returns project date range for a site model
+    /// </summary>
+    /// <param name="siteModelID">Grid to return status for</param>
+    /// <returns></returns>
+    [HttpGet("{siteModelID}/daterange")]
+    public JsonResult GetDateRange(string siteModelID)
+    {
+      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
+
+      DateTime minDate = DateTime.MaxValue;
+      DateTime maxDate = DateTime.MinValue;
+
+      foreach (var machine in siteModel.Machines)
+      {
+        var events = siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
+        if (events.Count() > 0)
+        {
+          events.GetStateAtIndex(0, out DateTime eventDate, out _);
+          if (minDate > eventDate)
+            minDate = eventDate;
+          if (maxDate < eventDate)
+            maxDate = eventDate;
+        }
+      }
+
+      return new JsonResult(new Tuple<DateTime, DateTime>(minDate, minDate));
     }
   }
 }
