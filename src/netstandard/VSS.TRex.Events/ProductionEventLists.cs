@@ -270,8 +270,7 @@ namespace VSS.TRex.Events
     {
       if (SiteModel.IsTransient)
       {
-        Log.LogError($"Sitemodel {SiteModel.ID} is a transient site model and should not be asked to save events to the persistent store - aborting save");
-        return;
+        throw new TRexPersistencyException($"Sitemodel {SiteModel.ID} is a transient site model. Transient sitemodels may not save events to the persistent store.");
       }
 
       foreach (var list in allEventsForMachine)

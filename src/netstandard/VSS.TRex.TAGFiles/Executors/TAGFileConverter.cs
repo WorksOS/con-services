@@ -82,8 +82,6 @@ namespace VSS.TRex.TAGFiles.Executors
         // so the SiteModel constructed to contain the data processed from a TAG file does not need a 
         // storage proxy assigned to it
         SiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
-
-        // Todo(?): Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
         Machine = new Machine();
 
         SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
