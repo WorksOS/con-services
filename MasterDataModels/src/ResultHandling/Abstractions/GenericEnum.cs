@@ -14,8 +14,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       Type t = typeof(T);
       Type u = typeof(U);
       if (t == u)
-        throw new InvalidOperationException(string.Format("{0} and its underlying type cannot be the same",
-                t.Name));
+        throw new InvalidOperationException($"{t.Name} and its underlying type cannot be the same");
       BindingFlags bf = BindingFlags.Static | BindingFlags.Public;
       FieldInfo[] fia = t.GetFields(bf);
       names = new List<string>();
@@ -29,7 +28,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
         }
       }
       if (names.Count == 0)
-        throw new InvalidOperationException(string.Format("{0} has no suitable fields", t.Name));
+        throw new InvalidOperationException($"{t.Name} has no suitable fields");
     }
 
     public bool AllowInstanceExceptions { get; set; }
@@ -76,17 +75,15 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       {
         return values[index];
       }
-      throw new ArgumentException(string.Format("'{0}' is not a defined name of {1}", name, typeof(T).Name));
+      throw new ArgumentException($"'{name}' is not a defined name of {typeof(T).Name}");
     }
 
     public string FirstNameWith(U value)
     {
-      int index = values.IndexOf(value);
-      if (index >= 0)
-      {
-        return names[index];
-      }
-      throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value, typeof(T).Name));
+      var index = values.IndexOf(value);
+      return index >= 0
+        ? names[index]
+        : $"ERROR: '{value}' is not a defined value of {typeof(T).Name}";
     }
 
     public int FirstIndexWith(U value)
@@ -96,7 +93,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       {
         return index;
       }
-      throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value, typeof(T).Name));
+      throw new ArgumentException($"'{value}' is not a defined value of {typeof(T).Name}");
     }
 
     public string NameAt(int index)
@@ -105,7 +102,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       {
         return names[index];
       }
-      throw new IndexOutOfRangeException(string.Format("Index must be between 0 and {0}", Count - 1));
+      throw new IndexOutOfRangeException($"Index must be between 0 and {Count - 1}");
     }
 
     public U ValueAt(int index)
@@ -114,7 +111,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       {
         return values[index];
       }
-      throw new IndexOutOfRangeException(string.Format("Index must be between 0 and {0}", Count - 1));
+      throw new IndexOutOfRangeException($"Index must be between 0 and {Count - 1}");
     }
 
     public Type UnderlyingType => typeof(U);
@@ -141,8 +138,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       if (!IsDefinedName(name))
       {
         if (AllowInstanceExceptions)
-          throw new ArgumentException(string.Format("'{0}' is not a defined name of {1}", name,
-                  typeof(T).Name));
+          throw new ArgumentException($"'{name}' is not a defined name of {typeof(T).Name}");
         return null;
       }
       T t = new T { _index = names.IndexOf(name) };
@@ -154,8 +150,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       if (!IsDefinedValue(value))
       {
         if (AllowInstanceExceptions)
-          throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value,
-                  typeof(T).Name));
+          throw new ArgumentException($"'{value}' is not a defined value of {typeof(T).Name}");
         return null;
       }
       T t = new T { _index = values.IndexOf(value) };
@@ -167,7 +162,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       if (index < 0 || index >= Count)
       {
         if (AllowInstanceExceptions)
-          throw new ArgumentException(string.Format("Index must be between 0 and {0}", Count - 1));
+          throw new ArgumentException($"Index must be between 0 and {Count - 1}");
         return null;
       }
       T t = new T { _index = index };
@@ -184,7 +179,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
         if (value < 0 || value >= Count)
         {
           if (AllowInstanceExceptions)
-            throw new ArgumentException(string.Format("Index must be between 0 and {0}", Count - 1));
+            throw new ArgumentException($"Index must be between 0 and {Count - 1}");
           return;
         }
         _index = value;
@@ -200,8 +195,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
         if (index == -1)
         {
           if (AllowInstanceExceptions)
-            throw new ArgumentException(string.Format("'{0}' is not a defined name of {1}", value,
-                    typeof(T).Name));
+            throw new ArgumentException($"'{value}' is not a defined name of {typeof(T).Name}");
           return;
         }
         _index = index;
@@ -217,8 +211,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
         if (index == -1)
         {
           if (AllowInstanceExceptions)
-            throw new ArgumentException(string.Format("'{0}' is not a defined value of {1}", value,
-                    typeof(T).Name));
+            throw new ArgumentException($"'{value}' is not a defined value of {typeof(T).Name}");
           return;
         }
         _index = index;
@@ -249,8 +242,7 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       }
       else
       {
-        throw new InvalidOperationException(string.Format("'{0}' is already an element of {1}", name,
-                typeof(T).Name));
+        throw new InvalidOperationException($"'{name}' is already an element of {typeof(T).Name}");
       }
     }
   }

@@ -13,13 +13,12 @@ namespace VSS.MasterData.Models.UnitTests.ResultsHandling.Abstractions
     [DataRow(2)]
     [DataRow(-1999)]
     [DataRow(-2015)]
-    public void FirstNameWithOffset_Should_throw_When_input_is_not_a_defined_value(int index)
+    public void FirstNameWithOffset_Should_not_throw_When_input_is_not_a_defined_value(int index)
     {
       var contractExecutionStates = new ContractExecutionStatesEnum();
 
-      Assert.ThrowsException<ArgumentException>(
-        () => contractExecutionStates.FirstNameWithOffset(index),
-        $"'{2000 + index}' is not a defined value of ContractExecutionStatesEnum");
+      Assert.AreEqual(contractExecutionStates.FirstNameWithOffset(index),
+        $"ERROR: '{2000 + index}' is not a defined value of {nameof(ContractExecutionStatesEnum)}");
     }
 
     [TestMethod]
