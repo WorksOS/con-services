@@ -1,16 +1,17 @@
 <h1>Projects</h1>
-<p>Project UID:</p><input [(ngModel)]="projectUid" type="text" value="" />
-<button (click)="selectProject()">Select</button><button (click)="setProjectToZero()">Zero</button>
+<p>
+  Project UID: <input [(ngModel)]="projectUid" type="text" value="" />
+  <button (click)="selectProject()">Select</button>
+  <button (click)="setProjectToZero()">Zero</button>
+</p>
 <p>Project Extents: {{projectExtents}}</p>
-
+<p>Render tiles of type:
 <select id="displayMode" name="displayMode" [(ngModel)]="displayMode" (change)="displayModeChanged($event)">
-  <option *ngFor="let displayMode of displayModes" [ngValue]="displayMode" [selected]="displayMode.item1==0">
+  <option *ngFor="let displayMode of displayModes" [ngValue]="displayMode">
     {{ displayMode.item2 }}
   </option>
-</select>
-
-
-<button  (click)="getTile()">Render</button>
+</select></p>
+<button (click)="getTile()">Render</button>
 <button (click)="zoomAll()">Zoom All</button>
 <button (click)="zoomIn()">Zoom In</button>
 <button (click)="zoomOut()">Zoom Out</button>
@@ -18,14 +19,8 @@
 <button (click)="panRight()">Right</button>
 <button (click)="panUp()">Up</button>
 <button (click)="panDown()">Down</button>
-
 <br />
-
-<img src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
-
-<br />
-
-<p>Tile, Extents: {{tileExtents}}</p>
-<br />
-<p>Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
-<br />
+<img style="border:1px solid black" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" />
+<p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
+<p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
+<p><button (click)="getSimpleFullVolume()">Compute Full Volume</button> Volume: {{projectVolume}}</p>
