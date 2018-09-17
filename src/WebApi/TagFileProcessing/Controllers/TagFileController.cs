@@ -27,7 +27,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
   /// For handling Tag file submissions from either TCC or machines equiped with direct submission capable units.
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  [ProjectVerifier(AllowArchivedState = false)]
   public class TagFileController : Controller
   {
     private readonly ITagProcessor tagProcessor;
@@ -59,6 +58,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <remarks>
     /// Manually submitted tag files include a project Id, the service performs a lookup for the boundary.
     /// </remarks>
+    [ProjectVerifier(AllowArchivedState = false)]
     [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
