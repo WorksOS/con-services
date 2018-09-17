@@ -197,10 +197,7 @@ namespace VSS.TRex.Events
         }
 
         /// <summary>
-        /// Adds an event of type T with the given date into the list. If the event is a duplicate
-        /// of an existing event the passed event will be ignored and the existing duplicate event 
-        /// will be returned, otherwise passed event will be returned. 
-        /// The method returns the event instance that was added to the list
+        /// Adds an event of type T with the given date into the list. 
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="value"></param>
