@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -58,7 +61,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <remarks>
     /// Manually submitted tag files include a project Id, the service performs a lookup for the boundary.
     /// </remarks>
-    [ProjectVerifier(AllowArchivedState = false)]
     [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
@@ -66,6 +68,30 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     {
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
+
+      ProjectData projectData;
+
+      if (request.ProjectId != null)
+      {
+        projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectId.Value);
+      }
+      else
+      {
+        if (request.ProjectUid == null){
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "ProjectId and ProjectUID cannot both be null."));
+        }
+
+        projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectUid.Value);
+      }
+
+      if (projectData != null && projectData.IsArchived)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "The project has been archived and this function is not allowed."));
+      }
 
       WGS84Fence boundary = null;
       if (request.ProjectUid != null)
@@ -85,7 +111,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         ? (IActionResult)Ok(responseObj)
         : BadRequest(responseObj);
     }
-    
+
     /// <summary>
     /// For the direct submission of tag files from GNSS capable machines.
     /// </summary>
@@ -106,12 +132,12 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       if (result.Code == 0)
       {
-        return StatusCode((int) HttpStatusCode.OK, result);
+        return StatusCode((int)HttpStatusCode.OK, result);
       }
 
       return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
-    
+
     /// <summary>
     /// Serialize the request ignoring the Data property so not to overwhelm the logs.
     /// </summary>

@@ -280,7 +280,7 @@ testRunner.And(string.Format("rawDataOutput \"{0}\"", rawDataOutput), ((string)(
 #line 33
 testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 34
-testRunner.When("I request an Export Report Machine Passes expecting Unauthorized", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I request an Export Report Machine Passes expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 35
 testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -297,14 +297,12 @@ testRunner.Then(string.Format("the report result should contain error code {0} a
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RestrictOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RawDataOutput", "false")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing Project or project does not belong to specified customer or don\'t have ac" +
-            "cess to the project")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "ProjectId and ProjectUID cannot both be null.")]
         public virtual void ExportReportMachinePasses_BadRequest_NoProjectUID_()
         {
 #line 27
-this.ExportReportMachinePasses_BadRequest_NoProjectUID("", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "0", "0", "false", "false", "Test", "-5", "Missing Project or project does not belong to specified customer or don\'t have ac" +
-                    "cess to the project", ((string[])(null)));
+this.ExportReportMachinePasses_BadRequest_NoProjectUID("", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "0", "0", "false", "false", "Test", "-1", "ProjectId and ProjectUID cannot both be null.", ((string[])(null)));
 #line hidden
         }
         

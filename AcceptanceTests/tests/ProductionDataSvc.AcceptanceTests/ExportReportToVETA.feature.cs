@@ -243,7 +243,7 @@ this.FeatureBackground();
 #line 36
   testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 37
-  testRunner.When("I request an Export Report To VETA expecting Unauthorized", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When("I request an Export Report To VETA expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 38
   testRunner.Then(string.Format("the report result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -257,14 +257,12 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "d15e65e0-3cb1-476f-8fc6-08507a14a269")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:MachineNames", "All")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing Project or project does not belong to specified customer or don\'t have ac" +
-            "cess to the project")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "ProjectId and ProjectUID cannot both be null")]
         public virtual void ExportReportToVETA_BadRequest_NoProjectUID_()
         {
 #line 33
-this.ExportReportToVETA_BadRequest_NoProjectUID("", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "All", "Test", "-5", "Missing Project or project does not belong to specified customer or don\'t have ac" +
-                    "cess to the project", ((string[])(null)));
+this.ExportReportToVETA_BadRequest_NoProjectUID("", "d15e65e0-3cb1-476f-8fc6-08507a14a269", "All", "Test", "-1", "ProjectId and ProjectUID cannot both be null", ((string[])(null)));
 #line hidden
         }
         

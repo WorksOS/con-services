@@ -32,8 +32,8 @@ Scenario Outline: GetDesignBoundaries - Good Request - No Tolerance
 
 Scenario Outline: GetDesignBoundaries - Bad Request - NoProjectUID
 	And tolerance "<Tolerance>"
-	When I request design boundaries expecting BadRequest Unauthorized
+	When I request design boundaries expecting BadRequest BadRequest
 	Then the GetDesignBoundaries result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples: 
-	| RequestName | Tolerance | ErrorCode | ErrorMessage                                                                                         |
-	|             | 1.00      | -5        | Missing Project or project does not belong to specified customer or don't have access to the project |
+	| RequestName | Tolerance | ErrorCode | ErrorMessage                                  |
+	|             | 1.00      | -1        | ProjectId and ProjectUID cannot both be null. |

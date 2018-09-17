@@ -28,10 +28,7 @@ namespace VSS.Productivity3D.WebApi.Configuration
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="options"></param>
     public void Configure(MvcOptions options)
-    {
-      options.UseProjectIdJsonInputFormatter(_logger, _objectPoolProvider);
-    }
+    { }
   }
 }

@@ -344,12 +344,12 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Mode", "0")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:PatchSize", "1")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:IncludeTimeOffsets", "true")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "InvalidProjectUid")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "401")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NullProjectUid")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:HttpCode", "400")]
         public virtual void Patch_BadRequest_NullProjectUid()
         {
 #line 40
-this.Patch_BadRequest("NullProjectUid", "", "", "0", "0", "1", "true", "InvalidProjectUid", "401", ((string[])(null)));
+this.Patch_BadRequest("NullProjectUid", "", "", "0", "0", "1", "true", "NullProjectUid", "400", ((string[])(null)));
 #line hidden
         }
         

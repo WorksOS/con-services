@@ -47,10 +47,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
     */
 
-    [When(@"I request design boundaries expecting BadRequest Unauthorized")]
+    [When(@"I request design boundaries expecting BadRequest BadRequest")]
     public void WhenIRequestDesignBoundariesExpectingBadRequestUnauthorized()
     {
-      designBoundariesRequester.DoInvalidRequest(url, HttpStatusCode.Unauthorized);
+      designBoundariesRequester.DoInvalidRequest(url, HttpStatusCode.BadRequest);
     }
 
     [Then(@"the result should match the ""(.*)"" from the repository")]
