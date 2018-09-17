@@ -49,10 +49,10 @@ Scenario Outline: Patch - Bad Request
     When I request result with expected status result "<HttpCode>"
     Then the result should match the "<ResultName>" result from the repository
     Examples: 
-    | RequestName           | ProjectUID                           | FilterUID | PatchId | Mode | PatchSize | IncludeTimeOffsets | ResultName            | HttpCode |
-    | NullProjectUid        |                                      |           | 0       | 0    | 1         | true              | InvalidProjectUid     | 401      |
-    | InvalidProjectUid     | 00000000-0000-0000-0000-000000000000 |           | 0       | 0    | 1         | true              | InvalidProjectUid     | 401      |
-    | NegativePatchSize     | ff91dd40-1569-4765-a2bc-014321f76ace |           | 0       | 0    | -1        | true              | InvalidPatchSize      | 400      |
-    | TooLargePatchSize     | ff91dd40-1569-4765-a2bc-014321f76ace |           | 0       | 0    | 1001      | true              | InvalidPatchSize      | 400      |
-    | NegativePatchId       | ff91dd40-1569-4765-a2bc-014321f76ace |           | -1      | 0    | 1         | true              | InvalidPatchId        | 400      |
-    | TooLargePatchId       | ff91dd40-1569-4765-a2bc-014321f76ace |           | 1001    | 0    | 1         | true              | InvalidPatchId        | 400      |
+    | RequestName       | ProjectUID                           | FilterUID | PatchId | Mode | PatchSize | IncludeTimeOffsets | ResultName        | HttpCode |
+    | NullProjectUid    |                                      |           | 0       | 0    | 1         | true               | NullProjectUid    | 400      |
+    | InvalidProjectUid | 00000000-0000-0000-0000-000000000000 |           | 0       | 0    | 1         | true               | InvalidProjectUid | 401      |
+    | NegativePatchSize | ff91dd40-1569-4765-a2bc-014321f76ace |           | 0       | 0    | -1        | true               | InvalidPatchSize  | 400      |
+    | TooLargePatchSize | ff91dd40-1569-4765-a2bc-014321f76ace |           | 0       | 0    | 1001      | true               | InvalidPatchSize  | 400      |
+    | NegativePatchId   | ff91dd40-1569-4765-a2bc-014321f76ace |           | -1      | 0    | 1         | true               | InvalidPatchId    | 400      |
+    | TooLargePatchId   | ff91dd40-1569-4765-a2bc-014321f76ace |           | 1001    | 0    | 1         | true               | InvalidPatchId    | 400      |

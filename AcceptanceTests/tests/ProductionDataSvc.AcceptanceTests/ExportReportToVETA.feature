@@ -34,11 +34,11 @@ Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
   And filterUid "<FilterUID>"
   And machineNames "<MachineNames>"
   And fileName is "<FileName>"
-  When I request an Export Report To VETA expecting Unauthorized
+  When I request an Export Report To VETA expecting BadRequest
   Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 Examples:
-  | RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage                                                                                         |
-  |             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     |  -5       | Missing Project or project does not belong to specified customer or don't have access to the project |
+  | RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage                                 |
+  |             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     | -1        | ProjectId and ProjectUID cannot both be null |
 
 Scenario Outline: ExportReportToVETA - Good Request - NoDateRange
   And projectUid "<ProjectUID>"
