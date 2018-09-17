@@ -38,10 +38,10 @@ namespace VSS.TRex.Tools.TTMToSTLConverter
 
               foreach (var tri in tin.Triangles.Items)
               {
-                writer.WriteLine("facet normal 0, 0, 0");
+                writer.WriteLine("facet normal 0 0 0");
                 writer.WriteLine("outer loop");
                 foreach (int vertex in new[] {tri.Vertex0, tri.Vertex1, tri.Vertex2})
-                  writer.WriteLine($"Vertex {tin.Vertices.Items[vertex].X}, {tin.Vertices.Items[vertex].Y}, {tin.Vertices.Items[vertex].Z}");
+                  writer.WriteLine($"Vertex {tin.Vertices.Items[vertex].X} {tin.Vertices.Items[vertex].Y} {tin.Vertices.Items[vertex].Z}");
                 writer.WriteLine("endloop");
                 writer.WriteLine("endfacet");
               }

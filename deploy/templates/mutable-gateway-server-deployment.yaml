@@ -1,0 +1,51 @@
+# An example of a Kubernetes configuration for Ignite pods deployment.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "trex.deployname" . }}-mgateway
+  labels:
+    app: {{ template "trex.deployname" . }}
+    chart: {{ template "trex.chart" . }}
+spec:
+  # A number of Ignite pods to be started by Kubernetes initially.
+  replicas: {{ .Values.mutableGateway.replicaCount }}
+  template:
+    metadata:
+      labels:
+        # This label has to be added to the selector's section of 
+        # ignite-service.yaml so that the Kubernetes Ignite lookup service
+        # can easily track all Ignite pods available deployed so far.
+        app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-mgateway
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+
+      containers:
+        # Custom Ignite pod name.
+      - name: ignite-node
+        # Ignite Docker image. Kubernetes IP finder is supported starting from
+        # Apache Ignite 2.3.0
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.MutableGateway
+        
+        resources:
+{{ toYaml .Values.mutableGateway.resources | indent 10 }}
+        command: ["dotnet"]
+        args: ["VSS.TRex.Mutable.Gateway.WebApi.dll"]
+
+        ports:
+        # Ports to open.
+        - containerPort: 80 # communication SPI port number.
+        - containerPort: 47100 # communication SPI port number.
+        - containerPort: 47500 # discovery SPI port number
+        - containerPort: 48100 # communication SPI port number.
+        - containerPort: 49112 # JMX port number.
+        - containerPort: 8080  # REST port number.
+        - containerPort: 10800 # SQL port number.
+
+        env:
+          - name: IGNITE_HOME
+            value: "/trex/"
+          - name: IS_KUBERNETES
+            value: "true"
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}

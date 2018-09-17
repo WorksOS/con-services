@@ -27,9 +27,9 @@ export class GridStatusComponent {
     this.gridStatusService.getGrids();
   }
 
-  public activateGrid(grid: IGrid) {
+  public toggleGridActivation(grid: IGrid) {
     console.log(`Grid is ${grid}`)
-    this.gridStatusService.activateGrid(grid);
+    this.gridStatusService.toggleGridActivation(grid);
   }
 }
 
