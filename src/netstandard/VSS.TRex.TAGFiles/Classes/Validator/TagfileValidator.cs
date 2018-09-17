@@ -102,8 +102,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       // Now open tagfile and validate contents
-      ISiteModel siteModel = DIContext.Obtain<ISiteModel>();
-      var machine = new Machine()
+      ISiteModel siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
+      var machine = new Machine
       {
         TargetValueChanges = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex)
       };

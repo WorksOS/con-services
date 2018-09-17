@@ -7,23 +7,22 @@ using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Events
 {
-  /// <summary>
+    /// <summary>
     /// Implements an event list containing events that detail when a machine started recording production data, and when it stopped
     /// recording production data.
     /// </summary>
     [Serializable]
-    public class StartEndProductionEvents : ProductionEvents<ProductionEventType>, IProductionEventPairs, IStartEndProductionEvents
-  {
+    public class StartEndProductionEvents : ProductionEvents<ProductionEventType>, IStartEndProductionEvents
+    {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         public StartEndProductionEvents()
         {}
 
-        public StartEndProductionEvents(IProductionEventLists container,
-            long machineID, Guid siteModelID,
+        public StartEndProductionEvents(long machineID, Guid siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, ProductionEventType> serialiseStateOut,
-            Func<BinaryReader, ProductionEventType> serialiseStateIn) : base(container, machineID, siteModelID,
+            Func<BinaryReader, ProductionEventType> serialiseStateIn) : base(machineID, siteModelID,
             eventListType, serialiseStateOut, serialiseStateIn)
         {}
 
@@ -97,7 +96,7 @@ namespace VSS.TRex.Events
         /// Implements collation semantics for event lists that do not contain homogenous lists of events. Machine start/stop and 
         /// data recording start/end are examples
         /// </summary>
-        public override void Collate()
+        public override void Collate(IProductionEventLists container)
         {
             // Note: Machine startup and shutdown start/end event lists are never collated
             if (EventListType == ProductionEventType.MachineStartupShutdown)

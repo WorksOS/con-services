@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -12,79 +13,92 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteModels : ISiteModels
   {
-    //  Dictionary<Guid, SiteModel> CachedModels = new Dictionary<Guid, SiteModel>()
+    /// <summary>
+    /// The cached set of sitemodels that are currently 'open' in TRex
+    /// </summary>
+    private Dictionary<Guid, ISiteModel> CachedModels = new Dictionary<Guid, ISiteModel>();
 
-
-    private IStorageProxy _ImmutableStorageProxy = null;
+    private IStorageProxy _StorageProxy;
+    private Func<IStorageProxy> StorageProxyFactory;
 
     /// <summary>
-    /// The default immutable storage proxy to be used for requests
+    /// The default storage proxy to be used for requests
     /// </summary>
-    public IStorageProxy ImmutableStorageProxy() => _ImmutableStorageProxy ?? (_ImmutableStorageProxy = DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage());
-
-    /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    public SiteModels()
+    public IStorageProxy StorageProxy
     {
+      get => _StorageProxy ?? (_StorageProxy = StorageProxyFactory());
     }
 
-    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ImmutableStorageProxy(), ID, false);
+    /// <summary>
+    /// Default no-arg constructor. Made private to enforce prpvision of storage proxy
+    /// </summary>
+    private SiteModels() {}
 
-    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(ImmutableStorageProxy(), ID, CreateIfNotExist);
+    /// <summary>
+    /// Constructs a SiteModels instance taking a storageProxyFactory delegate that will create the
+    /// proorpoate primary storage proxy
+    /// </summary>
+    /// <param name="storageProxyFactory"></param>
+    public SiteModels(Func<IStorageProxy> storageProxyFactory) : this()
+    {
+      StorageProxyFactory = storageProxyFactory;
+    }
+
+    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(StorageProxy, ID, false);
+
+    public ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist) => GetSiteModel(StorageProxy, ID, CreateIfNotExist);
 
     public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID) => GetSiteModel(storageProxy, ID, false);
 
-    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid ID, bool CreateIfNotExist)
+    /// <summary>
+    /// Retrieves a sitemodel from the persistent store ready for use. If the site model does not
+    /// exist it will be created if CreateIfNotExist is true.
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <param name="id"></param>
+    /// <param name="createIfNotExist"></param>
+    /// <returns></returns>
+    public ISiteModel GetSiteModel(IStorageProxy storageProxy, Guid id, bool createIfNotExist)
     {
-      SiteModel result = new SiteModel(ID);
+      ISiteModel result;
+
+      lock (CachedModels)
+      {
+        if (CachedModels.TryGetValue(id, out result))
+          return result;
+      }
+
+      result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(id);
 
       if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
       {
-        return result;
+        lock (CachedModels)
+        {
+          // Check if another thread managed to get in before this thread. If so discard
+          // the one just created in favour of the one in the dictionary
+          if (CachedModels.TryGetValue(id, out ISiteModel result2))
+            return result2;
+
+          CachedModels.Add(id, result);
+          return result;
+        }
       }
-      else
+
+      if (createIfNotExist)
       {
-        // The SiteModel does not exist - create a new one if requested
-        return CreateIfNotExist ? result : null;
+        lock (CachedModels)
+        {
+          // Check if another thread managed to get in before this thread. If so discard
+          // the one just created in favour of the one in the dictionary
+          if (CachedModels.TryGetValue(id, out ISiteModel result2))
+            return result2;
+
+          CachedModels.Add(id, result);
+          return result;
+        }
       }
 
-      /*
-       // The commented out code in this block operates by maintaining a dictionary if sitemodels. In Raptor
-          this was supported by significant locking mechanisms. In TRex, the code above simple creates a new sitemodel
-          each time on demand, however, it may be useful for performance reasons to revert to the dictionary approach
-          but clear the element in the dictionary whenever the processing layer advises the sitemodel has changed.
-          In order to support performant 'create once per access', the sitemodel itself shoudl ahve minimal serialisaed
-          content delagating non trivial blocks of information to additional cache elements that are loaded on demand
-          in the context of the operating request.
-
-          lock (this)
-          {
-              if (!CachedModels.TryGetValue(ID, out result))
-              {
-                  result = new SiteModel(ID);
-
-                  if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
-                  {
-                      CachedModels.Add(ID, result);
-                  }
-                  else
-                  {
-                      // The SiteModel does not exist in the store - create a new one if requested
-                      if (CreateIfNotExist)
-                      {
-                          CachedModels.Add(ID, result);
-                      }
-                      else
-                      {
-                          result = null;
-                      }
-                  }
-              }
-          }
-
-      return result;
-      */
+      return null;
     }
 
     /// <summary>
@@ -94,8 +108,8 @@ namespace VSS.TRex.SiteModels
     /// <param name="SiteModelID"></param>
     public void SiteModelAttributesHaveChanged(Guid SiteModelID)
     {
-      // Remove or updtae if necessary the Sitemodel from any cached storage in this context
-      //GetSiteModel(ImmutableStorageProxy, SiteModelID, false)?.LoadFromPersistentStore(ImmutableStorageProxy);
+      // Remove or update if necessary the Sitemodel from any cached storage in this context
+      GetSiteModel(StorageProxy, SiteModelID, false)?.LoadFromPersistentStore(StorageProxy);
     }
   }
 }

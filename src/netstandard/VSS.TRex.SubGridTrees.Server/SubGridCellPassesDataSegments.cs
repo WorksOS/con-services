@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
@@ -54,7 +55,16 @@ namespace VSS.TRex.SubGridTrees.Server
             */
         }
 
-        public ISubGridCellPassesDataSegment AddNewSegment(IServerLeafSubGrid subGrid,
+    /// <summary>
+    /// Dumps the segment metadata for this subgrid to the log
+    /// </summary>
+    private void DumpSegmentsToLog()
+    {
+      for (int i = 0; i < Count; i++)
+        Log.LogInformation($"Seg #{i}: {Items[i]}");
+    }
+
+    public ISubGridCellPassesDataSegment AddNewSegment(IServerLeafSubGrid subGrid,
                                                           ISubGridCellPassesDataSegmentInfo segmentInfo)
         {
             if (segmentInfo == null)
@@ -89,23 +99,21 @@ namespace VSS.TRex.SubGridTrees.Server
                     {
                         Items.Insert(I, Result);
 
-                        /* TODO add when more TRex config vailable
-                         * if VLPDSvcLocations.Debug_PerformSegmentAdditionIntegrityChecks then
-                           begin
-                             Counter:= 0;
-                             for J := 0 to Count - 2 do
-                                 if Items[J].SegmentInfo.StartTime >= Items[J + 1].SegmentInfo.StartTime then
-                                   begin
-                                     SIGLogMessage.PublishNoODS(Self, Format('Segment passes list out of order %.6f versus %.6f. Segment count = %d', { SKIP}
-                                     [Items[J].SegmentInfo.StartTime, Items[J + 1].SegmentInfo.StartTime, Count]), slmcAssert);
-                                     Inc(Counter);
-                                   end;
+                        if (TRexConfig.Debug_PerformSegmentAdditionIntegrityChecks)
+                        {
+                          int Counter = 0;
+                          for (int J = 0; J < Count - 1; J++)
+                            if (Items[J].SegmentInfo.StartTime >= Items[J + 1].SegmentInfo.StartTime)
+                            {
+                              Log.LogCritical($"Segment passes list out of order {Items[J].SegmentInfo.StartTime} versus {Items[J + 1].SegmentInfo.StartTime}. Segment count = {Count}");
+                              Counter++;
+                            }
+                  
+                          if (Counter > 0)
+                            DumpSegmentsToLog();
+                        }
 
-                             if Counter > 0 then
-                               DumpSegmentsToLog;
-                           end;
-                        */
-                        return Result;
+                      return Result;
                     }
                 }
 
@@ -124,6 +132,6 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             return Result;
-        }
     }
+  }
 }

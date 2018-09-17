@@ -1,18 +1,22 @@
-﻿using Apache.Ignite.Core;
+﻿using System;
+using System.Reflection;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.GridFabric.NodeFilters;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
 
-    /// <summary>
-    /// Class responsible for deploying the TAG file buffered queue service
-    /// </summary>
-    public class TAGFileBufferQueueServiceProxy
+  /// <summary>
+  /// Class responsible for deploying the TAG file buffered queue service
+  /// </summary>
+  public class TAGFileBufferQueueServiceProxy
     {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -37,7 +41,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public TAGFileBufferQueueServiceProxy()
         {
-            IIgnite _ignite = TRexGridFactory.Grid(TRexGrids.MutableGridName());
+            IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
 
             //var cacheGroup = _ignite.GetCluster().ForCacheNodes(TRexCaches.TAGFileBufferQueueCacheName());
 
@@ -53,7 +57,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             // Attempt to cancel any previously deployed service
             try
             {
-                Log.LogInformation("Cancelling deployed service");
+                Log.LogInformation($"Cancelling deployed service {ServiceName}");
                 services.Cancel(ServiceName);
             }
             catch (Exception E)
@@ -83,7 +87,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
             try
             {
-                Log.LogInformation("Obtaining service proxy");
+                Log.LogInformation($"Obtaining service proxy for {ServiceName}");
                 proxy = services.GetServiceProxy<ITAGFileBufferQueueService>(ServiceName);
             }
             catch (Exception E)

@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
     [Fact]
     public void Test_SpeedAggregator_Creation()
     {
-      var aggregator = new SpeedAggregator();
+      var aggregator = new SpeedStatisticsAggregator();
 
       Assert.True(aggregator.SiteModelID == Guid.Empty, "Invalid initial value for SiteModelID.");
       Assert.True(aggregator.CellSize < Consts.TOLERANCE_DIMENSION, "Invalid initial value for CellSize.");
@@ -34,9 +34,9 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
     [Fact]
     public void Test_SpeedAggregator_ProcessResult_NoAggregation()
     {
-      var aggregator = new SpeedAggregator();
+      var aggregator = new SpeedStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -59,9 +59,9 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
     [Fact]
     public void Test_SpeedAggregator_ProcessResult_WithAggregation()
     {
-      var aggregator = new SpeedAggregator();
+      var aggregator = new SpeedStatisticsAggregator();
 
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
 
       clientGrid.FillWithTestPattern();
 
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
       aggregator.ProcessSubgridResult(subGrids);
 
       // Other aggregator...
-      var otherAggregator = new SpeedAggregator();
+      var otherAggregator = new SpeedStatisticsAggregator();
 
       otherAggregator.CellSize = CELL_SIZE;
       otherAggregator.TargetMachineSpeed = new MachineSpeedExtendedRecord((ushort)(length - 1), (ushort)(length - 1));

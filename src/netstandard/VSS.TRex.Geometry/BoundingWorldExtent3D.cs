@@ -154,8 +154,11 @@ namespace VSS.TRex.Geometry
     /// <param name="dy"></param>
     public void Expand(double dx, double dy)
     {
-      Include(MinX - dx, MinY - dy);
-      Include(MaxX + dx, MaxY + dy);
+      if (IsValidPlanExtent)
+      {
+        Include(MinX - dx, MinY - dy);
+        Include(MaxX + dx, MaxY + dy);
+      }
     }
 
     /// <summary>
@@ -164,8 +167,11 @@ namespace VSS.TRex.Geometry
     /// <param name="dz"></param>
     public void Expand(double dz)
     {
-      MinZ = MinZ - dz;
-      MaxZ = MaxZ + dz;
+      if (MinZ < MaxZ)
+      {
+        MinZ = MinZ - dz;
+        MaxZ = MaxZ + dz;
+      }
     }
 
     /// <summary>

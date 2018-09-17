@@ -31,12 +31,12 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
     /// </summary>
-    public ISubGridTreeBitMask ProdDataMask;
+    public ISubGridTreeBitMask ProdDataMask { get; set; }
 
     /// <summary>
     /// The resulting bitmap subgrid tree mask of all subgrids containing production data that need to be requested
     /// </summary>
-    public ISubGridTreeBitMask SurveydSurfaceOnlyMask;
+    public ISubGridTreeBitMask SurveydSurfaceOnlyMask { get; set; }
 
     /// <summary>
     /// A cell coordinate level (rather than world coordinate) boundary that acts as an optional final override of the spatial area
@@ -50,9 +50,9 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
 
-    public long TotalNumberOfSubgridsAnalysed;
-    public long TotalNumberOfSubgridsToRequest;
-    public long TotalNumberOfCandidateSubgrids;
+    public long TotalNumberOfSubgridsAnalysed { get; set; }
+    public long TotalNumberOfSubgridsToRequest { get; set; }
+    public long TotalNumberOfCandidateSubgrids { get; set; }
 
     protected bool ScanningFullWorldExtent;
 
@@ -153,13 +153,13 @@ namespace VSS.TRex.Pipelines
     public bool Execute()
     {
       if (Pipeline == null)
-        throw new ArgumentException("No owning pipeline", "Pipeline");
+        throw new ArgumentException("No owning pipeline", nameof(Pipeline));
 
       if (Pipeline.FilterSet == null)
-        throw new ArgumentException("No filters in pipeline", "Filters");
+        throw new ArgumentException("No filters in pipeline", nameof(Pipeline.FilterSet));
 
       if (Pipeline.ProdDataExistenceMap == null)
-        throw new ArgumentException("Production Data Existance Map should have been specified", "ProdDataExistenceMap");
+        throw new ArgumentException("Production Data Existance Map should have been specified", nameof(Pipeline.ProdDataExistenceMap));
 
       PerformScanning();
 

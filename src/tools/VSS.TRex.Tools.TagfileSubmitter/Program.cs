@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
@@ -9,6 +10,7 @@ using VSS.TRex.TAGFiles.Servers.Client;
 using Microsoft.Extensions.Logging;
 using Tests.Common;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.GridFabric.Grids;
 
 /*
 Arguments for building project #5, Dimensions:
@@ -154,7 +156,12 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     private static void DependencyInjection()
     {
-      DIBuilder.New().AddLogging().Complete();
+      DIBuilder.New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Build()
+        .Add(x => x.AddSingleton(new TAGFileProcessingClientServer()))
+        .Complete();
     }
 
     static void Main(string[] args)
@@ -194,9 +201,6 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         {
           return;
         }
-
-        // Obtain a TAGFileProcessing client server
-        TAGFileProcessingClientServer TAGServer = new TAGFileProcessingClientServer();
 
         ProcessTAGFilesInFolder(projectID, folderPath);
 

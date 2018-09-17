@@ -1,4 +1,4 @@
-﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Common;
@@ -27,10 +28,10 @@ namespace VSS.TRex.Servers.Compute
   /// Defines a representation of a server responsible for performing TRex related compute operations using
   /// the Ignite In Memory Data Grid
   /// </summary>
-    public class MutableCacheComputeServer : IgniteServer
+  public class MutableCacheComputeServer : IgniteServer
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-    
+
     /// <summary>
     /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
     /// and cache instance in preparation for client access by business logic running on the node.
@@ -46,12 +47,16 @@ namespace VSS.TRex.Servers.Compute
 
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
+      //cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
       base.ConfigureTRexGrid(cfg);
+
+
+
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
       cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
-            cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
+      cfg.JvmMaxMemoryMb = 2 * 1024; // Set max to 2Gb
       cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", TRexGrids.MutableGridName() }
@@ -71,7 +76,7 @@ namespace VSS.TRex.Servers.Compute
         {
           Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
           InitialSize = 128 * 1024 * 1024,  // 128 MB
-                    MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB                               
+          MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB
 
           PersistenceEnabled = true
         },
@@ -90,13 +95,61 @@ namespace VSS.TRex.Servers.Compute
                 }
       };
 
-        Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
-        Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
-        Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
+      cfg.CacheConfiguration = new List<CacheConfiguration>
+      {
 
-            //cfg.JvmOptions = new List<string>() { "-DIGNITE_QUIET=false" };
+      };
 
-            cfg.DiscoverySpi = new TcpDiscoverySpi()
+      Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
+      Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
+      Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
+
+      cfg.JvmOptions = new List<string>() {
+        "-DIGNITE_QUIET=false",
+        "-Djava.net.preferIPv4Stack=true" };
+
+
+      cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
+
+      // Set an Ignite metrics heartbeat of 10 seconds
+      cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
+
+      cfg.PublicThreadPoolSize = 50;
+
+      cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
+
+      //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
+
+      bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+      cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
+      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
+
+    }
+
+    private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
+    {
+      cfg.SpringConfigUrl = @".\ignitePersistantMutableKubeConfig.xml";
+
+      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      {
+        LocalPort = 48100,
+      };
+      return cfg;
+
+
+    }
+
+    private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
+    {
+      //temp
+      cfg.SpringConfigUrl = @".\mutablePersistence.xml";
+
+
+      //TODO this should not be here but will do for the moment
+      TRexConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+
+      // Enforce using only the LocalHost interface
+      cfg.DiscoverySpi = new TcpDiscoverySpi()
       {
         LocalAddress = "127.0.0.1",
         LocalPort = 48500,
@@ -112,45 +165,37 @@ namespace VSS.TRex.Servers.Compute
         LocalAddress = "127.0.0.1",
         LocalPort = 48100,
       };
-
-      cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
-
-      // Set an Ignite metrics heartbeat of 10 seconds 
-      cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
-
-      cfg.PublicThreadPoolSize = 50;
-
-      cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
-
-      //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
+      return cfg;
     }
 
     public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
     {
-      base.ConfigureNonSpatialMutableCache(cfg);
+      //base.ConfigureNonSpatialMutableCache(cfg);
 
-      cfg.Name = TRexCaches.MutableNonSpatialCacheName();
-      //            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
-      cfg.KeepBinaryInStore = false;
+      //cfg.Name = TRexCaches.MutableNonSpatialCacheName();
+      ////            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
+      //cfg.KeepBinaryInStore = false;
 
-      // Non-spatial (event) data is replicated to all nodes for local access
-            cfg.CacheMode = CacheMode.Partitioned;
+      //// Non-spatial (event) data is replicated to all nodes for local access
+      //cfg.CacheMode = CacheMode.Partitioned;
 
-            // Note: The AffinityFunction is longer supplied as the ProjectID (Guid) member of the 
-            // NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
-            // this means the values are spread amongst the servers per the default 
-            cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+      //// Note: The AffinityFunction is longer supplied as the ProjectID (Guid) member of the
+      //// NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
+      //// this means the values are spread amongst the servers per the default
+      //cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
 
-      cfg.Backups = 0;
+      //cfg.Backups = 0;
     }
 
-        public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
-            return mutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
     {
+      //TODO This is handled by SPRING at the moment
+
       base.ConfigureMutableSpatialCache(cfg);
 
       cfg.Name = TRexCaches.MutableSpatialCacheName();
@@ -241,17 +286,22 @@ namespace VSS.TRex.Servers.Compute
 
       // Add the mutable Spatial & NonSpatial caches
 
-      CacheConfiguration CacheCfg = new CacheConfiguration();
-      ConfigureNonSpatialMutableCache(CacheCfg);
-      NonSpatialMutableCache = InstantiateTRexCacheReference(CacheCfg);
+      //CacheConfiguration CacheCfg = new CacheConfiguration();
+      //ConfigureNonSpatialMutableCache(CacheCfg);
+      var nonspatialcacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
+      NonSpatialMutableCache = InstantiateTRexCacheReference(nonspatialcacheConfiguration);
 
-      CacheCfg = new CacheConfiguration();
-      ConfigureMutableSpatialCache(CacheCfg);
-      SpatialMutableCache = InstantiateSpatialCacheReference(CacheCfg);
+      //CacheCfg = new CacheConfiguration();
+      //ConfigureMutableSpatialCache(CacheCfg);
+      //SpatialMutableCache = InstantiateSpatialCacheReference(CacheCfg);
+      var spacialcacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableSpatialCacheName()));
+      SpatialMutableCache = InstantiateSpatialCacheReference(spacialcacheConfiguration);
 
-      CacheCfg = new CacheConfiguration();
-      ConfigureTAGFileBufferQueueCache(CacheCfg);
-      InstantiateTAGFileBufferQueueCacheReference(CacheCfg);
+      //CacheCfg = new CacheConfiguration();
+      //ConfigureTAGFileBufferQueueCache(CacheCfg);
+      //InstantiateTAGFileBufferQueueCacheReference(CacheCfg);
+      var tagcacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
+      InstantiateTAGFileBufferQueueCacheReference(tagcacheConfiguration);
     }
 
   }

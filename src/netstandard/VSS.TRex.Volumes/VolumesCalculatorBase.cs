@@ -11,6 +11,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -187,19 +188,23 @@ namespace VSS.TRex.Volumes
             PipeLine.DataModelID = SiteModel.ID;
 
             Log.LogDebug($"Volume calculation extents for DM={SiteModel.ID}, Request={RequestDescriptor}: {Extents}");
-            PipeLine.WorldExtents.Assign(Extents);
 
             PipeLine.OverallExistenceMap = OverallExistenceMap;
             PipeLine.ProdDataExistenceMap = ProdDataExistenceMap;
             PipeLine.DesignSubgridOverlayMap = DesignSubgridOverlayMap;
+
+            // Initialise a request analyser to provide to the pipeline
+            PipeLine.RequestAnalyser = DIContext.Obtain<IRequestAnalyser>();
+            PipeLine.RequestAnalyser.Pipeline = PipeLine;
+            PipeLine.RequestAnalyser.WorldExtents.Assign(Extents);
 
             // PipeLine.LiftBuildSettings := FLiftBuildSettings;
 
             // Construct and assign the filter set into the pipeline
             IFilterSet FilterSet;
 
-          if (VolumeType == VolumeComputationType.Between2Filters)
-          {
+            if (VolumeType == VolumeComputationType.Between2Filters)
+            {
             // Determine if intermediary filter/surface behaviour is required to
             // support summary volumes
             if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == DateTime.MinValue // 'From' has As-At Time filter
@@ -216,12 +221,12 @@ namespace VSS.TRex.Volumes
               FilterSet = new FilterSet(new[] {BaseFilter, IntermediaryFilter, TopFilter});
             }
             else
-            FilterSet = new FilterSet(new[] {BaseFilter, TopFilter});
+            FilterSet = new FilterSet(BaseFilter, TopFilter);
           }
           else if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-                FilterSet = new FilterSet(new [] { TopFilter });
+                FilterSet = new FilterSet(TopFilter);
             else
-                FilterSet = new FilterSet(new [] { BaseFilter });
+                FilterSet = new FilterSet(BaseFilter);
 
             PipeLine.FilterSet = FilterSet;
             PipeLine.GridDataType = GridDataType.Height;

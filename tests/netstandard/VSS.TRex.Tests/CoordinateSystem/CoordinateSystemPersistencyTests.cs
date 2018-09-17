@@ -7,7 +7,6 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
@@ -39,7 +38,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
         var moqSiteModels = new Mock<ISiteModels>();
         moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuid)).Returns(mockedSiteModel);
-        moqSiteModels.Setup(mk => mk.ImmutableStorageProxy()).Returns(moqStorageProxy.Object);
+        moqSiteModels.Setup(mk => mk.StorageProxy).Returns(moqStorageProxy.Object);
 
         // Mock the new sitemodel creation API to return jsut a new sitemodel
         moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(mockedSiteModel);

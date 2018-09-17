@@ -85,13 +85,25 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
             return true;
         }
 
-        /// <summary>
-        /// Serialises the content of all the subgrids in the subgrid tree from the BinaryReader instance
-        /// </summary>
-        /// <param name="tree"></param>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        static bool SerialiseIn(ISubGridTree tree, BinaryReader reader, Action<ISubGrid, BinaryReader> subGridSerialiser)
+      /// <summary>
+      /// Serialises the content of all the subgrids in the subgrid tree from the BinaryReader instance
+      /// </summary>
+      /// <param name="tree"></param>
+      /// <param name="reader"></param>
+      /// <returns></returns>
+      private static bool SerialiseIn(ISubGridTree tree, BinaryReader reader)
+      {
+        return SerialiseIn(tree, reader, null);
+      }
+
+      /// <summary>
+      /// Serialises the content of all the subgrids in the subgrid tree from the BinaryReader instance
+      /// </summary>
+      /// <param name="tree"></param>
+      /// <param name="reader"></param>
+      /// <param name="subGridSerialiser"></param>
+      /// <returns></returns>
+      static bool SerialiseIn(ISubGridTree tree, BinaryReader reader, Action<ISubGrid, BinaryReader> subGridSerialiser)
         {
             try
             {
@@ -138,15 +150,16 @@ namespace VSS.TRex.SubGridTrees.Core.Utilities
         /// <returns></returns>
         public static bool Read(ISubGridTree tree, BinaryReader reader) => Read(tree, string.Empty, 0, reader, null);
 
-        /// <summary>
-        /// Provides Read() semantics for a subgrid tree against a BinaryReader
-        /// </summary>
-        /// <param name="tree"></param>
-        /// <param name="header"></param>
-        /// <param name="version"></param>
-        /// <param name="reader"></param>
-        /// <returns></returns>
-        public static bool Read(ISubGridTree tree, string header, int version, BinaryReader reader, Action<ISubGrid, BinaryReader> subGridSerialiser)
+      /// <summary>
+      /// Provides Read() semantics for a subgrid tree against a BinaryReader
+      /// </summary>
+      /// <param name="tree"></param>
+      /// <param name="header"></param>
+      /// <param name="version"></param>
+      /// <param name="reader"></param>
+      /// <param name="subGridSerialiser"></param>
+      /// <returns></returns>
+      public static bool Read(ISubGridTree tree, string header, int version, BinaryReader reader, Action<ISubGrid, BinaryReader> subGridSerialiser)
         {
             try
             {

@@ -37,15 +37,7 @@ namespace VSS.TRex.SubGridTrees.Client
          /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
 
-    /// <summary>
-    /// Constructor. Set the grid to MDP.
-    /// </summary>
-    /// <param name="owner"></param>
-    /// <param name="parent"></param>
-    /// <param name="level"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="indexOriginOffset"></param>
-    public ClientMDPLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    private void Initialise()
     {
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetMDPValues |
@@ -62,6 +54,28 @@ namespace VSS.TRex.SubGridTrees.Client
         PopulationControlFlags.WantsEventInAvoidZoneStateValues;
 
       _gridDataType = TRex.Types.GridDataType.MDP;
+    }
+
+    /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    public ClientMDPLeafSubGrid() : base()
+    {
+      Initialise();
+    }
+
+    /// <summary>
+    /// Constructor. Set the grid to MDP.
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="parent"></param>
+    /// <param name="level"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="indexOriginOffset"></param>
+    public ClientMDPLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    {
+      Initialise();
     }
 
     /// <summary>

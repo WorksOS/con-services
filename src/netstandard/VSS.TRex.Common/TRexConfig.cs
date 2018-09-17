@@ -41,7 +41,7 @@ namespace VSS.TRex.Common
         /// <summary>
         /// The file system location in which to store Ignite persistent data
         /// </summary>
-        public static string PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+        public static string PersistentCacheStoreLocation = Path.Combine("/persist", "TRexIgniteData");
         //public static string PersistentCacheStoreLocation = "C:/temp/TRexIgniteData"; //Path.Combine(Path.GetTempPath(), "TRexIgniteData");
 
         /// <summary>
@@ -58,6 +58,13 @@ namespace VSS.TRex.Common
       /// Records meta data about items to the log as they are written into the persistent store
       /// </summary>
       public static bool RecordItemsPersistedViaDataPersistorToLog = false;
+
+      /// <summary>
+      /// Enforces integrity on segments when they are added
+      /// </summary>
+      public static bool Debug_PerformSegmentAdditionIntegrityChecks = false;
+
+      public static bool AdviseOtherServicesOfDataModelChanges = true;
 
       /*
         /// <summary>

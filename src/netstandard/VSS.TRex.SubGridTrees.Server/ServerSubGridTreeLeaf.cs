@@ -421,8 +421,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Seed the latest value tags for this segment with the latest data from the previous segment
             if (TemporallyPrecedingSegment != null)
             {
-                // TODO: Include with other last pass attributes
-                // Segment.LatestPasses.AssignValuesFromLastPassFlags(TemporallyPrecedingSegment.LatestPasses);
+                 Segment.LatestPasses.AssignValuesFromLastPassFlags(TemporallyPrecedingSegment.LatestPasses);
             }
 
             // Iterate over the values in the child leaf subgrid looking for
@@ -435,8 +434,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     TemporallyPrecedingSegment.LatestPasses.PassDataExistanceMap.BitSet(I, J))
                 {
                     // Seed the latest data for this segment with the latest data from the previous segment
-                    // TODO: Include with other last pass attributes
-                    // Segment.LatestPasses.PassData[I, J] = TemporallyPrecedingSegment.LatestPasses.PassData[I, J];
+                    Segment.LatestPasses[(int)I, (int)J] = TemporallyPrecedingSegment.LatestPasses[(int)I, (int)J];
 
                     UpdatedCell = true;
                 }
@@ -508,24 +506,12 @@ namespace VSS.TRex.SubGridTrees.Server
 
             _GlobalLatestCells.Clear();
             _GlobalLatestCells.Assign(_LatestPasses);
-            //   TODO  _GlobalLatestCells.AssignValuesFromLastPassFlags(_LatestPasses);
-            //   TODO  _GlobalLatestCells.PassDataExistanceMap.Assign(_LatestPasses.PassDataExistanceMap);
 
             Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
         }
 
         public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy)
         {
-            //            SubGridCellPassesDataSegment Segment;
-
-            /* Locking for TRex not yet defined
-            if (!Locked)
-            {
-                Log.LogCritical($"May not calculate latest pass information if the subgrid {Moniker()} is not locked");
-                return;
-            }
-            */
-
             if (!Dirty)
             {
                 Log.LogCritical($"Subgrid {Moniker()} not marked as dirty when computing lastest pass information");
@@ -572,7 +558,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // has been read from the store
 
             if (SeedSegmentInfo != null && SeedSegmentInfo.ExistsInPersistentStore &&
-               ((SeedSegmentInfo.Segment == null) || !SeedSegmentInfo.Segment.HasLatestData))
+               (SeedSegmentInfo.Segment == null || !SeedSegmentInfo.Segment.HasLatestData))
             {
                 if (SeedSegmentInfo.Segment == null)
                 {
@@ -791,7 +777,7 @@ namespace VSS.TRex.SubGridTrees.Server
                   Log.LogError($"Expected leaf subgrid file {fileName} does not exist.");
                 else
                    if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull)
-                      Log.LogError($"Unable to load leaf subgrid file {fileName}. Details: {FSError}");
+                      Log.LogWarning($"Unable to load leaf subgrid file '{fileName}'. Details: {FSError}");
 
                 return false;
             }

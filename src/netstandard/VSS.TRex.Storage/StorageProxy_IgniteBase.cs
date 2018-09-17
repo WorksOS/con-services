@@ -23,10 +23,17 @@ namespace VSS.TRex.Storage
         protected IIgnite ignite;
 
         protected IStorageProxyCache<NonSpatialAffinityKey, byte[]> nonSpatialCache;
-        public IStorageProxyCache<NonSpatialAffinityKey, byte[]> NonSpatialCache => nonSpatialCache;
+
+        public IStorageProxyCache<NonSpatialAffinityKey, byte[]> NonSpatialCache
+        {
+          get { return nonSpatialCache; }
+        }
 
         protected IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> spatialCache;
-        public IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache => spatialCache;
+        public IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache
+        {
+          get { return spatialCache; }
+        }
 
         /// <summary>
         /// Controls which grid (Mutable or Immutable) this storage proxy performs reads and writes against.
@@ -37,7 +44,7 @@ namespace VSS.TRex.Storage
         {
             Mutability = mutability;
 
-            ignite = TRexGridFactory.Grid(TRexGrids.GridName(Mutability));
+            ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
         }
 
         /// <summary>
@@ -58,7 +65,7 @@ namespace VSS.TRex.Storage
         /// <returns></returns>
         protected static string ComputeNamedStreamCacheKey(long DataModelID, string Name, uint SubgridX, uint SubgridY)
         {
-            return string.Format("{0}-{1}-{2}-{3}", DataModelID, Name, SubgridX, SubgridY);
+            return $"{DataModelID}-{Name}-{SubgridX}-{SubgridY}";
         }
 
         /// <summary>
@@ -115,7 +122,7 @@ namespace VSS.TRex.Storage
             }
 
             // Convert from the mutable to the immutable form and store it into the immutable cache
-            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && (immutableStream != null))
+            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && immutableStream != null)
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
@@ -127,10 +134,10 @@ namespace VSS.TRex.Storage
             }
             else
             {
-                // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                // TODO Log the failure
+              // There was no immutable version of the requested information. Allow this to bubble up the stack...
+              Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
 
-                immutableStream = null;
+              immutableStream = null;
             }
 
             if (mutableStream != immutableStream)
@@ -187,7 +194,7 @@ namespace VSS.TRex.Storage
             }
 
             // Convert from the mutable to the immutable form and store it into the immutable cache
-            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && (immutableStream != null))
+            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && immutableStream != null)
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
@@ -199,10 +206,10 @@ namespace VSS.TRex.Storage
             }
             else
             {
-                // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                // TODO Log the failure
+               // There was no immutable version of the requested information. Allow this to bubble up the stack...
+               Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
 
-                immutableStream = null;
+               immutableStream = null;
             }
 
             return immutableStream;

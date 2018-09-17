@@ -54,7 +54,7 @@ namespace VSS.TRex.Filters.Models
             FilteredValue.Clear();
             PreviousFilteredValue.Clear();
             CellProfile = null;
-//          todo  LiftBuildSettings:= Nil;
+//          todo  LiftBuildSettings = Nil;
         }
 
         public void InitialiseProbePositions()

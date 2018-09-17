@@ -67,7 +67,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Copies the flags information from the source latest cell pass wrapper to this one
         /// </summary>
         /// <param name="Source"></param>
-        private void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source)
+        public void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source)
         {
             CCVValuesAreFromLastPass.Assign(Source.CCVValuesAreFromLastPass);
             RMVValuesAreFromLastPass.Assign(Source.RMVValuesAreFromLastPass);

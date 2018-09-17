@@ -42,11 +42,17 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
+        /// <summary>
+        /// Local reference to the client subgrid factory
+        /// </summary>
         [NonSerialized]
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.Factory();
+        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
+          => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
         // private static int requestCount = 0;
-
+     
         /// <summary>
         /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
         /// ProdDataMaskBytes member of the argument. It is only used during processing of the request.
@@ -97,9 +103,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// </summary>
         [NonSerialized]
         private IDesign CutFillDesign;
-
-        [NonSerialized]
-        private bool[] PrimaryPartitionMap;
 
         /// <summary>
         /// DI'ed context for designs service
@@ -438,7 +441,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             // Construct the set of requestors to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
                 (x => new SubGridRequestor(siteModel,
-                                           siteModels.ImmutableStorageProxy(),
+                                           siteModels.StorageProxy,
                                            x,
                                            false, // Override cell restriction
                                            BoundingIntegerExtent2D.Inverted(),
@@ -452,13 +455,13 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             addresses = new ISubGridCellAddress[addressBucketSize];
 
             // Obtain the primary partition map to allow this request to determine the elements it needs to process
-            PrimaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+            bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
 
             // Request production data only, or hybrid production data and surveyed surface data subgrids
             ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
             {
                 // Is this subgrid is the responsibility of this server?
-                if (!PrimaryPartitionMap[address.ToSpatialPartitionDescriptor()])
+                if (!primaryPartitionMap[address.ToSpatialPartitionDescriptor()])
                    return;
 
                 // Decorate the address with the production data and surveyed surface flags
@@ -468,20 +471,23 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 AddSubgridToAddressList(address);      // Assign the address into the group to be processed
             });
 
-            // Request surveyd surface only subgrids
-            SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
-            {
-                // Is this subgrid the responsibility of this server?
-                if (!PrimaryPartitionMap[address.ToSpatialPartitionDescriptor()])
-                    return;
-
-                // Decorate the address with the production data and surveyed surface flags
-                address.ProdDataRequested = false; // TODO: This is a bit of an assumption and assumes the subgrid request is not solely driven by the existance of a subgrid in a surveyed surface
-                address.SurveyedSurfaceDataRequested = localArg.IncludeSurveyedSurfaceInformation;
-
-                AddSubgridToAddressList(address);      // Assign the address into the group to be processed
-            });
-
+            if (localArg.IncludeSurveyedSurfaceInformation)
+            {  
+                // Request surveyed surface only subgrids
+                SurveyedSurfaceOnlyMask?.ScanAllSetBitsAsSubGridAddresses(address =>
+                {
+                    // Is this subgrid the responsibility of this server?
+                    if (!primaryPartitionMap[address.ToSpatialPartitionDescriptor()])
+                      return;
+                  
+                    // Decorate the address with the production data and surveyed surface flags
+                    address.ProdDataRequested = false; 
+                    address.SurveyedSurfaceDataRequested = true;
+                  
+                    AddSubgridToAddressList(address); // Assign the address into the group to be processed
+                });
+            }
+        
             PerformSubgridRequestList();    // Process the remaining subgrids...
 
             return AcquireComputationResult();
@@ -514,7 +520,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     result = PerformSubgridRequests();
                     result.NumSubgridsExamined = NumSubgridsToBeExamined;
 
-                    //TODO: Map the actual response code in to this
+                    //TODO: Map the actual response code into this
                     result.ResponseCode = SubGridRequestsResponseResult.OK;
                 }
                 finally

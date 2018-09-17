@@ -67,24 +67,20 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// DeleteSubgrod removes the subgrid present at the cell coordinates given
+        /// DeleteSubgrid removes the subgrid present at the cell coordinates given
         /// by SubGridX and SubGridY within this subgrid. The removed subgrid is freed.
         /// This operation is by definition only relevant to node subgrids. Leaf
         /// subgrids do not contain child subgrids
         /// </summary>
         /// <param name="SubGridX"></param>
         /// <param name="SubGridY"></param>
-        /// <param name="DeleteIfLocked"></param>
-        public void DeleteSubgrid(byte SubGridX, byte SubGridY, bool DeleteIfLocked)
+        public void DeleteSubgrid(byte SubGridX, byte SubGridY)
         {
             ISubGrid Subgrid = GetSubGrid(SubGridX, SubGridY);
 
             if (Subgrid != null)
             {
                 SetSubGrid(SubGridX, SubGridY, null);
-
-                //      if DeleteIfLocked and Subgrid.Locked then
-                //        Subgrid.ReleaseLock(Subgrid.LockToken);
             }
         }
 
@@ -176,8 +172,7 @@ namespace VSS.TRex.SubGridTrees
             if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
-                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range", 
-                                             "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
+                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range");
             }
 
             // Make use of the three parameter functor verion of ForEachSubgrid and ignore the subgrid location paramters.
@@ -212,8 +207,7 @@ namespace VSS.TRex.SubGridTrees
             if (minSubGridCellX >= SubGridTreeConsts.SubGridTreeDimension ||
                 minSubGridCellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
-                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range",
-                                             "minSubGridCellX, minSubGridCellY, maxnSubGridCellX, maxnSubGridCellY");
+                throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range");
             }
 
             if (Cells != null)
@@ -305,7 +299,7 @@ namespace VSS.TRex.SubGridTrees
             if (Value != null)
             {
                 if (Value.Level != 0 && Value.Level != Level + 1)
-                    throw new ArgumentException("Level of subgrid being added is non-null and is not set correctly for the level it is being added to", "Value.Level");
+                    throw new ArgumentException("Level of subgrid being added is non-null and is not set correctly for the level it is being added to", nameof(Value.Level));
 
                 Value.Parent = this;
                 Value.SetOriginPosition(X, Y);

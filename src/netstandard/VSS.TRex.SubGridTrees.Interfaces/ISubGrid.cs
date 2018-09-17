@@ -40,14 +40,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// </summary>
     ISubGrid Parent { get; set; }
 
-    /// <summary>
-    /// Locked denotes if an actore has placed an exclusive lock on the subgrid
-    /// </summary>
-    bool Locked { get; set; }
-
-    bool AcquireLock(int LockToken);
-    void ReleaseLock(int LockToken);
-
     uint AxialCellCoverageByThisSubgrid();
     uint AxialCellCoverageByChildSubgrid();
     bool ContainsOTGCell(uint CellX, uint CellY);
@@ -69,13 +61,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
     void Write(BinaryWriter writer, byte[] buffer);
 
-    // Commented out to favour BinaryWriter style serialization
-    //        void Write(BinaryFormatter formatter, Stream stream);
-
     void Read(BinaryReader reader, byte[] buffer);
-
-    // Commented out to favour BinaryReader style serialization
-    //        void Read(BinaryFormatter formatter, Stream stream);
 
     ISubGridCellAddress OriginAsCellAddress();
 

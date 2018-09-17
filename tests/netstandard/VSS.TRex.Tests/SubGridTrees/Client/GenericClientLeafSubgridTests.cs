@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     static int GridDataTypeCount = GetGridDataTypeCount();
 
-    private const int kGridDataTypeCount_Expected = 10;
+    private const int kGridDataTypeCount_Expected = 11;
     private const int kGridDataTypeCount = 33;
 
     /// <summary>
@@ -28,6 +28,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
              gridDataType == GridDataType.HeightAndTime ||
              gridDataType == GridDataType.CompositeHeights ||
              gridDataType == GridDataType.CCV ||
+             gridDataType == GridDataType.CCVPercentChange ||
              gridDataType == GridDataType.MDP ||
              gridDataType == GridDataType.MachineSpeed ||
              gridDataType == GridDataType.MachineSpeedTarget ||
@@ -82,7 +83,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [MemberData(nameof(ClientLeafDataTypes), parameters: kGridDataTypeCount)]
     public void Test_GenericClientLeafSubgrid_Creation_EX(GridDataType gridDataType, bool expected)
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
 
       if (expected)
         Assert.NotNull(clientGrid);
@@ -94,7 +95,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
     public void Test_GenericClientLeafSubgrid_ForEach_Ex(GridDataType gridDataType)
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
 
       int Count = 0;
 
@@ -106,22 +107,26 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
     public void Test_GenericClientLeafSubgrid_Clear_Ex(GridDataType gridDataType)
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
       clientGrid.FillWithTestPattern();
       clientGrid.Clear();
-      clientGrid.ForEach((x, y) => Assert.True(!clientGrid.CellHasValue(x, y), "Clear() did not clear all cells"));
+      clientGrid.ForEach((x, y) =>
+      {
+        if (gridDataType != GridDataType.CCVPercentChange)
+          Assert.True(!clientGrid.CellHasValue(x, y), "Clear() did not clear all cells");
+      });
     }
 
     [Theory]
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
     public void Test_GenericClientLeafSubgrid_ReadWrite_Ex(GridDataType gridDataType)
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
       clientGrid.FillWithTestPattern();
       byte[] bytes = clientGrid.ToBytes();
       Assert.True(bytes.Length > 0);
 
-      var clientGrid2 = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      var clientGrid2 = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
       clientGrid2.FromBytes(bytes);
 
       Assert.True(clientGrid.LeafContentEquals(clientGrid2), "Client grids not equal after read/write serialisation");
@@ -131,7 +136,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
     public void Test_GenericClientLeafSubgrid_CellHasValue_True_Ex(GridDataType gridDataType)
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
       clientGrid.FillWithTestPattern();
 
       clientGrid.ForEach((x, y) => Assert.True(clientGrid.CellHasValue(x, y), "Cell does not have value when it should"));
@@ -141,8 +146,14 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
     public void Test_GenericClientLeafSubgrid_CellHasValue_False_Ex(GridDataType gridDataType)
     {
-      var clientGrid = ClientLeafSubgridFactoryFactory.Factory().GetSubGrid(gridDataType);
-      clientGrid.ForEach((x, y) => Assert.False(clientGrid.CellHasValue(x, y), "Cell does have value when it should not"));
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+      clientGrid.ForEach((x, y) =>
+      {
+        if (gridDataType != GridDataType.CCVPercentChange)
+          Assert.False(clientGrid.CellHasValue(x, y), "Cell does have value when it should not");
+        else
+          Assert.True(clientGrid.CellHasValue(x, y), "Cell does not have value when it should");
+      });
     }
   }
 }

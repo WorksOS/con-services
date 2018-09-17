@@ -61,7 +61,7 @@ namespace VSS.TRex.SubGridTrees.Types
     /// <summary>
     /// Defines a publically accessible null value for this cell value type
     /// </summary>
-    public static SubGridCellPassDataPassCountEntryRecord NullValue = SubGridCellPassDataPassCountEntryRecord.Null();
+    public static SubGridCellPassDataPassCountEntryRecord NullValue = Null();
 
     /// <summary>
     /// Implements the business logic to create the null value for this cell valuye type

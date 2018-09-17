@@ -6,21 +6,33 @@ FROM ${BUILD_CONTAINER} as build_container
 
 # Now create runtime container
 # Why bash? it seems to be needed for ignite to run (maybe a dependency?)
-FROM microsoft/dotnet:2.1-runtime-alpine3.7
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine3.7
 RUN \
   apk --no-cache add openjdk8 && \
-  apk --no-cache add bash
+  apk --no-cache add bash nodejs nodejs-npm
+
+
+# We need libgdiplus for system.drawing.common for tiles
+RUN \
+  apk add libgdiplus --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 
 # #Need these for ignite to work
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
 ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
+ENV IGNITE_HOME=/trex/
+ENV IS_KUBERNETES=true
 
-# # Copy built artifacts from last stage into runtime container
-# # TRex still cannot run in 
-COPY --from=build_container /trex/ /trex/
+#Bring libs accross TODO: make the common part of this a new image to speed build times
+COPY --from=build_container /trex/libs/ /trex/libs/
+
+# Copy built artifacts from last stage into runtime container
+#ARGS have weird scoping
+ARG COMPONENT
+COPY --from=build_container /trex/${COMPONENT}/ /trex/
 #Get the ignite libs as these are ignored by dotnet publish
-COPY --from=build_container /root/.nuget/packages/apache.ignite/2.4.0/libs/ /trex/libs/
+#COPY --from=build_container /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
+WORKDIR /trex
 
 
 

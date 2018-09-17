@@ -1,11 +1,20 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Designs.Servers.Client;
+using System.Threading;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.Storage.Models;
+using System.Threading.Tasks;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Server.DesignElevation
 {
@@ -16,8 +25,15 @@ namespace VSS.TRex.Server.DesignElevation
       DIBuilder
         .New()
         .AddLogging()
-        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
+        .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+        .Build()
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
+        .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
+        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
         .Complete();
     }
 
@@ -46,15 +62,20 @@ namespace VSS.TRex.Server.DesignElevation
         if (asmType.Assembly == null)
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
-    static void Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
-      DependencyInjection();
-
       EnsureAssemblyDependenciesAreLoaded();
 
-      var server = new CalculateDesignElevationsServer();
-      Console.WriteLine("Press anykey to exit");
-      Console.ReadLine();
+      DependencyInjection();
+
+      var cancelTokenSource = new CancellationTokenSource();
+      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      {
+        Console.WriteLine("Exiting");
+        cancelTokenSource.Cancel();
+      };
+      await Task.Delay(-1, cancelTokenSource.Token);
+      return 0;
     }
   }
 }

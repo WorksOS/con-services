@@ -38,15 +38,15 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
       
-      // TODO...
+      // TODO: Configure design and lift build settings
       //var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
       //var liftBuildSettings =
       //  RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      CutFillOperation operation = new CutFillOperation();
-      CutFillResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
+      CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
+      CutFillStatisticsResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),

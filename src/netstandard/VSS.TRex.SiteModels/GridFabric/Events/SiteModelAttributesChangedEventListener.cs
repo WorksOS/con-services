@@ -16,7 +16,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         /// <summary>
         ///  Message group the listener has been added to
         /// </summary>
-        [NonSerialized] private IMessaging MsgGroup;
+        [NonSerialized]
+        private IMessaging MsgGroup;
 
         [NonSerialized]
         private string MessageTopicName = "SiteModelAttributesChangedEventListener";
@@ -32,7 +33,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception in SiteModelAttributesChangedEventListener.Invvoke:\n{E}");
+                Log.LogError($"Exception in SiteModelAttributesChangedEventListener.Invoke:\n{E}");
             }
 
             return true;

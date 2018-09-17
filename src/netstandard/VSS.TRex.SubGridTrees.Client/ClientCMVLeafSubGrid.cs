@@ -44,19 +44,11 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
 
-    /// <summary>
-    /// Constructor. Set the grid to CCV.
-    /// </summary>
-    /// <param name="owner"></param>
-    /// <param name="parent"></param>
-    /// <param name="level"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="indexOriginOffset"></param>
-    public ClientCMVLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    private void Initialise()
     {
-      EventPopulationFlags |= 
-        PopulationControlFlags.WantsTargetCCAValues | 
-        PopulationControlFlags.WantsTargetThicknessValues | 
+      EventPopulationFlags |=
+        PopulationControlFlags.WantsTargetCCAValues |
+        PopulationControlFlags.WantsTargetThicknessValues |
         PopulationControlFlags.WantsEventVibrationStateValues |
         PopulationControlFlags.WantsEventDesignNameValues |
         PopulationControlFlags.WantsEventGPSAccuracyValues |
@@ -67,9 +59,6 @@ namespace VSS.TRex.SubGridTrees.Client
         PopulationControlFlags.WantsEventMachineAutomaticsValues |
         PopulationControlFlags.WantsEventMinElevMappingValues |
         PopulationControlFlags.WantsEventInAvoidZoneStateValues;
-
-      WantsPreviousCCVValue = false;
-      IgnoresNullValueForLastCMV = true;
 
       if (WantsPreviousCCVValue)
       {
@@ -83,6 +72,33 @@ namespace VSS.TRex.SubGridTrees.Client
 
       _sWantsPreviousCCVValue = WantsPreviousCCVValue;
       _sIgnoresNullValueForLastCMV = IgnoresNullValueForLastCMV;
+    }
+
+    /// <summary>
+    /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
+    /// and using the default cell size and index origin offset
+    /// </summary>
+    /// <param name="wantsPreviousCCVValue"></param>
+    /// <param name="ignoresNullValueForLastCMV"></param>
+    public ClientCMVLeafSubGrid(bool wantsPreviousCCVValue = false, bool ignoresNullValueForLastCMV = true) : base()
+    {
+      WantsPreviousCCVValue = wantsPreviousCCVValue;
+      IgnoresNullValueForLastCMV = ignoresNullValueForLastCMV;
+
+      Initialise();
+    }
+
+    /// <summary>
+    /// Constructor. Set the grid to CCV.
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="parent"></param>
+    /// <param name="level"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="indexOriginOffset"></param>
+    public ClientCMVLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    {
+      Initialise();
     }
 
     /// <summary>
@@ -179,7 +195,30 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public override void FillWithTestPattern()
     {
-      ForEach((x, y) => Cells[x, y] = new SubGridCellPassDataCMVEntryRecord { MeasuredCMV = x, TargetCMV = y});
+      const short DUMMY_CMV_VALUE = 1;
+
+      ForEach((x, y) =>
+      {
+        Cells[x, y] = new SubGridCellPassDataCMVEntryRecord
+        {
+          MeasuredCMV = x,
+          TargetCMV = y
+        };
+
+        if (y > 0)
+        {
+          Cells[x, y].PreviousMeasuredCMV = Cells[x, y - 1].MeasuredCMV;
+          Cells[x, y].PreviousTargetCMV = Cells[x, y - 1].TargetCMV;
+        }
+
+        // The PreviousMeasuredCMV and PreviousTargetCMV values below are set to non-zero values as
+        // these cannot be zeros.
+        if (Cells[x, y].PreviousMeasuredCMV == 0)
+          Cells[x, y].PreviousMeasuredCMV = DUMMY_CMV_VALUE;
+
+        if (Cells[x, y].PreviousTargetCMV == 0)
+          Cells[x, y].PreviousTargetCMV = DUMMY_CMV_VALUE;
+      });
     }
 
     /// <summary>

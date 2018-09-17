@@ -65,7 +65,7 @@ namespace VSS.TRex.Time
         {
             if (dateTime < kGPSOriginDate)
             {
-                throw new ArgumentException("Date to be converted to GPS date is before the GPS date origin", "dateTime");
+                throw new ArgumentException("Date to be converted to GPS date is before the GPS date origin", nameof(dateTime));
             }
 
             TimeSpan span = dateTime - kGPSOriginDate;

@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.Pipelines
       var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
-        FilterSet = new FilterSet(new[] {new CombinedFilter()}),
+        FilterSet = new FilterSet(new CombinedFilter()),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };
@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.Pipelines
       var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
-        FilterSet = new FilterSet(new[] {new CombinedFilter()}),
+        FilterSet = new FilterSet(new CombinedFilter()),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };
@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
-        FilterSet = new FilterSet(new[] {new CombinedFilter()}),
+        FilterSet = new FilterSet(new CombinedFilter()),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };
@@ -100,8 +100,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
-        FilterSet = new FilterSet(new[]
-          {new CombinedFilter {SpatialFilter = {IsSpatial = true, Fence = new Fence(0, 0, 100, 100)}}}),
+        FilterSet = new FilterSet(new CombinedFilter {SpatialFilter = {IsSpatial = true, Fence = new Fence(0, 0, 100, 100)}}),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };
@@ -120,8 +119,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
-        FilterSet = new FilterSet(new[]
-          {new CombinedFilter {SpatialFilter = {IsSpatial = true, Fence = new Fence(0, 0, 100, 100)}}}),
+        FilterSet = new FilterSet(new CombinedFilter {SpatialFilter = {IsSpatial = true, Fence = new Fence(0, 0, 100, 100)}}),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };
@@ -142,7 +140,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
-        FilterSet = new FilterSet(new[] {new CombinedFilter()}),
+        FilterSet = new FilterSet(new CombinedFilter()),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };
@@ -167,7 +165,7 @@ namespace VSS.TRex.Tests.Pipelines
 
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
-        FilterSet = new FilterSet(new[] {new CombinedFilter()}),
+        FilterSet = new FilterSet(new CombinedFilter()),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };

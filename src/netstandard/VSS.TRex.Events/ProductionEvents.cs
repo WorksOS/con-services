@@ -18,7 +18,7 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <typeparam name="V"></typeparam>
     [Serializable]
-    public class ProductionEvents<V> : IProductionEvents, IProductionEvents<V>
+    public class ProductionEvents<V> : IProductionEvents<V>
   {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -26,7 +26,7 @@ namespace VSS.TRex.Events
         private const int MajorVersion = 1;
         private const int MinorVersion = 0;
 
-        public bool EventsChanged { get; set; } = false;
+        public bool EventsChanged { get; set; }
 
         /// <summary>
         /// The structure that contains all information about this type of event.
@@ -79,12 +79,6 @@ namespace VSS.TRex.Events
         /// </summary>
         public long MachineID { get; set; }
 
-        /// <summary>
-        /// The container of event changes lists for a machine in a project that this event list is a member of
-        /// </summary>
-        [NonSerialized]
-        public IProductionEventLists Container;
-
 //        [NonSerialized]
 //        private DateTime lastUpdateTimeUTC = DateTime.MinValue;
 
@@ -126,8 +120,7 @@ namespace VSS.TRex.Events
         public ProductionEvents()
         {}
 
-        public ProductionEvents(IProductionEventLists container,
-            long machineID, Guid siteModelID,
+        public ProductionEvents(long machineID, Guid siteModelID,
             ProductionEventType eventListType,
             Action<BinaryWriter, V> serialiseStateOut,
             Func<BinaryReader, V> serialiseStateIn)
@@ -135,7 +128,6 @@ namespace VSS.TRex.Events
             MachineID = machineID;
             SiteModelID = siteModelID;
             EventListType = eventListType;
-            Container = container;
 
             // Machines created with the max machine ID are treated as transient and never
             // stored in or loaded from the FS file. 
@@ -188,10 +180,21 @@ namespace VSS.TRex.Events
         //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;
 
         // protected void InvalidateEventList() => eventsListIsOutOfDate = true;
-
         // public bool EventsListIsOutOfDate() => eventsListIsOutOfDate;
 
         // protected bool LoadedFromPersistentStore = false;
+
+        /// <summary>
+        /// Retrieves the event state and date at a specific location in the events list
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="dateTime"></param>
+        /// <param name="state"></param>
+        public void GetStateAtIndex(int index, out DateTime dateTime, out V state)
+        {
+            dateTime = Events[index].Date;
+            state = Events[index].State;
+        }
 
         /// <summary>
         /// Adds an event of type T with the given date into the list. If the event is a duplicate
@@ -270,19 +273,10 @@ namespace VSS.TRex.Events
         }
 
         /// <summary>
-        /// Sets the state of the owning 'container' of event list (the production event changes) that this list is a member of
-        /// </summary>
-        /// <param name="container"></param>
-        public void SetContainer(IProductionEventLists container)
-        {
-            Container = container;
-        }
-
-        /// <summary>
         /// Collates a series of events within an event list by aggregating consecutive events where there is no change
         /// in the underlying event state
         /// </summary>
-        public virtual void Collate()
+        public virtual void Collate(IProductionEventLists container)
         {
             bool HaveStartEndEventPair = false;
 
@@ -306,7 +300,7 @@ namespace VSS.TRex.Events
                 if (!HaveStartEndEventPair ||
                      !Range.InRange(Events[FirstIdx].Date, StartEvent.Date, EndEvent.Date))
                 {
-                    if (!Container.GetStartEndRecordedDataEvents().FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
+                    if (!container.GetStartEndRecordedDataEvents().FindStartEventPairAtTime(Events[FirstIdx].Date, out StartEvent, out EndEvent))
                     {
                         FirstIdx = SecondIdx;
                         SecondIdx = FirstIdx + 1;
@@ -381,34 +375,9 @@ namespace VSS.TRex.Events
 
         // Function CalculateInMemorySize : Integer; Virtual;
         // Function InMemorySize : Integer; InLine;
-        // Procedure EnsureEventListLoaded; Inline;
         // Procedure MarkEventListAsInMemoryOnly; Inline;
-        // Procedure AcquireSharedReadInterlock; Inline;
-        // Procedure ReleaseSharedReadInterlock; Inline;
-        // Procedure AcquireExclusiveWriteInterlock; Inline;
-        // Procedure ReleaseExclusiveWriteInterlock; Inline;
 
 /*
-        /// <summary>
-        /// Writes a binary serialisation of the content of the list
-        /// </summary>
-        /// <param name="writer"></param>
-        public void Write(BinaryWriter writer)
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(writer.BaseStream, this);
-        }
-
-        /// <summary>
-        /// Reads a binary serialisation of the content of the list
-        /// </summary>
-        /// <param name="reader"></param>
-        public static ProductionEvents<V> Read(BinaryReader reader)
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            return (ProductionEvents<V>)formatter.Deserialize(reader.BaseStream);
-        }
-
         /// <summary>
         /// Serialises the contents of the event list using a binary writer
         /// </summary>
@@ -452,19 +421,10 @@ namespace VSS.TRex.Events
             }
 
             EventsChanged = false;
-
-            /*
-            using (MemoryStream MS = new MemoryStream())
-            {
-                SaveToStream(MS);
-
-                storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, MS);
-            }
-            */
         }
 
         /// <summary>
-        /// Loads the event list by requesting it's serialised representation from the persistent store and 
+        /// Loads the event list by requesting its serialised representation from the persistent store and 
         /// deserialising it into the event list
         /// </summary>
         /// <param name="storageProxy"></param>
@@ -501,32 +461,6 @@ namespace VSS.TRex.Events
                     }
                 }
             }
-
-            /*
-            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(),
-                FileSystemStreamType.Events, out MemoryStream MS);
-
-            if (MS != null)
-            {
-                MS.Position = 0;
-                using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
-                {
-                    Result = Read(reader);
-                }
-            }
-            */
-
-            /*
-             * if (Result != null)
-             
-            {
-                // Copy the serialisation lambdas into the new instance as these are not serialised into the persistent store
-                Result.SerialiseStateOut = SerialiseStateOut;
-                Result.SerialiseStateIn = SerialiseStateIn;
-            }
-
-            return Result ?? this;
-            */
         }
 
     /// <summary>
@@ -543,7 +477,7 @@ namespace VSS.TRex.Events
         /// <param name="stateChangeIndex"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default(V))
+        public virtual V GetValueAtDate(DateTime eventDate, out int stateChangeIndex, V defaultValue = default)
         {
             if (Events.Count == 0)
             {

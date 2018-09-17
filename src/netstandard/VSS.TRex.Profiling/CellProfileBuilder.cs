@@ -5,6 +5,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -23,13 +24,13 @@ namespace VSS.TRex.Profiling
 
     private ISiteModel SiteModel;
     private double CellSize;
-    public bool Aborted;
+    public bool Aborted { get; set; }
 
     private InterceptList VtIntercepts = new InterceptList();
     private InterceptList HzIntercepts = new InterceptList();
     private InterceptList VtHzIntercepts = new InterceptList();
 
-    public bool SlicerToolUsed;
+    private bool SlicerToolUsed;
     private bool ReturnDesignElevation;
     private uint OTGCellX, OTGCellY;
 
@@ -51,7 +52,7 @@ namespace VSS.TRex.Profiling
     private ICellSpatialFilter CellFilter;
     private IDesign CutFillDesign;
 
-    public double GridDistanceBetweenProfilePoints;
+    public double GridDistanceBetweenProfilePoints { get; set; }
 
     /// <summary>
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
@@ -200,6 +201,9 @@ namespace VSS.TRex.Profiling
       ReturnDesignElevation = CutFillDesign != null;
       DesignElevations = null;
 
+      // Obtain the primary partition map to allow this request to determine the elements it needs to process
+      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
+
       for (int loopBound = NEECoords.Length - 1, I = 0; I < loopBound; I++)
       {
         StartX = NEECoords[I].X;
@@ -260,11 +264,8 @@ namespace VSS.TRex.Profiling
 
         if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin))
         {
-          /* TODO: Affinity key calculation to detemrine if this node is responsible for this subgrid in the sequence along the profile
-          //with VLPDDynamicSvcLocations do
-          if (PSNodeServicingSubgrid(ThisSubgridOrigin.ToSkipInterleavedDescriptor).Descriptor != PSNodeDescriptors.ThisNodeDescriptor)
+          if (!primaryPartitionMap[ThisSubgridOrigin.ToSpatialPartitionDescriptor()])
             continue;
-          */
 
           CurrentSubgridOrigin = ThisSubgridOrigin;
 

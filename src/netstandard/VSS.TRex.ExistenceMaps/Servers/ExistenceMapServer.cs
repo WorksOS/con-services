@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Storage.Caches;
@@ -24,7 +25,6 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// Ignite instance to be used in the server
         /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
         /// </summary>
-        //[InstanceResource]
         private readonly IIgnite ignite;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         public ExistenceMapServer()
         {
-            ignite = TRexGridFactory.Grid(TRexGrids.ImmutableGridName());
+            ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
             
             if (ignite == null)
             {

@@ -64,7 +64,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="passFilter"></param>
     private void SetupForCellPassStackExamination(ICellPassAttributeFilter passFilter)
     {      
-      SegmentIterator = new SubGridSegmentIterator(null, null, DIContext.Obtain<ISiteModels>().ImmutableStorageProxy());
+      SegmentIterator = new SubGridSegmentIterator(null, null, DIContext.Obtain<ISiteModels>().StorageProxy);
 
       if (passFilter.ReturnEarliestFilteredCellPass ||
           (passFilter.HasElevationTypeFilter && passFilter.ElevationType == ElevationType.First))
@@ -148,15 +148,15 @@ namespace VSS.TRex.Profiling.Executors
             /* todo design: */null, /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
-          // todo {$IFDEF DEBUG}
-          //SIGLogMessage.PublishNoODS(Self, Format('RequestProfile: BuildCellPassProfile for sitemodel %d', [Args.DataModelID]), slmcMessage);
+          //{$IFDEF DEBUG}
+          //Log.LogInformation($"RequestProfile: BuildCellPassProfile for sitemodel {ProjectID}");
           //{$ENDIF}
 
           Log.LogInformation("Building cell profile");
           if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
-            // todo {$IFDEF DEBUG}
-            // SIGLogMessage.PublishNoODS(Self, Format('RequestProfile: BuildLiftProfileFromInitialLayer for sitemodel %d', [Args.DataModelID]), slmcMessage);
+            // {$IFDEF DEBUG}
+            // Log.LogInformation($"RequestProfile: BuildLiftProfileFromInitialLayer for sitemodel {ProjectID}");
             // {$ENDIF}
 
             SetupForCellPassStackExamination(PassFilter);
@@ -176,8 +176,8 @@ namespace VSS.TRex.Profiling.Executors
             Log.LogInformation("Lift profile building failed");
           }
 
-          // todo... {$IFDEF DEBUG}
-          // SIGLogMessage.PublishNoODS(Self, Format('RequestProfile: completed construction for sitemodel %d', [Args.DataModelID]), slmcMessage);
+          // {$IFDEF DEBUG}
+          // Log.LogInformation($"RequestProfile: completed construction for sitemodel {ProjectID}");
           // {$ENDIF}
 
           /*       if ServerResult = icsrrNoError then

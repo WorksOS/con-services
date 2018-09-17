@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
@@ -14,21 +13,21 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        private IProductionEventLists /*EfficientProductionEventChanges*/ Source;
-        private IProductionEventLists /*EfficientProductionEventChanges*/ Target;
+        private IProductionEventLists SourceLists;
+        private IProductionEventLists TargetLists;
         private bool IntegratingIntoPersistentDataModel;
 
         public EventIntegrator()
         {
         }
 
-        public EventIntegrator(ProductionEventLists /*EfficientProductionEventChanges*/ Source,
-                               ProductionEventLists /*EfficientProductionEventChanges*/ Target,
-                               bool IntegratingIntoPersistentDataModel) : this()
+        public EventIntegrator(IProductionEventLists sourceLists,
+                               IProductionEventLists targetLists,
+                               bool integratingIntoPersistentDataModel) : this()
         {
-            this.Source = Source;
-            this.Target = Target;
-            this.IntegratingIntoPersistentDataModel = IntegratingIntoPersistentDataModel;
+            SourceLists = sourceLists;
+            TargetLists = targetLists;
+            IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
         }
 
         private void IntegrateMachineDesignEventNames()
@@ -38,11 +37,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             EventDesignName: TEventDesignName;
             string DesignName;
 
-            if (IntegratingIntoPersistentDataModel)
-                Source.DesignNameIDStateEvents.AcquireExclusiveWriteInterlock;
-
-            try
-            {
                 //  with Source.SiteModel as TICSiteModel do
                 for (int I = 0; I < Source.DesignNameIDStateEvents.Count; I++)
                 {
@@ -60,20 +54,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         return;
                     }
                 }
-            }
-            finally
-            {
-                if IntegratingIntoPersistentDataModel then
-                    Source.DesignNameIDStateEvents.ReleaseExclusiveWriteInterlock;
-            }
 
-            if (IntegratingIntoPersistentDataModel)
-            {
-                Source.MapResets.AcquireExclusiveWriteInterlock;
-            }
-
-            try
-            {
                 // with Source.SiteModel as TICSiteModel do
                 for (int I = 0; I < Source.MapResets.Count; I++)
                 {
@@ -91,14 +72,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         return;
                     }
                 }
-            }
-            finally
-            {
-                if (IntegratingIntoPersistentDataModel)
-                {
-                    Source.MapResets.ReleaseExclusiveWriteInterlock;
-                }
-            }
             */
         }
 
@@ -113,56 +86,41 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             if (source.Count() > 1)
                 source.Sort();
 
-            if (IntegratingIntoPersistentDataModel)
-            {
-                // TODO revisit when sitemodel locking semantics are defined
-                //Target.AcquireExclusiveWriteInterlock();
-            }
-
-            try
-            {
-                target.CopyEventsFrom(source);
-                target.Collate();
-            }
-            finally
-            {
-                if (IntegratingIntoPersistentDataModel)
-                {
-                    // TODO revisit when sitemodel locking semantics are defined
-                    // Target.ReleaseExclusiveWriteInterlock;
-                }
-            }
+            target.CopyEventsFrom(source);
+            target.Collate(TargetLists);
         }
 
-        private void PerformListIntegration(IProductionEvents source,
-                                            IProductionEvents target)
+        private void PerformListIntegration(IProductionEvents source, IProductionEvents target)
         {
             IntegrateList(source, target);
         }
 
-        public void IntegrateMachineEvents(IProductionEventLists /*EfficientProductionEventChanges*/ source,
-                                           IProductionEventLists /*EfficientProductionEventChanges*/ target,
+        public void IntegrateMachineEvents(IProductionEventLists sourceLists,
+                                           IProductionEventLists targetLists,
                                            bool integratingIntoPersistentDataModel)
         {
-            Source = source;
-            Target = target;
+            SourceLists = sourceLists;
+            TargetLists = targetLists;
             IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
 
             IntegrateMachineEvents();
         }
 
+        /// <summary>
+        /// Integrate together all the events lists for a machine between the source and target lists of machine events
+        /// </summary>
         public void IntegrateMachineEvents()
         {
             IntegrateMachineDesignEventNames();
 
-            IProductionEvents SourceStartEndRecordedDataList = Source.StartEndRecordedDataEvents; // EventStartEndRecordedData;
+            IProductionEvents SourceStartEndRecordedDataList = SourceLists.StartEndRecordedDataEvents;
 
             // Always integrate the machine recorded data start/stop events first, as collation
             // of the other events depends on collation of these events
-            PerformListIntegration(SourceStartEndRecordedDataList, Target.StartEndRecordedDataEvents); // EventStartEndRecordedData);
+            PerformListIntegration(SourceStartEndRecordedDataList, TargetLists.StartEndRecordedDataEvents); 
 
-            var sourceEventLists = Source.GetEventLists();
-            var targetEventLists = Target.GetEventLists();
+            var sourceEventLists = SourceLists.GetEventLists();
+            var targetEventLists = TargetLists.GetEventLists();
 
             // Integrate all remaining event lists and collate them wrt the machine start/stop recording events
             for (int I = 0; I < sourceEventLists.Length; I++)

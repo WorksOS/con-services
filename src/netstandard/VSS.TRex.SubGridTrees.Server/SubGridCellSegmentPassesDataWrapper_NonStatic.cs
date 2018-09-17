@@ -79,7 +79,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     case 2: PassCounts[i, j] = reader.ReadInt16(); break;
                     case 3: PassCounts[i, j] = reader.ReadInt32(); break;
                     default:
-                        throw new InvalidDataException(string.Format("Unknown PassCounts_Size {0}", PassCounts_Size));
+                        throw new InvalidDataException($"Unknown PassCounts_Size {PassCounts_Size}");
                 }
             });
 
@@ -200,7 +200,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     case 2: writer.Write((ushort)PassCount(i, j)); break;
                     case 3: writer.Write((int)PassCount(i, j)); break;
                     default:
-                        throw new InvalidDataException(string.Format("Unknown PassCounts_Size: {0}", PassCounts_Size));
+                        throw new InvalidDataException($"Unknown PassCounts_Size: {PassCounts_Size}");
                 }
             });
 

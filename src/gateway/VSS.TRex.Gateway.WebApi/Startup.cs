@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Requestors;
+using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -36,8 +38,12 @@ namespace VSS.TRex.Gateway.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       // Add framework services.
-      services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
-      services.AddSingleton<ISiteModels>(new SiteModels.SiteModels());
+      var storageProxyFactory = new StorageProxyFactory();
+
+      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
+      services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
+      services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.ImmutableGridStorage()));
+      services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
       services.AddTransient<ITINSurfaceExportRequestor>(factory => new TINSurfaceExportRequestor());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required

@@ -52,6 +52,12 @@ namespace VSS.TRex.Pipelines
     public BoundingWorldExtent3D SpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
 
     /// <summary>
+    /// Any override world coordinate spatial entent imposed by the client context.
+    /// For example, this might be the rectangular border of a tile being requested
+    /// </summary>
+    public BoundingWorldExtent3D OverrideSpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
+
+    /// <summary>
     /// The response used as the return from the pipeline request
     /// </summary>
     public ISubGridsPipelinedReponseBase Response { get; set; }
@@ -181,10 +187,6 @@ namespace VSS.TRex.Pipelines
       Pipeline.PipelineTask = Task;
       Task.PipeLine = Pipeline;
 
-      // Introduce the Request analyser to the pipeline and spatial extents it requires
-      RequestAnalyser.Pipeline = Pipeline;
-      RequestAnalyser.WorldExtents = SpatialExtents;
-
       // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
       foreach (var filter in Filters.Filters)
       {
@@ -211,12 +213,12 @@ namespace VSS.TRex.Pipelines
 
       if (!SpatialExtents.IsValidPlanExtent)
       {
-        Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // TODO: Or there was no data in the model
+        Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // Or there was no data in the model
         return false;
       }
 
       // Get the current production data existance map from the sitemodel
-      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(DIContext.Obtain<ISiteModels>().ImmutableStorageProxy());
+      ProdDataExistenceMap = SiteModel.GetProductionDataExistanceMap(DIContext.Obtain<ISiteModels>().StorageProxy);
       
       if (ProdDataExistenceMap == null)
       {
@@ -305,6 +307,13 @@ namespace VSS.TRex.Pipelines
         DesignSubgridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.Grid.CellSize;
       }
 
+      // Impose the final restriction on the spatial extents from the client context
+      SpatialExtents = SpatialExtents.Intersect(OverrideSpatialExtents);
+
+      // Introduce the Request analyser to the pipeline and spatial extents it requires
+      RequestAnalyser.Pipeline = Pipeline;
+      RequestAnalyser.WorldExtents = SpatialExtents;
+
       ConfigurePipeline();
 
       return true;
@@ -326,7 +335,7 @@ namespace VSS.TRex.Pipelines
       Pipeline.DataModelID = DataModelID;
 
       //TODO Readd when lift build settings are supported
-      //todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+      // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
 
       // If summaries of compaction information (both CMV and MDP) are being displayed,
       // and the lift build settings requires all layers to be examined (so the
@@ -337,16 +346,14 @@ namespace VSS.TRex.Pipelines
       /* Todo: Delegate this kind of specialised configuration to the client of the pipeline processor
       if (Mode == DisplayMode.CCVSummary || Mode == DisplayMode.CCVPercentSummary)
       {
-        // TODO... if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
-        //    PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-        //
+        if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
+           PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
       }
 
       if (Mode == DisplayMode.MDPSummary || Mode == DisplayMode.MDPPercentSummary)
       {
-        // TODO... if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
-        //  PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-        //
+        if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
+          PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
       }
       */
 
@@ -358,13 +365,14 @@ namespace VSS.TRex.Pipelines
       Pipeline.FilterSet = Filters;
 
       Log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
-      Pipeline.WorldExtents.Assign(SpatialExtents);
 
       Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExludedViaTimeFiltering;
 
-      Pipeline.OverrideSpatialCellRestriction = OverrideSpatialCellRestriction;
+//      Pipeline.OverrideSpatialCellRestriction = OverrideSpatialCellRestriction;
 
       //PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
+
+      Pipeline.RequestAnalyser = RequestAnalyser;
     }
 
     /// <summary>

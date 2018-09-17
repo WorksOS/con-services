@@ -8,7 +8,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// <summary>
   /// The response state returned from a MDP statistics request
   /// </summary>
-  public class MDPStatisticsResponse : SummaryAnalyticsResponse, IAggregateWith<MDPStatisticsResponse>, IAnalyticsOperationResponseResultConversion<MDPResult>
+  public class MDPStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<MDPStatisticsResponse>, IAnalyticsOperationResponseResultConversion<MDPStatisticsResult>
   {
     /// <summary>
     /// Holds last known good target MDP value.
@@ -20,7 +20,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    protected override void AggregateBaseDataWith(StatisticAnalyticsResponse other)
+    protected override void AggregateBaseDataWith(StatisticsAnalyticsResponse other)
     {
       base.AggregateBaseDataWith(other);
 
@@ -34,9 +34,9 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     }
 
 
-    public MDPResult ConstructResult()
+    public MDPStatisticsResult ConstructResult()
     {
-      return new MDPResult
+      return new MDPStatisticsResult
       {
         IsTargetMDPConstant = IsTargetValueConstant,
         ConstantTargetMDP = LastTargetMDP,
@@ -47,6 +47,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
 
         ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? MissingTargetDataResultType.NoResult : MissingTargetDataResultType.PartialResult : MissingTargetDataResultType.NoProblems,
 
+        Counts = Counts,
         ResultStatus = ResultStatus
       };
     }

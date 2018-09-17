@@ -123,7 +123,7 @@ namespace VSS.TRex.Rendering.Executors
 
     private BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
 
-    /* TODO
+    /* TODO ColourPaletteClassType()
      private TICDisplayPaletteBaseClass ColourPaletteClassType()
         {
         case FMode of
@@ -163,7 +163,7 @@ namespace VSS.TRex.Rendering.Executors
       end;
     */
 
-    /* TODO
+    /* TODO: ComputeCCAPalette
       function ComputeCCAPalette :Boolean;
       var
         I, J, K               :Integer;
@@ -233,7 +233,7 @@ namespace VSS.TRex.Rendering.Executors
       end;
     */
 
-    /* TODO
+    /* TODO: CreateAndInitialiseWorkingColourPalette
      function CreateAndInitialiseWorkingColourPalette :Boolean;
      begin
        Result  = True;
@@ -306,7 +306,6 @@ namespace VSS.TRex.Rendering.Executors
           return true;
         }))
       {
-        // PackageRenderedTileIntoPNG(RepresentationalDisplayer);
         return RepresentationalDisplayer.MapView.BitmapCanvas;
       }
 
@@ -432,7 +431,7 @@ namespace VSS.TRex.Rendering.Executors
         NEECoords = LLHCoords;
       else
       {
-        /* TODO
+        /* TODO: RequestCoordinateConversion
         CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(RequestDescriptor, DataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
         if (CoordConversionResult != csOK)
         {
@@ -487,7 +486,7 @@ namespace VSS.TRex.Rendering.Executors
           ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
             
           //RenderTransparentTile();
-          return Renderer.Displayer.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
+          return Renderer.Displayer?.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
         }
 
         // Compute the override cell boundary to be used when processing cells in the subgrids
@@ -504,9 +503,7 @@ namespace VSS.TRex.Rendering.Executors
         BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int) CellExtents_MinX, (int) CellExtents_MinY, (int) CellExtents_MaxX, (int) CellExtents_MaxY);
         CellExtents.Expand(1);
 
-        ICombinedFilter[] filterSet = Filter1 == null && Filter2 == null ?
-          new ICombinedFilter[0] : Filter2 == null ? new[] {Filter1} : new[] {Filter1, Filter2};
-        IFilterSet Filters = new FilterSet(filterSet);
+        IFilterSet Filters = new FilterSet(Filter1, Filter2);
 
         // Construct PipelineProcessor
         IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
@@ -532,8 +529,9 @@ namespace VSS.TRex.Rendering.Executors
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
         ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
-        // Set the initial spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate syste,
-        processor.SpatialExtents = RotatedTileBoundingExtents;
+        // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate syste to act as
+        // a final restrictor of the spatial extent used to govern data requests
+        processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 
         // Prepare the processor
         if (!processor.Build())
@@ -550,7 +548,7 @@ namespace VSS.TRex.Rendering.Executors
         if (Utilities.SubgridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
           return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
 
-        /* TODO 
+        /* TODO - Create a scaled palette to use when rendering the data
         // Create a scaled palette to use when rendering the data
         if not CreateAndInitialiseWorkingColourPalette then
           begin
@@ -580,9 +578,6 @@ namespace VSS.TRex.Rendering.Executors
         if (processor.Response.ResultStatus == RequestErrorStatus.OK)
         {
           return Renderer.Displayer.MapView.BitmapCanvas;
-
-          // TODO - report the final rendered result back
-          // PackageRenderedTileIntoPNG(Renderer.Displayer);
         }
       }
       catch (Exception e)
