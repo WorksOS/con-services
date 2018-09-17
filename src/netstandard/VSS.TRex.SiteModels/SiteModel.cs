@@ -48,7 +48,7 @@ namespace VSS.TRex.SiteModels
         /// <summary>
         /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
         /// </summary>
-        public bool IsTransient { get; set; } = true;
+        public bool IsTransient { get; private set; } = true;
 
         /// <summary>
         /// The grid data for this site model
@@ -170,7 +170,7 @@ namespace VSS.TRex.SiteModels
         {
         }
 
-        public SiteModel(Guid id) : this()
+        public SiteModel(Guid id, bool isTransient = true) : this()
         {
             ID = id;
 
@@ -179,6 +179,8 @@ namespace VSS.TRex.SiteModels
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';
             // FActive:= True;
+
+            IsTransient = isTransient;
 
             Machines = new MachinesList(id);
 

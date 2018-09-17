@@ -20,7 +20,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// <summary>
     /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
     /// </summary>
-    bool IsTransient { get; set; }
+    bool IsTransient { get; }
 
     /// <summary>
     /// The grid data for this site model
