@@ -3,7 +3,7 @@ using VSS.TRex.Exceptions;
 
 namespace VSS.TRex.Common.Exceptions
 {
-  class TRexPersistencyException : TRexException
+  public class TRexPersistencyException : TRexException
   {
     public TRexPersistencyException(string message) : base(message)
     {
