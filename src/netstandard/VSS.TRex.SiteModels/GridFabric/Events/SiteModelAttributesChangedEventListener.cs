@@ -5,10 +5,15 @@ using System;
 using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
-    public class SiteModelAttributesChangedEventListener : IMessageListener<SiteModelAttributesChangedEvent>, IDisposable
+    /// <summary>
+    /// The listener that responds to site model change notifications emiited by actors such as TAG file processing
+    /// </summary>
+    [Serializable]
+    public class SiteModelAttributesChangedEventListener : IMessageListener<ISiteModelAttributesChangedEvent>, IDisposable, ISiteModelAttributesChangedEventListener
     {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -24,8 +29,10 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
         [NonSerialized] private string GridName;
 
-        public bool Invoke(Guid nodeId, SiteModelAttributesChangedEvent message)
+        public bool Invoke(Guid nodeId, ISiteModelAttributesChangedEvent message)
         {
+            Log.LogInformation($"Received notification site model attributes changed for {message.SiteModelID}");
+
             // Tell the SiteModels instance to reload the designated site model that has changed
             try
             {
