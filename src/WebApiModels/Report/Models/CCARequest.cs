@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using VSS.Productivity3D.Common.Models;
+﻿using System;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
   /// <summary>
   /// The request representation used for a summary CCA request.
