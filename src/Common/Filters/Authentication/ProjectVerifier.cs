@@ -55,6 +55,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       {
         projectIdentifier = actionContext.ActionArguments[PROJECT_UID];
       }
+      else
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "ProjectId and ProjectUID cannot both be null."));
+      }
 
       switch (projectIdentifier)
       {
