@@ -74,3 +74,6 @@ spec:
             value: "/trex/"
           - name: IS_KUBERNETES
             value: "true"
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}
+

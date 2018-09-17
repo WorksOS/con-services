@@ -48,6 +48,8 @@ spec:
           value: {{ .Values.mutableData.environment.tfaServiceBaseUrl }}
         - name: IS_KUBERNETES
           value: "true"
+        - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}
 
         ports:
         # Ports to open.
