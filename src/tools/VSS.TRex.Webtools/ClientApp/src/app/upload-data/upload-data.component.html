@@ -10,6 +10,19 @@
       <button (click)="clearProjectUid()">Clear</button>
     </span>
   </p>
+
+  <h6>Dimensions</h6>
+  <ul>
+    <li>OrgId: 87bdf851-44c5-e311-aa77-00505688274d</li>
+    <li>ProjectUid: bea52e4f-faa2-e511-80e5-0050568821e6</li>
+  </ul>
+
+  <h6>Boone county expo</h6>
+  <ul>
+    <li>OrgId: 87bdf851-44c5-e311-aa77-00505688274d</li>
+    <li>ProjectUid: 62a52e4f-faa2-e511-80e5-0050568821e6</li>
+  </ul>
+
 </div>
 <div class="center">
   <div>
@@ -26,14 +39,14 @@
   <div class="upload-table">
     <table class="table">
       <thead>
-      <tr>
-        <th>Name</th>
-      </tr>
+        <tr>
+          <th>Name</th>
+        </tr>
       </thead>
       <tbody class="upload-name-style">
-      <tr *ngFor="let item of files; let i=index">
-        <td><strong>{{ item.relativePath }}</strong></td>
-      </tr>
+        <tr *ngFor="let item of files; let i=index">
+          <td><strong>{{ item.relativePath }}</strong></td>
+        </tr>
       </tbody>
     </table>
   </div>
