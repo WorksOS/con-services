@@ -50,7 +50,6 @@ immutableData:
     requests:
       cpu: 300m
       memory: 1.6Gi
-  storageSize: 10Gi
 
 mutableData:
   replicaCount: 1
@@ -77,6 +76,7 @@ psnode:
     requests:
       cpu: 300m
       memory: 1.6Gi
+  storageSize: 10Gi
 
 tileServer:
   replicaCount: 1
