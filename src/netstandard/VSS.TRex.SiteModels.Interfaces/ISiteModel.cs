@@ -18,8 +18,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     DateTime LastModifiedDate { get; set; }
 
     /// <summary>
-    /// Determines if this sitemodel is a transient model used for the purposes of TAG file processing, or
-    /// if it stored within the persistency layer
+    /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
     /// </summary>
     bool IsTransient { get; set; }
 
