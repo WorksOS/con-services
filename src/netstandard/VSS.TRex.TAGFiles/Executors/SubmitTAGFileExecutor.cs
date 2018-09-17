@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.TAGFiles.Classes;
@@ -77,8 +78,9 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) ValidationResult.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tagfile
-            IConfiguration config = DIContext.Obtain<IConfiguration>();
-            if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING", false))
+            var config = DIContext.Obtain<IConfigurationStore>();
+            var tagFileArchiving = config.GetValueBool("ENABLE_TAGFILE_ARCHIVING") ?? false;
+            if (tagFileArchiving)
             {
               Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);

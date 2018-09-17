@@ -18,7 +18,7 @@ using Xunit;
 
 namespace TAGFiles.Tests
 {
-    public class TerrainSwatherTests : IClassFixture<DILoggingFixture>
+    public class TerrainSwatherTests : IClassFixture<DITagFileTestsDIFixture>
     {
         [Fact]
         public void Test_TerrainSwather_Creation()

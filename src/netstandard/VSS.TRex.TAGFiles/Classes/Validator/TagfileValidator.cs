@@ -35,7 +35,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     ///      and lookup assetId and projectId 
     /// </summary>
     /// <returns></returns>
-    private static GetProjectAndAssetUidsResult ValidateWithTfa(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest)
+    private static async Task<GetProjectAndAssetUidsResult> ValidateWithTfa(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest)
     {
       Log.LogInformation($"#Progress# ValidateWithTFA. Calling TFA servce to validate tagfile permissions:{JsonConvert.SerializeObject(getProjectAndAssetUidsRequest)}");
       var tfa = DIContext.Obtain<ITagFileAuthProjectProxy>();
@@ -43,7 +43,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       GetProjectAndAssetUidsResult tfaResult;
       try
       {
-        tfaResult = tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest).Result as GetProjectAndAssetUidsResult;
+        tfaResult = await tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest).ConfigureAwait(false) as GetProjectAndAssetUidsResult;
       }
       catch (Exception e)
       {
@@ -80,7 +80,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Type C. Do we have what we need already (Most likley test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString());
+          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
 
       // Business rule for device type conversion
       int radioType = processor.RadioType == "torch" ? (int) DeviceType.SNM940 : (int) DeviceType.ManualDevice; // torch device set to type 6
@@ -98,7 +98,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         radioType, processor.RadioSerial, tagDetail.tccOrgId,
         processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime);
 
-      var tfaResult = ValidateWithTfa(tfaRequest);
+      var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
       Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
       if (tfaResult.Code == (int) ValidationResult.Valid)
@@ -110,7 +110,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         }
 
         // take what TFA gives us including an empty guid which is a JohnDoe
-        tagDetail.assetId = (Guid.Parse(tfaResult.AssetUid));
+        tagDetail.assetId = tfaResult.AssetUid == string.Empty ? Guid.Empty :(Guid.Parse(tfaResult.AssetUid));
 
         // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense
         if (tagDetail.assetId == Guid.Empty)
@@ -146,7 +146,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE") ?? true;
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
       {
-        return new ContractExecutionResult((int) ValidationResult.InvalidTagfile, "ValidationResult.InvalidTagfile content too short");
+        return new ContractExecutionResult((int) ValidationResult.InvalidTagfile, ValidationResult.InvalidTagfile.ToString());
       }
 
       // Now open tagfile and validate contents
@@ -165,7 +165,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       TAGReadResult readResult = tagFile.Read(reader, sink);
       if (readResult != TAGReadResult.NoError)
       {
-        return new ContractExecutionResult((int)ValidationResult.InvalidTagfile, "ValidationResult.InvalidTagfile unable to read");
+        return new ContractExecutionResult((int)readResult, readResult.ToString());
       }
 
       // Tagfile contents are OK so proceed

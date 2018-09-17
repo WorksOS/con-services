@@ -6,7 +6,7 @@ using Xunit;
 
 namespace TAGFiles.Tests
 {
-        public class TAGFileConverterTests : IClassFixture<DILoggingFixture>
+        public class TAGFileConverterTests : IClassFixture<DITagFileTestsDIFixture>
   {
         [Fact()]
         public void Test_TAGFileConverter_Creation()

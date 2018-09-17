@@ -15,9 +15,14 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Logging;
 using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Server.MutableData
@@ -36,7 +41,8 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
+        // todo
+        //.Add(x => x.AddSingleton<ITagFileAuthProjectProxy>(new TagFileAuthProjectProxy(Configuration, DIContext.Obtain<ILoggerFactory())))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
