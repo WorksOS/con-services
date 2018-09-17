@@ -43,7 +43,7 @@ spec:
         - name: IGNITE_HOME
           value: "/trex/"
         - name: ENABLE_TFA_SERVICE
-          value: {{ .Values.mutableData.environment.enableTfa }}
+          value: {{ .Values.mutableData.environment.enableTfa | quote }}
         - name: TFA_SERVICE_BASEURL
           value: {{ .Values.mutableData.environment.tfaServiceBaseUrl }}
         - name: IS_KUBERNETES
