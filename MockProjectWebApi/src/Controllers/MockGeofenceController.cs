@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
@@ -47,9 +48,9 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v1/mock/geofences")]
     [HttpGet]
-    public GeofenceDataResult GetMockGeofences()
+    public GeofenceDataResult GetMockGeofences(long[] geofenceTypeIds)
     {
-      Console.WriteLine("GetMockGeofences");
+      Console.WriteLine($"GetMockGeofences: {JsonConvert.SerializeObject(geofenceTypeIds)}");
       var geofences = GeofenceData;
       return new GeofenceDataResult { Geofences = geofences };
     }
