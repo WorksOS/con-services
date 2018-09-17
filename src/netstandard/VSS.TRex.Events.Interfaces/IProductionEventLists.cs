@@ -126,6 +126,13 @@ namespace VSS.TRex.Events.Interfaces
     IProductionEvents[] GetEventLists();
 
     /// <summary>
+    /// Loads a specific event list into the events lists for a machine and returns a reference to it
+    /// </summary>
+    /// <param name="eventType"></param>
+    /// <returns></returns>
+    IProductionEvents GetEventList(ProductionEventType eventType);
+
+    /// <summary>
     /// Saves the event lists for this machine to the persistent store
     /// </summary>
     void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy);

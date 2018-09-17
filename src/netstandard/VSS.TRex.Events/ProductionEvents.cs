@@ -268,8 +268,6 @@ namespace VSS.TRex.Events
             Events.Insert(EventIndex, Event);
 
             EventsChanged = true;
-
-            // return Event;
         }
 
         /// <summary>

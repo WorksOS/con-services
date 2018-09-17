@@ -46,6 +46,12 @@ namespace VSS.TRex.SiteModels
         public DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
 
         /// <summary>
+        /// Determines if this sitemodel is a transient model used for the purposes of TAG file processing, or
+        /// if it stored within the persistency layer. 
+        /// </summary>
+        public bool IsTransient { get; set; } = true;
+
+        /// <summary>
         /// The grid data for this site model
         /// </summary>
         [NonSerialized]

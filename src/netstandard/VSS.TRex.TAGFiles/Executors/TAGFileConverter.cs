@@ -3,7 +3,6 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Logging;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
@@ -54,12 +53,6 @@ namespace VSS.TRex.TAGFiles.Executors
         public IMachine Machine { get; set; }
 
         /// <summary>
-        /// The events from the primary target site model
-        /// </summary>
-        public IProductionEventLists Events;
-
-
-        /// <summary>
         // SiteModelGridAggregator is an object that aggregates all the cell passes generated while processing the file. 
         // These are then integrated into the primary site model in a single step at a later point in processing
         /// </summary>
@@ -92,10 +85,6 @@ namespace VSS.TRex.TAGFiles.Executors
 
         // Todo(?): Machine.InternalSiteModelMachineIndex -> Change dummy machine index number to real machine index number when integrating into the live database
         Machine = new Machine();
-//        {
-//          TargetValueChanges = Events
-//        };
-//        Events = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
         SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID);
         if (SiteModel.Grid != null)

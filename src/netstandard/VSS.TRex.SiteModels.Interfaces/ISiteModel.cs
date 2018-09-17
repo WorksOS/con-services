@@ -18,6 +18,12 @@ namespace VSS.TRex.SiteModels.Interfaces
     DateTime LastModifiedDate { get; set; }
 
     /// <summary>
+    /// Determines if this sitemodel is a transient model used for the purposes of TAG file processing, or
+    /// if it stored within the persistency layer
+    /// </summary>
+    bool IsTransient { get; set; }
+
+    /// <summary>
     /// The grid data for this site model
     /// </summary>
     IServerSubGridTree Grid { get; }
