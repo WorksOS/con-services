@@ -44,24 +44,9 @@ namespace VSS.TRex.Analytics.CMVStatistics
       CMVPercentageRange.Clear();
     }
 
-    private void IncrementCountOfTransition(double cmvValue)
+    protected override int GetMaximumValue()
     {
-      if (DetailsDataValues == null || Counts == null)
-        return;
-
-      Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
-
-      for (int i = 0; i < DetailsDataValues.Length; i++)
-      {
-        var startTransitionValue = DetailsDataValues[i];
-        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPassConsts.NullCCV;
-
-        if (cmvValue >= startTransitionValue && cmvValue < endTransitionValue)
-        {
-          Counts[i]++;
-          break;
-        }
-      }
+      return CellPassConsts.NullCCV;
     }
 
     protected override void DataCheck(DataStatisticsAggregator other)

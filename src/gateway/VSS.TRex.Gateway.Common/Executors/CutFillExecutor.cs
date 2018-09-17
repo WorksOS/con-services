@@ -45,8 +45,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var filter = ConvertFilter(request.Filter, siteModel);
 
-      CutFillOperation operation = new CutFillOperation();
-      CutFillResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
+      CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
+      CutFillStatisticsResult cutFillResult = operation.Execute(new CutFillStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),

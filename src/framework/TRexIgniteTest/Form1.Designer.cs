@@ -71,6 +71,8 @@
       this.label5 = new System.Windows.Forms.Label();
       this.tabTileRequest = new System.Windows.Forms.TabControl();
       this.tabPageRender = new System.Windows.Forms.TabPage();
+      this.chkUseGateway = new System.Windows.Forms.CheckBox();
+      this.txtGatewayBase = new System.Windows.Forms.TextBox();
       this.btnZoomAll = new System.Windows.Forms.Button();
       this.tabPageTest = new System.Windows.Forms.TabPage();
       this.button8 = new System.Windows.Forms.Button();
@@ -101,12 +103,11 @@
       this.tabPage4 = new System.Windows.Forms.TabPage();
       this.btnKill = new System.Windows.Forms.Button();
       this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.btnTemplate = new System.Windows.Forms.Button();
+      this.label11 = new System.Windows.Forms.Label();
       this.txtJSON = new System.Windows.Forms.TextBox();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.txtGatewayBase = new System.Windows.Forms.TextBox();
-      this.chkUseGateway = new System.Windows.Forms.CheckBox();
-      this.label11 = new System.Windows.Forms.Label();
-      this.btnTemplate = new System.Windows.Forms.Button();
+      this.CMVChangeButton = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -181,9 +182,9 @@
       // 
       // button6
       // 
-      this.button6.Location = new System.Drawing.Point(20, 361);
+      this.button6.Location = new System.Drawing.Point(20, 392);
       this.button6.Name = "button6";
-      this.button6.Size = new System.Drawing.Size(158, 20);
+      this.button6.Size = new System.Drawing.Size(159, 20);
       this.button6.TabIndex = 43;
       this.button6.Text = "Test TTM probe performance";
       this.button6.UseVisualStyleBackColor = true;
@@ -201,9 +202,9 @@
       // 
       // button4
       // 
-      this.button4.Location = new System.Drawing.Point(20, 336);
+      this.button4.Location = new System.Drawing.Point(20, 365);
       this.button4.Name = "button4";
-      this.button4.Size = new System.Drawing.Size(225, 20);
+      this.button4.Size = new System.Drawing.Size(226, 20);
       this.button4.TabIndex = 41;
       this.button4.Text = "Test ProductionDataModel.xml add";
       this.button4.UseVisualStyleBackColor = true;
@@ -211,9 +212,9 @@
       // 
       // button3
       // 
-      this.button3.Location = new System.Drawing.Point(20, 311);
+      this.button3.Location = new System.Drawing.Point(20, 338);
       this.button3.Name = "button3";
-      this.button3.Size = new System.Drawing.Size(140, 20);
+      this.button3.Size = new System.Drawing.Size(141, 20);
       this.button3.TabIndex = 40;
       this.button3.Text = "Test Queue...";
       this.button3.UseVisualStyleBackColor = true;
@@ -559,6 +560,26 @@
       this.tabPageRender.Text = "Render";
       this.tabPageRender.UseVisualStyleBackColor = true;
       // 
+      // chkUseGateway
+      // 
+      this.chkUseGateway.AutoSize = true;
+      this.chkUseGateway.Checked = true;
+      this.chkUseGateway.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.chkUseGateway.Location = new System.Drawing.Point(26, 231);
+      this.chkUseGateway.Name = "chkUseGateway";
+      this.chkUseGateway.Size = new System.Drawing.Size(90, 17);
+      this.chkUseGateway.TabIndex = 39;
+      this.chkUseGateway.Text = "Use Gateway";
+      this.chkUseGateway.UseVisualStyleBackColor = true;
+      // 
+      // txtGatewayBase
+      // 
+      this.txtGatewayBase.Location = new System.Drawing.Point(122, 228);
+      this.txtGatewayBase.Name = "txtGatewayBase";
+      this.txtGatewayBase.Size = new System.Drawing.Size(190, 20);
+      this.txtGatewayBase.TabIndex = 38;
+      this.txtGatewayBase.Text = "http://localhost:55750/";
+      // 
       // btnZoomAll
       // 
       this.btnZoomAll.Location = new System.Drawing.Point(122, 39);
@@ -571,6 +592,7 @@
       // 
       // tabPageTest
       // 
+      this.tabPageTest.Controls.Add(this.CMVChangeButton);
       this.tabPageTest.Controls.Add(this.button8);
       this.tabPageTest.Controls.Add(this.PassCountDetailsButton);
       this.tabPageTest.Controls.Add(this.CMVDetailsButton);
@@ -603,9 +625,9 @@
       // 
       // button8
       // 
-      this.button8.Location = new System.Drawing.Point(19, 412);
+      this.button8.Location = new System.Drawing.Point(20, 447);
       this.button8.Name = "button8";
-      this.button8.Size = new System.Drawing.Size(140, 21);
+      this.button8.Size = new System.Drawing.Size(141, 21);
       this.button8.TabIndex = 53;
       this.button8.Text = "Project Statistics...";
       this.button8.UseVisualStyleBackColor = true;
@@ -683,9 +705,9 @@
       // 
       // button7
       // 
-      this.button7.Location = new System.Drawing.Point(22, 387);
+      this.button7.Location = new System.Drawing.Point(20, 419);
       this.button7.Name = "button7";
-      this.button7.Size = new System.Drawing.Size(120, 19);
+      this.button7.Size = new System.Drawing.Size(121, 19);
       this.button7.TabIndex = 46;
       this.button7.Text = "Test Patch Request";
       this.button7.UseVisualStyleBackColor = true;
@@ -885,6 +907,25 @@
       this.tabPage1.Text = "Tile Request";
       this.tabPage1.UseVisualStyleBackColor = true;
       // 
+      // btnTemplate
+      // 
+      this.btnTemplate.Location = new System.Drawing.Point(229, 23);
+      this.btnTemplate.Name = "btnTemplate";
+      this.btnTemplate.Size = new System.Drawing.Size(99, 23);
+      this.btnTemplate.TabIndex = 3;
+      this.btnTemplate.Text = "Update Template";
+      this.btnTemplate.UseVisualStyleBackColor = true;
+      this.btnTemplate.Click += new System.EventHandler(this.btnTemplate_Click);
+      // 
+      // label11
+      // 
+      this.label11.AutoSize = true;
+      this.label11.Location = new System.Drawing.Point(18, 7);
+      this.label11.Name = "label11";
+      this.label11.Size = new System.Drawing.Size(221, 13);
+      this.label11.TabIndex = 2;
+      this.label11.Text = "Auto update for mode, projectUid and extents";
+      // 
       // txtJSON
       // 
       this.txtJSON.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -905,44 +946,15 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // txtGatewayBase
+      // CMVChangeButton
       // 
-      this.txtGatewayBase.Location = new System.Drawing.Point(122, 228);
-      this.txtGatewayBase.Name = "txtGatewayBase";
-      this.txtGatewayBase.Size = new System.Drawing.Size(190, 20);
-      this.txtGatewayBase.TabIndex = 38;
-      this.txtGatewayBase.Text = "http://localhost:55750/";
-      // 
-      // chkUseGateway
-      // 
-      this.chkUseGateway.AutoSize = true;
-      this.chkUseGateway.Checked = true;
-      this.chkUseGateway.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkUseGateway.Location = new System.Drawing.Point(26, 231);
-      this.chkUseGateway.Name = "chkUseGateway";
-      this.chkUseGateway.Size = new System.Drawing.Size(90, 17);
-      this.chkUseGateway.TabIndex = 39;
-      this.chkUseGateway.Text = "Use Gateway";
-      this.chkUseGateway.UseVisualStyleBackColor = true;
-      // 
-      // label11
-      // 
-      this.label11.AutoSize = true;
-      this.label11.Location = new System.Drawing.Point(18, 7);
-      this.label11.Name = "label11";
-      this.label11.Size = new System.Drawing.Size(221, 13);
-      this.label11.TabIndex = 2;
-      this.label11.Text = "Auto update for mode, projectUid and extents";
-      // 
-      // btnTemplate
-      // 
-      this.btnTemplate.Location = new System.Drawing.Point(229, 23);
-      this.btnTemplate.Name = "btnTemplate";
-      this.btnTemplate.Size = new System.Drawing.Size(99, 23);
-      this.btnTemplate.TabIndex = 3;
-      this.btnTemplate.Text = "Update Template";
-      this.btnTemplate.UseVisualStyleBackColor = true;
-      this.btnTemplate.Click += new System.EventHandler(this.btnTemplate_Click);
+      this.CMVChangeButton.Location = new System.Drawing.Point(20, 311);
+      this.CMVChangeButton.Name = "CMVChangeButton";
+      this.CMVChangeButton.Size = new System.Drawing.Size(140, 21);
+      this.CMVChangeButton.TabIndex = 54;
+      this.CMVChangeButton.Text = "CMV C&hange";
+      this.CMVChangeButton.UseVisualStyleBackColor = true;
+      this.CMVChangeButton.Click += new System.EventHandler(this.CMVChangeButton_Click);
       // 
       // Form1
       // 
@@ -1056,6 +1068,7 @@
     private System.Windows.Forms.TextBox txtGatewayBase;
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.Button btnTemplate;
+    private System.Windows.Forms.Button CMVChangeButton;
   }
 }
 

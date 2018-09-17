@@ -5,7 +5,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics
   /// <summary>
   /// Provides a client consumable operation for performing cut fill analytics that returns a client model space cut fill result.
   /// </summary>
-  public class CutFillOperation : AnalyticsOperation<CutFillStatisticsRequest_ApplicationService, CutFillStatisticsArgument, CutFillStatisticsResponse, CutFillResult>
+  public class CutFillStatisticsOperation : AnalyticsOperation<CutFillStatisticsRequest_ApplicationService, CutFillStatisticsArgument, CutFillStatisticsResponse, CutFillStatisticsResult>
     { }
 
     /*

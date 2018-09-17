@@ -60,9 +60,6 @@ namespace VSS.TRex.SubGridTrees.Client
         PopulationControlFlags.WantsEventMinElevMappingValues |
         PopulationControlFlags.WantsEventInAvoidZoneStateValues;
 
-      WantsPreviousCCVValue = false;
-      IgnoresNullValueForLastCMV = true;
-
       if (WantsPreviousCCVValue)
       {
         _gridDataType = GridDataType.CCVPercentChange;
@@ -81,8 +78,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientCMVLeafSubGrid() : base()
+    /// <param name="wantsPreviousCCVValue"></param>
+    /// <param name="ignoresNullValueForLastCMV"></param>
+    public ClientCMVLeafSubGrid(bool wantsPreviousCCVValue = false, bool ignoresNullValueForLastCMV = true) : base()
     {
+      WantsPreviousCCVValue = wantsPreviousCCVValue;
+      IgnoresNullValueForLastCMV = ignoresNullValueForLastCMV;
+
       Initialise();
     }
 
@@ -193,7 +195,30 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public override void FillWithTestPattern()
     {
-      ForEach((x, y) => Cells[x, y] = new SubGridCellPassDataCMVEntryRecord { MeasuredCMV = x, TargetCMV = y});
+      const short DUMMY_CMV_VALUE = 1;
+
+      ForEach((x, y) =>
+      {
+        Cells[x, y] = new SubGridCellPassDataCMVEntryRecord
+        {
+          MeasuredCMV = x,
+          TargetCMV = y
+        };
+
+        if (y > 0)
+        {
+          Cells[x, y].PreviousMeasuredCMV = Cells[x, y - 1].MeasuredCMV;
+          Cells[x, y].PreviousTargetCMV = Cells[x, y - 1].TargetCMV;
+        }
+
+        // The PreviousMeasuredCMV and PreviousTargetCMV values below are set to non-zero values as
+        // these cannot be zeros.
+        if (Cells[x, y].PreviousMeasuredCMV == 0)
+          Cells[x, y].PreviousMeasuredCMV = DUMMY_CMV_VALUE;
+
+        if (Cells[x, y].PreviousTargetCMV == 0)
+          Cells[x, y].PreviousTargetCMV = DUMMY_CMV_VALUE;
+      });
     }
 
     /// <summary>

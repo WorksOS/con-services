@@ -37,24 +37,9 @@ namespace VSS.TRex.Analytics.PassCountStatistics
       LastPassCountTargetRange.Clear();
     }
 
-    private void IncrementCountOfTransition(double passCountValue)
+    protected override int GetMaximumValue()
     {
-      if (DetailsDataValues == null || Counts == null)
-        return;
-
-        Debug.Assert(DetailsDataValues.Length == Counts.Length, "Invalid size of the Counts array.");
-
-      for (int i = 0; i < DetailsDataValues.Length; i++)
-      {
-        var startTransitionValue = DetailsDataValues[i];
-        var endTransitionValue = i < DetailsDataValues.Length - 1 ? DetailsDataValues[i + 1] : CellPassConsts.MaxPassCountValue;
-
-        if (passCountValue >= startTransitionValue && passCountValue < endTransitionValue)
-        {
-          Counts[i]++;
-          break;
-        }
-      }
+      return CellPassConsts.MaxPassCountValue;
     }
 
     protected override void DataCheck(DataStatisticsAggregator other)

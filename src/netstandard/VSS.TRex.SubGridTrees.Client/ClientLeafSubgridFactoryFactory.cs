@@ -24,6 +24,7 @@ namespace VSS.TRex.SubGridTrees.Client
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.MachineSpeed, () => new ClientMachineSpeedLeafSubGrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.MachineSpeedTarget, () => new ClientMachineTargetSpeedLeafSubGrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CCV, () => new ClientCMVLeafSubGrid());
+      clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CCVPercentChange, () => new ClientCMVLeafSubGrid(true, false));
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.MDP, () => new ClientMDPLeafSubGrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.PassCount, () => new ClientPassCountLeafSubGrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.Temperature, () => new ClientTemperatureLeafSubGrid());
