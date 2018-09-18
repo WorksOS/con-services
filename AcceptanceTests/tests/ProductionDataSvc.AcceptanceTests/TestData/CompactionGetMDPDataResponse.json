@@ -74,19 +74,19 @@
     "Message": "success"
   },
   "PassCountFilter": {
-    "mdpSummaryData": {
-      "percentEqualsTarget": 79.3533176153587,
-      "percentGreaterThanTarget": 0.0,
-      "percentLessThanTarget": 20.646682384641295,
-      "totalAreaCoveredSqMeters": 1029.6492000000003,
-      "mdpTarget": {
-        "mdpMachineTarget": 150.0,
-        "targetVaries": false
-      },
-      "minMDPPercent": 80.0,
-      "maxMDPPercent": 130.0
+  "mdpSummaryData": {
+    "percentEqualsTarget": 86.896551724137922,
+    "percentGreaterThanTarget": 0.0,
+    "percentLessThanTarget": 13.103448275862069,
+    "totalAreaCoveredSqMeters": 184.38200000000003,
+    "mdpTarget": {
+      "mdpMachineTarget": 150.0,
+      "targetVaries": false
     },
-    "Code": 0,
-    "Message": "success"
+    "minMDPPercent": 80.0,
+    "maxMDPPercent": 130.0
+  },
+  "Code": 0,
+  "Message": "success"
   }
 }
