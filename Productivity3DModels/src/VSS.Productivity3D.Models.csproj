@@ -21,7 +21,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.3" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.5" />
   </ItemGroup>
 
   <ItemGroup>
