@@ -13,7 +13,7 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// Sets the machine speed target for Speed Summary requests. During this request Raptor does analysis of all cell passes (filtered out) and searches for the
@@ -23,30 +23,27 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// The machine speed target.
     /// </value>
     [JsonProperty(PropertyName = "machineSpeedTarget", Required = Required.Default)]
-    public MachineSpeedTarget machineSpeedTarget { get; private set; }
+    public MachineSpeedTarget MachineSpeedTarget { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private SpeedSummaryRequest()
     {
     }
 
     /// <summary>
-    /// Create an instance of the SpeedSummaryRequest class.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static SpeedSummaryRequest CreateSpeedSummaryRequest(
+    public SpeedSummaryRequest(
       Guid projectUid,
       FilterResult filter,
       MachineSpeedTarget machineSpeedTarget
     )
     {
-      return new SpeedSummaryRequest
-      {
-        ProjectUid = projectUid,
-        filter = filter,
-        machineSpeedTarget = machineSpeedTarget
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      MachineSpeedTarget = machineSpeedTarget;
     }
 
     /// <summary>
@@ -56,9 +53,9 @@ namespace VSS.TRex.Gateway.Common.Requests
     {
       base.Validate();
 
-      filter?.Validate();
+      Filter?.Validate();
 
-      machineSpeedTarget?.Validate();
+      MachineSpeedTarget?.Validate();
     }
   }
 }

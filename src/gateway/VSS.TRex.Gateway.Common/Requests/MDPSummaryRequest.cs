@@ -23,47 +23,47 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The target MDP value expressed in 10ths of units
     /// </summary>
     [Range(MIN_MDP, MAX_MDP)]
     [JsonProperty(PropertyName = "mdpTarget", Required = Required.Default)]
-    public short mdpTarget { get; private set; }
+    public short MdpTarget { get; private set; }
 
     /// <summary>
     /// Override the target MDP recorded from the machine with the value of mdpTarget
     /// </summary>
     [JsonProperty(PropertyName = "overrideTargetMDP", Required = Required.Always)]
     [Required]
-    public bool overrideTargetMDP { get; private set; }
+    public bool OverrideTargetMDP { get; private set; }
 
     /// <summary>
     /// The maximum percentage the measured MDP may be compared to the mdpTarget from the machine, or the mdpTarget override if overrideTargetMDP is true
     /// </summary>
     [Range(MIN_PERCENT_MDP, MAX_PERCENT_MDP)]
     [JsonProperty(PropertyName = "maxMDPPercent", Required = Required.Default)]
-    public double maxMDPPercent { get; private set; }
+    public double MaxMDPPercent { get; private set; }
 
     /// <summary>
     /// The minimum percentage the measured MDP may be compared to the mdpTarget from the machine, or the mdpTarget override if overrideTargetMDP is true
     /// </summary>
     [Range(MIN_PERCENT_MDP, MAX_PERCENT_MDP)]
     [JsonProperty(PropertyName = "minMDPPercent", Required = Required.Default)]
-    public double minMDPPercent { get; private set; }
+    public double MinMDPPercent { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private MDPSummaryRequest()
     {
     }
 
     /// <summary>
-    /// Create an instance of the MDPSummaryRequest class.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static MDPSummaryRequest CreateMDPSummaryRequest(
+    public MDPSummaryRequest(
       Guid projectUid,
       FilterResult filter,
       short mdpTarget,
@@ -72,15 +72,12 @@ namespace VSS.TRex.Gateway.Common.Requests
       double minMDPPercent
     )
     {
-      return new MDPSummaryRequest
-      {
-        ProjectUid = projectUid,
-        filter = filter,
-        mdpTarget = mdpTarget,
-        overrideTargetMDP = overrideTargetMDP,
-        maxMDPPercent = maxMDPPercent,
-        minMDPPercent = minMDPPercent
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      MdpTarget = mdpTarget;
+      OverrideTargetMDP = overrideTargetMDP;
+      MaxMDPPercent = maxMDPPercent;
+      MinMDPPercent = minMDPPercent;
     }
 
     /// <summary>
@@ -90,22 +87,22 @@ namespace VSS.TRex.Gateway.Common.Requests
     {
       base.Validate();
 
-      filter?.Validate();
+      Filter?.Validate();
 
-      if (overrideTargetMDP)
+      if (OverrideTargetMDP)
       {
-        if (!(mdpTarget > 0) || !(minMDPPercent > 0 && maxMDPPercent > 0))
+        if (!(MdpTarget > 0) || !(MinMDPPercent > 0 && MaxMDPPercent > 0))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid MDP settings: if overriding Target, Target and MDP Percentage values should be specified."));
         }
       }
 
-      if (mdpTarget > 0)
+      if (MdpTarget > 0)
       {
-        if (minMDPPercent > 0 || maxMDPPercent > 0)
+        if (MinMDPPercent > 0 || MaxMDPPercent > 0)
         {
-          if (minMDPPercent > maxMDPPercent)
+          if (MinMDPPercent > MaxMDPPercent)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid MDP summary request values: must have minimum % < maximum %"));
