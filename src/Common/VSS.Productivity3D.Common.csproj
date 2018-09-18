@@ -45,12 +45,12 @@
     <PackageReference Include="VSS.AWS.TransferProxy" Version="1.4.2" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.5" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.42.6" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.32.0" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.43.0" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.2" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.71" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.8.4" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.0" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
