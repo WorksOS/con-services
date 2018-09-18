@@ -15,6 +15,9 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger("SiteModelAttributesChangedEventSender");
 
+        [NonSerialized]
+        private string MessageTopicName = "SiteModelAttributesChangedEvents";
+
         /// <summary>
         /// Notify all interested nodes in the immutable grid a site model has changed attributes
         /// </summary>
@@ -24,10 +27,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
           try
           {
             DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetMessaging().Send
-            (new SiteModelAttributesChangedEvent
-            {
-                SiteModelID = siteModelID
-            });
+            (new SiteModelAttributesChangedEvent { SiteModelID = siteModelID }, MessageTopicName);
           }
           catch (Exception e)
           {

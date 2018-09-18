@@ -25,7 +25,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         private IMessaging MsgGroup;
 
         [NonSerialized]
-        private string MessageTopicName = "SiteModelAttributesChangedEventListener";
+        private string MessageTopicName = "SiteModelAttributesChangedEvents";
 
         [NonSerialized] private string GridName;
 
@@ -67,13 +67,15 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
         public void StartListening()
         {
+            Log.LogError($"Start listening for site model notification events on {MessageTopicName}");
+
             // Create a messaging group the cluster can use to send messages back to and establish a local listener
             // All nodes (client and server) want to know about site model attribute changes
             MsgGroup = Ignition.TryGetIgnite(GridName)?.GetCluster().GetMessaging();
 
             if (MsgGroup != null)
             {
-                MsgGroup.LocalListen(this, MessageTopicName);
+              MsgGroup.LocalListen(this, MessageTopicName);
             }
             else
             {
