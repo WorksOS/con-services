@@ -14,36 +14,33 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The global override value for target pass count range. Optional.
     /// </summary>
     [JsonProperty(PropertyName = "overridingTargetPassCountRange", Required = Required.Default)]
-    public TargetPassCountRange overridingTargetPassCountRange { get; private set; }
+    public TargetPassCountRange OverridingTargetPassCountRange { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private PassCountSummaryRequest()
     {
     }
 
     /// <summary>
-    /// Create an instance of the PassCountSummaryRequest class.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static PassCountSummaryRequest CreatePassCountSummaryRequest(
+    public PassCountSummaryRequest(
       Guid projectUid,
       FilterResult filter,
       TargetPassCountRange overridingTargetPassCountRange
     )
     {
-      return new PassCountSummaryRequest
-      {
-        ProjectUid = projectUid,
-        filter = filter,
-        overridingTargetPassCountRange = overridingTargetPassCountRange
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      OverridingTargetPassCountRange = overridingTargetPassCountRange;
     }
 
     /// <summary>
@@ -53,9 +50,9 @@ namespace VSS.TRex.Gateway.Common.Requests
     {
       base.Validate();
 
-      filter?.Validate();
+      Filter?.Validate();
 
-      overridingTargetPassCountRange?.Validate();
+      OverridingTargetPassCountRange?.Validate();
     }
   }
 }

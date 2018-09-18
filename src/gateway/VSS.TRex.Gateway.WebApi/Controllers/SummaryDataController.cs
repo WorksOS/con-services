@@ -49,12 +49,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Process(cmvSummaryRequest) as CMVSummaryResult);
 
       var cmvSettings = new CMVSettings(
-        cmvSummaryRequest.cmvTarget,
+        cmvSummaryRequest.CmvTarget,
         DATA_VALUE_NOT_REQUIRED,
-        cmvSummaryRequest.maxCMVPercent,
+        cmvSummaryRequest.MaxCMVPercent,
         DATA_VALUE_NOT_REQUIRED,
-        cmvSummaryRequest.minCMVPercent,
-        cmvSummaryRequest.overrideTargetCMV
+        cmvSummaryRequest.MinCMVPercent,
+        cmvSummaryRequest.OverrideTargetCMV
       );
 
       return new CompactionCmvSummaryResult(result, cmvSettings);
@@ -79,12 +79,12 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Process(mdpSummaryRequest) as MDPSummaryResult);
 
       var mdpSettings = new MDPSettings(
-        mdpSummaryRequest.mdpTarget,
+        mdpSummaryRequest.MdpTarget,
         DATA_VALUE_NOT_REQUIRED,
-        mdpSummaryRequest.maxMDPPercent,
+        mdpSummaryRequest.MaxMDPPercent,
         DATA_VALUE_NOT_REQUIRED,
-        mdpSummaryRequest.minMDPPercent,
-        mdpSummaryRequest.overrideTargetMDP
+        mdpSummaryRequest.MinMDPPercent,
+        mdpSummaryRequest.OverrideTargetMDP
       );
 
       return new CompactionMdpSummaryResult(result, mdpSettings);
@@ -129,7 +129,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<SummarySpeedExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(speedSummaryRequest) as SpeedSummaryResult);
 
-      return new CompactionSpeedSummaryResult(result, speedSummaryRequest.machineSpeedTarget);
+      return new CompactionSpeedSummaryResult(result, speedSummaryRequest.MachineSpeedTarget);
       ;
     }
 

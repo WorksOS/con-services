@@ -40,11 +40,11 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       var targetPassCountRange = new PassCountRangeRecord();
-      if (request.overridingTargetPassCountRange != null)
-        targetPassCountRange.SetMinMax(request.overridingTargetPassCountRange.Min, request.overridingTargetPassCountRange.Max);
+      if (request.OverridingTargetPassCountRange != null)
+        targetPassCountRange.SetMinMax(request.OverridingTargetPassCountRange.Min, request.OverridingTargetPassCountRange.Max);
 
       PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
       PassCountStatisticsResult passCountSummaryResult = operation.Execute(
@@ -53,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
           OverridingTargetPassCountRange = targetPassCountRange,
-          OverrideTargetPassCount = request.overridingTargetPassCountRange != null
+          OverrideTargetPassCount = request.OverridingTargetPassCountRange != null
         }
       );
 

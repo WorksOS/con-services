@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
       TemperatureStatisticsResult temperatureSummaryResult = operation.Execute(
@@ -49,10 +49,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          OverrideTemperatureWarningLevels = request.temperatureSettings != null && request.temperatureSettings.OverrideTemperatureRange,
+          OverrideTemperatureWarningLevels = request.TemperatureSettings != null && request.TemperatureSettings.OverrideTemperatureRange,
           OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(
-            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
-            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
+            request.TemperatureSettings != null ? Convert.ToUInt16(request.TemperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
+            request.TemperatureSettings != null ? Convert.ToUInt16(request.TemperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
         }
       );
 

@@ -42,11 +42,11 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       var machineSpeedTargetRange = new MachineSpeedExtendedRecord();
-      if (request.machineSpeedTarget != null)
-        machineSpeedTargetRange.SetMinMax(request.machineSpeedTarget.MinTargetMachineSpeed, request.machineSpeedTarget.MaxTargetMachineSpeed);
+      if (request.MachineSpeedTarget != null)
+        machineSpeedTargetRange.SetMinMax(request.MachineSpeedTarget.MinTargetMachineSpeed, request.MachineSpeedTarget.MaxTargetMachineSpeed);
 
       SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
       SpeedSummaryResult speedSummaryResult = operation.Execute(
