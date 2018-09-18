@@ -32,7 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.32.0" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.8.4" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.0" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
