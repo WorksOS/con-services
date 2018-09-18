@@ -23,11 +23,8 @@
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.4" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.18" />
     <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.8.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
