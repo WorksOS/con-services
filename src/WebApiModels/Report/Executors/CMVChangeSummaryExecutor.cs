@@ -16,7 +16,7 @@ using VSS.Productivity3D.WebApiModels.Report.Models;
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   /// <summary>
-  /// Builds Summary speed report from Raptor
+  /// Builds CMV change report from Raptor
   /// </summary>
   public class CMVChangeSummaryExecutor : RequestExecutorContainer
   {
