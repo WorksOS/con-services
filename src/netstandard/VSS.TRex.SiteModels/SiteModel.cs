@@ -15,6 +15,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Services.SurveyedSurfaces;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -369,10 +370,13 @@ namespace VSS.TRex.SiteModels
 
             if (Result)
             {
-                if (TRexConfig.AdviseOtherServicesOfDataModelChanges)
+                if (!IsTransient && TRexConfig.AdviseOtherServicesOfDataModelChanges)
                 {
                   // Notify the site model in all contents in the grid that it's attributes have changed
-                  SiteModelAttributesChangedEventSender.ModelAttributesChanged(ID);
+                  Log.LogInformation($"Notifying site model attributes changed for {ID}");
+
+                  // Notify the immutable grid listeners that attributes of this sitemodel have changed
+                  DIContext.Obtain<ISiteModelAttributesChangedEventSender>()?.ModelAttributesChanged(ID);
                 }
             }
             else

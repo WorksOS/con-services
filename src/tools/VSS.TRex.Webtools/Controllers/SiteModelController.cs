@@ -40,6 +40,9 @@ namespace VSS.TRex.Webtools.Controllers
     {
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
 
+      if (siteModel == null)
+        return new JsonResult(new Tuple<DateTime, DateTime>(DateTime.MinValue, DateTime.MinValue));
+
       DateTime minDate = DateTime.MaxValue;
       DateTime maxDate = DateTime.MinValue;
 

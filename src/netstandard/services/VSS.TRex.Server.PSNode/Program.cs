@@ -19,7 +19,9 @@ using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Servers.Compute;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -79,6 +81,9 @@ namespace VSS.TRex.Server.PSNode
         .Build()
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+
+        // Register the listener for site model attribute change notifications
+        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Complete();
     }
 
@@ -126,10 +131,17 @@ namespace VSS.TRex.Server.PSNode
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
+    private static void DoServiceInitialisation()
+    {
+      // Start listening to site model change notifications
+      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+    }
+
     static async Task<int> Main(string[] args)
     {
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
+      DoServiceInitialisation();
 
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>

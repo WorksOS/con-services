@@ -130,7 +130,7 @@ namespace VSS.TRex.Machines
                 throw new Exception($"Invalid version number ({version}) reading machines list, expected version (1)");
 
             int count = reader.ReadInt32();
-            this.Capacity = count;
+            Capacity = count;
 
             for (int i = 0; i < count; i++)
             {
