@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.2" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.42.2" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.42.6" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
