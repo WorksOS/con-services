@@ -30,14 +30,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Get CMV % change from Raptor for the specified project and date range.
     /// </summary>
     [Route("api/v1/cmv/percentchange")]
-    [HttpGet]
-    public CompactionCmvPercentChangeResult GetCmvPercentChange(
-      [FromQuery] Guid projectUid,
-      [FromQuery] Guid? filterUid)
+    [HttpPost]
+    public CompactionCmvPercentChangeResult PostCmvPercentChange([FromBody] CMVChangeDetailsRequest cmvChangeDetailsRequest)
     {
-      Log.LogInformation($"{nameof(GetCmvPercentChange)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostCmvPercentChange)}: {Request.QueryString}");
 
-      var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(projectUid, null/* filter */, new[] { -50.0, -10.0, 0.0, 10.0, 50.0 });
       cmvChangeDetailsRequest.Validate();
 
       var result = WithServiceExceptionTryExecute(() =>
