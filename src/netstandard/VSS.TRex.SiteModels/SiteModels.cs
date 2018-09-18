@@ -119,7 +119,7 @@ namespace VSS.TRex.SiteModels
     {
       // Sitemodels have immutable characteristics in TRex. Multiple requests may reference the same site model
       // concurrently, with no interlocks enforcing access serialisation. Any attempt to replace or modify an already loaded
-      // sitemodel may cause issue with conucrrent request accessing that site model.
+      // sitemodel may cause issue with concurrent request accessing that site model.
       // THe strategy here is to preserve continued access by concurrent requests to the sitemodel retrieved
       // at the time the request was initiated by removing it from the SiteModels cache but not destroying it.
       // Once all request based references to the sitemodel have completed the now orphaned sitemodel will be cleaned
