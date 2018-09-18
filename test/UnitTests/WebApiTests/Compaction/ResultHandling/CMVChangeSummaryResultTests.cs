@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
 {
@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
     [DataRow(10.234, true)]
     public void HasData_Should_return_expected_result_From_coverage_value(double coverageArea, bool expectedResult)
     {
-      var obj = CMVChangeSummaryResult.Create(null, coverageArea);
+      var obj = new CMVChangeSummaryResult(null, coverageArea);
 
       Assert.AreEqual(expectedResult, obj.HasData());
     }
