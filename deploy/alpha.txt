@@ -1,0 +1,18 @@
+PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
+IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
+PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
+CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
+RAPTOR_3DPM_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0
+TCCBASEURL: https://www.myconnectedsite.com
+TCCUSERNAME: vlbeta
+TCCPWD: vlbeta_key8
+TCCORG: vlbeta
+TCCFILESPACEID: ua9bc5eaf-583a-44d3-b33b-24c035946ae2
+ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
+JAEGER_AGENT_HOST: jaeger-agent.jaeger
+JAEGER_AGENT_PORT: "6831"
+JAEGER_SAMPLER_TYPE: const
+JAEGER_SERVICE_NAME: Alpha Tile Service API
+NEW_RELIC_LICENSE_KEY: YOUR_LICENSE_KEY 
+NEW_RELIC_APP_NAME: YOUR_APP_NAME
+

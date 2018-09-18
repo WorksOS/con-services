@@ -1,0 +1,10 @@
+FROM microsoft/dotnet:2.1-sdk 
+
+COPY . /build/
+WORKDIR /build
+
+RUN chmod 777 ./build/*.sh
+
+RUN ["/bin/sh", "/build/build/build.sh"]
+RUN ["/bin/sh", "/build/build/unittests.sh"]
+
