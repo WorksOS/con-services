@@ -67,7 +67,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
         public void StartListening()
         {
-            Log.LogError($"Start listening for site model notification events on {MessageTopicName}");
+            Log.LogInformation($"Start listening for site model notification events on {MessageTopicName}");
 
             // Create a messaging group the cluster can use to send messages back to and establish a local listener
             // All nodes (client and server) want to know about site model attribute changes
