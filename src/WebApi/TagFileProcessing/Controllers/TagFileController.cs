@@ -69,20 +69,14 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
 
-      ProjectData projectData;
+      ProjectData projectData = null;
 
       if (request.ProjectId != null)
       {
         projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectId.Value);
       }
-      else
+      else if (request.ProjectUid != null)
       {
-        if (request.ProjectUid == null){
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "ProjectId and ProjectUID cannot both be null."));
-        }
-
         projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectUid.Value);
       }
 
