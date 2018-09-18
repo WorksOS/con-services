@@ -36,9 +36,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         //      FNumberOfTasksBeingProcessed : Integer;
         //      FRemainingNumberOfTasksBeingProcessed : Integer;
 
-        //      FEncapsulatedSubgridsSize : Int64;
-        //      FEncapsulatedSubgridsCapacity : Int64;
-
         //      FWorkers : Array of TSVOICAggregatedDataIntegratorWorkerThread;
 
         //    public
@@ -56,18 +53,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                       IProductionEventLists aggregatedMachineEvents /*,
                                     const ATaskFinalizer : TAggregationTaskFinalizer*/)
         {
-            /*
-              // First encapsulate the subgrid tree. Performing this first means that
-              // we don't block the aggregation process while encapsulation is taking place
-                if kEncapsulateIntermediaryTAGFileProcessingResults then
-                begin
-                  AAggregatedCellPasses.Encapsulate;
-                        IncrementEncapsulationSizeAndCapacity(AAggregatedCellPasses.EncapsulatedSize,
-                                                              AAggregatedCellPasses.EncapsulatedCapacity);
-                 end;
-            */
-            // Then add the new event
-
             AggregatedDataIntegratorTask NewTask = new AggregatedDataIntegratorTask()
             {
                 TargetSiteModel = siteModel,
@@ -144,7 +129,5 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Procedure GetPendingFileList(const FileList : TStringList);
 
         public void IncrementOutstandingCellPasses(int Increment) => System.Threading.Interlocked.Add(ref OutstandingCellPasses, Increment);
-
-        //  Procedure IncrementEncapsulationSizeAndCapacity(Const SizeIncrement, CapacityIncrement : Int64);
     }
 }
