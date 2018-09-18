@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Models.Models
   public class CMVSettings //: IValidatable
   {
     protected const ushort MIN_CMV = 0;
-    protected const ushort MAX_CMV = 1500;
+    protected const ushort MAX_CMV = 5000;
     private const double MIN_PERCENT_CMV = 0.0;
     private const double MAX_PERCENT_CMV = 250.0;
 
