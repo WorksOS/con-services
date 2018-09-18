@@ -2,21 +2,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
+  name: {{ template "trex.deployname" . }}-webtools
   labels:
-    app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
-  replicas: {{ .Values.psNodeReplicaCount }}
+  replicas: {{ .Values.webtools.replicaCount }}
   template:
     metadata:
       labels:
         # This label has to be added to the selector's section of 
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
-        app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
-        component: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mgateway
+        app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-webtools
+
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       #volumes:
@@ -32,20 +33,14 @@ spec:
       - name: ignite-node
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.MutableGateway
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.Webtools
+
+        resources:
+{{ toYaml .Values.webtools.resources | indent 10 }}
         
         command: ["dotnet"]
-        args: ["VSS.TRex.Mutable.Gateway.WebApi.dll"]
+        args: ["VSS.TRex.Webtools.dll"]
 
-        #env:
-        # Ignite's Docker image parameter. Adding the jar file that
-        # contain TcpDiscoveryKubernetesIpFinder implementation.
-        #- name: OPTION_LIBS
-        #  value: ignite-kubernetes
-        # Ignite's Docker image parameter. Passing the Ignite configuration
-        # to use for an Ignite pod.
-        #- name: CONFIG_URI
-        #  value: file:////data/ignite/example-kube.xml
         ports:
         # Ports to open.
         # Might be optional depending on your Kubernetes environment.
@@ -65,3 +60,5 @@ spec:
             value: "/trex/"
           - name: IS_KUBERNETES
             value: "true"
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}

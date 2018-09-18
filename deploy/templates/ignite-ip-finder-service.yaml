@@ -11,4 +11,4 @@ spec:
   selector:
     # Must be equal to one of the labels set in Ignite pods'
     # deployement configuration.
-    app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}

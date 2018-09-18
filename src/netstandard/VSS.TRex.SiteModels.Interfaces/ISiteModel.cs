@@ -18,6 +18,11 @@ namespace VSS.TRex.SiteModels.Interfaces
     DateTime LastModifiedDate { get; set; }
 
     /// <summary>
+    /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
+    /// </summary>
+    bool IsTransient { get; }
+
+    /// <summary>
     /// The grid data for this site model
     /// </summary>
     IServerSubGridTree Grid { get; }

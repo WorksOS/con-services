@@ -68,7 +68,7 @@ namespace VSS.TRex.SiteModels
           return result;
       }
 
-      result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(id);
+      result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
 
       if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
       {

@@ -111,5 +111,9 @@ node ('jenkinsslave-pod') {
 			sh "docker images"
 			runtime_container.push()
 		}
-	}	
+	}
+
+	stage('Publish helm chart'){
+		 archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+	}
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -227,9 +228,13 @@ namespace VSS.TRex.Events
           {
             IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(MachineID, SiteModel.ID, eventType);
 
-            if (temp != null) // The event is supported
+            if (temp != null) // The event is supported, load if the model is persisent (non-transient)
             {
-              temp.LoadFromStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+              if (!SiteModel.IsTransient)
+              {
+                temp.LoadFromStore(DIContext.Obtain<ISiteModels>().StorageProxy);
+              }
+
               allEventsForMachine[(int) eventType] = temp;
             }
           }
@@ -264,15 +269,28 @@ namespace VSS.TRex.Events
     /// </summary>
     public void SaveMachineEventsToPersistentStore(IStorageProxy storageProxy)
     {
-      foreach (IProductionEvents list in allEventsForMachine)
-        if (list != null && list.EventsChanged)
+      if (SiteModel.IsTransient)
+      {
+        throw new TRexPersistencyException($"Sitemodel {SiteModel.ID} is a transient site model. Transient sitemodels may not save events to the persistent store.");
+      }
+
+      foreach (var list in allEventsForMachine)
+      {
+        if (list?.EventsChanged == true)
         {
           Log.LogDebug($"Saving {list.EventListType} with {list.Count()} events for machine {MachineID} in project {SiteModel.ID}");
 
           list.SaveToStore(storageProxy);
         }
+      }
     }
 
+    /// <summary>
+    /// Forces all event lists to be loaded for a machine. This is an in-efficient approach and should only be called
+    /// if all lists are required, and doing so is more desirable than using lazy loading for event lists
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
     public bool LoadEventsForMachine(IStorageProxy storageProxy)
     {
       foreach (ProductionEventType evt in Enum.GetValues(typeof(ProductionEventType)))
