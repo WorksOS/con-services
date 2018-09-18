@@ -144,6 +144,40 @@ namespace TAGFiles.Tests
       Assert.Equal("success", result.Message);
     }
 
+    [Fact]
+    public async Task Test_ValidateFailed_InvalidManualProjectType()
+    {
+      var projectUid = Guid.NewGuid();
+      var timeOfPosition = DateTime.UtcNow;
+      var moqRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, String.Empty, string.Empty, 0, 0, timeOfPosition);
+      var moqResult = GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 3044, "Manual Import: cannot import to a Civil type project");
+      SetupDITfa(true, moqRequest, moqResult);
+
+      byte[] tagContent;
+      using (FileStream tagFileStream =
+        new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"),
+          FileMode.Open, FileAccess.Read))
+      {
+        tagContent = new byte[tagFileStream.Length];
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
+      }
+
+      TagFileDetail td = new TagFileDetail()
+      {
+        assetId = null,
+        projectId = projectUid,
+        tagFileName = "Test.tag",
+        tagFileContent = tagContent,
+        tccOrgId = "",
+        IsJohnDoe = false
+      };
+
+      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      Assert.True(result.Code == 3044, "Failed to return correct error code");
+      Assert.Equal("Manual Import: cannot import to a Civil type project", result.Message);
+    }
+
+
     [Fact(Skip = "Requires live Ignite node")]
     public void Test_TagFileArchive()
     {
