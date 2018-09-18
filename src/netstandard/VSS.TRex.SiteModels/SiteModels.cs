@@ -74,6 +74,8 @@ namespace VSS.TRex.SiteModels
 
       result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
 
+      Log.LogInformation($"Loading site model {id} from persistent store");
+
       if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
       {
         lock (CachedModels)
@@ -88,6 +90,8 @@ namespace VSS.TRex.SiteModels
         }
       }
 
+      Log.LogInformation($"Site model {id} is not present in the persistent store, createIfNotExist = {createIfNotExist}");
+
       if (createIfNotExist)
       {
         lock (CachedModels)
@@ -96,6 +100,8 @@ namespace VSS.TRex.SiteModels
           // the one just created in favour of the one in the dictionary
           if (CachedModels.TryGetValue(id, out ISiteModel result2))
             return result2;
+
+          Log.LogInformation($"Creating new site model {id} and adding to internal cache");
 
           CachedModels.Add(id, result);
           return result;
