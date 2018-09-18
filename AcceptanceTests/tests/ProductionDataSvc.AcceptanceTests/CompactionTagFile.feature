@@ -27,7 +27,7 @@ Scenario Outline: TagFile - Bad Request
   | NullFileName    | -1   |
   | NullData        | -1   |
   | FilenameTooLong | -1   |
-  | NullProjectUid  | -1   |
+  | NullProjectUid  | 2008 |
 
 Scenario Outline: TagFile Direct Submission - Bad Tag File
   Given the Tag file service URI "/api/v2/tagfiles/direct" and request repo "CompactionTagFileDirectSubmissionRequest.json"
