@@ -107,22 +107,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(result);
         }
 
-        // This is temporary until FirstNameWithOffset() is fixed to not throw if Raptor error code isn't found in the generic error enum.
-        // See story #74870 Refactor Models::GenericEnum to not throw exceptions.
-        string errorName;
-        try
-        {
-          errorName = ContractExecutionStates.FirstNameWithOffset((int)raptorResult);
-        }
-        catch (Exception exception)
-        {
-          errorName = exception.Message;
-        }
-
         throw new ServiceException(
           HttpStatusCode.BadRequest,
-          new ContractExecutionResult((int)raptorResult,
-            $"Failed to get requested volumes summary data with error: {errorName}"));
+          new ContractExecutionResult((int) raptorResult,
+            $"Failed to get requested volumes summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally
       {
