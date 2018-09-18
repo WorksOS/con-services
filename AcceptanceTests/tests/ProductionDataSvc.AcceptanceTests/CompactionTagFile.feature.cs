@@ -218,11 +218,11 @@ this.TagFile_BadRequest("FilenameTooLong", "-1", ((string[])(null)));
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionTagFile")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullProjectUid")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:paramName", "NullProjectUid")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:code", "2008")]
         public virtual void TagFile_BadRequest_NullProjectUid()
         {
 #line 21
-this.TagFile_BadRequest("NullProjectUid", "-1", ((string[])(null)));
+this.TagFile_BadRequest("NullProjectUid", "2008", ((string[])(null)));
 #line hidden
         }
         
