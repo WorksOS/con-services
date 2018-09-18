@@ -198,7 +198,7 @@ this.FeatureBackground();
 #line 34
  testRunner.And(string.Format("tolerance \"{0}\"", tolerance), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 35
- testRunner.When("I request design boundaries expecting BadRequest Unauthorized", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request design boundaries expecting BadRequest BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 36
  testRunner.Then(string.Format("the GetDesignBoundaries result should contain error code {0} and error message \"{" +
                         "1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -211,14 +211,12 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetDesignBoundaries")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "1.00")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-5")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Missing Project or project does not belong to specified customer or don\'t have ac" +
-            "cess to the project")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-1")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "ProjectId and ProjectUID cannot both be null.")]
         public virtual void GetDesignBoundaries_BadRequest_NoProjectUID_()
         {
 #line 33
-this.GetDesignBoundaries_BadRequest_NoProjectUID("", "1.00", "-5", "Missing Project or project does not belong to specified customer or don\'t have ac" +
-                    "cess to the project", ((string[])(null)));
+this.GetDesignBoundaries_BadRequest_NoProjectUID("", "1.00", "-1", "ProjectId and ProjectUID cannot both be null.", ((string[])(null)));
 #line hidden
         }
     }

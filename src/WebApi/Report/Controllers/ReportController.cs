@@ -230,60 +230,60 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Gets Thickness summary from Raptor.
     /// </summary>
-    /// <param name="parameters">The request for thickness summary request to Raptor</param>
+    /// <param name="request">The request for thickness summary request to Raptor</param>
     /// <returns></returns>
     /// <executor>SummaryVolumesExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/thickness/summary")]
     [HttpPost]
-    public SummaryThicknessResult PostExportSummaryThickness([FromBody] SummaryParametersBase parameters)
+    public SummaryThicknessResult PostExportSummaryThickness([FromBody] SummaryParametersBase request)
     {
-      log.LogDebug($"{nameof(PostExportSummaryThickness)}: {JsonConvert.SerializeObject(parameters)}");
+      log.LogDebug($"{nameof(PostExportSummaryThickness)}: {JsonConvert.SerializeObject(request)}");
 
-      parameters.Validate();
+      request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummaryThicknessExecutor>(logger, raptorClient).Process(parameters)
+        RequestExecutorContainerFactory.Build<SummaryThicknessExecutor>(logger, raptorClient).Process(request)
           as SummaryThicknessResult;
     }
 
     /// <summary>
     /// Gets Speed summary from Raptor.
     /// </summary>
-    /// <param name="parameters">The request for speed summary request to Raptor</param>
+    /// <param name="request">The request for speed summary request to Raptor</param>
     /// <returns></returns>
     /// <executor>SummarySpeedExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/speed/summary")]
     [HttpPost]
-    public SpeedSummaryResult PostExportSummarySpeed([FromBody] SummarySpeedRequest parameters)
+    public SpeedSummaryResult PostExportSummarySpeed([FromBody] SummarySpeedRequest request)
     {
-      log.LogDebug($"{nameof(PostExportSummarySpeed)}: {JsonConvert.SerializeObject(parameters)}");
+      log.LogDebug($"{nameof(PostExportSummarySpeed)}: {JsonConvert.SerializeObject(request)}");
 
-      parameters.Validate();
+      request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient).Process(parameters) as
+        RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient).Process(request) as
           SpeedSummaryResult;
     }
 
     /// <summary>
     /// Gets CMV Change summary from Raptor. This request uses absolute values of CMV.
     /// </summary>
-    /// <param name="parameters">The request for CMV Change summary request to Raptor</param>
+    /// <param name="request">The request for CMV Change summary request to Raptor</param>
     /// <returns></returns>
     /// <executor>CMVChangeSummaryExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/cmvchange/summary")]
     [HttpPost]
-    public CMVChangeSummaryResult PostExportSummaryCmvChange([FromBody] CMVChangeSummaryRequest parameters)
+    public CMVChangeSummaryResult PostExportSummaryCmvChange([FromBody] CMVChangeSummaryRequest request)
     {
-      log.LogDebug($"{nameof(PostExportSummaryCmvChange)}: {JsonConvert.SerializeObject(parameters)}");
+      log.LogDebug($"{nameof(PostExportSummaryCmvChange)}: {JsonConvert.SerializeObject(request)}");
 
-      parameters.Validate();
+      request.Validate();
       return
-        RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger, raptorClient).Process(parameters)
+        RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger, raptorClient).Process(request)
           as CMVChangeSummaryResult;
     }
 

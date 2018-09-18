@@ -17,7 +17,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
   /// Controller for the CoordinateSystemFile resource.
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  [ProjectVerifier]
   public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
     private readonly IASNodeClient raptorClient;
@@ -60,6 +59,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// Gets a coordinate system (CS) definition assigned to a Raptor's data model/project.
     /// </summary>
     [Route("api/v1/projects/{projectId}/coordsystem")]
+    [ProjectVerifier]
     [HttpGet]
     public CoordinateSystemSettings Get([FromRoute] long projectId)
     {
@@ -73,6 +73,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// Gets a coordinate system (CS) definition assigned to a Raptor's data model/project with a unique identifier.
     /// </summary>
     [Route("api/v2/projects/{projectUid}/coordsystem")]
+    [ProjectVerifier]
     [HttpGet]
     public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
     {
