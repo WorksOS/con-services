@@ -2,20 +2,20 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-tile
+  name: {{ template "trex.deployname" . }}-as
   labels:
-    app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
-  replicas: {{ .Values.psNodeReplicaCount }}
+  replicas: {{ .Values.applicationServer.replicaCount }}
   template:
     metadata:
       labels:
         # This label has to be added to the selector's section of 
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
-        app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+        app: {{ template "trex.deployname" . }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       #volumes:
@@ -31,13 +31,13 @@ spec:
       - name: ignite-node
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.TileRendering
-
-        resources:
-{{ toYaml .Values.resources | indent 10 }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.ApplicationServer
         
+        resources:
+{{ toYaml .Values.applicationServer.resources | indent 10 }}
+
         command: ["dotnet"]
-        args: ["VSS.TRex.Server.TileRendering.dll"]
+        args: ["VSS.TRex.Server.Application.dll"]
 
         #env:
         # Ignite's Docker image parameter. Adding the jar file that
@@ -74,3 +74,6 @@ spec:
             value: "/trex/"
           - name: IS_KUBERNETES
             value: "true"
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}
+

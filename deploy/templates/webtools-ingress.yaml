@@ -3,9 +3,9 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-webtools
+  name: {{ template "trex.deployname" . }}-webtools
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}
   annotations:
   {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
@@ -16,6 +16,6 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: {{ $serviceName }}-webtools 
+              serviceName: {{ template "trex.deployname" . }}-webtools 
               servicePort: 80
 

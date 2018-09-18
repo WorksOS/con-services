@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-gateway
+  name: {{ template "trex.deployname" . }}-gateway
 spec:
   selector:
-    component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-gateway
+    component: {{ template "trex.deployname" . }}-gateway
   ports:
   - protocol: TCP
     port: 80

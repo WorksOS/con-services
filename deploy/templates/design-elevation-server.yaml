@@ -2,20 +2,20 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}-des
+  name: {{ template "trex.deployname" . }}-des
   labels:
-    app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
-  replicas: {{ .Values.psNodeReplicaCount }}
+  replicas: {{ .Values.designElevation.replicaCount }}
   template:
     metadata:
       labels:
         # This label has to be added to the selector's section of 
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
-        app: {{ template "trex.name" . }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+        app: {{ template "trex.deployname" . }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       #volumes:
@@ -34,7 +34,7 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.DesignElevation
 
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+{{ toYaml .Values.designElevation.resources | indent 10 }}
         
         command: ["dotnet"]
         args: ["VSS.TRex.Server.DesignElevation.dll"]
@@ -74,3 +74,6 @@ spec:
             value: "/trex/"
           - name: IS_KUBERNETES
             value: "true"
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}
+

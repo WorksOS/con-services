@@ -5,16 +5,8 @@ import { _ } from 'underscore'
 import { UploadDataService } from './upload-data.service'
 import { ITagFileRequest } from "./tagfile-request"
 
-//Dimensions
-const ProjectUid = 'bea52e4f-faa2-e511-80e5-0050568821e6';
-const OrgId = "87bdf851-44c5-e311-aa77-00505688274d";
 
-//Boone
-//const ProjectUid = '62a52e4f-faa2-e511-80e5-0050568821e6';
-//const OrgId = "87bdf851-44c5-e311-aa77-00505688274d";
-
-@
-Component({
+@Component({
   selector: 'upload-data',
   providers: [UploadDataService],
   templateUrl: 'upload-data.component.html'
@@ -33,8 +25,11 @@ export class UploadDataComponent {
   public displayInvalidFileTypeError: boolean = false;
   public uploadFile: any;
   public selectedFiles: any;
+  public projectUid: string;
+  public orgUid: string;
   private fileCount: number = 0;
   public isFinishEnabled: boolean = false;
+
 
   constructor(private uploadDataService: UploadDataService) { }
   
@@ -89,8 +84,8 @@ export class UploadDataComponent {
     const tagToUpload: ITagFileRequest = {
       fileName: this.selectedFiles[this.fileCount].name,
       data: data,
-      ProjectUid: ProjectUid,
-      OrgId: OrgId
+      ProjectUid: this.projectUid,
+      OrgId: this.orgUid
   } as ITagFileRequest;
 
 
@@ -137,4 +132,11 @@ export class UploadDataComponent {
     console.log(event);
   }
 
+  public clearProjectUid() {
+    this.projectUid = "";
+  }
+
+  public clearOrgUid() {
+    this.orgUid = "";
+  }
 }
