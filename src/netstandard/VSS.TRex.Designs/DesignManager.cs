@@ -44,14 +44,14 @@ namespace VSS.TRex.Designs
       {
         StorageProxy.ReadStreamFromPersistentStoreDirect(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
 
-        if (ms == null)
-          return null;
-
         IDesigns designs = DIContext.Obtain<IDesigns>();
 
-        using (ms)
+        if (ms != null)
         {
-          designs.FromStream(ms);
+          using (ms)
+          {
+            designs.FromStream(ms);
+          }
         }
 
         return designs;
@@ -94,7 +94,7 @@ namespace VSS.TRex.Designs
     public IDesign Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
       IDesigns designs = Load(SiteModelID);
-      IDesign result = designs.AddDesignDetails(Guid.NewGuid(), designDescriptor, extents);
+      IDesign result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(SiteModelID, designs);
 
       return result;

@@ -11,7 +11,8 @@
     <option *ngFor="let displayMode of displayModes" [ngValue]="displayMode">
       {{ displayMode.item2 }}
     </option>
-  </select> Timed call took {{timerTotalTime}}ms</p>
+  </select> Timed call took {{timerTotalTime}}ms
+</p>
 <button (click)="getTile()">Render</button>
 <button (click)="getTile10x()">Render 10x</button>
 <button (click)="zoomAll()">Zoom All</button>
@@ -27,4 +28,11 @@
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
 
 <p><input type="checkbox" [(ngModel)]="applyToViewOnly"> Apply to view only <button (click)="getSimpleFullVolume()">Compute Full Volume</button> Volume: {{projectVolume}}</p>
-<button (click)="testJSONParameter()">Test JSON Param</button>
+
+<br />
+<H2>Surveyed Surfaces</H2>
+<p><button (click)="addADummySurveyedSurface()">Add a dummy!</button> New SS Guid -> {{newSurveyedSurfaceGuid}}</p>
+<p *ngFor="let surveyedSurface of surveyedSurfaces">Surveyed surface = {{ surveyedSurface.id }}</p>
+
+<br />
+<H2>Designs</H2>

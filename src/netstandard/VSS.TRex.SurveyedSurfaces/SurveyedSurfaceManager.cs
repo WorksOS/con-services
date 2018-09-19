@@ -45,15 +45,15 @@ namespace VSS.TRex.SurveyedSurfaces
       {
         StorageProxy.ReadStreamFromPersistentStoreDirect(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
 
-        if (ms == null)
-          return null;
-
         ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
 
-        using (ms)
-        {
-          ss.FromStream(ms);
-        }
+        if (ms != null)
+        { 
+          using (ms)
+          {
+            ss.FromStream(ms);
+          }
+          }
 
         return ss;
       }
@@ -96,7 +96,7 @@ namespace VSS.TRex.SurveyedSurfaces
     public ISurveyedSurface Add(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
     {
       ISurveyedSurfaces ss = Load(SiteModelID);
-      ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(SiteModelID, designDescriptor, asAtDate, extents);
+      ISurveyedSurface newSurveyedSurface = ss.AddSurveyedSurfaceDetails(Guid.NewGuid(), designDescriptor, asAtDate, extents);
       Store(SiteModelID, ss);
 
       return newSurveyedSurface;

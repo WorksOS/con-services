@@ -1,8 +1,8 @@
 export class ProjectExtents {
-  minX: number;
-  minY: number;
-  maxX: number;
-  maxY: number;
+  minX: number = 0;
+  minY: number = 0;
+  maxX: number = 0;
+  maxY: number = 0;
 
   public constructor(minX: number, minY: number, maxX: number, maxY: number) {
     this.minX = minX;
@@ -64,5 +64,20 @@ export class ProjectExtents {
   public setCenterPosition(cx: number, cy: number) {
     this.panByDelta(cx - this.centerX(), cy - this.centerY());  
   }
+}
+
+export class DesignDescriptor {
+  fileSpace: string = "";
+  fileSpaceID: string = "";
+  folder: string = "";
+  fileName: string = "";
+  offset:number = 0;
+}
+
+export class SurveyedSurface{
+  iD: string = "";
+  descriptor: DesignDescriptor = new DesignDescriptor();
+  asAtDate: Date = new Date();
+  extents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 }
 

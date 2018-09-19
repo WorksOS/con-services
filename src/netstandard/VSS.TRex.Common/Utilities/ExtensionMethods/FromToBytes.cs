@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Utilities.ExtensionMethods
@@ -82,7 +83,7 @@ namespace VSS.TRex.Utilities.ExtensionMethods
     {
       MemoryStream ms = new MemoryStream();
 
-      using (BinaryWriter writer = new BinaryWriter(ms))
+      using (BinaryWriter writer = new BinaryWriter(ms, Encoding.UTF8, true))
       {
           item.Write(writer);
       }

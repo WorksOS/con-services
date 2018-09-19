@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -44,7 +44,10 @@ export class ProjectComponent {
   public timerTotalTime: number = 0;
 
   public applyToViewOnly: boolean = false;
-    
+
+  public newSurveyedSurfaceGuid: string = "";
+  public surveyedSurfaces: SurveyedSurface[] = [];
+
     constructor(
     private projectService: ProjectService
   ) { }
@@ -227,6 +230,26 @@ export class ProjectComponent {
     filter.attributeFilter = new AttributeFilter();
 
     this.projectService.testJSONParameter(filter).subscribe(x => x);
+  }
+
+  public addADummySurveyedSurface(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
+
+    this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
+      uid => {
+        this.newSurveyedSurfaceGuid = uid.iD;
+      },
+      err => {
+        this.newSurveyedSurfaceGuid = err;
+      });
+  }
+
+  public getSurveyedSurfaces(): void {
+    this.surveyedSurfaces = [];
+
+    this.projectService.getSurveyedSurfaces(this.projectUid).subscribe(
+      surveyedsurfaces => surveyedsurfaces.forEach(ss => this.surveyedSurfaces.push(ss)));  
   }
 }
 

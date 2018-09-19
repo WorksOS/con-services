@@ -146,8 +146,6 @@ namespace VSS.TRex.SiteModels
         if (siteModel == null)
           return;
 
-        Log.LogInformation($"Evicting sitemodel {SiteModelID} from cache due to attribute change notification");
-
         // Note: The spatial data grid is highly conserved and never killed in a sitemodel change notifiation.
         SiteModelOriginConstructionFlags originFlags = 
           SiteModelOriginConstructionFlags.PreserveGrid 
@@ -157,6 +155,8 @@ namespace VSS.TRex.SiteModels
           | (!message.SurveyedSurfacesModified ? SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces : 0)
           | (!message.MachinesModified ? SiteModelOriginConstructionFlags.PreserveMachines : 0)
           | (!message.MachineTargetValuesModified? SiteModelOriginConstructionFlags.PreserveMachineTargetValues : 0);
+
+        Log.LogInformation($"Processing attribute change notification for sitemodel {SiteModelID}. Preserved elements are {originFlags}");
 
         // First create a new sitemodel to replace the site model with, requesting certain elements of the existing sitemodel
         // to be preserved in the new sitemodel instance.

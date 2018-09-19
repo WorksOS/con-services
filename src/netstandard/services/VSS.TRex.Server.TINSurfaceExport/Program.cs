@@ -68,6 +68,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, IPipelineTask>>(provider => SubGridTaskFactoryMethod))
       .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+      .Build()
       .Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
       .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))

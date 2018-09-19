@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -16,6 +18,10 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Webtools
 {
@@ -53,13 +59,17 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()));
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
       services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
-
+      services.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces());
+      services.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory());
+      services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
 
       services.AddSingleton(new ImmutableClientServer("Webtools-Immutable"));
       services.AddSingleton(new MutableClientServer("Webtools-Mutable"));
 
       // Register the listener for site model attribute change notifications
       services.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName()));
+      services.AddSingleton<IDesignManager>(factory => new DesignManager());
+      services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
 
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);

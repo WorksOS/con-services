@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -34,6 +34,18 @@ export class ProjectService {
     return this.http.get<T>(url);
   }
 
+  private executePostRequest<T>(label: string, url: string, body: any): Observable<T> {
+    url = `${this.baseUrl}api/${url}`;
+    console.log(`${label}: url=${url}`);
+
+//    let headers = new HttpHeaders();
+//    headers.append('Content-Type', 'application/json');
+    //post data missing(here you pass email and password)
+
+//    return this.http.post(url, body, headers);
+    return this.http.post<T>(url, body);
+  }
+
   public getProjectExtents(projectUid: string): Observable<ProjectExtents> {
     return this.executeRequest<ProjectExtents>('getProjectExtents', `sitemodels/${projectUid}/extents`);
   }
@@ -59,5 +71,28 @@ export class ProjectService {
     var paramString : string = btoa(JSON.stringify(param));
 
     return this.executeRequest<CombinedFilter>('testJSONParameter', `sandbox/jsonparameter?param=${paramString}`);
+  }
+
+  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<SurveyedSurface> {
+
+//    var newSurveyedSurface = new SurveyedSurface();
+
+//    newSurveyedSurface.descriptor = descriptor;
+//    newSurveyedSurface.asAtDate = asAtDate;
+//    newSurveyedSurface.extents = extents;
+
+//    return this.executePostRequest<string>
+//      ('addSurveyedSurface',
+//      `surveyedsurfaces/${projectUid}?newsurveyedsurface=${btoa(JSON.stringify(newSurveyedSurface))}`,
+//      null);
+
+    return this.executePostRequest<SurveyedSurface>
+    ('addSurveyedSurface',
+      `surveyedsurfaces/${projectUid}?fileName=${descriptor.fileName}&offset=${descriptor.offset}&asAtDate=${asAtDate.toISOString()}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`,
+      null);
+  }
+
+  public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
+    return this.executeRequest<SurveyedSurface[]>('getSurveyedSurfaces', `surveyedsurfaces/${projectUid}`);
   }
 }
