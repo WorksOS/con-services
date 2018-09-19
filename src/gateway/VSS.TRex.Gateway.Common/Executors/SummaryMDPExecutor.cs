@@ -42,7 +42,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       MDPStatisticsOperation operation = new MDPStatisticsOperation();
 
@@ -51,9 +51,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          MDPPercentageRange = new MDPRangePercentageRecord(request.minMDPPercent, request.maxMDPPercent),
-          OverrideMachineMDP = request.overrideTargetMDP,
-          OverridingMachineMDP = request.mdpTarget
+          MDPPercentageRange = new MDPRangePercentageRecord(request.MinMDPPercent, request.MaxMDPPercent),
+          OverrideMachineMDP = request.OverrideTargetMDP,
+          OverridingMachineMDP = request.MdpTarget
         }
       );
 

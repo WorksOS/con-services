@@ -42,14 +42,14 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
       PassCountStatisticsResult passCountDetailsResult = operation.Execute(new PassCountStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        PassCountDetailValues = request.passCounts
+        PassCountDetailValues = request.PassCounts
       });
 
       if (passCountDetailsResult != null)

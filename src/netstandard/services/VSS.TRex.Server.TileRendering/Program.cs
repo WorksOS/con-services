@@ -14,7 +14,6 @@ using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Implementations.Core2;
@@ -27,6 +26,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using IPipelineTask = VSS.TRex.Pipelines.Interfaces.Tasks.ITask;
 
 namespace VSS.TRex.Server.TileRendering
 {
@@ -43,7 +43,7 @@ namespace VSS.TRex.Server.TileRendering
       }
     }
 
-    private static ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    private static Pipelines.Interfaces.Tasks.ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       switch (key)
       {
@@ -74,7 +74,7 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, IPipelineTask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new TileRenderingServer()))

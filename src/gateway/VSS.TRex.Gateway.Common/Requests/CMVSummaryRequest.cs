@@ -23,46 +23,46 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The target CMV value expressed in 10ths of units.
     /// </summary>
     [Range(MIN_CMV, MAX_CMV)]
     [JsonProperty(PropertyName = "cmvTarget", Required = Required.Default)]
-    public short cmvTarget { get; protected set; }
+    public short CmvTarget { get; protected set; }
 
     /// <summary>
     /// Override the target CMV recorded from the machine with the value of cmvTarget
     /// </summary>
     [JsonProperty(PropertyName = "overrideTargetCMV", Required = Required.Default)]
-    public bool overrideTargetCMV { get; protected set; }
+    public bool OverrideTargetCMV { get; protected set; }
 
     /// <summary>
     /// The minimum percentage the measured CMV may be compared to the cmvTarget from the machine, or the cmvTarget override if overrideTargetCMV is true
     /// </summary>
     [Range(MIN_PERCENT_CMV, MAX_PERCENT_CMV)]
     [JsonProperty(PropertyName = "minCMVPercent", Required = Required.Default)]
-    public double minCMVPercent { get; protected set; }
+    public double MinCMVPercent { get; protected set; }
 
     /// <summary>
     /// The maximum percentage the measured CMV may be compared to the cmvTarget from the machine, or the cmvTarget override if overrideTargetCMV is true
     /// </summary>
     [Range(MIN_PERCENT_CMV, MAX_PERCENT_CMV)]
     [JsonProperty(PropertyName = "maxCMVPercent", Required = Required.Default)]
-    public double maxCMVPercent { get; protected set; }
+    public double MaxCMVPercent { get; protected set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     private CMVSummaryRequest()
     {
     }
 
     /// <summary>
-    /// Create an instance of the CMVSummaryRequest class.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVSummaryRequest CreateCMVSummaryRequest(
+    public CMVSummaryRequest(
       Guid projectUid,
       FilterResult filter,
       short cmvTarget,
@@ -71,15 +71,12 @@ namespace VSS.TRex.Gateway.Common.Requests
       double minCMVPercent
     )
     {
-      return new CMVSummaryRequest
-      {
-        ProjectUid = projectUid,
-        filter = filter,
-        cmvTarget = cmvTarget,
-        overrideTargetCMV = overrideTargetCMV,
-        maxCMVPercent = maxCMVPercent,
-        minCMVPercent = minCMVPercent
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      CmvTarget = cmvTarget;
+      OverrideTargetCMV = overrideTargetCMV;
+      MaxCMVPercent = maxCMVPercent;
+      MinCMVPercent = minCMVPercent;
     }
 
     /// <summary>
@@ -89,11 +86,11 @@ namespace VSS.TRex.Gateway.Common.Requests
     {
       base.Validate();
 
-      filter?.Validate();
+      Filter?.Validate();
 
-      if (overrideTargetCMV)
+      if (OverrideTargetCMV)
       {
-        if (!(cmvTarget > 0) || !(minCMVPercent > 0 && maxCMVPercent > 0))
+        if (!(CmvTarget > 0) || !(MinCMVPercent > 0 && MaxCMVPercent > 0))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -101,11 +98,11 @@ namespace VSS.TRex.Gateway.Common.Requests
         }
       }
 
-      if (cmvTarget > 0)
+      if (CmvTarget > 0)
       {
-        if (minCMVPercent > 0 || maxCMVPercent > 0)
+        if (MinCMVPercent > 0 || MaxCMVPercent > 0)
         {
-          if (minCMVPercent > maxCMVPercent)
+          if (MinCMVPercent > MaxCMVPercent)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid CMV summary request values: must have minimum % < maximum %"));

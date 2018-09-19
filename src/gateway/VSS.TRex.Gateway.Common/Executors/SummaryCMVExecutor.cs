@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       CMVStatisticsOperation operation = new CMVStatisticsOperation();
 
@@ -47,9 +47,9 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          CMVPercentageRange = new CMVRangePercentageRecord(request.minCMVPercent, request.maxCMVPercent),
-          OverrideMachineCMV = request.overrideTargetCMV,
-          OverridingMachineCMV = request.cmvTarget
+          CMVPercentageRange = new CMVRangePercentageRecord(request.MinCMVPercent, request.MaxCMVPercent),
+          OverrideMachineCMV = request.OverrideTargetCMV,
+          OverridingMachineCMV = request.CmvTarget
         }
       );
 
