@@ -12,10 +12,20 @@
       <conversionPattern value="%date [%thread] %-5level %logger{1} %message%newline" />
     </layout>
   </appender>
+  <appender name="ElasticSearchAppender" type="log4net.ElasticSearch.ElasticSearchAppender, log4net.ElasticSearch">
+<!--for production <connectionString value="Scheme=http;Server=es.k8s.services.myvisionlink.com;Index=log;Port=80;rolling=true"/>-->
+        <connectionString value="Scheme=http;Server=es.k8s.vspengg.com;Index=log;Port=80;rolling=true"/>
+        <lossy value="false" />
+        <evaluator type="log4net.Core.LevelEvaluator">
+            <threshold value="DEBUG" />
+        </evaluator>
+        <bufferSize value="100" />
+  </appender>
 
   <root>
     <level value="DEBUG" />
     <appender-ref ref="RollingFile" />
     <appender-ref ref="Console" />
+    <appender-ref ref="ElasticSearchAppender" />
   </root>
 </log4net>

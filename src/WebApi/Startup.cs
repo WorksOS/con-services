@@ -73,6 +73,20 @@ namespace VSS.Productivity3D.WebApi
       services.AddCustomResponseCaching();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+      /*services.AddOpenTracing(builder =>
+      {
+        builder.ConfigureAspNetCore(options =>
+        {
+          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
+          options.Hosting.IgnorePatterns.Add(request => request.Request.GetUri().ToString().Contains("newrelic.com"));
+        });
+      });
+
+      services.AddJaeger(SERVICE_TITLE);
+
+      services.AddOpenTracing();*/
+
+
       ConfigureApplicationServices(services);
     }
 
