@@ -238,7 +238,7 @@ export class ProjectComponent {
 
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
       uid => {
-        this.newSurveyedSurfaceGuid = uid.iD;
+        this.newSurveyedSurfaceGuid = uid.id;
       },
       err => {
         this.newSurveyedSurfaceGuid = err;
