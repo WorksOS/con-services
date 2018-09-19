@@ -17,10 +17,10 @@
     <PackageReference Include="Apache.Ignite" Version="2.6.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.4.0" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.0" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.1" />
   </ItemGroup>
 
   <ItemGroup>

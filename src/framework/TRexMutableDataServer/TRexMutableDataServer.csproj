@@ -100,8 +100,8 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VSS.Log4NetExtensions, Version=2.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\VSS.Log4NetExtensions.netcore.2.3.3\lib\netstandard2.0\VSS.Log4NetExtensions.dll</HintPath>
+    <Reference Include="VSS.Log4NetExtensions, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\VSS.Log4NetExtensions.netcore.2.4.0\lib\netstandard2.0\VSS.Log4NetExtensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

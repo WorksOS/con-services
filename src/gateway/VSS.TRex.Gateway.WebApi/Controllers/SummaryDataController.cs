@@ -16,8 +16,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   public class SummaryDataController : BaseController
   {
     private const short DATA_VALUE_NOT_REQUIRED = 0;
-    private const double TEMPERATURE_TARGET_MIN = 10.5;
-    private const double TEMPERATURE_TARGET_MAX = 150.5;
 
     /// <summary>
     /// Default constructor.
@@ -26,7 +24,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
     public SummaryDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
-      : base(loggerFactory, loggerFactory.CreateLogger<DetailsDataController>(), serviceExceptionHandler, configStore)
+      : base(loggerFactory, loggerFactory.CreateLogger<SummaryDataController>(), serviceExceptionHandler, configStore)
     {
     }
 

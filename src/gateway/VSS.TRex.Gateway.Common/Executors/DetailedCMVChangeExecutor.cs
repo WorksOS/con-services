@@ -34,6 +34,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       CMVChangeDetailsRequest request = item as CMVChangeDetailsRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(CMVChangeDetailsRequest));
+
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var filter = ConvertFilter(request.Filter, siteModel);

@@ -39,6 +39,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       TemperatureSummaryRequest request = item as TemperatureSummaryRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(TemperatureSummaryRequest));
+
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var filter = ConvertFilter(request.Filter, siteModel);

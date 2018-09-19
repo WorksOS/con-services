@@ -36,6 +36,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       CMVSummaryRequest request = item as CMVSummaryRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(CMVSummaryRequest));
+      
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var filter = ConvertFilter(request.Filter, siteModel);

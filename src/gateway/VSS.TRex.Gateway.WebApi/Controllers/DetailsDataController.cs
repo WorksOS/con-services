@@ -29,6 +29,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get CMV % change from Raptor for the specified project and date range.
     /// </summary>
+    /// <param name="cmvChangeDetailsRequest"></param>
+    /// <returns></returns>
     [Route("api/v1/cmv/percentchange")]
     [HttpPost]
     public CompactionCmvPercentChangeResult PostCmvPercentChange([FromBody] CMVChangeDetailsRequest cmvChangeDetailsRequest)

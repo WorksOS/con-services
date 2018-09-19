@@ -40,6 +40,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       SpeedSummaryRequest request = item as SpeedSummaryRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(SpeedSummaryRequest));
+
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var filter = ConvertFilter(request.Filter, siteModel);

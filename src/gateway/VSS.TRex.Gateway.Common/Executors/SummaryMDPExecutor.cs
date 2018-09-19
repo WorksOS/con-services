@@ -40,6 +40,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       MDPSummaryRequest request = item as MDPSummaryRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(MDPSummaryRequest));
+
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var filter = ConvertFilter(request.Filter, siteModel);
