@@ -1,10 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Hangfire;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -47,8 +51,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       string jobId;
       try
       {
-       jobId = BackgroundJob.Enqueue(() => exportJob.GetExportData(
-        request, Request.Headers.GetCustomHeaders(true), null));
+        jobId = exportJob.QueueJob(request, Request.Headers.GetCustomHeaders(true));
       }
       catch (Exception e)
       {

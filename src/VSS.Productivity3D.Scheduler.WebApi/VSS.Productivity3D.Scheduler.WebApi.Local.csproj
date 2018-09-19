@@ -37,11 +37,6 @@
     <PackageReference Include="Hangfire.MySql.NetCore" Version="1.0.7" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.6.17" />
     <PackageReference Include="Hangfire.Core" Version="1.6.17" />
-    <PackageReference Include="VSS.AWS.TransferProxy" Version="1.4.*" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.38.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -54,6 +49,15 @@
     </ItemGroup>
     <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
   </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MerinoSandbox\AWS.TransferProxy\src\VSS.AWS.TransferProxy.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Update="appsettings.json">

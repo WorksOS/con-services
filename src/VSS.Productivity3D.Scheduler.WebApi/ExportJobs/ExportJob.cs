@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.MasterData.Models.Models;
 
@@ -25,6 +29,11 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// </summary>
     public const string S3KeyStateKey = "s3Key";
 
+    /// <summary>
+    /// Location to save incoming Scheduled Job Requests
+    /// </summary>
+    private const string S3ScheduleSaveLocation = "background";
+
     private readonly IApiClient apiClient;
     private readonly ITransferProxy transferProxy;
     private readonly ILogger log;
@@ -40,6 +49,60 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     }
 
     /// <summary>
+    /// Save the request in S3 for use in the background task, rather than in the Database
+    /// </summary>
+    /// <param name="request">Request to be saved</param>
+    /// <returns>A Guid to be passed in to the background task</returns>
+    private Guid SaveRequest(ScheduleJobRequest request)
+    {
+      var guid = Guid.NewGuid();
+      var data = JsonConvert.SerializeObject(request, Formatting.None);
+      var bytes = Encoding.UTF8.GetBytes(data);
+      using (var ms = new MemoryStream(bytes))
+      {
+        transferProxy.Upload(ms, $"{S3ScheduleSaveLocation}/{guid}");
+      }
+
+      return guid;
+    }
+
+    /// <summary>
+    /// Fetch the Schedule Job Request for a given Request ID
+    /// </summary>
+    /// <param name="requestId">Request ID returned from the SaveRequest Method</param>
+    /// <returns>The original Scheduled Task class</returns>
+    private async Task<ScheduleJobRequest> DownloadRequest(Guid requestId)
+    {
+      ScheduleJobRequest request = null;
+      var fileStreamResult = await transferProxy.Download($"{S3ScheduleSaveLocation}/{requestId}");
+      using (var ms = new MemoryStream())
+      {
+        fileStreamResult.FileStream.CopyTo(ms);
+        var bytes = ms.ToArray();
+        var data = Encoding.UTF8.GetString(bytes);
+        request = JsonConvert.DeserializeObject<ScheduleJobRequest>(data);
+      }
+
+      return request;
+    }
+
+    /// <summary>
+    /// Queue a Scheduled Job to be run in the background
+    /// </summary>
+    /// <param name="request">Scheduled Job Details</param>
+    /// <param name="customHeaders">Any Customer headers to be passed with the Scheduled Job Request</param>
+    /// <returns>A Job ID for the Background Job</returns>
+    public string QueueJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
+    {
+      var savedRequestId = SaveRequest(request);
+
+      // We have to pass in a null PerformContext, as Hangfire will inject the correct one when the job is run.
+      var jobId = BackgroundJob.Enqueue(() => GetExportData(savedRequestId, customHeaders, null));
+
+      return jobId;
+    }
+
+    /// <summary>
     /// Gets the export data from a web api and saves it to AWS S3.
     /// </summary>
     /// <param name="request">Http request details of how to get the export data</param>
@@ -47,9 +110,12 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="context">Hangfire context</param>
     [ExportFailureFilter]
     [AutomaticRetry(Attempts = 0)]
-    public async Task GetExportData(ScheduleJobRequest request, IDictionary<string, string> customHeaders,
+    public async Task GetExportData(Guid requestId, IDictionary<string, string> customHeaders,
       PerformContext context)
     {
+      // Refetch the Request Model from S3
+      var request = await DownloadRequest(requestId);
+
       using (var data = await apiClient.SendRequest(request, customHeaders))
       {
         //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?

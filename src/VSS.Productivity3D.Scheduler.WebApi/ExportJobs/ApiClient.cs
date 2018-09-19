@@ -54,8 +54,21 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
             log.LogDebug($"HTTP Header '{header.Key}' exists in both the web requests and job request headers, using web request value. Web Request Value: '${customHeaders[header.Key]}', Job Request Value: '${header.Value}'");
           }
         }
-        //Stop retries in GracefulWebRequest
-        result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, jobRequest.Payload, jobRequest.Timeout, 0);
+        
+        // The Schedule job request may contain encoded binary data, or a standard string,
+        // We need to handle both cases differently, as we could lose data if converting binary information to a string
+        if (jobRequest.IsBinaryData)
+        {
+          using (var ms = new MemoryStream(jobRequest.PayloadBytes))
+          {
+            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, ms, jobRequest.Timeout, 0);
+          }
+        }
+        else
+        {
+          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, jobRequest.Payload, null, jobRequest.Timeout, 0);
+        }
+
         log.LogDebug("Result of send request: Stream Content={0}", result);
       }
       catch (Exception ex)
