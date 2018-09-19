@@ -181,6 +181,14 @@
       <Project>{786EE762-216E-46D3-936F-7F478693D76C}</Project>
       <Name>VSS.TRex.Services.SurveyedSurfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj">
+      <Project>{780E0712-9E35-4FED-B936-CB86CC02AB53}</Project>
+      <Name>VSS.TRex.SiteModels.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj">
+      <Project>{A614210E-B1A6-4E02-96FC-1FF78A86C5A9}</Project>
+      <Name>VSS.TRex.SiteModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj">
       <Project>{06b93475-a235-4f5d-a226-48e4205f9ba1}</Project>
       <Name>VSS.TRex.Storage.Interfaces</Name>
@@ -188,6 +196,10 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
       <Project>{6c9c0264-67a6-4035-bbc2-6ab380a51c30}</Project>
       <Name>VSS.TRex.Storage.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
+      <Project>{E9FFB4FA-AAF2-4EA3-93FB-82B0B38B7FA5}</Project>
+      <Name>VSS.TRex.Storage</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj">
       <Project>{c423088f-2b76-49f9-b601-666980a4c1c7}</Project>

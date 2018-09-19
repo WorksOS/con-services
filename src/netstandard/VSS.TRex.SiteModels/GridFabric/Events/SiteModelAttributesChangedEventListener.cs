@@ -36,7 +36,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
             // Tell the SiteModels instance to reload the designated site model that has changed
             try
             {
-                DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(message.SiteModelID);
+                DIContext.Obtain<ISiteModels>().SiteModelAttributesHaveChanged(message.SiteModelID, message);
             }
             catch (Exception E)
             {

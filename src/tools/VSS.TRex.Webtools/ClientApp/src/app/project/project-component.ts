@@ -58,6 +58,9 @@ export class ProjectComponent {
 
   public selectProject(): void {
     this.getProjectExtents();
+
+    // Sleep for half a second to allow the project extents result to come back, then zoom all
+    setTimeout(() => this.zoomAll(), 500);
   }
 
   public setProjectToZero(): void {
@@ -67,7 +70,6 @@ export class ProjectComponent {
   public getProjectExtents(): void {
     this.projectService.getProjectExtents(this.projectUid).subscribe(extent => {
       this.projectExtents = new ProjectExtents(extent.minX, extent.minY, extent.maxX, extent.maxY);
-      this.zoomAll();
     });
 
     this.projectService.getProjectDateRange(this.projectUid).subscribe(dateRange => {
@@ -92,7 +94,8 @@ export class ProjectComponent {
   }
 
   public zoomAll(): void {
-  //  this.tileExtents = new ProjectExtents(this.projectExtents.minX, this.projectExtents.minY, this.projectExtents.maxX, this.projectExtents.maxY);
+    // Ensure our project bounds are up to date
+    this.getProjectExtents(); 
 
     // Square up the tileExtents to match the aspect ratio between the displayed image and the requested world area
 

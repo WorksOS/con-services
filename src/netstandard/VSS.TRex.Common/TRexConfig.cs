@@ -64,39 +64,49 @@ namespace VSS.TRex.Common
       /// </summary>
       public static bool Debug_PerformSegmentAdditionIntegrityChecks = false;
 
+      /// <summary>
+      /// Controls notification of site model changes made in the persistent to interested listeners
+      /// such as cluster processing nodes in the immutable grid
+      /// </summary>
       public static bool AdviseOtherServicesOfDataModelChanges = true;
+
+      /// <summary>
+      /// Maximum number of TAG files to processing through the aggregation/integration pipeline
+      /// as a single work unit
+      /// </summary>
+      public static int MaxMappedTAGFilesToProcessPerAggregationEpoch = 20;
 
       /*
         /// <summary>
         /// Use TFA service to validate tagfiles
         /// </summary>
         public static bool EnableTFAService = true;
-
+  
         /// <summary>
         /// Enable archiving of tagfiles
         /// </summary>
         public static bool EnableTagfileArchiving = false; // for now
-
+  
         /// <summary>
         /// Enable archiving of the metadata of tagfiles
         /// </summary>
         public static bool EnableTagfileArchivingMetaData = false;
-
+  
         /// <summary>
         /// URL of TFA
         /// </summary>
         public static string TFAServiceURL = "http://localhost:7654/";
-
+  
         /// <summary>
         /// Endpoint for validation of tagfiles in TFA service
         /// </summary>
         public static string TFAServiceGetProjectID = "api/v3/project/getid";
-
+  
         /// <summary>
         /// Minimum lenght a valid tagfile can be. e.g header is normally over 100 bytes
         /// </summary>
         public static int MinTAGFileLength = 100;
-
+  
         /// <summary>
         /// location to archive tagfiles. If blank defaults to local temp TrexIgniteData folder
         /// </summary>

@@ -9,6 +9,8 @@ namespace VSS.TRex.SiteModels
 
     public ISiteModel NewSiteModel(Guid id) => new SiteModel(id);
 
+    public ISiteModel NewSiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) => new SiteModel(originModel, originFlags);
+
     public ISiteModel NewSiteModel_NonTransient(Guid id) => new SiteModel(id, false);
   }
 }

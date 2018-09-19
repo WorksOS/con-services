@@ -11,7 +11,9 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 
@@ -55,15 +57,21 @@ namespace VSS.TRex.Webtools
 
       services.AddSingleton(new ImmutableClientServer("Webtools-Immutable"));
       services.AddSingleton(new MutableClientServer("Webtools-Mutable"));
+
+      // Register the listener for site model attribute change notifications
+      services.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName()));
+
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
-
 
       // In production, the Angular files will be served from this directory
       services.AddSpaStaticFiles(configuration =>
       {
         configuration.RootPath = "ClientApp/dist";
       });
+
+      // Start listening to site model change notifications
+      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

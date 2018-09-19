@@ -5,7 +5,7 @@ namespace VSS.TRex.Exceptions
   /// <summary>
   /// The base class for TRex custom exceptions. Rarrr!
   /// </summary>
-  public abstract class TRexException : Exception
+  public class TRexException : Exception
   {
     public TRexException(string message) : base(message)
     {

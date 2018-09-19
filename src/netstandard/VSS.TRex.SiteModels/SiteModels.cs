@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 
@@ -75,7 +76,7 @@ namespace VSS.TRex.SiteModels
 
       Log.LogInformation($"Loading site model {id} from persistent store");
 
-      if (result.LoadFromPersistentStore(storageProxy) == FileSystemErrorStatus.OK)
+      if (result.LoadFromPersistentStore() == FileSystemErrorStatus.OK)
       {
         lock (CachedModels)
         {
@@ -115,7 +116,8 @@ namespace VSS.TRex.SiteModels
     /// requiring the sitemodel to be reloaded
     /// </summary>
     /// <param name="SiteModelID"></param>
-    public void SiteModelAttributesHaveChanged(Guid SiteModelID)
+    /// <param name="message"></param>
+    public void SiteModelAttributesHaveChanged(Guid SiteModelID, ISiteModelAttributesChangedEvent message)
     {
       // Sitemodels have immutable characteristics in TRex. Multiple requests may reference the same site model
       // concurrently, with no interlocks enforcing access serialisation. Any attempt to replace or modify an already loaded
@@ -125,16 +127,43 @@ namespace VSS.TRex.SiteModels
       // Once all request based references to the sitemodel have completed the now orphaned sitemodel will be cleaned
       // up by the garbage collector. Removal of the sitemodel is interlocked with getting a sitemodel reference
       // to ensure no concurrency issues within the underlying cache implementation
+      // Note: The sitemodel references some elements that may be preserved via the site model factory method that
+      // accepts an origin sitemodel.
+      // These elements are:
+      // 1. ExistenceMap
+      // 2. Subgridtree containing cached subgrid data
+      // 3. Coordinate system
+      // 4. Designs
+      // 5. Surveyed Surfaces
+      // 6. Machines
+      // 7. Machines target values
 
       // Remove the site model from the cache
       lock (CachedModels)
       {
-        if (CachedModels.ContainsKey(SiteModelID))
-        {
-          Log.LogInformation($"Evicting sitemodel {SiteModelID} from cache due to attribute change notification");
+        CachedModels.TryGetValue(SiteModelID, out ISiteModel siteModel);
 
-          CachedModels.Remove(SiteModelID);
-        }
+        if (siteModel == null)
+          return;
+
+        Log.LogInformation($"Evicting sitemodel {SiteModelID} from cache due to attribute change notification");
+
+        // Note: The spatial data grid is highly conserved and never killed in a sitemodel change notifiation.
+        SiteModelOriginConstructionFlags originFlags = 
+          SiteModelOriginConstructionFlags.PreserveGrid 
+          | (!message.ExistenceMapModified ? SiteModelOriginConstructionFlags.PreserveExistenceMap : 0)
+          | (!message.CsibModified ? SiteModelOriginConstructionFlags.PreserveCsib : 0)
+          | (!message.DesignsModified ? SiteModelOriginConstructionFlags.PreserveDesigns : 0)
+          | (!message.SurveyedSurfacesModified ? SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces : 0)
+          | (!message.MachinesModified ? SiteModelOriginConstructionFlags.PreserveMachines : 0)
+          | (!message.MachineTargetValuesModified? SiteModelOriginConstructionFlags.PreserveMachineTargetValues : 0);
+
+        // First create a new sitemodel to replace the site model with, requesting certain elements of the existing sitemodel
+        // to be preserved in the new sitemodel instance.
+        ISiteModel newSiteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(siteModel, originFlags);
+
+        // Replace the site model reference in the cache with the new site model
+        CachedModels[SiteModelID] = newSiteModel;
       }
     }
   }

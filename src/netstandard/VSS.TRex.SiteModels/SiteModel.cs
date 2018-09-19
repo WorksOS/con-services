@@ -6,19 +6,17 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
-using VSS.TRex.Services.SurveyedSurfaces;
-using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -44,7 +42,7 @@ namespace VSS.TRex.SiteModels
 
         public Guid ID { get; set; } = Guid.Empty;
 
-        public DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
+        public DateTime LastModifiedDate { get; set; } 
 
         /// <summary>
         /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
@@ -65,7 +63,23 @@ namespace VSS.TRex.SiteModels
         [NonSerialized]
         private ISubGridTreeBitMask existanceMap;
 
-        public ISubGridTreeBitMask ExistanceMap {  get { return existanceMap; } }
+        /// <summary>
+        /// Returns a reference to the existance map for the site model. If the existance map is not yet present
+        /// load it from storage/cache
+        /// </summary>
+        public ISubGridTreeBitMask ExistanceMap
+        {
+          get { return existanceMap ?? GetProductionDataExistanceMap(); }
+        }
+
+        /// <summary>
+        /// Gets the loaded state of the existence map. This permits testing if an existance map is loaded without forcing
+        /// the existence map to be loaded via the ExistenceMap property
+        /// </summary>
+        public bool ExistenceMapLoaded
+        {
+          get => existanceMap != null;
+        }
 
         /// <summary>
         /// SiteModelExtent records the 3D extents of the data stored in the site model
@@ -102,6 +116,16 @@ namespace VSS.TRex.SiteModels
             return Encoding.ASCII.GetString(csibStream.ToArray());
           }
         }
+
+
+        /// <summary>
+        /// Gets the loaded state of the CSIB. This permits testing if a CSIB is loaded without forcing
+        /// the CSIB to be loaded via the CSIB property
+        /// </summary>
+        public bool CSIBLoaded
+        {
+          get => csib != null;
+        }
   
         // ProofingRuns is the set of proofing runs that have been collected in this site model
         // public SiteProofingRuns ProofingRuns;
@@ -113,8 +137,16 @@ namespace VSS.TRex.SiteModels
         private IMachinesProductionEventLists machinesTargetValues;
         public IMachinesProductionEventLists MachinesTargetValues
         {
-          get => machinesTargetValues;
-          set => machinesTargetValues = value;
+          // Allow lazy loading of the machine event lists to occur organically.
+          // Any requests holding references to events lists will continue to do so as the lists themselves
+          // wont be garbage collected until all request references to them are relinquished
+          get => machinesTargetValues ?? (machinesTargetValues = new MachinesProductionEventLists(this, Machines));
+          private set => machinesTargetValues = value;
+        }
+
+        public bool MachineTargetValuesLoaded
+        {
+          get => machinesTargetValues != null;
         }
 
         private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
@@ -126,29 +158,33 @@ namespace VSS.TRex.SiteModels
         /// </summary>
         public ISiteModelDesignList SiteModelDesigns { get { return siteModelDesigns; } }
 
-        private ISurveyedSurfaces surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+        private ISurveyedSurfaces surveyedSurfaces = null;
 
         // This is a list of TTM descriptors which indicate designs
         // that can be used as a snapshot of an actual ground surface at a specific point in time
         public ISurveyedSurfaces SurveyedSurfaces
         {
-            get
-            {
-                if (!SurveyedSurfacesLoaded)
-                {
-                    SurveyedSurfaceService proxy = new SurveyedSurfaceService(StorageMutability.Immutable, TRexCaches.ImmutableNonSpatialCacheName());
-                    proxy.Init(null); // Note: Not needed when this moves to Ignite deployed service model
-                    ISurveyedSurfaces ss = proxy.ListDirect(ID);
+            get => surveyedSurfaces ?? (surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
+        }
 
-                    lock (this)
-                    {
-                        surveyedSurfaces = ss;
-                        SurveyedSurfacesLoaded = true;
-                    }
-                }
+        public bool SurveyedSurfacesLoaded
+        {
+            get => surveyedSurfaces != null;
+        }
 
-                return surveyedSurfaces;
-            }
+        private IDesigns designs = null;
+    
+        /// <summary>
+        /// Designs records all the design surfaces that have been imported into the sitemodel
+        /// </summary>
+        public IDesigns Designs 
+        {
+            get => designs ?? (designs = DIContext.Obtain<IDesignManager>().List(ID));
+        }
+
+        public bool DesignsLoaded
+        {
+            get => designs != null;
         }
 
         // FSiteModelDesignNames is an integrated list of all the design names that have appeared
@@ -156,19 +192,86 @@ namespace VSS.TRex.SiteModels
         // and FSiteModelDesigns could either be refactored to use it, or the two could be
         // merged in intent.
         // public SiteModelDesignNames : TICClientDesignNames;
-
+      
         // Machines contains a list of compactor machines that this site model knows
         // about. Each machine contains a link to the machine hardware ID for the
         // appropriate machine
 
-        public IMachinesList Machines { get; set; }
+        private IMachinesList machines { get; set; }
+     
+        public IMachinesList Machines
+        {
+          get
+          {
+            if (machines == null)
+            {
+              machines = new MachinesList();
+              machines.LoadFromPersistentStore();
+            }
+
+            return machines;
+          }
+        }
+
+        public bool MachinesLoaded
+        {
+          get => machines != null;
+        }
 
         public bool IgnoreInvalidPositions { get; set; } = true;
 
-        private bool SurveyedSurfacesLoaded { get; set; }
-
         public SiteModel()
         {
+          LastModifiedDate = DateTime.MinValue;
+        }
+
+        /// <summary>
+        /// Constructs a sitemodel from an 'origin' sitemodel that provides select information to seed the new site model
+        /// </summary>
+        /// <param name="originModel"></param>
+        /// <param name="originFlags"></param>
+        public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this()
+        {
+          if (originModel.IsTransient)
+            throw new TRexException("Cannot use a transient sitemodel as an origin for constructing a new site model");
+
+          ID = originModel.ID;
+
+          // FCreationDate:= Now;
+          // FName:= Format('SiteModel-%d', [AID]);
+          // FDescription:= '';
+          // FActive:= True;
+
+          IsTransient = false;
+
+          LastModifiedDate = originModel.LastModifiedDate;
+
+         // SiteModelDesignNames = LastModifiedDate.SiteModelDesignNames;
+
+          grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0 
+            ? originModel.Grid : new ServerSubGridTree(originModel.ID);
+
+          existanceMap = originModel.ExistenceMapLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveExistenceMap) != 0
+            ? originModel.ExistanceMap : null;
+
+          designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0 
+            ? originModel.Designs : null;
+
+          surveyedSurfaces = originModel.SurveyedSurfacesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces) != 0
+            ? originModel.SurveyedSurfaces : null;
+
+          machines = originModel.MachinesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachines) != 0
+            ? originModel.Machines: null;
+
+          // Machine target values are an extension vector from machines. If the machine have not changed
+          machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
+            ? originModel.MachinesTargetValues
+            : null;
+
+          // FProofingRuns:= TICSiteProofingRuns.Create;
+
+          // Reload the bits that need to be reloaded
+          LoadFromPersistentStore();
         }
 
         public SiteModel(Guid id, bool isTransient = true) : this()
@@ -176,43 +279,25 @@ namespace VSS.TRex.SiteModels
             ID = id;
 
             // FCreationDate:= Now;
-            // FMarkedForRemoval:= False;
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';
             // FActive:= True;
 
             IsTransient = isTransient;
 
-            Machines = new MachinesList(id);
-
-            MachinesTargetValues = new MachinesProductionEventLists(this);
-
-            LastModifiedDate = DateTime.MinValue;
+            Machines.DataModelID = ID;
 
             // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
             grid = new ServerSubGridTree(ID);
 
-            existanceMap = new SubGridTreeSubGridExistenceBitMask();
+            // Allow existence map loading to be deferred/lazy on reference
+            existanceMap = null;
 
             // FProofingRuns:= TICSiteProofingRuns.Create;
-            // FMaxInterEpochDist:= kMaxEpochInterval;
-            // FWorkingSiteModelExtent.SetInverted;
-            // FGroundSurfacesInterlock:= TCriticalSection.Create;
-            // FLoadFromPersistentStoreInterlock:= TCriticalSection.Create;
-            // FIsNewlyCreated:= False;
-            // FAttributesChangedNotificationCount:= 0;
-            // FSiteModelPersistenceSerialisationInterlock:= TCriticalSection.Create;
-            // FMachineEventsPersistenceSerialisationInterlock:= TCriticalSection.Create;
-
-            // {$IFDEF DATAMODEL_WRITES_SUPPORTED}
-            // FPendingSubgridWritesMap:= TSubGridTreeBitMask.Create(FGrid.NumLevels - 1, FGrid.CellSize * kSubGridTreeDimension);
-            // PendingSiteModelPendingPersistences:= 0;
-            // {$ENDIF}
         }
 
-        public SiteModel(//AOwner: TICSiteModels;
-                         //string name,
+        public SiteModel(//string name,
                          //string description,
                          Guid id,
                          double cellSize) : this(id)
@@ -220,20 +305,13 @@ namespace VSS.TRex.SiteModels
             //  FName := AName;
             //  FDescription := ADescription;
             Grid.CellSize = cellSize;
-
-            //  {$IFDEF DATAMODEL_WRITES_SUPPORTED}
-            //FPendingSubgridWritesMap.CellSize := FGrid.CellSize* kSubGridTreeDimension;
-            //  {$ENDIF}
         }
 
         public void Include(ISiteModel Source)
         {
             // SiteModel extents
             SiteModelExtent.Include(Source.SiteModelExtent);
-
-            // TODO: FWorkingSiteModelExtent needed
-            // FWorkingSiteModelExtent.Include(Source.WorkingSiteModelExtent);
-        
+       
             // Proofing runs
             /* TODO: Proofing runs
             for (int I = 0; I < Source.ProofingRuns.ProofingRuns.Count; I++)
@@ -270,7 +348,6 @@ namespace VSS.TRex.SiteModels
 
             // WriteBooleanToStream(Stream, FActive);
 
-            //WriteDoubleToStream(Stream, FMaxInterEpochDist);
             //WriteBooleanToStream(Stream, FIgnoreInvalidPositions);
 
             writer.Write(Grid.CellSize);
@@ -282,9 +359,6 @@ namespace VSS.TRex.SiteModels
 
             // Write the design names list
             //FSiteModelDesignNames.SaveToStream(Stream);
-
-            // Write the machines list
-            Machines.Write(writer);
 
             writer.Write(LastModifiedDate.ToBinary());
         }
@@ -314,7 +388,7 @@ namespace VSS.TRex.SiteModels
                 ID = LocalID;
             }
 
-            /* TODO: Is there a need for 'active' status in a sitemodel?
+            /* 
             Active = reader.ReadBool();
             if (!Active)
             {
@@ -323,7 +397,6 @@ namespace VSS.TRex.SiteModels
             }
             */
 
-            // FMaxInterEpochDist:= ReadDoubleFromStream(Stream);
             // FIgnoreInvalidPositions:= ReadBooleanFromStream(Stream);
 
             double SiteModelGridCellSize = reader.ReadDouble();
@@ -341,9 +414,6 @@ namespace VSS.TRex.SiteModels
 
             // Read the design names list
             //FSiteModelDesignNames.LoadFromStream(Stream);
-
-            // Read the machines list
-            Machines.Read(reader);
 
             LastModifiedDate = DateTime.FromBinary(reader.ReadInt64());
 
@@ -387,24 +457,14 @@ namespace VSS.TRex.SiteModels
             return Result;
         }
 
-        private bool CreateMachinesTargetValues()
-        {
-            // Recreate the array and allow lazy loading of the machine event lists to occur organically.
-            // Any requests holding references to events lists will continue to do so as the lists themselves
-            // wont be garbage collected until all request references to them are relinquished
-            MachinesTargetValues = new MachinesProductionEventLists(this);
-
-            return true;
-        }
-
-        public FileSystemErrorStatus LoadFromPersistentStore(IStorageProxy StorageProxy)
+        public FileSystemErrorStatus LoadFromPersistentStore()
         {
             Guid SavedID = ID;
-            FileSystemErrorStatus Result = StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+            FileSystemErrorStatus Result = DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
-            if (Result == FileSystemErrorStatus.OK)
+            if (Result == FileSystemErrorStatus.OK && MS != null)
             {
-                try
+                using (MS)
                 {
                     if (SavedID != ID)
                     {
@@ -425,16 +485,8 @@ namespace VSS.TRex.SiteModels
                         lock (this)
                         {
                             Read(reader);
-
-                            // Now read in the existance map, replacing any currently loaded map. Requests holding 
-                            // references to the current map will continute to be able to reference it until
-                            // all such reqeusts are completed.
-                            Result = LoadProductionDataExistanceMapFromStorage(StorageProxy);
                         }
                     }
-
-                    if (!CreateMachinesTargetValues())
-                      Result = FileSystemErrorStatus.UnknownErrorReadingFromFS;
 
                     if (Result == FileSystemErrorStatus.OK)
                     {
@@ -446,10 +498,6 @@ namespace VSS.TRex.SiteModels
                         Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
                     }
                 }
-                finally
-                {
-                    MS.Dispose();
-                }
             }
 
             return Result;
@@ -460,11 +508,11 @@ namespace VSS.TRex.SiteModels
         /// load it from storage/cache
         /// </summary>
         /// <returns></returns>
-        public ISubGridTreeBitMask GetProductionDataExistanceMap(IStorageProxy StorageProxy)
+        public ISubGridTreeBitMask GetProductionDataExistanceMap()
         {
             if (existanceMap == null)
             {
-                return LoadProductionDataExistanceMapFromStorage(StorageProxy) == FileSystemErrorStatus.OK ? existanceMap : null;
+                return LoadProductionDataExistanceMapFromStorage() == FileSystemErrorStatus.OK ? existanceMap : null;
             }
 
             return existanceMap;
@@ -479,17 +527,20 @@ namespace VSS.TRex.SiteModels
             try
             {
                 // Create the new existance map instance
+              if (existanceMap != null)
+              {
                 ISubGridTreeBitMask localExistanceMap = existanceMap;
 
                 // Save its content to storage
                 using (MemoryStream MS = new MemoryStream())
                 {
-                    using (BinaryWriter writer = new BinaryWriter(MS))
-                    {
-                        SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer, null);
-                        StorageProxy.WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, MS);
-                    }
+                  using (BinaryWriter writer = new BinaryWriter(MS))
+                  {
+                    SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer, null);
+                    StorageProxy.WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, MS);
+                  }
                 }
+              }
             }
             catch (Exception e)
             {
@@ -504,7 +555,7 @@ namespace VSS.TRex.SiteModels
         /// Retrieves the content of the existance map from storage
         /// </summary>
         /// <returns></returns>
-        protected FileSystemErrorStatus LoadProductionDataExistanceMapFromStorage(IStorageProxy StorageProxy)
+        protected FileSystemErrorStatus LoadProductionDataExistanceMapFromStorage()
         {
             try
             {
@@ -512,18 +563,21 @@ namespace VSS.TRex.SiteModels
                 ISubGridTreeBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
 
                 // Read its content from storage 
-                StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
- 
-                try
+                DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+
+                if (MS == null)
+                {
+                    Log.LogInformation($"Attempt to read existence map for site model {ID} failed as the map does not exist, creating new existence map");
+                    existanceMap = new SubGridTreeSubGridExistenceBitMask();
+                    return FileSystemErrorStatus.OK;
+                }
+
+                using (MS)
                 {
                     using (BinaryReader reader = new BinaryReader(MS))
                     {
                         SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, reader, null);
                     }
-                }
-                finally
-                {
-                    MS?.Dispose();
                 }
 
                 // Replace existance map with the newly read map

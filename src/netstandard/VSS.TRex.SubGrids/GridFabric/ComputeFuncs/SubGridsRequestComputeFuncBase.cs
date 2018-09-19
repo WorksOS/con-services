@@ -20,7 +20,6 @@ using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
-using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -46,7 +45,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// Local reference to the client subgrid factory
         /// </summary>
         [NonSerialized]
-        private static IClientLeafSubgridFactory clientLeafSubGridFactory;
+        private IClientLeafSubgridFactory clientLeafSubGridFactory;
 
         private IClientLeafSubgridFactory ClientLeafSubGridFactory
           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
@@ -76,6 +75,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
         [NonSerialized]
         private ISiteModel siteModel;
+
+        [NonSerialized]
+        private ISiteModels siteModels;
 
         [NonSerialized]
         private IClientLeafSubGrid[][] clientGrids;
@@ -108,7 +110,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// DI'ed context for designs service
         /// </summary>
         [NonSerialized]
-        private IDesignsService DesignsService = DIContext.Obtain<IDesignsService>();
+        private IDesignManager designManager = DIContext.Obtain<IDesignManager>();
 
         /// <summary>
         /// Default no-arg constructor
@@ -247,9 +249,10 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             localArg = arg;
 
-            // Unpack the mask from the argument.
-            // TODO: Would be nice to use the FromBytes/ToBytes pattern here
+            siteModels = DIContext.Obtain<ISiteModels>();
+            siteModel = siteModels.GetSiteModel(localArg.SiteModelID);
 
+            // Unpack the mask from the argument.
             if (arg.ProdDataMaskBytes != null)
             {
                 ProdDataMask = new SubGridTreeSubGridExistenceBitMask();
@@ -277,7 +280,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
             // Set up any required cut fill design
             if (arg.CutFillDesignID != Guid.Empty)
-                CutFillDesign = DesignsService.Find(arg.SiteModelID, arg.CutFillDesignID);
+                CutFillDesign = siteModel.Designs.Locate(arg.CutFillDesignID);
         }
 
 
@@ -434,9 +437,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             // noted with the 'set' bits in the bitmask, processing only those that matter for this server
 
             Log.LogInformation("Scanning subgrids in request");
-
-            ISiteModels siteModels = DIContext.Obtain<ISiteModels>();
-            siteModel = siteModels.GetSiteModel(localArg.SiteModelID);
 
             // Construct the set of requestors to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
