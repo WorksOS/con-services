@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
 using System;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.WebApi
 {
@@ -35,6 +36,7 @@ namespace VSS.Productivity3D.WebApi
 
       var config = new ConfigurationBuilder()
         .AddCommandLine(args)
+        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
 
       //To run the service use https://docs.microsoft.com/en-us/aspnet/core/hosting/windows-service
@@ -62,8 +64,10 @@ namespace VSS.Productivity3D.WebApi
         {
           Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Trace);
+          builder.SetMinimumLevel(LogLevel.Debug);
+          builder.AddConfiguration(config);
         })
+        .UsePrometheus()
         .UseStartup<Startup>()
         .Build();
 
