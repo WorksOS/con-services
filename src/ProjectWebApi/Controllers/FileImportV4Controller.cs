@@ -206,9 +206,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         Request.Body.Position = 0;
       }
-
-      var body = new StreamReader(Request.Body).ReadToEnd();
-      if (string.IsNullOrEmpty(body))
+      else if(Request.Body.Position != 0)
       {
         // This can happen when the Body is already read, ensure that Request.EnableRewind() is called before the Request is read
         // Ideally in Startup.cs -> Configure()
@@ -223,10 +221,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         Filename = file.flowFilename,
         Method = Request.Method, // Can be either POST or PUT
-        Payload = body,
         Url = callbackUrl,
         Headers = { ["Content-Type"] = Request.Headers["Content-Type"] }
       };
+      request.SetBinaryPayload(Request.Body);
 
       var headers = Request.Headers.GetCustomHeaders(true);
 

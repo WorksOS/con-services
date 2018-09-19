@@ -195,13 +195,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         Filename = projectRequest.ProjectName + Guid.NewGuid(), // Make sure the filename is unique, it's not important what it's called as the scheduled job keeps a reference
         Method = "POST",
-        Payload = JsonConvert.SerializeObject(projectRequest),
         Url = callbackUrl,
         Headers =
         {
           ["Content-Type"] = Request.Headers["Content-Type"]
         }
       };
+      request.SetBinaryPayload(Request.Body);
 
       var customHeaders = Request.Headers.GetCustomHeaders(true);
 
@@ -283,13 +283,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         Filename = projectRequest.ProjectName + Guid.NewGuid(), // Make sure the filename is unique, it's not important what it's called as the scheduled job keeps a reference
         Method = "PUT",
-        Payload = JsonConvert.SerializeObject(projectRequest),
         Url = callbackUrl,
         Headers =
         {
           ["Content-Type"] = Request.Headers["Content-Type"]
         }
       };
+      request.SetBinaryPayload(Request.Body);
 
       var customHeaders = Request.Headers.GetCustomHeaders(true);
 
