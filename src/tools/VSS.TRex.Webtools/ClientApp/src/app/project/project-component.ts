@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -15,7 +15,7 @@ import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../pr
 export class ProjectComponent {
   private zoomFactor: number = 0.2;
 
-  public projectUid: string; 
+  public projectUid: string = ""; 
   public mode: number = 0;
   public pixelsX: number = 850;
   public pixelsY: number = 500;
@@ -47,6 +47,9 @@ export class ProjectComponent {
 
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
+        
+  public newDesignGuid: string = "";
+  public designs: DesignDescriptor[] = [];
 
     constructor(
     private projectService: ProjectService
@@ -62,6 +65,7 @@ export class ProjectComponent {
   public selectProject(): void {
     this.getProjectExtents();
     this.getSurveyedSurfaces();
+    this.getDesigns();
 
     // Sleep for half a second to allow the project extents result to come back, then zoom all
     setTimeout(() => this.zoomAll(), 500);
@@ -88,6 +92,10 @@ export class ProjectComponent {
   }
 
   public getTile(): void {
+    // If there is no project bail...
+    if (this.projectUid === "")
+      return;
+
     // Make sure the displayed tile extents is updated
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
     this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents)
@@ -256,6 +264,31 @@ export class ProjectComponent {
   public deleteSurveyedSurface(surveyedSurface : SurveyedSurface): void {
     this.projectService.deleteSurveyedSurface(this.projectUid, surveyedSurface.id).subscribe(x =>
       this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
+  }
+
+  public addADummyDesign(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = `C:/temp/${performance.now()}/SomeFile.ttm`;
+
+    this.projectService.addDesign(this.projectUid, descriptor, this.tileExtents).subscribe(
+      uid => {
+        this.newDesignGuid = uid.designId;
+        this.getDesigns();
+      });
+  }
+
+  public getDesigns(): void {
+    var result: Design[] = [];
+    this.projectService.getDesigns(this.projectUid).subscribe(
+      designs => {
+        designs.forEach(design => result.push(design));
+        this.designs = result;
+      });  
+  }
+
+  public deleteDesign(design: Design): void {
+    this.projectService.deleteDesign(this.projectUid, design.id).subscribe(x =>
+      this.designs.splice(this.designs.indexOf(design), 1));
   }
 }
 

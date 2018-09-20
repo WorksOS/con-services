@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -105,4 +105,18 @@ export class ProjectService {
   public deleteSurveyedSurface(projectUid: string, surveyedSurfaceId: string): Observable<any> {
     return this.executeDeleteRequest<any>('deleteSurveyedSurface', `surveyedsurfaces/${projectUid}/${surveyedSurfaceId}`);
   }
+
+  public addDesign(projectUid: string, descriptor: DesignDescriptor, extents: ProjectExtents): Observable<DesignDescriptor> {
+    return this.executePostRequest<DesignDescriptor>
+      ('addDesign', `designs/${projectUid}?fileName=${descriptor.fileName}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`, null);
+  }
+
+  public getDesigns(projectUid: string): Observable<Design[]> {
+    return this.executeRequest<Design[]>('getDesigns', `designs/${projectUid}`);
+  }
+
+  public deleteDesign(projectUid: string, designId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteDesign', `designs/${projectUid}/${designId}`);
+  }
+
 }

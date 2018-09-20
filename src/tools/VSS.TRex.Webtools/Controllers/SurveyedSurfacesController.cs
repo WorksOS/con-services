@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Webtools.Controllers
@@ -31,7 +30,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Deletes a surveyed surfaces from a sitemodel.
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
+    /// <param name="siteModelID"></param>
     /// <param name="surveyedSurfaceID"></param>
     /// <returns></returns>
     [HttpDelete("{siteModelID}/{surveyedSurfaceID}")]

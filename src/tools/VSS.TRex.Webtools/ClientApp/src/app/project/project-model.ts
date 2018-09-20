@@ -67,11 +67,18 @@ export class ProjectExtents {
 }
 
 export class DesignDescriptor {
+  designId : string = "";
   fileSpace: string = "";
   fileSpaceID: string = "";
   folder: string = "";
   fileName: string = "";
   offset:number = 0;
+}
+
+export class Design {
+  public id: string = "";
+  public designDescriptor: DesignDescriptor = new DesignDescriptor();
+  public extents: ProjectExtents = new ProjectExtents();
 }
 
 export class SurveyedSurface{
