@@ -4,12 +4,12 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Analytics.PassCountStatistics.GridFabric.Summary;
-using VSS.TRex.Analytics.PassCountStatistics.Summary;
+using VSS.TRex.Analytics.PassCountStatistics;
+using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
-using PassCountSummaryResult = VSS.TRex.Analytics.PassCountStatistics.Summary.PassCountSummaryResult;
+using PassCountStatisticsResult = VSS.TRex.Analytics.PassCountStatistics.PassCountStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.PassCountSummaryResult;
 using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
 
@@ -40,20 +40,20 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       var targetPassCountRange = new PassCountRangeRecord();
-      if (request.overridingTargetPassCountRange != null)
-        targetPassCountRange.SetMinMax(request.overridingTargetPassCountRange.Min, request.overridingTargetPassCountRange.Max);
+      if (request.OverridingTargetPassCountRange != null)
+        targetPassCountRange.SetMinMax(request.OverridingTargetPassCountRange.Min, request.OverridingTargetPassCountRange.Max);
 
-      PassCountSummaryOperation operation = new PassCountSummaryOperation();
-      PassCountSummaryResult passCountSummaryResult = operation.Execute(
-        new PassCountSummaryArgument()
+      PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
+      PassCountStatisticsResult passCountSummaryResult = operation.Execute(
+        new PassCountStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
           OverridingTargetPassCountRange = targetPassCountRange,
-          OverrideTargetPassCount = request.overridingTargetPassCountRange != null
+          OverrideTargetPassCount = request.OverridingTargetPassCountRange != null
         }
       );
 
@@ -64,7 +64,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         "Failed to get requested Pass Count summary data"));
     }
 
-    private SummaryResult ConvertResult(PassCountSummaryResult summary)
+    private SummaryResult ConvertResult(PassCountStatisticsResult summary)
     {
       return new SummaryResult(
         new TargetPassCountRange(summary.ConstantTargetPassCountRange.Min, summary.ConstantTargetPassCountRange.Max),

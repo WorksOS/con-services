@@ -31,12 +31,12 @@ export class GridStatusService {
     this.http.get<IGrid[]>(url).subscribe((grids) => {
       grids.forEach((grid) => result.push(grid))
     });
-
+     
     return result;
   }
 
-  public activateGrid(grid: IGrid): void {
-    let url = `${this.baseUrl}api/grids/active/${grid.name}/true`
+  public toggleGridActivation(grid: IGrid): void {
+    let url = `${this.baseUrl}api/grids/active/${grid.name}/${!grid.isActive}`
     console.log(url);
     this.http.put<string>(url, null).subscribe((result) => {
       console.log(result)

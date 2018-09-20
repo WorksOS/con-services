@@ -5,10 +5,15 @@ using System;
 using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
-    public class SiteModelAttributesChangedEventListener : IMessageListener<SiteModelAttributesChangedEvent>, IDisposable
+    /// <summary>
+    /// The listener that responds to site model change notifications emiited by actors such as TAG file processing
+    /// </summary>
+    [Serializable]
+    public class SiteModelAttributesChangedEventListener : IMessageListener<ISiteModelAttributesChangedEvent>, IDisposable, ISiteModelAttributesChangedEventListener
     {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -20,12 +25,14 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         private IMessaging MsgGroup;
 
         [NonSerialized]
-        private string MessageTopicName = "SiteModelAttributesChangedEventListener";
+        private string MessageTopicName = "SiteModelAttributesChangedEvents";
 
         [NonSerialized] private string GridName;
 
-        public bool Invoke(Guid nodeId, SiteModelAttributesChangedEvent message)
+        public bool Invoke(Guid nodeId, ISiteModelAttributesChangedEvent message)
         {
+            Log.LogInformation($"Received notification site model attributes changed for {message.SiteModelID}");
+
             // Tell the SiteModels instance to reload the designated site model that has changed
             try
             {
@@ -60,13 +67,15 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
         public void StartListening()
         {
+            Log.LogInformation($"Start listening for site model notification events on {MessageTopicName}");
+
             // Create a messaging group the cluster can use to send messages back to and establish a local listener
             // All nodes (client and server) want to know about site model attribute changes
             MsgGroup = Ignition.TryGetIgnite(GridName)?.GetCluster().GetMessaging();
 
             if (MsgGroup != null)
             {
-                MsgGroup.LocalListen(this, MessageTopicName);
+              MsgGroup.LocalListen(this, MessageTopicName);
             }
             else
             {

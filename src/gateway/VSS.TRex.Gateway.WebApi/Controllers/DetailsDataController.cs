@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -23,6 +24,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public DetailsDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<DetailsDataController>(), serviceExceptionHandler, configStore)
     {
+    }
+
+    /// <summary>
+    /// Get CMV % change from Raptor for the specified project and date range.
+    /// </summary>
+    [Route("api/v1/cmv/percentchange")]
+    [HttpPost]
+    public CompactionCmvPercentChangeResult PostCmvPercentChange([FromBody] CMVChangeDetailsRequest cmvChangeDetailsRequest)
+    {
+      Log.LogInformation($"{nameof(PostCmvPercentChange)}: {Request.QueryString}");
+
+      cmvChangeDetailsRequest.Validate();
+
+      var result = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<DetailedCMVChangeExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(cmvChangeDetailsRequest) as CMVChangeSummaryResult);
+
+      return new CompactionCmvPercentChangeResult(result);
     }
 
     /// <summary>

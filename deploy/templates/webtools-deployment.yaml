@@ -1,0 +1,64 @@
+# An example of a Kubernetes configuration for Ignite pods deployment.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "trex.deployname" . }}-webtools
+  labels:
+    app: {{ template "trex.deployname" . }}
+    chart: {{ template "trex.chart" . }}
+spec:
+  # A number of Ignite pods to be started by Kubernetes initially.
+  replicas: {{ .Values.webtools.replicaCount }}
+  template:
+    metadata:
+      labels:
+        # This label has to be added to the selector's section of 
+        # ignite-service.yaml so that the Kubernetes Ignite lookup service
+        # can easily track all Ignite pods available deployed so far.
+        app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-webtools
+
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      #volumes:
+        # Custom name for the storage that holds Ignite's configuration
+        # which is example-kube.xml.
+        # TODO Workout peristance!
+        #- name: ignite-storage
+        #  persistentVolumeClaim:
+        #   # Must be equal to the PersistentVolumeClaim created before.
+        #   claimName: ignite-volume-claim	
+      containers:
+        # Custom Ignite pod name.
+      - name: ignite-node
+        # Ignite Docker image. Kubernetes IP finder is supported starting from
+        # Apache Ignite 2.3.0
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.Webtools
+
+        resources:
+{{ toYaml .Values.webtools.resources | indent 10 }}
+        
+        command: ["dotnet"]
+        args: ["VSS.TRex.Webtools.dll"]
+
+        ports:
+        # Ports to open.
+        # Might be optional depending on your Kubernetes environment.
+        - containerPort: 80 # communication SPI port number.
+        - containerPort: 47100 # communication SPI port number.
+        - containerPort: 47500 # discovery SPI port number
+        - containerPort: 48100 # communication SPI port number.
+        - containerPort: 49112 # JMX port number.
+        - containerPort: 8080  # REST port number.
+        - containerPort: 10800 # SQL port number.
+        volumeMounts:
+        # Mounting the storage with the Ignite configuration.
+        #- mountPath: "/data/ignite"
+        #  name: ignite-storage
+        env:
+          - name: IGNITE_HOME
+            value: "/trex/"
+          - name: IS_KUBERNETES
+            value: "true"
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}

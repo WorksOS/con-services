@@ -181,6 +181,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         if (args.Length < 2)
         {
           Console.WriteLine("Usage: ProcessTAGFiles <ProjectID> <FolderPath>");
+          Console.ReadKey();
           return;
         }
 
@@ -194,6 +195,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         catch
         {
           Console.WriteLine($"Invalid project ID {args[0]} or folder path {args[1]}");
+          Console.ReadKey();
           return;
         }
 
@@ -218,7 +220,6 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       }
       finally
       {
-        Console.ReadKey();
       }
     }
   }

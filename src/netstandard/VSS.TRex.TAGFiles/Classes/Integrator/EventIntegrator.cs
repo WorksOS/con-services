@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
@@ -123,43 +125,26 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             var targetEventLists = TargetLists.GetEventLists();
 
             // Integrate all remaining event lists and collate them wrt the machine start/stop recording events
-            for (int I = 0; I < sourceEventLists.Length; I++)
+            foreach (var evt in Enum.GetValues(typeof(ProductionEventType)))
             {
-                IProductionEvents SourceList = sourceEventLists[I];
+                IProductionEvents SourceList = sourceEventLists[(int)evt];
 
-                if (SourceList == null)
-                    return;
-
-                if (SourceList != SourceStartEndRecordedDataList && SourceList.Count() > 0)
+                if (SourceList != null && SourceList != SourceStartEndRecordedDataList && SourceList.Count() > 0)
                 {
                     // The source event list is always an in-memory list. The target event list
                     // will be an in-memory list unless IntegratingIntoPersistentDataModel is true,
                     // in which case the source events are being integrated into the data model events
-                    // list present in the persistent store. In this instance the target event list
-                    // must be read from the persistent store (or be in a cached location) prior
-                    // to the integration of the source events
+                    // list present in the persistent store.
 
-                    IProductionEvents TargetList = targetEventLists[I];
-                    if (TargetList == null)
-                    {
-                        // TODO revisit if target lists become lazy loaded
-                        // TargetList.EnsureEventListLoaded();
-                        Debug.Assert(false, $"Target list at location {I} not loaded");
-                    }
+                    IProductionEvents TargetList = targetEventLists[(int)evt] ?? TargetLists.GetEventList(SourceList.EventListType);
 
                     if (IntegratingIntoPersistentDataModel && TargetList == null)
                     {
-                        // Read the events list from the persistent store.
-                        // OR... Just read the whole lot to start with
-                        // OR... Don't bother as the caller will have sorted it all out.
-
-                        Log.LogError($"Event list {I} not available in IntegrateMachineEvents");
+                        Log.LogError($"Event list {evt} not available in IntegrateMachineEvents");
                     }
 
                     if (TargetList != null)
                         PerformListIntegration(SourceList, TargetList);
-                    else
-                        Log.LogError($"Event list {I} not available in IntegrateMachineEvents");
                 }
             }
         }

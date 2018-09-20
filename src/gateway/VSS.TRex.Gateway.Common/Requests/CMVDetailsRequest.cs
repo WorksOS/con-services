@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -17,37 +18,35 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The collection of CMV targets. Values are in ascending order.
     /// There must be 16 values and the first value must be 0.
     /// </summary>
     [JsonProperty(PropertyName = "customCMVDetailTargets", Required = Required.Always)]
-    public int[] customCMVDetailTargets { get; private set; }
+    [Required]
+    public int[] CustomCMVDetailTargets { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private CMVDetailsRequest()
     {
     }
 
     /// <summary>
-    /// Create an instance of the CMVDetailsRequest class.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVDetailsRequest CreateCMVDetailsRequest(
+    public CMVDetailsRequest(
       Guid projectUid,
       FilterResult filter,
       int[] customCMVDetailTargets
     )
     {
-      return new CMVDetailsRequest
-      {
-        ProjectUid = projectUid,
-        filter = filter,
-        customCMVDetailTargets = customCMVDetailTargets
-      };
+      ProjectUid = projectUid;
+      Filter = filter;
+      CustomCMVDetailTargets = customCMVDetailTargets;
     }
 
     /// <summary>
@@ -57,29 +56,29 @@ namespace VSS.TRex.Gateway.Common.Requests
     {
       base.Validate();
 
-      filter?.Validate();
+      Filter?.Validate();
 
       // Validate custom CMV Detail targets...
-      if (customCMVDetailTargets == null || customCMVDetailTargets.Length == 0)
+      if (CustomCMVDetailTargets == null || CustomCMVDetailTargets.Length == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CMV Detail targets required"));
       }
-      if (customCMVDetailTargets[0] != MIN_CMV)
+      if (CustomCMVDetailTargets[0] != MIN_CMV)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"CMV Detail targets must start at {MIN_CMV}"));
       }
-      for (int i = 1; i < customCMVDetailTargets.Length; i++)
+      for (int i = 1; i < CustomCMVDetailTargets.Length; i++)
       {
-        if (customCMVDetailTargets[i] <= customCMVDetailTargets[i - 1])
+        if (CustomCMVDetailTargets[i] <= CustomCMVDetailTargets[i - 1])
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CMV Detail targets must be ordered from lowest to the highest"));
         }
       }
-      if (customCMVDetailTargets[customCMVDetailTargets.Length - 1] < MIN_CMV || customCMVDetailTargets[customCMVDetailTargets.Length - 1] > MAX_CMV)
+      if (CustomCMVDetailTargets[CustomCMVDetailTargets.Length - 1] < MIN_CMV || CustomCMVDetailTargets[CustomCMVDetailTargets.Length - 1] > MAX_CMV)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

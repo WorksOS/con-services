@@ -13,10 +13,10 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.0" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-	  <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.8.3" />
+	  <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.1" />
   </ItemGroup>
 
   <ItemGroup>

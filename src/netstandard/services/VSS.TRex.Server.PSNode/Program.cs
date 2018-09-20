@@ -19,7 +19,9 @@ using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Servers.Compute;
 using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -27,6 +29,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using IPipelineTask = VSS.TRex.Pipelines.Interfaces.Tasks.ITask;
 
 namespace VSS.TRex.Server.PSNode
 {
@@ -43,7 +46,7 @@ namespace VSS.TRex.Server.PSNode
       }
     }
 
-    private static Pipelines.Interfaces.Tasks.ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    private static IPipelineTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       switch (key)
       {
@@ -73,12 +76,15 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, Pipelines.Interfaces.Tasks.ITask>>(provider => SubGridTaskFactoryMethod))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, IPipelineTask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
         .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+
+        // Register the listener for site model attribute change notifications
+        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Complete();
     }
 
@@ -88,7 +94,7 @@ namespace VSS.TRex.Server.PSNode
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
       {
-        typeof(VSS.TRex.Analytics.MDPStatistics.MDPAggregator),
+        typeof(VSS.TRex.Analytics.MDPStatistics.MDPStatisticsAggregator),
         typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
         typeof(VSS.TRex.Exports.Patches.PatchResult),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
@@ -126,10 +132,17 @@ namespace VSS.TRex.Server.PSNode
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
+    private static void DoServiceInitialisation()
+    {
+      // Start listening to site model change notifications
+      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+    }
+
     static async Task<int> Main(string[] args)
     {
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
+      DoServiceInitialisation();
 
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>

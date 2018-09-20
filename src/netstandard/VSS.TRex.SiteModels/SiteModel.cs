@@ -15,6 +15,7 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Services.SurveyedSurfaces;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -44,6 +45,11 @@ namespace VSS.TRex.SiteModels
         public Guid ID { get; set; } = Guid.Empty;
 
         public DateTime LastModifiedDate { get; set; } = DateTime.MinValue;
+
+        /// <summary>
+        /// Gets/sets transient state for this sitemodel. Transient site models are not persisted.
+        /// </summary>
+        public bool IsTransient { get; private set; } = true;
 
         /// <summary>
         /// The grid data for this site model
@@ -165,7 +171,7 @@ namespace VSS.TRex.SiteModels
         {
         }
 
-        public SiteModel(Guid id) : this()
+        public SiteModel(Guid id, bool isTransient = true) : this()
         {
             ID = id;
 
@@ -174,6 +180,8 @@ namespace VSS.TRex.SiteModels
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';
             // FActive:= True;
+
+            IsTransient = isTransient;
 
             Machines = new MachinesList(id);
 
@@ -362,10 +370,13 @@ namespace VSS.TRex.SiteModels
 
             if (Result)
             {
-                if (TRexConfig.AdviseOtherServicesOfDataModelChanges)
+                if (!IsTransient && TRexConfig.AdviseOtherServicesOfDataModelChanges)
                 {
                   // Notify the site model in all contents in the grid that it's attributes have changed
-                  SiteModelAttributesChangedEventSender.ModelAttributesChanged(ID);
+                  Log.LogInformation($"Notifying site model attributes changed for {ID}");
+
+                  // Notify the immutable grid listeners that attributes of this sitemodel have changed
+                  DIContext.Obtain<ISiteModelAttributesChangedEventSender>()?.ModelAttributesChanged(ID);
                 }
             }
             else

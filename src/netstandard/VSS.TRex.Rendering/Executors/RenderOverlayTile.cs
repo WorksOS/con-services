@@ -486,7 +486,7 @@ namespace VSS.TRex.Rendering.Executors
           ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
             
           //RenderTransparentTile();
-          return Renderer.Displayer.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
+          return Renderer.Displayer?.MapView.RenderingFactory.CreateBitmap(NPixelsX, NPixelsY);
         }
 
         // Compute the override cell boundary to be used when processing cells in the subgrids
@@ -529,8 +529,9 @@ namespace VSS.TRex.Rendering.Executors
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
         ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
-        // Set the initial spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate syste,
-        processor.SpatialExtents = RotatedTileBoundingExtents;
+        // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate syste to act as
+        // a final restrictor of the spatial extent used to govern data requests
+        processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 
         // Prepare the processor
         if (!processor.Build())

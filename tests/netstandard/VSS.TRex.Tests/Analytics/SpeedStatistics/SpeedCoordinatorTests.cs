@@ -18,22 +18,22 @@ namespace VSS.TRex.Tests.Analytics.SpeedStatistics
       TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 100)
     };
 
-    private SpeedCoordinator _getCoordinator()
+    private SpeedStatisticsCoordinator _getCoordinator()
     {
-      return new SpeedCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
+      return new SpeedStatisticsCoordinator() { RequestDescriptor = Guid.NewGuid(), SiteModel = _siteModel };
     }
 
-    private SpeedAggregator _getSpeedAggregator()
+    private SpeedStatisticsAggregator _getSpeedAggregator()
     {
       var coordinator = _getCoordinator();
 
-      return coordinator.ConstructAggregator(Arg) as SpeedAggregator;
+      return coordinator.ConstructAggregator(Arg) as SpeedStatisticsAggregator;
     }
 
     [Fact]
     public void Test_SpeedCoordinator_Creation()
     {
-      var coordinator = new SpeedCoordinator();
+      var coordinator = new SpeedStatisticsCoordinator();
 
       Assert.True(coordinator.SiteModel == null, "Invalid initial value for SiteModel.");
       Assert.True(coordinator.RequestDescriptor == Guid.Empty, "Invalid initial value for RequestDescriptor.");

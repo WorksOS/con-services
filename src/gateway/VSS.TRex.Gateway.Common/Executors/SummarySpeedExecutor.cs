@@ -10,7 +10,7 @@ using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
-using SpeedSummaryResult = VSS.TRex.Analytics.SpeedStatistics.SpeedResult;
+using SpeedSummaryResult = VSS.TRex.Analytics.SpeedStatistics.SpeedStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.SpeedSummaryResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -42,13 +42,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
       var machineSpeedTargetRange = new MachineSpeedExtendedRecord();
-      if (request.machineSpeedTarget != null)
-        machineSpeedTargetRange.SetMinMax(request.machineSpeedTarget.MinTargetMachineSpeed, request.machineSpeedTarget.MaxTargetMachineSpeed);
+      if (request.MachineSpeedTarget != null)
+        machineSpeedTargetRange.SetMinMax(request.MachineSpeedTarget.MinTargetMachineSpeed, request.MachineSpeedTarget.MaxTargetMachineSpeed);
 
-      SpeedOperation operation = new SpeedOperation();
+      SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
       SpeedSummaryResult speedSummaryResult = operation.Execute(
         new SpeedStatisticsArgument()
         {

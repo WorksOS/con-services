@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Models;
 
@@ -14,16 +15,17 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The various summary and target values to use in preparation of the result
     /// </summary>
     [JsonProperty(PropertyName = "temperatureSettings", Required = Required.Always)]
-    public TemperatureSettings temperatureSettings { get; private set; }
+    [Required]
+    public TemperatureSettings TemperatureSettings { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private TemperatureSummaryRequest()
     {
@@ -35,8 +37,8 @@ namespace VSS.TRex.Gateway.Common.Requests
     public TemperatureSummaryRequest(Guid projectUid, FilterResult filter, TemperatureSettings temperatureSettings)
     {
       this.ProjectUid = projectUid;
-      this.filter = filter;
-      this.temperatureSettings = temperatureSettings;
+      this.Filter = filter;
+      this.TemperatureSettings = temperatureSettings;
     }
 
     /// <summary>
@@ -46,9 +48,9 @@ namespace VSS.TRex.Gateway.Common.Requests
     {
       base.Validate();
 
-      filter?.Validate();
+      Filter?.Validate();
 
-      temperatureSettings?.Validate();
+      TemperatureSettings?.Validate();
     }
   }
 }

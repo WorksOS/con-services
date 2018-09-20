@@ -23,6 +23,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using IPipelineTask = VSS.TRex.Pipelines.Interfaces.Tasks.ITask;
 
 namespace VSS.TRex.Server.TINSurfaceExport
 {
@@ -39,7 +40,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       }
     }
 
-    private static Pipelines.Interfaces.Tasks.ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    private static IPipelineTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       switch (key)
       {
@@ -65,7 +66,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
       .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
       .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-      .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, Pipelines.Interfaces.Tasks.ITask>>(provider => SubGridTaskFactoryMethod))
+      .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, IPipelineTask>>(provider => SubGridTaskFactoryMethod))
       .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
       .Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
       .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))

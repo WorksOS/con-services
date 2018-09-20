@@ -41,18 +41,18 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
-      var filter = ConvertFilter(request.filter, siteModel);
+      var filter = ConvertFilter(request.Filter, siteModel);
 
-      TemperatureOperation operation = new TemperatureOperation();
-      TemperatureResult temperatureSummaryResult = operation.Execute(
+      TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
+      TemperatureStatisticsResult temperatureSummaryResult = operation.Execute(
         new TemperatureStatisticsArgument()
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          OverrideTemperatureWarningLevels = request.temperatureSettings != null && request.temperatureSettings.OverrideTemperatureRange,
+          OverrideTemperatureWarningLevels = request.TemperatureSettings != null && request.TemperatureSettings.OverrideTemperatureRange,
           OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(
-            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
-            request.temperatureSettings != null ? Convert.ToUInt16(request.temperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
+            request.TemperatureSettings != null ? Convert.ToUInt16(request.TemperatureSettings.MinTemperature * TEMPERATURE_CONVERSION_FACTOR) : MIN_TEMPERATURE,
+            request.TemperatureSettings != null ? Convert.ToUInt16(request.TemperatureSettings.MaxTemperature * TEMPERATURE_CONVERSION_FACTOR) : MAX_TEMPERATURE)
         }
       );
 
@@ -63,7 +63,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         "Failed to get requested material temperature summary data"));
     }
 
-    private TemperatureSummaryResult ConvertResult(TemperatureResult summary)
+    private TemperatureSummaryResult ConvertResult(TemperatureStatisticsResult summary)
     {
       return new TemperatureSummaryResult(
         summary.MinimumTemperature,

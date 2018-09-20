@@ -24,6 +24,8 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Logging;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces.Events;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -51,6 +53,9 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton(new TagProcComputeServer()))
+
+        // Register the sender for the sie model attribute change notifications
+        .Add(x => x.AddSingleton< ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
 
        .Complete();
     }

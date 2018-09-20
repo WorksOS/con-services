@@ -185,6 +185,7 @@ namespace TRexTAGFileSubmittor
         if (args.Length < 2)
         {
           Console.WriteLine("Usage: ProcessTAGFiles <ProjectID> <FolderPath>");
+          Console.ReadKey();
           return;
         }
 
@@ -198,6 +199,7 @@ namespace TRexTAGFileSubmittor
         catch
         {
           Console.WriteLine($"Invalid project ID {args[0]} or folder path {args[1]}");
+          Console.ReadKey();
           return;
         }
 
@@ -233,7 +235,6 @@ namespace TRexTAGFileSubmittor
       }
       finally
       {
-        Console.ReadKey();
       }
     }
   }

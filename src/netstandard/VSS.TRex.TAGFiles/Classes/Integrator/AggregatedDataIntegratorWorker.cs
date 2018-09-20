@@ -64,19 +64,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                           CellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel, true);
         }
 
-        /*
-         *   Procedure HandleDecapsulation(AggregatedCellPasses : TICServerSubGridTree);
-                begin
-            // Decapsulate the cell passes so they are accessible
-            if kEncapsulateIntermediaryTAGFileProcessingResults then
-              begin
-                DataIntegratorInstance.IncrementEncapsulationSizeAndCapacity(-AggregatedCellPasses.EncapsulatedSize,
-                                                                             -AggregatedCellPasses.EncapsulatedCapacity);
-                AggregatedCellPasses.Decapsulate;
-              end;
-          end;
-        */
-
         /// <summary>
         /// Processes all available tasks in the TasksToProcess list up to the maximum number the worker will accept 
         /// for any single epoch of processing TAG files.
@@ -187,11 +174,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         }
                     }
 
-                    // Decapsulate the cell passes so they are accessible. Perform this after assembling the tasks list to prevent
-                    // depletion of viable tasks by other aggregator workers between obtaining the first task from the list and completion
-                    // of building the similar tasks into a group to be processed.
-                    // TODO... HandleDecapsulation(Task.AggregatedCellPasses);
-
                     Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.TargetMachineID} in project {Task.TargetSiteModelID}");
 
                     // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
@@ -215,9 +197,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         // Integrate the cell passes from all cell pass aggregators containing cell passes for this machine and sitemodel
                         if (AnyCellPasses && processedTask.AggregatedCellPasses != null)
                         {
-                            // Decapsulate the cell passes so they are accessible
-                            // TODO...  HandleDecapsulation(AggregatedCellPasses);
-
                             SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null /* ProcessedTasks[I].TargetSiteModel*/, Task.AggregatedCellPasses, null);
                             subGridIntegrator.IntegrateSubGridTree(//ProcessedTasks[I].AggregatedCellPasses,
                                                                    //null,
@@ -278,23 +257,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         if (AnyMachineEvents)
                         {
                             // If the machine target values can't be found then create them
-                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex]; // [MachineFromDM.ID];
+                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
 
                             if (SiteModelMachineTargetValues == null)
                             {
-                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists (SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex /*MachineFromDM.ID*/));
-                                //SiteModelFromDM.MachinesTargetValues.CreateNewMachineTargetValues(MachineFromDM, MachineFromDM.ID);
+                                SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists (SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex));
                             }
 
                             // Check to see the machine target values were created correctly
-                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex]; //[MachineFromDM.ID];
-
-                            // The events for this machine have not yet been read from the persistent store
-                            // TODO: There is no check to see if they have already been loaded...
-                            if (!SiteModelMachineTargetValues.LoadEventsForMachine(storageProxy_Mutable))
-                            {
-                                return false;
-                            }
+                            SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
                         }
                     }
 
