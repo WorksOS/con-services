@@ -63,7 +63,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       throw new ServiceException(
         HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"{nameof(requestClassType)} cast failed."));
+          $"{requestClassType} cast failed."));
     }
   }
 }
