@@ -827,11 +827,16 @@ namespace VSS.TRex.Profiling
     {
       int Count = 0;
       int HalfPassCount = 0;
+      int PrevIdx = 0;
 
       for (int LayerIndex = 0; LayerIndex < Cell.Layers.Count(); LayerIndex++)
       {
         int PassStartIdx = Cell.Layers[LayerIndex].StartCellPassIdx;
+        int CCVIdx = Cell.Layers[LayerIndex].CCV_CellPassIdx;
+        if (PassStartIdx > PrevIdx)  // Alter the CCV_CellPassIdx if starting index was set higher due to invalid passes
+           Cell.Layers[LayerIndex].CCV_CellPassIdx  -= (PassStartIdx - PrevIdx);
         int EndPassIdx = Cell.Layers[LayerIndex].EndCellPassIdx;
+        PrevIdx = EndPassIdx + 1; // position at possible start location for next layer
 
         if (LayerIndex > 0)
         {
@@ -874,6 +879,8 @@ namespace VSS.TRex.Profiling
           {
             // move end index up one as pass failed validation
             Cell.Layers[LayerIndex].EndCellPassIdx = Cell.Layers[LayerIndex].EndCellPassIdx - 1;
+            if (PassIndex < CCVIdx)
+              Cell.Layers[LayerIndex].CCV_CellPassIdx--; // adjust CCV_CellPassIdx accordingly
           }
         }
 
