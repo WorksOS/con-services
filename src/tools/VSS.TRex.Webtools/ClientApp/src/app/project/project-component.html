@@ -31,7 +31,8 @@
 
 <br />
 <H3>Surveyed Surfaces</H3>
-<p><button (click)="addADummySurveyedSurface()">Add a dummy!</button> New SS Guid -> {{newSurveyedSurfaceGuid}}</p>
+<p>Design File Name: <input [(ngModel)]="surveydSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveydSurfaceAsAtDate" type="datetime" value="" /> Offset: <input [(ngModel)]="surveydSurfaceOffset" type="number" value="" /></p>
+<p><button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button> <button (click)="addADummySurveyedSurface()">Add a dummy!</button> New SS Guid -> {{newSurveyedSurfaceGuid}}</p>
 
 <p *ngFor="let surveyedSurface of surveyedSurfaces">
   <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
@@ -40,7 +41,8 @@
 
 <br />
 <H3>Designs</H3>
-<p><button (click)="addADummyDesign()">Add a dummy!</button> New Design Guid -> {{newSurveyedSurfaceGuid}}</p>
+<p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" /></p>
+<p><button (click)=addNewDesign()>Add New Design</button> <button (click)="addADummyDesign()">Add a dummy!</button> New Design Guid -> {{newDesignGuid}}</p>
 
 <p *ngFor="let design of designs">
   <button (click)="deleteDesign(design)">Delete</button>

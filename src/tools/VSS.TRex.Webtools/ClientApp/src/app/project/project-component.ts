@@ -45,9 +45,16 @@ export class ProjectComponent {
 
   public applyToViewOnly: boolean = false;
 
+  public surveydSurfaceFileName: string = "";
+  public surveydSurfaceAsAtDate: Date = new Date();
+  public surveydSurfaceOffset: number = 0;
+
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
-        
+
+  public designFileName: string = "";
+  public designOffset: number = 0.0;
+
   public newDesignGuid: string = "";
   public designs: Design[] = [];
 
@@ -252,6 +259,19 @@ export class ProjectComponent {
       });
   }
 
+  public addNewSurveyedSurface(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = this.surveydSurfaceFileName;
+    descriptor.offset = this.surveydSurfaceOffset;
+
+    this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveydSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
+      uid => {
+        this.newSurveyedSurfaceGuid = uid.id;
+        this.getSurveyedSurfaces();
+      });
+
+  }
+
   public getSurveyedSurfaces(): void {
     var result: SurveyedSurface[] = [];
     this.projectService.getSurveyedSurfaces(this.projectUid).subscribe(
@@ -277,7 +297,19 @@ export class ProjectComponent {
       });
   }
 
-  public getDesigns(): void {
+  public addNewDesign(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = this.designFileName;
+    descriptor.offset = this.designOffset;
+
+    this.projectService.addDesign(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
+      uid => {
+        this.newDesignGuid = uid.designId;
+        this.getDesigns();
+      });
+  }
+
+    public getDesigns(): void {
     var result: Design[] = [];
     this.projectService.getDesigns(this.projectUid).subscribe(
       designs => {
