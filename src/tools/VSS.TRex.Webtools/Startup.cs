@@ -60,6 +60,7 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
       services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
       services.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces());
+      services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
       services.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory());
       services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
 
