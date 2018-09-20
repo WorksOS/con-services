@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
@@ -32,7 +33,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/volumes/summary")]
     [HttpPost]
-    public SummaryVolumesResult PostSummaryVolumes([FromBody] SummaryVolumesRequest summaryVolumesRequest)
+    public SummaryVolumesResult PostSummaryVolumes([FromBody] SummaryVolumesDataRequest summaryVolumesRequest)
     {
       Log.LogInformation($"{nameof(PostSummaryVolumes)}: {Request.QueryString}");
 
