@@ -54,7 +54,7 @@ namespace VSS.TRex.SurveyedSurfaces
           {
             ss.FromStream(ms);
           }
-          }
+        }
 
         return ss;
       }
@@ -82,10 +82,10 @@ namespace VSS.TRex.SurveyedSurfaces
         StorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream());
         StorageProxy.Commit();
 
-        // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
-        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender?.ModelAttributesChanged(StorageMutability.Mutable, siteModelID, surveyedSurfacesChanged: true);
-        sender?.ModelAttributesChanged(StorageMutability.Immutable, siteModelID, surveyedSurfacesChanged: true);
+        // Notify the  grid listeners that attributes of this sitemodel have changed.
+        DIContext.Obtain<ISiteModelAttributesChangedEventSender>().ModelAttributesChanged
+         (SiteModelNotificationEventGridMutability.NotifyMutable | SiteModelNotificationEventGridMutability.NotifyMutable,
+          siteModelID, surveyedSurfacesChanged: true);
       }
       catch (Exception e)
       {

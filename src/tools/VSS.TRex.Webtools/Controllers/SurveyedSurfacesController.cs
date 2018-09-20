@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Webtools.Controllers
@@ -36,13 +37,20 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpDelete("{siteModelID}/{surveyedSurfaceID}")]
     public JsonResult DeleteSurveyedSurfacesFromSiteModel(string siteModelID, string surveyedSurfaceID)
     {
-      return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Remove(Guid.Parse(siteModelID), Guid.Parse(surveyedSurfaceID)));
+      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID)).SurveyedSurfaces.);
     }
 
     /// <summary>
     /// Adds a new surveyed surfaces to a sitemodel. 
     /// </summary>
     /// <param name="siteModelID">Grid to return status for</param>
+    /// <param name="fileName"></param>
+    /// <param name="offset"></param>
+    /// <param name="asAtDate"></param>
+    /// <param name="minX"></param>
+    /// <param name="minY"></param>
+    /// <param name="maxX"></param>
+    /// <param name="maxY"></param>
     /// <returns></returns>
     [HttpPost("{siteModelID}")]
     public JsonResult AddSurveyedSurfacesToSiteModel(string siteModelID,
