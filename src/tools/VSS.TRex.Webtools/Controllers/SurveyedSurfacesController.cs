@@ -37,7 +37,7 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpDelete("{siteModelID}/{surveyedSurfaceID}")]
     public JsonResult DeleteSurveyedSurfacesFromSiteModel(string siteModelID, string surveyedSurfaceID)
     {
-      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID)).SurveyedSurfaces.);
+      return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Remove(Guid.Parse(siteModelID), Guid.Parse(surveyedSurfaceID)));
     }
 
     /// <summary>
