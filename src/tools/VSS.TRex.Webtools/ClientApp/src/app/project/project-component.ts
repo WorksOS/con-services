@@ -49,7 +49,7 @@ export class ProjectComponent {
   public surveyedSurfaces: SurveyedSurface[] = [];
         
   public newDesignGuid: string = "";
-  public designs: DesignDescriptor[] = [];
+  public designs: Design[] = [];
 
     constructor(
     private projectService: ProjectService

@@ -78,7 +78,7 @@ export class DesignDescriptor {
 export class Design {
   public id: string = "";
   public designDescriptor: DesignDescriptor = new DesignDescriptor();
-  public extents: ProjectExtents = new ProjectExtents();
+  public extents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 }
 
 export class SurveyedSurface{
