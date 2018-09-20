@@ -48,12 +48,6 @@ namespace VSS.TRex.Tests
         }
 
         [Fact(Skip = "Not Implemented")]
-        public void Test_StorageProxy_Ignite_ReadStreamFromPersistentStoreDirect()
-        {
-            Assert.True(false);
-        }
-
-        [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_RemoveStreamFromPersistentStore()
         {
             Assert.True(false);
@@ -67,12 +61,6 @@ namespace VSS.TRex.Tests
 
         [Fact(Skip = "Not Implemented")]
         public void Test_StorageProxy_Ignite_WriteStreamToPersistentStore()
-        {
-            Assert.True(false);
-        }
-
-        [Fact(Skip = "Not Implemented")]
-        public void Test_StorageProxy_Ignite_WriteStreamToPersistentStoreDirect()
         {
             Assert.True(false);
         }

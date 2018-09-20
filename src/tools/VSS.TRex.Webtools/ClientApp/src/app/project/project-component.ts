@@ -61,6 +61,7 @@ export class ProjectComponent {
 
   public selectProject(): void {
     this.getProjectExtents();
+    this.getSurveyedSurfaces();
 
     // Sleep for half a second to allow the project extents result to come back, then zoom all
     setTimeout(() => this.zoomAll(), 500);
@@ -239,17 +240,22 @@ export class ProjectComponent {
     this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
       uid => {
         this.newSurveyedSurfaceGuid = uid.id;
-      },
-      err => {
-        this.newSurveyedSurfaceGuid = err;
+        this.getSurveyedSurfaces();
       });
   }
 
   public getSurveyedSurfaces(): void {
-    this.surveyedSurfaces = [];
-
+    var result: SurveyedSurface[] = [];
     this.projectService.getSurveyedSurfaces(this.projectUid).subscribe(
-      surveyedsurfaces => surveyedsurfaces.forEach(ss => this.surveyedSurfaces.push(ss)));  
+      surveyedsurfaces => {
+        surveyedsurfaces.forEach(ss => result.push(ss));
+        this.surveyedSurfaces = result;
+      });  
+  }
+
+  public deleteSurveyedSurface(surveyedSurface : SurveyedSurface): void {
+    this.projectService.deleteSurveyedSurface(this.projectUid, surveyedSurface.id).subscribe(x =>
+      this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
   }
 }
 

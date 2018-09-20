@@ -30,9 +30,17 @@
 <p><input type="checkbox" [(ngModel)]="applyToViewOnly"> Apply to view only <button (click)="getSimpleFullVolume()">Compute Full Volume</button> Volume: {{projectVolume}}</p>
 
 <br />
-<H2>Surveyed Surfaces</H2>
+<H3>Surveyed Surfaces</H3>
 <p><button (click)="addADummySurveyedSurface()">Add a dummy!</button> New SS Guid -> {{newSurveyedSurfaceGuid}}</p>
-<p *ngFor="let surveyedSurface of surveyedSurfaces">Surveyed surface = {{ surveyedSurface.id }}</p>
+<!--<li *ngFor="let surveyedSurface of surveyedSurfaces"><p>Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} with offset {{surveyedSurface.designDescriptor.offset}} from file {{surveyedSurface.designDescriptor.fileName}}</p></li>-->
+
+<p *ngFor="let surveyedSurface of surveyedSurfaces">
+  <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
+  Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} with offset {{surveyedSurface.designDescriptor.offset}} from file {{surveyedSurface.designDescriptor.fileName}}
+</p>
+
+<!--<p *ngFor="let surveyedSurface of surveyedSurfaces">Surveyed surface: {{ surveyedSurface.id }} = {{ surveyedSurface.descriptor.fileName }}<button (click)="deleteSurveyedSurface({{ surveyedSurface.id }})">Delete</button></p>-->
 
 <br />
-<H2>Designs</H2>
+<H3>Designs</H3>
+<p><button (click)="addADummyDesign()">Add a dummy!</button> New Design Guid -> {{newSurveyedSurfaceGuid}}</p>

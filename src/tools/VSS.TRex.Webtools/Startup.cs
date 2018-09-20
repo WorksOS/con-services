@@ -68,6 +68,7 @@ namespace VSS.TRex.Webtools
 
       // Register the listener for site model attribute change notifications
       services.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName()));
+      services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
 

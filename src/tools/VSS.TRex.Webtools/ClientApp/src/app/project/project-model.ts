@@ -75,8 +75,8 @@ export class DesignDescriptor {
 }
 
 export class SurveyedSurface{
-  iD: string = "";
-  descriptor: DesignDescriptor = new DesignDescriptor();
+  id: string = "";
+  designDescriptor: DesignDescriptor = new DesignDescriptor();
   asAtDate: Date = new Date();
   extents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 }

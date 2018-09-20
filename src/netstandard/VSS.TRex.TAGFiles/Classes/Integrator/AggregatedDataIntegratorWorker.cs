@@ -9,7 +9,9 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -384,6 +386,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     // All operations within the transaction to integrate the changes into the live model have completed successfully.
                     // Now commit those changes as a block.
                     storageProxy_Mutable.Commit();
+
+                    if (TRexConfig.AdviseOtherServicesOfDataModelChanges)
+                    {
+                        // Notify the site model in all contents in the grid that it's attributes have changed
+                        Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
+                    
+                        // Notify the immutable grid listeners that attributes of this sitemodel have changed.
+                        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+                        sender.ModelAttributesChanged(StorageMutability.Mutable, SiteModelFromDM.ID, existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+                        sender.ModelAttributesChanged(StorageMutability.Immutable, SiteModelFromDM.ID, existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+                    }
                 }
                 finally
                 {

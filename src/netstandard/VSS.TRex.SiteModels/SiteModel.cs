@@ -438,18 +438,7 @@ namespace VSS.TRex.SiteModels
                 }
             }
 
-            if (Result)
-            {
-                if (!IsTransient && TRexConfig.AdviseOtherServicesOfDataModelChanges)
-                {
-                  // Notify the site model in all contents in the grid that it's attributes have changed
-                  Log.LogInformation($"Notifying site model attributes changed for {ID}");
-
-                  // Notify the immutable grid listeners that attributes of this sitemodel have changed
-                  DIContext.Obtain<ISiteModelAttributesChangedEventSender>()?.ModelAttributesChanged(ID);
-                }
-            }
-            else
+            if (!Result)
             {
                 Log.LogError($"Failed to save site model for project {ID} to persistent store");
             }
@@ -460,7 +449,7 @@ namespace VSS.TRex.SiteModels
         public FileSystemErrorStatus LoadFromPersistentStore()
         {
             Guid SavedID = ID;
-            FileSystemErrorStatus Result = DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+            FileSystemErrorStatus Result = DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
             if (Result == FileSystemErrorStatus.OK && MS != null)
             {
@@ -537,7 +526,7 @@ namespace VSS.TRex.SiteModels
                   using (BinaryWriter writer = new BinaryWriter(MS))
                   {
                     SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer, null);
-                    StorageProxy.WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, MS);
+                    StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, MS);
                   }
                 }
               }
@@ -563,7 +552,7 @@ namespace VSS.TRex.SiteModels
                 ISubGridTreeBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
 
                 // Read its content from storage 
-                DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+                DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
                 if (MS == null)
                 {

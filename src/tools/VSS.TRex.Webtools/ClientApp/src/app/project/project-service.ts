@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders,  } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
@@ -44,6 +44,12 @@ export class ProjectService {
 
 //    return this.http.post(url, body, headers);
     return this.http.post<T>(url, body);
+  }
+
+  private executeDeleteRequest<T>(label: string, url: string): Observable<T> {
+    url = `${this.baseUrl}api/${url}`;
+    console.log(`${label}: url=${url}`);
+    return this.http.delete<T>(url);
   }
 
   public getProjectExtents(projectUid: string): Observable<ProjectExtents> {
@@ -94,5 +100,9 @@ export class ProjectService {
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
     return this.executeRequest<SurveyedSurface[]>('getSurveyedSurfaces', `surveyedsurfaces/${projectUid}`);
+  }
+
+  public deleteSurveyedSurface(projectUid: string, surveyedSurfaceId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteSurveyedSurface', `surveyedsurfaces/${projectUid}/${surveyedSurfaceId}`);
   }
 }

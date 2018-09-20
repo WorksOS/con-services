@@ -7,6 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -43,7 +44,7 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       try
       {
-        StorageProxy.ReadStreamFromPersistentStoreDirect(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
+        StorageProxy.ReadStreamFromPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
 
         ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
 
@@ -78,7 +79,13 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStoreDirect(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream());
+        StorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream());
+        StorageProxy.Commit();
+
+        // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
+        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+        sender?.ModelAttributesChanged(StorageMutability.Mutable, siteModelID, surveyedSurfacesChanged: true);
+        sender?.ModelAttributesChanged(StorageMutability.Immutable, siteModelID, surveyedSurfacesChanged: true);
       }
       catch (Exception e)
       {

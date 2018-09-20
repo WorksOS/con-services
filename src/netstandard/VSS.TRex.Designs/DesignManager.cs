@@ -8,7 +8,9 @@ using VSS.TRex.DI;
 using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
 
@@ -42,7 +44,7 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        StorageProxy.ReadStreamFromPersistentStoreDirect(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
+        StorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
 
         IDesigns designs = DIContext.Obtain<IDesigns>();
 
@@ -77,7 +79,13 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStoreDirect(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream());
+        StorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream());
+        StorageProxy.Commit();
+
+        // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
+        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+        sender.ModelAttributesChanged(StorageMutability.Mutable, siteModelID, existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+        sender.ModelAttributesChanged(StorageMutability.Immutable, siteModelID, existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
       }
       catch (Exception e)
       {

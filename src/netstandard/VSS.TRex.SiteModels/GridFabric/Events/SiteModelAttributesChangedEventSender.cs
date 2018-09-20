@@ -22,7 +22,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       /// Notify all interested nodes in the immutable grid a site model has changed attributes
       /// </summary>
       /// <param name="siteModelID"></param>
-      public void ModelAttributesChanged(Guid siteModelID,
+      public void ModelAttributesChanged(StorageMutability targetGrid,
+        Guid siteModelID,
         bool existenceMapChanged = false,
         bool designsChanged = false,
         bool surveyedSurfacesChanged = false,
@@ -32,7 +33,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         {
           try
           {
-            DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetMessaging().Send
+            DIContext.Obtain<ITRexGridFactory>().Grid(targetGrid)?.GetMessaging().Send
             (new SiteModelAttributesChangedEvent
             {
               SiteModelID = siteModelID,
