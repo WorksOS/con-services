@@ -578,7 +578,7 @@ namespace VSS.Productivity3D.Models.Models
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                $"CMV targets must be between {MIN_CMV_MDP_VALUE} and {MAX_CMV_MDP_VALUE}"));
+                $"CMV targets must be between {MIN_CMV_MDP_VALUE} and {MAX_CMV_MDP_VALUE/10}"));
           }
         }
 
@@ -678,6 +678,6 @@ namespace VSS.Productivity3D.Models.Models
     private const double MAX_CUT_FILL = 400.0;
 
     private const short MIN_CMV_MDP_VALUE = 0;
-    private const short MAX_CMV_MDP_VALUE = 1500;
+    private const short MAX_CMV_MDP_VALUE = 5000;
   }
 }
