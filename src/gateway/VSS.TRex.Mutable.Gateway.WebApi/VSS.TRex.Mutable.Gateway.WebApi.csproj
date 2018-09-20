@@ -20,7 +20,8 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.9" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.8.3" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.1" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.44.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,8 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
   </ItemGroup>

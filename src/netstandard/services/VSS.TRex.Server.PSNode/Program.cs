@@ -43,7 +43,7 @@ namespace VSS.TRex.Server.PSNode
       }
     }
 
-    private static ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    private static Pipelines.Interfaces.Tasks.ITask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       switch (key)
       {
@@ -73,7 +73,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITask>>(provider => SubGridTaskFactoryMethod))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, Pipelines.Interfaces.Tasks.ITask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
         .Build()

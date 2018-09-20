@@ -40,11 +40,8 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <returns></returns>
     public static SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
-
-//      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}, AssetID:{assetId}");
       Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}");
-
-
+      
       SubmitTAGFileResponse response = new SubmitTAGFileResponse
       {
         FileName = tagFileName,

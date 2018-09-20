@@ -13,7 +13,7 @@ using Xunit;
 
 namespace TAGFiles.Tests
 {
-        public class TAGProcessorTests : IClassFixture<DITagFileTestsDIFixture>
+        public class TAGProcessorTests : IClassFixture<DITagFileFixture>
     {
         [Fact()]
         public void Test_TAGProcessor_Creation()

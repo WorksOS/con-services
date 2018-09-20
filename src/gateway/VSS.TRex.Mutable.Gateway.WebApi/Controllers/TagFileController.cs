@@ -76,16 +76,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
       var tagfileResult = WithServiceExceptionTryExecute(() => RequestExecutorContainer
                                                      .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
                                                      .Process(tfRequest)) as TagFileResult;
-
-      //// todo we probably need to return some proper return codes to determine further course of action
-      //if (tagfileResult != null)
-      //{
-      //  return tagfileResult.Code == 0 ? (IActionResult)Ok(tagfileResult) : BadRequest(tagfileResult);
-      //}
-      //else
-      //{
-      //  return BadRequest(TagFileResult.Create(1, "Unexpected failure"));
-      //}
       return tagfileResult;
     }
 

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.42.4" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.44.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,7 +11,7 @@ using Xunit;
 namespace TAGFiles.Tests
 {
 
-  public class AggregatedDataIntegratorWorkerTests : IClassFixture<DITagFileTestsDIFixture>
+  public class AggregatedDataIntegratorWorkerTests : IClassFixture<DITagFileFixture>
   {
     [Fact(Skip = "Not Implemented")]
     public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
@@ -35,7 +35,7 @@ namespace TAGFiles.Tests
         "Converter execute returned false");
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      SiteModel siteModel = new SiteModel( /*"TestName", "TestDesc", */DITagFileTestsDIFixture.NewSiteModelGuid, 1.0);
+      SiteModel siteModel = new SiteModel( /*"TestName", "TestDesc", */DITagFileFixture.NewSiteModelGuid, 1.0);
       VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), MachineConsts.kNullInternalSiteModelMachineIndex, false);
 
       // Create the integrator and add the processed TAG file to its processing list

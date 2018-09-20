@@ -7,11 +7,12 @@ using VSS.TRex.SubGridTrees.Server;
 using Xunit;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 
 namespace TAGFiles.Tests
 {
-        public class AggregatedDataIntegratorTests
-    {
+        public class AggregatedDataIntegratorTests : IClassFixture<DILoggingFixture>
+  {
         [Fact()]
         public void Test_AggregatedDataIntegrator_AddTaskToProcessList()
         {

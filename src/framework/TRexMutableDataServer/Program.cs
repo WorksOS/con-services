@@ -39,7 +39,7 @@ namespace TRexMutableDataServer
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<ITFAProxy>(new TFAProxy(Configuration)))
+// todo is this neeeded?        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>())
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps()))

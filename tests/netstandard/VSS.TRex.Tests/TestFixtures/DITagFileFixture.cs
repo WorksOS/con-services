@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -13,18 +12,13 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public static class LocalState
-  {
-    public static Guid NewSiteModelGuid = Guid.NewGuid();
-  }
-
-  public class DITagFileTestsDIFixture : IDisposable
+  public class DITagFileFixture : IDisposable
   {
     private static object Lock = new object();
 
     public static Guid NewSiteModelGuid = Guid.NewGuid();
 
-    public DITagFileTestsDIFixture()
+    public DITagFileFixture()
     {
       lock (Lock)
       {

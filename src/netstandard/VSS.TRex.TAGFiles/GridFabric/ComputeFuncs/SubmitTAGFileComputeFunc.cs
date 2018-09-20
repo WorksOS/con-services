@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
@@ -8,6 +9,7 @@ using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {
+  [Serializable]
     public class SubmitTAGFileComputeFunc : BaseComputeFunc, IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>
     {
         /// <summary>
