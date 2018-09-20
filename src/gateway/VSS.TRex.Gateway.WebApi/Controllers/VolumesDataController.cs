@@ -20,7 +20,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="log"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
-    protected VolumesDataController(ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
+    public VolumesDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<VolumesDataController>(), serviceExceptionHandler, configStore)
     {
     }

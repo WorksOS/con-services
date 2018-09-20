@@ -35,27 +35,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cmv/summary")]
     [HttpPost]
-    public CompactionCmvSummaryResult PostCmvSummary([FromBody] CMVSummaryRequest cmvSummaryRequest)
+    public CMVSummaryResult PostCmvSummary([FromBody] CMVSummaryRequest cmvSummaryRequest)
     {
       Log.LogInformation($"{nameof(PostCmvSummary)}: {Request.QueryString}");
 
       cmvSummaryRequest.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<SummaryCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvSummaryRequest) as CMVSummaryResult);
-
-      var cmvSettings = new CMVSettings(
-        cmvSummaryRequest.CmvTarget,
-        DATA_VALUE_NOT_REQUIRED,
-        cmvSummaryRequest.MaxCMVPercent,
-        DATA_VALUE_NOT_REQUIRED,
-        cmvSummaryRequest.MinCMVPercent,
-        cmvSummaryRequest.OverrideTargetCMV
-      );
-
-      return new CompactionCmvSummaryResult(result, cmvSettings);
     }
 
     /// <summary>

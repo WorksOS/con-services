@@ -75,21 +75,21 @@ namespace VSS.TRex.Gateway.Common.Requests
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="projectId"></param>
+    /// <param name="projectUid"></param>
     /// <param name="baseFilter"></param>
     /// <param name="topFilter"></param>
     /// <param name="baseDesignUid"></param>
     /// <param name="topDesignUid"></param>
     /// <param name="volumeCalcType"></param>
     public SummaryVolumesRequest(
-      long projectId, 
+      Guid projectUid, 
       FilterResult baseFilter, 
       FilterResult topFilter, 
       Guid? baseDesignUid, 
       Guid? topDesignUid, 
       VolumesType volumeCalcType)
     {
-      ProjectId = projectId;
+      ProjectUid = projectUid;
       BaseFilter = baseFilter;
       TopFilter = topFilter;
       BaseDesignUid = baseDesignUid;
