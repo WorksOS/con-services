@@ -2,8 +2,6 @@
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.Models
