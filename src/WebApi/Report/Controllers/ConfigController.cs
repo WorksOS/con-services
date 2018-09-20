@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {

@@ -1,22 +1,22 @@
-﻿using ASNode.CMVChange.RPC;
-using ASNodeDecls;
-using SVOICOptionsDecls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using ASNode.CMVChange.RPC;
+using ASNodeDecls;
+using SVOICOptionsDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   /// <summary>
-  /// Builds Summary speed report from Raptor
+  /// Builds CMV change report from Raptor
   /// </summary>
   public class CMVChangeSummaryExecutor : RequestExecutorContainer
   {
@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Executors
     private CMVChangeSummaryResult ConvertResult(TASNodeCMVChangeResult result)
     {
 
-      return CMVChangeSummaryResult.Create
+      return new CMVChangeSummaryResult
           (
               result.Values,
               result.CoverageArea

@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Net;
 using System.Xml;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class ConfigExecutor : RequestExecutorContainer
     {
