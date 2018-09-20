@@ -41,16 +41,15 @@
     <PackageReference Include="NodaTime" Version="2.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
-    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.8" />
+    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.13" />
     <PackageReference Include="VSS.AWS.TransferProxy" Version="1.4.2" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.3" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.42.2" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.32.0" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.43.0" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.2" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.71" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.9" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.8.4" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.1" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

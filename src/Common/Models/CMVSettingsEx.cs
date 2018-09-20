@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.Common.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"CMV Detail targets must be between {MIN_CMV + 1} and {MAX_CMV}"));
+            $"CMV Detail targets must be between {MIN_CMV + 1} and {MAX_CMV/10}"));
       }
     }
 
