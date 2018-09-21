@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using System;
-using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -23,7 +22,6 @@ using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
@@ -256,26 +254,13 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             if (arg.ProdDataMaskBytes != null)
             {
                 ProdDataMask = new SubGridTreeSubGridExistenceBitMask();
-
-                using (MemoryStream ms = new MemoryStream(arg.ProdDataMaskBytes))
-                {
-                    using (BinaryReader reader = new BinaryReader(ms))
-                    {
-                        SubGridTreePersistor.Read(ProdDataMask, reader);
-                    }
-                }
+                ProdDataMask.FromBytes(arg.ProdDataMaskBytes);
             }
 
             if (arg.SurveyedSurfaceOnlyMaskBytes != null)
             {
                 SurveyedSurfaceOnlyMask = new SubGridTreeSubGridExistenceBitMask();
-                using (MemoryStream ms = new MemoryStream(arg.SurveyedSurfaceOnlyMaskBytes))
-                {
-                    using (BinaryReader reader = new BinaryReader(ms))
-                    {
-                        SubGridTreePersistor.Read(SurveyedSurfaceOnlyMask, reader);
-                    }
-                }
+                SurveyedSurfaceOnlyMask.FromBytes(arg.SurveyedSurfaceOnlyMaskBytes);
             }
 
             // Set up any required cut fill design

@@ -67,7 +67,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
     byte[] ToBytes();
     byte[] ToBytes(byte[] helperBuffer);
-    byte[] ToBytes(MemoryStream helperStream, byte[] helperBuffer);
     void FromBytes(byte[] bytes, byte[] helperBuffer = null);
 
     /// <summary>

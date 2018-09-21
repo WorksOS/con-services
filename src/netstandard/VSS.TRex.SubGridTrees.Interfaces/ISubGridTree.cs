@@ -234,6 +234,8 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         void FromBytes(byte[] bytes);
 
         MemoryStream ToStream();
+        void ToStream(Stream stream);
+
         void FromStream(MemoryStream stream);
   }
 }

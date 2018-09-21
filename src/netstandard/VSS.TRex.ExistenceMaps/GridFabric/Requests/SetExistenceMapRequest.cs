@@ -23,10 +23,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="key"></param>
         /// <param name="mask"></param>
         /// <returns></returns>
-        public static void Execute(NonSpatialAffinityKey key, ISubGridTreeBitMask mask) 
-        {
-            ExistenceMapServer.Instance().SetExistenceMap(key, mask.ToBytes());
-        }
+        public static void Execute(NonSpatialAffinityKey key, ISubGridTreeBitMask mask) => ExistenceMapServer.Instance().SetExistenceMap(key, mask.ToBytes());
 
         /// <summary>
         /// Executes the request to set an existence map given it's type descriptor and ID

@@ -4,12 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Utilities;
@@ -1241,11 +1241,9 @@ namespace VSS.TRex.Designs
         using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(fileName)))
         {
           FSubgridIndex.FromStream(ms);
-          using (BinaryReader reader = new BinaryReader(ms))
-          {
-            return SubGridTreePersistor.Read(FSubgridIndex, reader);
-          }
         }
+
+        return true;
       }
       catch (Exception e)
       {
@@ -1297,7 +1295,9 @@ namespace VSS.TRex.Designs
             ms.Position = bufPos;
 
             // Load the tree of references into the optimised triangle reference list
-            return SubGridTreePersistor.Read(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, reader);
+            FSpatialIndexOptimised.FromStream(ms);
+
+            return true;
           }
         }
       }
@@ -1380,10 +1380,7 @@ namespace VSS.TRex.Designs
         // Write the index out to a file
         using (FileStream fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
-          using (BinaryWriter writer = new BinaryWriter(fs))
-          {
-            SubGridTreePersistor.Write(FSubgridIndex, writer);
-          }
+          FSubgridIndex.ToStream(fs);
         }
 
         if (!File.Exists(fileName))
@@ -1413,7 +1410,7 @@ namespace VSS.TRex.Designs
         // Write the index out to a file
         using (FileStream fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
-          using (BinaryWriter writer = new BinaryWriter(fs))
+          using (BinaryWriter writer = new BinaryWriter(fs, Encoding.UTF8, true))
           {
             writer.Write((byte) 1); // Major version
             writer.Write((byte) 0); // Minor version
@@ -1422,11 +1419,10 @@ namespace VSS.TRex.Designs
             writer.Write((long) SpatialIndexOptimisedTriangles.Length);
             foreach (int triIndex in SpatialIndexOptimisedTriangles)
               writer.Write(triIndex);
-
-
-            // Write out the subgrid tree of index references
-            SubGridTreePersistor.Write(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, writer);
           }
+
+          // Write the body of the subgrid tree contianing references into the list of triangles
+          FSpatialIndexOptimised.ToStream(fs);
         }
 
         if (!File.Exists(fileName))

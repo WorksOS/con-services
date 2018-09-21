@@ -42,7 +42,7 @@ namespace VSS.TRex.Utilities.ExtensionMethods
     public static void FromStream<T>(this T item, Stream stream) where T : class, IBinaryReaderWriter => FromStream(stream, item.Read);
 
     /// <summary>
-    /// An extension method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
+    /// An extension method providing a ToStream() semantic to serialise its state to a stream via the class defined Write() implementation
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
@@ -56,6 +56,14 @@ namespace VSS.TRex.Utilities.ExtensionMethods
     /// <param name="item"></param>
     /// <returns></returns>
     public static MemoryStream ToStream<T>(this T item) where T : class, IBinaryReaderWriter => ToStream(item.Write);
+
+    /// <summary>
+    /// An extension method providing a ToStream() semantic to serialise its state to a stream via the class defined Write() implementation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public static void ToStream<T>(this T item, Stream stream) where T : class, IBinaryReaderWriter => ToStream(stream, item.Write);
 
     /// <summary>
     /// An extension method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
@@ -89,20 +97,20 @@ namespace VSS.TRex.Utilities.ExtensionMethods
     /// <param name="serialiser"></param>
     /// <param name="buffer"></param>
     /// <returns></returns>
-    public static byte[] ToBytes(Action<BinaryWriter> serialiser, byte[] buffer)
+    public static byte[] ToBytes(Action<BinaryWriter, byte[]> serialiser, byte[] helperBuffer)
     {
       using (MemoryStream ms = new MemoryStream())
       {
         using (BinaryWriter writer = new BinaryWriter(ms))
         {
-          serialiser(writer);
+          serialiser(writer, helperBuffer);
           return ms.ToArray();
         }
       }
     }
 
     /// <summary>
-    /// A generic method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
+    /// A generic method providing a ToStream() semantic to serialise its state to a stream via the class defined Write() implementation
     /// </summary>
     /// <param name="serialiser"></param>
     /// <returns></returns>
@@ -115,8 +123,37 @@ namespace VSS.TRex.Utilities.ExtensionMethods
         serialiser(writer);
       }
 
-      ms.Position = 0;
       return ms;
+    }
+
+    /// <summary>
+    /// A generic method providing a ToSTream() semantic to serialise its state to a stream via the class defined Write() implementation
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="serialiser"></param>
+    /// <returns></returns>
+    public static void ToStream(Stream stream, Action<BinaryWriter> serialiser)
+    {
+      using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true))
+      {
+        serialiser(writer);
+      }
+    }
+    
+    /// <summary>
+    /// A generic providing a FromBytes() semantic to deserialise a byte array via the class defined Read() implementation
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="serialiser"></param>
+    public static void FromBytes(byte[] bytes, Action<BinaryReader, byte[]> serialiser, byte[]  helperBuffer)
+    {
+      using (MemoryStream ms = new MemoryStream(bytes))
+      {
+        using (BinaryReader reader = new BinaryReader(ms))
+        {
+          serialiser(reader, helperBuffer);
+        }
+      }
     }
 
     /// <summary>
@@ -136,7 +173,7 @@ namespace VSS.TRex.Utilities.ExtensionMethods
     }
 
     /// <summary>
-    /// An extension method providing a FromBytes() semantic to deserialise a byte array via the class defined Read() implementation
+    /// An extension method providing a FromStream() semantic to deserialise a stream via the class defined Read() implementation
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="serialiser"></param>

@@ -2,6 +2,7 @@
 using System.IO;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -386,68 +387,32 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public ISubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(OriginX, OriginY);
 
-        public byte[] ToBytes()
+        public byte[] ToBytes() => FromToBytes.ToBytes(Write, new byte[10000]);
+
+        public byte[] ToBytes(byte[] helperBuffer) => FromToBytes.ToBytes(Write, helperBuffer ?? new byte[10000]);
+
+        public void FromBytes(byte[] bytes, byte[] helperBuffer = null) => FromToBytes.FromBytes(bytes, Read, helperBuffer ?? new byte[10000]);
+     
+        /// <summary>
+        /// Iterates over all the cells in the subgrid calling functor on each of them.
+        /// Both non-null and null values are presented to functor.
+        /// </summary>
+        /// <param name="functor"></param>
+        /// <returns></returns>
+        public void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
+     
+        public bool Equals(ISubGrid other)
         {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                using (BinaryWriter bw = new BinaryWriter(ms))
-                {
-                    Write(bw, new byte[10000]);
-
-                    return ms.ToArray();
-                }
-            }
+          throw new NotImplementedException();
         }
-
-        public byte[] ToBytes(byte[] helperBuffer)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                using (BinaryWriter bw = new BinaryWriter(ms))
-                {
-                    Write(bw, helperBuffer ?? new byte[10000]);
-
-                    return ms.ToArray();
-                }
-            }
-        }
-
-        public byte[] ToBytes(MemoryStream helperStream, byte[] helperBuffer)
-        {
-            throw new NotImplementedException("Not done yet");
-        }
-
-        public void FromBytes(byte[] bytes, byte[] helperBuffer = null)
-        {
-            using (MemoryStream ms = new MemoryStream(bytes))
-            {
-                using (BinaryReader bw = new BinaryReader(ms))
-                {
-                    Read(bw, helperBuffer ?? new byte[10000]);
-                }
-            }
-        }
-
-      /// <summary>
-      /// Iterates over all the cells in the subgrid calling functor on each of them.
-      /// Both non-null and null values are presented to functor.
-      /// </summary>
-      /// <param name="functor"></param>
-      /// <returns></returns>
-      public void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
-
-      public bool Equals(ISubGrid other)
-      {
-        throw new NotImplementedException();
-      }
-
-      /// <summary>
-      /// Iterates over all the cells in the subgrid calling functor on each of them.
-      /// Both non-null and null values are presented to functor.
-      /// </summary>
-      /// <param name="functor"></param>
-      /// <returns></returns>
-      public static void ForEachStatic(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
-  }
+     
+        /// <summary>
+        /// Iterates over all the cells in the subgrid calling functor on each of them.
+        /// Both non-null and null values are presented to functor.
+        /// </summary>
+        /// <param name="functor"></param>
+        /// <returns></returns>
+        public static void ForEachStatic(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
+    }
 }
 

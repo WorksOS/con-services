@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -719,6 +718,8 @@ namespace VSS.TRex.SubGridTrees
       /// </summary>
       /// <returns></returns>
       public MemoryStream ToStream() => FromToBytes.ToStream(SerialiseOutWriter);
+
+      public void ToStream(Stream stream) => FromToBytes.ToStream(stream, SerialiseOutWriter);
 
       /// <summary>
       /// Deserialises the content of the subgrid tree from a memory stream
