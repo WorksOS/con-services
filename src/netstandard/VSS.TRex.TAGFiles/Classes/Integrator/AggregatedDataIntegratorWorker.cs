@@ -315,7 +315,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     }
 
                     // Free the aggregated machine events as they are no longer needed. Don't do this under a SiteModel write access lock
-                    // to prevent blocking of other aggreation threads while this occurs.
+                    // to prevent blocking of other aggregation threads while this occurs.
                     if (SiteModelMachineTargetValues != null)
                     {
                         Task.AggregatedMachineEvents = null; 

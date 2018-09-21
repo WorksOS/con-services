@@ -22,10 +22,11 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-    public class SiteModel : ISiteModel
+    public class SiteModel : ISiteModel, IBinaryReaderWriter
     {
         [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -137,7 +138,7 @@ namespace VSS.TRex.SiteModels
           // Allow lazy loading of the machine event lists to occur organically.
           // Any requests holding references to events lists will continue to do so as the lists themselves
           // wont be garbage collected until all request references to them are relinquished
-          get => machinesTargetValues ?? (machinesTargetValues = new MachinesProductionEventLists(this, Machines));
+          get => machinesTargetValues ?? (machinesTargetValues = new MachinesProductionEventLists(this, Machines.Count));
           private set => machinesTargetValues = value;
         }
 
@@ -202,8 +203,10 @@ namespace VSS.TRex.SiteModels
           {
             if (machines == null)
             {
-              machines = new MachinesList();
-              machines.DataModelID = ID;
+              machines = new MachinesList
+              {
+                DataModelID = ID
+              };
               machines.LoadFromPersistentStore();
             }
 
@@ -359,7 +362,12 @@ namespace VSS.TRex.SiteModels
             writer.Write(LastModifiedDate.ToBinary());
         }
 
-        public bool Read(BinaryReader reader)
+        public void Write(BinaryWriter writer, byte[] buffer)
+        {
+          throw new NotImplementedException();
+        }
+    
+        public void Read(BinaryReader reader)
         {
             // Read the SiteModel attributes
             int MajorVersion = reader.ReadInt32();
@@ -368,7 +376,7 @@ namespace VSS.TRex.SiteModels
             if (!(MajorVersion == kMajorVersion && (MinorVersion == kMinorVersion)))
             {
                 Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
-                return false;
+                throw new TRexException($"Unknown version number { MajorVersion }:{ MinorVersion} in {nameof(SiteModel)}.Read()");
             }
 
             // Name = reader.ReadString();
@@ -412,26 +420,38 @@ namespace VSS.TRex.SiteModels
             //FSiteModelDesignNames.LoadFromStream(Stream);
 
             LastModifiedDate = DateTime.FromBinary(reader.ReadInt64());
-
-            return true;
         }
 
         public bool SaveToPersistentStore(IStorageProxy StorageProxy)
         {
-            bool Result;
+            bool Result = true;
 
-            using (MemoryStream MS = new MemoryStream())
+            lock (this)
             {
-                using (BinaryWriter writer = new BinaryWriter(MS))
-                {
-                    lock (this)
-                    {
-                        Write(writer);
+              if (StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream()) != FileSystemErrorStatus.OK)
+              {
+                Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
+                Result = false;
+              }
 
-                        Result = StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, MS) == FileSystemErrorStatus.OK
-                                 && SaveProductionDataExistanceMapToStorage(StorageProxy) == FileSystemErrorStatus.OK;
-                    }
+              if (ExistenceMapLoaded && SaveProductionDataExistanceMapToStorage(StorageProxy) != FileSystemErrorStatus.OK)
+              {
+                Log.LogError($"Failed to save existence map for site model {ID} to persistent store");
+                Result = false;
+              }
+
+              if (MachinesLoaded)
+              {
+                try
+                {
+                  Machines.SaveToPersistentStore(StorageProxy);
                 }
+                catch (Exception e)
+                {
+                   Log.LogError($"Failed to save machine list for site model {ID} to persistent store");
+                   Result = false;
+                }
+              }
             }
 
             if (!Result)

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Events
@@ -30,11 +28,13 @@ namespace VSS.TRex.Events
     /// Constructor for the machines events within the sitemodel supplier as owner
     /// </summary>
     /// <param name="owner"></param>
-    public MachinesProductionEventLists(ISiteModel owner, IMachinesList machines)
+    /// <param name="machineCount"></param>
+    public MachinesProductionEventLists(ISiteModel owner, int machineCount)
     {
       Owner = owner;
 
-      MachineIDMap = Enumerable.Range(0, machines.Count).Select(x => new ProductionEventLists(owner, (short)x) as IProductionEventLists).ToArray();
+      Log.LogInformation($"Creating machine ID map containing {machineCount} entries");
+      MachineIDMap = new IProductionEventLists[machineCount]; 
     }
 
     /// <summary>
@@ -46,11 +46,13 @@ namespace VSS.TRex.Events
       if (machineID < 0 || machineID >= MachineIDMap.Length)
         return null;
 
+      // Return (creating if necessarty) the machine event lists for this machine and allow required events to lazy load.
       if (MachineIDMap[machineID] == null)
-      {
-        Log.LogCritical($"Sitemodel {Owner.ID} asked for non existent machine events at index {machineID}");
-        return null;
-      }
+        lock (this)
+        {
+          if (MachineIDMap[machineID] == null) // This thread 'won'
+            MachineIDMap[machineID] = new ProductionEventLists(Owner, machineID);
+        }
 
       return MachineIDMap[machineID];
     }

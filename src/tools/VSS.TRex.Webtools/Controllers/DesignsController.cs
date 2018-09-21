@@ -20,7 +20,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="siteModelID">Grid to return status for</param>
     /// <returns></returns>
     [HttpGet("{siteModelID}")]
-    public JsonResult GetSurveyedSurfacesForSiteModel(string siteModelID)
+    public JsonResult GetDesignsForSiteModel(string siteModelID)
     {
       return new JsonResult(DIContext.Obtain<IDesignManager>().List(Guid.Parse(siteModelID)));
     }
@@ -32,7 +32,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="designID"></param>
     /// <returns></returns>
     [HttpDelete("{siteModelID}/{designID}")]
-    public JsonResult DeleteSurveyedSurfacesFromSiteModel(string siteModelID, string designID)
+    public JsonResult DeleteDesignFromSiteModel(string siteModelID, string designID)
     {
       return new JsonResult(DIContext.Obtain<IDesignManager>().Remove(Guid.Parse(siteModelID), Guid.Parse(designID)));
     }

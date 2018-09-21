@@ -61,5 +61,16 @@ namespace VSS.TRex.Webtools.Controllers
 
       return new JsonResult(new Tuple<DateTime, DateTime>(minDate, minDate));
     }
+
+    /// <summary>
+    /// Returns the number of subgrids present in the production data spatial existence map 
+    /// </summary>
+    /// <param name="siteModelID">Grid to return status for</param>
+    /// <returns></returns>
+    [HttpGet("{siteModelID}/existencemap/subgridcount")]
+    public JsonResult GetSubGridCount(string siteModelID)
+    {
+      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.ExistanceMap?.CountBits() ?? 0);
+    }
   }
 }

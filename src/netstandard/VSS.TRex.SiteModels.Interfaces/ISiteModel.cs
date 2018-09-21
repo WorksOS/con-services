@@ -68,7 +68,7 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     void Include(ISiteModel Source);
     void Write(BinaryWriter writer);
-    bool Read(BinaryReader reader);
+    void Read(BinaryReader reader);
     bool SaveToPersistentStore(IStorageProxy StorageProxy);
     FileSystemErrorStatus LoadFromPersistentStore();
 

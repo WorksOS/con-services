@@ -5,6 +5,7 @@
   <button (click)="setProjectToZero()">Zero</button>
 </p>
 <p>Project Extents: {{projectExtents}}, Starts At: {{projectStartDate}}, Ends At: {{projectEndDate}}</p>
+<p>Existence map contains {{existenceMapSubGridCount}} subgrids, covering approximately {{(existenceMapSubGridCount * 1024) / 10000}} hectares.</p>
 <p>
   Render tiles of type:
   <select id="displayMode" name="displayMode" [(ngModel)]="displayMode" (change)="displayModeChanged($event)">
@@ -27,12 +28,38 @@
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
 
-<p><input type="checkbox" [(ngModel)]="applyToViewOnly"> Apply to view only <button (click)="getSimpleFullVolume()">Compute Full Volume</button> Volume: {{projectVolume}}</p>
+
+<H3>Machines [{{machines.length}} in total]</H3>
+
+<!--Display the machines in a list-->
+
+<p *ngFor="let machine of machines">
+  Machine: {{ machine.id }} Internal Index: {{ machine.internalSiteModelMachineIndex }}, Name:{{machine.name}}, Type:{{machine.machineType}},
+  Hardware ID: {{machine.machineHardwareID}}, Device Type: {{machine.deviceType}} IsJohnDoe: {{machine.isJohnDoeMachine}},
+  Last known location: [{{machine.lastKnownX}}, {{machine.lastKnownY}} at {{machine.lastKnownPositionDateStamp}}],
+  Last known design: {{machine.lastKnownDesignName}}, Last known layer: {{machine.lastKnownLayerId}}
+</p>
+
+<!--Display the machines in a table-->
+
+<table>
+  <tr>
+    <th *ngFor="let col of machineColumnNames">
+      {{col}}
+    </th>
+  </tr>
+  <tr *ngFor="let machine of machines">
+    <td *ngFor="let col of machineColumns">
+      {{machine[col]}}
+    </td>
+  </tr>
+</table>
+
 
 <br />
-<H3>Surveyed Surfaces</H3>
+<H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="surveydSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveydSurfaceAsAtDate" type="datetime" value="" /> Offset: <input [(ngModel)]="surveydSurfaceOffset" type="number" value="" /></p>
-<p><button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button> <button (click)="addADummySurveyedSurface()">Add a dummy!</button> New SS Guid -> {{newSurveyedSurfaceGuid}}</p>
+<p><button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button> <button (click)="addADummySurveyedSurface()">Add a dummy!</button></p>
 
 <p *ngFor="let surveyedSurface of surveyedSurfaces">
   <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
@@ -40,11 +67,14 @@
 </p>
 
 <br />
-<H3>Designs</H3>
+<H3>Designs [{{designs.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" /></p>
-<p><button (click)=addNewDesign()>Add New Design</button> <button (click)="addADummyDesign()">Add a dummy!</button> New Design Guid -> {{newDesignGuid}}</p>
+<p><button (click)=addNewDesign()>Add New Design</button> <button (click)="addADummyDesign()">Add a dummy!</button></p>
 
 <p *ngFor="let design of designs">
   <button (click)="deleteDesign(design)">Delete</button>
   Design: {{ design.id }} with offset {{design.designDescriptor.offset}} from file {{design.designDescriptor.fileName}}
 </p>
+<br />
+<H3>Volume Calculations</H3>
+<p><input type="checkbox" [(ngModel)]="applyToViewOnly"> Apply to view only <button (click)="getSimpleFullVolume()">Compute Full Volume</button> Volume: {{projectVolume}}</p>
