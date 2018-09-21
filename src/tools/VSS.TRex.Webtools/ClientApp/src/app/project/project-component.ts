@@ -15,7 +15,7 @@ import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../pr
 export class ProjectComponent {
   private zoomFactor: number = 0.2;
 
-  public projectUid: string = ""; 
+  public projectUid: string; 
   public mode: number = 0;
   public pixelsX: number = 850;
   public pixelsY: number = 500;
@@ -100,7 +100,7 @@ export class ProjectComponent {
 
   public getTile(): void {
     // If there is no project bail...
-    if (this.projectUid === "")
+    if (this.projectUid == undefined)
       return;
 
     // Make sure the displayed tile extents is updated
