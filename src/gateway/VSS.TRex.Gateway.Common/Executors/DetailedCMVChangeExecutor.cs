@@ -4,11 +4,11 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CMVChangeStatistics;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Requests;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -33,6 +33,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       CMVChangeDetailsRequest request = item as CMVChangeDetailsRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(CMVChangeDetailsRequest));
 
       var siteModel = GetSiteModel(request.ProjectUid);
 

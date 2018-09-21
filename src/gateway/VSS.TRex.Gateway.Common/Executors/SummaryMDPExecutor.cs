@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
 using MDPSummaryResult = VSS.TRex.Analytics.MDPStatistics.MDPStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.MDPSummaryResult;
@@ -39,6 +35,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       MDPSummaryRequest request = item as MDPSummaryRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(MDPSummaryRequest));
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
