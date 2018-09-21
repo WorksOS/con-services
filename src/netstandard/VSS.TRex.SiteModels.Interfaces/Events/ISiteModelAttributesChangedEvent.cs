@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces.Events
 {
@@ -15,5 +16,7 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
     bool MachinesModified { get; }
 
     bool MachineTargetValuesModified { get;}
+
+    byte[] ExistenceMapChangeMask { get; }
   }
 }
