@@ -204,6 +204,7 @@ namespace VSS.TRex.SiteModels
             if (machines == null)
             {
               machines = new MachinesList();
+              machines.DataModelID = ID;
               machines.LoadFromPersistentStore();
             }
 
@@ -282,8 +283,6 @@ namespace VSS.TRex.SiteModels
             // FActive:= True;
 
             IsTransient = isTransient;
-
-            Machines.DataModelID = ID;
 
             // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
