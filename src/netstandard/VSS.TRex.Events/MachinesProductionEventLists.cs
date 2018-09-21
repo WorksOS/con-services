@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Events
@@ -29,11 +30,11 @@ namespace VSS.TRex.Events
     /// Constructor for the machines events within the sitemodel supplier as owner
     /// </summary>
     /// <param name="owner"></param>
-    public MachinesProductionEventLists(ISiteModel owner)
+    public MachinesProductionEventLists(ISiteModel owner, IMachinesList machines)
     {
       Owner = owner;
 
-      MachineIDMap = Enumerable.Range(0, owner.Machines.Count).Select(x => new ProductionEventLists(owner, (short)x) as IProductionEventLists).ToArray();
+      MachineIDMap = Enumerable.Range(0, machines.Count).Select(x => new ProductionEventLists(owner, (short)x) as IProductionEventLists).ToArray();
     }
 
     /// <summary>

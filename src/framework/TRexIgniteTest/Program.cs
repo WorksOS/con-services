@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Client;
-using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
@@ -30,7 +30,8 @@ namespace TRexIgniteTest
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-Framework")))
         .Add(x => x.AddSingleton(new MutableClientServer("TRexIgniteClient-Framework")))
-        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
         .Complete();
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces
@@ -20,6 +21,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// requiring the sitemodel to be reloaded
     /// </summary>
     /// <param name="SiteModelID"></param>
-    void SiteModelAttributesHaveChanged(Guid SiteModelID);
+    void SiteModelAttributesHaveChanged(Guid SiteModelID, ISiteModelAttributesChangedEvent message);
   }
 }

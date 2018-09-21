@@ -50,13 +50,11 @@ using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.GridFabric.Queues;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Servers.Client;
-using VSS.TRex.Services.Designs;
-using VSS.TRex.Services.SurveyedSurfaces;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
@@ -92,8 +90,6 @@ namespace TRexIgniteTest
 					return Guid.Empty;
 			}
 		}
-
-
 
 	  private async Task<long> GatewayRender(string jsonParams, DisplayMode displayMode, int width, int height, bool returnEarliestFilteredCellPass, BoundingWorldExtent3D extents)
 	  {
@@ -353,7 +349,7 @@ namespace TRexIgniteTest
 
 		private void DoUpdateDesignsAndSurveyedSurfaces()
 		{
-				IDesigns designs = DIContext.Obtain<IDesignsService>().List(ID());
+				IDesigns designs = DIContext.Obtain<IDesignManager>().List(ID());
 
 				if (designs != null)
 				{
@@ -366,15 +362,12 @@ namespace TRexIgniteTest
 						cmbDesigns.DataSource = designs.Select(x => new { Text = x.Get_DesignDescriptor().FullPath, Value = x }).ToArray();
 				}
 
-				SurveyedSurfaceService surveyedSurfacesService = new SurveyedSurfaceService(StorageMutability.Immutable);
-				surveyedSurfacesService.Init(null);
-				ISurveyedSurfaces surveyedSurfaces = surveyedSurfacesService.List(ID());
+  		  SurveyedSurfaceManager ssm = new SurveyedSurfaceManager();
+				ISurveyedSurfaces surveyedSurfaces = ssm.List(ID());
 
 				if (surveyedSurfaces != null)
 				{
 						cmbDesigns.DropDownStyle = ComboBoxStyle.DropDownList;
-
-						//cmbSurveyedSurfaces.Items.Clear();
 
 						cmbSurveyedSurfaces.DisplayMember = "Text";
 						cmbSurveyedSurfaces.ValueMember = "Value";

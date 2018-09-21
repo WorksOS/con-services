@@ -136,19 +136,6 @@ namespace VSS.TRex.Storage
         }
 
         /// <summary>
-        /// Supports reading a named stream from the persistent store via the grid cache
-        /// </summary>
-        /// <param name="DataModelID"></param>
-        /// <param name="StreamName"></param>
-        /// <param name="StreamType"></param>
-        /// <param name="Stream"></param>
-        /// <returns></returns>
-        public FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
-        {
-            return ReadStreamFromPersistentStore(DataModelID, StreamName, StreamType, out Stream);
-        }
-
-        /// <summary>
         /// Supports removing a named stream from the persistent store via the grid cache
         /// </summary>
         /// <param name="DataModelID"></param>
@@ -264,48 +251,6 @@ namespace VSS.TRex.Storage
                     Log.LogError($"Exception performing mutability conversion: {e}");
                     return FileSystemErrorStatus.MutableToImmutableConversionError;
                 }
-
-              return FileSystemErrorStatus.OK;
-            }
-            catch
-            {
-                return FileSystemErrorStatus.UnknownErrorWritingToFS;
-            }
-        }
-
-        /// <summary>
-        /// Supports writing a named data stream to the persistent store via the grid cache.
-        /// </summary>
-        /// <param name="DataModelID"></param>
-        /// <param name="StreamName"></param>
-        /// <param name="StreamType"></param>
-        /// <param name="Stream"></param>
-        /// <returns></returns>
-        public FileSystemErrorStatus WriteStreamToPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
-        {
-            try
-            {
-                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
-
-                using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
-                {
-                    // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
-                    nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
-                }
-
-              try
-              {
-                  // Convert the stream to the immutable form and write it to the immutable storage proxy
-                  if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
-                  {
-                    PerformNonSpatialImmutabilityConversion(Stream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType);
-                  }
-              }
-              catch (Exception e)
-              {
-                  Log.LogError($"Exception performing mutability conversion: {e}");
-                  return FileSystemErrorStatus.MutableToImmutableConversionError;
-              }
 
               return FileSystemErrorStatus.OK;
             }

@@ -15,12 +15,16 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using System.Threading.Tasks;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -46,7 +50,10 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Build()
         .Add(x => x.AddSingleton(new TagProcComputeServer()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
         // Register the sender for the sie model attribute change notifications
         .Add(x => x.AddSingleton< ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))

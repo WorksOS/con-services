@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
@@ -29,7 +30,17 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     BoundingWorldExtent3D SiteModelExtent { get; }
 
+    /// <summary>
+    /// Returns a reference to the existance map for the site model. If the existance map is not yet present
+    /// load it from storage/cache
+    /// </summary>
     ISubGridTreeBitMask ExistanceMap { get; }
+
+    /// <summary>
+    /// Gets the loaded stae of the existence map. This permits testing if an existance map is loaded without forcing
+    /// the existence map to be loaded via the ExistenceMap property
+    /// </summary>
+    bool ExistenceMapLoaded { get; }
 
     /// <summary>
     /// SiteModelDesigns records all the designs that have been seen in this sitemodel.
@@ -39,7 +50,18 @@ namespace VSS.TRex.SiteModels.Interfaces
     ISiteModelDesignList SiteModelDesigns { get; }
 
     ISurveyedSurfaces SurveyedSurfaces { get; }
-    IMachinesList Machines { get; set; }
+    bool SurveyedSurfacesLoaded { get; }
+
+    /// <summary>
+    /// Designs records all the design surfaces that have been imported into the sitemodel
+    /// </summary>
+    IDesigns Designs { get; }
+    bool DesignsLoaded { get; }
+  
+    IMachinesList Machines { get; }
+
+    bool MachinesLoaded { get; }
+
     bool IgnoreInvalidPositions { get; set; }
 
     string CSIB();
@@ -48,14 +70,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     void Write(BinaryWriter writer);
     bool Read(BinaryReader reader);
     bool SaveToPersistentStore(IStorageProxy StorageProxy);
-    FileSystemErrorStatus LoadFromPersistentStore(IStorageProxy StorageProxy);
-
-    /// <summary>
-    /// Returns a reference to the existance map for the site model. If the existance map is not yet present
-    /// load it from storage/cache
-    /// </summary>
-    /// <returns></returns>
-    ISubGridTreeBitMask GetProductionDataExistanceMap(IStorageProxy StorageProxy);
+    FileSystemErrorStatus LoadFromPersistentStore();
 
     /// <summary>
     /// GetAdjustedDataModelSpatialExtents returns the bounding extent of the production data held in the 
@@ -66,5 +81,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList);
 
     IMachinesProductionEventLists MachinesTargetValues { get; }
+    bool MachineTargetValuesLoaded { get; }
   }
 }

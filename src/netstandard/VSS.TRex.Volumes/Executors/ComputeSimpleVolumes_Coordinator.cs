@@ -6,7 +6,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.RequestStatistics;
-using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -23,14 +22,14 @@ namespace VSS.TRex.Volumes.Executors
         /// <summary>
         /// The ID of the site model the volume is being calculated for 
         /// </summary>
-        public Guid SiteModelID = Guid.Empty;
-
+        public Guid SiteModelID;
+       
         //ExternalDescriptor : TASNodeRequestDescriptor;
 
         /// <summary>
         /// The volume computation method to use when calculating volume information
         /// </summary>
-        public VolumeComputationType VolumeType = VolumeComputationType.None;
+        public VolumeComputationType VolumeType;
 
         // FLiftBuildSettings : TICLiftBuildSettings;
 
@@ -48,13 +47,13 @@ namespace VSS.TRex.Volumes.Executors
         /// The ID of the 'base' design. This is the design forming the 'from' surface in 
         /// the volumes calculation
         /// </summary>
-        Guid BaseDesignID = Guid.Empty;
+        Guid BaseDesignID;
 
         /// <summary>
         /// The ID of the 'to or top' design. This is the design forming the 'to or top' surface in 
         /// the volumes calculation
         /// </summary>
-        Guid TopDesignID = Guid.Empty;
+        Guid TopDesignID;
 
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query
@@ -67,7 +66,7 @@ namespace VSS.TRex.Volumes.Executors
         /// considered to be equivalent, or 'on-grade', and hence there is material still remaining to
         /// be cut
         /// </summary>
-        public double CutTolerance = VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE;
+        public double CutTolerance;
 
         /// <summary>
         /// FillTolerance determines the tolerance (in meters) that the 'To' surface
@@ -75,7 +74,7 @@ namespace VSS.TRex.Volumes.Executors
         /// considered to be equivalent, or 'on-grade', and hence there is material still remaining to
         /// be filled
         /// </summary>
-        public double FillTolerance = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
+        public double FillTolerance;
 
         /// <summary>
         /// The aggregator to be used to compute the volumes related results
@@ -83,9 +82,9 @@ namespace VSS.TRex.Volumes.Executors
         public SimpleVolumesCalculationsAggregator Aggregator { get; set; }
 
         /// <summary>
-        /// DI'ed context for designs service
+        ///  Local refernece to the sitemodel to be used during processing
         /// </summary>
-        private IDesignsService DesignsService = DIContext.Obtain<IDesignsService>();
+        private ISiteModel siteModel;
 
         /// <summary>
         /// Performs funcional initialisation of ComnputeVolumes state that is dependent on the initial state
@@ -115,8 +114,8 @@ namespace VSS.TRex.Volumes.Executors
 
             ComputeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
-            ComputeVolumes.RefOriginal = BaseDesignID == Guid.Empty ? null : DesignsService.Find(SiteModelID, BaseDesignID);
-            ComputeVolumes.RefDesign = TopDesignID == Guid.Empty ? null : DesignsService.Find(SiteModelID, TopDesignID);
+            ComputeVolumes.RefOriginal = BaseDesignID == Guid.Empty ? null : siteModel.Designs.Locate(BaseDesignID);
+            ComputeVolumes.RefDesign = TopDesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesignID);
 
             if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
                 ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal;
@@ -214,9 +213,9 @@ namespace VSS.TRex.Volumes.Executors
                         return VolumesResult;
 
                     // Obtain the site model context for the request
-                    ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(SiteModelID);
+                    siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(SiteModelID);
 
-                    if (SiteModel == null)
+                    if (siteModel == null)
                         return VolumesResult;
 
                     // Create and configure the aggregator that contains the business logic for the 
@@ -226,7 +225,7 @@ namespace VSS.TRex.Volumes.Executors
                         RequiresSerialisation = true,
                         SiteModelID = SiteModelID,
                         //LiftBuildSettings := LiftBuildSettings;
-                        CellSize = SiteModel.Grid.CellSize,
+                        CellSize = siteModel.Grid.CellSize,
                         VolumeType = VolumeType,
                         CutTolerance = CutTolerance,
                         FillTolerance = FillTolerance
@@ -236,7 +235,7 @@ namespace VSS.TRex.Volumes.Executors
                     VolumesCalculator ComputeVolumes = new VolumesCalculator
                     {
                         RequestDescriptor = RequestDescriptor,
-                        SiteModel = SiteModel,
+                        SiteModel = siteModel,
                         Aggregator = Aggregator,
                         BaseFilter = BaseFilter,
                         TopFilter = TopFilter,

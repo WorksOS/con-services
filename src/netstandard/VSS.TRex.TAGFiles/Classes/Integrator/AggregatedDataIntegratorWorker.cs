@@ -3,12 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -93,7 +96,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             ProcessedTasks.Clear();
 
             // Set capacity to maximum expected size to prevent List resizing while assembling tasks
-            //TODO ... ProcessedTasks.Capacity = VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch;
+            ProcessedTasks.Capacity = TRexConfig.MaxMappedTAGFilesToProcessPerAggregationEpoch;
 
             try
             {
@@ -149,26 +152,20 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                     if (TasksToProcess.Count > 0)
                     {
-                        for (int I = 0; I < Math.Min(TasksToProcess.Count - 1, TasksToProcess.Count /*Removed for POC VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch*/); I++)
+                        for (int I = 0; I < TasksToProcess.Count; I++)
                         {
-                            if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask TestTask))
+                            if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask TestTask) &&
+                                AnyCellPasses == (TestTask.AggregatedCellPasses != null) &&
+                                AnyMachineEvents == (TestTask.AggregatedMachineEvents != null))
                             {
-                                if (AnyCellPasses == (TestTask.AggregatedCellPasses != null) &&
-                                    AnyMachineEvents == (TestTask.AggregatedMachineEvents != null))
-                                {
-                                    //Todo Removed for Ignite POC
-                                    //if (ProcessedTasks.Count < VLPDSvcLocations.VLPDTagProc_MaxMappedTAGFilesToProcessPerAggregationEpoch)
-                                    //{
+                                if (ProcessedTasks.Count < TRexConfig.MaxMappedTAGFilesToProcessPerAggregationEpoch)
+                                { 
                                     if (TasksToProcess.TryDequeue(out TestTask))
-                                    {
                                         ProcessedTasks.Add(TestTask);
-                                    }
-
-                                    //}
-                                    //else
-                                    //{
-                                    //    break;
-                                    //}
+                                }
+                                else
+                                {
+                                    break;
                                 }
                             }
                         }
@@ -189,7 +186,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         if (AnyMachineEvents && (processedTask.AggregatedMachineEvents != null))
                         {
                             eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false);
-                            processedTask.AggregatedMachineEvents = null; // FreeAndNil(AggregatedMachineEvents);
+                            processedTask.AggregatedMachineEvents = null; 
                         }
 
                         //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
@@ -197,12 +194,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         // Integrate the cell passes from all cell pass aggregators containing cell passes for this machine and sitemodel
                         if (AnyCellPasses && processedTask.AggregatedCellPasses != null)
                         {
-                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null /* ProcessedTasks[I].TargetSiteModel*/, Task.AggregatedCellPasses, null);
-                            subGridIntegrator.IntegrateSubGridTree(//ProcessedTasks[I].AggregatedCellPasses,
-                                                                   //null,
-                                                                   //Task.AggregatedCellPasses,
-                                                                   SubGridTreeIntegrationMode.UsingInMemoryTarget,
-                                                                   SubgridHasChanged);
+                            SubGridIntegrator subGridIntegrator = new SubGridIntegrator(processedTask.AggregatedCellPasses, null, Task.AggregatedCellPasses, null);
+                            subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.UsingInMemoryTarget, SubgridHasChanged);
 
                             //Update current DateTime with the lates on
                             if (processedTask.TargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp) == -1)
@@ -212,7 +205,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                 Task.TargetMachine.LastKnownY = processedTask.TargetMachine.LastKnownY;
                             }
 
-                            processedTask.AggregatedCellPasses = null; // FreeAndNil(AggregatedCellPasses);
+                            processedTask.AggregatedCellPasses = null;
                         }
                     }
 
@@ -325,7 +318,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     // to prevent blocking of other aggreation threads while this occurs.
                     if (SiteModelMachineTargetValues != null)
                     {
-                        Task.AggregatedMachineEvents = null; // FreeAndNil(Task.AggregatedMachineEvents);
+                        Task.AggregatedMachineEvents = null; 
                     }
 
                     // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
@@ -350,21 +343,21 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                             // Integrate the cell pass data into the main sitemodel and commit each subgrid as it is updated
                             // ... first relable the passes with the machine ID
-                          Task.AggregatedCellPasses.ScanAllSubGrids(leaf =>
-                          {
-                            ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;
-
-                            foreach (var segment in serverLeaf.Cells.PassesData.Items)
+                            Task.AggregatedCellPasses.ScanAllSubGrids(leaf =>
                             {
-                              SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                              ServerSubGridTreeLeaf serverLeaf = (ServerSubGridTreeLeaf) leaf;
+                    
+                              foreach (var segment in serverLeaf.Cells.PassesData.Items)
                               {
-                                uint passCount = segment.PassesData.PassCount(x, y);
-                                for (int i = 0; i < passCount; i++)
-                                  segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
-                              });
-                            }
-                            return true;
-                          });
+                                SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+                                {
+                                  uint passCount = segment.PassesData.PassCount(x, y);
+                                  for (int i = 0; i < passCount; i++)
+                                    segment.PassesData.SetInternalMachineID(x, y, i, MachineFromDM.InternalSiteModelMachineIndex);
+                                });
+                              }
+                              return true;
+                            });
 
                             // ... then integrate them
                             SubGridIntegrator subGridIntegrator = new SubGridIntegrator(Task.AggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
@@ -393,6 +386,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     // All operations within the transaction to integrate the changes into the live model have completed successfully.
                     // Now commit those changes as a block.
                     storageProxy_Mutable.Commit();
+
+                    if (TRexConfig.AdviseOtherServicesOfDataModelChanges)
+                    {
+                        // Notify the site model in all contents in the grid that it's attributes have changed
+                        Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
+                    
+                        // Notify the immutable grid listeners that attributes of this sitemodel have changed.
+                        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+                        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyMutable | SiteModelNotificationEventGridMutability.NotifyMutable,
+                           SiteModelFromDM.ID, existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+                    }
                 }
                 finally
                 {

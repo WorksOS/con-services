@@ -2,16 +2,12 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.Services.Designs;
-using VSS.TRex.Services.SurveyedSurfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
@@ -24,32 +20,12 @@ namespace SurveyedSurfaceManager
             InitializeComponent();
         }
 
-        private SurveyedSurfaceServiceProxy DeployedSurveyedSurfaceService = null;
-        private SurveyedSurfaceService SurveyedSurfaceService = null;
-
+        private ISurveyedSurfaceManager surveyedSurfaceManager = DIContext.Obtain<ISurveyedSurfaceManager>();
+        private IDesignManager designManager = DIContext.Obtain<IDesignManager>();
         private IExistenceMaps ExistenceMaps = DIContext.Obtain<IExistenceMaps>();
-
-        private bool CheckConnection()
-        {
-            if ((DeployedSurveyedSurfaceService == null && SurveyedSurfaceService == null) ||
-                (DIContext.Obtain<IDesignsService>() == null))
-            {
-                MessageBox.Show(@"Not connected to service");
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (!CheckConnection())
-            {
-                return;
-            }
-
             // Get the site model ID
             if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
             {
@@ -81,75 +57,46 @@ namespace SurveyedSurfaceManager
                 TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
                 TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
-                if (DeployedSurveyedSurfaceService != null)
-                {
-                    DeployedSurveyedSurfaceService.Invoke_Add(ID, 
-                                                              new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),                                                          
-                                                              dateTimePicker.Value,
-                                                              extents);
+                ISurveyedSurface surveyedSurface = 
+                  surveyedSurfaceManager.Add(ID, 
+                                             new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                                             dateTimePicker.Value,
+                                             extents);
 
-                    throw new NotImplementedException("Existence map not set via Ignite service invocation to add a surveyes surface or design");
-                }
-                else
-                {
-                    SurveyedSurfaceService.AddDirect(ID, 
-                                                     new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
-                                                     dateTimePicker.Value,
-                                                     extents,
-                                                     out Guid SurveyedSurfaceID);
-
-                    // Store the existence map for the surveyd surface for later use
-                    ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, SurveyedSurfaceID, TTM.SubgridOverlayIndex());
-                }
+                // Store the existence map for the surveyd surface for later use
+                ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)
             {
                 MessageBox.Show($@"Exception: {E}");
             }
         }
-
-        /// <summary>
-        /// Register services...
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+      
+        private bool GetSiteModelID(out Guid ID)
         {
-            // Deploy the service as a cluster singleton
-            DeployedSurveyedSurfaceService = new SurveyedSurfaceServiceProxy();
-
-            try
-            { 
-                DeployedSurveyedSurfaceService.Deploy();
-            }
-            catch (Exception E)
+            if (Guid.TryParse(txtSiteModelID.Text, out ID))
             {
-                MessageBox.Show($@"Exception: {E}");
+              return true;
             }
+      
+          MessageBox.Show(@"Invalid Site Model ID");
+          ID = Guid.Empty;
+          return false;
         }
 
         private void btnListSurveyedSurfacesClick(object sender, EventArgs e)
         {
-            if (!CheckConnection())
-            {
-                return;
-            }
-
             try
             {
-                // Get the site model ID
-                if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
-                {
-                    MessageBox.Show(@"Invalid Site Model ID");
-                    return;
-                }
-
-                ISurveyedSurfaces ss = DeployedSurveyedSurfaceService != null ? DeployedSurveyedSurfaceService.Invoke_List(ID) : SurveyedSurfaceService.ListDirect(ID);
+              if (GetSiteModelID(out Guid SiteModelID))
+              {
+                ISurveyedSurfaces ss = surveyedSurfaceManager.List(SiteModelID);
 
                 if (ss == null || ss.Count == 0)
-                    MessageBox.Show(@"No surveyed surfaces");
+                  MessageBox.Show(@"No surveyed surfaces");
                 else
-                    MessageBox.Show("Surveyed Surfaces:\n" + ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
+                  MessageBox.Show("Surveyed Surfaces:\n" + ss.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
+              }
             }
             catch (Exception E)
             {
@@ -157,168 +104,110 @@ namespace SurveyedSurfaceManager
             }
         }
 
-        /// <summary>
-        /// Create direct access
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            SurveyedSurfaceService = new SurveyedSurfaceService(StorageMutability.Immutable);
-            SurveyedSurfaceService.Init(null);
-        }
-
         private void btnRemoveSurveyedSurface_Click(object sender, EventArgs e)
         {
-            if (!CheckConnection())
+          if (GetSiteModelID(out Guid SiteModelID))
+          {
+            // Get the surveyd surface ID
+            if (!Guid.TryParse(txtSurveyedSurfaceID.Text, out Guid SurveyedSurfaceID))
             {
-                return;
-            }
-
-            // Get the site model ID
-            if (!Guid.TryParse(txtSiteModelID.Text, out Guid SiteModelID))
-            {
-                MessageBox.Show(@"Invalid Site Model ID");
-                return;
-            }
-
-            // Get the site model ID
-            if (!Guid.TryParse(txtSurveyedSurfaceID.Text, out Guid SurveydSurfaceID))
-            {
-                MessageBox.Show(@"Invalid Surveyed Surface ID");
-                return;
+              MessageBox.Show(@"Invalid Surveyed Surface ID");
+              return;
             }
 
             // Invoke the service to remove the surveyed surface
             try
             {
-                bool result = false;
-
-                if (DeployedSurveyedSurfaceService != null)
-                {
-                    result = DeployedSurveyedSurfaceService.Invoke_Remove(SiteModelID, SurveydSurfaceID);
-                }
-                else
-                {
-                    result = SurveyedSurfaceService.RemoveDirect(SiteModelID, SurveydSurfaceID);
-                }
-
-                MessageBox.Show($@"Result for removing surveyed surface ID {SurveydSurfaceID} from Site Model {SiteModelID}: {result}");
+              bool result = surveyedSurfaceManager.Remove(SiteModelID, SurveyedSurfaceID);
+              MessageBox.Show($@"Result for removing surveyed surface ID {SurveyedSurfaceID} from Site Model {SiteModelID}: {result}");
             }
             catch (Exception E)
             {
-                MessageBox.Show($@"Exception: {E}");
+              MessageBox.Show($@"Exception: {E}");
             }
+          }
         }
 
         private void btnRemoveDesign_Click(object sender, EventArgs e)
         {
-            if (!CheckConnection())
-            {
-                return;
-            }
-
-            // Get the site model ID
-            if (!Guid.TryParse(txtSiteModelID.Text, out Guid SiteModelID))
-            {
-                MessageBox.Show(@"Invalid Site Model ID");
-                return;
-            }
-
+          if (GetSiteModelID(out Guid SiteModelID))
+          {
             // Get the design ID
             if (!Guid.TryParse(txtDesignID.Text, out Guid DesignID))
             {
-                MessageBox.Show(@"Invalid design ID");
-                return;
+              MessageBox.Show(@"Invalid design ID");
+              return;
             }
 
             // Invoke the service to remove the design
             try
             {
-                bool result = DIContext.Obtain<IDesignsService>().RemoveDirect(SiteModelID, DesignID);
+              bool result = designManager.Remove(SiteModelID, DesignID);
 
-                MessageBox.Show($@"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
+              MessageBox.Show($@"Result for removing design ID {DesignID} from Site Model {SiteModelID}: {result}");
             }
             catch (Exception E)
             {
-                MessageBox.Show($@"Exception: {E}");
+              MessageBox.Show($@"Exception: {E}");
             }
+          }
         }
 
         private void btnListDesigns_Click(object sender, EventArgs e)
         {
-            if (!CheckConnection())
+          try
+          {
+            if (GetSiteModelID(out Guid SiteModelID))
             {
-                return;
-            }
+              IDesigns designList = designManager.List(SiteModelID);
 
-            try
-            {
-                // Get the site model ID
-                if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
-                {
-                    MessageBox.Show(@"Invalid Site Model ID");
-                    return;
-                }
-
-                IDesigns designList = DIContext.Obtain<IDesignsService>().ListDirect(ID);
-
-                if (designList == null || designList.Count == 0)
-                    MessageBox.Show(@"No designs");
-                else
-                    MessageBox.Show("Designs:\n" + designList.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
+              if (designList == null || designList.Count == 0)
+                MessageBox.Show(@"No designs");
+              else
+                MessageBox.Show("Designs:\n" + designList.Select(x => x.ToString() + "\n").Aggregate((s1, s2) => s1 + s2));
             }
-            catch (Exception E)
-            {
-                MessageBox.Show($@"Exception: {E}");
-            }
+          }
+          catch (Exception E)
+          {
+            MessageBox.Show($@"Exception: {E}");
+          }
         }
 
         private void btnAddAsNewDesign_Click(object sender, EventArgs e)
         {
-            if (!CheckConnection())
-            {
-                return;
-            }
-
-            // Get the site model ID
-            if (!Guid.TryParse(txtSiteModelID.Text, out Guid ID))
-            {
-                MessageBox.Show(@"Invalid Site Model ID");
-                return;
-            }
-
+          if (GetSiteModelID(out Guid SiteModelID))
+          {
             // Get the offset
             if (!double.TryParse(txtOffset.Text, out double offset))
             {
-                MessageBox.Show(@"Invalid design offset");
-                return;
+              MessageBox.Show(@"Invalid design offset");
+              return;
             }
 
             // Invoke the service to add the design
             try
             {
-                // Load the file and extract its extents
-                TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-                TTM.LoadFromFile(Path.Combine(new [] { txtFilePath.Text, txtFileName.Text }));
+              // Load the file and extract its extents
+              TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+              TTM.LoadFromFile(Path.Combine(new[] {txtFilePath.Text, txtFileName.Text}));
 
-                BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
-                TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
-                TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+              BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+              TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+              TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
-                // Create the new design for the site model
-                DIContext.Obtain<IDesignsService>().AddDirect(ID,
-                                         new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
-                                         extents,
-                                         out Guid DesignID);
+              // Create the new design for the site model
+              IDesign design = designManager.Add(SiteModelID,
+                new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                extents);
 
-                // Store the existence map for the design for later use
-                ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, DesignID, TTM.SubgridOverlayIndex());
+              // Store the existence map for the design for later use
+              ExistenceMaps.SetExistenceMap(SiteModelID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)
             {
-                MessageBox.Show($@"Exception: {E}");
+              MessageBox.Show($@"Exception: {E}");
             }
+          }
         }
 
         private void txtFilePath_TextChanged(object sender, EventArgs e)
