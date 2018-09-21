@@ -43,7 +43,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
             {
                 using (BinaryReader reader = new BinaryReader(ms))
                 {
-                    SubGridTreePersistor.Read(mask, Interfaces.Consts.EXISTENCE_MAP_HEADER, Interfaces.Consts.EXISTENCE_MAP_VERSION, reader, null);
+                    SubGridTreePersistor.Read(mask, Interfaces.Consts.EXISTENCE_MAP_HEADER, Interfaces.Consts.EXISTENCE_MAP_VERSION, reader);
                 }
             }
 

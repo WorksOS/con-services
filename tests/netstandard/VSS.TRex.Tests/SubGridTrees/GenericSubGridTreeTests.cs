@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
@@ -10,12 +11,12 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_GenericSubGridTree_Creation()
         {
-           var tree1 = new GenericSubGridTree<bool>(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+           var tree1 = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
 
             Assert.True(tree1 != null && tree1.NumLevels == SubGridTreeConsts.SubGridTreeLevels && tree1.CellSize == 1.0,
                 "Generic sub grid tree not created as expected with 3 arg constructor");
 
-            var tree2 = new GenericSubGridTree<bool>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+            var tree2 = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
 
             Assert.True(tree2 != null && tree2.NumLevels == SubGridTreeConsts.SubGridTreeLevels && tree2.CellSize == 1.0,
                 "Generic sub grid tree not created as expected with  arg constructor");
@@ -24,7 +25,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_GenericSubGridTree_GetCell()
         {
-            var tree = new GenericSubGridTree<bool>(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+            var tree = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
 
             Assert.False(tree[0, 0]);
             tree[0, 0] = true;
@@ -34,7 +35,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_GenericSubGridTree_SetCell()
         {
-            var tree = new GenericSubGridTree<bool>(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+            var tree = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
 
             tree[0, 0] = true;
             Assert.True(tree[0, 0]);
@@ -43,20 +44,20 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_GenericSubGridTree_NullCellValue()
         {
-            var tree1 = new GenericSubGridTree<bool> (SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+            var tree1 = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
             Assert.False(tree1.NullCellValue);
 
-            var tree2 = new GenericSubGridTree<long> (SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<long>>());
+            var tree2 = new GenericSubGridTree<long, GenericLeafSubGrid<long>> (SubGridTreeConsts.SubGridTreeLevels, 1.0);
             Assert.Equal(0, tree2.NullCellValue);
 
-            var tree3 = new GenericSubGridTree<object>(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<long>>());
+            var tree3 = new GenericSubGridTree<object, GenericLeafSubGrid<object>>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
             Assert.Null(tree3.NullCellValue);
         }
 
         [Fact]
         public void Test_GenericSubGridTree_ForEach()
         {
-            var tree = new GenericSubGridTree<bool>(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+            var tree = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
             int count;
 
             // Count 'true' cells (should be none yet)

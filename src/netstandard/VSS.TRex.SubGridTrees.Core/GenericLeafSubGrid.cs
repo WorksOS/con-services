@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -71,7 +70,6 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
-          throw new NotImplementedException("Generic BinaryWriter based implementation not provided. Override to implement if needed.");
         }
 
         /// <summary>
@@ -83,7 +81,6 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte[] buffer)
         {
-          throw new NotImplementedException("Generic BinaryReader based implementation not provided. Override to implement if needed.");
         }
-    }
+  }
 }

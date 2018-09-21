@@ -204,6 +204,7 @@ namespace VSS.TRex.SiteModels
             if (machines == null)
             {
               machines = new MachinesList();
+              machines.DataModelID = ID;
               machines.LoadFromPersistentStore();
             }
 
@@ -282,8 +283,6 @@ namespace VSS.TRex.SiteModels
             // FActive:= True;
 
             IsTransient = isTransient;
-
-            Machines.DataModelID = ID;
 
             // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
@@ -498,9 +497,7 @@ namespace VSS.TRex.SiteModels
         public ISubGridTreeBitMask GetProductionDataExistanceMap()
         {
             if (existanceMap == null)
-            {
                 return LoadProductionDataExistanceMapFromStorage() == FileSystemErrorStatus.OK ? existanceMap : null;
-            }
 
             return existanceMap;
         }
@@ -513,25 +510,13 @@ namespace VSS.TRex.SiteModels
         {
             try
             {
-                // Create the new existance map instance
+              // Serialise and write out the stream to the persistent store
               if (existanceMap != null)
-              {
-                ISubGridTreeBitMask localExistanceMap = existanceMap;
-
-                // Save its content to storage
-                using (MemoryStream MS = new MemoryStream())
-                {
-                  using (BinaryWriter writer = new BinaryWriter(MS))
-                  {
-                    SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, writer, null);
-                    StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, MS);
-                  }
-                }
-              }
+                StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, existanceMap.ToStream());
             }
             catch (Exception e)
             {
-                Log.LogDebug($"Exception occurred: {e}");
+                Log.LogError($"Exception occurred: {e}");
                 return FileSystemErrorStatus.UnknownErrorWritingToFS;
             }
 
@@ -559,13 +544,7 @@ namespace VSS.TRex.SiteModels
                     return FileSystemErrorStatus.OK;
                 }
 
-                using (MS)
-                {
-                    using (BinaryReader reader = new BinaryReader(MS))
-                    {
-                        SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, reader, null);
-                    }
-                }
+                localExistanceMap.FromStream(MS);
 
                 // Replace existance map with the newly read map
                 existanceMap = localExistanceMap;

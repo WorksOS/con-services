@@ -1,9 +1,6 @@
 ﻿using System;
-using System.IO;
 using VSS.TRex.ExistenceMaps.Servers;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
@@ -26,17 +23,9 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="key"></param>
         /// <param name="mask"></param>
         /// <returns></returns>
-        public static void Execute(NonSpatialAffinityKey key, ISubGridTreeBitMask mask)
+        public static void Execute(NonSpatialAffinityKey key, ISubGridTreeBitMask mask) 
         {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(ms))
-                {
-                    SubGridTreePersistor.Write(mask, Consts.EXISTENCE_MAP_HEADER, Consts.EXISTENCE_MAP_VERSION, writer, null);
-
-                    ExistenceMapServer.Instance().SetExistenceMap(key, ms.ToArray());
-                }
-            }
+            ExistenceMapServer.Instance().SetExistenceMap(key, mask.ToBytes());
         }
 
         /// <summary>

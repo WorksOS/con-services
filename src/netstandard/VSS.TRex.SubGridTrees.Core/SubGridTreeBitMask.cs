@@ -4,6 +4,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -355,5 +356,8 @@ namespace VSS.TRex.SubGridTrees
             return true;
           });
         }
+
+    public override string SerialisedHeaderName() => "ExistenceMap";
+    public override int SerialisedVersion() => 1;
   }
 }

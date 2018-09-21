@@ -45,12 +45,6 @@ namespace VSS.TRex.Designs
     public long NumTINHeightRequests = 0;
     public long NumNonNullProbeResults = 0;
 
-    public struct TriangleArrayReference
-    {
-      public int TriangleArrayIndex;
-      public short Count;
-    }
-
     public struct TriangleSubGridCellExtents
     {
       public byte MinX, MinY, MaxX, MaxY;
@@ -58,9 +52,9 @@ namespace VSS.TRex.Designs
 
     private int[] SpatialIndexOptimisedTriangles;
 
-    private GenericSubGridTree<TriangleArrayReference> FSpatialIndexOptimised;
+    private OptimisedSpatialIndexSubGridTree FSpatialIndexOptimised;
 
-    public GenericSubGridTree<TriangleArrayReference> SpatialIndexOptimised
+    public OptimisedSpatialIndexSubGridTree SpatialIndexOptimised
     {
       get { return FSpatialIndexOptimised; }
     }
@@ -623,7 +617,7 @@ namespace VSS.TRex.Designs
       };
 
       // Create the optimised subgrid tree spatial index that minmises the number of allocations in the final result.
-      FSpatialIndexOptimised = new GenericSubGridTree<TriangleArrayReference>(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * ACellSize);
+      FSpatialIndexOptimised = new OptimisedSpatialIndexSubGridTree(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * ACellSize);
     }
 
     /// <summary>
@@ -885,10 +879,10 @@ namespace VSS.TRex.Designs
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="triIndex"></param>
-    private void IncludeTriangleInSubGridTreeIndex(GenericSubGridTree<List<int>> tree, uint x, uint y, int triIndex)
+    private void IncludeTriangleInSubGridTreeIndex(NonOptimisedSpatialIndexSubGridTree tree, uint x, uint y, int triIndex)
     {
       // Get subgrid from tree, creating the path and leaf if necessary
-      GenericLeafSubGrid<List<int>> leaf = tree.ConstructPathToCell(x, y, SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid<List<int>>;
+      var leaf = tree.ConstructPathToCell(x, y, SubGridPathConstructionType.CreateLeaf) as NonOptimisedSpatialIndexSubGridLeaf;
 
       leaf.GetSubGridCellIndex(x, y, out byte SubGridX, out byte SubGridY);
 
@@ -929,7 +923,7 @@ namespace VSS.TRex.Designs
       // determine which subgrids in the index intersect it and add it to those subgrids
       try
       {
-        var FSpatialIndex = new GenericSubGridTree<List<int>>(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * FCellSize);
+        var FSpatialIndex = new NonOptimisedSpatialIndexSubGridTree(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * FCellSize);
 
         Log.LogInformation($"In: Constructing subgrid index for design containing {FData.Triangles.Items.Length} triangles");
         try
@@ -941,7 +935,7 @@ namespace VSS.TRex.Designs
             ScanCellsOverTriangle(FSpatialIndex,
               triIndex,
               (tree, x, y) => false,
-              (tree, x, y, t) => IncludeTriangleInSubGridTreeIndex(tree as GenericSubGridTree<List<int>>, x, y, t),
+              (tree, x, y, t) => IncludeTriangleInSubGridTreeIndex(tree as NonOptimisedSpatialIndexSubGridTree, x, y, t),
               AddTrianglePieceToSubgridIndex);
           }
 
@@ -1246,6 +1240,7 @@ namespace VSS.TRex.Designs
 
         using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(fileName)))
         {
+          FSubgridIndex.FromStream(ms);
           using (BinaryReader reader = new BinaryReader(ms))
           {
             return SubGridTreePersistor.Read(FSubgridIndex, reader);
@@ -1259,40 +1254,7 @@ namespace VSS.TRex.Designs
         return false;
       }
     }
-
-    /// <summary>
-    /// Writes the content of the level 5 (leaf) subgrid in the optimised TTM spatial index
-    /// </summary>
-    /// <param name="subGrid"></param>
-    /// <param name="writer"></param>
-    private void SerialiseOutOptimisedSpatialIndexSubGridCells(ISubGrid subGrid, BinaryWriter writer)
-    {
-      var leaf = (GenericLeafSubGrid<TriangleArrayReference>) subGrid;
-      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-      {
-        writer.Write(leaf.Items[x, y].Count);
-        writer.Write(leaf.Items[x, y].TriangleArrayIndex);
-      });
-    }
-
-    /// <summary>
-    /// Writes the content of the level 5 (leaf) subgrid in the optimised TTM spatial index
-    /// </summary>
-    /// <param name="subGrid"></param>
-    /// <param name="reader"></param>
-    private void SerialiseInOptimisedSpatialIndexSubGridCells(ISubGrid subGrid, BinaryReader reader)
-    {
-      var leaf = (GenericLeafSubGrid<TriangleArrayReference>) subGrid;
-      TriangleArrayReference arrayReference = new TriangleArrayReference();
-
-      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-      {
-        arrayReference.Count = reader.ReadInt16();
-        arrayReference.TriangleArrayIndex = reader.ReadInt32();
-        leaf.Items[x, y] = arrayReference;
-      });
-    }
-
+    
     /// <summary>
     /// Loads the subgrid existence map from a file
     /// </summary>
@@ -1335,7 +1297,7 @@ namespace VSS.TRex.Designs
             ms.Position = bufPos;
 
             // Load the tree of references into the optimised triangle reference list
-            return SubGridTreePersistor.Read(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, reader, SerialiseInOptimisedSpatialIndexSubGridCells);
+            return SubGridTreePersistor.Read(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, reader);
           }
         }
       }
@@ -1461,8 +1423,9 @@ namespace VSS.TRex.Designs
             foreach (int triIndex in SpatialIndexOptimisedTriangles)
               writer.Write(triIndex);
 
+
             // Write out the subgrid tree of index references
-            SubGridTreePersistor.Write(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, writer, SerialiseOutOptimisedSpatialIndexSubGridCells);
+            SubGridTreePersistor.Write(FSpatialIndexOptimised, "OptmisedSpatialIndex", 1, writer);
           }
         }
 
