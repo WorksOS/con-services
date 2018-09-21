@@ -11,7 +11,7 @@ using VSS.Productivity3D.Models.Models;
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
   /// <summary>
-  /// Represents speed summary request.
+  /// Represents CMV change summary request.
   /// </summary>
   public class CMVChangeSummaryRequest : ProjectID, IValidatable
   {

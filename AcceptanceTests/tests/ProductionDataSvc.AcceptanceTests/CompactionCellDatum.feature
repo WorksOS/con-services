@@ -28,9 +28,9 @@ Examples:
 | CMVPercentChange    | ff91dd40-1569-4765-a2bc-014321f76ace |                                      |                                      | 27          | 36.206958   | -115.020144   | CMVPercentChange    |
 | HeightOutsideFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 154470b6-15ae-4cca-b281-eae8ac1efa6c |                                      | 0           | 36.20696541 | -115.02021047 | HeightOutsideFilter |
 | CutFillWithDesign   | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 8           | 36.20735707 | -115.01959313 | CutFillWithDesign   |
-| PassCountFilter     | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 4           | 36.20696541 | -115.02021047 | PassCountFilter     |
-| MachineSpeedFilter  | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 23          | 36.20696541 | -115.02021047 | MachineSpeedFilter  |
-| HeightFilter        | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 0           | 36.20696541 | -115.02021047 | HeightFilter        |
+#| PassCountFilter     | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 4           | 36.20696541 | -115.02021047 | PassCountFilter     |
+#| MachineSpeedFilter  | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 23          | 36.20696541 | -115.02021047 | MachineSpeedFilter  |
+#| HeightFilter        | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 0           | 36.20696541 | -115.02021047 | HeightFilter        |
 
 Scenario Outline: CompactionCellDatum - Bad Request 
 And projectUid "<ProjectUID>"

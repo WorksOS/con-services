@@ -208,21 +208,6 @@ this.CompactionGetSpeedSummary("FilterAreaMachine", "ff91dd40-1569-4765-a2bc-014
 this.CompactionGetSpeedSummary("TemperatureFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "1980fc8b-c892-4f9f-b673-bc09827bf2b5", "TemperatureFilter_Summary", ((string[])(null)));
 #line hidden
         }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Speed Summary: PassCountFilter")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionSpeed")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountFilter")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountFilter")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountFilter_Summary")]
-        public virtual void CompactionGetSpeedSummary_PassCountFilter()
-        {
-#line 16
-this.CompactionGetSpeedSummary("PassCountFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "PassCountFilter_Summary", ((string[])(null)));
-#line hidden
-        }
     }
 }
 #pragma warning restore

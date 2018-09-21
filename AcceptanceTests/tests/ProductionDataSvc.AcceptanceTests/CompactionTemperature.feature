@@ -28,5 +28,5 @@ Examples:
 | AlignmentFilter    | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c7a | AlignmentFilter_Summary    |
 | TemperatureFilter  | ff91dd40-1569-4765-a2bc-014321f76ace | 1980fc8b-c892-4f9f-b673-bc09827bf2b5 | TemperatureFilter_Summary  |
 | TempBoundaryFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 3c0b76b6-8e35-4729-ab83-f976732d999b | TempBoundaryFilter_Summary |
-| PassCountFilter    | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 | PassCountFilter_Summary    |
+#| PassCountFilter    | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 | PassCountFilter_Summary    |
 

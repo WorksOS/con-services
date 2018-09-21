@@ -15,12 +15,9 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -52,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return CompactionCmvPercentChangeResult.CreateEmptyResult();
+        return new CompactionCmvPercentChangeResult();
       }
 
       var projectSettings = await this.GetProjectSettingsTargets(projectUid);
@@ -70,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(LoggerFactory, RaptorClient)
           .Process(request) as CMVChangeSummaryResult;
-        var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result);
+        var returnResult = new CompactionCmvPercentChangeResult(result);
         Log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);
