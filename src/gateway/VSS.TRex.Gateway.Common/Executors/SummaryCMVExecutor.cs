@@ -4,6 +4,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Filters;
@@ -36,6 +37,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       CMVSummaryRequest request = item as CMVSummaryRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(CMVSummaryRequest));
+      
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var filter = ConvertFilter(request.Filter, siteModel);

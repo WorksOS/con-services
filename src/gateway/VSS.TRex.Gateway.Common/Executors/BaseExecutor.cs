@@ -57,5 +57,13 @@ namespace VSS.TRex.Gateway.Common.Executors
       combinedFilter.AttributeFilter.SurveyedSurfaceExclusionList = excludedIds;
       return combinedFilter;
     }
+
+    protected void ThrowRequestTypeCastException(Type requestClassType)
+    {
+      throw new ServiceException(
+        HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"{requestClassType} cast failed."));
+    }
   }
 }

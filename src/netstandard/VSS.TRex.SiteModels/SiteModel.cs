@@ -285,7 +285,6 @@ namespace VSS.TRex.SiteModels
             // FActive:= True;
 
             IsTransient = isTransient;
-
             // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
 
             grid = new ServerSubGridTree(ID);

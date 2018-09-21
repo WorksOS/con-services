@@ -39,6 +39,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       var request = item as TileRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(TileRequest));
+
       //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
       //Raymond: how are designs implemented in TRex?
       //We could create a derived class of DesignDescriptor containing the Guid and 3dpm can create a new TileRequest
