@@ -84,8 +84,8 @@ namespace VSS.TRex.Designs
 
         // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyMutable | SiteModelNotificationEventGridMutability.NotifyMutable,
-            siteModelID, designsChanged: true, machineTargetValuesChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, 
+          designsChanged: true, machineTargetValuesChanged: true);
       }
       catch (Exception e)
       {

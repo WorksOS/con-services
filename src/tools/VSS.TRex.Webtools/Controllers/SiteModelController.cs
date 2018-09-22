@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders.Composite;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.Logging;
@@ -25,9 +21,7 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpGet("{siteModelID}/extents")]
     public JsonResult GetExtents(string siteModelID)
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
-
-      return new JsonResult(siteModel?.SiteModelExtent);
+      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.SiteModelExtent);
     }
 
     /// <summary>

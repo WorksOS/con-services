@@ -302,8 +302,7 @@ namespace VSS.TRex.SubGridTrees
                     throw new ArgumentException("Level of subgrid being added is non-null and is not set correctly for the level it is being added to", nameof(Value.Level));
 
                 Value.Parent = this;
-                Value.SetOriginPosition((uint)(OriginX + X * SubGridTreeConsts.SubGridTreeDimension), 
-                                        (uint)(OriginY + Y * SubGridTreeConsts.SubGridTreeDimension));
+                Value.SetOriginPosition((uint)X, (uint)Y);
                 Value.Level = (byte)(Level + 1);
             }
 

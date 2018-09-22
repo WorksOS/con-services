@@ -108,7 +108,7 @@ constructor(
     this.getMachines();
 
     // Sleep for half a second to allow the project extents result to come back, then zoom all
-    setTimeout(() => this.zoomAll(), 500);
+    setTimeout(() => this.zoomAll(), 250);
   }
 
   public setProjectToZero(): void {

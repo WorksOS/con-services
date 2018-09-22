@@ -394,8 +394,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     
                         // Notify the immutable grid listeners that attributes of this sitemodel have changed.
                         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-                        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyMutable | SiteModelNotificationEventGridMutability.NotifyMutable,
-                           SiteModelFromDM.ID, existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+                        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, SiteModelFromDM.ID, 
+                          existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
                     }
                 }
                 finally

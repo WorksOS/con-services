@@ -1,24 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.TRex.DI;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Geometry;
-using VSS.TRex.Logging;
-using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
@@ -34,6 +20,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Generates a tile...
     /// </summary>
     /// <param name="siteModelID">Grid to return status for</param>
+    /// <param name="filter"></param>
     /// <returns></returns>
     [HttpGet("{siteModelID}")]
     public JsonResult GetVolume(string siteModelID,
@@ -41,6 +28,7 @@ namespace VSS.TRex.Webtools.Controllers
     {
       var filterJson = Encoding.ASCII.GetString(Convert.FromBase64String(filter));
 
+      // Create the two filters necessary to capture the earliest and latest surfaces for the volume
       var baseFilter = JsonConvert.DeserializeObject<CombinedFilter>(filterJson);
       baseFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
       baseFilter.SpatialFilter.Fence?.UpdateExtents();

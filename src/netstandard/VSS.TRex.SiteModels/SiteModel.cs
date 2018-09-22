@@ -375,7 +375,7 @@ namespace VSS.TRex.SiteModels
             if (!(MajorVersion == kMajorVersion && (MinorVersion == kMinorVersion)))
             {
                 Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
-                throw new TRexException($"Unknown version number { MajorVersion }:{ MinorVersion} in {nameof(SiteModel)}.Read()");
+                throw new TRexException($"Unknown version number {MajorVersion}:{MinorVersion} in {nameof(SiteModel)}.Read()");
             }
 
             // Name = reader.ReadString();
@@ -494,8 +494,7 @@ namespace VSS.TRex.SiteModels
 
                     if (Result == FileSystemErrorStatus.OK)
                     {
-                        Log.LogDebug($"Site model read from FS file (ID:{ID}) succeeded");
-                        Log.LogDebug($"Data model extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+                        Log.LogInformation($"Site model read from FS file (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
                     }
                     else
                     {
