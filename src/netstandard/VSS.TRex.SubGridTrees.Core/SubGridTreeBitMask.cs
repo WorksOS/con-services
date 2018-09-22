@@ -4,7 +4,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {

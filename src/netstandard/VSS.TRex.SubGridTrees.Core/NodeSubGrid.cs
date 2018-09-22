@@ -74,7 +74,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         /// <param name="SubGridX"></param>
         /// <param name="SubGridY"></param>
-        public void DeleteSubgrid(byte SubGridX, byte SubGridY)
+        public void DeleteSubgrid(int SubGridX, int SubGridY)
         {
             ISubGrid Subgrid = GetSubGrid(SubGridX, SubGridY);
 
@@ -90,7 +90,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        public override ISubGrid GetSubGrid(byte X, byte Y)
+        public override ISubGrid GetSubGrid(int X, int Y)
         {
             if (Cells != null)
                 return Cells[X, Y];
@@ -290,7 +290,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="Value"></param>
-        public override void SetSubGrid(byte X, byte Y, ISubGrid Value)
+        public override void SetSubGrid(int X, int Y, ISubGrid Value)
         {
             // Set the origin position and level for the subgrid as these quantities are
             // relative to the location of the subgrid in the tree. Throw an exception if the 
@@ -302,7 +302,8 @@ namespace VSS.TRex.SubGridTrees
                     throw new ArgumentException("Level of subgrid being added is non-null and is not set correctly for the level it is being added to", nameof(Value.Level));
 
                 Value.Parent = this;
-                Value.SetOriginPosition(X, Y);
+                Value.SetOriginPosition((uint)(OriginX + X * SubGridTreeConsts.SubGridTreeDimension), 
+                                        (uint)(OriginY + Y * SubGridTreeConsts.SubGridTreeDimension));
                 Value.Level = (byte)(Level + 1);
             }
 
@@ -323,7 +324,7 @@ namespace VSS.TRex.SubGridTrees
                 // Add it to the sparse list
                 if (SparseCellCount < TRexConfig.SubGridTreeNodeCellSparcityLimit())
                 {
-                    SparseCells[SparseCellCount++] = new SubgridTreeSparseCellRecord(X, Y, Value);
+                    SparseCells[SparseCellCount++] = new SubgridTreeSparseCellRecord((byte)X, (byte)Y, Value);
                 }
                 else
                 {

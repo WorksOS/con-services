@@ -5,9 +5,8 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities.ExtensionMethods;
+
 
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
@@ -46,12 +45,15 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <summary>
     /// Notify all interested nodes in the immutable grid a site model has changed attributes
     /// </summary>
+    /// <param name="targetGrids"></param>
     /// <param name="siteModelID"></param>
     /// <param name="existenceMapChanged"></param>
     /// <param name="existenceMapChangeMask"></param>
     /// <param name="designsChanged"></param>
+    /// <param name="csibChanged"></param>
     /// <param name="machinesChanged"></param>
     /// <param name="machineTargetValuesChanged"></param>
+    /// <param name="surveyedSurfacesChanged"></param>
     public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
       Guid siteModelID,
       bool existenceMapChanged = false,

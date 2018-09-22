@@ -206,7 +206,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        public virtual ISubGrid GetSubGrid(byte X, byte Y)
+        public virtual ISubGrid GetSubGrid(int X, int Y)
         {
             throw new Exception("SubGrid.GetSubGrid() should never be called");
         }
@@ -214,12 +214,13 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// A virtual method representing an access mechanism to request a child subgrid at the X/Y location in this subgrid
         /// Note: By definition, leaf sub grids do not have child subgrids.
+        /// Note: The X, Y location is relative to the elements in the subgrid (ie: 0..dimension(x/x)-1)
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public virtual void SetSubGrid(byte X, byte Y, ISubGrid value)
+        public virtual void SetSubGrid(int X, int Y, ISubGrid value)
         {
             throw new Exception("SubGrid.SetSubGrid() should never be called");
         }

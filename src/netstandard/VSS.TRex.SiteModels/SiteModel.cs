@@ -529,8 +529,10 @@ namespace VSS.TRex.SiteModels
             try
             {
               // Serialise and write out the stream to the persistent store
-              if (existanceMap != null)
-                StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, existanceMap.ToStream());
+              if (existanceMap == null)
+                return FileSystemErrorStatus.OK;
+
+              StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, existanceMap.ToStream());
             }
             catch (Exception e)
             {
