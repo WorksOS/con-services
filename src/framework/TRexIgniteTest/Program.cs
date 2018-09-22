@@ -41,8 +41,6 @@ namespace TRexIgniteTest
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
       {
-        typeof(VSS.TRex.Rendering.Implementations.Framework.RenderingFactory),
-        typeof(VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses.TileRenderResponse_Framework)
       };
 
       foreach (var asmType in AssemblyDependencies)
