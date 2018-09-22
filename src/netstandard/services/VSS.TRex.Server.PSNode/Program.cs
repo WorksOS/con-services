@@ -13,20 +13,17 @@ using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Servers.Compute;
-using VSS.TRex.Services.Designs;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -145,7 +142,6 @@ namespace VSS.TRex.Server.PSNode
     {
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
-      DoServiceInitialisation();
 
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
@@ -153,6 +149,9 @@ namespace VSS.TRex.Server.PSNode
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+
+      DoServiceInitialisation();
+
       await Task.Delay(-1, cancelTokenSource.Token);
       return 0;
     }

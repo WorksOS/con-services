@@ -14,9 +14,10 @@ using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
@@ -73,6 +74,9 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
       .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
+        // Register the listener for site model attribute change notifications
+      .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+
       .Complete();
     }
 
@@ -117,6 +121,12 @@ namespace VSS.TRex.Server.TINSurfaceExport
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
+    private static void DoServiceInitialisation()
+    {
+      // Start listening to site model change notifications
+      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+    }
+
     static async Task<int> Main(string[] args)
     {
       EnsureAssemblyDependenciesAreLoaded();
@@ -133,6 +143,9 @@ namespace VSS.TRex.Server.TINSurfaceExport
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+
+      DoServiceInitialisation();
+
       await Task.Delay(-1, cancelTokenSource.Token);
       return 0;
     }
