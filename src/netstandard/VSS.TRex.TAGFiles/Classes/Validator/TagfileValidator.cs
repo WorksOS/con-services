@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -43,7 +44,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       GetProjectAndAssetUidsResult tfaResult;
       try
       {
-        tfaResult = await tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest).ConfigureAwait(false) as GetProjectAndAssetUidsResult;
+        var customHeaders = new Dictionary<string, string>();
+        tfaResult = await tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest, customHeaders).ConfigureAwait(false) as GetProjectAndAssetUidsResult;
       }
       catch (Exception e)
       {
