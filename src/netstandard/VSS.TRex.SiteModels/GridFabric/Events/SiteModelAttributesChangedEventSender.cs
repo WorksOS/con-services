@@ -87,7 +87,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       }
       catch (Exception e)
       {
-        Log.LogDebug($"Exception occurred sending model attributes changed notification: {e}");
+        Log.LogError($"Exception occurred sending model attributes changed notification: {e}");
       }
     }
   }

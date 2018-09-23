@@ -46,7 +46,7 @@ namespace VSS.TRex.Events
       if (machineID < 0 || machineID >= MachineIDMap.Length)
         return null;
 
-      // Return (creating if necessarty) the machine event lists for this machine and allow required events to lazy load.
+      // Return (creating if necessary) the machine event lists for this machine and allow required events to lazy load.
       if (MachineIDMap[machineID] == null)
         lock (this)
         {

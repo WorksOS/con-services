@@ -32,7 +32,8 @@ namespace VSS.TRex.SiteModels
   /// and events among other things.
   /// Access mechanisms are typically lock free with the only exceptions being those occasions when thread contention
   /// to create a new or updated unstance of some element needs to be managed.
-  /// 
+  /// </summary>
+  /// <remarks>
   /// Note(1): This class should never be serialized over the wire to any context for any reason. All contects requiring access
   /// to a sitemodel must use the local DIContext to access the SiteModels manager to obtain a reference to the desired sitemodel.
   /// 
@@ -51,7 +52,7 @@ namespace VSS.TRex.SiteModels
   /// recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a subgrid
   /// or cache derivative is always consistently valid for the duration of that reference, within a request, regardless of spatial
   /// data invalidation due to mutating changes, even of those referenced elements.
-  /// </summary>
+  /// </remarks>
   public class SiteModel : ISiteModel, IBinaryReaderWriter
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -401,7 +402,7 @@ namespace VSS.TRex.SiteModels
             if (!(MajorVersion == kMajorVersion && (MinorVersion == kMinorVersion)))
             {
                 Log.LogError($"Unknown version number {MajorVersion}:{MinorVersion} in Read()");
-                throw new TRexException($"Unknown version number {MajorVersion}:{MinorVersion} in {nameof(SiteModel)}.Read()");
+                throw new TRexException($"Unknown version number {MajorVersion}:{MinorVersion} in {nameof(SiteModel)}.{nameof(Read)}");
             }
 
             // Name = reader.ReadString();
