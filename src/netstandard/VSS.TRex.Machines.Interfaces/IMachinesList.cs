@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Machines.Interfaces
 {
@@ -59,7 +60,7 @@ namespace VSS.TRex.Machines.Interfaces
       bool isJohnDoeMachine,
       Guid machineID);
 
-    void SaveToPersistentStore();
+    void SaveToPersistentStore(IStorageProxy StorageProxy);
     void LoadFromPersistentStore();
   }
 }

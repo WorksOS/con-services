@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -11,11 +11,10 @@ import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../pr
   providers: [ProjectService]
 //  styleUrls: ['./project.component.less']
 })
-
 export class ProjectComponent {
   private zoomFactor: number = 0.2;
 
-  public projectUid: string = ""; 
+  public projectUid: string;
   public mode: number = 0;
   public pixelsX: number = 850;
   public pixelsY: number = 500;
@@ -33,7 +32,7 @@ export class ProjectComponent {
 
   public projectVolume: VolumeResult = new VolumeResult(0, 0, 0, 0, 0);
 
-  public mousePixelLocation : string;
+  public mousePixelLocation: string;
   public mouseWorldLocation: string;
 
   private mouseWorldX: number = 0;
@@ -58,7 +57,43 @@ export class ProjectComponent {
   public newDesignGuid: string = "";
   public designs: Design[] = [];
 
-    constructor(
+  public machines: Machine[] = [];
+
+  public existenceMapSubGridCount: number = 0;
+
+  public machineColumns: string[] = 
+  ["id",
+  "internalSiteModelMachineIndex",
+  "name",
+  "machineType",
+  "deviceType",
+  "machineHardwareID",
+  "isJohnDoeMachine",
+  "lastKnownX",
+  "lastKnownY",
+  "lastKnownPositionTimeStamp",
+  "lastKnownDesignName",
+  "lastKnownLayerId"];
+
+  public machineColumnNames: string[] =
+   ["ID",
+    "Index", // "internalSiteModelMachineIndex"
+    "Name",
+    "Type",
+    "Device",
+    "Hardware ID",
+    "John Doe",
+    "Last Known X",
+    "Last Known Y",
+    "Last Known Date",
+    "Last Known Design",
+    "Last Known Layer"];
+
+  public projectMetadata: ISiteModelMetadata;
+
+  public allProjectsMetadata: ISiteModelMetadata[] = [];
+
+constructor(
     private projectService: ProjectService
   ) { }
 
@@ -67,15 +102,19 @@ export class ProjectComponent {
       modes.forEach(mode => this.displayModes.push(mode));
       this.displayMode = this.displayModes[0];
     });
+
+    this.getAllProjectMetadata();
   }
 
   public selectProject(): void {
     this.getProjectExtents();
+    this.getExistenceMapSubGridCount();
     this.getSurveyedSurfaces();
     this.getDesigns();
+    this.getMachines();
 
     // Sleep for half a second to allow the project extents result to come back, then zoom all
-    setTimeout(() => this.zoomAll(), 500);
+    setTimeout(() => this.zoomAll(), 250);
   }
 
   public setProjectToZero(): void {
@@ -100,7 +139,7 @@ export class ProjectComponent {
 
   public getTile(): void {
     // If there is no project bail...
-    if (this.projectUid === "")
+    if (this.projectUid == undefined)
       return;
 
     // Make sure the displayed tile extents is updated
@@ -321,6 +360,37 @@ export class ProjectComponent {
   public deleteDesign(design: Design): void {
     this.projectService.deleteDesign(this.projectUid, design.id).subscribe(x =>
       this.designs.splice(this.designs.indexOf(design), 1));
+  }
+
+  public getMachines(): void {
+    var result: Machine[] = [];
+    this.projectService.getMachines(this.projectUid).subscribe(
+      machines => {
+        machines.forEach(machine => result.push(machine));
+        this.machines = result;
+      });
+  }
+
+  public getExistenceMapSubGridCount(): void {
+    this.projectService.getExistenceMapSubGridCount(this.projectUid).subscribe(count =>
+      this.existenceMapSubGridCount = count);
+  }
+
+  public getAllProjectMetadata(): void {
+    var result: ISiteModelMetadata[] = [];
+    this.projectService.getAllProjectMetadata().subscribe(
+      metadata => {
+        metadata.forEach(data => result.push(data));
+        this.allProjectsMetadata = result;
+      });
+  }
+
+  public projectMetadataChanged(event: any): void {
+    this.projectUid = this.projectMetadata.id;
+  }
+
+  public updateAllProjectsMetadata(): void {
+    this.getAllProjectMetadata();
   }
 }
 

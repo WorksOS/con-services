@@ -2,11 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Utilities;
+using VSS.TRex.Utilities.ExtensionMethods;
 
 /*
 Glossary
@@ -673,5 +676,55 @@ namespace VSS.TRex.SubGridTrees
       {
         throw new NotImplementedException();
       }
+
+      /// <summary>
+      /// The header string to be written into a serialised subgrid tree
+      /// </summary>
+      /// <returns></returns>
+      public virtual string SerialisedHeaderName() => string.Empty;
+
+      /// <summary>
+      /// The header version to be written into a serialised subgrid tree
+      /// </summary>
+      /// <returns></returns>
+      public virtual int SerialisedVersion() => 0;
+
+      /// <summary>
+      /// The internal logic to serialise out the content of the subgrid tree using the SubGridTreePersistor
+      /// </summary>
+      /// <param name="reader"></param>
+      private void SerialiseInReader(BinaryReader reader) => SubGridTreePersistor.Read(this, SerialisedHeaderName(), SerialisedVersion(), reader);
+
+      /// <summary>
+      /// The internal logic to serialise in the content of the subgrid tree using the SubGridTreePersistor
+      /// </summary>
+      /// <param name="writer"></param>
+      private void SerialiseOutWriter(BinaryWriter writer) => SubGridTreePersistor.Write(this, SerialisedHeaderName(), SerialisedVersion(), writer);
+
+      /// <summary>
+      /// Serialises the content of the subgrid tree to a byte array
+      /// </summary>
+      /// <returns></returns>
+      public byte[] ToBytes() => FromToBytes.ToBytes(SerialiseOutWriter);
+
+      /// <summary>
+      /// Deserialises the content of the subgrid tree from a byte array
+      /// </summary>
+      /// <returns></returns>
+      public void FromBytes(byte[] bytes) => FromToBytes.FromBytes(bytes, SerialiseInReader);
+
+      /// <summary>
+      /// Serialises the content of the subgrid tree to a memory stream
+      /// </summary>
+      /// <returns></returns>
+      public MemoryStream ToStream() => FromToBytes.ToStream(SerialiseOutWriter);
+
+      public void ToStream(Stream stream) => FromToBytes.ToStream(stream, SerialiseOutWriter);
+
+      /// <summary>
+      /// Deserialises the content of the subgrid tree from a memory stream
+      /// </summary>
+      /// <returns></returns>
+      public void FromStream(MemoryStream stream) => FromToBytes.FromStream(stream, SerialiseInReader);
     }
 }

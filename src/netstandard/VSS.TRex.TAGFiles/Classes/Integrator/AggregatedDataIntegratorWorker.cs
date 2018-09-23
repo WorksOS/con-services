@@ -315,7 +315,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     }
 
                     // Free the aggregated machine events as they are no longer needed. Don't do this under a SiteModel write access lock
-                    // to prevent blocking of other aggreation threads while this occurs.
+                    // to prevent blocking of other aggregation threads while this occurs.
                     if (SiteModelMachineTargetValues != null)
                     {
                         Task.AggregatedMachineEvents = null; 
@@ -394,9 +394,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     
                         // Notify the immutable grid listeners that attributes of this sitemodel have changed.
                         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-                        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyMutable | SiteModelNotificationEventGridMutability.NotifyMutable,
-                           SiteModelFromDM.ID, existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+                        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, SiteModelFromDM.ID, 
+                          existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
                     }
+
+                    // Update the metadata for the site model
+                    Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
+                    DIContext.Obtain<ISiteModelMetadataManager>().Update
+                      (siteModelID: SiteModelFromDM.ID, lastModifiedDate:DateTime.Now, siteModelExtent:SiteModelFromDM.SiteModelExtent,
+                      machineCount: SiteModelFromDM.Machines.Count);
                 }
                 finally
                 {

@@ -6,11 +6,11 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 {
     public interface INodeSubGrid : ISubGrid
     {
-        void DeleteSubgrid(byte SubGridX, byte SubGridY);
+        void DeleteSubgrid(int SubGridX, int SubGridY);
 
-        new ISubGrid GetSubGrid(byte X, byte Y);
+        new ISubGrid GetSubGrid(int X, int Y);
 
-        new void SetSubGrid(byte X, byte Y, ISubGrid Value);
+        new void SetSubGrid(int X, int Y, ISubGrid Value);
 
         bool GetSubGridContainingCell(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY);
 

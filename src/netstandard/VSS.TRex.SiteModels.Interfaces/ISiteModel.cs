@@ -68,7 +68,7 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     void Include(ISiteModel Source);
     void Write(BinaryWriter writer);
-    bool Read(BinaryReader reader);
+    void Read(BinaryReader reader);
     bool SaveToPersistentStore(IStorageProxy StorageProxy);
     FileSystemErrorStatus LoadFromPersistentStore();
 
@@ -82,5 +82,7 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     IMachinesProductionEventLists MachinesTargetValues { get; }
     bool MachineTargetValuesLoaded { get; }
+
+    ISiteModelMetadata MetaData { get; }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -8,7 +9,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
 {
-  public class DecimationElevationSubGridTree : GenericSubGridTree<float>
+  public class DecimationElevationSubGridTree : GenericSubGridTree<float, GenericLeafSubGrid_Float>
   {
     public override float NullCellValue => Common.Consts.NullHeight;
   }
@@ -69,11 +70,11 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridDecimator
         {
           SubGridUtilities.SubGridDimensionalIterator((x, y) =>
           {
-            float elev = ((GenericLeafSubGrid<float>) subGrid).Items[x, y];
+            float elev = ((GenericLeafSubGrid_Float) subGrid).Items[x, y];
             if (elev != 0)
               ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
             else
-              ((GenericLeafSubGrid<float>)subGrid).Items[x, y] = Common.Consts.NullHeight;
+              ((GenericLeafSubGrid_Float)subGrid).Items[x, y] = Common.Consts.NullHeight;
           });
 
           return true;

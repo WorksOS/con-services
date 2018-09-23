@@ -7,11 +7,12 @@ using VSS.TRex.SubGridTrees.Types;
 namespace VSS.TRex.SubGridTrees
 {
   /// <summary>
-  /// GenericSubGridTree in T implements a subgrid tree where all the cells in the leaf subgrids are generic type T.
+  /// GenericSubGridTree in T implements a subgrid tree where all the cells in the leaf subgrids are generic type T, which
+  /// are in turn implemented using a GenericLeafSubgrid in T based subclass, S.
   /// The tree automates tree node and leaf subgrid management behind a uniform tree wide Cells[,] facade.
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  public class GenericSubGridTree<T> : SubGridTree
+  public class GenericSubGridTree<T, S> : SubGridTree where S : GenericLeafSubGrid<T>, ILeafSubGrid, new()
   {
     /// <summary>
     /// Default indexer property to access the cells as a default property of the generic subgrid
@@ -41,7 +42,7 @@ namespace VSS.TRex.SubGridTrees
         return NullCellValue;
 
       subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
-      return ((GenericLeafSubGrid<T>) subGrid).Items[subGridX, subGridY];
+      return ((S) subGrid).Items[subGridX, subGridY];
     }
 
     /// <summary>
@@ -65,7 +66,7 @@ namespace VSS.TRex.SubGridTrees
       else
       {
         subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
-        ((GenericLeafSubGrid<T>) subGrid).Items[subGridX, subGridY] = value;
+        ((S) subGrid).Items[subGridX, subGridY] = value;
       }
     }
 
@@ -98,7 +99,7 @@ namespace VSS.TRex.SubGridTrees
     /// <param name="numLevels"></param>
     /// <param name="cellSize"></param>
     public GenericSubGridTree(byte numLevels,
-      double cellSize) : base(numLevels, cellSize, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<T>>())
+      double cellSize) : base(numLevels, cellSize, new SubGridFactory<NodeSubGrid, S>())
     {
     }
 
@@ -107,7 +108,7 @@ namespace VSS.TRex.SubGridTrees
     /// The sub grid factory is created from the standard NodeSubGrid class, and the base generic leaf subgrid
     /// derived from T. Note: This is only suitable if the default(T) value is appropriate for the cell null value.
     /// </summary>
-    public GenericSubGridTree() : base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<T>>())
+    public GenericSubGridTree() : base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, new SubGridFactory<NodeSubGrid, S>())
     {
     }
 
@@ -121,7 +122,7 @@ namespace VSS.TRex.SubGridTrees
     {
       ScanAllSubGrids(subgrid =>
       {
-        ((GenericLeafSubGrid<T>) subgrid).ForEach(functor);
+        ((S) subgrid).ForEach(functor);
         return true;
       });
     }

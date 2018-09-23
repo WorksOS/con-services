@@ -11,6 +11,7 @@ using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -72,7 +73,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// </summary>
     /// <param name="dataStore"></param>
     /// <returns></returns>
-    private BoundingWorldExtent3D DataStoreExtents(GenericSubGridTree<float> dataStore)
+    private BoundingWorldExtent3D DataStoreExtents(GenericSubGridTree_Float dataStore)
     {
       BoundingWorldExtent3D ComputedGridExtent = BoundingWorldExtent3D.Inverted();
 
@@ -161,7 +162,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
         }
 
         // Create the TIN decimator and populate it with the retrieve subgrids
-        GenericSubGridTree<float> datastore = new GenericSubGridTree<float>(SiteModel.Grid.NumLevels, SiteModel.Grid.CellSize);
+        GenericSubGridTree_Float datastore = new GenericSubGridTree_Float(SiteModel.Grid.NumLevels, SiteModel.Grid.CellSize);
         foreach (var subgrid in ((SurfaceTask)processor.Task).SurfaceSubgrids)
         {
           INodeSubGrid newGridNode = datastore.ConstructPathToCell(subgrid.OriginX, subgrid.OriginY, SubGridPathConstructionType.CreatePathToLeaf) as INodeSubGrid;

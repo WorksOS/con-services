@@ -88,3 +88,31 @@ export class SurveyedSurface{
   extents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 }
 
+export class Machine {
+  id: string = "";
+  internalSiteModelMachineIndex : number;
+  name : string; 
+  machineType: number;
+  deviceType: number;
+  machineHardwareID : string;
+  isJohnDoeMachine:boolean;
+  lastKnownX: number;
+  lastKnownY:number;
+  lastKnownPositionTimeStamp: Date;
+  lastKnownDesignName:string;
+  lastKnownLayerId: number;
+  targetValueChanges: any;
+  compactionDataReported: boolean;
+  compactionSensorType:number;
+}
+
+export interface ISiteModelMetadata {
+  id: string;
+  name: string;
+  description:string;
+  lastModifiedDate: Date;
+  siteModelExtent: ProjectExtents;
+  machineCount:number;
+  designCount: number;
+  surveyedSurfaceCount: number;
+}

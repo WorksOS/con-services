@@ -355,5 +355,8 @@ namespace VSS.TRex.SubGridTrees
             return true;
           });
         }
+
+    public override string SerialisedHeaderName() => "ExistanceMap";
+    public override int SerialisedVersion() => 1;
   }
 }

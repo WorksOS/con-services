@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Types;
 
@@ -228,5 +229,15 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <param name="cellExtent"></param>
         /// <returns></returns>
         bool CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent);
-    }
+        
+        byte[] ToBytes();
+
+        void FromBytes(byte[] bytes);
+
+        MemoryStream ToStream();
+
+        void ToStream(Stream stream);
+
+        void FromStream(MemoryStream stream);
+  }
 }

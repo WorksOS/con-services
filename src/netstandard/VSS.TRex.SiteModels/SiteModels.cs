@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels
@@ -104,6 +107,10 @@ namespace VSS.TRex.SiteModels
           Log.LogInformation($"Creating new site model {id} and adding to internal cache");
 
           CachedModels.Add(id, result);
+
+          // Establish the metadata entry for this new sitemodel
+          DIContext.Obtain<ISiteModelMetadataManager>().Add(id, result.MetaData);
+
           return result;
         }
       }
@@ -138,10 +145,13 @@ namespace VSS.TRex.SiteModels
       // 6. Machines
       // 7. Machines target values
 
-      // Remove the site model from the cache
+      ISiteModel siteModel;
+
+      // Construct a new sitemodel that preserves elements not affected by the notification and replace the existing 
+      // site model reference with it.
       lock (CachedModels)
       {
-        CachedModels.TryGetValue(SiteModelID, out ISiteModel siteModel);
+        CachedModels.TryGetValue(SiteModelID, out siteModel);
 
         if (siteModel == null)
           return;
@@ -164,7 +174,41 @@ namespace VSS.TRex.SiteModels
 
         // Replace the site model reference in the cache with the new site model
         CachedModels[SiteModelID] = newSiteModel;
+        siteModel = newSiteModel;
       }
+
+      // If the notification contains an exeistance map change mask then all cached subgrid based elements that match the masked subgrids
+      // need to be evicted from all cached contexts related to this sitemodel. Note: This operation is not performed under a lock as the 
+      // removal operations on the cache are lock free
+      // [todo: validate lock free operations on general result and similar cache stores as implemented]
+      if (message.ExistenceMapChangeMask != null)
+      {
+        // Get the site model reference in case there was not a need to replace per the logic above
+        siteModel = siteModel ?? CachedModels[SiteModelID];
+
+        // Create and deserialise the subgrid but mask fron the message
+        ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
+        mask.FromBytes(message.ExistenceMapChangeMask);
+        
+        // Iterate over all leaf subgrids in the mask. For each get the matching node subgrid in sitgeModel.Grid, 
+        // and remove all subgrid references from that node subgrid matching by the bits in the bit mask subgrid
+        mask.ScanAllSubGrids(leaf => 
+        {
+          // Obtain the matching node subgrid in Grid
+          ISubGrid node = siteModel.Grid.LocateClosestSubGridContaining(leaf.OriginX, leaf.OriginY, leaf.Level);
+
+          if (node != null) // There are subgrids present in Grid that match the subgrids identified by leaf
+          {
+            // Remove the elements identified in leaf from the node subgrid
+            ((ISubGridTreeLeafBitmapSubGrid) leaf).ForEachSetBit((x, y) => node.SetSubGrid(x, y, null));
+
+            // Remove other cache elements dependent on these subgrids
+            // Todo... Remove other cache elements dependent on these subgrids
+          }
+
+          return true; // Keep processing leaf subgrids
+        });      
+      }   
     }
   }
 }

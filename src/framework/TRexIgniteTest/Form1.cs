@@ -16,7 +16,6 @@ using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Analytics.CutFillStatistics;
-using VSS.TRex.Rendering.Implementations.Framework.GridFabric.Responses;
 using VSS.TRex.Analytics.MDPStatistics;
 using VSS.TRex.Analytics.MDPStatistics.GridFabric;
 using VSS.TRex.Analytics.PassCountStatistics;
@@ -32,7 +31,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Responses;
-using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
@@ -170,29 +168,8 @@ namespace TRexIgniteTest
 
 				  TileRenderRequest request = new TileRenderRequest();
 
-				  if (chkUseGateway.Checked)
-				  {
-				    var task = Task.Run(async () => await GatewayRender(tileParamsTemplate, displayMode, width, height, returnEarliestFilteredCellPass, extents));
-            task.Wait();
-				//    var asyncFunctionResult = task.Result;
-				  }
-        else
-				  {
-
-				    TileRenderResponse_Framework response = request.Execute(new TileRenderRequestArgument
-				    (ID(),
-				      displayMode,
-				      extents,
-				      true, // CoordsAreGrid
-				      (ushort) width, // PixelsX
-				      (ushort) height, // PixelsY
-				      new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
-				      null, // filter 2
-				      (cmbDesigns.Items.Count == 0) ? Guid.Empty : (cmbDesigns.SelectedValue as Design).ID // DesignDescriptor
-				    )) as TileRenderResponse_Framework;
-
-				    tileData = response?.TileBitmapData;
-				  }
+  		    var task = Task.Run(async () => await GatewayRender(tileParamsTemplate, displayMode, width, height, returnEarliestFilteredCellPass, extents));
+          task.Wait();
 
 				  if (tileData != null)
 				  {

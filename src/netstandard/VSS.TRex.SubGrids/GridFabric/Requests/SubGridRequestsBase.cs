@@ -134,28 +134,19 @@ namespace VSS.TRex.GridFabric.Requests
         {
             Log.LogInformation($"Preparing argument with TRexNodeId = {TRexNodeId}");
 
-            using (MemoryStream ProdDataMS = new MemoryStream(), SurveyedSurfaceMS = new MemoryStream())
+            arg = new TSubGridsRequestArgument()
             {
-                using (BinaryWriter ProdDataWriter = new BinaryWriter(ProdDataMS), SurveyedSurfaceWriter = new BinaryWriter(SurveyedSurfaceMS))
-                {
-                    SubGridTreePersistor.Write(ProdDataMask, ProdDataWriter);
-                    SubGridTreePersistor.Write(SurveyedSurfaceOnlyMask, SurveyedSurfaceWriter);
-
-                    arg = new TSubGridsRequestArgument()
-                    {
-                        SiteModelID = SiteModelID,
-                        RequestID = RequestID,
-                        GridDataType = RequestedGridDataType,
-                        IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
-                        ProdDataMaskBytes = ProdDataMS.ToArray(),
-                        SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceMS.ToArray(),
-                        Filters = Filters,
-                        MessageTopic = $"SubGridRequest:{RequestID}",
-                        TRexNodeID = TRexNodeId,
-                        CutFillDesignID = CutFillDesignID
-                    };
-                }
-            }
+                SiteModelID = SiteModelID,
+                RequestID = RequestID,
+                GridDataType = RequestedGridDataType,
+                IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,
+                ProdDataMaskBytes = ProdDataMask.ToBytes(),
+                SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceOnlyMask.ToBytes(),
+                Filters = Filters,
+                MessageTopic = $"SubGridRequest:{RequestID}",
+                TRexNodeID = TRexNodeId,
+                CutFillDesignID = CutFillDesignID
+            };
         }
 
         protected void CheckArguments()

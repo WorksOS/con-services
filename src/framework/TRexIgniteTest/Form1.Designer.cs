@@ -71,10 +71,10 @@
       this.label5 = new System.Windows.Forms.Label();
       this.tabTileRequest = new System.Windows.Forms.TabControl();
       this.tabPageRender = new System.Windows.Forms.TabPage();
-      this.chkUseGateway = new System.Windows.Forms.CheckBox();
       this.txtGatewayBase = new System.Windows.Forms.TextBox();
       this.btnZoomAll = new System.Windows.Forms.Button();
       this.tabPageTest = new System.Windows.Forms.TabPage();
+      this.CMVChangeButton = new System.Windows.Forms.Button();
       this.button8 = new System.Windows.Forms.Button();
       this.PassCountDetailsButton = new System.Windows.Forms.Button();
       this.CMVDetailsButton = new System.Windows.Forms.Button();
@@ -107,7 +107,7 @@
       this.label11 = new System.Windows.Forms.Label();
       this.txtJSON = new System.Windows.Forms.TextBox();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.CMVChangeButton = new System.Windows.Forms.Button();
+      this.label12 = new System.Windows.Forms.Label();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -535,7 +535,7 @@
       // 
       // tabPageRender
       // 
-      this.tabPageRender.Controls.Add(this.chkUseGateway);
+      this.tabPageRender.Controls.Add(this.label12);
       this.tabPageRender.Controls.Add(this.txtGatewayBase);
       this.tabPageRender.Controls.Add(this.btnZoomAll);
       this.tabPageRender.Controls.Add(this.btmZoomIn);
@@ -559,18 +559,6 @@
       this.tabPageRender.TabIndex = 0;
       this.tabPageRender.Text = "Render";
       this.tabPageRender.UseVisualStyleBackColor = true;
-      // 
-      // chkUseGateway
-      // 
-      this.chkUseGateway.AutoSize = true;
-      this.chkUseGateway.Checked = true;
-      this.chkUseGateway.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkUseGateway.Location = new System.Drawing.Point(26, 231);
-      this.chkUseGateway.Name = "chkUseGateway";
-      this.chkUseGateway.Size = new System.Drawing.Size(90, 17);
-      this.chkUseGateway.TabIndex = 39;
-      this.chkUseGateway.Text = "Use Gateway";
-      this.chkUseGateway.UseVisualStyleBackColor = true;
       // 
       // txtGatewayBase
       // 
@@ -622,6 +610,16 @@
       this.tabPageTest.TabIndex = 1;
       this.tabPageTest.Text = "Tests";
       this.tabPageTest.UseVisualStyleBackColor = true;
+      // 
+      // CMVChangeButton
+      // 
+      this.CMVChangeButton.Location = new System.Drawing.Point(20, 311);
+      this.CMVChangeButton.Name = "CMVChangeButton";
+      this.CMVChangeButton.Size = new System.Drawing.Size(140, 21);
+      this.CMVChangeButton.TabIndex = 54;
+      this.CMVChangeButton.Text = "CMV C&hange";
+      this.CMVChangeButton.UseVisualStyleBackColor = true;
+      this.CMVChangeButton.Click += new System.EventHandler(this.CMVChangeButton_Click);
       // 
       // button8
       // 
@@ -946,15 +944,14 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // CMVChangeButton
+      // label12
       // 
-      this.CMVChangeButton.Location = new System.Drawing.Point(20, 311);
-      this.CMVChangeButton.Name = "CMVChangeButton";
-      this.CMVChangeButton.Size = new System.Drawing.Size(140, 21);
-      this.CMVChangeButton.TabIndex = 54;
-      this.CMVChangeButton.Text = "CMV C&hange";
-      this.CMVChangeButton.UseVisualStyleBackColor = true;
-      this.CMVChangeButton.Click += new System.EventHandler(this.CMVChangeButton_Click);
+      this.label12.AutoSize = true;
+      this.label12.Location = new System.Drawing.Point(39, 231);
+      this.label12.Name = "label12";
+      this.label12.Size = new System.Drawing.Size(77, 13);
+      this.label12.TabIndex = 40;
+      this.label12.Text = "Gateway URL:";
       // 
       // Form1
       // 
@@ -1064,11 +1061,11 @@
     private System.Windows.Forms.Button button8;
     private System.Windows.Forms.TabPage tabPage1;
     private System.Windows.Forms.TextBox txtJSON;
-    private System.Windows.Forms.CheckBox chkUseGateway;
     private System.Windows.Forms.TextBox txtGatewayBase;
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.Button btnTemplate;
     private System.Windows.Forms.Button CMVChangeButton;
+    private System.Windows.Forms.Label label12;
   }
 }
 

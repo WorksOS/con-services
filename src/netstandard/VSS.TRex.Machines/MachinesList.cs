@@ -4,6 +4,7 @@ using System.IO;
 using VSS.TRex.DI;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
 using VSS.TRex.Utilities.Interfaces;
@@ -154,10 +155,12 @@ namespace VSS.TRex.Machines
 
       /// <summary>
       /// Saves the content of the machines list into the persistent store
+      /// Note: It uses a storage proxy delegate to support the TAG file ingest pipeline that creates transactional storage
+      /// proxies to manage graceful rollback of changes if needed
       /// </summary>
-      public void SaveToPersistentStore()
+      public void SaveToPersistentStore(IStorageProxy StorageProxy)
       {
-        DIContext.Obtain<ISiteModels>().StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, this.ToStream());
+        StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, this.ToStream());
       }
 
       /// <summary>

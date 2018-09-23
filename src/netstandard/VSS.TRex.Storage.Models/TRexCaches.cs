@@ -17,6 +17,8 @@ namespace VSS.TRex.Storage.Caches
         private const string kNonSpatialImmutable = "NonSpatial-Immutable";
         private const string kNonSpatialImmutableCompressed = "NonSpatial-Immutable"; // Same as compressed as there is currently no distinction
 
+        private const string kSiteModelMetadataCache = "SiteModelMetadataCache";
+
         private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
 
         private const string kTAGFileBufferQueueCacheName = "TAGFileBufferQueue";
@@ -92,6 +94,12 @@ namespace VSS.TRex.Storage.Caches
 
         public static string NonSpatialCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
 
+        /// <summary>
+        /// Returns the name of of the design topology existence maps
+        /// </summary>
+        /// <returns></returns>
+        public static string SiteModelMetadataCacheName() => kSiteModelMetadataCache;
+   
         /// <summary>
         /// Returns the name of of the design topology existence maps
         /// </summary>
