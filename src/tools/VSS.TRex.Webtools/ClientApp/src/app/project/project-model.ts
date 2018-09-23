@@ -105,3 +105,14 @@ export class Machine {
   compactionDataReported: boolean;
   compactionSensorType:number;
 }
+
+export interface ISiteModelMetadata {
+  iD: string;
+  name: string;
+  description:string;
+  lastModifiedDate: Date;
+  siteModelExtent: ProjectExtents;
+  machineCount:number;
+  designCount: number;
+  surveyedSurfaceCount: number;
+}

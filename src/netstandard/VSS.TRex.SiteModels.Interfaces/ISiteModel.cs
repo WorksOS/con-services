@@ -82,5 +82,7 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     IMachinesProductionEventLists MachinesTargetValues { get; }
     bool MachineTargetValuesLoaded { get; }
+
+    ISiteModelMetadata MetaData { get; }
   }
 }

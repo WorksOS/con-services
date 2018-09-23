@@ -58,6 +58,8 @@ namespace VSS.TRex.Server.MutableData
         // Register the sender for the sie model attribute change notifications
         .Add(x => x.AddSingleton< ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
 
+        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager()))
+
        .Complete();
     }
 

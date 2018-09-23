@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -127,5 +127,8 @@ export class ProjectService {
     return this.executeRequest<number>('getExistenceMapSubGridCount', `sitemodels/${projectUid}/existencemap/subgridcount`);
   }
 
+  public getAllProjectMetadata(): Observable<ISiteModelMetadata[]> {
+    return this.executeRequest<ISiteModelMetadata[]>('getAllProjectMetadata', `sitemodels/metadata`);
+  }
 
 }

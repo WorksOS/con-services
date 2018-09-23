@@ -66,5 +66,15 @@ namespace VSS.TRex.Webtools.Controllers
     {
       return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.ExistanceMap?.CountBits() ?? 0);
     }
+
+    /// <summary>
+    /// Returns project extents for a site model
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("metadata")]
+    public JsonResult GetAllProjectsMetadata()
+    {
+      return new JsonResult(DIContext.Obtain<ISiteModelMetadataManager>().GetAll());
+    }
   }
 }

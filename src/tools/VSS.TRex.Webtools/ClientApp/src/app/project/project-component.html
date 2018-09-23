@@ -3,6 +3,13 @@
   Project UID: <input [(ngModel)]="projectUid" type="text" value="" />
   <button (click)="selectProject()">Select</button>
   <button (click)="setProjectToZero()">Zero</button>
+
+    Projects:
+    <select id="projectMetadata" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChanged($event)">
+      <option *ngFor="let projectMetadata of allProjectsMetadata" [ngValue]="projectMetadata">
+        {{ projectMetadata.iD }}
+      </option>
+    </select>
 </p>
 <p>Project Extents: {{projectExtents}}, Starts At: {{projectStartDate}}, Ends At: {{projectEndDate}}</p>
 <p>Existence map contains {{existenceMapSubGridCount}} subgrids, covering approximately {{(existenceMapSubGridCount * 1024) / 10000}} hectares.</p>

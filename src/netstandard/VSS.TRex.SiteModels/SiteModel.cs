@@ -26,11 +26,35 @@ using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-    public class SiteModel : ISiteModel, IBinaryReaderWriter
+  /// <summary>
+  /// Represents the existance of and meta data for a site model/data model/project present in TRex.
+  /// It also holds references to numerous other aspects of project, such as designs, machines, surveyed surfaces,
+  /// and events among other things.
+  /// Access mechanisms are typically lock free with the only exceptions being those occasions when thread contention
+  /// to create a new or updated unstance of some element needs to be managed.
+  /// 
+  /// Note(1): This class should never be serialized over the wire to any context for any reason. All contects requiring access
+  /// to a sitemodel must use the local DIContext to access the SiteModels manager to obtain a reference to the desired sitemodel.
+  /// 
+  /// Note(2): All sitemodel references should be treated as immutable and ephemeral. The access period to such a reference
+  /// should be constrained to the life cycle of the request.
+  /// Each request should obtain a new sitemodel reference to ensure it contains current versions of the information held by that sitemodel.
+  /// 
+  /// Note(3): The sitemodel reference obtained by a reference is not singular to that request. Multiple requests may share the
+  /// same sitemodel request safely.
+  /// 
+  /// Note(4): TRex site model change notifications manage how a sitemodel responds to mutating events made to the persistent state
+  /// of that sitemodel. These changes may cause the creation of a new cloned site model that inherits elements not affected by
+  /// the mutating change, and will relinquish elements that have been to allow deferred/lazy loading on subsequent reference.
+  /// Requests referencing such sitemodels will have consistent access to already referenced elements of the sitemodel
+  /// for the duration of the request. However, non-referenced spatial data elements and their cached derivatives are actively
+  /// recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a subgrid
+  /// or cache derivative is always consistently valid for the duration of that reference, within a request, regardless of spatial
+  /// data invalidation due to mutating changes, even of those referenced elements.
+  /// </summary>
+  public class SiteModel : ISiteModel, IBinaryReaderWriter
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
         public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
         public const string kSubGridExistanceMapFileName = "SubGridExistanceMap";
 
@@ -50,7 +74,6 @@ namespace VSS.TRex.SiteModels
         /// <summary>
         /// The grid data for this site model
         /// </summary>
-        [NonSerialized]
         private IServerSubGridTree grid;
 
         /// <summary>
@@ -58,7 +81,6 @@ namespace VSS.TRex.SiteModels
         /// </summary>
         public IServerSubGridTree Grid { get { return grid; } }
 
-        [NonSerialized]
         private ISubGridTreeBitMask existanceMap;
 
         /// <summary>
@@ -131,7 +153,6 @@ namespace VSS.TRex.SiteModels
         // MachinesTargetValues stores a list of target values, one list per machine,
         // that record how the cofigured target CCV and pass count settings on each
         // machine has changed over time.
-        [NonSerialized]
         private IMachinesProductionEventLists machinesTargetValues;
         public IMachinesProductionEventLists MachinesTargetValues
         {
@@ -146,6 +167,11 @@ namespace VSS.TRex.SiteModels
         {
           get => machinesTargetValues != null;
         }
+
+        /// <summary>
+        /// Provides a set of metadata attributes about this sitemodel
+        /// </summary>
+        public ISiteModelMetadata MetaData => GetMetaData();
 
         private SiteModelDesignList siteModelDesigns = new SiteModelDesignList();
 
@@ -171,8 +197,8 @@ namespace VSS.TRex.SiteModels
         }
 
         private IDesigns designs = null;
-    
-        /// <summary>
+
+      /// <summary>
         /// Designs records all the design surfaces that have been imported into the sitemodel
         /// </summary>
         public IDesigns Designs 
@@ -607,5 +633,22 @@ namespace VSS.TRex.SiteModels
 
             return SpatialExtents;
         }
+
+      /// <summary>
+      /// Returns simple metadata about the sitemodel
+      /// </summary>
+      /// <returns></returns>
+      private SiteModelMetadata GetMetaData()
+      {
+        return new SiteModelMetadata
+        {
+          ID = ID,
+          LastModifiedDate = LastModifiedDate,
+          SiteModelExtent = SiteModelExtent,
+          MachineCount = Machines.Count,
+          DesignCount = Designs.Count,
+          SurveyedSurfaceCount = SurveyedSurfaces.Count
+        };
+      }
     }
 }

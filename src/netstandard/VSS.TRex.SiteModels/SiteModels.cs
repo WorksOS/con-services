@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
@@ -106,6 +107,10 @@ namespace VSS.TRex.SiteModels
           Log.LogInformation($"Creating new site model {id} and adding to internal cache");
 
           CachedModels.Add(id, result);
+
+          // Establish the metadata entry for this new sitemodel
+          DIContext.Obtain<ISiteModelMetadataManager>().Add(id, result.MetaData);
+
           return result;
         }
       }
@@ -204,6 +209,17 @@ namespace VSS.TRex.SiteModels
           return true; // Keep processing leaf subgrids
         });      
       }   
+
+      // Update the site model meta data according to the elements currently loaded in the sitemodel
+      // (this reduces the compute & IO footprint of updating this information)
+      // Todo: This should be moved to the contex that emits the notification as it has all this information
+      var metadataManager = DIContext.Obtain<ISiteModelMetadataManager>();
+      ISiteModelMetadata metaData = metadataManager.Get(SiteModelID);
+      metaData.SiteModelExtent = siteModel.SiteModelExtent;
+      metaData.DesignCount = siteModel.DesignsLoaded ? siteModel.Designs.Count : metaData.DesignCount;
+      metaData.SurveyedSurfaceCount = siteModel.SurveyedSurfacesLoaded ? siteModel.SurveyedSurfaces.Count : metaData.SurveyedSurfaceCount;
+      metaData.MachineCount = siteModel.MachinesLoaded ? siteModel.Machines.Count : metaData.MachineCount;
+      metadataManager.Update(SiteModelID, metaData);
     }
   }
 }

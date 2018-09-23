@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -89,6 +89,10 @@ export class ProjectComponent {
     "Last Known Design",
     "Last Known Layer"];
 
+  public projectMetadata: ISiteModelMetadata;
+
+  public allProjectsMetadata: ISiteModelMetadata[] = [];
+
 constructor(
     private projectService: ProjectService
   ) { }
@@ -98,6 +102,8 @@ constructor(
       modes.forEach(mode => this.displayModes.push(mode));
       this.displayMode = this.displayModes[0];
     });
+
+    this.getAllProjectMetadata();
   }
 
   public selectProject(): void {
@@ -368,6 +374,19 @@ constructor(
   public getExistenceMapSubGridCount(): void {
     this.projectService.getExistenceMapSubGridCount(this.projectUid).subscribe(count =>
       this.existenceMapSubGridCount = count);
+  }
+
+  public getAllProjectMetadata(): void {
+    var result: ISiteModelMetadata[] = [];
+    this.projectService.getAllProjectMetadata().subscribe(
+      metadata => {
+        metadata.forEach(data => result.push(data));
+        this.allProjectsMetadata = result;
+      });
+  }
+
+  public projectMetadataChanged(event: any): void {
+    this.projectUid = this.projectMetadata.iD;
   }
 }
 
