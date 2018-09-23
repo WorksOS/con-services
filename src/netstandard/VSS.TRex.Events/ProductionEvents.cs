@@ -411,7 +411,7 @@ namespace VSS.TRex.Events
                         SerialiseStateOut(writer, e.State);
                     }
 
-                    storageProxy.WriteStreamToPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter", FileSystemStreamType.Events, MS);
+                    storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter", FileSystemStreamType.Events, MS);
                 }
             }
 
@@ -426,7 +426,7 @@ namespace VSS.TRex.Events
         /// <returns></returns>
         public void LoadFromStore(IStorageProxy storageProxy)
         {
-            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
+            storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
                 FileSystemStreamType.Events, out MemoryStream MS);
 
             if (MS != null)

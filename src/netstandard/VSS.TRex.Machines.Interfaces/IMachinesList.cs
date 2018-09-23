@@ -7,6 +7,11 @@ namespace VSS.TRex.Machines.Interfaces
   public interface IMachinesList : IList<IMachine>
   {
     /// <summary>
+    /// The identifier of the site model owning this list of machines
+    /// </summary>
+    Guid DataModelID { get; set; }
+
+    /// <summary>
     /// Finds the machine in the list whose name matches the given name
     /// It returns NIL if there is no matching machine
     /// </summary>
@@ -53,5 +58,8 @@ namespace VSS.TRex.Machines.Interfaces
       int deviceType,
       bool isJohnDoeMachine,
       Guid machineID);
+
+    void SaveToPersistentStore();
+    void LoadFromPersistentStore();
   }
 }

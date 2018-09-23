@@ -216,6 +216,7 @@ namespace TAGFiles.Tests
 
     private void SetupDITfa(bool enableTfaService = true, GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest = null, GetProjectAndAssetUidsResult getProjectAndAssetUidsResult = null)
     {
+      // this setup includes the DITagFileFixture. Done here to try to avoid random test failures.
       lock (Lock)
       {
         var moqStorageProxy = new Mock<IStorageProxy>();
@@ -251,12 +252,6 @@ namespace TAGFiles.Tests
 
         // Mock the new sitemodel creation API to return just a new sitemodel
         moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
-
-        //  DIBuilder
-        //    .Continue()
-        //    .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        //    .Complete();
-        //}
 
         //Moq doesn't support extention methods in IConfiguration/Root.
         var moqConfiguration = new Mock<IConfigurationStore>();

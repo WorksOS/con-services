@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using VSS.TRex.DI;
 using VSS.TRex.Machines.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Types;
+using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Machines
 {
     /// <summary>
     /// Implements a container for all the machines that have had activity within a Site Model
     /// </summary>
-    [Serializable]
-    public class MachinesList : List<IMachine>, IMachinesList
+//    [Serializable]
+    public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
     {
+        private const string kMachinesListStreamName = "Machines";
+
         /// <summary>
         /// Maps machine IDs (currently as 64 bit integers) to the instance containing all the event lists for all the machines
         /// that have contributed to the owner SiteModel
@@ -22,9 +29,8 @@ namespace VSS.TRex.Machines
         /// </summary>
         public Guid DataModelID { get; set; }
 
-        public MachinesList(Guid datamodelID)
+        public MachinesList()
         {
-            DataModelID = datamodelID;
         }
 
         /// <summary>
@@ -57,7 +63,8 @@ namespace VSS.TRex.Machines
 
             short internalMachineID = (short)Count;
 
-            Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine /* TODO, kICUnknownConnectedMachineLevel*/);
+            Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine
+              /* TODO, kICUnknownConnectedMachineLevel*/);
 
             // Add it to the list
             Add(Result);
@@ -119,7 +126,12 @@ namespace VSS.TRex.Machines
                 this[i].Write(writer);
         }
 
-        /// <summary>
+      public void Write(BinaryWriter writer, byte[] buffer)
+      {
+        throw new NotImplementedException();
+      }
+
+      /// <summary>
         /// Deserialises the list of machines using the given reader
         /// </summary>
         /// <param name="reader"></param>
@@ -139,5 +151,29 @@ namespace VSS.TRex.Machines
                 Add(Machine);
             }
         }
+
+      /// <summary>
+      /// Saves the content of the machines list into the persistent store
+      /// </summary>
+      public void SaveToPersistentStore()
+      {
+        DIContext.Obtain<ISiteModels>().StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, this.ToStream());
+      }
+
+      /// <summary>
+      /// Loads the content of the machines list from the tpersistent store. If there is no item in the persistent store containing
+      /// machines for this sitemodel them return an empty list.
+      /// </summary>
+      public void LoadFromPersistentStore()
+      {
+        DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, out MemoryStream MS);
+        if (MS == null)
+          return;
+
+        using (MS)
+        {
+          this.FromStream(MS);
+        }
+      }
     }
 }

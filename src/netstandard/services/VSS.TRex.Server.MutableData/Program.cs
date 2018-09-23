@@ -15,8 +15,8 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VSS.ConfigurationStore;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.Events;
@@ -26,6 +26,9 @@ using VSS.TRex.Logging;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.Storage.Models;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.ConfigurationStore;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -43,8 +46,8 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Build()
-        // todo
-        //.Add(x => x.AddSingleton<ITagFileAuthProjectProxy>(new TagFileAuthProjectProxy(Configuration, DIContext.Obtain<ILoggerFactory())))
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>())
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
@@ -52,7 +55,10 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Build()
         .Add(x => x.AddSingleton(new TagProcComputeServer()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
         // Register the sender for the sie model attribute change notifications
         .Add(x => x.AddSingleton< ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))

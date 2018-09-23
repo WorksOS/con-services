@@ -6,6 +6,7 @@ namespace VSS.TRex.SiteModels.Interfaces
   {
     ISiteModel NewSiteModel();
     ISiteModel NewSiteModel(Guid id);
+    ISiteModel NewSiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags);
     ISiteModel NewSiteModel_NonTransient(Guid id);
   }
 }

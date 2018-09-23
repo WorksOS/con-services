@@ -40,6 +40,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       PassCountDetailsRequest request = item as PassCountDetailsRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(PassCountDetailsRequest));
+
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var filter = ConvertFilter(request.Filter, siteModel);

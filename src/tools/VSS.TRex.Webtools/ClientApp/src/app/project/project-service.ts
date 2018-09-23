@@ -1,12 +1,12 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders,  } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -32,6 +32,24 @@ export class ProjectService {
     url = `${this.baseUrl}api/${url}`;
     console.log(`${label}: url=${url}`);
     return this.http.get<T>(url);
+  }
+
+  private executePostRequest<T>(label: string, url: string, body: any): Observable<T> {
+    url = `${this.baseUrl}api/${url}`;
+    console.log(`${label}: url=${url}`);
+
+//    let headers = new HttpHeaders();
+//    headers.append('Content-Type', 'application/json');
+    //post data missing(here you pass email and password)
+
+//    return this.http.post(url, body, headers);
+    return this.http.post<T>(url, body);
+  }
+
+  private executeDeleteRequest<T>(label: string, url: string): Observable<T> {
+    url = `${this.baseUrl}api/${url}`;
+    console.log(`${label}: url=${url}`);
+    return this.http.delete<T>(url);
   }
 
   public getProjectExtents(projectUid: string): Observable<ProjectExtents> {
@@ -60,4 +78,45 @@ export class ProjectService {
 
     return this.executeRequest<CombinedFilter>('testJSONParameter', `sandbox/jsonparameter?param=${paramString}`);
   }
+
+  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<SurveyedSurface> {
+
+//    var newSurveyedSurface = new SurveyedSurface();
+
+//    newSurveyedSurface.descriptor = descriptor;
+//    newSurveyedSurface.asAtDate = asAtDate;
+//    newSurveyedSurface.extents = extents;
+
+//    return this.executePostRequest<string>
+//      ('addSurveyedSurface',
+//      `surveyedsurfaces/${projectUid}?newsurveyedsurface=${btoa(JSON.stringify(newSurveyedSurface))}`,
+//      null);
+
+    return this.executePostRequest<SurveyedSurface>
+    ('addSurveyedSurface',
+      `surveyedsurfaces/${projectUid}?fileName=${descriptor.fileName}&offset=${descriptor.offset}&asAtDate=${asAtDate.toISOString()}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`,
+      null);
+  }
+
+  public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
+    return this.executeRequest<SurveyedSurface[]>('getSurveyedSurfaces', `surveyedsurfaces/${projectUid}`);
+  }
+
+  public deleteSurveyedSurface(projectUid: string, surveyedSurfaceId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteSurveyedSurface', `surveyedsurfaces/${projectUid}/${surveyedSurfaceId}`);
+  }
+
+  public addDesign(projectUid: string, descriptor: DesignDescriptor, extents: ProjectExtents): Observable<DesignDescriptor> {
+    return this.executePostRequest<DesignDescriptor>
+      ('addDesign', `designs/${projectUid}?fileName=${descriptor.fileName}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`, null);
+  }
+
+  public getDesigns(projectUid: string): Observable<Design[]> {
+    return this.executeRequest<Design[]>('getDesigns', `designs/${projectUid}`);
+  }
+
+  public deleteDesign(projectUid: string, designId: string): Observable<any> {
+    return this.executeDeleteRequest<any>('deleteDesign', `designs/${projectUid}/${designId}`);
+  }
+
 }

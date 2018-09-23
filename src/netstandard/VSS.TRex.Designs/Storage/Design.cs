@@ -32,7 +32,7 @@ namespace VSS.TRex.Designs.Storage
         {
             writer.Write(ID.ToByteArray());
             DesignDescriptor.Write(writer);
-            Extents.Write(writer);
+            extents.Write(writer);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace VSS.TRex.Designs.Storage
         {
             ID = reader.ReadGuid();
             DesignDescriptor.Read(reader);
-            Extents.Read(reader);
+            extents.Read(reader);
         }
 
         /// <summary>
@@ -58,24 +58,26 @@ namespace VSS.TRex.Designs.Storage
         /// </summary>
         public Guid ID { get; private set; } = Guid.Empty;
 
-      /// <summary>
-      /// The full design descriptior representing the design
-      /// </summary>
-      public DesignDescriptor DesignDescriptor;
+        /// <summary>
+        /// The full design descriptior representing the design
+        /// </summary>
+        public DesignDescriptor DesignDescriptor;
 
-    // Public accessor method for design descriptor struct
-    public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
-
-      /// <summary>
-    /// The rectangular bounding extents of the design in grid coordiantes
-    /// </summary>
-    private BoundingWorldExtent3D extents;
+        // Public accessor method for design descriptor struct
+        public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;
+      
+          /// <summary>
+        /// The rectangular bounding extents of the design in grid coordiantes
+        /// </summary>
+        private BoundingWorldExtent3D extents;
 
         /// <summary>
         /// No-arg constructor
         /// </summary>
         public Design()
         {
+          extents = new BoundingWorldExtent3D();
+          DesignDescriptor = new DesignDescriptor();
         }
 
       /// <summary>
@@ -98,7 +100,7 @@ namespace VSS.TRex.Designs.Storage
     /// Constructor accepting a Binary Reader instance from which to instantiate itself
     /// </summary>
     /// <param name="reader"></param>
-    public Design(BinaryReader reader)
+      public Design(BinaryReader reader)
         {
             Read(reader);
         }

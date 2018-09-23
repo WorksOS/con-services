@@ -3,11 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Designs.Servers.Client;
 using System.Threading;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps;
 using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.TRex.Services.Designs;
-using VSS.TRex.Storage.Models;
 using System.Threading.Tasks;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -15,6 +14,8 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Server.DesignElevation
 {
@@ -32,8 +33,10 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+        .Build()
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
-        .Add(x => x.AddSingleton<IDesignsService>(new DesignsService(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
         .Complete();
     }
 

@@ -29,20 +29,20 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get CMV % change from Raptor for the specified project and date range.
     /// </summary>
+    /// <param name="cmvChangeDetailsRequest"></param>
+    /// <returns></returns>
     [Route("api/v1/cmv/percentchange")]
     [HttpPost]
-    public CompactionCmvPercentChangeResult PostCmvPercentChange([FromBody] CMVChangeDetailsRequest cmvChangeDetailsRequest)
+    public CMVChangeSummaryResult PostCmvPercentChange([FromBody] CMVChangeDetailsRequest cmvChangeDetailsRequest)
     {
       Log.LogInformation($"{nameof(PostCmvPercentChange)}: {Request.QueryString}");
 
       cmvChangeDetailsRequest.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<DetailedCMVChangeExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvChangeDetailsRequest) as CMVChangeSummaryResult);
-
-      return new CompactionCmvPercentChangeResult(result);
     }
 
     /// <summary>
@@ -73,18 +73,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/passcounts/details")]
     [HttpPost]
-    public CompactionPassCountDetailedResult PostPassCountDetails([FromBody] PassCountDetailsRequest passCountDetailsRequest)
+    public PassCountDetailedResult PostPassCountDetails([FromBody] PassCountDetailsRequest passCountDetailsRequest)
     {
       Log.LogInformation($"{nameof(PostPassCountDetails)}: {Request.QueryString}");
 
       passCountDetailsRequest.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<DetailedPassCountExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(passCountDetailsRequest) as PassCountDetailedResult);
-
-      return new CompactionPassCountDetailedResult(result);
     }
 
     /// <summary>

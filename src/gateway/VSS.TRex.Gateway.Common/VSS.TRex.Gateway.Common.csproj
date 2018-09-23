@@ -15,8 +15,8 @@
     <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.0" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-	  <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.9.1" />
+    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
+	  <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.10.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
   </ItemGroup>

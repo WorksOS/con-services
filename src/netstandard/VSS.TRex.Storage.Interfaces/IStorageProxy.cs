@@ -18,11 +18,6 @@ namespace VSS.TRex.Storage.Interfaces
                                               FileSystemStreamType StreamType,
                                               MemoryStream Stream);
 
-        FileSystemErrorStatus WriteStreamToPersistentStoreDirect(Guid DataModelID,
-                                              string StreamName,
-                                              FileSystemStreamType StreamType,
-                                              MemoryStream Stream);
-
         FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid DataModelID,
                                               string StreamName,
                                               uint SubgridX, uint SubgridY,
@@ -33,11 +28,6 @@ namespace VSS.TRex.Storage.Interfaces
                                               MemoryStream Stream);
 
         FileSystemErrorStatus ReadStreamFromPersistentStore(Guid DataModelID,
-                                                  string StreamName,
-                                                  FileSystemStreamType StreamType,
-                                                  out MemoryStream Stream);
-
-        FileSystemErrorStatus ReadStreamFromPersistentStoreDirect(Guid DataModelID,
                                                   string StreamName,
                                                   FileSystemStreamType StreamType,
                                                   out MemoryStream Stream);

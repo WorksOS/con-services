@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Utilities.ExtensionMethods
@@ -41,6 +42,20 @@ namespace VSS.TRex.Utilities.ExtensionMethods
     }
 
     /// <summary>
+    /// An extension method providing a FromBytes() semantic to deserialise a byte array via the class defined Read() implementation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <param name="stream"></param>
+    public static void FromStream<T>(this T item, Stream stream) where T : class, IBinaryReaderWriter
+    {
+        using (BinaryReader reader = new BinaryReader(stream))
+        {
+          item.Read(reader);
+        }
+    }
+
+    /// <summary>
     /// An extension method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -56,6 +71,25 @@ namespace VSS.TRex.Utilities.ExtensionMethods
           return ms.ToArray();
         }
       }
+    }
+
+    /// <summary>
+    /// An extension method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public static MemoryStream ToStream<T>(this T item) where T : class, IBinaryReaderWriter
+    {
+      MemoryStream ms = new MemoryStream();
+
+      using (BinaryWriter writer = new BinaryWriter(ms, Encoding.UTF8, true))
+      {
+          item.Write(writer);
+      }
+
+      ms.Position = 0;
+      return ms;
     }
 
     /// <summary>

@@ -31,11 +31,6 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
-    {
-      throw new NotImplementedException();
-    }
-
     FileSystemErrorStatus IStorageProxy.RemoveStreamFromPersistentStore(Guid DataModelID, string StreamName)
     {
       throw new NotImplementedException();
@@ -47,11 +42,6 @@ namespace VSS.TRex.Storage
     }
 
     FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
-    {
-      throw new NotImplementedException();
-    }
-
-    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStoreDirect(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
     {
       throw new NotImplementedException();
     }

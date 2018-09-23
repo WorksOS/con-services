@@ -6,7 +6,7 @@
     /// Default (short) indexer for the machines target values that uses the machine ID map dictionary to locate the set of 
     /// events lists for that machine.
     /// </summary>
-    /// <param name="MachineID"></param>
+    /// <param name="machineID"></param>
     /// <returns></returns>
     IProductionEventLists this[short machineID] { get; }
 

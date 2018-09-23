@@ -29,6 +29,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="VSS.MasterData.Proxies">
+      <HintPath>..\..\..\..\..\..\..\Users\jwalter\.nuget\packages\vss.masterdata.proxies.netcore\2.44.1\lib\netstandard2.0\VSS.MasterData.Proxies.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -52,9 +58,8 @@
     </None>
   </ItemGroup>
 
-  <Target Name="CopyFiles" AfterTargets="build" Condition="'$(SolutionDir)'!='*Undefined*'" >
-    <Copy SourceFiles="$(SolutionDir)\build\ignite-corex.jar" 
-          DestinationFolder="$(USERPROFILE)\.nuget\packages\apache.ignite\2.6.0\libs" />
+  <Target Name="CopyFiles" AfterTargets="build" Condition="'$(SolutionDir)'!='*Undefined*'">
+    <Copy SourceFiles="$(SolutionDir)\build\ignite-corex.jar" DestinationFolder="$(USERPROFILE)\.nuget\packages\apache.ignite\2.6.0\libs" />
   </Target>
 
 </Project>

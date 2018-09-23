@@ -10,6 +10,9 @@
         Events,
         ProductionDataXML,
         SubgridExistenceMap,
-        CoordinateSystemCSIB
+        CoordinateSystemCSIB,
+        SurveyedSurfaces,
+        Designs,
+        Machines
     }
 }
