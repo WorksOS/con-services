@@ -63,7 +63,6 @@ namespace VSS.TRex.Servers.Client
 
           IgniteConfiguration cfg = new IgniteConfiguration
           {
-
             IgniteInstanceName = TRexGrids.ImmutableGridName(),
             ClientMode = true,
 
@@ -83,6 +82,7 @@ namespace VSS.TRex.Servers.Client
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration
             {
+              WalMode = WalMode.Fsync,
               PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
               DefaultDataRegionConfiguration = new DataRegionConfiguration

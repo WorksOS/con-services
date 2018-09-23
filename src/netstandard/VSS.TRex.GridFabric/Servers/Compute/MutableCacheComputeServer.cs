@@ -1,4 +1,4 @@
-using Apache.Ignite.Core;
+﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
@@ -66,6 +66,7 @@ namespace VSS.TRex.Servers.Compute
       // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
       cfg.DataStorageConfiguration = new DataStorageConfiguration
       {
+        WalMode = WalMode.Fsync,
         PageSize = DataRegions.DEFAULT_MUTABLE_DATA_REGION_PAGE_SIZE,
 
         StoragePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable", "Persistence"),

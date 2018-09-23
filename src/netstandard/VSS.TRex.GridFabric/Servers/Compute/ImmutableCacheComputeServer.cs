@@ -71,6 +71,7 @@ namespace VSS.TRex.Servers.Compute
       // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
       cfg.DataStorageConfiguration = new DataStorageConfiguration
       {
+        WalMode = WalMode.Fsync,
         PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
         StoragePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable", "Persistence"),
