@@ -73,6 +73,8 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
 
+      services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
+
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
 

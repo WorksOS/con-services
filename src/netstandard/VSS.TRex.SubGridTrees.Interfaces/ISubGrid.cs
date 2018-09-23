@@ -47,8 +47,8 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     void GetSubGridCellIndex(uint CellX, uint CellY, out byte SubGridX, out byte SubGridY);
     bool IsLeafSubGrid();
     string Moniker();
-    ISubGrid GetSubGrid(byte X, byte Y);
-    void SetSubGrid(byte X, byte Y, ISubGrid value);
+    ISubGrid GetSubGrid(int X, int Y);
+    void SetSubGrid(int X, int Y, ISubGrid value);
     void CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
     void Clear();
     void AllChangesMigrated();
@@ -67,7 +67,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
     byte[] ToBytes();
     byte[] ToBytes(byte[] helperBuffer);
-    byte[] ToBytes(MemoryStream helperStream, byte[] helperBuffer);
     void FromBytes(byte[] bytes, byte[] helperBuffer = null);
 
     /// <summary>

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using VSS.TRex.ExistenceMaps.Servers;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
@@ -38,14 +36,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
             }
 
             ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
-
-            using (MemoryStream ms = new MemoryStream(bytes))
-            {
-                using (BinaryReader reader = new BinaryReader(ms))
-                {
-                    SubGridTreePersistor.Read(mask, Interfaces.Consts.EXISTENCE_MAP_HEADER, Interfaces.Consts.EXISTENCE_MAP_VERSION, reader, null);
-                }
-            }
+            mask.FromBytes(bytes);
 
             return mask;
         }

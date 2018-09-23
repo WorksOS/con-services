@@ -255,7 +255,7 @@ namespace VSS.TRex.Volumes.Executors
 
                     if (ResultStatus != RequestErrorStatus.OK)
                     {
-                      Log.LogInformation("Summary volume result: Failure, error = {ResultStatus}");
+                      Log.LogInformation($"Summary volume result: Failure, error = {ResultStatus}");
 
                       // Send the (empty) results back to the caller
                       return VolumesResult;

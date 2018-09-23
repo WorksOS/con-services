@@ -1,13 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
-    /// <summary>
+  /// <summary>
     ///  A subgrid variant that contains a bit mask construct to represent a one-bit-per-pixel map
     /// </summary>
-    public class SubGridTreeLeafBitmapSubGrid : SubGrid, ILeafSubGrid
+    public class SubGridTreeLeafBitmapSubGrid : SubGrid, ILeafSubGrid, ISubGridTreeLeafBitmapSubGrid
     {
         public SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
@@ -69,5 +70,12 @@ namespace VSS.TRex.SubGridTrees
 
             return Result;
         }
+
+      public void ForEachSetBit(Action<int, int> functor) => Bits.ForEachSetBit(functor);
+      public void ForEachSetBit(Func<int, int, bool> functor) => Bits.ForEachSetBit(functor);
+      public void ForEachClearBit(Action<int, int> functor) => Bits.ForEachClearBit(functor);
+
+      public new void ForEach(Action<byte, byte> functor) => Bits.ForEach(functor);
+      public void ForEach(Func<byte, byte, bool> functor) => Bits.ForEach(functor);
     }
 }

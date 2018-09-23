@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
@@ -44,7 +45,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// FDataStore is a reference to a client data store that contains the
     /// grid if point information we are creating the TIN surface from
     /// </summary>
-    public GenericSubGridTree<float> DataStore { set; get; }
+    public GenericSubGridTree<float, GenericLeafSubGrid_Float> DataStore { set; get; }
 
     /// <summary>
     /// Tolerance represents the maximum acceptable difference between the height
@@ -231,7 +232,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     protected void GetHeightForTriangleScan(int x, int y, bool spotElevationOnly, int numElevationsToScan, double[] elevations)
     {
       int TestX, TestY;
-      GenericLeafSubGrid<float> CacheSubgrid;
+      GenericLeafSubGrid_Float CacheSubgrid;
       int CacheSubgridIndex = 0;
 
       void GetCacheElevationMap()
@@ -240,7 +241,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
           CacheSubgrid = CachedElevationSubgrids[CacheSubgridIndex].SubGrid;
         else
         {
-          CacheSubgrid = (GenericLeafSubGrid<float>) DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
+          CacheSubgrid = (GenericLeafSubGrid_Float) DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
           CachedElevationSubgrids[CacheSubgridIndex].SubGrid = CacheSubgrid;
           CachedElevationSubgrids[CacheSubgridIndex].TriangleScanInvocationNumber = TriangleScanInvocationNumber;
         }
@@ -254,7 +255,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       // Get the initial ExistanceBitMask from the bitmask cache
       if (spotElevationOnly)
-        CacheSubgrid = (GenericLeafSubGrid<float>)DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
+        CacheSubgrid = (GenericLeafSubGrid_Float)DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
       else
       {
         CacheSubgridIndex = TestX / SubGridTreeConsts.SubGridTreeDimension - Elevations_MinXTriangleScanRange / SubGridTreeConsts.SubGridTreeDimension;
@@ -575,7 +576,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
     public void Refresh() => CreateDecimationState();
 
-    public GridToTINDecimator(GenericSubGridTree<float> dataStore)
+    public GridToTINDecimator(GenericSubGridTree<float, GenericLeafSubGrid_Float> dataStore)
     {
       DataStore = dataStore;
 

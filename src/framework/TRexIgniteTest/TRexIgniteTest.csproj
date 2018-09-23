@@ -308,10 +308,6 @@
       <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
       <Name>VSS.TRex.Geometry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
-      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
-      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="log4net.xml">
