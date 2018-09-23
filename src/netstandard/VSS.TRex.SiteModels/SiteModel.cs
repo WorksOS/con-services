@@ -643,6 +643,8 @@ namespace VSS.TRex.SiteModels
         return new SiteModelMetadata
         {
           ID = ID,
+          //Name = Name,
+          //Decription = Description,
           LastModifiedDate = LastModifiedDate,
           SiteModelExtent = SiteModelExtent,
           MachineCount = Machines.Count,

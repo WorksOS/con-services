@@ -107,7 +107,7 @@ export class Machine {
 }
 
 export interface ISiteModelMetadata {
-  iD: string;
+  id: string;
   name: string;
   description:string;
   lastModifiedDate: Date;

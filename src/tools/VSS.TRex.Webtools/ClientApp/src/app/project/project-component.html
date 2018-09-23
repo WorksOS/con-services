@@ -4,12 +4,13 @@
   <button (click)="selectProject()">Select</button>
   <button (click)="setProjectToZero()">Zero</button>
 
-    Projects:
-    <select id="projectMetadata" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChanged($event)">
-      <option *ngFor="let projectMetadata of allProjectsMetadata" [ngValue]="projectMetadata">
-        {{ projectMetadata.iD }}
-      </option>
-    </select>
+  Available Projects:
+  <select id="projectMetadata" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChanged($event)">
+    <option *ngFor="let projectMetadata of allProjectsMetadata" [ngValue]="projectMetadata">
+      {{ projectMetadata.id }}
+    </option>
+  </select>
+  <button (click)="updateAllProjectsMetadata()">Update Metadata</button>
 </p>
 <p>Project Extents: {{projectExtents}}, Starts At: {{projectStartDate}}, Ends At: {{projectEndDate}}</p>
 <p>Existence map contains {{existenceMapSubGridCount}} subgrids, covering approximately {{(existenceMapSubGridCount * 1024) / 10000}} hectares.</p>
@@ -38,14 +39,14 @@
 
 <H3>Machines [{{machines.length}} in total]</H3>
 
-<!--Display the machines in a list-->
-
+<!--Display the machines in a list
 <p *ngFor="let machine of machines">
   Machine: {{ machine.id }} Internal Index: {{ machine.internalSiteModelMachineIndex }}, Name:{{machine.name}}, Type:{{machine.machineType}},
   Hardware ID: {{machine.machineHardwareID}}, Device Type: {{machine.deviceType}} IsJohnDoe: {{machine.isJohnDoeMachine}},
   Last known location: [{{machine.lastKnownX}}, {{machine.lastKnownY}} at {{machine.lastKnownPositionDateStamp}}],
   Last known design: {{machine.lastKnownDesignName}}, Last known layer: {{machine.lastKnownLayerId}}
 </p>
+-->
 
 <!--Display the machines in a table-->
 

@@ -386,7 +386,11 @@ constructor(
   }
 
   public projectMetadataChanged(event: any): void {
-    this.projectUid = this.projectMetadata.iD;
+    this.projectUid = this.projectMetadata.id;
+  }
+
+  public updateAllProjectsMetadata(): void {
+    this.getAllProjectMetadata();
   }
 }
 

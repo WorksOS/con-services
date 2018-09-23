@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
@@ -13,5 +14,10 @@ namespace VSS.TRex.SiteModels.Interfaces
     void Update(Guid siteModelID);
 
     void Update(Guid siteModelID, ISiteModelMetadata metaData);
+
+    void Update(Guid siteModelID,
+      BoundingWorldExtent3D siteModelExtent = null,
+      string name = null, string description = null, DateTime? lastModifiedDate = null,
+      int? machineCount = null, int? designCount = null, int? surveyedSurfaceCount = null);
   }
 }

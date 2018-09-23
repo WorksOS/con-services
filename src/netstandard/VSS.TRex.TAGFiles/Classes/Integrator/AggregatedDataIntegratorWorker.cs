@@ -397,6 +397,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, SiteModelFromDM.ID, 
                           existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
                     }
+
+                    // Update the metadata for the site model
+                    Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
+                    DIContext.Obtain<ISiteModelMetadataManager>().Update
+                      (siteModelID: SiteModelFromDM.ID, lastModifiedDate:DateTime.Now, siteModelExtent:SiteModelFromDM.SiteModelExtent,
+                      machineCount: SiteModelFromDM.Machines.Count);
                 }
                 finally
                 {

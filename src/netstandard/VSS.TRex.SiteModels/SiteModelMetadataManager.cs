@@ -7,6 +7,7 @@ using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Query;
 using VSS.TRex.DI;
 using VSS.TRex.Exceptions;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -42,13 +43,13 @@ namespace VSS.TRex.SiteModels
         // No backups for now
         Backups = 0,
 
-        DataRegionName = DataRegions.DEFAULT_DATA_REGION_NAME
+        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
       };
     }
 
     /// <summary>
     /// Constructs a site model meta data manager instance oriented to the TRex grid that is the primary grid
-    /// referenced by the DI'c SiteModels instance
+    /// referenced by the DI'd SiteModels instance
     /// </summary>
     public SiteModelMetadataManager()
     {
@@ -90,7 +91,58 @@ namespace VSS.TRex.SiteModels
     /// <param name="metaData"></param>
     public void Update(Guid siteModelID, ISiteModelMetadata metaData)
     {
+      if (metaData != null)
         metaDataCache.Put(siteModelID, metaData);
+    }
+
+    /// <summary>
+    /// Updates a metadata record for a site model given a pre-built metadata instance
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="siteModelExtent"></param>
+    /// <param name="name"></param>
+    /// <param name="description"></param>
+    /// <param name="lastModifiedDate"></param>
+    /// <param name="machineCount"></param>
+    /// <param name="designCount"></param>
+    /// <param name="surveyedSurfaceCount"></param>
+    public void Update(Guid siteModelID, 
+      BoundingWorldExtent3D siteModelExtent = null,
+      string name = null, string description = null, DateTime? lastModifiedDate = null,
+      int? machineCount = null, int? designCount = null, int? surveyedSurfaceCount = null)
+    {
+      ISiteModelMetadata metaData;
+      try
+      {
+        metaData = metaDataCache.Get(siteModelID);
+      }
+      catch (KeyNotFoundException)
+      {
+        metaData = new SiteModelMetadata
+        {
+          ID = siteModelID,
+          Name = name,
+          Description = description
+        };
+      }
+
+      if (metaData == null)
+        return;
+
+      if (siteModelExtent != null)
+      {
+        if (metaData.SiteModelExtent == null)
+          metaData.SiteModelExtent = new BoundingWorldExtent3D(siteModelExtent);
+        else
+          metaData.SiteModelExtent.Assign(siteModelExtent);
+      }
+
+      metaData.DesignCount = designCount ?? metaData.DesignCount;
+      metaData.SurveyedSurfaceCount = surveyedSurfaceCount ?? metaData.SurveyedSurfaceCount;
+      metaData.MachineCount = machineCount ?? metaData.MachineCount;
+      metaData.LastModifiedDate = lastModifiedDate ?? metaData.LastModifiedDate;
+
+      metaDataCache.Put(siteModelID, metaData);
     }
 
     /// <summary>
@@ -122,7 +174,8 @@ namespace VSS.TRex.SiteModels
     {
       try
       {
-        return metaDataCache.Query(new ScanQuery<Guid, SiteModelMetadata>()).GetAll().Select(x => x.Value).ToArray();
+        ISiteModelMetadata[] result = metaDataCache.Query(new ScanQuery<Guid, SiteModelMetadata>()).GetAll().Select(x => x.Value).ToArray();
+        return result;
       }
       catch (Exception e)
       {
