@@ -117,17 +117,44 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"Dir: {Request.QueryString}");
 
-      return new
+      if (filespaceid == "u710e3466-1d47-45e3-87b8-81d1127ed4ed")//Mock TBC customer filespace
       {
-        success = true,
-        createTime = DateTime.UtcNow,
-        entryName = filemasks,
-        entries = new[] {new{}},
-        isFolder = false,
-        leaf = true,
-        modifyTime = DateTime.UtcNow,
-        size = 1634
-      };
+        return new
+        {
+          success = true,
+          createTime = DateTime.UtcNow,
+          entries = new[]
+          {
+            new
+            {
+              createTime = DateTime.UtcNow,
+              entryName = filemasks,
+              isFolder = false,
+              leaf = true,
+              modifyTime = DateTime.UtcNow,
+              size = 1182
+            }
+          },
+          isFolder = true,
+          leaf = false,
+          modifyTime = DateTime.UtcNow,
+          size = 16348
+        };
+      }
+      else //vldev filespace
+      {
+        return new
+        {
+          success = true,
+          createTime = DateTime.UtcNow,
+          entryName = filemasks,
+          entries = new[] { new { } },
+          isFolder = false,
+          leaf = true,
+          modifyTime = DateTime.UtcNow,
+          size = 7284
+        };
+      }
     }
 
     [Route("tcc/Login")]
