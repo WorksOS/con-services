@@ -27,7 +27,9 @@ namespace VSS.TRex.Events.Interfaces
       /// </summary>
       /// <returns></returns>
       object RawEventsObjects();
-    }
+
+      string[] ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
+  }
 
   public interface IProductionEvents<V> : IProductionEvents
   {
