@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.Common;
+﻿using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
@@ -12,9 +11,6 @@ namespace VSS.TRex.Events
   /// </summary>
   public class SiteModelMachineTargetValuesTrackingState
   {
-    private short MachineID;
-    private Guid SiteModelID;
-
     /// <summary>
     /// A reference to the machine production event lists for the machines within the sitemodel
     /// </summary>
@@ -82,10 +78,8 @@ namespace VSS.TRex.Events
     //    EventMapResetDesignID        : TICDesignNameID;
     //    EventMapReset_Tracking       : TTICSiteModelMachineTargetValueTrackingState;
 
-    public SiteModelMachineTargetValuesTrackingState(short machineID, Guid siteModelID)
+    public SiteModelMachineTargetValuesTrackingState()
     {
-      MachineID = machineID;
-      SiteModelID = siteModelID;
     }
 
     public void Initialise(IFilteredValuePopulationControl populationControl)
@@ -96,31 +90,31 @@ namespace VSS.TRex.Events
       if (populationControl.WantsTargetCCVValues)
       {
         TargetCCV = CellPassConsts.NullCCV;
-        TargetCCV_Tracking = new SiteModelMachineTargetValueTrackingState<short>(MachineID, SiteModelID, ProductionEventType.TargetCCV);
+        TargetCCV_Tracking = new SiteModelMachineTargetValueTrackingState<short>(MachineTargetValues, ProductionEventType.TargetCCV);
       }
 
       if (populationControl.WantsTargetMDPValues)
       {
         TargetMDP = CellPassConsts.NullMDP;
-        TargetMDP_Tracking = new SiteModelMachineTargetValueTrackingState<short>(MachineID, SiteModelID, ProductionEventType.TargetMDP);
+        TargetMDP_Tracking = new SiteModelMachineTargetValueTrackingState<short>(MachineTargetValues, ProductionEventType.TargetMDP);
       }
 
       if (populationControl.WantsTargetCCAValues)
       {
         TargetCCA = CellPassConsts.NullCCA;
-        TargetCCA_Tracking = new SiteModelMachineTargetValueTrackingState<byte>(MachineID, SiteModelID, ProductionEventType.TargetCCA);
+        TargetCCA_Tracking = new SiteModelMachineTargetValueTrackingState<byte>(MachineTargetValues, ProductionEventType.TargetCCA);
       }
 
       if (populationControl.WantsTargetPassCountValues)
       {
         TargetPassCount = 0; // kICNullPassCountValue;
-        TargetPassCount_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineID, SiteModelID, ProductionEventType.TargetPassCount);
+        TargetPassCount_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineTargetValues, ProductionEventType.TargetPassCount);
       }
 
       if (populationControl.WantsTargetLiftThicknessValues)
       {
         TargetLiftThickness = CellPassConsts.NullHeight;
-        TargetLiftThickness_Tracking = new SiteModelMachineTargetValueTrackingState<float>(MachineID, SiteModelID, ProductionEventType.TargetLiftThickness);
+        TargetLiftThickness_Tracking = new SiteModelMachineTargetValueTrackingState<float>(MachineTargetValues, ProductionEventType.TargetLiftThickness);
       }
 
       /* TODO map reset events not included
@@ -135,79 +129,79 @@ namespace VSS.TRex.Events
       if (populationControl.WantsEventDesignNameValues)
       {
         EventDesignNameID = Consts.kNoDesignNameID;
-        EventDesignNameID_Tracking = new SiteModelMachineTargetValueTrackingState<int>(MachineID, SiteModelID, ProductionEventType.DesignChange);
+        EventDesignNameID_Tracking = new SiteModelMachineTargetValueTrackingState<int>(MachineTargetValues, ProductionEventType.DesignChange);
       }
 
       if (populationControl.WantsEventVibrationStateValues)
       {
         EventVibrationState = VibrationState.Invalid;
-        EventVibrationState_Tracking = new SiteModelMachineTargetValueTrackingState<VibrationState>(MachineID, SiteModelID, ProductionEventType.VibrationStateChange);
+        EventVibrationState_Tracking = new SiteModelMachineTargetValueTrackingState<VibrationState>(MachineTargetValues, ProductionEventType.VibrationStateChange);
       }
 
       if (populationControl.WantsEventAutoVibrationStateValues)
       {
         EventAutoVibrationState = AutoVibrationState.Unknown;
-        EventAutoVibrationState_Tracking = new SiteModelMachineTargetValueTrackingState<AutoVibrationState>(MachineID, SiteModelID, ProductionEventType.AutoVibrationStateChange);
+        EventAutoVibrationState_Tracking = new SiteModelMachineTargetValueTrackingState<AutoVibrationState>(MachineTargetValues, ProductionEventType.AutoVibrationStateChange);
       }
 
       if (populationControl.WantsEventMinElevMappingValues)
       {
         MinElevMappingState = false;
-        MinElevMappingState_Tracking = new SiteModelMachineTargetValueTrackingState<bool>(MachineID, SiteModelID, ProductionEventType.MinElevMappingStateChange);
+        MinElevMappingState_Tracking = new SiteModelMachineTargetValueTrackingState<bool>(MachineTargetValues, ProductionEventType.MinElevMappingStateChange);
       }
 
       if (populationControl.WantsEventICFlagsValues)
       {
         EventICFlag = 0;
-        EventICFlag_Tracking = new SiteModelMachineTargetValueTrackingState<byte>(MachineID, SiteModelID, ProductionEventType.ICFlagsChange);
+        EventICFlag_Tracking = new SiteModelMachineTargetValueTrackingState<byte>(MachineTargetValues, ProductionEventType.ICFlagsChange);
       }
 
       if (populationControl.WantsEventMachineGearValues)
       {
         EventMachineGear = MachineGear.Null;
-        EventMachineGear_Tracking = new SiteModelMachineTargetValueTrackingState<MachineGear>(MachineID, SiteModelID, ProductionEventType.MachineGearChange);
+        EventMachineGear_Tracking = new SiteModelMachineTargetValueTrackingState<MachineGear>(MachineTargetValues, ProductionEventType.MachineGearChange);
       }
 
       if (populationControl.WantsEventMachineCompactionRMVJumpThreshold)
       {
         EventMachineRMVThreshold = CellPassConsts.NullRMV;
-        EventMachineRMVThreshold_Tracking = new SiteModelMachineTargetValueTrackingState<short>(MachineID, SiteModelID, ProductionEventType.MachineRMVJumpValueChange);
+        EventMachineRMVThreshold_Tracking = new SiteModelMachineTargetValueTrackingState<short>(MachineTargetValues, ProductionEventType.MachineRMVJumpValueChange);
       }
 
       if (populationControl.WantsEventMachineAutomaticsValues)
       {
         EventMachineAutomatics = MachineAutomaticsMode.Unknown;
-        EventMachineAutomatics_Tracking = new SiteModelMachineTargetValueTrackingState<MachineAutomaticsMode>(MachineID, SiteModelID, ProductionEventType.MachineAutomaticsChange);
+        EventMachineAutomatics_Tracking = new SiteModelMachineTargetValueTrackingState<MachineAutomaticsMode>(MachineTargetValues, ProductionEventType.MachineAutomaticsChange);
       }
 
       if (populationControl.WantsEventGPSAccuracyValues)
       {
         GPSAccuracyAndTolerance = new GPSAccuracyAndTolerance(GPSAccuracy.Unknown, CellPassConsts.NullGPSTolerance);
-        GPSAccuracyState_Tracking = new SiteModelMachineTargetValueTrackingState<GPSAccuracyAndTolerance>(MachineID, SiteModelID, ProductionEventType.GPSAccuracyChange);
+        GPSAccuracyState_Tracking = new SiteModelMachineTargetValueTrackingState<GPSAccuracyAndTolerance>(MachineTargetValues, ProductionEventType.GPSAccuracyChange);
       }
 
       if (populationControl.WantsEventPositioningTechValues)
       {
         PositioningTechState = PositioningTech.Unknown;
-        PositioningTechState_Tracking = new SiteModelMachineTargetValueTrackingState<PositioningTech>(MachineID, SiteModelID, ProductionEventType.PositioningTech);
+        PositioningTechState_Tracking = new SiteModelMachineTargetValueTrackingState<PositioningTech>(MachineTargetValues, ProductionEventType.PositioningTech);
       }
 
       if (populationControl.WantsTempWarningLevelMinValues)
       {
         TempWarningLevelMin = CellPassConsts.NullMaterialTemperatureValue;
-        TempWarningLevelMin_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineID, SiteModelID, ProductionEventType.TempWarningLevelMinChange);
+        TempWarningLevelMin_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineTargetValues, ProductionEventType.TempWarningLevelMinChange);
       }
 
       if (populationControl.WantsTempWarningLevelMaxValues)
       {
         TempWarningLevelMax = CellPassConsts.NullMaterialTemperatureValue;
-        TempWarningLevelMax_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineID, SiteModelID, ProductionEventType.TempWarningLevelMaxChange);
+        TempWarningLevelMax_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineTargetValues, ProductionEventType.TempWarningLevelMaxChange);
       }
 
       if (populationControl.WantsLayerIDValues)
       {
         EventLayerID = CellPassConsts.NullLayerID;
-        EventLayerID_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineID, SiteModelID, ProductionEventType.LayerID);
+        EventLayerID_Tracking = new SiteModelMachineTargetValueTrackingState<ushort>(MachineTargetValues, ProductionEventType.LayerID);
       }
     }
   }
