@@ -8,6 +8,8 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels.Interfaces;
@@ -46,6 +48,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.MutableGridStorage()));
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
 

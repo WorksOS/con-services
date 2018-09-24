@@ -44,8 +44,8 @@ spec:
           value: "/trex/"
         - name: ENABLE_TFA_SERVICE
           value: {{ .Values.mutableData.environment.enableTfa | quote }}
-        - name: TFA_SERVICE_BASEURL
-          value: {{ .Values.mutableData.environment.tfaServiceBaseUrl }}
+        - name: TFA_PROJECTV2_API_URL
+          value: {{ .Values.mutableData.environment.tfaProjectV2ApiUrl }}
         - name: IS_KUBERNETES
           value: "true"
         - name: DEPLOYED_ENV

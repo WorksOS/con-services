@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -30,12 +31,12 @@ namespace VSS.TRex.Webtools
 
     public const string LOGGER_REPO_NAME = "Webtools";
 
-    public Startup(IConfiguration configuration)
+    public Startup(IConfigurationStore configuration)
     {
       Configuration = configuration;
     }
 
-    public IConfiguration Configuration { get; }
+    public IConfigurationStore Configuration { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)

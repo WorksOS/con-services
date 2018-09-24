@@ -1,4 +1,5 @@
 ﻿using System;
+using Apache.Ignite.Core.Cache.Query.Continuous;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
@@ -10,6 +11,8 @@ namespace VSS.TRex.DI
   /// </summary>
   public class DIBuilder
   {
+    public static DIBuilder Instance = null;
+
     public IServiceProvider ServiceProvider { get; internal set; }
     public IServiceCollection ServiceCollection = new ServiceCollection();
 
@@ -76,7 +79,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Static method to create a new DIImplementation instance
     /// </summary>
-    public static DIBuilder New() => new DIBuilder();
+    public static DIBuilder New() => Instance = new DIBuilder();
 
     /// <summary>
     /// Performs the Inject operation into the DIContext as a fluent operation from the DIImplementation
@@ -91,5 +94,11 @@ namespace VSS.TRex.DI
     /// A handly shorthand version of .Build().Inject()
     /// </summary>
     public DIBuilder Complete() => Build(); //.Inject();
+
+    /// <summary>
+    /// Allow continuation of building the DI context
+    /// </summary>
+    /// <returns></returns>
+    public static DIBuilder Continue() => Instance;
   }
 }
