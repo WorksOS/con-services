@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Events
@@ -21,10 +20,10 @@ namespace VSS.TRex.Events
     public T ThisEvent;
     public T NextEvent;
    
-    public SiteModelMachineTargetValueTrackingState(short machineID, Guid siteModelID, ProductionEventType eventType)
+    public SiteModelMachineTargetValueTrackingState(IProductionEventLists machineEventLists, ProductionEventType eventType)
     {
-      EventList = (IProductionEvents<T>)DIContext.Obtain<IProductionEventsFactory>().NewEventList(machineID, siteModelID, eventType);
-        
+      EventList = (IProductionEvents<T>)machineEventLists.GetEventList(eventType);
+
       StartDate = DateTime.MinValue;
       EndDate = DateTime.MinValue;
       Index = -1;

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -326,8 +327,6 @@ namespace VSS.TRex.Profiling
       int Tolerance = Dummy_LiftBuildSettings.CCATolerance;
       bool TargetMeet = false;
       int ValidCCAPasses = 0;
-
-      // TOdo Assert(GridDataType in [icdtAll, icdtCCV, icdtCCVPercent, icdtMDP, icdtMDPPercent, icdtCCA, icdtCCAPercent], 'GridDataType is not related to CCV or MDP!');
 
       bool IsCCV = gridDataType == GridDataType.CCV || gridDataType == GridDataType.CCVPercent;
       bool IsMDP = gridDataType == GridDataType.MDP || gridDataType == GridDataType.MDPPercent;
