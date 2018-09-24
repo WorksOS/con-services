@@ -111,12 +111,13 @@ namespace VSS.TRex.Events
 
           if (TrackingState == null)
           {
-            TrackingState = new SiteModelMachineTargetValuesTrackingState(_MachineID, SiteModel.ID);
-            MachinesValuesTrackingState[_MachineID] = TrackingState;
-
+            TrackingState = new SiteModelMachineTargetValuesTrackingState
+            {
+              MachineTargetValues = SiteModel.MachinesTargetValues[_MachineID]
+            };
             TrackingState.Initialise(populationControl);
 
-            TrackingState.MachineTargetValues = SiteModel.MachinesTargetValues[_MachineID];
+            MachinesValuesTrackingState[_MachineID] = TrackingState;
 
             if (TrackingState.MachineTargetValues == null)
             {

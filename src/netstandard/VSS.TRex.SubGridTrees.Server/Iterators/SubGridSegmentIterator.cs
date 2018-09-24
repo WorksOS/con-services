@@ -165,28 +165,15 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         /// </summary>
         public IServerLeafSubGrid SubGrid
         {
-            get
-            {
-                return IterationState.SubGrid;
-            }
-            set
-            {
-                /*
-                // Ensure subgrids are either locked, or segments are not required to be notified as
-                // touched to the cache (which is the case for subgrids that are in intermediary
-                // subgrid trees in TAG file processing)
-                if (!(!MarkReturnedSegmentsAsTouched || Value.Locked)))
-                {
-                    SIGLogMessage.PublishNoODS(Self, Format('Subgrid %s supplied to iterator is not locked', [Value.Moniker]), slmcAssert);
-                    return;
-                }
-                */
-
-                IterationState.SubGrid = value;
-            }
+            get => IterationState.SubGrid;            
+            set => IterationState.SubGrid = value;
         }
 
-        public ISubGridDirectory Directory { get { return IterationState.Directory; } set { IterationState.Directory = value; } }
+        public ISubGridDirectory Directory
+        {
+          get => IterationState.Directory;
+          set => IterationState.Directory = value;
+        }
 
         public bool MarkReturnedSegmentsAsTouched { get; set; }
 
