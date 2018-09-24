@@ -59,7 +59,7 @@ mutableData:
       memory: 1.6Gi
   storageSize: 10Gi
   environment:
-    tfaServiceBaseUrl: "http://tagfileauth.alpha.k8s.vspengg.com/"
+    tfaProjectV2ApiUrl: "http://tagfileauth.dev.k8s.vspengg.com/api/v2/project"
     enableTfa: true
 
 
