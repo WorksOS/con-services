@@ -3,17 +3,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Moq;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests.Executors
@@ -185,7 +184,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3039,
-        expectedMessageResult: "Manual Import: unable to locate any valid subscriptions"
+        expectedMessageResult: "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
       );
     }
 
@@ -271,7 +270,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3039,
-        expectedMessageResult: "Manual Import: unable to locate any valid subscriptions"
+        expectedMessageResult: "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
       );
     }
 

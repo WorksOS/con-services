@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.
   /// </summary>
-  public class GetProjectBoundaryAtDateRequest : ContractRequest
+  public class GetProjectBoundaryAtDateRequest 
   {
     /// <summary>
     /// The id of the project to get the boundary of. 

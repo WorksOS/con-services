@@ -6,13 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -65,8 +64,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (request == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty,
-            ContractExecutionStatesEnum.SerializationError));
+          ProjectUidHelper.FormatResult(string.Empty, string.Empty, ContractExecutionStatesEnum.SerializationError));
       }
 
       var projectCustomerSubs = new List<Subscriptions>();
@@ -86,12 +84,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           if (project.IsDeleted)
           {
-            return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 43);
+            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 43);
           }
 
           if (project.ProjectType == ProjectType.ProjectMonitoring)
           {
-            return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 44);
+            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 44);
           }
 
           projectCustomerSubs =
@@ -101,7 +99,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
         else
         {
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 38);
+          return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 38);
         }
       }
 
@@ -159,7 +157,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       
       if (!intersectingProjects.Any())
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 41);
+        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 41);
       }
 
       if (project.ProjectType == ProjectType.Standard)
@@ -184,12 +182,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
             if (mostSignificantServiceType == serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum)
             {
-              return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 39);
+              return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 39);
             }
           }
           else
           {
-            return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 40);
+            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 40);
           }
         }
 
@@ -198,9 +196,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
                 string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase))
               .Any())
         {
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(project.ProjectUID, assetUid);
+          return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid);
         }
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 41);
+        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 50);
       }
    
 
@@ -213,15 +211,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
                   && p.SubscriptionEndDate.HasValue 
                   && request.TimeOfPosition <= p.SubscriptionEndDate))
         {
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(project.ProjectUID, assetUid);
+          return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid);
         }
 
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, 45);
+        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 45);
       }
 
       // pm prevented from getting here, all types should be handled already
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(String.Empty, String.Empty, 46));
+      throw new ServiceException(HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(String.Empty, String.Empty, 46));
     }
     
 
@@ -240,7 +237,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (string.IsNullOrEmpty(tccCustomerUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(String.Empty, string.Empty, 47);
+        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, 47);
       }
 
       var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, assetSubs, tccCustomerUid, request);
@@ -248,15 +245,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (!potentialProjects.Any())
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(String.Empty, string.Empty, 48);
+        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, 48);
       }
 
       if (potentialProjects.Count > 1)
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(String.Empty, string.Empty, 49);
+        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, 49);
       }
 
-      return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(potentialProjects[0].ProjectUID, assetUid);
+      return ProjectUidHelper.FormatResult(potentialProjects[0].ProjectUID, assetUid);
     }
 
     private int GetMostSignificantServiceType(string assetUid, string projectCustomerUid,

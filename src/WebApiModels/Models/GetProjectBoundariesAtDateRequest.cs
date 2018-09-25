@@ -9,7 +9,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// The request representation used to request the boundaries of projects that are active at a specified date time and belong to the owner
   /// of the specified asset.
   /// </summary>
-  public class GetProjectBoundariesAtDateRequest : ContractRequest
+  public class GetProjectBoundariesAtDateRequest 
   {
     /// <summary>
     /// The id of the asset owned by the customer whose active project boundaries are returned. 

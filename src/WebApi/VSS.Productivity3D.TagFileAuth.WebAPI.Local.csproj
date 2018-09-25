@@ -38,13 +38,13 @@
     <PackageReference Include="Jaeger" Version="0.1.1" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
     <PackageReference Include="NewRelic.Agent.Api" Version="8.3.360" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
   </ItemGroup>
 
   
   <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\KafkaConsumer\src\VSS.KafkaConsumer.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.Local.csproj" />
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.Local.csproj" />

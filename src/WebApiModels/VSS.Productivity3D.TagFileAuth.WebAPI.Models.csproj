@@ -13,11 +13,10 @@
   
   <ItemGroup>
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.26.*" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.4" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
   </ItemGroup>
 

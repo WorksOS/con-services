@@ -9,7 +9,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// <summary>
   /// The request representation used to request the project Id that a specified asset is inside at a given location and date time.
   /// </summary>
-  public class GetProjectIdRequest : ContractRequest
+  public class GetProjectIdRequest
   {
     /// <summary>
     /// The id of the asset whose tagfile is to be processed. A value of -1 indicates 'none' so all assets are considered (depending on tccOrgId). 

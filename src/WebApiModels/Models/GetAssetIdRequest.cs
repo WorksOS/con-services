@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project  is known 
   /// which is when a tagfile is being manually imported by a user.
   /// </summary>
-  public class GetAssetIdRequest : ContractRequest
+  public class GetAssetIdRequest 
   {
     /// <summary>
     /// The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
