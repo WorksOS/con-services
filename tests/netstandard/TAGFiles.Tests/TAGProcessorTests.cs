@@ -13,7 +13,7 @@ using Xunit;
 
 namespace TAGFiles.Tests
 {
-        public class TAGProcessorTests : IClassFixture<DILoggingFixture>
+        public class TAGProcessorTests : IClassFixture<DITagFileFixture>
     {
         [Fact()]
         public void Test_TAGProcessor_Creation()
@@ -89,11 +89,11 @@ namespace TAGFiles.Tests
                           "DoPostProcessFileAction did not set GPSMode event");
 
             Assert.True(MachineTargetValueChangesAggregator.PositioningTechStateEvents.LastStateValue() == PositioningTech.UTS &&
-                          MachineTargetValueChangesAggregator.PositioningTechStateEvents.LastStateDate().Date == eventDate,
+                          MachineTargetValueChangesAggregator.PositioningTechStateEvents.LastStateDate() == eventDate,
                           "DoPostProcessFileAction did not set positioning tech event");
 
             Assert.True(MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.LastStateValue() == ProductionEventType.EndEvent /*EndRecordedData*/ &&
-                          MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.LastStateDate().Date == eventDate2,
+                          MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.LastStateDate() == eventDate2,
                           "DoPostProcessFileAction did not set end recorded data event");
         }
 

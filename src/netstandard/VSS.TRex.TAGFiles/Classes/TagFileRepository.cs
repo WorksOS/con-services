@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Validator;
 
@@ -34,11 +35,10 @@ namespace VSS.TRex.TAGFiles.Classes
 
     private static string MakePath(TagFileDetail td)
     {
-      IConfiguration config = DIContext.Obtain<IConfiguration>();
-      string TagFileArchiveFolder = config.GetValue<string>("TAGFILE_ARCHIVE_FOLDER", String.Empty);
-
-      if (!string.IsNullOrEmpty(TagFileArchiveFolder))
-        return Path.Combine(TagFileArchiveFolder, td.projectId.ToString(), td.assetId.ToString());
+      var config = DIContext.Obtain<IConfigurationStore>();
+      string tagFileArchiveFolder = config.GetValueString("TAGFILE_ARCHIVE_FOLDER");
+      if (!string.IsNullOrEmpty(tagFileArchiveFolder))
+        return Path.Combine(tagFileArchiveFolder, td.projectId.ToString(), td.assetId.ToString());
 
       return Path.Combine(Path.GetTempPath(), "TRexIgniteData", "TagFileArchive", td.projectId.ToString(), td.assetId.ToString());
     }
@@ -143,8 +143,9 @@ namespace VSS.TRex.TAGFiles.Classes
       // load xml data ArchiveTagfileMetaDataPath and put into tagDetail
       // if using location oly for metadata then you would have to extract it fromn the path
 
-      IConfiguration config = DIContext.Obtain<IConfiguration>();
-      if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING_METADATA", false) && File.Exists(ArchiveTagfileMetaDataPath))
+      var config = DIContext.Obtain<IConfigurationStore>();
+      var enableArchivingMetadata = config.GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA") ?? false;
+      if (enableArchivingMetadata && File.Exists(ArchiveTagfileMetaDataPath))
       {
         FileStream ReadFileStream = new FileStream(ArchiveTagfileMetaDataPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         XmlSerializer SerializerObj = new XmlSerializer(typeof(TagfileMetaData));
