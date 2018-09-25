@@ -38,14 +38,10 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   #$myCmd = "net use z: "+ $SHAREUNC +" 'v3L0c1R^pt0R!' /user:svcRaptor /persistent:yes"
-   #Write-Host $myCmd
-   #Write-Host "Mapping Raptor ProductionData folder to Z: drive"
    $mappedDrivePassword = ConvertTo-SecureString "v3L0c1R^pt0R!" -AsPlainText -Force
    $mappedDriveUsername = "ad-vspengg\svcRaptor"
    $mappedDriveCredentials = New-Object System.Management.Automation.PSCredential ($mappedDriveUsername, $mappedDrivePassword)
    New-PSDrive -Name "Z" -PSProvider FileSystem -Root "\\dev-iolv01.vssengg.com\ProductionData" -Persist -Credential $mappedDriveCredentials
-   #& cmd /c $myCmd
    & Z:
    $DL = (get-location).Drive.Name
    Write-host "Current Drive=$DL"
