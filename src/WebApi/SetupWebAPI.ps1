@@ -41,7 +41,7 @@ else
    $mappedDrivePassword = ConvertTo-SecureString "v3L0c1R^pt0R!" -AsPlainText -Force
    $mappedDriveUsername = "ad-vspengg\svcRaptor"
    $mappedDriveCredentials = New-Object System.Management.Automation.PSCredential ($mappedDriveUsername, $mappedDrivePassword)
-   New-PSDrive -Name "Z" -PSProvider FileSystem -Root "\\dev-iolv01.vssengg.com\ProductionData" -Persist -Credential $mappedDriveCredentials
+   New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
    & Z:
    $DL = (get-location).Drive.Name
    Write-host "Current Drive=$DL"
