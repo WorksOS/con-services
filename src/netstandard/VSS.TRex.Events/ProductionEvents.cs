@@ -211,7 +211,36 @@ namespace VSS.TRex.Events
             });
         }
 
-        /// <summary>
+    /// <summary>
+    /// Creates an array of string representations for the events in the list bounded by the
+    /// supplied date range and the maximum number of events to return
+    /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <param name="maxEventsToReturn"></param>
+    /// <returns></returns>
+    public List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn)
+    {
+      // Get the index of the first value
+      GetValueAtDate(startDate, out int index);
+
+      // If the start date is before the first event index will be -1, compensate for that
+      index = index < 0 ? 0 : index;
+
+      List<string> result = new List<string>(maxEventsToReturn);
+
+      for (int i = index; i < Math.Min(index + maxEventsToReturn, Events.Count); i++)
+      {
+        if (Events[i].Date > endDate)
+          break;
+
+        result.Add($"Date: {Events[i].Date}, Event:{Events[i].State}");
+      }
+
+      return result;
+    }
+
+    /// <summary>
         /// Adds the given event into the list.  If the event is a duplicate of an existing event the 
         /// passed event will be ignored and the existing duplicate event will be returned, otherwise 
         /// passed event will be returned.

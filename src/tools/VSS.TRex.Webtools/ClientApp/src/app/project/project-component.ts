@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -23,6 +23,9 @@ export class ProjectComponent {
 
   public displayModes: DisplayMode[] = [];
   public displayMode: DisplayMode = new DisplayMode();
+
+  public eventTypes: MachineEventType[] = [];
+  public eventType: MachineEventType = new MachineEventType();
 
   public projectExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
   public tileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
@@ -58,6 +61,7 @@ export class ProjectComponent {
   public designs: Design[] = [];
 
   public machines: Machine[] = [];
+  public machine: Machine = new Machine();
 
   public existenceMapSubGridCount: number = 0;
 
@@ -93,6 +97,11 @@ export class ProjectComponent {
 
   public allProjectsMetadata: ISiteModelMetadata[] = [];
 
+  public machineEvents: string[] = [];
+  public machineEventsStartDate: Date = new Date(1980, 1, 1, 0, 0, 0, 0);
+  public machineEventsEndDate: Date = new Date(2100, 1, 1, 0, 0, 0, 0);
+  public maxMachineEventsToReturn: number = 100;
+
 constructor(
     private projectService: ProjectService
   ) { }
@@ -101,6 +110,11 @@ constructor(
     this.projectService.getDisplayModes().subscribe((modes) => {
       modes.forEach(mode => this.displayModes.push(mode));
       this.displayMode = this.displayModes[0];
+    });
+
+    this.projectService.getMachineEventTypes().subscribe((types) => {
+      types.forEach(type => this.eventTypes.push(type));
+      this.eventType = this.eventTypes[0];
     });
 
     this.getAllProjectMetadata();
@@ -391,6 +405,40 @@ constructor(
 
   public updateAllProjectsMetadata(): void {
     this.getAllProjectMetadata();
+  }
+
+  public updateDisplayedMachineEvents() {
+    // Request the first 100 events of the selected event type from the selected site model and machine
+    var result: string[] = [];
+
+    var startDate: Date = this.machineEventsStartDate;
+    if (startDate == undefined) {
+      startDate = new Date(1980, 1, 1, 0, 0, 0, 0);
+    }
+      
+    var endDate: Date = this.machineEventsEndDate;
+    if (endDate == undefined) {
+      endDate = new Date(2100, 1, 1, 0, 0, 0, 0);
+    }
+
+    this.projectService.getMachineEvents(this.projectUid, this.machine.id, this.eventType.item1,
+      this.machineEventsStartDate, this.machineEventsEndDate, this.maxMachineEventsToReturn).subscribe(      
+      events => {
+        events.forEach(event => result.push(event));
+        this.machineEvents = result;
+      });
+  }
+
+  public eventTypeChanged(event: any): void {
+    this.updateDisplayedMachineEvents();
+  }
+
+  public machineChanged(event: any): void {
+    this.updateDisplayedMachineEvents();
+  }
+
+  public updateMachineEvents(): void {
+    this.updateDisplayedMachineEvents();
   }
 }
 

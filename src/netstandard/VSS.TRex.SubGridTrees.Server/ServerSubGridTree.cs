@@ -20,20 +20,13 @@ namespace VSS.TRex.SubGridTrees.Server
             base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
                 new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
         {
-            // FSerialisedStream := Nil;
-            // SerialisedCompressorStream := Nil;
-            // FIsNewlyCreated := False;
-
             ID = siteModelID; // Ensure the ID of the subgrid tree matches the datamodel ID
-
-            // FIsValid:= True;
         }
 
         public ServerSubGridTree(byte numLevels,
                                  double cellSize,
                                  ISubGridFactory subGridfactory) : base(numLevels, cellSize, subGridfactory)
         {
-
         }
 
         /// <summary>
@@ -90,7 +83,6 @@ namespace VSS.TRex.SubGridTrees.Server
             // Locate the segment file and load the data from it
             string FullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, Segment.SegmentInfo);
 
-            // Debug.Assert(false, "SubGrid.LoadFromFile not implemented (should usee direct serialisation from Ignite, or serialisation of dumb dinary data from same");
             // Load the cells into it from its file
             FileLoaded = SubGrid.LoadSegmentFromStorage(storageProxy, FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses);
 
