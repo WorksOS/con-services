@@ -38,6 +38,7 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
+   Write-Host "Mapping Raptor ProductionData folder to Z: drive"
    $mappedDrivePassword = ConvertTo-SecureString "v3L0c1R^pt0R!" -AsPlainText -Force
    $mappedDriveUsername = "ad-vspengg\svcRaptor"
    $mappedDriveCredentials = New-Object System.Management.Automation.PSCredential ($mappedDriveUsername, $mappedDrivePassword)
