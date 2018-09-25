@@ -219,27 +219,24 @@ namespace VSS.TRex.Events
     /// <param name="endDate"></param>
     /// <param name="maxEventsToReturn"></param>
     /// <returns></returns>
-    public string[] ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn)
+    public List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn)
     {
-      int numEventsReturned = 0;
-
       // Get the index of the first value
       GetValueAtDate(startDate, out int index);
 
       // If the start date is before the first event index will be -1, compensate for that
       index = index < 0 ? 0 : index;
 
-      string[] result = new string[maxEventsToReturn];
+      List<string> result = new List<string>(maxEventsToReturn);
 
       for (int i = index; i < Math.Min(index + maxEventsToReturn, Events.Count); i++)
       {
         if (Events[i].Date > endDate)
           break;
 
-        result[numEventsReturned++] = $"Date: {Events[i].Date}, Event:{Events[i].State}";
+        result.Add($"Date: {Events[i].Date}, Event:{Events[i].State}");
       }
 
-      Array.Resize(ref result, numEventsReturned);
       return result;
     }
 
