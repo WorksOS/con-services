@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Events.Interfaces
@@ -28,7 +29,7 @@ namespace VSS.TRex.Events.Interfaces
       /// <returns></returns>
       object RawEventsObjects();
 
-      string[] ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
+      List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
   }
 
   public interface IProductionEvents<V> : IProductionEvents
