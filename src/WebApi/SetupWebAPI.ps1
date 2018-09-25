@@ -38,7 +38,7 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   $myCmd = "net use z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
+   $myCmd = "net use z: "+ $SHAREUNC +" v3L0c1R^pt0R! /user:ad-vspengg\svcRaptor /persistent:yes"
    Write-Host "Mapping Raptor ProductionData folder to Z: drive"
    & cmd /c $myCmd
    & Z:
