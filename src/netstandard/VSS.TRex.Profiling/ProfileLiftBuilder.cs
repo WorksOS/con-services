@@ -525,7 +525,7 @@ namespace VSS.TRex.Profiling
           CurrentSubgridOrigin = ThisSubgridOrigin;
           SubGrid = null;
 
-          // Does the subgridtree contain this node in it's existance map?
+          // Does the subgridtree contain this node in it's existence map?
           if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
             SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY,
               SiteModel.Grid.NumLevels);

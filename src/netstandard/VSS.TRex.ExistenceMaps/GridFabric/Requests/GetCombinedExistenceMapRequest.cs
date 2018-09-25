@@ -6,8 +6,8 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
   /// <summary>
-  /// Represents a request that will extract and combine a set of existance maps into a single existence map
-  /// Ideally this request is executed on the node containing the existance maps to minimise network traffic...
+  /// Represents a request that will extract and combine a set of existence maps into a single existence map
+  /// Ideally this request is executed on the node containing the existence maps to minimise network traffic...
   /// </summary>
   public class GetCombinedExistenceMapRequest : BaseExistenceMapRequest
   {

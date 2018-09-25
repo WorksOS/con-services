@@ -313,7 +313,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
         /// <summary>
         /// Given a filter compute which of the surfaces in the list match any given time aspect
-        /// of the filter, and the overall existance map of the surveyed surfaces that match the filter.
+        /// of the filter, and the overall existence map of the surveyed surfaces that match the filter.
         /// ComparisonList denotes a possibly pre-filtered set of surfaces for another filter; if this is the same as the 
         /// filtered set of surfaces then the overall existence map for those surfaces will not be computed as it is 
         /// assumed to be the same.
@@ -342,14 +342,14 @@ namespace VSS.TRex.SurveyedSurfaces
          
             if (FilteredSurveyedSurfaces.Count > 0)
             {
-              ISubGridTreeBitMask SurveyedSurfaceExistanceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
-              FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
+              ISubGridTreeBitMask surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
+              FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
          
               if (OverallExistenceMap == null)
                 return false;
          
-              if (SurveyedSurfaceExistanceMap != null)
-                OverallExistenceMap.SetOp_OR(SurveyedSurfaceExistanceMap);
+              if (surveyedSurfaceExistenceMap != null)
+                OverallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
             }
          
             return true;

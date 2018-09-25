@@ -127,7 +127,7 @@ namespace VSS.TRex.Filters
           if (Filter.SpatialFilter.HasAlignmentDesignMask())
           {
             /* If the filter needs to retain a reference to the existence map, then do this...
-            Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+            Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
             if (Filter.SpatialFilter.DesignMaskExistenceMap == null)
             {
