@@ -50,14 +50,14 @@ namespace VSS.TRex.Pipelines.Interfaces
     bool RequireSurveyedSurfaceInformation { get; set; }
 
     /// <summary>
-    /// If this request involves a relationship with a design then ensure the existance map
+    /// If this request involves a relationship with a design then ensure the existence map
     /// for the design is loaded in to memory to allow the request pipeline to confine
     /// subgrid requests that overlay the actual design
     /// </summary>
-    bool RequestRequiresAccessToDesignFileExistanceMap { get; set; }
+    bool RequestRequiresAccessToDesignFileExistenceMap { get; set; }
 
     /// <summary>
-    /// Any override world coordinate spatial entent imposed by the client context.
+    /// Any override world coordinate spatial extent imposed by the client context.
     /// For example, this might be the rectangular border of a tile being requested
     /// </summary>
     BoundingWorldExtent3D OverrideSpatialExtents { get; set; }

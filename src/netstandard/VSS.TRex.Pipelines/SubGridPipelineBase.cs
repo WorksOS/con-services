@@ -226,7 +226,7 @@ namespace VSS.TRex.Pipelines
 
             SubgridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubgridsToRequest;
 
-            Log.LogInformation($"Request analyser counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existance map");
+            Log.LogInformation($"Request analyser counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existence map");
 
             if (RequestAnalyser.TotalNumberOfSubgridsToRequest == 0)
             {

@@ -31,13 +31,13 @@ namespace VSS.TRex.SiteModels.Interfaces
     BoundingWorldExtent3D SiteModelExtent { get; }
 
     /// <summary>
-    /// Returns a reference to the existance map for the site model. If the existance map is not yet present
+    /// Returns a reference to the existence map for the site model. If the existence map is not yet present
     /// load it from storage/cache
     /// </summary>
-    ISubGridTreeBitMask ExistanceMap { get; }
+    ISubGridTreeBitMask ExistenceMap { get; }
 
     /// <summary>
-    /// Gets the loaded stae of the existence map. This permits testing if an existance map is loaded without forcing
+    /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
     /// the existence map to be loaded via the ExistenceMap property
     /// </summary>
     bool ExistenceMapLoaded { get; }
@@ -75,7 +75,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// <summary>
     /// GetAdjustedDataModelSpatialExtents returns the bounding extent of the production data held in the 
     /// data model expanded to include the bounding extents of the surveyed surfaces associated with the 
-    /// datamodel, excepting those identitied in the SurveyedSurfaceExclusionList
+    /// datamodel, excepting those identified in the SurveyedSurfaceExclusionList
     /// </summary>
     /// <returns></returns>
     BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList);

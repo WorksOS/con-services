@@ -43,7 +43,7 @@ namespace VSS.TRex.Events
 
             /// <summary>
             /// Defines whether this event is a custom event, ie: an event that was not recorded by a machine but which has been 
-            /// inserted as a part of a nother process such as to override values recorded by the machine that were incorrect 
+            /// inserted as a part of another process such as to override values recorded by the machine that were incorrect 
             /// (eg: design or material lift number)
             /// </summary>
             public bool IsCustomEvent
@@ -179,7 +179,6 @@ namespace VSS.TRex.Events
         //                                  const InternalStream: TMemoryStream;
         //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;
 
-        // protected void InvalidateEventList() => eventsListIsOutOfDate = true;
         // public bool EventsListIsOutOfDate() => eventsListIsOutOfDate;
 
         // protected bool LoadedFromPersistentStore = false;
@@ -227,7 +226,7 @@ namespace VSS.TRex.Events
       // If the start date is before the first event index will be -1, compensate for that
       index = index < 0 ? 0 : index;
 
-      List<string> result = new List<string>(maxEventsToReturn);
+      var result = new List<string>(maxEventsToReturn);
 
       for (int i = index; i < Math.Min(index + maxEventsToReturn, Events.Count); i++)
       {
@@ -278,7 +277,7 @@ namespace VSS.TRex.Events
                         else if (Event.IsCustomEvent)
                         {
                             // If we've got a custom event with the same date as a machine event
-                            // then "bump" the custom event's date by a milli-second to ensure it's
+                            // then "bump" the custom event's date by a millisecond to ensure it's
                             // after the machine event.
 
                             Event.Date = Event.Date.AddMilliseconds(1);
@@ -314,7 +313,7 @@ namespace VSS.TRex.Events
             // The EventStartEndRecordedDataChangeList.Collate method overrides this one to collate those
             // Start/EndRecordedData events slightly differently.
             // All other Container.EventStartEndRecordedData should use this method.
-            // This method also relies on the fact that the Container.FEventStartEndRecordedData instance should
+            // This method also relies on the fact that the Container.EventStartEndRecordedData instance should
             // have been correctly collated BEFORE any of the other Container event lists are
             // collated; this is currently achieved by the fact that ProductionEventChanges.SaveToFile saves
             // the EventStartEndRecordedData list first, indirectly invoking Collate on that list first, before

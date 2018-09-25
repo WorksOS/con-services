@@ -519,7 +519,7 @@ namespace VSS.TRex.Rendering.Executors
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
                                              Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistanceMap: Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
+          requestRequiresAccessToDesignFileExistenceMap: Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
           overrideSpatialCellRestriction: CellExtents
         );
 

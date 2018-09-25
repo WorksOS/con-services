@@ -29,7 +29,7 @@ namespace VSS.TRex.Pipelines
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
-    /// <param name="requestRequiresAccessToDesignFileExistanceMap"></param>
+    /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
     /// <param name="siteModel"></param>
     public IPipelineProcessor NewInstance(Guid requestDescriptor,
@@ -43,12 +43,12 @@ namespace VSS.TRex.Pipelines
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
-      bool requestRequiresAccessToDesignFileExistanceMap,
+      bool requestRequiresAccessToDesignFileExistenceMap,
       BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       var pipelineProcesor = NewInstanceNoBuild
         (requestDescriptor, dataModelID, siteModel, gridDataType, response, filters, cutFillDesignID, 
-        task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistanceMap,
+        task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction);
 
       if (!pipelineProcesor.Build())
@@ -74,7 +74,7 @@ namespace VSS.TRex.Pipelines
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
-    /// <param name="requestRequiresAccessToDesignFileExistanceMap"></param>
+    /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
     /// <param name="siteModel"></param>
     public IPipelineProcessor NewInstanceNoBuild(Guid requestDescriptor,
@@ -88,12 +88,12 @@ namespace VSS.TRex.Pipelines
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
-      bool requestRequiresAccessToDesignFileExistanceMap,
+      bool requestRequiresAccessToDesignFileExistenceMap,
       BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       return new PipelineProcessor
         (requestDescriptor, dataModelID, siteModel, gridDataType, response, filters, cutFillDesignID,
-        task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistanceMap,
+        task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction);
     }
   }

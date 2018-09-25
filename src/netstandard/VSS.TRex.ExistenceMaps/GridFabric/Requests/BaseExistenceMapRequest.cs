@@ -4,12 +4,12 @@ using VSS.TRex.GridFabric.Models.Affinity;
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
     /// <summary>
-    /// Base class for existence maps requests. Defines existnace map type descriptors and related base functionality sucj as cachey key calculation
+    /// Base class for existence maps requests. Defines existence map type descriptors and related base functionality such as cachy key calculation
     /// </summary>
     public class BaseExistenceMapRequest
     {
         /// <summary>
-        /// Constrct a unique key for the existance map comprised of a type descriptor and an ID
+        /// Construct a unique key for the existence map comprised of a type descriptor and an ID
         /// </summary>
         /// <param name="siteModelID"></param>
         /// <param name="typeDescriptor"></param>

@@ -64,7 +64,7 @@ namespace SurveyedSurfaceManager
                                              extents);
 
                 // Store the existence map for the surveyd surface for later use
-                ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTANCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, TTM.SubgridOverlayIndex());
+                ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)
             {
@@ -201,7 +201,7 @@ namespace SurveyedSurfaceManager
                 extents);
 
               // Store the existence map for the design for later use
-              ExistenceMaps.SetExistenceMap(SiteModelID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+              ExistenceMaps.SetExistenceMap(SiteModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)
             {

@@ -56,11 +56,11 @@
         public const string IMMUTABLE_NONSPATIAL_DATA_REGION = DEFAULT_IMMUTABLE_DATA_REGION_NAME;
 
         /// <summary>
-        /// The data region to place spatial subgrid existance maps (usually computed from TTM topological designs and surveyed surfaces)
+        /// The data region to place spatial subgrid existence maps (usually computed from TTM topological designs and surveyed surfaces)
         /// </summary>
         public const string SPATIAL_EXISTENCEMAP_DATA_REGION = DEFAULT_IMMUTABLE_DATA_REGION_NAME;
         /// <summary>
-        /// The data region to place spatial subgrid existance maps (usually computed from TTM topological designs and surveyed surfaces)
+        /// The data region to place spatial subgrid existence maps (usually computed from TTM topological designs and surveyed surfaces)
         /// </summary>
         public const string TAG_FILE_BUFFER_QUEUE_DATA_REGION = "TAGFileBufferQueue";
 

@@ -228,7 +228,7 @@ namespace VSS.TRex.Events
           {
             IProductionEvents temp = DIContext.Obtain<IProductionEventsFactory>().NewEventList(MachineID, SiteModel.ID, eventType);
 
-            if (temp != null) // The event is supported, load if the model is persisent (non-transient)
+            if (temp != null) // The event is supported, load if the model is persistent (non-transient)
             {
               if (!SiteModel.IsTransient)
               {

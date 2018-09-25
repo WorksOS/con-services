@@ -64,7 +64,7 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpGet("{siteModelID}/existencemap/subgridcount")]
     public JsonResult GetSubGridCount(string siteModelID)
     {
-      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.ExistanceMap?.CountBits() ?? 0);
+      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.ExistenceMap?.CountBits() ?? 0);
     }
 
     /// <summary>

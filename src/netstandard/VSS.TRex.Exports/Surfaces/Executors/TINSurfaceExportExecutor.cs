@@ -131,7 +131,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistanceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(DisplayMode.Height),
+          requestRequiresAccessToDesignFileExistenceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(DisplayMode.Height),
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
 
         // Set the surface task parameters for progressive processing

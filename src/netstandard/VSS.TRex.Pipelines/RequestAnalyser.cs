@@ -121,7 +121,7 @@ namespace VSS.TRex.Pipelines
           FilterRestriction = filter.SpatialFilter.CalculateIntersectionWithExtents(FilterRestriction);
       }
 
-      // Combine the overall existance map with the existence maps from any surface design filter aspects in 
+      // Combine the overall existence map with the existence maps from any surface design filter aspects in 
       // the filter set supplied with the request.
       foreach (var filter in Pipeline.FilterSet.Filters)
       {
@@ -129,7 +129,7 @@ namespace VSS.TRex.Pipelines
           {
             Log.LogDebug($"Has Design {filter.SpatialFilter.SurfaceDesignMaskDesignUid}, ANDing with OverallExistMap");
 
-            ISubGridTreeBitMask mask = GetExistenceMaps().GetSingleExistenceMap(Pipeline.DataModelID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+            ISubGridTreeBitMask mask = GetExistenceMaps().GetSingleExistenceMap(Pipeline.DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
             if (mask != null)
               Pipeline.OverallExistenceMap.SetOp_AND(mask);
@@ -159,7 +159,7 @@ namespace VSS.TRex.Pipelines
         throw new ArgumentException("No filters in pipeline", nameof(Pipeline.FilterSet));
 
       if (Pipeline.ProdDataExistenceMap == null)
-        throw new ArgumentException("Production Data Existance Map should have been specified", nameof(Pipeline.ProdDataExistenceMap));
+        throw new ArgumentException("Production Data Existence Map should have been specified", nameof(Pipeline.ProdDataExistenceMap));
 
       PerformScanning();
 
@@ -202,7 +202,7 @@ namespace VSS.TRex.Pipelines
         // calculate the on-the-ground cell indices of the world coordinate bounding extents, then
         // determine the subgrid indices of the cell within this subgrid that contains those
         // cells, then determines the subgrid extents in this subgrid to scan over
-        // Remember, each on-the-ground element (bit) in the existance map represents an
+        // Remember, each on-the-ground element (bit) in the existence map represents an
         // entire on-the-ground subgrid (32x32 OTG cells) in the matching sub grid tree.
 
         // Expand the number of cells scanned to create the rendered tile by a single cell width

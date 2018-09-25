@@ -77,7 +77,7 @@ namespace VSS.TRex.Analytics.Foundation
               task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.AggregatedPipelined),
               pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
               requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-              requestRequiresAccessToDesignFileExistanceMap: CutFillDesignID != Guid.Empty,
+              requestRequiresAccessToDesignFileExistenceMap: CutFillDesignID != Guid.Empty,
               requireSurveyedSurfaceInformation: IncludeSurveyedSurfaces,
               overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
             );
