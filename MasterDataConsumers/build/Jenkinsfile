@@ -45,8 +45,13 @@ node ('jenkinsslave-pod') {
 			error("Build stopping, no valid branch supplied")
 		}
 	}
+	
+	sh "ls -la"
+	
 	dir ('./MasterDataConsumers')
     {
+	
+	sh "ls -la"
 	
     stage('Build Solution') {
         checkout scm
