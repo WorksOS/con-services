@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
+    public FilterResult Filter { get; set; }
 
     /// <summary>
     /// The collection of CMV targets. Values are in ascending order.
@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "customCMVDetailTargets", Required = Required.Always)]
     [Required]
-    public int[] CustomCMVDetailTargets { get; private set; }
+    public int[] CustomCMVDetailTargets { get; set; }
 
     /// <summary>
     /// Default private constructor
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public CMVDetailsRequest(
-      Guid projectUid,
+      Guid? projectUid,
       FilterResult filter,
       int[] customCMVDetailTargets
     )

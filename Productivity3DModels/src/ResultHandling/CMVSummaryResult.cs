@@ -1,31 +1,18 @@
 ﻿using System;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary CMV request
   /// </summary>
-  public class CMVSummaryResult : ContractExecutionResult
+  public class CMVSummaryResult : CMVBaseResult
   {
     /// <summary>
     /// The percentage of cells that are compacted within the target bounds
     /// </summary>
     [JsonProperty(PropertyName = "compactedPercent")]
     public double CompactedPercent { get; private set; }
-
-    /// <summary>
-    /// If the CMV value is constant, this is the constant value of all CMV targets in the processed data.
-    /// </summary>
-    [JsonProperty(PropertyName = "constantTargetCMV")]
-    public short ConstantTargetCmv { get; private set; }
-
-    /// <summary>
-    /// Are the CMV target values applying to all processed cells constant?
-    /// </summary>
-    [JsonProperty(PropertyName = "isTargetCMVConstant")]
-    public bool IsTargetCmvConstant { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are over-compacted

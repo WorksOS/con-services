@@ -17,14 +17,14 @@ namespace VSS.Productivity3D.Models.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
+    public FilterResult Filter { get; set; }
 
     /// <summary>
     /// Sets the CMV change details values to compare against.
     /// </summary>
     [JsonProperty(PropertyName = "CMVChangeSummaryValues", Required = Required.Always)]
     [Required]
-    public double[] CMVChangeDetailsValues { get; private set; }
+    public double[] CMVChangeDetailsValues { get; set; }
 
     /// <summary>
     /// Default private constructor.
@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public CMVChangeDetailsRequest(
-      Guid projectUid,
+      Guid? projectUid,
       FilterResult filter,
       double[] cmvChangeDetailsValues
     )
