@@ -253,7 +253,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       int SubGridX = TestX % SubGridTreeConsts.SubGridTreeDimension;
       int SubGridY = TestY % SubGridTreeConsts.SubGridTreeDimension;
 
-      // Get the initial ExistanceBitMask from the bitmask cache
+      // Get the initial ExistenceBitMask from the bitmask cache
       if (spotElevationOnly)
         CacheSubgrid = (GenericLeafSubGrid_Float)DataStore.LocateSubGridContaining((uint)TestX, (uint)TestY);
       else
@@ -314,18 +314,18 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     protected void Scan_triangle_line(int _y, double x1, double x2, ref int NumImportUpdates)
     {
       int _x;
-      SubGridTreeLeafBitmapSubGrid ExistanceBitMask;
+      SubGridTreeLeafBitmapSubGrid ExistenceBitMask;
       bool YOrdinateIsASeedVertexRow;
       int BitMaskCacheSubgridIndex;
 
-      void GetInUseExistanceMap()
+      void GetInUseExistenceMap()
       {
         if (CachedInUseMaps[BitMaskCacheSubgridIndex].TriangleScanInvocationNumber == TriangleScanInvocationNumber)
-          ExistanceBitMask = CachedInUseMaps[BitMaskCacheSubgridIndex].InUseMap;
+          ExistenceBitMask = CachedInUseMaps[BitMaskCacheSubgridIndex].InUseMap;
         else
         {
-          ExistanceBitMask = (SubGridTreeLeafBitmapSubGrid)IsUsed.ConstructPathToCell((uint)_x, (uint)_y, SubGridPathConstructionType.ReturnExistingLeafOnly);
-          CachedInUseMaps[BitMaskCacheSubgridIndex].InUseMap = ExistanceBitMask;
+          ExistenceBitMask = (SubGridTreeLeafBitmapSubGrid)IsUsed.ConstructPathToCell((uint)_x, (uint)_y, SubGridPathConstructionType.ReturnExistingLeafOnly);
+          CachedInUseMaps[BitMaskCacheSubgridIndex].InUseMap = ExistenceBitMask;
           CachedInUseMaps[BitMaskCacheSubgridIndex].TriangleScanInvocationNumber = TriangleScanInvocationNumber;
         }
       }
@@ -343,9 +343,9 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       int BitMaskIndexX = _x & SubGridTreeConsts.SubGridLocalKeyMask;
       int BitMaskIndexY = _x & SubGridTreeConsts.SubGridLocalKeyMask;
 
-      // Get the initial ExistanceBitMask from the bitmask cache
+      // Get the initial ExistenceBitMask from the bitmask cache
       BitMaskCacheSubgridIndex = startx / SubGridTreeConsts.SubGridTreeDimension - InUse_MinXTriangleScanRange / SubGridTreeConsts.SubGridTreeDimension;
-      GetInUseExistanceMap();
+      GetInUseExistenceMap();
 
       YOrdinateIsASeedVertexRow = _y % YSeedIntervalStep == 0;
 
@@ -357,7 +357,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       for (int I = 0; I < NumElevationsToScan; I++)
       {
-        if (ExistanceBitMask == null || !ExistanceBitMask.Bits.BitSet(BitMaskIndexX, BitMaskIndexY))
+        if (ExistenceBitMask == null || !ExistenceBitMask.Bits.BitSet(BitMaskIndexX, BitMaskIndexY))
         {
           double _z = Elevations[I];
           double Diff = Math.Abs(_z - z0);
@@ -384,7 +384,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
         if (BitMaskIndexX == SubGridTreeConsts.SubGridTreeDimension && I != NumElevationsToScan - 1)
         {
           BitMaskCacheSubgridIndex++;
-          GetInUseExistanceMap();
+          GetInUseExistenceMap();
           BitMaskIndexX = 0;
         }
       }

@@ -119,7 +119,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           // Obtain the subgrid existence map for the project
-          ISubGridTreeBitMask ProdDataExistenceMap = SiteModel.ExistanceMap;
+          ISubGridTreeBitMask ProdDataExistenceMap = SiteModel.ExistenceMap;
 
           if (ProdDataExistenceMap == null)
           {

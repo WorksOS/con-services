@@ -24,7 +24,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
-    /// <param name="requestRequiresAccessToDesignFileExistanceMap"></param>
+    /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
     /// <param name="siteModel"></param>
     IPipelineProcessor NewInstance(Guid requestDescriptor,
@@ -38,7 +38,7 @@ namespace VSS.TRex.Pipelines.Interfaces
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
-      bool requestRequiresAccessToDesignFileExistanceMap,
+      bool requestRequiresAccessToDesignFileExistenceMap,
       BoundingIntegerExtent2D overrideSpatialCellRestriction);
 
     /// <summary>
@@ -55,7 +55,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
-    /// <param name="requestRequiresAccessToDesignFileExistanceMap"></param>
+    /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
     /// <param name="siteModel"></param>
     IPipelineProcessor NewInstanceNoBuild(Guid requestDescriptor,
@@ -69,7 +69,7 @@ namespace VSS.TRex.Pipelines.Interfaces
       ISubGridPipelineBase pipeline,
       IRequestAnalyser requestAnalyser,
       bool requireSurveyedSurfaceInformation,
-      bool requestRequiresAccessToDesignFileExistanceMap,
+      bool requestRequiresAccessToDesignFileExistenceMap,
       BoundingIntegerExtent2D overrideSpatialCellRestriction);
   }
 }

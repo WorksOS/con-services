@@ -553,7 +553,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Constructs the Subgrid existance map for the design
+    /// Constructs the Subgrid existence map for the design
     /// </summary>
     /// <returns></returns>
     protected bool ConstructSubgridIndex()
@@ -1186,7 +1186,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Loads the TTM design from a TTM file, along with the subgrid existance map file if it exists (created otherwise)
+    /// Loads the TTM design from a TTM file, along with the subgrid existence map file if it exists (created otherwise)
     /// </summary>
     /// <param name="fileName"></param>
     /// <returns></returns>

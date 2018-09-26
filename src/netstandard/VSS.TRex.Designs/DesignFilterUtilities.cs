@@ -32,14 +32,14 @@ namespace VSS.TRex.Designs
 
             if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
             {
-                ISubGridTreeBitMask DesignExistanceMap = DIContext.Obtain<IExistenceMaps>().GetSingleExistenceMap
-                    (siteModel.ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
+                ISubGridTreeBitMask DesignExistenceMap = DIContext.Obtain<IExistenceMaps>().GetSingleExistenceMap
+                    (siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
 
-                if (DesignExistanceMap != null)
+                if (DesignExistenceMap != null)
                 {
                     // Not sure this is really needed...
-                    DesignExistanceMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModel.Grid.CellSize;
-                    overallExistenceMap.SetOp_OR(DesignExistanceMap);
+                    DesignExistenceMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModel.Grid.CellSize;
+                    overallExistenceMap.SetOp_OR(DesignExistenceMap);
                 }
             }
 

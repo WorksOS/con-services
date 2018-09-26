@@ -12,22 +12,20 @@ namespace VSS.TRex.Volumes.Executors.Tasks
     /// A pipelined subgrid task that accepts pairs of processed client height grids and compares them to compute volume
     /// informatikon using the supplied aggregator.
     /// </summary>
-    public class SimpleVolumesComputationTask : PipelinedSubGridTask
+    public class VolumesComputationTask : PipelinedSubGridTask
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// The aggregator performing volumes computation operations
         /// </summary>
-        private ISubGridRequestsAggregator Aggregator;
+        public ISubGridRequestsAggregator Aggregator;
 
         /// <summary>
-        /// Constructor accepting a simple volumes aggregator that hardwires the expected grid data type to height
+        /// Constructor that hardwires the expected grid data type to height
         /// </summary>
-        /// <param name="aggregator"></param>
-        public SimpleVolumesComputationTask(ISubGridRequestsAggregator aggregator) : base(Guid.NewGuid(), "", GridDataType.Height)
+        public VolumesComputationTask() : base(Guid.NewGuid(), "", GridDataType.Height)
         {
-            Aggregator = aggregator;
         }
 
         /// <summary>

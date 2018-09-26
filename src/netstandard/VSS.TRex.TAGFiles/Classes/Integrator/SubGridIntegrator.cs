@@ -128,9 +128,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             if (TargetSubGrid.SaveDirectoryToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
             {
                 // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
-                // in the sitemodel. Note this by including it within the SiteModel existance map
+                // in the sitemodel. Note this by including it within the SiteModel existence map
 
-                SiteModel.ExistanceMap.SetCell(TargetSubGrid.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                SiteModel.ExistenceMap.SetCell(TargetSubGrid.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
                                                TargetSubGrid.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
                                                true);
             }

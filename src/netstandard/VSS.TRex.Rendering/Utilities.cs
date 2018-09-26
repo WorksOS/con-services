@@ -40,15 +40,15 @@ namespace VSS.TRex.Rendering
         }
 
         /// <summary>
-        /// Determine if the request needs to use the existance from a design to determine which subgrids to request
+        /// Determine if the request needs to use the existence from a design to determine which subgrids to request
         /// </summary>
         /// <param name="Mode"></param>
         /// <returns></returns>
-        public static bool RequestRequiresAccessToDesignFileExistanceMap(DisplayMode Mode
+        public static bool RequestRequiresAccessToDesignFileExistenceMap(DisplayMode Mode
             // ReferenceVolumeType : TComputeICVolumesType
             )
         {
-            // Some requests benefit from having the existance map for a reference design on hand.
+            // Some requests benefit from having the existence map for a reference design on hand.
             // These are Cut Fill, Summary Volume(*) and Thickness Summary requests (*)
             // (*) Where these requests are specified with either filter-design or design-filter
             //     volume computation modes

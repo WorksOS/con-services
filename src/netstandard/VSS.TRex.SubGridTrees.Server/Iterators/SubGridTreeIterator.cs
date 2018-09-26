@@ -154,7 +154,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         protected ISubGrid LocateNextSubgridInIteration()
         {
             int LevelIdx = 1;
-            SubGridTreeBitmapSubGridBits DummyExistanceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+            SubGridTreeBitmapSubGridBits DummyExistenceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
             Debug.Assert(iterationState[1].SubGrid != null, "No root subgrid node assigned to iteration state");
 
@@ -177,7 +177,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                   ISubGrid SubGrid;
                   if (LevelIdx == SubGridTreeConsts.SubGridTreeLevels - 1)
                     {
-                        // It's a leaf subgrid we are looking for - check the existance map
+                        // It's a leaf subgrid we are looking for - check the existence map
                         if (SubGridsInServerDiskStore)
                         {
                             if (returnCachedItemsOnly)
@@ -221,7 +221,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                         {
                             if (Scanner != null)
                             {
-                                switch (Scanner.OnProcessNodeSubgrid(SubGrid, DummyExistanceMap))
+                                switch (Scanner.OnProcessNodeSubgrid(SubGrid, DummyExistenceMap))
                                 {
                                     case Types.SubGridProcessNodeSubGridResult.OK:
                                         AllowedToUseSubgrid = true;

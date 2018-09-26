@@ -14,7 +14,7 @@ using VSS.TRex.Storage.Models;
 namespace VSS.TRex.ExistenceMaps.Servers
 {
     /// <summary>
-    /// A server representing access operations for existance maps derived from topologic surfaces such as TTM designs
+    /// A server representing access operations for existence maps derived from topological surfaces such as TTM designs
     /// and surveyed surfaces
     /// </summary>
     public class ExistenceMapServer
@@ -28,11 +28,11 @@ namespace VSS.TRex.ExistenceMaps.Servers
         private readonly IIgnite ignite;
 
         /// <summary>
-        /// A cache that holds the existance maps derived from designfiles (eg: TTM files)
+        /// A cache that holds the existence maps derived from designfiles (eg: TTM files)
         /// Each existence map is stored in it's serialised byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        protected ICache<NonSpatialAffinityKey, byte[]> DesignTopologyExistanceMapsCache;
+        protected ICache<NonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
 
         /// <summary>
         /// Internal static instance variable for the server
@@ -60,14 +60,14 @@ namespace VSS.TRex.ExistenceMaps.Servers
 
             try
             {
-                DesignTopologyExistanceMapsCache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName());
+                DesignTopologyExistenceMapsCache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName());
             }
             catch // Exception is thrown if the cache does not exist
             {
-                DesignTopologyExistanceMapsCache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistanceMapsCache());
+                DesignTopologyExistenceMapsCache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
             }
 
-            if (DesignTopologyExistanceMapsCache == null)
+            if (DesignTopologyExistenceMapsCache == null)
             {
                 Log.LogInformation($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
@@ -77,7 +77,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// <summary>
         /// Configure the parameters of the existence map cache
         /// </summary>
-        public CacheConfiguration ConfigureDesignTopologyExistanceMapsCache()
+        public CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
         {
             return new CacheConfiguration()
             {
@@ -97,7 +97,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         }
 
         /// <summary>
-        /// Get a specific existance map given its key
+        /// Get a specific existence map given its key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -105,7 +105,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         {
             try
             {
-                return DesignTopologyExistanceMapsCache.Get(key);
+                return DesignTopologyExistenceMapsCache.Get(key);
             }
             catch (KeyNotFoundException)
             {
@@ -121,7 +121,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// <param name="map"></param>
         public void SetExistenceMap(NonSpatialAffinityKey key, byte [] map)
         {
-            DesignTopologyExistanceMapsCache.Put(key, map);
+            DesignTopologyExistenceMapsCache.Put(key, map);
         }
     }
 }

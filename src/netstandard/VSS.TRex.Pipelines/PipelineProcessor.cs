@@ -117,14 +117,14 @@ namespace VSS.TRex.Pipelines
     public bool RequireSurveyedSurfaceInformation { get; set; }
 
     /// <summary>
-    /// If this request involves a relationship with a design then ensure the existance map
+    /// If this request involves a relationship with a design then ensure the existence map
     /// for the design is loaded in to memory to allow the request pipeline to confine
     /// subgrid requests that overlay the actual design
     /// </summary>
-    public bool RequestRequiresAccessToDesignFileExistanceMap { get; set; }
+    public bool RequestRequiresAccessToDesignFileExistenceMap { get; set; }
 
     /// <summary>
-    /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
+    /// A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria
     /// </summary>
     public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
 
@@ -142,7 +142,7 @@ namespace VSS.TRex.Pipelines
     /// <param name="pipeline"></param>
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
-    /// <param name="requestRequiresAccessToDesignFileExistanceMap"></param>
+    /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
     /// <param name="siteModel"></param>
     public PipelineProcessor(Guid requestDescriptor,
@@ -156,7 +156,7 @@ namespace VSS.TRex.Pipelines
                              ISubGridPipelineBase pipeline,
                              IRequestAnalyser requestAnalyser,
                              bool requireSurveyedSurfaceInformation,
-                             bool requestRequiresAccessToDesignFileExistanceMap,
+                             bool requestRequiresAccessToDesignFileExistenceMap,
                              BoundingIntegerExtent2D overrideSpatialCellRestriction)
     {
       RequestDescriptor = requestDescriptor;
@@ -172,7 +172,7 @@ namespace VSS.TRex.Pipelines
       RequestAnalyser = requestAnalyser;
 
       RequireSurveyedSurfaceInformation = requireSurveyedSurfaceInformation;
-      RequestRequiresAccessToDesignFileExistanceMap = requestRequiresAccessToDesignFileExistanceMap;
+      RequestRequiresAccessToDesignFileExistenceMap = requestRequiresAccessToDesignFileExistenceMap;
 
       OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
     }
@@ -217,8 +217,8 @@ namespace VSS.TRex.Pipelines
         return false;
       }
 
-      // Get the current production data existance map from the sitemodel
-      ProdDataExistenceMap = SiteModel.ExistanceMap;
+      // Get the current production data existence map from the sitemodel
+      ProdDataExistenceMap = SiteModel.ExistenceMap;
       
       if (ProdDataExistenceMap == null)
       {
@@ -283,10 +283,10 @@ namespace VSS.TRex.Pipelines
       // Adjust the extents we have been given to encompass the spatial extent of the supplied filters (if any)
       Filters.ApplyFilterAndSubsetBoundariesToExtents(SpatialExtents);
 
-      // If this request involves a relationship with a design then ensure the existance map
+      // If this request involves a relationship with a design then ensure the existence map
       // for the design is loaded in to memory to allow the request pipeline to confine
       // subgrid requests that overlay the actual design
-      if (RequestRequiresAccessToDesignFileExistanceMap)
+      if (RequestRequiresAccessToDesignFileExistenceMap)
       {
         if (CutFillDesignID == Guid.Empty)
         {
@@ -295,7 +295,7 @@ namespace VSS.TRex.Pipelines
             return false;
         }
 
-        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
+        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesignID);
 
         if (DesignSubgridOverlayMap == null)
         {

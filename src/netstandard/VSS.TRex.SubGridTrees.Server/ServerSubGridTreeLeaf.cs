@@ -390,7 +390,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public override bool CellHasValue(byte CellX, byte CellY)
         {
-            return Directory.GlobalLatestCells.PassDataExistanceMap.BitSet(CellX, CellY);
+            return Directory.GlobalLatestCells.PassDataExistenceMap.BitSet(CellX, CellY);
         }
 
         public void CalculateLatestPassGridForSegment(ISubGridCellPassesDataSegment Segment,
@@ -431,7 +431,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 bool UpdatedCell = false;
 
                 if (TemporallyPrecedingSegment != null &&
-                    TemporallyPrecedingSegment.LatestPasses.PassDataExistanceMap.BitSet(I, J))
+                    TemporallyPrecedingSegment.LatestPasses.PassDataExistenceMap.BitSet(I, J))
                 {
                     // Seed the latest data for this segment with the latest data from the previous segment
                     Segment.LatestPasses[(int)I, (int)J] = TemporallyPrecedingSegment.LatestPasses[(int)I, (int)J];
@@ -480,7 +480,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
 
                 if (UpdatedCell)
-                    Segment.LatestPasses.PassDataExistanceMap.SetBit(I, J);
+                    Segment.LatestPasses.PassDataExistenceMap.SetBit(I, J);
             });
         }
 
@@ -507,7 +507,7 @@ namespace VSS.TRex.SubGridTrees.Server
             _GlobalLatestCells.Clear();
             _GlobalLatestCells.Assign(_LatestPasses);
 
-            Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
+            Segment.LatestPasses.PassDataExistenceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
         }
 
         public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy)
