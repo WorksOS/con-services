@@ -177,7 +177,7 @@ namespace VSS.TRex.SiteModels
         siteModel = newSiteModel;
       }
 
-      // If the notification contains an exeistance map change mask then all cached subgrid based elements that match the masked subgrids
+      // If the notification contains an existence map change mask then all cached subgrid based elements that match the masked subgrids
       // need to be evicted from all cached contexts related to this sitemodel. Note: This operation is not performed under a lock as the 
       // removal operations on the cache are lock free
       // [todo: validate lock free operations on general result and similar cache stores as implemented]

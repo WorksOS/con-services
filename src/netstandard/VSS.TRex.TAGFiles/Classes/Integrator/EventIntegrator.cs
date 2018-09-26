@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
@@ -139,9 +138,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                     IProductionEvents TargetList = targetEventLists[(int)evt] ?? TargetLists.GetEventList(SourceList.EventListType);
 
                     if (IntegratingIntoPersistentDataModel && TargetList == null)
-                    {
                         Log.LogError($"Event list {evt} not available in IntegrateMachineEvents");
-                    }
 
                     if (TargetList != null)
                         PerformListIntegration(SourceList, TargetList);

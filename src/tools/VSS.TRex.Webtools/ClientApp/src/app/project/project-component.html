@@ -12,7 +12,7 @@
   <button (click)="updateAllProjectsMetadata()">Update Metadata</button>
 </p>
 <p>Project Extents: {{projectExtents}}, Starts At: {{projectStartDate}}, Ends At: {{projectEndDate}}</p>
-<p>Existence map contains {{existenceMapSubGridCount}} subgrids, covering approximately {{(existenceMapSubGridCount * 1024) / 10000}} hectares.</p>
+<p>Existence map contains {{existenceMapSubGridCount}} subgrids, covering approximately {{(existenceMapSubGridCount * 1024 * (0.34*0.34)) / 10000}} hectares.</p>
 <p>
   Render tiles of type:
   <select id="displayMode" name="displayMode" [(ngModel)]="displayMode" (change)="displayModeChanged($event)">

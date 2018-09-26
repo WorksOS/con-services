@@ -11,7 +11,6 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -281,16 +280,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                 if (Comparison < 1)
                                 {
                                     // TODO: Convert design name list and id event list structure from Raptor
-                                    // MachineFromDM.LastKnownDesignName = SiteModelMachineTargetValues.DesignNameStateEvents.LastOrDefault().State;
-                                    MachineFromDM.LastKnownDesignName = "";
+                                    // Something like this: MachineFromDM.LastKnownDesignName = SiteModelFromDM.DesignNames[SiteModelMachineTargetValues.DesignNameStateEvents.LastStateValue()];
 
-                                    /* TODO as above
-                                    if (SiteModelMachineTargetValues.DesignNameStateEvents.Count > 0)
-                                    {
-                                        SiteModelFromDM.SiteModelMachineTargetValues.DesignNameStateEvents.Items[SiteModelMachineTargetValues.TargetValueChanges.EventDesignNames.Count - 1] as TICEventDesignNameValueChange).EventDesignNameID, out string LastKnownDesignName);
-                                        MachineFromDM.LastKnownDesignName = LastKnownDesignName;
-                                    }
-                                    */
+                                     MachineFromDM.LastKnownDesignName = ""; // Todo: remove when above todo done
 
                                     if (SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0)
                                     {
