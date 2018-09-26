@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk as builder
+FROM microsoft/dotnet:2.0-sdk as builder
 
 COPY . /build/
 WORKDIR /build
@@ -8,7 +8,7 @@ RUN chmod 777 *.sh
 RUN rm -rf /artifacts
 RUN dotnet publish ./src/MasterDataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o /artifacts -f netcoreapp2.0
 
-FROM microsoft/dotnet:2.1-runtime
+FROM microsoft/dotnet:2.0-sdk
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \

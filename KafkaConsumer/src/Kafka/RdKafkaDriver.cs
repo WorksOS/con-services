@@ -78,8 +78,12 @@ namespace VSS.KafkaConsumer.Kafka
         try
         {
           var result = rdConsumer.Consume(timeout);
-          payloads.Add(result.Value);
-          lastValidResult = result;
+          log?.LogTrace($"Polled with the OK result {result.Headers} and value {result.Value?.Length}");
+          if (result.Value != null)
+          {
+            payloads.Add(result.Value);
+            lastValidResult = result;
+          }
         }
         catch (ConsumeException e)
         {
@@ -87,7 +91,6 @@ namespace VSS.KafkaConsumer.Kafka
         }
         finally
         {
-          log?.LogTrace($"Polled with the OK result ");
           protectionCounter++;
         }
       }
