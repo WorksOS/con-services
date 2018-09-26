@@ -47,9 +47,9 @@ export class ProjectComponent {
 
   public applyToViewOnly: boolean = false;
 
-  public surveydSurfaceFileName: string = "";
-  public surveydSurfaceAsAtDate: Date = new Date();
-  public surveydSurfaceOffset: number = 0;
+  public surveyedSurfaceFileName: string = "";
+  public surveyedSurfaceAsAtDate: Date = new Date();
+  public surveyedSurfaceOffset: number = 0;
 
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
@@ -314,10 +314,10 @@ constructor(
 
   public addNewSurveyedSurface(): void {
     var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.surveydSurfaceFileName;
-    descriptor.offset = this.surveydSurfaceOffset;
+    descriptor.fileName = this.surveyedSurfaceFileName;
+    descriptor.offset = this.surveyedSurfaceOffset;
 
-    this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveydSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
+    this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {
         this.newSurveyedSurfaceGuid = uid.id;
         this.getSurveyedSurfaces();
@@ -401,6 +401,7 @@ constructor(
 
   public projectMetadataChanged(event: any): void {
     this.projectUid = this.projectMetadata.id;
+    this.selectProject();
   }
 
   public updateAllProjectsMetadata(): void {
