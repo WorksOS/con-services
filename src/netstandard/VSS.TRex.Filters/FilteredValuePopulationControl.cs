@@ -288,8 +288,9 @@ namespace VSS.TRex.Filters
       WantsEventMachineAutomaticsValues =
         (clientGrid.EventPopulationFlags & PopulationControlFlags.WantsEventMachineAutomaticsValues) != 0 ||
         passFilter.HasGCSGuidanceModeFilter;
-      WantsLayerIDValues =
-        false; // Todo (LiftBuildSettings.LiftDetectionType = icldtTagfile) || passFilter.HasLayerIDFilter || (LiftBuildSettings.LiftDetectionType in[icldtMapReset, icldtAutoMapReset]);
+      WantsLayerIDValues = profileTypeRequired == GridDataType.CellProfile || profileTypeRequired == GridDataType.CellProfile || passFilter.HasLayerIDFilter;
+
+      // Todo (LiftBuildSettings.LiftDetectionType = icldtTagfile) || passFilter.HasLayerIDFilter || (LiftBuildSettings.LiftDetectionType in[icldtMapReset, icldtAutoMapReset]);
     }
 
     /// <summary>
@@ -338,8 +339,8 @@ namespace VSS.TRex.Filters
       WantsEventGPSAccuracyValues = passFilter.HasGPSAccuracyFilter || passFilter.HasGPSToleranceFilter;
       WantsEventPositioningTechValues = passFilter.HasPositioningTechFilter;
       WantsEventMachineAutomaticsValues = passFilter.HasGCSGuidanceModeFilter;
-      WantsLayerIDValues =
-        false; // todo (LiftBuildSettings.LiftDetectionType = icldtTagfile) || passFilter.HasLayerIDFilter || (LiftBuildSettings.LiftDetectionType in [icldtMapReset, icldtAutoMapReset]);
+      WantsLayerIDValues = profileTypeRequired == GridDataType.CellProfile || profileTypeRequired == GridDataType.CellProfile || passFilter.HasLayerIDFilter;
+      //  todo (LiftBuildSettings.LiftDetectionType = icldtTagfile) || passFilter.HasLayerIDFilter || (LiftBuildSettings.LiftDetectionType in [icldtMapReset, icldtAutoMapReset]);
     }
   }
 }
