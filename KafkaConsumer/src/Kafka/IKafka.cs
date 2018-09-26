@@ -15,7 +15,7 @@ namespace VSS.KafkaConsumer.Kafka
     bool EnableAutoCommit { get; set; }
     int Port { get; set; }
     void Subscribe(List<string> topics);
-    Task<CommittedOffsets> Commit();
+    TopicPartitionOffset Commit();
     void InitConsumer(IConfigurationStore configurationStore, string groupName = null, ILogger<IKafka> logger = null);
     void InitProducer(IConfigurationStore configurationStore);
     void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys);
