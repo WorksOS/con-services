@@ -240,6 +240,21 @@ this.CompactionGetCMVSummary("TemperatureFilter", "ff91dd40-1569-4765-a2bc-01432
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary: PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountFilter_Summary")]
+        public virtual void CompactionGetCMVSummary_PassCountFilter()
+        {
+#line 16
+this.CompactionGetCMVSummary("PassCountFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "PassCountFilter_Summary", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary: AutomaticsFilter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "AutomaticsFilter")]
@@ -656,6 +671,21 @@ this.CompactionGetCMVChangeSummary("AsAtCustom", "ff91dd40-1569-4765-a2bc-014321
         {
 #line 108
 this.CompactionGetCMVChangeSummary("TemperatureFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "1980fc8b-c892-4f9f-b673-bc09827bf2b5", "TemperatureFilter_PercentChangeSummary", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary: PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCmv")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountFilter_PercentChangeSummary")]
+        public virtual void CompactionGetCMVChangeSummary_PassCountFilter()
+        {
+#line 108
+this.CompactionGetCMVChangeSummary("PassCountFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "PassCountFilter_PercentChangeSummary", ((string[])(null)));
 #line hidden
         }
     }

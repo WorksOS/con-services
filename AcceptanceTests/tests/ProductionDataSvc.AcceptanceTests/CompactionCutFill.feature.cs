@@ -236,6 +236,22 @@ this.CompactionGetCut_FillDetails("AlignmentFilter", "ff91dd40-1569-4765-a2bc-01
 this.CompactionGetCut_FillDetails("TemperatureFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "1980fc8b-c892-4f9f-b673-bc09827bf2b5", "TemperatureFilter_Details", ((string[])(null)));
 #line hidden
         }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Cut-Fill Details: PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CompactionCutFill")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "PassCountFilter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:CutFillDesignUID", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "c5590172-a1bb-440a-bc7d-6c35ecc75724")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "PassCountFilter_Details")]
+        public virtual void CompactionGetCut_FillDetails_PassCountFilter()
+        {
+#line 17
+this.CompactionGetCut_FillDetails("PassCountFilter", "ff91dd40-1569-4765-a2bc-014321f76ace", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "c5590172-a1bb-440a-bc7d-6c35ecc75724", "PassCountFilter_Details", ((string[])(null)));
+#line hidden
+        }
     }
 }
 #pragma warning restore

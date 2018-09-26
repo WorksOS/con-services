@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -200,12 +202,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = boundingBoxService.GetProductionDataExtents(projectId, excludedIds);
 
+        var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
+        //In case we have rogue tag files distorting the extents, restrict to project boundary
         var returnResult = new ProjectExtentsResult
         {
-          minLat = result.conversionCoordinates[0].y.LatRadiansToDegrees(),
-          minLng = result.conversionCoordinates[0].x.LonRadiansToDegrees(),
-          maxLat = result.conversionCoordinates[1].y.LatRadiansToDegrees(),
-          maxLng = result.conversionCoordinates[1].x.LonRadiansToDegrees()
+          minLat = Math.Max(result.conversionCoordinates[0].y.LatRadiansToDegrees(), projectPoints.Min(p => p.Lat).LatRadiansToDegrees()),
+          minLng = Math.Max(result.conversionCoordinates[0].x.LonRadiansToDegrees(), projectPoints.Min(p => p.Lon).LonRadiansToDegrees()),
+          maxLat = Math.Min(result.conversionCoordinates[1].y.LatRadiansToDegrees(), projectPoints.Max(p => p.Lat).LatRadiansToDegrees()),
+          maxLng = Math.Min(result.conversionCoordinates[1].x.LonRadiansToDegrees(), projectPoints.Max(p => p.Lon).LonRadiansToDegrees())
         };
 
         Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
