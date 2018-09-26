@@ -54,8 +54,8 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                      arg.CoordsAreGrid,
                      arg.PixelsX, arg.PixelsY,
                      arg.Filter1, arg.Filter2,
-                     arg.ReferenceDesignID,//arg.CutFillDesign,
-                  Draw.Color.Black,
+                     arg.ReferenceDesignID,
+                     Draw.Color.Black,
                      arg.TRexNodeID);
 
                 Log.LogInformation("Executing render.Execute()");

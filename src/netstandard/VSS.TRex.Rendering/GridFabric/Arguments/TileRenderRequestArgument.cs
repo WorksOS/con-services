@@ -34,7 +34,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
                                          ushort pixelsY,
                                          ICombinedFilter filter1,
                                          ICombinedFilter filter2,
-                                         Guid referenceDesignId /*DesignDescriptor cutFillDesign*/)
+                                         Guid referenceDesignId)
         {
             SiteModelID = siteModelID;
             Mode = mode;
@@ -44,7 +44,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
             PixelsY = pixelsY;
             Filter1 = filter1;
             Filter2 = filter2;
-            ReferenceDesignID = referenceDesignId; // CutFillDesign = cutFillDesign;
+            ReferenceDesignID = referenceDesignId; 
         }
     }
 }
