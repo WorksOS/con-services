@@ -36,6 +36,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(CutFillDetailsRequest));
+
       var siteModel = GetSiteModel(request.ProjectUid);
       
       // TODO: Configure design and lift build settings

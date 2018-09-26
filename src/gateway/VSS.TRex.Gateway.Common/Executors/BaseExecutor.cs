@@ -61,7 +61,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected void ThrowRequestTypeCastException(Type requestClassType)
     {
       throw new ServiceException(
-        HttpStatusCode.BadRequest,
+        HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           $"{requestClassType} cast failed."));
     }
