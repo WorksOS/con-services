@@ -85,7 +85,7 @@ node ('jenkinsslave-pod') {
 					[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
 					[$class: 'SkippedThreshold', unstableThreshold: '1']
 				],
-                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
+                tools: [[$class: 'XUnitDotNetTestType', pattern: '../TestResults/UnitTests/**/*.xml']]])
 
 		//Stash results for publication to vsts after acceptance/integration tests have run
 		dir("TestResults") {
