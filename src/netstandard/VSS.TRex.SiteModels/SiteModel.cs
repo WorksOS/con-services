@@ -506,7 +506,7 @@ namespace VSS.TRex.SiteModels
                         // is particularly useful for testing purposes where copying around projects
                         // is much quicker than reprocessing large sets of TAG files
 
-                        Log.LogWarning($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
+                        Log.LogWarning($"Site model ID read ({ID}) does not match expected ID ({SavedID}), setting to expected");
                         ID = SavedID;
                     }
 
@@ -521,11 +521,11 @@ namespace VSS.TRex.SiteModels
 
                     if (Result == FileSystemErrorStatus.OK)
                     {
-                        Log.LogInformation($"Site model read from FS file (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+                        Log.LogInformation($"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
                     }
                     else
                     {
-                        Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
+                        Log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
                     }
                 }
             }
@@ -645,12 +645,12 @@ namespace VSS.TRex.SiteModels
         {
           ID = ID,
           //Name = Name,
-          //Decription = Description,
+          //Description = Description,
           LastModifiedDate = LastModifiedDate,
           SiteModelExtent = SiteModelExtent,
-          MachineCount = Machines.Count,
-          DesignCount = Designs.Count,
-          SurveyedSurfaceCount = SurveyedSurfaces.Count
+          MachineCount = Machines?.Count ?? 0,
+          DesignCount = Designs?.Count ?? 0,
+          SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0
         };
       }
     }
