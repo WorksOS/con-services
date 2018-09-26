@@ -46,7 +46,7 @@ node ('jenkinsslave-pod') {
 		}
 	}
 	
-	sh "ls -la"
+    checkout scm
 	
 	dir ('./MasterDataConsumers')
     {
@@ -54,8 +54,6 @@ node ('jenkinsslave-pod') {
 	sh "ls -la"
 	
     stage('Build Solution') {
-        checkout scm
-
 
 	    def build_container = docker.build(container, "-f ./build/Dockerfile.build .")
 
