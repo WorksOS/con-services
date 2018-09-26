@@ -24,7 +24,7 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.0" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.18" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.10.0" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.10.1" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

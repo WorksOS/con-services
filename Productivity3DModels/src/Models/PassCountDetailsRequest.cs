@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public PassCountDetailsRequest(
-      Guid projectUid,
+      Guid? projectUid,
       FilterResult filter,
       int[] passCounts
     )

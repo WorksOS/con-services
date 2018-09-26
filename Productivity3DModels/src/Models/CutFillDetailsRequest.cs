@@ -33,31 +33,18 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     /// <param name="projectId"></param>
+    /// <param name="projectUid"></param>
     /// <param name="tolerances"></param>
     /// <param name="filter"></param>
     /// <param name="liftBuildSettings"></param>
     /// <param name="designDescriptor"></param>
-    public CutFillDetailsRequest(long projectId, double[] tolerances, FilterResult filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
+    public CutFillDetailsRequest(long projectId, Guid? projectUid, double[] tolerances, FilterResult filter, LiftBuildSettings liftBuildSettings, DesignDescriptor designDescriptor)
     {
       ProjectId = projectId;
-      CutFillTolerances = tolerances;
-      Filter = filter;
-      LiftBuildSettings = liftBuildSettings;
-      DesignDescriptor = designDescriptor;
-    }
-
-    /// <summary>
-    /// Overload constructor with parameters.
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="tolerances"></param>
-    /// <param name="filter"></param>
-    /// <param name="designDescriptor"></param>
-    public CutFillDetailsRequest(Guid projectUid, double[] tolerances, FilterResult filter, DesignDescriptor designDescriptor)
-    {
       ProjectUid = projectUid;
       CutFillTolerances = tolerances;
       Filter = filter;
+      LiftBuildSettings = liftBuildSettings;
       DesignDescriptor = designDescriptor;
     }
 
