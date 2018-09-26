@@ -50,50 +50,47 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
           var settings = (CMVSettingsEx) request.CmvSettings;
           var cmvDetailsRequest = new CMVDetailsRequest(request.ProjectUid, request.Filter, settings.CustomCMVDetailTargets);
-
           return trexCompactionDataProxy.SendCMVDetailsRequest(cmvDetailsRequest, customHeaders).Result;
+        }
+
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
+            request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
+
+        TASNodeRequestDescriptor externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
+          request.CallId ?? Guid.NewGuid(), 0,
+          TASNodeCancellationDescriptorType.cdtCMVDetailed);
+
+        TICLiftBuildSettings liftBuildSettings = RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod);
+
+        TCMVDetails cmvDetails;
+        TASNodeErrorStatus raptorResult;
+
+        if (!request.IsCustomCMVTargets)
+        {
+          raptorResult = raptorClient.GetCMVDetails(
+            request.ProjectId ?? -1,
+            externalRequestDescriptor,
+            ConvertSettings(request.CmvSettings),
+            raptorFilter,
+            liftBuildSettings,
+            out cmvDetails);
         }
         else
         {
-          TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
-            request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
-
-          TASNodeRequestDescriptor externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
-            request.CallId ?? Guid.NewGuid(), 0,
-            TASNodeCancellationDescriptorType.cdtCMVDetailed);
-
-          TICLiftBuildSettings liftBuildSettings = RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod);
-
-          TCMVDetails cmvDetails;
-          TASNodeErrorStatus raptorResult;
-
-          if (!request.IsCustomCMVTargets)
-          {
-            raptorResult = raptorClient.GetCMVDetails(
-              request.ProjectId ?? -1,
-              externalRequestDescriptor,
-              ConvertSettings(request.CmvSettings),
-              raptorFilter,
-              liftBuildSettings,
-              out cmvDetails);
-          }
-          else
-          {
-            raptorResult = raptorClient.GetCMVDetailsExt(
-              request.ProjectId ?? -1,
-              externalRequestDescriptor,
-              ConvertSettingsExt((CMVSettingsEx)request.CmvSettings),
-              raptorFilter,
-              liftBuildSettings,
-              out cmvDetails);
-          }
-
-          if (raptorResult == TASNodeErrorStatus.asneOK)
-            return ConvertResult(cmvDetails);
-
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested CMV details data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+          raptorResult = raptorClient.GetCMVDetailsExt(
+            request.ProjectId ?? -1,
+            externalRequestDescriptor,
+            ConvertSettingsExt((CMVSettingsEx)request.CmvSettings),
+            raptorFilter,
+            liftBuildSettings,
+            out cmvDetails);
         }
+
+        if (raptorResult == TASNodeErrorStatus.asneOK)
+          return ConvertResult(cmvDetails);
+
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          $"Failed to get requested CMV details data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally
       {

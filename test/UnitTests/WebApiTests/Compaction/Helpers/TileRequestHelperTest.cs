@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           filterResult = new FilterResult(new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
         }
 
-        requestHelper.Initialize(null, null, null, settingsManager, 0, compactionProjectSettings, compactionProjectSettingsColors, null, filterResult, designDescriptor);
+        requestHelper.Initialize(null, null, null, settingsManager, null, 0, compactionProjectSettings, compactionProjectSettingsColors, null, filterResult, designDescriptor);
       }
 
       [TestMethod]

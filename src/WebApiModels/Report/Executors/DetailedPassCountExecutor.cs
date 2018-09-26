@@ -45,33 +45,37 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         if (request == null)
           ThrowRequestTypeCastException(typeof(PassCounts));
-        
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
-          request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds,log: log);
+
+        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway))
+          useTrexGateway = false;
+
+        if (useTrexGateway)
+        {
+          var pcDetailsRequest = new PassCountDetailsRequest(request.ProjectUid, request.Filter, request.passCountSettings.passCounts);
+          return trexCompactionDataProxy.SendPassCountDetailsRequest(pcDetailsRequest, customHeaders).Result;
+        }
+
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
+            request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds, log: log);
         var raptorResult = raptorClient.GetPassCountDetails(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
             TASNodeCancellationDescriptorType.cdtPassCountDetailed),
           request.passCountSettings != null ? ConvertSettings(request.passCountSettings) : new TPassCountSettings(),
           raptorFilter,
           RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
           out passCountDetails);
         //log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
+
         if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          result = ConvertResult(passCountDetails, request.liftBuildSettings);
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested pass count details data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
-        }
+            return ConvertResult(passCountDetails, request.liftBuildSettings);
+
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          $"Failed to get requested pass count details data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
 
     protected sealed override void ProcessErrorCodes()

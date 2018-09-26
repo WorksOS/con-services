@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
       var cutFillSettings = SettingsManager.CompactionCutFillSettings(ProjectSettings);
-      return new CutFillDetailsRequest(ProjectId, cutFillSettings, Filter, liftSettings, DesignDescriptor);
+      return new CutFillDetailsRequest(ProjectId, ProjectUid, cutFillSettings, Filter, liftSettings, DesignDescriptor);
     }
   }
 }

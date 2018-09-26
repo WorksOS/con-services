@@ -56,29 +56,25 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (useTrexGateway)
         {
           var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
-          
           return trexCompactionDataProxy.SendCMVChangeDetailsRequest(cmvChangeDetailsRequest, customHeaders).Result;
         }
-        else
-        {
-          TASNodeCMVChangeSettings settings = new TASNodeCMVChangeSettings(request.CMVChangeSummaryValues);
 
-          var raptorResult = raptorClient.GetCMVChangeSummary(request.ProjectId ?? -1,
-            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
-              TASNodeCancellationDescriptorType.cdtCMVChange),
-            settings,
-            RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
-              new List<long>()),
-            RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
-            out result);
-          if (raptorResult == TASNodeErrorStatus.asneOK)
-          {
-            return ConvertResult(result);
-          }
+        TASNodeCMVChangeSettings settings = new TASNodeCMVChangeSettings(request.CMVChangeSummaryValues);
 
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested CMV change summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
-        }
+        var raptorResult = raptorClient.GetCMVChangeSummary(request.ProjectId ?? -1,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
+            TASNodeCancellationDescriptorType.cdtCMVChange),
+          settings,
+          RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
+            new List<long>()),
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
+          out result);
+
+        if (raptorResult == TASNodeErrorStatus.asneOK)
+          return ConvertResult(result);
+
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          $"Failed to get requested CMV change summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally
       {

@@ -19,6 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     private readonly IConfigurationStore configStore;
     private readonly IFileListProxy fileListProxy;
     private readonly ICompactionSettingsManager settingsManager;
+    private Guid projectUid;
     private long projectId;
     private IDictionary<string, string> headers;
     private CompactionProjectSettings projectSettings;
@@ -52,11 +53,21 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
       action(this);
 
       var obj = new T();
-      obj.Initialize(log, configStore, fileListProxy, settingsManager, projectId, projectSettings, projectSettingsColors, headers, filter, designDescriptor);
+      obj.Initialize(log, configStore, fileListProxy, settingsManager, projectUid, projectId, projectSettings, projectSettingsColors, headers, filter, designDescriptor);
 
       return obj;
     }
 
+    /// <summary>
+    /// Sets the ProjectUID
+    /// </summary>
+    /// <param name="projectUid"></param>
+    public ProductionDataRequestFactory ProjectUid(Guid projectUid)
+    {
+      this.projectUid = projectUid;
+      return this;
+    }
+    
     /// <summary>
     /// Sets the ProjectID
     /// </summary>

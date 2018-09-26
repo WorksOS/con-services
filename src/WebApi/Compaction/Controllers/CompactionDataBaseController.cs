@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      return PassCounts.CreatePassCountsRequest(projectId, null, passCountSettings, liftSettings, filter, -1, null, null, null);
+      return new PassCounts(projectId, projectUid, null, passCountSettings, liftSettings, filter, -1, null, null, null);
     }
 
     /// <summary>

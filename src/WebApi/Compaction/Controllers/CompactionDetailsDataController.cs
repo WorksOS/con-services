@@ -245,6 +245,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await GetLegacyProjectId(projectUid);
 
       var cutFillRequest = RequestFactory.Create<CutFillRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
