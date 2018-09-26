@@ -306,8 +306,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 requestor.CellOverrideMask.Fill();
 
-
-
                 ServerRequestResult result = requestor.RequestSubGridInternal((SubGridCellAddress)address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
 
                 if (result != ServerRequestResult.NoError)
@@ -320,11 +318,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
                     IClientLeafSubGrid[] ClientArray = { clientGrid };
                     ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
-
-
-
-
-
 
                   // If the requested data is cut fill derived from elevation data previously calculated, 
                   // then perform the conversion here
