@@ -39,6 +39,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         TCCASummary ccaSummary;
         CCARequest request = item as CCARequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException(typeof(CCARequest));
+
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
 
         bool success = raptorClient.GetCCASummary(request.ProjectId ?? -1,

@@ -10,7 +10,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
@@ -39,6 +39,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         TemperatureRequest request = item as TemperatureRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException(typeof(TemperatureRequest));
+
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
             request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
         var raptorResult = raptorClient.GetTemperatureSummary(request.ProjectId ?? -1,

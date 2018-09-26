@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
   /// <summary>
   /// Represents CMV change summary request.
@@ -20,13 +19,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// An identifying string from the caller
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; protected set; }
+    public Guid? CallId { get; protected set; }
 
     /// <summary>
     /// The filter to be used 
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; protected set; }
+    public FilterResult Filter { get; protected set; }
 
     /// <summary>
     /// Gets or sets the filter identifier.
@@ -35,13 +34,13 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// The filter identifier.
     /// </value>
     [JsonProperty(PropertyName = "filterId", Required = Required.Default)]
-    public int filterId { get; protected set; }
+    public int FilterId { get; protected set; }
 
     /// <summary>
     /// The set of parameters and configuration information relevant to analysis of compaction material layers information for related profile queries.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; protected set; }
+    public LiftBuildSettings LiftBuildSettings { get; protected set; }
 
 
     /// <summary>
@@ -54,11 +53,11 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public override void Validate()
     {
       base.Validate();
-      if (this.liftBuildSettings != null)
-        this.liftBuildSettings.Validate();
+      if (this.LiftBuildSettings != null)
+        this.LiftBuildSettings.Validate();
 
-      if (this.filter !=null)
-        this.filter.Validate();
+      if (this.Filter !=null)
+        this.Filter.Validate();
 
       for (int i=1;i<CMVChangeSummaryValues.Length;i++ )
         if (CMVChangeSummaryValues[i] <= CMVChangeSummaryValues[i - 1])
@@ -68,33 +67,39 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private CMVChangeSummaryRequest()
     {
     }
 
     /// <summary>
-    /// Create instance of CMVRequest
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVChangeSummaryRequest CreateCMVChangeSummaryRequest(
+    /// <param name="projectID"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="callId"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="filter"></param>
+    /// <param name="filterID"></param>
+    /// <param name="cmvChangeSummaryValues"></param>
+    public CMVChangeSummaryRequest(
       long projectID,
+      Guid? projectUid,
       Guid? callId,
       LiftBuildSettings liftBuildSettings,
       FilterResult filter,
       int filterID,
       double[] cmvChangeSummaryValues
-        )
+     )
     {
-      return new CMVChangeSummaryRequest
-      {
-        ProjectId = projectID,
-        callId = callId,
-        liftBuildSettings = liftBuildSettings,
-        filter = filter,
-        filterId = filterID,
-        CMVChangeSummaryValues = cmvChangeSummaryValues
-      };
+      ProjectId = projectID;
+      ProjectUid = projectUid;
+      CallId = callId;
+      LiftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterId = filterID;
+      CMVChangeSummaryValues = cmvChangeSummaryValues;
     }
   }
 }

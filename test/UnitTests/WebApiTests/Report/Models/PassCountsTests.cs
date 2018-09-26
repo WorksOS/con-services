@@ -9,7 +9,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
 {

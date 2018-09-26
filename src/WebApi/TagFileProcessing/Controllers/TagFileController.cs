@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, boundary);
 
       var responseObj = await RequestExecutorContainerFactory
-        .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, customHeaders)
+        .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
         .ProcessAsync(requestExt).ConfigureAwait(false);
 
       return responseObj.Code == 0
@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
       var result = await RequestExecutorContainerFactory
-        .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, customHeaders)
+        .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
         .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)

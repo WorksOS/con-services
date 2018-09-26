@@ -42,11 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         MDPRequest request = item as MDPRequest;
 
         if (request == null)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Undefined requested data MDPRequest"));
-        }
+          ThrowRequestTypeCastException(typeof(MDPRequest));
 
         string fileSpaceName = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 

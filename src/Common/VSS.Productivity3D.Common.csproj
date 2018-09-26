@@ -47,8 +47,8 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.0" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.45.0" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.2" />
-    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.71" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.12.2" />
+    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.72" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
     <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.10.0" />
   </ItemGroup>

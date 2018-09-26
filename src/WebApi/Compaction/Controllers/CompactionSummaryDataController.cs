@@ -21,7 +21,6 @@ using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -37,8 +36,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionSummaryDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
-      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory)
+    public CompactionSummaryDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
     { }
 
     /// <summary>
@@ -68,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
               .Process(request) as CMVSummaryResult;
 
-        var returnResult = new CompactionCmvSummaryResult(result, request.cmvSettings);
+        var returnResult = new CompactionCmvSummaryResult(result, request.CmvSettings);
         Log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
 
         await SetCacheControlPolicy(projectUid);

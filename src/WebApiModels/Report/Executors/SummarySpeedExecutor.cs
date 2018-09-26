@@ -44,6 +44,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         SummarySpeedRequest request = item as SummarySpeedRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException(typeof(SummarySpeedRequest));
+
         new TASNodeSpeedSummaryResult();
 
         var raptorResult = this.raptorClient.GetSummarySpeed(request.ProjectId ?? -1,

@@ -1,15 +1,14 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
   /// <summary>
   /// The request representation used to request both detailed and summary CMV requests.
@@ -20,74 +19,86 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// An identifying string from the caller
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; private set; }
+    public Guid? CallId { get; private set; }
 
     /// <summary>
     /// The various summary and target values to use in preparation of the result
     /// </summary>
     [JsonProperty(PropertyName = "cmvSettings", Required = Required.Always)]
     [Required]
-    public CMVSettings cmvSettings { get; private set; }
+    public CMVSettings CmvSettings { get; private set; }
 
     /// <summary>
     /// The lift build settings to use in the request.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings LiftBuildSettings { get; private set; }
 
     /// <summary>
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The filter ID to used in the request.
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
-    public long filterID { get; private set; }
+    public long FilterID { get; private set; }
 
     /// <summary>
     /// An override start date that applies to the operation in conjunction with any date range specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideStartUTC", Required = Required.Default)]
-    public DateTime? overrideStartUTC { get; private set; }
+    public DateTime? OverrideStartUTC { get; private set; }
 
     /// <summary>
     /// An override end date that applies to the operation in conjunction with any date range specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideEndUTC", Required = Required.Default)]
-    public DateTime? overrideEndUTC { get; private set; }
+    public DateTime? OverrideEndUTC { get; private set; }
 
     /// <summary>
     /// An override set of asset IDs that applies to the operation in conjunction with any asset IDs specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideAssetIds", Required = Required.Default)]
-    public List<long> overrideAssetIds { get; private set; }
+    public List<long> OverrideAssetIds { get; private set; }
 
     /// <summary>
     /// 
     /// </summary>
     [JsonProperty(PropertyName = "isCustomCMVTargets", Required = Required.Default)]
-    public bool isCustomCMVTargets { get; private set; }
+    public bool IsCustomCMVTargets { get; private set; }
 
       /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private CMVRequest()
     {
     }
 
     /// <summary>
-    /// Create instance of CMVRequest
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVRequest CreateCMVRequest(
+    /// <param name="projectID"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="callId"></param>
+    /// <param name="cmvSettings"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="filter"></param>
+    /// <param name="filterID"></param>
+    /// <param name="overrideStartUTC"></param>
+    /// <param name="overrideEndUTC"></param>
+    /// <param name="overrideAssetIds"></param>
+    /// <param name="isCustomCMVTargets"></param>
+    public CMVRequest(
       long projectID,
+      Guid? projectUid,
       Guid? callId,
       CMVSettings cmvSettings,
       LiftBuildSettings liftBuildSettings,
@@ -99,19 +110,17 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       bool isCustomCMVTargets = false
     )
     {
-      return new CMVRequest
-      {
-        ProjectId = projectID,
-        callId = callId,
-        cmvSettings = cmvSettings,
-        liftBuildSettings = liftBuildSettings,
-        filter = filter,
-        filterID = filterID,
-        overrideStartUTC = overrideStartUTC,
-        overrideEndUTC = overrideEndUTC,
-        overrideAssetIds = overrideAssetIds,
-        isCustomCMVTargets = isCustomCMVTargets
-      };
+      ProjectId = projectID;
+      ProjectUid = projectUid;
+      CallId = callId;
+      CmvSettings = cmvSettings;
+      LiftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterID = filterID;
+      OverrideStartUTC = overrideStartUTC;
+      OverrideEndUTC = overrideEndUTC;
+      OverrideAssetIds = overrideAssetIds;
+      IsCustomCMVTargets = isCustomCMVTargets;
     }
     
     /// <summary>
@@ -120,17 +129,17 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public override void Validate()
     {
       base.Validate();
-      cmvSettings.Validate();
-      liftBuildSettings?.Validate();
+      CmvSettings.Validate();
+      LiftBuildSettings?.Validate();
 
-      if (filter != null)
-        filter.Validate();
+      if (Filter != null)
+        Filter.Validate();
 
-      if (overrideStartUTC.HasValue || overrideEndUTC.HasValue)
+      if (OverrideStartUTC.HasValue || OverrideEndUTC.HasValue)
       {
-        if (overrideStartUTC.HasValue && overrideEndUTC.HasValue)
+        if (OverrideStartUTC.HasValue && OverrideEndUTC.HasValue)
         {
-          if (overrideStartUTC.Value > overrideEndUTC.Value)
+          if (OverrideStartUTC.Value > OverrideEndUTC.Value)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

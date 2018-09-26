@@ -24,6 +24,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ContractExecutionResult result;
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(CutFillDetailsRequest));
+
       var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
       var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
       var liftBuildSettings =

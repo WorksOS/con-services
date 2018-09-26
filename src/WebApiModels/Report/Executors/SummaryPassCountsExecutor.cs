@@ -40,6 +40,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         PassCounts request = item as PassCounts;
+
+        if (request == null)
+          ThrowRequestTypeCastException(typeof(PassCounts));
+
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
           request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
         var raptorResult = raptorClient.GetPassCountSummary(request.ProjectId ?? -1,

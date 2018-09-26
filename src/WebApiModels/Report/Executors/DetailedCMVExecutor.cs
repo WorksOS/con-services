@@ -13,8 +13,8 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
@@ -36,50 +36,61 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-
       try
       {
         CMVRequest request = item as CMVRequest;
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
-          request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
 
-        TASNodeRequestDescriptor externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
-          request.callId ?? Guid.NewGuid(), 0,
-          TASNodeCancellationDescriptorType.cdtCMVDetailed);
+        if (request == null)
+          ThrowRequestTypeCastException(typeof(CMVRequest));
 
-        TICLiftBuildSettings liftBuildSettings = RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod);
+        if (!request.IsCustomCMVTargets || !bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
+          useTrexGateway = false;
 
-        TCMVDetails cmvDetails;
-        TASNodeErrorStatus raptorResult;
-
-        if (!request.isCustomCMVTargets)
+        if (useTrexGateway)
         {
-          raptorResult = raptorClient.GetCMVDetails(
-            request.ProjectId ?? -1,
-            externalRequestDescriptor,
-            ConvertSettings(request.cmvSettings),
-            raptorFilter,
-            liftBuildSettings,
-            out cmvDetails);
+          var settings = (CMVSettingsEx) request.CmvSettings;
+          var cmvDetailsRequest = new CMVDetailsRequest(request.ProjectUid, request.Filter, settings.CustomCMVDetailTargets);
+
+          return trexCompactionDataProxy.SendCMVDetailsRequest(cmvDetailsRequest, customHeaders).Result;
         }
         else
         {
-          raptorResult = raptorClient.GetCMVDetailsExt(
-            request.ProjectId ?? -1,
-            externalRequestDescriptor,
-            ConvertSettingsExt((CMVSettingsEx) request.cmvSettings),
-            raptorFilter,
-            liftBuildSettings,
-            out cmvDetails);
-        }
+          TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
+            request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
-        if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          result = ConvertResult(cmvDetails);
-        }
-        else
-        {
+          TASNodeRequestDescriptor externalRequestDescriptor = ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(
+            request.CallId ?? Guid.NewGuid(), 0,
+            TASNodeCancellationDescriptorType.cdtCMVDetailed);
+
+          TICLiftBuildSettings liftBuildSettings = RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod);
+
+          TCMVDetails cmvDetails;
+          TASNodeErrorStatus raptorResult;
+
+          if (!request.IsCustomCMVTargets)
+          {
+            raptorResult = raptorClient.GetCMVDetails(
+              request.ProjectId ?? -1,
+              externalRequestDescriptor,
+              ConvertSettings(request.CmvSettings),
+              raptorFilter,
+              liftBuildSettings,
+              out cmvDetails);
+          }
+          else
+          {
+            raptorResult = raptorClient.GetCMVDetailsExt(
+              request.ProjectId ?? -1,
+              externalRequestDescriptor,
+              ConvertSettingsExt((CMVSettingsEx)request.CmvSettings),
+              raptorFilter,
+              liftBuildSettings,
+              out cmvDetails);
+          }
+
+          if (raptorResult == TASNodeErrorStatus.asneOK)
+            return ConvertResult(cmvDetails);
+
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
             $"Failed to get requested CMV details data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
         }
@@ -88,8 +99,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
 
     protected sealed override void ProcessErrorCodes()
