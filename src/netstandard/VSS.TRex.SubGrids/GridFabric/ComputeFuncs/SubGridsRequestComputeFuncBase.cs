@@ -102,7 +102,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
         /// </summary>
         [NonSerialized]
-        private IDesign CutFillDesign;
+        private IDesign ReferenceDesign;
 
         /// <summary>
         /// DI'ed context for designs service
@@ -264,8 +264,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             }
 
             // Set up any required cut fill design
-            if (arg.CutFillDesignID != Guid.Empty)
-                CutFillDesign = siteModel.Designs.Locate(arg.CutFillDesignID);
+            if (arg.ReferenceDesignID != Guid.Empty)
+                ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignID);
         }
 
 
@@ -281,9 +281,22 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             try
             {
-                // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+        // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
-                clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
+              if (localArg.GridDataType == GridDataType.DesignHeight)
+              {
+                bool designResult = ReferenceDesign.GetDesignHeights(localArg.SiteModelID, address, siteModel.Grid.CellSize,
+                  out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
+
+                clientGrid = DesignElevations;
+                if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+                   return ServerRequestResult.NoError;
+
+                Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");
+                return ServerRequestResult.FailedToComputeDesignElevationPatch;
+              }
+
+              clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
 
                 clientGrid.CellSize = siteModel.Grid.CellSize;
                 clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
@@ -292,6 +305,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 requestor.CellOverrideMask.Fill();
+
+
+
                 ServerRequestResult result = requestor.RequestSubGridInternal((SubGridCellAddress)address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
 
                 if (result != ServerRequestResult.NoError)
@@ -305,9 +321,14 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     IClientLeafSubGrid[] ClientArray = { clientGrid };
                     ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
 
-                    // If the requested data is cut fill derived from elevation data previously calculated, 
-                    // then perform the conversion here
-                    if (localArg.GridDataType == GridDataType.CutFill)
+
+
+
+
+
+                  // If the requested data is cut fill derived from elevation data previously calculated, 
+                  // then perform the conversion here
+                  if (localArg.GridDataType == GridDataType.CutFill)
                     {
                         if (ClientArray.Length == 2)
                         {
@@ -321,9 +342,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                             // The cut fill is defined between one production data derived height subgrid and a
                             // height subgrid to be calculated from a designated design
                             if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
-                                                                        CutFillDesign, // 'top'
+                                                                        ReferenceDesign, // 'top'
                                                                         localArg.SiteModelID,
-                                                                        out DesignProfilerRequestResult _ /*ProfilerRequestResult*/))
+                                                                        out _ /*ProfilerRequestResult*/))
                                 result = ServerRequestResult.FailedToComputeDesignElevationPatch;
                         }
                     }

@@ -41,7 +41,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
 
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        PatchExecutor request = new PatchExecutor(arg.ProjectID, arg.Mode, arg.Filters, arg.CutFillDesignID,
+        PatchExecutor request = new PatchExecutor(arg.ProjectID, arg.Mode, arg.Filters, arg.ReferenceDesignID,
           arg.TRexNodeID, arg.DataPatchNumber, arg.DataPatchSize);
 
         Log.LogInformation("Executing request.Execute()");
