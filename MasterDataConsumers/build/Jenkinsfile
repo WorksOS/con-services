@@ -46,15 +46,15 @@ node ('jenkinsslave-pod') {
 		}
 	}
 	
-    checkout scm
-	
-	dir ('./MasterDataConsumers')
-    {
-	
-	sh "ls -la"
+
 	
     stage('Build Solution') {
-
+		checkout scm
+	
+		dir ('./MasterDataConsumers')
+		{
+		sh "ls -la"
+	
 	    def build_container = docker.build(container, "-f ./build/Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
@@ -77,6 +77,7 @@ node ('jenkinsslave-pod') {
 		sh(script: testCommand)
 
         sh "ls ${env.WORKSPACE}/TestResults"
+		}
 		
 		//Publish test results to Jenkins, set build stability according to configured thresholds
 		//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
@@ -85,7 +86,7 @@ node ('jenkinsslave-pod') {
 					[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
 					[$class: 'SkippedThreshold', unstableThreshold: '1']
 				],
-                tools: [[$class: 'XUnitDotNetTestType', pattern: '../TestResults/UnitTests/**/*.xml']]])
+                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
 
 		//Stash results for publication to vsts after acceptance/integration tests have run
 		dir("TestResults") {
@@ -95,21 +96,29 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage('Preparing runtime image') {
+		dir ('./MasterDataConsumers')
+		{
 		//runtimeImage = docker.build(container, "-f ./build/Dockerfile .")
         runtimeImage = docker.build(container, "-f ./build/Dockerfile --build-arg BUILD_CONTAINER=${container} .")
 		runtimeImage.push()
 		
 		dbRuntimeImage = docker.build(containerDb, "-f ./build/Dockerfile.db .")
 		dbRuntimeImage.push()
+		}
 	}
 	
     stage('Build Acceptance tests') {	
+		dir ('./MasterDataConsumers')
+		{
 	    docker.build(testContainer, "-f ./build/Dockerfile.tests .").push()
+		}
 	}
 
 	
 	
 	stage ('Run acceptance tests') {
+		dir ('./MasterDataConsumers')
+		{
 		dir ("./build/yaml") {
 			def testingEnvVars = readFile("testingvars.env").split("\n")
 				testingEnvVars.each { String line ->
@@ -160,10 +169,12 @@ node ('jenkinsslave-pod') {
 				}
 			}		
 		}
-	
+		}
 	}
 	
 	stage ('Publish results') {
+		dir ('./MasterDataConsumers')
+		{
 	    if (currentBuild.result=='SUCCESS') { 
 			sh "docker tag ${container} ${finalImage}"
 			sh "docker tag ${containerDb} ${dbFinalImage}"
@@ -172,6 +183,6 @@ node ('jenkinsslave-pod') {
 			sh "docker push ${dbFinalImage}"
 			archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
 		}
-	}
+		}
 	}
 }
