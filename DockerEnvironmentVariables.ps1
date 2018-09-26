@@ -18,7 +18,7 @@
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
-[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "LOCALIPADDRESS", "Machine")
+[Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "10.3.17.228", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_PORT", "9092", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Project-Consumer", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Project", "Machine")
@@ -34,8 +34,11 @@
 [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://mockprojectwebapi:5001/api/v1/mock/getcustomersforme","Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_PROJECT_SETTINGS_API_URL", "http://mockprojectwebapi:5001/api/v2", "Machine")
 [Environment]::SetEnvironmentVariable("PROJECTSERVICE_KAFKA_TOPIC_NAME","VSS.Interfaces.Events.MasterData.IProjectEvent", "Machine")
-[Environment]::SetEnvironmentVariable("TCCBASEURL", "mock", "Machine")
-[Environment]::SetEnvironmentVariable("TCCFILESPACEID", "mock", "Machine")
+[Environment]::SetEnvironmentVariable("TCCBASEURL", "http://mockprojectwebapi:5001", "Machine")
+[Environment]::SetEnvironmentVariable("TCCORG", "vldev", "Machine")
+[Environment]::SetEnvironmentVariable("TCCUSERNAME", "vldev", "Machine")
+[Environment]::SetEnvironmentVariable("TCCPWD", "vldev_key", "Machine")
+[Environment]::SetEnvironmentVariable("TCCFILESPACEID", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "Machine")
 <# #>
 <#  Dev environment 
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
@@ -58,6 +61,10 @@
 [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://mockprojectwebapi:5001/api/v1/mock/getcustomersforme", "Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_PROJECT_SETTINGS_API_URL", "http://mockprojectwebapi:5001/api/v2", "Machine")
 [Environment]::SetEnvironmentVariable("PROJECTSERVICE_KAFKA_TOPIC_NAME","VSS.Interfaces.Events.MasterData.IProjectEvent", "Machine")
-[Environment]::SetEnvironmentVariable("TCCBASEURL", "mock", "Machine")
-[Environment]::SetEnvironmentVariable("TCCFILESPACEID", "mock", "Machine")
+[Environment]::SetEnvironmentVariable("TCCBASEURL", "http://mockprojectwebapi:5001", "Machine")
+[Environment]::SetEnvironmentVariable("TCCORG", "vldev", "Machine")
+[Environment]::SetEnvironmentVariable("TCCUSERNAME", "vldev", "Machine")
+[Environment]::SetEnvironmentVariable("TCCPWD", "vldev_key", "Machine")
+
+[Environment]::SetEnvironmentVariable("TCCFILESPACEID", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "Machine")
 #>

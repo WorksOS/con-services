@@ -17,7 +17,7 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.44.0" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.18" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.2" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.12.2" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.0" />
     <!--Common does not directly depend on NameResolution however it wont build without it due to package downgrade issues-->
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />

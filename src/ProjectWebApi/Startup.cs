@@ -92,6 +92,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<ISchedulerProxy, SchedulerProxy>();
+      services.AddTransient<IFileRepository, FileRepository>();
 
       services.AddOpenTracing(builder =>
       {
@@ -107,15 +108,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddOpenTracing();
       services.AddMemoryCache();
 
-      var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
-      var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";
-      if (useMock)
-        services.AddTransient<IFileRepository, MockFileRepository>();
-      else
-        services.AddTransient<IFileRepository, FileRepository>();
-
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
 
       serviceCollection = services;
     }

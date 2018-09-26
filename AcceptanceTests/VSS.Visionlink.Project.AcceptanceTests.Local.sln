@@ -31,8 +31,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Project.WebApi.Common.L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtility.Local", "utilities\TestUtility\TestUtility.Local.csproj", "{24FB1C64-EB05-437A-BE29-CC2060235A50}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRun.Local", "utilities\TestRun\TestRun.Local.csproj", "{AB1847CD-C06A-460F-B89A-C9A94461D414}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories.Local", "..\..\MerinoSandbox\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj", "{4BC6BF78-F501-4026-BA90-3915E9A263BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Local", "..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj", "{9753D7F3-A00C-4A0E-ABE1-9C28F031A44C}"
@@ -50,6 +48,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Local", "..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj", "{8E2A6CF4-84FA-4BEA-8C0A-E768ED05EAE6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\..\MerinoSandbox\FlowJSMVC\src\VSS.FlowJSHandler.csproj", "{01AD1BA6-864C-4F37-9A85-45F9B42B1E25}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models.Local", "..\..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj", "{789482D5-A042-4454-8D22-10B841BB6428}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +77,6 @@ Global
 		{24FB1C64-EB05-437A-BE29-CC2060235A50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24FB1C64-EB05-437A-BE29-CC2060235A50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24FB1C64-EB05-437A-BE29-CC2060235A50}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB1847CD-C06A-460F-B89A-C9A94461D414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB1847CD-C06A-460F-B89A-C9A94461D414}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB1847CD-C06A-460F-B89A-C9A94461D414}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB1847CD-C06A-460F-B89A-C9A94461D414}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4BC6BF78-F501-4026-BA90-3915E9A263BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4BC6BF78-F501-4026-BA90-3915E9A263BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BC6BF78-F501-4026-BA90-3915E9A263BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -117,6 +113,10 @@ Global
 		{01AD1BA6-864C-4F37-9A85-45F9B42B1E25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01AD1BA6-864C-4F37-9A85-45F9B42B1E25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01AD1BA6-864C-4F37-9A85-45F9B42B1E25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{789482D5-A042-4454-8D22-10B841BB6428}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{789482D5-A042-4454-8D22-10B841BB6428}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{789482D5-A042-4454-8D22-10B841BB6428}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{789482D5-A042-4454-8D22-10B841BB6428}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,6 +127,8 @@ Global
 		{3489FEC4-8970-430A-A3BA-A3287E6B352A} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{4E154DC7-E4A9-4505-9142-ACB9E1DC23A0} = {1464640F-AEAE-4331-BC58-52898DF893B6}
 		{24FB1C64-EB05-437A-BE29-CC2060235A50} = {63AD8236-F12D-44C8-B663-EE78D00EFC9A}
-		{AB1847CD-C06A-460F-B89A-C9A94461D414} = {63AD8236-F12D-44C8-B663-EE78D00EFC9A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {93A267F3-30F1-417D-B3E8-ACFEA87B5242}
 	EndGlobalSection
 EndGlobal
