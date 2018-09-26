@@ -50,7 +50,7 @@ namespace VSS.TRex.Webtools.Controllers
         mode: (DisplayMode) mode,
         filter1: new CombinedFilter(),
         filter2: new CombinedFilter(),
-        cutFillDesignID: Guid.Empty
+        referenceDesignId: Guid.Empty
       )) as TileRenderResponse_Core2;
 
       return new JsonResult(TileResult.CreateTileResult(response.TileBitmapData));

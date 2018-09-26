@@ -80,7 +80,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// The design to be used in cases of cut/fill subgrid requests
         /// </summary>
-        public Guid CutFillDesignID { get; set; } = Guid.Empty;
+        public Guid ReferenceDesignID { get; set; } = Guid.Empty;
 
         /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
@@ -102,7 +102,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <param name="prodDataMask"></param>
         /// <param name="surveyedSurfaceOnlyMask"></param>
         /// <param name="filters"></param>
-        /// <param name="cutFillDesignID"></param>
+        /// <param name="referenceDesignId"></param>
         public SubGridRequestsBase(ITask task,
                                    Guid siteModelID, 
                                    Guid requestID, 
@@ -112,7 +112,7 @@ namespace VSS.TRex.GridFabric.Requests
                                    ISubGridTreeBitMask prodDataMask,
                                    ISubGridTreeBitMask surveyedSurfaceOnlyMask,
                                    IFilterSet filters,
-                                   Guid cutFillDesignID) : this()
+                                   Guid referenceDesignId) : this()
         {
             Task = task;
             SiteModelID = siteModelID;
@@ -123,7 +123,7 @@ namespace VSS.TRex.GridFabric.Requests
             ProdDataMask = prodDataMask;
             SurveyedSurfaceOnlyMask = surveyedSurfaceOnlyMask;
             Filters = filters;
-            CutFillDesignID = cutFillDesignID;
+            ReferenceDesignID = referenceDesignId;
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace VSS.TRex.GridFabric.Requests
                 Filters = Filters,
                 MessageTopic = $"SubGridRequest:{RequestID}",
                 TRexNodeID = TRexNodeId,
-                CutFillDesignID = CutFillDesignID
+                ReferenceDesignID = ReferenceDesignID
             };
         }
 
