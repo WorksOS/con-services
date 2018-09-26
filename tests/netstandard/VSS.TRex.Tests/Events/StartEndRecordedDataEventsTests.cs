@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.Events
         }
 
         [Fact]
-        public void Test_StartEndRecordedDataEvents_SimpleStartEndAndCollation()
+        public void Test_StartEndRecordedDataEvents_SimpleStartEndCollation()
         {
             StartEndProductionEvents events =
                 new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
@@ -121,6 +121,7 @@ namespace VSS.TRex.Tests.Events
 
             void CheckEventsAfter()
             {
+                Assert.True(events.Count() == 2, "Events count not two after collation");
                 Assert.True(outerFirstEventDate == events.Events[0].Date, $"Date of first outer element incorrect, expected {outerFirstEventDate}, got {events.Events[0].Date}");
                 Assert.True(ProductionEventType.StartEvent == events.Events[0].State, $"State of first outer element incorrect, expected {ProductionEventType.StartEvent}, got {events.Events[0].State}");
 
@@ -149,5 +150,99 @@ namespace VSS.TRex.Tests.Events
             // Check the resulting 2 elements are as expected
             CheckEventsAfter();
         }
+
+      [Fact]
+      void Test_StartEndRecordedDataEvents_ComplexNestedStartEndCollation()
+      {
+        StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
+      
+        // Construct an array of 50 dates one minute apart
+        var dateTimes = Enumerable.Range(0, 50).Select(x => new DateTime(2000, 1, 1, 1, x, 0)).ToArray();
+
+        // Make simplest event list
+        events.PutValueAtDate(dateTimes[0], ProductionEventType.StartEvent);
+        events.PutValueAtDate(dateTimes[dateTimes.Length - 1], ProductionEventType.EndEvent);
+
+        events.Collate(null);
+        Assert.True(events.Count() == 2, $"Event count not 2 after initial collation (length is {events.Count()})");
+        Assert.True(events.Events[0].State == ProductionEventType.StartEvent, "First event not start event");
+        Assert.True(events.Events[1].State == ProductionEventType.EndEvent, "Last event not end event");
+
+        // mimic many additions of start end events completely covering the wider interval
+        for (int i = 0; i < dateTimes.Length - 1; i++)
+        {
+          events.PutValueAtDate(dateTimes[i], ProductionEventType.StartEvent);
+          events.PutValueAtDate(dateTimes[i + 1], ProductionEventType.EndEvent);
+        }
+
+        events.Collate(null);
+        Assert.True(events.Count() == 2, $"Event count not 2 after collation of internal start/end pairs (length is {events.Count()})");
+        Assert.True(events.Events[0].State == ProductionEventType.StartEvent, "First event not start event");
+        Assert.True(events.Events[1].State == ProductionEventType.EndEvent, "Last event not end event");
     }
+
+
+      [Fact]
+      void Test_StartEndRecordedDataEvents_ComplexNonNestedStartEndCollation_Ordered()
+      {
+        StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
+
+        // Construct an array of 50 dates one minute apart
+        var dateTimes = Enumerable.Range(0, 50).Select(x => new DateTime(2000, 1, 1, 1, x, 0)).ToArray();
+
+        // mimic many additions of start end events completely covering the wider interval
+        for (int i = 0; i < dateTimes.Length - 1; i++)
+        {
+          events.PutValueAtDate(dateTimes[i], ProductionEventType.StartEvent);
+          events.PutValueAtDate(dateTimes[i + 1], ProductionEventType.EndEvent);
+        }
+
+        events.Collate(null);
+        Assert.True(events.Count() == 2, $"Event count not 2 after collation of internal start/end pairs (length is {events.Count()})");
+        Assert.True(events.Events[0].State == ProductionEventType.StartEvent, "First event not start event");
+        Assert.True(events.Events[1].State == ProductionEventType.EndEvent, "Last event not end event");
+      }
+
+      [Fact]
+      void Test_StartEndRecordedDataEvents_ComplexNonNestedStartEndCollation_Unordered()
+      {
+        StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
+
+        // Construct an array of 50 dates one minute apart
+        var dateTimes = Enumerable.Range(0, 50).Select(x => new DateTime(2000, 1, 1, 1, x, 0)).ToArray();
+
+        // mimic many additions of start end events completely covering the wider interval
+        for (int i = dateTimes.Length - 2; i >= 0; i--)
+        {
+          events.PutValueAtDate(dateTimes[i], ProductionEventType.StartEvent);
+          events.PutValueAtDate(dateTimes[i + 1], ProductionEventType.EndEvent);
+        }
+
+        events.Collate(null);
+        Assert.True(events.Count() == 2, $"Event count not 2 after collation of internal start/end pairs (length is {events.Count()})");
+        Assert.True(events.Events[0].State == ProductionEventType.StartEvent, "First event not start event");
+        Assert.True(events.Events[1].State == ProductionEventType.EndEvent, "Last event not end event");
+      }
+
+      [Fact]
+      void Test_StartEndRecordedDataEvents_EquivalentTo()
+      {
+        StartEndProductionEvents events = new StartEndProductionEvents(-1, Guid.Empty, ProductionEventType.StartEndRecordedData, null, null);
+
+        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 0, 0), ProductionEventType.StartEvent);
+        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 1, 0), ProductionEventType.EndEvent);
+        events.PutValueAtDate(new DateTime(2000, 1, 1, 1, 2, 0), ProductionEventType.StartEvent);
+
+        Assert.False(events.Events[0].EquivalentTo(events.Events[1]), "Events 0 & 1 are equivalent-to when they are not");
+        Assert.True(events.Events[0].EquivalentTo(events.Events[2]), "Events 1 & 2 are not equivalent-to when they are");
+      }
+
+      [Fact]
+      void Test_StartEndRecordedDataEvents_EqualityComparer()
+      {
+        Assert.True(EqualityComparer<ProductionEventType>.Default.Equals(ProductionEventType.StartEvent, ProductionEventType.StartEvent));
+        Assert.True(EqualityComparer<ProductionEventType>.Default.Equals(ProductionEventType.EndEvent, ProductionEventType.EndEvent));
+        Assert.False(EqualityComparer<ProductionEventType>.Default.Equals(ProductionEventType.StartEvent, ProductionEventType.EndEvent));
+      }
+  }
 }
