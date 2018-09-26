@@ -46,21 +46,6 @@ spec:
     - configMapRef:
         name: mdconsumer-testing
 
-  - name: mockapi-container
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
-    ports:
-    - containerPort: 5001
-    livenessProbe:
-      tcpSocket:
-        port: 5001
-    readinessProbe:
-      tcpSocket:
-        port: 5001
-    tty: true
-    envFrom:
-    - configMapRef:
-        name: mdconsumer-testing
-
   - name: service-container-db
     image: !db-container!
     tty: true
@@ -73,17 +58,6 @@ spec:
 
   - name: service-container
     image: !container!
-    ports:
-    - containerPort: 80
-    livenessProbe:
-      httpGet:
-        scheme: HTTP
-        path: /ping
-        port: 80
-      readinessProbe:
-        httpGet:
-          path: /ping
-          port: 80
     tty: true
     envFrom:
     - configMapRef:
