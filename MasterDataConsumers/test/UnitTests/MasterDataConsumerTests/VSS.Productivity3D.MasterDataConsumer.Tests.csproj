@@ -23,7 +23,7 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
-    <PackageReference Include="coverlet.msbuild" Version="2.1.1" />
+    <PackageReference Include="coverlet.msbuild" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
