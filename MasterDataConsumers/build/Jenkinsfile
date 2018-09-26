@@ -45,10 +45,13 @@ node ('jenkinsslave-pod') {
 			error("Build stopping, no valid branch supplied")
 		}
 	}
+	dir ('./MasterDataConsumers')
+    {
 	
     stage('Build Solution') {
         checkout scm
-		
+
+
 	    def build_container = docker.build(container, "-f ./build/Dockerfile.build .")
 
         // Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
@@ -88,7 +91,6 @@ node ('jenkinsslave-pod') {
 			stash name: "build-test-results"
 		} 
 		
-
 	}
 	
 	stage('Preparing runtime image') {
@@ -169,5 +171,6 @@ node ('jenkinsslave-pod') {
 			sh "docker push ${dbFinalImage}"
 			archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
 		}
+	}
 	}
 }
