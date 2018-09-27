@@ -201,16 +201,45 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = boundingBoxService.GetProductionDataExtents(projectId, excludedIds);
-
-        var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
-        //In case we have rogue tag files distorting the extents, restrict to project boundary
         var returnResult = new ProjectExtentsResult
         {
-          minLat = Math.Max(result.conversionCoordinates[0].y.LatRadiansToDegrees(), projectPoints.Min(p => p.Lat).LatRadiansToDegrees()),
-          minLng = Math.Max(result.conversionCoordinates[0].x.LonRadiansToDegrees(), projectPoints.Min(p => p.Lon).LonRadiansToDegrees()),
-          maxLat = Math.Min(result.conversionCoordinates[1].y.LatRadiansToDegrees(), projectPoints.Max(p => p.Lat).LatRadiansToDegrees()),
-          maxLng = Math.Min(result.conversionCoordinates[1].x.LonRadiansToDegrees(), projectPoints.Max(p => p.Lon).LonRadiansToDegrees())
+          minLat = result.conversionCoordinates[0].y,
+          minLng = result.conversionCoordinates[0].x,
+          maxLat = result.conversionCoordinates[1].y,
+          maxLng = result.conversionCoordinates[1].x
         };
+
+        //In case we have rogue tag files distorting the extents, restrict to project boundary
+        var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
+        var projMinLat = projectPoints.Min(p => p.Lat);
+        var projMinLng = projectPoints.Min(p => p.Lon);
+        var projMaxLat = projectPoints.Max(p => p.Lat);
+        var projMaxLng = projectPoints.Max(p => p.Lon);
+
+        returnResult.minLat = Math.Max(returnResult.minLat, projMinLat);
+        returnResult.minLng = Math.Max(returnResult.minLng, projMinLng);
+        returnResult.maxLat = Math.Min(returnResult.maxLat, projMaxLat);
+        returnResult.maxLng = Math.Min(returnResult.maxLng, projMaxLng);
+
+        //Further check in case we need to now swap min/max due to restricting one bound but not the other
+        if (returnResult.minLat > returnResult.maxLat)
+        {
+          var temp = returnResult.minLat;
+          returnResult.minLat = returnResult.maxLat;
+          returnResult.maxLat = temp;
+        }
+        if (returnResult.minLng > returnResult.maxLng)
+        {
+          var temp = returnResult.minLng;
+          returnResult.minLng = returnResult.maxLng;
+          returnResult.maxLng = temp;
+        }
+
+        //Convert to degrees to return
+        returnResult.minLat = returnResult.minLat.LatRadiansToDegrees();
+        returnResult.minLng = returnResult.minLng.LonRadiansToDegrees();
+        returnResult.maxLat = returnResult.maxLat.LatRadiansToDegrees();
+        returnResult.maxLng = returnResult.maxLng.LonRadiansToDegrees();
 
         Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
