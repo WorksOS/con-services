@@ -164,7 +164,7 @@ configMaps:
       format json
       read_from_head true
     </source>
-    <filter raw.kubernetes.*>
+    <filter raw.kubernetes.**>
       @type parser
       format /^(?:(?<localdate>[^ ]*) (?<localtime>[^ ]*) (?<thread>[^ ]*) (?<level>[^ ]*)\s+(?<logger>[^ ]*) (?:(?<requestid>req:[^ ]*\s+))?(?:(?<method>Request starting HTTP\/1.1 [^ ]*))?)?(?<message>[^*]*)/
       key_name log
