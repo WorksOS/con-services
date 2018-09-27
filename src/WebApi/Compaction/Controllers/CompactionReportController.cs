@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -131,6 +133,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     /// <summary>
     /// Get station offset report data for the given filter and design files.
+    /// If left and/or right offsets are specified they will be used, 
+    /// else offsets array if specified will be used
+    /// Negative offsets are to the left of the centre line.
     /// </summary>
     /// <returns>Returns the station offset report results as JSON.</returns>
     [Route("api/v2/report/stationoffset")]
@@ -149,6 +154,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] double crossSectionInterval,
       [FromQuery] double startStation,
       [FromQuery] double endStation,
+      [FromQuery] double[] leftOffsets,
+      [FromQuery] double[] rightOffsets,
       [FromQuery] double[] offsets)
     {
       Log.LogInformation("GetStationOffset: " + Request.QueryString);
@@ -161,8 +168,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var userPreferences = user.IsApplication ? new UserPreferenceData() : await GetUserPreferences();
 
-      // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...
-      var updatedOffsets = offsets?.AddZeroDistinctSortBy();
+
+      double[] updatedOffsets;
+      if (leftOffsets.Length > 0 || rightOffsets.Length > 0)
+      {
+        for (int i = 0; i < leftOffsets.Length; i++)
+        {
+          leftOffsets[i] *= -1;
+        }
+        updatedOffsets = leftOffsets.Concat(rightOffsets).ToArray().AddZeroDistinctSortBy(); ;
+      }
+      else
+      {
+        // Add 0.0 value to the offsets array, remove any duplicates and sort contents by ascending order...
+        updatedOffsets = offsets?.AddZeroDistinctSortBy();
+      }
+
+
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
         .ProjectId(project.LegacyProjectId)
@@ -193,6 +215,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Process(reportRequest) as CompactionReportResult
       );
     }
+
 
     private async Task<UserPreferenceData> GetUserPreferences()
     {
