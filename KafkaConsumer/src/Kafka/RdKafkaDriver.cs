@@ -74,12 +74,12 @@ namespace VSS.KafkaConsumer.Kafka
       while (payloads.Count < batchSize && protectionCounter < 10) //arbitary number here for the perfomance testing
       {
         log?.LogTrace($"Polling with retries {protectionCounter}");
-        log?.LogTrace($"Consumer is subscribed to {rdConsumer.Subscription.Aggregate((i, j) => i + j)}");
+        log?.LogTrace($"Consumer is subscribed to {rdConsumer.Subscription[0]}");
         try
         {
           var result = rdConsumer.Consume(timeout);
-          log?.LogTrace($"Polled with the OK result {result.Headers} and value {result.Value?.Length}");
-          if (result.Value != null)
+          log?.LogTrace($"Polled with the OK result {result?.Headers} and value {result?.Value?.Length}");
+          if (result?.Value != null)
           {
             payloads.Add(result.Value);
             lastValidResult = result;
