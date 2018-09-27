@@ -216,23 +216,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var projMaxLat = projectPoints.Max(p => p.Lat);
         var projMaxLng = projectPoints.Max(p => p.Lon);
 
-        returnResult.minLat = Math.Max(returnResult.minLat, projMinLat);
-        returnResult.minLng = Math.Max(returnResult.minLng, projMinLng);
-        returnResult.maxLat = Math.Min(returnResult.maxLat, projMaxLat);
-        returnResult.maxLng = Math.Min(returnResult.maxLng, projMaxLng);
-
-        //Further check in case we need to now swap min/max due to restricting one bound but not the other
-        if (returnResult.minLat > returnResult.maxLat)
+        if (returnResult.minLat < projMinLat || returnResult.minLat > projMaxLat ||
+            returnResult.maxLat < projMinLat || returnResult.maxLat > projMaxLat ||
+            returnResult.minLng < projMinLng || returnResult.minLng > projMaxLng ||
+            returnResult.maxLng < projMinLng || returnResult.maxLng > projMaxLng)
         {
-          var temp = returnResult.minLat;
-          returnResult.minLat = returnResult.maxLat;
-          returnResult.maxLat = temp;
-        }
-        if (returnResult.minLng > returnResult.maxLng)
-        {
-          var temp = returnResult.minLng;
-          returnResult.minLng = returnResult.maxLng;
-          returnResult.maxLng = temp;
+          returnResult.minLat = projMinLat;
+          returnResult.minLng = projMinLng;
+          returnResult.maxLat = projMaxLat;
+          returnResult.maxLng = projMaxLng;
         }
 
         //Convert to degrees to return
