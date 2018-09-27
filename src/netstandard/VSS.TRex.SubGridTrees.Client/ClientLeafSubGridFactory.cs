@@ -25,42 +25,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public ClientLeafSubGridFactory()
     {
-      typeMap = new Func<IClientLeafSubGrid>[] //Type[]
-      {
-        null, // All = $00000000;
-        null, // CCV = $00000001;
-        null, // Height = $00000002;
-        null, // Latency = $00000003;
-        null, // PassCount = $00000004;
-        null, // Frequency = $00000005;
-        null, // Amplitude = $00000006;
-        null, // Moisture = $00000007;
-        null, // Temperature = $00000008;
-        null, // RMV = $00000009;
-        null, // GPSMode = $0000000A;
-        null, // CCVPercent = $0000000B;
-        null, // SimpleVolumeOverlay = $0000000C;
-        null, // HeightAndTime = $0000000D;
-        null, // CompositeHeights = $0000000E;
-        null, // MDP = $0000000F;
-        null, // MDPPercent = $00000010;
-        null, // CellProfile = $00000011;
-        null, // CellPasses = $00000012;
-        null, // MachineSpeed = $00000013;
-        null, // CCVPercentChange = $00000014;
-        null, // MachineSpeedTarget = $00000015;
-        null, // CCVPercentChangeIgnoredTopNullValue = $0000016
-        null, // CCA = $0000017
-        null, // CCAPerccent = $0000018
-        null, // TemperatureDetail = 0x00000019
-        null, // Unused 0x0000001A
-        null, // Unused 0x0000001B
-        null, // Unused 0x0000001C
-        null, // Unused 0x0000001D
-        null, // Unused 0x0000001E
-        null, // Unused 0x0000001F
-        null // CutFill = 0x00000020
-      };
+      typeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
     }
 
     /// <summary>
