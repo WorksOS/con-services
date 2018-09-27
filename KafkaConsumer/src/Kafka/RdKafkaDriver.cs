@@ -52,13 +52,13 @@ namespace VSS.KafkaConsumer.Kafka
       return null;
     }
 
-    [Obsolete]
+    [Obsolete("Use Consume() instead")]
     public void SubscribeConsumer(Func<Message, int> onMessagesArrived, Action onCompleted)
     {
       throw new NotImplementedException();
     }
 
-    [Obsolete]
+    [Obsolete("Do not use observer pattern - use Consume() instead")]
     private void RdConsumer_OnMessage(object sender, Confluent.Kafka.Message e)
     {
       throw new NotImplementedException();
