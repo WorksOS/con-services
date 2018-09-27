@@ -52,7 +52,7 @@ namespace VSS.TRex.Webtools.Controllers
 
     /// <summary>
     /// Gets a list of events of a particular type for a machine in a project. Each event is represented as a
-    /// hunan readable text string. The range of queries is restricted by the date range, and the maximum
+    /// human readable text string. The range of queries is restricted by the date range, and the maximum
     /// number of events in the request
     /// </summary>
     /// <param name="siteModelID"></param>

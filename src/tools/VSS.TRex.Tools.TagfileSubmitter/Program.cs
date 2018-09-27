@@ -140,7 +140,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         }
 
         // ProcessTAGFiles(projectID, Directory.GetFiles(folder));
-        SubmitTAGFiles(projectID, Directory.GetFiles(folder));
+        SubmitTAGFiles(projectID, Directory.GetFiles(folder, "*.tag"));
       }
     }
 

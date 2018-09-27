@@ -71,7 +71,7 @@ namespace VSS.TRex.SiteModels
 
     /// <summary>
     /// Requests TRex update the stored metadata for a particular sitemodel by creating a new
-    /// metadata record from cratch.
+    /// metadata record from scratch.
     /// Note: This does force the site model to load a range of elements to construct the update
     /// metadata object.
     /// </summary>

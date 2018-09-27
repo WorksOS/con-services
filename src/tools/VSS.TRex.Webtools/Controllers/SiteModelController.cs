@@ -25,6 +25,18 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
+    /// Returns project extents for a site model
+    /// </summary>
+    /// <param name="siteModelID">Grid to return status for</param>
+    /// <returns></returns>
+    [HttpGet("{siteModelID}/machinedesigns")]
+    public JsonResult GetMachineDesigns(string siteModelID)
+    {
+   // return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.MachineDesignNames);
+      return null;
+    }
+
+    /// <summary>
     /// Returns project date range for a site model
     /// </summary>
     /// <param name="siteModelID">Grid to return status for</param>

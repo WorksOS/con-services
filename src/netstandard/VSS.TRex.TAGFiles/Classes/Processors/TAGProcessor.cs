@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
@@ -15,7 +16,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// Coordinates reading and converting recorded information from compaction machines into the IC server database.
     /// </summary>
     public class TAGProcessor : TAGProcessorBase
-    {
+    {  
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGProcessor>();
+
         public TAGProcessor()
         {
         }
@@ -84,7 +87,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         private bool HasGPSModeBeenSet = false;
 
         /// <summary>
-        /// EpochContainsProofingRunDescription determines if the current epochsw
+        /// EpochContainsProofingRunDescription determines if the current epoch
         /// contains a description of a proofing run.
         /// </summary>
         protected bool EpochContainsProofingRunDescription()
@@ -131,7 +134,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             return Result;
         }
 
-        /*
         /// <summary>
         /// At every epoch we process a set of state information that has been set into
         /// this processor by the active tag file value sink. Most of this information
@@ -143,7 +145,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         {
             base.ClearEpochSpecificData();
         }
-        */
 
         private SwatherBase CreateSwather(Fence InterpolationFence)
         {
@@ -188,11 +189,29 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
             if (DataTime != DateTime.MinValue)
             {
-        // TODO: Not like this...
-        // See: TICProductionEventChanges.AddDesignChangeEvent(
+        // TODO: Add the design, a bit like this in Raptor:
+        /*
+function TICProductionEventChanges.AddDesignChangeEvent(const ADate: TICPassTime;
+                                                  DesignName: TICDesignName): TICEventDesignNameValueChange;
+var
+Index : integer;
+DesignNameID : TICDesignNameID;
+NewDesignName : TEventDesignName;
+begin
+if strip_blanks(DesignName) = '' then
+DesignName := kNoDesignName;
 
-        // TODO: But like this:
-        //   MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, Value);
+with TICSiteModel(FSiteModel) do
+if SiteModelDesignNames.Find_WideString(DesignName, Index) then
+DesignNameID := SiteModelDesignNames[Index].ID
+else
+begin
+  NewDesignName := SiteModelDesignNames.AddDesignName(DesignName);
+  DesignNameID := NewDesignName.ID;
+end;
+end;               */
+
+        //   MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, DesignNameID);
       }
       else
             {
@@ -724,7 +743,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             // Record the last data time as the data end event
             if (DataTime != DateTime.MinValue)
             {
-                MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent /*EndRecordedData*/);
+                MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent);
 
                 if (!HasGPSModeBeenSet)
                 {
@@ -747,6 +766,51 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             }
         }
 
+        /// <summary>
+        /// Handles a specific set of events that cause modifications to the epoch state, such as positioning
+        /// technology, machine start/stop events and map resets
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <returns></returns>
+        public override bool DoEpochStateEvent(EpochStateEvent eventType)
+        {
+            switch (eventType)
+            {
+                case EpochStateEvent.Unknown:
+                  Debug.Assert(false, "Unknown epoch state event type");
+                  break;
+
+                case EpochStateEvent.MachineStartup:
+                  if (DataTime != DateTime.MinValue)
+                    MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(DataTime, ProductionEventType.StartEvent);
+                  break;
+
+                case EpochStateEvent.MachineShutdown:
+                  if (DataTime != DateTime.MinValue)
+                    MachineTargetValueChangesAggregator.MachineStartupShutdownEvents.PutValueAtDate(DataTime, ProductionEventType.EndEvent);
+                  break;
+
+                case EpochStateEvent.MachineMapReset:
+                  // Todo: Map reset events not implemented yet
+                  //if (DataTime != DateTime.MinValue)
+                  //MachineTargetValueChangesAggregator.MapResetEvents.PutValueAtDate(DataTime, Design);
+                  break;
+
+                case EpochStateEvent.MachineInUTSMode:
+                  if (DataTime != DateTime.MinValue)
+                  {
+                    PositioningTech = PositioningTech.UTS;
+                    MachineTargetValueChangesAggregator.PositioningTechStateEvents.PutValueAtDate(DataTime, PositioningTech);
+                  }               
+                  break;
+
+                default:
+                  throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);
+            }
+
+          return true;
+        }
+     
         /// <summary>
         /// DoEpochPreProcessAction is called in ProcessEpochContext immediately
         /// before any processing of the epoch information is done. It allows a

@@ -26,33 +26,33 @@ using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  /// <summary>
-  /// Represents the existence of and meta data for a site model/data model/project present in TRex.
-  /// It also holds references to numerous other aspects of project, such as designs, machines, surveyed surfaces,
-  /// and events among other things.
-  /// Access mechanisms are typically lock free with the only exceptions being those occasions when thread contention
-  /// to create a new or updated instance of some element needs to be managed.
-  /// </summary>
-  /// <remarks>
-  /// Note(1): This class should never be serialized over the wire to any context for any reason. All contexts requiring access
-  /// to a sitemodel must use the local DIContext to access the SiteModels manager to obtain a reference to the desired sitemodel.
-  /// 
-  /// Note(2): All sitemodel references should be treated as immutable and ephemeral. The access period to such a reference
-  /// should be constrained to the life cycle of the request.
-  /// Each request should obtain a new sitemodel reference to ensure it contains current versions of the information held by that sitemodel.
-  /// 
-  /// Note(3): The sitemodel reference obtained by a reference is not singular to that request. Multiple requests may share the
-  /// same sitemodel request safely.
-  /// 
-  /// Note(4): TRex site model change notifications manage how a sitemodel responds to mutating events made to the persistent state
-  /// of that sitemodel. These changes may cause the creation of a new cloned site model that inherits elements not affected by
-  /// the mutating change, and will relinquish elements that have been to allow deferred/lazy loading on subsequent reference.
-  /// Requests referencing such sitemodels will have consistent access to already referenced elements of the sitemodel
-  /// for the duration of the request. However, non-referenced spatial data elements and their cached derivatives are actively
-  /// recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a subgrid
-  /// or cache derivative is always consistently valid for the duration of that reference, within a request, regardless of spatial
-  /// data invalidation due to mutating changes, even of those referenced elements.
-  /// </remarks>
+  // <summary>
+  // Represents the existence of and meta data for a site model/data model/project present in TRex.
+  // It also holds references to numerous other aspects of project, such as designs, machines, surveyed surfaces,
+  // and events among other things.
+  // Access mechanisms are typically lock free with the only exceptions being those occasions when thread contention
+  // to create a new or updated instance of some element needs to be managed.
+  // </summary>
+  // <remarks>
+  // Note(1): This class should never be serialized over the wire to any context for any reason. All contexts requiring access
+  // to a sitemodel must use the local DIContext to access the SiteModels manager to obtain a reference to the desired sitemodel.
+  // 
+  // Note(2): All sitemodel references should be treated as immutable and ephemeral. The access period to such a reference
+  // should be constrained to the life cycle of the request.
+  // Each request should obtain a new sitemodel reference to ensure it contains current versions of the information held by that sitemodel.
+  // 
+  // Note(3): The sitemodel reference obtained by a reference is not singular to that request. Multiple requests may share the
+  // same sitemodel request safely.
+  // 
+  // Note(4): TRex site model change notifications manage how a sitemodel responds to mutating events made to the persistent state
+  // of that sitemodel. These changes may cause the creation of a new cloned site model that inherits elements not affected by
+  // the mutating change, and will relinquish elements that have been to allow deferred/lazy loading on subsequent reference.
+  // Requests referencing such sitemodels will have consistent access to already referenced elements of the sitemodel
+  // for the duration of the request. However, non-referenced spatial data elements and their cached derivatives are actively
+  // recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a subgrid
+  // or cache derivative is always consistently valid for the duration of that reference, within a request, regardless of spatial
+  // data invalidation due to mutating changes, even of those referenced elements.
+  // </remarks>
   public class SiteModel : ISiteModel, IBinaryReaderWriter
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -506,7 +506,7 @@ namespace VSS.TRex.SiteModels
                         // is particularly useful for testing purposes where copying around projects
                         // is much quicker than reprocessing large sets of TAG files
 
-                        Log.LogWarning($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
+                        Log.LogWarning($"Site model ID read ({ID}) does not match expected ID ({SavedID}), setting to expected");
                         ID = SavedID;
                     }
 
@@ -521,11 +521,11 @@ namespace VSS.TRex.SiteModels
 
                     if (Result == FileSystemErrorStatus.OK)
                     {
-                        Log.LogInformation($"Site model read from FS file (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+                        Log.LogInformation($"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
                     }
                     else
                     {
-                        Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
+                        Log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
                     }
                 }
             }
@@ -645,12 +645,12 @@ namespace VSS.TRex.SiteModels
         {
           ID = ID,
           //Name = Name,
-          //Decription = Description,
+          //Description = Description,
           LastModifiedDate = LastModifiedDate,
           SiteModelExtent = SiteModelExtent,
-          MachineCount = Machines.Count,
-          DesignCount = Designs.Count,
-          SurveyedSurfaceCount = SurveyedSurfaces.Count
+          MachineCount = Machines?.Count ?? 0,
+          DesignCount = Designs?.Count ?? 0,
+          SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0
         };
       }
     }
