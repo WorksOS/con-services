@@ -10,7 +10,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             SubGridCellLatestPassDataWrapper_NonStatic wrapper = new SubGridCellLatestPassDataWrapper_NonStatic();
 
-            Assert.True(wrapper.PassDataExistanceMap != null && wrapper.PassDataExistanceMap.IsEmpty(), "Instance not created as expected");
+            Assert.True(wrapper.PassDataExistenceMap != null && wrapper.PassDataExistenceMap.IsEmpty(), "Instance not created as expected");
         }
 
         [Fact()]
@@ -18,9 +18,9 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
             SubGridCellLatestPassDataWrapper_NonStatic wrapper = new SubGridCellLatestPassDataWrapper_NonStatic();
 
-            Assert.True(wrapper.PassDataExistanceMap.IsEmpty(), "Existence map not empty after creation");
+            Assert.True(wrapper.PassDataExistenceMap.IsEmpty(), "Existence map not empty after creation");
 
-            wrapper.PassDataExistanceMap.SetBitValue(0, 0, true);
+            wrapper.PassDataExistenceMap.SetBitValue(0, 0, true);
         }
     }
 }

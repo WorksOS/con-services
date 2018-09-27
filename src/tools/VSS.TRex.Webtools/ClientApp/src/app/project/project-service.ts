@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -129,6 +129,15 @@ export class ProjectService {
 
   public getAllProjectMetadata(): Observable<ISiteModelMetadata[]> {
     return this.executeRequest<ISiteModelMetadata[]>('getAllProjectMetadata', `sitemodels/metadata`);
+  }
+
+  public getMachineEventTypes(): Observable<MachineEventType[]> {
+    return this.executeRequest<MachineEventType[]>('getMachineEventTypes', `events/types`);
+  }
+
+  public getMachineEvents(projectUid: string, machineUid: string, eventType: number,
+    startDate: Date, endDate: Date, maxEventsToReturn: number): Observable<string[]> {
+    return this.executeRequest<string[]>('getMachineEvents', `events/text/${projectUid}/${machineUid}/${eventType}?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&maxEventsToReturn=${maxEventsToReturn}`);
   }
 
 }

@@ -106,7 +106,7 @@ namespace VSS.TRex.Filters
             bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is IServerLeafSubGrid;
             if (SubGridAsLeaf_is_TICServerSubGridTreeLeaf)
             {
-                PDMask.SetAndOf(FilterMask, ((IServerLeafSubGrid)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistanceMap);
+                PDMask.SetAndOf(FilterMask, ((IServerLeafSubGrid)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistenceMap);
             }
             else
             {

@@ -196,7 +196,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             leaf.AllocateLeafLatestPassGrid();
 
             Assert.True(leaf.Directory.GlobalLatestCells != null && 
-                          leaf.Directory.GlobalLatestCells.PassDataExistanceMap != null, 
+                          leaf.Directory.GlobalLatestCells.PassDataExistenceMap != null, 
                           "Pass data existence map is not instantiated");
 
             Assert.False(leaf.CellHasValue(0, 0), "Cell already has a value");
@@ -221,7 +221,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             leaf.AllocateLeafLatestPassGrid();
 
             Assert.True(leaf.Directory.GlobalLatestCells != null &&
-                          leaf.Directory.GlobalLatestCells.PassDataExistanceMap != null,
+                          leaf.Directory.GlobalLatestCells.PassDataExistenceMap != null,
                           "Pass data existence map is not instantiated");
 
             Assert.False(leaf.CellHasValue(0, 0), "Cell already has a value");

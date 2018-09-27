@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             MemoryStream MS = new MemoryStream();
 
-            Assert.True(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
+            Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
             Assert.Equal(46, MS.Length);
         }
 
@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             MemoryStream MS = new MemoryStream();
 
-            Assert.True(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
+            Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
             Assert.Equal(183, MS.Length);
         }
 
@@ -39,18 +39,18 @@ namespace VSS.TRex.Tests.SubGridTrees
             SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
             MemoryStream MS = new MemoryStream();
 
-            Assert.True(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
+            Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
             SubGridTreeSubGridExistenceBitMask newtree = new SubGridTreeSubGridExistenceBitMask();
 
             MS.Position = 0;
-            Assert.False(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");
+            Assert.False(SubGridTreePersistor.Read(newtree, "ExistenceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");
 
             MS.Position = 0;
-            Assert.False(SubGridTreePersistor.Read(newtree, "Existance", 2, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect version did not cause failure");
+            Assert.False(SubGridTreePersistor.Read(newtree, "Existence", 2, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect version did not cause failure");
 
             MS.Position = 0;
-            Assert.True(SubGridTreePersistor.Read(newtree, "Existance", 1, new BinaryReader(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Read failed");
+            Assert.True(SubGridTreePersistor.Read(newtree, "Existence", 1, new BinaryReader(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Read failed");
         }
 
         [Fact()]
@@ -62,18 +62,18 @@ namespace VSS.TRex.Tests.SubGridTrees
 
             MemoryStream MS = new MemoryStream();
 
-            Assert.True(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
+            Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
             SubGridTreeSubGridExistenceBitMask newtree = new SubGridTreeSubGridExistenceBitMask();
 
             MS.Position = 0;
-            Assert.False(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");
+            Assert.False(SubGridTreePersistor.Read(newtree, "ExistenceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");
 
             MS.Position = 0;
-            Assert.False(SubGridTreePersistor.Read(newtree, "Existance", 2, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect version did not cause failure");
+            Assert.False(SubGridTreePersistor.Read(newtree, "Existence", 2, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect version did not cause failure");
 
             MS.Position = 0;
-            Assert.True(SubGridTreePersistor.Read(newtree, "Existance", 1, new BinaryReader(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Read failed");
+            Assert.True(SubGridTreePersistor.Read(newtree, "Existence", 1, new BinaryReader(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Read failed");
 
             Assert.Equal(1, newtree.CountBits());
             Assert.True(newtree.GetCell(100, 100));
@@ -86,21 +86,21 @@ namespace VSS.TRex.Tests.SubGridTrees
         SubGridTreeSubGridExistenceBitMask masktree = new SubGridTreeSubGridExistenceBitMask();
         MemoryStream MS = new MemoryStream();
 
-        Assert.True(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), 
+        Assert.True(SubGridTreePersistor.Write(masktree, "Existence", 1, new BinaryWriter(MS, Encoding.UTF8, true)), 
           "SubGridTreePersistor.Write failed");
 
         SubGridTreeSubGridExistenceBitMask newtree = new SubGridTreeSubGridExistenceBitMask();
 
         MS.Position = 0;
-        Assert.False(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), 
+        Assert.False(SubGridTreePersistor.Read(newtree, "ExistenceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), 
           "Incorrect header did not cause failure");
 
         MS.Position = 0;
-        Assert.False(SubGridTreePersistor.Read(newtree, "Existance", 2, new BinaryReader(MS, Encoding.UTF8, true)),
+        Assert.False(SubGridTreePersistor.Read(newtree, "Existence", 2, new BinaryReader(MS, Encoding.UTF8, true)),
             "Incorrect version did not cause failure");
 
         MS.Position = 0;
-        Assert.True(SubGridTreePersistor.Read(newtree, "Existance", 1, new BinaryReader(MS, Encoding.UTF8, true)),
+        Assert.True(SubGridTreePersistor.Read(newtree, "Existence", 1, new BinaryReader(MS, Encoding.UTF8, true)),
             "SubGridTreePersistor.Read failed");
       }
 

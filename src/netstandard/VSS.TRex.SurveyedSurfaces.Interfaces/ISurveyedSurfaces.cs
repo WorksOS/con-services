@@ -74,7 +74,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
 
     /// <summary>
     /// Given a filter compute which of the surfaces in the list match any given time aspect
-    /// of the filter, and the overall existance map of the surveyed surfaces that match the filter.
+    /// of the filter, and the overall existence map of the surveyed surfaces that match the filter.
     /// ComparisonList denotes a possibly pre-filtered set of surfaces for another filter; if this is the same as the 
     /// filtered set of surfaces then the overall existence map for those surfaces will not be computed as it is 
     /// assumed to be the same.

@@ -29,9 +29,9 @@ namespace VSS.TRex.GridFabric.Models.Arguments
     public IFilterSet Filters { get; set; }
 
     /// <summary>
-    /// The design to be used in cases of cut/fill subgrid requests
+    /// The design to be used in cases of cut/fill or DesignHeights subgrid requests
     /// </summary>
-    public Guid CutFillDesignID { get; set; } = Guid.Empty;
+    public Guid ReferenceDesignID { get; set; } = Guid.Empty;
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
   }

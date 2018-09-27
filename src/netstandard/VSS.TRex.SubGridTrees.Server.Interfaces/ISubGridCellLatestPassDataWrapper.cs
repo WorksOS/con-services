@@ -7,7 +7,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
     public interface ISubGridCellLatestPassDataWrapper
     {
-        SubGridTreeBitmapSubGridBits PassDataExistanceMap { get; set; }
+        SubGridTreeBitmapSubGridBits PassDataExistenceMap { get; set; }
 
         SubGridTreeBitmapSubGridBits CCVValuesAreFromLastPass { get; set; }
         SubGridTreeBitmapSubGridBits RMVValuesAreFromLastPass { get; set; }

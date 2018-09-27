@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// The existence map detailed which cells have pass data recorded for them
         /// </summary>
-        public SubGridTreeBitmapSubGridBits PassDataExistanceMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits PassDataExistenceMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         public SubGridTreeBitmapSubGridBits CCVValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         public SubGridTreeBitmapSubGridBits RMVValuesAreFromLastPass { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
@@ -42,7 +42,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         public void Clear()
         {
-            PassDataExistanceMap.Clear();
+            PassDataExistenceMap.Clear();
 
             CCVValuesAreFromLastPass.Clear();
             RMVValuesAreFromLastPass.Clear();
@@ -81,7 +81,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void Assign(ISubGridCellLatestPassDataWrapper Source)
         {
-            PassDataExistanceMap.Assign(Source.PassDataExistanceMap);
+            PassDataExistenceMap.Assign(Source.PassDataExistenceMap);
 
             AssignValuesFromLastPassFlags(Source);
         }
@@ -89,7 +89,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public virtual void Read(BinaryReader reader, byte[] buffer)
         {
             // Read in the latest call pass flags
-            PassDataExistanceMap.Read(reader, buffer);
+            PassDataExistenceMap.Read(reader, buffer);
             CCVValuesAreFromLastPass.Read(reader, buffer);
             RMVValuesAreFromLastPass.Read(reader, buffer);
             FrequencyValuesAreFromLastPass.Read(reader, buffer);
@@ -103,7 +103,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public virtual void Write(BinaryWriter writer, byte [] buffer)
         {
             // Write out the latest call pass flags
-            PassDataExistanceMap.Write(writer, buffer);
+            PassDataExistenceMap.Write(writer, buffer);
             CCVValuesAreFromLastPass.Write(writer, buffer);
             RMVValuesAreFromLastPass.Write(writer, buffer);
             FrequencyValuesAreFromLastPass.Write(writer, buffer);

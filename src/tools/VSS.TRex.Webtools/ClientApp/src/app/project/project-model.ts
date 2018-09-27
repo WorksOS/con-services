@@ -116,3 +116,8 @@ export interface ISiteModelMetadata {
   designCount: number;
   surveyedSurfaceCount: number;
 }
+
+export class MachineEventType {
+  item1: number;
+  item2: string;
+}

@@ -107,7 +107,7 @@ namespace VSS.TRex.Exports.Patches.Executors
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
                                              && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistanceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistanceMap(Mode /*ReferenceVolumeType*/),
+          requestRequiresAccessToDesignFileExistenceMap: Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
 
         // Configure the request analyser to return a single page of results.

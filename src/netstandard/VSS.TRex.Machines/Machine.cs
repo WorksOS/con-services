@@ -15,12 +15,7 @@ namespace VSS.TRex.Machines
     /// </summary>
     [Serializable]
     public class Machine : IMachine
-  {
-    /// <summary>
-        /// The telematics asset ID assigned to any John Doe machine
-        /// </summary>
-        //        public const long kJohnDoeAssetID = 0x7fffffffffffffff;
-
+    {
         [NonSerialized]
         public MachinesList Owner;
 

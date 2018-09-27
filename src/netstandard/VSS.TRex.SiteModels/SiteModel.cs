@@ -26,38 +26,38 @@ using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  /// <summary>
-  /// Represents the existance of and meta data for a site model/data model/project present in TRex.
-  /// It also holds references to numerous other aspects of project, such as designs, machines, surveyed surfaces,
-  /// and events among other things.
-  /// Access mechanisms are typically lock free with the only exceptions being those occasions when thread contention
-  /// to create a new or updated unstance of some element needs to be managed.
-  /// </summary>
-  /// <remarks>
-  /// Note(1): This class should never be serialized over the wire to any context for any reason. All contects requiring access
-  /// to a sitemodel must use the local DIContext to access the SiteModels manager to obtain a reference to the desired sitemodel.
-  /// 
-  /// Note(2): All sitemodel references should be treated as immutable and ephemeral. The access period to such a reference
-  /// should be constrained to the life cycle of the request.
-  /// Each request should obtain a new sitemodel reference to ensure it contains current versions of the information held by that sitemodel.
-  /// 
-  /// Note(3): The sitemodel reference obtained by a reference is not singular to that request. Multiple requests may share the
-  /// same sitemodel request safely.
-  /// 
-  /// Note(4): TRex site model change notifications manage how a sitemodel responds to mutating events made to the persistent state
-  /// of that sitemodel. These changes may cause the creation of a new cloned site model that inherits elements not affected by
-  /// the mutating change, and will relinquish elements that have been to allow deferred/lazy loading on subsequent reference.
-  /// Requests referencing such sitemodels will have consistent access to already referenced elements of the sitemodel
-  /// for the duration of the request. However, non-referenced spatial data elements and their cached derivatives are actively
-  /// recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a subgrid
-  /// or cache derivative is always consistently valid for the duration of that reference, within a request, regardless of spatial
-  /// data invalidation due to mutating changes, even of those referenced elements.
-  /// </remarks>
+  // <summary>
+  // Represents the existence of and meta data for a site model/data model/project present in TRex.
+  // It also holds references to numerous other aspects of project, such as designs, machines, surveyed surfaces,
+  // and events among other things.
+  // Access mechanisms are typically lock free with the only exceptions being those occasions when thread contention
+  // to create a new or updated instance of some element needs to be managed.
+  // </summary>
+  // <remarks>
+  // Note(1): This class should never be serialized over the wire to any context for any reason. All contexts requiring access
+  // to a sitemodel must use the local DIContext to access the SiteModels manager to obtain a reference to the desired sitemodel.
+  // 
+  // Note(2): All sitemodel references should be treated as immutable and ephemeral. The access period to such a reference
+  // should be constrained to the life cycle of the request.
+  // Each request should obtain a new sitemodel reference to ensure it contains current versions of the information held by that sitemodel.
+  // 
+  // Note(3): The sitemodel reference obtained by a reference is not singular to that request. Multiple requests may share the
+  // same sitemodel request safely.
+  // 
+  // Note(4): TRex site model change notifications manage how a sitemodel responds to mutating events made to the persistent state
+  // of that sitemodel. These changes may cause the creation of a new cloned site model that inherits elements not affected by
+  // the mutating change, and will relinquish elements that have been to allow deferred/lazy loading on subsequent reference.
+  // Requests referencing such sitemodels will have consistent access to already referenced elements of the sitemodel
+  // for the duration of the request. However, non-referenced spatial data elements and their cached derivatives are actively
+  // recycled during spatial data change notifications. Notwithstanding this, any actively referenced element such as a subgrid
+  // or cache derivative is always consistently valid for the duration of that reference, within a request, regardless of spatial
+  // data invalidation due to mutating changes, even of those referenced elements.
+  // </remarks>
   public class SiteModel : ISiteModel, IBinaryReaderWriter
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
         public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
-        public const string kSubGridExistanceMapFileName = "SubGridExistanceMap";
+        public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
 
         private const int kMajorVersion = 1;
         private const int kMinorVersion = 0;
@@ -82,24 +82,24 @@ namespace VSS.TRex.SiteModels
         /// </summary>
         public IServerSubGridTree Grid { get { return grid; } }
 
-        private ISubGridTreeBitMask existanceMap;
+        private ISubGridTreeBitMask existenceMap;
 
         /// <summary>
-        /// Returns a reference to the existance map for the site model. If the existance map is not yet present
+        /// Returns a reference to the existence map for the site model. If the existence map is not yet present
         /// load it from storage/cache
         /// </summary>
-        public ISubGridTreeBitMask ExistanceMap
+        public ISubGridTreeBitMask ExistenceMap
         {
-          get { return existanceMap ?? GetProductionDataExistanceMap(); }
+          get { return existenceMap ?? GetProductionDataExistenceMap(); }
         }
 
         /// <summary>
-        /// Gets the loaded state of the existence map. This permits testing if an existance map is loaded without forcing
+        /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
         /// the existence map to be loaded via the ExistenceMap property
         /// </summary>
         public bool ExistenceMapLoaded
         {
-          get => existanceMap != null;
+          get => existenceMap != null;
         }
 
         /// <summary>
@@ -279,8 +279,8 @@ namespace VSS.TRex.SiteModels
           grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0 
             ? originModel.Grid : new ServerSubGridTree(originModel.ID);
 
-          existanceMap = originModel.ExistenceMapLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveExistenceMap) != 0
-            ? originModel.ExistanceMap : null;
+          existenceMap = originModel.ExistenceMapLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveExistenceMap) != 0
+            ? originModel.ExistenceMap : null;
 
           designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0 
             ? originModel.Designs : null;
@@ -317,7 +317,7 @@ namespace VSS.TRex.SiteModels
             grid = new ServerSubGridTree(ID);
 
             // Allow existence map loading to be deferred/lazy on reference
-            existanceMap = null;
+            existenceMap = null;
 
             // FProofingRuns:= TICSiteProofingRuns.Create;
         }
@@ -460,7 +460,7 @@ namespace VSS.TRex.SiteModels
                 Result = false;
               }
 
-              if (ExistenceMapLoaded && SaveProductionDataExistanceMapToStorage(StorageProxy) != FileSystemErrorStatus.OK)
+              if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(StorageProxy) != FileSystemErrorStatus.OK)
               {
                 Log.LogError($"Failed to save existence map for site model {ID} to persistent store");
                 Result = false;
@@ -506,7 +506,7 @@ namespace VSS.TRex.SiteModels
                         // is particularly useful for testing purposes where copying around projects
                         // is much quicker than reprocessing large sets of TAG files
 
-                        Log.LogWarning($"Site model ID read from FS file ({ID}) does not match expected ID ({SavedID}), setting to expected");
+                        Log.LogWarning($"Site model ID read ({ID}) does not match expected ID ({SavedID}), setting to expected");
                         ID = SavedID;
                     }
 
@@ -521,11 +521,11 @@ namespace VSS.TRex.SiteModels
 
                     if (Result == FileSystemErrorStatus.OK)
                     {
-                        Log.LogInformation($"Site model read from FS file (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
+                        Log.LogInformation($"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {Grid.CellSize}");
                     }
                     else
                     {
-                        Log.LogWarning($"Site model ID read from FS file ({ID}) failed with error {Result}");
+                        Log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
                     }
                 }
             }
@@ -534,31 +534,31 @@ namespace VSS.TRex.SiteModels
         }
 
         /// <summary>
-        /// Returns a reference to the existance map for the site model. If the existance map is not yet present
+        /// Returns a reference to the existence map for the site model. If the existence map is not yet present
         /// load it from storage/cache
         /// </summary>
         /// <returns></returns>
-        public ISubGridTreeBitMask GetProductionDataExistanceMap()
+        public ISubGridTreeBitMask GetProductionDataExistenceMap()
         {
-            if (existanceMap == null)
-                return LoadProductionDataExistanceMapFromStorage() == FileSystemErrorStatus.OK ? existanceMap : null;
+            if (existenceMap == null)
+                return LoadProductionDataExistenceMapFromStorage() == FileSystemErrorStatus.OK ? existenceMap : null;
 
-            return existanceMap;
+            return existenceMap;
         }
 
         /// <summary>
         /// Saves the content of the existence map to storage
         /// </summary>
         /// <returns></returns>
-        protected FileSystemErrorStatus SaveProductionDataExistanceMapToStorage(IStorageProxy StorageProxy)
+        protected FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy StorageProxy)
         {
             try
             {
               // Serialise and write out the stream to the persistent store
-              if (existanceMap == null)
+              if (existenceMap == null)
                 return FileSystemErrorStatus.OK;
 
-              StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.SubgridExistenceMap, existanceMap.ToStream());
+              StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream());
             }
             catch (Exception e)
             {
@@ -570,30 +570,30 @@ namespace VSS.TRex.SiteModels
         }
 
         /// <summary>
-        /// Retrieves the content of the existance map from storage
+        /// Retrieves the content of the existence map from storage
         /// </summary>
         /// <returns></returns>
-        protected FileSystemErrorStatus LoadProductionDataExistanceMapFromStorage()
+        protected FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
         {
             try
             {
-                // Create the new existance map instance
-                ISubGridTreeBitMask localExistanceMap = new SubGridTreeSubGridExistenceBitMask();
+                // Create the new existence map instance
+                ISubGridTreeBitMask localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
                 // Read its content from storage 
-                DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistanceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+                DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
 
                 if (MS == null)
                 {
                     Log.LogInformation($"Attempt to read existence map for site model {ID} failed as the map does not exist, creating new existence map");
-                    existanceMap = new SubGridTreeSubGridExistenceBitMask();
+                    existenceMap = new SubGridTreeSubGridExistenceBitMask();
                     return FileSystemErrorStatus.OK;
                 }
 
-                localExistanceMap.FromStream(MS);
+                localExistenceMap.FromStream(MS);
 
-                // Replace existance map with the newly read map
-                existanceMap = localExistanceMap;
+                // Replace existence map with the newly read map
+                existenceMap = localExistenceMap;
             }
             catch
             {
@@ -645,12 +645,12 @@ namespace VSS.TRex.SiteModels
         {
           ID = ID,
           //Name = Name,
-          //Decription = Description,
+          //Description = Description,
           LastModifiedDate = LastModifiedDate,
           SiteModelExtent = SiteModelExtent,
-          MachineCount = Machines.Count,
-          DesignCount = Designs.Count,
-          SurveyedSurfaceCount = SurveyedSurfaces.Count
+          MachineCount = Machines?.Count ?? 0,
+          DesignCount = Designs?.Count ?? 0,
+          SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0
         };
       }
     }

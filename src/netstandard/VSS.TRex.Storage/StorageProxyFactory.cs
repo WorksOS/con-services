@@ -19,8 +19,8 @@ namespace VSS.TRex.Storage
         {
             IStorageProxy proxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
 
-            // Establish any available immutable storage proxy into the mutable storage proxy to allow transparnet
-            // promotion of data changes in the mutable data store to the immutabvle data store.
+            // Establish any available immutable storage proxy into the mutable storage proxy to allow transparent
+            // promotion of data changes in the mutable data store to the immutable data store.
             proxy.SetImmutableStorageProxy(ImmutableGridStorage());
 
             return proxy;

@@ -48,11 +48,13 @@ namespace VSS.TRex.Events
 
       // Return (creating if necessary) the machine event lists for this machine and allow required events to lazy load.
       if (MachineIDMap[machineID] == null)
+      {
         lock (this)
         {
           if (MachineIDMap[machineID] == null) // This thread 'won'
             MachineIDMap[machineID] = new ProductionEventLists(Owner, machineID);
         }
+      }
 
       return MachineIDMap[machineID];
     }

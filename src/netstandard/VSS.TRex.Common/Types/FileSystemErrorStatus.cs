@@ -11,7 +11,7 @@
         FileSystemRecoveryFailure,
         ErrorReadingFreeSpaceList,
         ErrorReadingSpatialSubgridIndex,
-        ErrorConstructingSpatialSubgridExistanceMap,
+        ErrorConstructingSpatialSubgridExistenceMap,
         FileSystemCorrupt,
         ErrorReadingFileList,
         UnknownErrorCreatingFS,

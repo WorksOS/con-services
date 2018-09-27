@@ -43,7 +43,7 @@ namespace VSS.TRex.Events
 
             /// <summary>
             /// Defines whether this event is a custom event, ie: an event that was not recorded by a machine but which has been 
-            /// inserted as a part of a nother process such as to override values recorded by the machine that were incorrect 
+            /// inserted as a part of another process such as to override values recorded by the machine that were incorrect 
             /// (eg: design or material lift number)
             /// </summary>
             public bool IsCustomEvent
@@ -66,7 +66,7 @@ namespace VSS.TRex.Events
 
             public byte Flags;
 
-            public bool EquivalentTo(Event other) => (!IsCustomEvent && !other.IsCustomEvent) && EqualityComparer<V>.Default.Equals(State, other.State);
+            public bool EquivalentTo(Event other) => !IsCustomEvent && !other.IsCustomEvent && EqualityComparer<V>.Default.Equals(State, other.State);
         }
 
         /// <summary>
@@ -179,7 +179,6 @@ namespace VSS.TRex.Events
         //                                  const InternalStream: TMemoryStream;
         //                                  const FileMajorVersion, FileMinorVersion: Integer): Boolean; virtual;
 
-        // protected void InvalidateEventList() => eventsListIsOutOfDate = true;
         // public bool EventsListIsOutOfDate() => eventsListIsOutOfDate;
 
         // protected bool LoadedFromPersistentStore = false;
@@ -211,6 +210,35 @@ namespace VSS.TRex.Events
             });
         }
 
+    /// <summary>
+    /// Creates an array of string representations for the events in the list bounded by the
+    /// supplied date range and the maximum number of events to return
+    /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <param name="maxEventsToReturn"></param>
+    /// <returns></returns>
+    public List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn)
+    {
+      // Get the index of the first value
+      GetValueAtDate(startDate, out int index);
+
+      // If the start date is before the first event index will be -1, compensate for that
+      index = index < 0 ? 0 : index;
+
+      var result = new List<string>(maxEventsToReturn);
+
+      for (int i = index; i < Math.Min(index + maxEventsToReturn, Events.Count); i++)
+      {
+        if (Events[i].Date > endDate)
+          break;
+
+        result.Add($"Date: {Events[i].Date}, Event:{Events[i].State}");
+      }
+
+      return result;
+    }
+
         /// <summary>
         /// Adds the given event into the list.  If the event is a duplicate of an existing event the 
         /// passed event will be ignored and the existing duplicate event will be returned, otherwise 
@@ -225,8 +253,7 @@ namespace VSS.TRex.Events
 
             if (ExistingEventFound)
             {
-                Debug.Assert(Events[EventIndex].Date == Event.Date,
-                "Have determined two events are the same but that they have different dates!!!");
+                Debug.Assert(Events[EventIndex].Date == Event.Date, "Have determined two events are the same but that they have different dates!!!");
 
                 // If we find an event with the same date then delete the existing one and replace it with the new one.
                 bool CorrectInsertLocationIdentified;
@@ -240,16 +267,30 @@ namespace VSS.TRex.Events
                         // then delete the existing event.
                         if (Events[EventIndex].IsCustomEvent == Event.IsCustomEvent)
                         {
-                            //if (!Event.IsCustomEvent)
-                            //    return Events[EventIndex];
-
-                            Log.LogDebug($"Deleting custom machine event: {Events[EventIndex]}");
-                            Events.RemoveAt(EventIndex);
+                            if (Event.IsCustomEvent)
+                            {
+                                Log.LogDebug($"Deleting custom machine event: {Events[EventIndex]}");
+                                Events.RemoveAt(EventIndex);
+                            }
+                            else 
+                            {
+                                // All start/end recorded data events to have duplicates as these are
+                                // needed for correction collation
+                                if (EventListType != ProductionEventType.StartEndRecordedData)
+                                {
+                                    // 'Delete' the duplicate by not adding it
+                                    return;
+                                }
+                                else
+                                {
+                                    Debug.Assert(false, "Start/End recorded events should not be managed by the generic event PutValueAtDate()");
+                                }
+                            }
                         }
                         else if (Event.IsCustomEvent)
                         {
                             // If we've got a custom event with the same date as a machine event
-                            // then "bump" the custom event's date by a milli-second to ensure it's
+                            // then "bump" the custom event's date by a (millisecond) to ensure it's
                             // after the machine event.
 
                             Event.Date = Event.Date.AddMilliseconds(1);
@@ -285,7 +326,7 @@ namespace VSS.TRex.Events
             // The EventStartEndRecordedDataChangeList.Collate method overrides this one to collate those
             // Start/EndRecordedData events slightly differently.
             // All other Container.EventStartEndRecordedData should use this method.
-            // This method also relies on the fact that the Container.FEventStartEndRecordedData instance should
+            // This method also relies on the fact that the Container.EventStartEndRecordedData instance should
             // have been correctly collated BEFORE any of the other Container event lists are
             // collated; this is currently achieved by the fact that ProductionEventChanges.SaveToFile saves
             // the EventStartEndRecordedData list first, indirectly invoking Collate on that list first, before
@@ -371,20 +412,6 @@ namespace VSS.TRex.Events
         // Function CalculateInMemorySize : Integer; Virtual;
         // Function InMemorySize : Integer; InLine;
         // Procedure MarkEventListAsInMemoryOnly; Inline;
-
-/*
-        /// <summary>
-        /// Serialises the contents of the event list using a binary writer
-        /// </summary>
-        /// <param name="stream"></param>
-        public void SaveToStream(Stream stream)
-        {
-            using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true))
-            {
-                Write(writer);
-            }
-        }
-*/
 
         public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
@@ -521,6 +548,8 @@ namespace VSS.TRex.Events
 
         /// <summary>
         /// Copies all events from the source list to this list.
+        /// Note: The end result of this operation will not be a sorted list at the new events are added
+        /// to the end of the list and require collation to sort & remove duplicates
         /// </summary>
         /// <param name="eventsList"></param>
         public void CopyEventsFrom(IProductionEvents eventsList)
@@ -530,21 +559,23 @@ namespace VSS.TRex.Events
             // in cell pass integration
 
             foreach (Event Event in (List<Event>)eventsList.RawEventsObjects())
-                PutValueAtDate(Event);
+              PutValueAtDate(Event);
         }
 
         /// <summary>
         /// Copies all events from the source list to this list.
+        /// Note: The end result of this operation will not be a sorted list at the new events are added
+        /// to the end of the list and require collation to sort & remove duplicates
         /// </summary>
         /// <param name="eventsList"></param>
         public void CopyEventsFrom(IProductionEvents<V> eventsList)
         {
-          // If the numbers of events being added here become significant, then
-          // it may be worth using an event merge process similar to the one done
-          // in cell pass integration
-      
-          foreach (Event Event in ((ProductionEvents<V>)eventsList).Events)
-            PutValueAtDate(Event);
+            // If the numbers of events being added here become significant, then
+            // it may be worth using an event merge process similar to the one done
+            // in cell pass integration
+         
+            foreach (Event Event in ((ProductionEvents<V>)eventsList).Events)
+              PutValueAtDate(Event); 
         }
       
         /// <summary>

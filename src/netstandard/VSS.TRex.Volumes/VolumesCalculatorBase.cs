@@ -160,7 +160,7 @@ namespace VSS.TRex.Volumes
 
         // FLiftBuildSettings : TICLiftBuildSettings;
 
-        private ISubGridTreeBitMask ProdDataExistenceMap; //: TProductionDataExistanceMap;      //FPDExistenceMap : TSubGridTreeBitMask;
+        private ISubGridTreeBitMask ProdDataExistenceMap; 
         private ISubGridTreeBitMask OverallExistenceMap;
 
         private ISubGridTreeBitMask DesignSubgridOverlayMap;
@@ -237,7 +237,7 @@ namespace VSS.TRex.Volumes
 
         public RequestErrorStatus ExecutePipeline()
         {
-            PipelinedSubGridTask PipelinedTask;
+          VolumesComputationTask /*PipelinedSubGridTask*/ PipelinedTask;
             SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine;
 
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
@@ -247,7 +247,7 @@ namespace VSS.TRex.Volumes
 
             try
             {
-                ProdDataExistenceMap = SiteModel.ExistanceMap; // ASNodeImplInstance.IOService.GetSubgridExistanceMap(FDataModelID, kSubGridTreeDimension * CellSize, FReturnCode);
+                ProdDataExistenceMap = SiteModel.ExistenceMap;
 
                 if (ProdDataExistenceMap == null)
                     return RequestErrorStatus.FailedToRequestSubgridExistenceMap;
@@ -262,7 +262,7 @@ namespace VSS.TRex.Volumes
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
-                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, Consts.EXISTANCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
+                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
 
                         if (DesignSubgridOverlayMap == null)
                             return RequestErrorStatus.NoDesignProvided;
@@ -293,7 +293,7 @@ namespace VSS.TRex.Volumes
                         }
                     }
 
-                    // Add in the production data existance map to the computed surveyed surfaces existance maps
+                    // Add in the production data existence map to the computed surveyed surfaces existence maps
                     OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
 
                     // If necessary, impose spatial constraints from Lift filter design(s)
@@ -309,7 +309,8 @@ namespace VSS.TRex.Volumes
                             return RequestErrorStatus.Unknown;
                     }
 
-                    PipelinedTask = new SimpleVolumesComputationTask(Aggregator);
+                    PipelinedTask = new VolumesComputationTask();
+                    PipelinedTask.Aggregator = Aggregator;
 
                     try
                     {
@@ -411,5 +412,28 @@ namespace VSS.TRex.Volumes
 
             return RequestErrorStatus.Unknown;
         }
-    }
-}
+
+      /*
+      public RequestErrorStatus ExecutePipelineEx()
+      {
+        IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
+        (requestDescriptor: RequestDescriptor,
+          dataModelID: SiteModel.ID,
+          siteModel: SiteModel,
+          gridDataType: GridDataType.Height,
+          response: new SimpleVolumesResponse(), // todo or any predefined response object
+          filters: new FilterSet(BaseFilter, TopFilter),
+          cutFillDesignID: ReferenceDesignID,
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
+          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
+          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
+          requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignID != Guid.Empty,
+          requireSurveyedSurfaceInformation: true, // todo -> IncludeSurveyedSurfaces,
+          overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
+        );
+
+        return RequestErrorStatus.OK;
+      }
+      */
+  }
+  }

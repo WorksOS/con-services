@@ -143,8 +143,8 @@ namespace TRexTAGFileSubmittor
           ProcessTAGFilesInFolder(projectID, f);
         }
 
-        // ProcessTAGFiles(projectID, Directory.GetFiles(folder));
-        SubmitTAGFiles(projectID, Directory.GetFiles(folder));
+        // ProcessTAGFiles(projectID, Directory.GetFiles(folder, "*.tag"));
+        SubmitTAGFiles(projectID, Directory.GetFiles(folder, "*.tag"));
       }
     }
 
