@@ -223,7 +223,7 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 13";
       DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
-      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("200d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 13", "Create one project, then delete it");
       var eventArray = new[] {
          "| EventType          | EventDate   | ProjectID   | ProjectUID      | ProjectName    | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
