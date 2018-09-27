@@ -195,7 +195,7 @@ namespace TRexIgniteTest
 	      ProfileTypeRequired = GridDataType.Height,
 	      PositionsAreGrid = true,
 	      Filters = new FilterSet(new[] {new CombinedFilter()}),
-	      CutFillDesignID = Guid.Empty,
+	      ReferenceDesignID = Guid.Empty,
 	      StartPoint = new WGS84Point(lon: extents.MinX, lat: extents.MinY),
 	      EndPoint = new WGS84Point(lon: extents.MaxX, lat: extents.MaxY),
 	      ReturnAllPassesAndLayers = false,

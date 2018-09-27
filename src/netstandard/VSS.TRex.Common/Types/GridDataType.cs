@@ -38,13 +38,8 @@ namespace VSS.TRex.Types
     CCA = 0x00000017,
     CCAPercent = 0x00000018,
     TemperatureDetail = 0x00000019,
-    Unused1 = 0x0000001A,
-    Unused2 = 0x0000001B,
-    Unused3 = 0x0000001C,
-    Unused4 = 0x0000001D,
-    Unused5 = 0x0000001E,
-    Unused6 = 0x0000001F,
-    CutFill = 0x00000020
+    CutFill = 0x0000001A,
+    DesignHeight = 0x0000001B
   }
 
   public static class GridDataFromModeConverter
@@ -85,7 +80,7 @@ namespace VSS.TRex.Types
         case DisplayMode.CCASummary: return GridDataType.CCA;
         case DisplayMode.TemperatureDetail: return GridDataType.TemperatureDetail;
         case DisplayMode.ThreeDTerrain: return GridDataType.Height;
-        case DisplayMode.ThreeDDesign: return GridDataType.Height;
+        case DisplayMode.ThreeDDesign: return GridDataType.DesignHeight;
 
         default:
           Debug.Assert(false, $"Unknown mode ({Mode}) in ICGridDataTypeForDisplayMode");
