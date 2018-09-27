@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public PassCountSummaryRequest(
-      Guid projectUid,
+      Guid? projectUid,
       FilterResult filter,
       TargetPassCountRange overridingTargetPassCountRange
     )

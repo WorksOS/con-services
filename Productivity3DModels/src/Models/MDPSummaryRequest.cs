@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public MDPSummaryRequest(
-      Guid projectUid,
+      Guid? projectUid,
       FilterResult filter,
       short mdpTarget,
       bool overrideTargetMDP,

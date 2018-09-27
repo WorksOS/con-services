@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public CMVSummaryRequest(
-      Guid projectUid,
+      Guid? projectUid,
       FilterResult filter,
       short cmvTarget,
       bool overrideTargetCMV,

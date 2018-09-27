@@ -50,6 +50,19 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Sends a request to get CMV Summary statistics from the TRex database.
+    /// </summary>
+    /// <param name="cmvSummaryRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendCMVSummaryRequest(CMVSummaryRequest cmvSummaryRequest, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendCMVSummaryRequest)}: Sending the request: {cmvSummaryRequest}");
+
+      return await SendRequestPost(JsonConvert.SerializeObject(cmvSummaryRequest), customHeaders, "/cmv/summary");
+    }
+
+    /// <summary>
     /// Sends a request to get Pass Count Details statistics from the TRex database.
     /// </summary>
     /// <param name="pcDetailsRequest"></param>
@@ -63,6 +76,19 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Sends a request to get Pass Count Summary statistics from the TRex database.
+    /// </summary>
+    /// <param name="pcSummaryRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendPassCountSummaryRequest(PassCountSummaryRequest pcSummaryRequest, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendPassCountSummaryRequest)}: Sending the request: {pcSummaryRequest}");
+
+      return await SendRequestPost(JsonConvert.SerializeObject(pcSummaryRequest), customHeaders, "/passcounts/summary");
+    }
+
+    /// <summary>
     /// Sends a request to get Cut/Fill Details statistics from the TRex database.
     /// </summary>
     /// <param name="cfDetailsRequest"></param>
@@ -73,6 +99,59 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"{nameof(SendCutFillDetailsRequest)}: Sending the request: {cfDetailsRequest}");
 
       return await SendRequestPost(JsonConvert.SerializeObject(cfDetailsRequest), customHeaders, "/cutfill/details");
+    }
+
+    /// <summary>
+    /// Sends a request to get MDP Summary statistics from the TRex database.
+    /// </summary>
+    /// <param name="mdpSummaryRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendMDPSummaryRequest(MDPSummaryRequest mdpSummaryRequest, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendMDPSummaryRequest)}: Sending the request: {mdpSummaryRequest}");
+
+      return await SendRequestPost(JsonConvert.SerializeObject(mdpSummaryRequest), customHeaders, "/mdp/summary");
+    }
+
+    /// <summary>
+    /// Sends a request to get Material Temperature Summary statistics from the TRex database.
+    /// </summary>
+    /// <param name="temperatureSummaryRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendTemperatureSummaryRequest(TemperatureSummaryRequest temperatureSummaryRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendTemperatureSummaryRequest)}: Sending the request: {temperatureSummaryRequest}");
+
+      return await SendRequestPost(JsonConvert.SerializeObject(temperatureSummaryRequest), customHeaders, "/temperature/summary");
+    }
+
+    /// <summary>
+    /// Sends a request to get Machine Speed Summary statistics from the TRex database.
+    /// </summary>
+    /// <param name="speedSummaryRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendSpeedSummaryRequest(SpeedSummaryRequest speedSummaryRequest, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendSpeedSummaryRequest)}: Sending the request: {speedSummaryRequest}");
+
+      return await SendRequestPost(JsonConvert.SerializeObject(speedSummaryRequest), customHeaders, "/speed/summary");
+    }
+
+    /// <summary>
+    /// Sends a request to get Summary Volumes statistics from the TRex database.
+    /// </summary>
+    /// <param name="summaryVolumesRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the request: {summaryVolumesRequest}");
+
+      return await SendRequestPost(JsonConvert.SerializeObject(summaryVolumesRequest), customHeaders, "/volumes/summary");
     }
 
     /// <summary>

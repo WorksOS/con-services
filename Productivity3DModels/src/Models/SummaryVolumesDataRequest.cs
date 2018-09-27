@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="topDesignUid"></param>
     /// <param name="volumeCalcType"></param>
     public SummaryVolumesDataRequest(
-      Guid projectUid, 
+      Guid? projectUid, 
       FilterResult baseFilter, 
       FilterResult topFilter, 
       Guid? baseDesignUid, 

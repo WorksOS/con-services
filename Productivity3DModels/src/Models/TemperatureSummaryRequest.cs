@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    public TemperatureSummaryRequest(Guid projectUid, FilterResult filter, TemperatureSettings temperatureSettings)
+    public TemperatureSummaryRequest(Guid? projectUid, FilterResult filter, TemperatureSettings temperatureSettings)
     {
       this.ProjectUid = projectUid;
       this.Filter = filter;
