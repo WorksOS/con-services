@@ -55,11 +55,11 @@ namespace VSS.TRex.Storage
     /// <param name="Stream"></param>
     /// <returns></returns>
     public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid DataModelID,
-                                                                          string StreamName,
-                                                                          uint SubgridX, uint SubgridY,
-                                                                          string SegmentIdentifier,
-                                                                          FileSystemStreamType StreamType,
-                                                                          out MemoryStream Stream)
+                                                                      string StreamName,
+                                                                      uint SubgridX, uint SubgridY,
+                                                                      string SegmentIdentifier,
+                                                                      FileSystemStreamType StreamType,
+                                                                      out MemoryStream Stream)
         {
             Stream = null;
 

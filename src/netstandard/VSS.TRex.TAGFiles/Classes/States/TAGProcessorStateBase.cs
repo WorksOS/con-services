@@ -601,8 +601,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
         }
 
         /// <summary>
-        /// DoEpochStateEvent is called to handle epoch state events read from the
-        /// production tag files.
+        /// DoEpochStateEvent is called to handle epoch state events read from the  production tag files.
         /// </summary>
         /// <returns></returns>
         public virtual bool DoEpochStateEvent(EpochStateEvent eventType)
@@ -612,7 +611,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
         }
 
         /// <summary>
-        /// Takes copies of the arrays of positions obtained from TAG values thathave been produced by transformation of the grid
+        /// Takes copies of the arrays of positions obtained from TAG values that have been produced by transformation of the grid
         /// coordinate system they were measured in, into the coordinate system of the project the data is being processed into.
         /// </summary>
         /// <param name="convertedBladePositions"></param>

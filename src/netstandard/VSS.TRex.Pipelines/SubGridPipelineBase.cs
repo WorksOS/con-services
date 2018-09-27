@@ -85,7 +85,7 @@ namespace VSS.TRex.Pipelines
 
         public int MaxNumberOfPassesToReturn = 0;
 
-        public Guid CutFillDesignID { get; set; } = Guid.Empty;
+        public Guid ReferenceDesignID { get; set; } = Guid.Empty;
 
         // public float FNoChangeVolumeTolerance;
 
@@ -250,7 +250,7 @@ namespace VSS.TRex.Pipelines
                 ProdDataMask = RequestAnalyser.ProdDataMask,
                 SurveyedSurfaceOnlyMask = RequestAnalyser.SurveydSurfaceOnlyMask,
                 Filters = FilterSet,
-                CutFillDesignID = CutFillDesignID
+                ReferenceDesignID = ReferenceDesignID
             };
 
             ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();

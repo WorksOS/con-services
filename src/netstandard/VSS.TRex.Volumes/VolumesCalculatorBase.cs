@@ -423,11 +423,11 @@ namespace VSS.TRex.Volumes
           gridDataType: GridDataType.Height,
           response: new SimpleVolumesResponse(), // todo or any predefined response object
           filters: new FilterSet(BaseFilter, TopFilter),
-          cutFillDesignID: CutFillDesignID,
+          cutFillDesignID: ReferenceDesignID,
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requestRequiresAccessToDesignFileExistenceMap: CutFillDesignID != Guid.Empty,
+          requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignID != Guid.Empty,
           requireSurveyedSurfaceInformation: true, // todo -> IncludeSurveyedSurfaces,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
         );

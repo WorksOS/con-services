@@ -61,7 +61,7 @@ namespace VSS.TRex.Events
 
         /// <summary>
         /// Implements search semantics for paired events where it is important to locate bracketing pairs of
-        /// start and stop evnets given a date/time
+        /// start and stop events given a date/time
         /// </summary>
         /// <param name="eventDate"></param>
         /// <param name="StartEventDate"></param>
@@ -77,18 +77,16 @@ namespace VSS.TRex.Events
                 EndEventDate = Events[StartIndex + 1].Date;
                 return true;
             }
-            else
+
+            StartEventDate = default;
+            EndEventDate = default;
+
+            if (StartIndex == Events.Count - 1)
             {
-                StartEventDate = default(DateTime);
-                EndEventDate = default(DateTime);
-
-                if (StartIndex == Events.Count - 1)
-                {
-                    Log.LogError(
-                        $"FindStartEventPairAtTime located only one event (index:{StartIndex}) at search time {eventDate:6f} {eventDate:o}");
-                }
+                Log.LogError(
+                    $"FindStartEventPairAtTime located only one event (index:{StartIndex}) at search time {eventDate:6f} {eventDate:o}");
             }
-
+            
             return false;
         }
 
@@ -102,7 +100,25 @@ namespace VSS.TRex.Events
             if (EventListType == ProductionEventType.MachineStartupShutdown)
                 return;
 
-            // First, deal with any nested events
+          // Please leave...
+          //{
+          //  Log.LogInformation($"In: Before sort: Collating start/end events: event count = {Events.Count}");
+          //  int count = 0;
+          //  foreach (var evt in Events)
+          //    Log.LogInformation($"{count++}: Date {evt.Date} -> {evt.State}");
+          //}
+
+            Sort();
+
+          // Please leave...
+          //{
+          //  Log.LogInformation($"In: After sort: Collating start/end events: event count = {Events.Count}");
+          //  int count = 0;
+          //  foreach (var evt in Events)
+          //   Log.LogInformation($"{count++}: Date {evt.Date} -> {evt.State}");      
+          //}
+
+          // First, deal with any nested events
             // ie: Structures of the form <Start><Start><End><Start><End><End>
             // in these instances, all events bracketed by the double <start><end> events should be removed
 
@@ -121,6 +137,7 @@ namespace VSS.TRex.Events
 
                 if (NestingLevel > 1)
                 {
+                    // Log.LogInformation($"Removing due to nesting: {I}: Date {Events[I].Date} -> {Events[I].State}");
                     Events.RemoveAt(I);
 
                     // Decrement location to take into account the removal of the event
@@ -133,30 +150,50 @@ namespace VSS.TRex.Events
                 I++;
             }
 
-            // Deal with collation of non-nested events
+            if (Events.Count == 2)
+            {
+                // Single start/stop events (from processing a single TAG file) never need collation
+                return;
+            }
+
+            // Deal with collation of non-nested events. This means removing End/Start pairs occurring 
+            // at the same point in time
             I = 0;
             while (I < Events.Count - 1)
             {
-                Debug.Assert(Events[I].Date <= Events[I + 1].Date, "Start/end recorded data events are out of order");
+                // Introduce one second worth of slop into the start/stop event date comparisons to deal with 
+                // jitter between the last time epoch in one TAG file and the first time epoch in the 
+                // following TAG file. The second TAG file may even have a first epoch time before the last
+                // epoch time of the previous TAG file.
+                // Note: This means the list of events may be validly strictly out of date order.
 
-                if (Events[I].EquivalentTo(Events[I + 1]) &&
-                    Events[I].State == ProductionEventType.StartEvent &&
-                    Events[I + 1].State == ProductionEventType.EndEvent)
-                {
-                    //Don't collate this pair - it's a single epoch tag file
-                    I++;
-                }
-                else if (Events[I].EquivalentTo(Events[I + 1]) && Events[I].State != Events[I + 1].State)
-                {
-                    Events.RemoveAt(I); // this[I] = null;
-                    Events.RemoveAt(I); // this[I + 1] = null;
+                TimeSpan eventTimeDelta = Events[I].Date - Events[I + 1].Date; 
+                bool eventTimesAreEqual = Math.Abs(eventTimeDelta.Ticks) < TimeSpan.TicksPerSecond;
 
-                    // Decrement location to take into account the removal of the event
+                // Log.LogInformation($"Comparing at {I}->{I + 1}: {Events[I].Date}[{Events[I].Date.ToBinary()}] -> {Events[I + 1].Date}[{Events[I + 1].Date.ToBinary()}] (close enough?:{eventTimesAreEqual}, {Events[I].State} -> {Events[I + 1].State}");
+
+                if (eventTimesAreEqual &&
+                    Events[I].State == ProductionEventType.EndEvent &&
+                    Events[I + 1].State == ProductionEventType.StartEvent)
+                {
+                    // Log.LogInformation($"Removing due end/start co-location: {I}: Date {Events[I].Date}");
+
+                    // Remove the End/Start combo and reset the location to take into account the removal of the event
+                    Events.RemoveAt(I);
+                    Events.RemoveAt(I);
                     I--;
                 }
 
                 I++;
             }
+
+          // Please leave...
+          //{
+          //  Log.LogInformation($"Out: Collating start/end events, event count = {Events.Count}");
+          //  int count = 0;
+          //  foreach (var evt in Events)
+          //    Log.LogInformation($"{count++}: Date {evt.Date} -> {evt.State}");
+          //}
         }
 
         /// <summary>
@@ -167,71 +204,18 @@ namespace VSS.TRex.Events
         /// <returns></returns>
         public override void PutValueAtDate(Event Event)
         {
-            bool ExistingEventFound = Find(Event, out int EventIndex);
-
-            if (ExistingEventFound)
-            {
-                Debug.Assert(Events[EventIndex].Date == Event.Date,
-                    "Have determined two events are the same but that they have different dates!!!");
-
-                // If we find an event with the same date then delete the existing one and replace it with the new one.
-                bool CorrectInsertLocationIdentified;
-                do
-                {
-                    CorrectInsertLocationIdentified = true;
-
-                    if (ExistingEventFound)
-                    {
-                        // Check is start==start or end==end
-                        if (Event.State == Events[EventIndex].State)
-                        {
-                            // If we've got a machine event overriding a machine event or a custom event overriding a custom event
-                            // then delete the existing event.
-                            if (Events[EventIndex].IsCustomEvent == Event.IsCustomEvent)
-                            {
-                                if (Event.IsCustomEvent)
-                                {
-                                    Log.LogDebug($"Deleting custom machine event: {Events[EventIndex]}");
-                                    Events.RemoveAt(EventIndex);
-                                }
-                            }
-                            else
-                            {
-                                if (Event.IsCustomEvent)
-                                {
-                                    // If we've got a custom event with the same date as a machine event
-                                    // then "bump" the custom event's date by a milli-second to ensure it's
-                                    // after the machine event.
-
-                                    Event.Date = Event.Date.AddMilliseconds(1);
-                                    CorrectInsertLocationIdentified = false;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // Ensure 'end' events are placed after 'start' events at the same time
-                            if (Events[EventIndex].State == ProductionEventType.StartEvent &&
-                                Event.State == ProductionEventType.EndEvent)
-                            {
-                                Event.Date = Event.Date.AddMilliseconds(1);
-                                CorrectInsertLocationIdentified = false;
-                            }
-                        }
-                    }
-
-                    ExistingEventFound = Find(Event, out EventIndex);
-                } while (!CorrectInsertLocationIdentified);
-            }
-
+            // Note: The event being added may be a duplicate of an existing event. These are added to
+            // permit correct collation of the events across nested spans created by reprocessing TAG file data
+            Find(Event, out int EventIndex);
             Events.Insert(EventIndex, Event);
-
             EventsChanged = true;
         }
 
         /// <summary>
         /// Provides a Start-End event pair based comparator that takes into account both date of event
         /// and 'start' and 'end' natures of the events states.
+        /// Note: If a start and an end event are at the same date, the end event is said to occur before the
+        /// start event occurs so as not to get zero-length start-end event periods.
         /// </summary>
         /// <param name="I1"></param>
         /// <param name="I2"></param>
@@ -242,23 +226,26 @@ namespace VSS.TRex.Events
             const int EqualsValue = 0;
             const int GreaterThanValue = 1;
 
-            if (I1.State == I2.State || I1.Date != I2.Date)
-                return base.Compare(I1, I2);
+            // Introduce one second worth of slop into the start/stop event date comparisons to deal with 
+            // jitter between the last time epoch in one TAG file and the first time epoch in the 
+            // following TAG file. The second TAG file may even have a first epoch time before the last
+            // epoch time of the previous TAG file.
+            // Note: This means the list of events may be validly strictly out of date order.
 
-            if (I1.Date == I2.Date)
-            {
-                if (I1.State == ProductionEventType.StartEvent && I2.State == ProductionEventType.EndEvent)
-                    return LessThanValue;
+            TimeSpan eventTimeDelta = I1.Date - I2.Date;
+            bool eventTimesAreEqual = Math.Abs(eventTimeDelta.Ticks) <= TimeSpan.TicksPerSecond;
 
-                if (I1.State == ProductionEventType.EndEvent && I2.State == ProductionEventType.StartEvent)
-                    return GreaterThanValue;
+            if (!eventTimesAreEqual)
+              return base.Compare(I1, I2);
 
-                // Then they must be equal...
-                return EqualsValue;
-            }
+            if (I1.State == ProductionEventType.StartEvent && I2.State == ProductionEventType.EndEvent)
+              return GreaterThanValue;
 
-            // Not sure why control would ever get here...
-            return base.Compare(I1, I2);
+            if (I1.State == ProductionEventType.EndEvent && I2.State == ProductionEventType.StartEvent)
+              return LessThanValue;
+
+            // Then they must be equal...
+            return EqualsValue;
         }  
-  }
+    }
 }

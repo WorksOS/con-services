@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using VSS.TRex.Events.Models;
-using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
