@@ -59,24 +59,29 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static SummarySpeedRequest CreateSummarySpeedRequest(
+    /// <param name="projectId"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="callId"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="filter"></param>
+    /// <param name="filterId"></param>
+    /// <returns></returns>
+    public SummarySpeedRequest(
       long projectId,
+      Guid? projectUid,
       Guid? callId,
       LiftBuildSettings liftBuildSettings,
       FilterResult filter,
       int filterId)
     {
-      return new SummarySpeedRequest
-      {
-        ProjectId = projectId,
-        CallId = callId,
-        LiftBuildSettings = liftBuildSettings,
-        Filter = filter,
-        FilterId = filterId,
-
-      };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
+      CallId = callId;
+      LiftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterId = filterId;
     }
   }
 }

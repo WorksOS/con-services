@@ -35,7 +35,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <returns>a TemperatureSummaryResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       try
       {
         TemperatureRequest request = item as TemperatureRequest;
@@ -43,29 +42,39 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request == null)
           ThrowRequestTypeCastException(typeof(TemperatureRequest));
 
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
-            request.overrideStartUTC, request.overrideEndUTC, request.overrideAssetIds);
+        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE"), out var useTrexGateway))
+          useTrexGateway = false;
+
+        if (useTrexGateway)
+        {
+          var temperatureSummaryRequest = new TemperatureSummaryRequest(
+            request.ProjectUid,
+            request.Filter,
+            request.TemperatureSettings);
+
+          return trexCompactionDataProxy.SendTemperatureSummaryRequest(temperatureSummaryRequest, customHeaders).Result;
+        }
+
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
+          request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
+
         var raptorResult = raptorClient.GetTemperatureSummary(request.ProjectId ?? -1,
-                            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtTemperature),
-                            ConvertSettings(request.temperatureSettings),
+                            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtTemperature),
+                            ConvertSettings(request.TemperatureSettings),
                             raptorFilter,
-                            RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
+                            RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
                             out var temperatureSummary);
+
         if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          result = ConvertResult(temperatureSummary);
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested Temperature summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
-        }
+          return ConvertResult(temperatureSummary);
+
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          $"Failed to get requested Temperature summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
     }
 
     protected sealed override void ProcessErrorCodes()

@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      MDPRequest request = MDPRequest.CreateMDPRequest(projectId, null, mdpSettings, liftSettings, filter,
+      MDPRequest request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter,
         -1,
         null, null, null);
       request.Validate();
@@ -217,7 +217,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      TemperatureRequest request = TemperatureRequest.CreateTemperatureRequest(projectId, null,
+      TemperatureRequest request = new TemperatureRequest(projectId, projectUid, null,
         temperatureSettings, liftSettings, filter, -1, null, null, null);
       request.Validate();
       try
@@ -272,8 +272,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
-      SummarySpeedRequest request =
-        SummarySpeedRequest.CreateSummarySpeedRequest(projectId, null, liftSettings, filter, -1);
+      SummarySpeedRequest request = new SummarySpeedRequest(projectId, projectUid, null, liftSettings, filter, -1);
       request.Validate();
       try
       {
@@ -370,7 +369,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
       }
       var projectId = await GetLegacyProjectId(projectUid);
-      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
       CompactionVolumesSummaryResult returnResult;
 

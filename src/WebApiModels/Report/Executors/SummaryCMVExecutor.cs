@@ -34,8 +34,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-
       try
       {
         CMVRequest request = item as CMVRequest;
@@ -43,8 +41,24 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request == null)
           ThrowRequestTypeCastException(typeof(CMVRequest));
 
+        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
+          useTrexGateway = false;
+
+        if (useTrexGateway)
+        {
+          var cmvSummaryRequest = new CMVSummaryRequest(
+            request.ProjectUid, 
+            request.Filter,
+            request.CmvSettings.CmvTarget,
+            request.CmvSettings.OverrideTargetCMV,
+            request.CmvSettings.MaxCMVPercent,
+            request.CmvSettings.MinCMVPercent);
+
+          return trexCompactionDataProxy.SendCMVSummaryRequest(cmvSummaryRequest, customHeaders).Result;
+        }
+
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
-            request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
+          request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
         var raptorResult = raptorClient.GetCMVSummary(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCMVSummary),
@@ -54,20 +68,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           out var cmvSummary);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          result = ConvertResult(cmvSummary);
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested CMV summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
-        }
+          return ConvertResult(cmvSummary);
+
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          $"Failed to get requested CMV summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
     }
 
     protected sealed override void ProcessErrorCodes()
