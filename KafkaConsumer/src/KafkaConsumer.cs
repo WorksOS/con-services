@@ -145,7 +145,7 @@ namespace VSS.KafkaConsumer
       if (success)
       {
         log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
-        await kafkaDriver.Commit();
+        kafkaDriver.Commit();
       }
     }
 
