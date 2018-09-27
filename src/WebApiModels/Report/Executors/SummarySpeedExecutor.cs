@@ -30,7 +30,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     private SpeedSummaryResult ConvertResult(TASNodeSpeedSummaryResult result)
     {
-
       return new SpeedSummaryResult
       (
         Math.Round(result.AboveTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
@@ -44,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        SummarySpeedRequest request = item as SummarySpeedRequest;
+        var request = item as SummarySpeedRequest;
 
         if (request == null)
           ThrowRequestTypeCastException(typeof(SummarySpeedRequest));
@@ -54,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         if (useTrexGateway)
         {
-          var speedSummaryRequest = new SpeedSummaryRequest(
+        	var speedSummaryRequest = new SpeedSummaryRequest(
             request.ProjectUid,
             request.Filter,
             request.LiftBuildSettings.MachineSpeedTarget);
@@ -62,8 +61,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return trexCompactionDataProxy.SendSpeedSummaryRequest(speedSummaryRequest, customHeaders).Result;
         }
 
-        var raptorResult = this.raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
+        var raptorResult = raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((request.CallId ?? Guid.NewGuid()), 0,
             TASNodeCancellationDescriptorType.cdtVolumeSummary),
           RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
             new List<long>()),
@@ -75,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return ConvertResult(result);
         }
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,
           $"Failed to get requested speed summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
       finally
@@ -88,6 +87,5 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using ASNodeDecls;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -20,7 +18,6 @@ using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -46,18 +43,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectVerifier]
     [Route("api/v2/cmv/summary")]
     [HttpGet]
-    public async Task<CompactionCmvSummaryResult> GetCmvSummary(
+    public async Task<ActionResult<CompactionCmvSummaryResult>> GetCmvSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       Log.LogInformation("GetCmvSummary: " + Request.QueryString);
 
-      CMVRequest request = await GetCmvRequest(projectUid, filterUid);
+      var request = await GetCmvRequest(projectUid, filterUid);
       request.Validate();
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return new CompactionCmvSummaryResult();
+        return Ok(new CompactionCmvSummaryResult());
       }
 
       Log.LogDebug("GetCmvSummary request for Raptor: " + JsonConvert.SerializeObject(request));
@@ -67,23 +64,21 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
               .Process(request) as CMVSummaryResult;
 
-        var returnResult = new CompactionCmvSummaryResult(result, request.CmvSettings);
-        Log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
+        var cmvSummaryResult = new CompactionCmvSummaryResult(result, request.CmvSettings);
+        Log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(cmvSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
-        return returnResult;
+        return Ok(cmvSummaryResult);
+      }
+      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
+      {
+        return NoContent();
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(
-        //  HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
-        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
-
-        throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+        Log.LogError($"{nameof(GetCmvSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -98,48 +93,47 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectVerifier]
     [Route("api/v2/mdp/summary")]
     [HttpGet]
-    public async Task<CompactionMdpSummaryResult> GetMdpSummary(
+    public async Task<ActionResult<CompactionMdpSummaryResult>> GetMdpSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
       Log.LogInformation("GetMdpSummary: " + Request.QueryString);
 
       var projectSettings = await GetProjectSettingsTargets(projectUid);
-      MDPSettings mdpSettings = this.SettingsManager.CompactionMdpSettings(projectSettings);
-      LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var mdpSettings = SettingsManager.CompactionMdpSettings(projectSettings);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return new CompactionMdpSummaryResult();
+        return Ok(new CompactionMdpSummaryResult());
       }
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
       MDPRequest request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter,
-        -1,
-        null, null, null);
       request.Validate();
 
       try
       {
-        var result = RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(LoggerFactory, RaptorClient, null, this.ConfigStore)
-          .Process(request) as MDPSummaryResult;
-        var returnResult = new CompactionMdpSummaryResult(result, mdpSettings);
-        Log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
+        var result = RequestExecutorContainerFactory
+                     .Build<SummaryMDPExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
+                     .Process(request) as MDPSummaryResult;
+
+        var mdpSummaryResult = new CompactionMdpSummaryResult(result, mdpSettings);
+        Log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(mdpSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
-        return returnResult;
+        return Ok(mdpSummaryResult);
+      }
+      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
+      {
+        return NoContent();
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
-        var statusCode = (TASNodeErrorStatus) exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
-
-        throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+        Log.LogError($"{nameof(GetMdpSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -153,7 +147,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectVerifier]
     [Route("api/v2/passcounts/summary")]
     [HttpGet]
-    public async Task<CompactionPassCountSummaryResult> GetPassCountSummary(
+    public async Task<ActionResult<CompactionPassCountSummaryResult>> GetPassCountSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
@@ -161,32 +155,33 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return new CompactionPassCountSummaryResult();
+        return Ok(new CompactionPassCountSummaryResult());
       }
 
-      PassCounts request = await GetPassCountRequest(projectUid, filterUid, true);
+      var request = await GetPassCountRequest(projectUid, filterUid, true);
       request.Validate();
 
       try
       {
-        var result = RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(LoggerFactory, RaptorClient)
-          .Process(request) as PassCountSummaryResult;
-        var returnResult = new CompactionPassCountSummaryResult(result);
-        Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
+        var result = RequestExecutorContainerFactory
+                     .Build<SummaryPassCountsExecutor>(LoggerFactory, RaptorClient)
+                     .Process(request) as PassCountSummaryResult;
+
+        var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
+        Log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(passCountSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
-        return returnResult;
+        return Ok(passCountSummaryResult);
+      }
+      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
+      {
+        return NoContent();
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
-        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
-
-        throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+        Log.LogError($"{nameof(GetPassCountSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -200,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectVerifier]
     [Route("api/v2/temperature/summary")]
     [HttpGet]
-    public async Task<CompactionTemperatureSummaryResult> GetTemperatureSummary(
+    public async Task<ActionResult<CompactionTemperatureSummaryResult>> GetTemperatureSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
@@ -208,12 +203,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return new CompactionTemperatureSummaryResult();
+        return Ok(new CompactionTemperatureSummaryResult());
       }
 
       var projectSettings = await GetProjectSettingsTargets(projectUid);
-      TemperatureSettings temperatureSettings = this.SettingsManager.CompactionTemperatureSettings(projectSettings, false);
-      LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings, false);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
@@ -222,25 +217,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result =
-          RequestExecutorContainerFactory.Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient)
-            .Process(request) as TemperatureSummaryResult;
-        var returnResult = new CompactionTemperatureSummaryResult(result);
-        Log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
+        var result = RequestExecutorContainerFactory
+                     .Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient)
+                     .Process(request) as TemperatureSummaryResult;
+
+        var temperatureSummaryResult = new CompactionTemperatureSummaryResult(result);
+        Log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(temperatureSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
-        return returnResult;
+        return Ok(temperatureSummaryResult);
+      }
+      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
+      {
+        return NoContent();
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.BadRequest,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
-        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
-
-        throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+        Log.LogError($"{nameof(GetTemperatureSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -254,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectVerifier]
     [Route("api/v2/speed/summary")]
     [HttpGet]
-    public async Task<CompactionSpeedSummaryResult> GetSpeedSummary(
+    public async Task<ActionResult<CompactionSpeedSummaryResult>> GetSpeedSummary(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid)
     {
@@ -262,12 +257,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectId = await GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
-      //Speed settings are in LiftBuildSettings
-      LiftBuildSettings liftSettings = this.SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       if (!await ValidateFilterAgainstProjectExtents(projectUid, filterUid))
       {
-        return new CompactionSpeedSummaryResult();
+        return Ok(new CompactionSpeedSummaryResult());
       }
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -276,25 +270,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(LoggerFactory, RaptorClient)
-          .Process(request) as SpeedSummaryResult;
-        var returnResult =
-          new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
-        Log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
+        var result = RequestExecutorContainerFactory
+                     .Build<SummarySpeedExecutor>(LoggerFactory, RaptorClient)
+                     .Process(request) as SpeedSummaryResult;
+
+        var speedSummaryResult = new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
+        Log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(speedSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
 
-        return returnResult;
+        return Ok(speedSummaryResult);
+      }
+      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
+      {
+        return NoContent();
       }
       catch (ServiceException exception)
       {
-        //throw new ServiceException(HttpStatusCode.NoContent,
-        //  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, exception.Message));
-
-        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
-
-        throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+        Log.LogError($"{nameof(GetSpeedSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
@@ -312,7 +306,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectVerifier]
     [Route("api/v2/volumes/summary")]
     [HttpGet]
-    public async Task<CompactionVolumesSummaryResult> GetSummaryVolumes(
+    public async Task<ActionResult<ContractExecutionResult>> GetSummaryVolumes(
       [FromServices] ISummaryDataHelper summaryDataHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid baseUid,
@@ -322,9 +316,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (baseUid == Guid.Empty || topUid == Guid.Empty)
       {
-        throw new ServiceException(
-          HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid surface parameter(s)."));
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid surface parameter(s)."));
       }
 
       DesignDescriptor baseDesign = null;
@@ -355,49 +347,45 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (baseFilter == null && baseDesign == null || topFilter == null && topDesign == null)
       {
-        throw new ServiceException(
-          HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
       }
 
       var volumeCalcType = summaryDataHelper.GetVolumesType(baseFilter, topFilter);
 
       if (volumeCalcType == VolumesType.None)
       {
-        throw new ServiceException(
-          HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
       }
       var projectId = await GetLegacyProjectId(projectUid);
       var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
-      CompactionVolumesSummaryResult returnResult;
+      CompactionVolumesSummaryResult volumesSummaryResult;
 
       try
       {
         var result = RequestExecutorContainerFactory
-          .Build<SummaryVolumesExecutorV2>(LoggerFactory, RaptorClient)
-          .Process(request) as SummaryVolumesResult;
+                     .Build<SummaryVolumesExecutorV2>(LoggerFactory, RaptorClient)
+                     .Process(request) as SummaryVolumesResult;
 
-        returnResult = CompactionVolumesSummaryResult.Create(result, await GetProjectSettingsTargets(projectUid));
+        volumesSummaryResult = CompactionVolumesSummaryResult.Create(result, await GetProjectSettingsTargets(projectUid));
+      }
+      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
+      {
+        return NoContent();
       }
       catch (ServiceException exception)
       {
-        //returnResult = new CompactionVolumesSummaryResult(exception.GetResult.Code, exception.GetResult.Message);
-
-        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
-
-        throw new ServiceException(statusCode,
-          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+        Log.LogError($"{nameof(GetSummaryVolumes)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
       }
       finally
       {
         Log.LogInformation("GetSummaryVolumes returned: " + Response.StatusCode);
       }
 
-      Log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(returnResult));
+      Log.LogTrace("GetSummaryVolumes result: " + JsonConvert.SerializeObject(volumesSummaryResult));
 
-      return returnResult;
+      return Ok(volumesSummaryResult);
     }
   }
 }

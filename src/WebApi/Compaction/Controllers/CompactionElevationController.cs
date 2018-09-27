@@ -201,16 +201,37 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = boundingBoxService.GetProductionDataExtents(projectId, excludedIds);
-
-        var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
-        //In case we have rogue tag files distorting the extents, restrict to project boundary
         var returnResult = new ProjectExtentsResult
         {
-          minLat = Math.Max(result.conversionCoordinates[0].y.LatRadiansToDegrees(), projectPoints.Min(p => p.Lat).LatRadiansToDegrees()),
-          minLng = Math.Max(result.conversionCoordinates[0].x.LonRadiansToDegrees(), projectPoints.Min(p => p.Lon).LonRadiansToDegrees()),
-          maxLat = Math.Min(result.conversionCoordinates[1].y.LatRadiansToDegrees(), projectPoints.Max(p => p.Lat).LatRadiansToDegrees()),
-          maxLng = Math.Min(result.conversionCoordinates[1].x.LonRadiansToDegrees(), projectPoints.Max(p => p.Lon).LonRadiansToDegrees())
+          minLat = result.conversionCoordinates[0].y,
+          minLng = result.conversionCoordinates[0].x,
+          maxLat = result.conversionCoordinates[1].y,
+          maxLng = result.conversionCoordinates[1].x
         };
+
+        //In case we have rogue tag files distorting the extents, restrict to project boundary
+        var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
+        var projMinLat = projectPoints.Min(p => p.Lat);
+        var projMinLng = projectPoints.Min(p => p.Lon);
+        var projMaxLat = projectPoints.Max(p => p.Lat);
+        var projMaxLng = projectPoints.Max(p => p.Lon);
+
+        if (returnResult.minLat < projMinLat || returnResult.minLat > projMaxLat ||
+            returnResult.maxLat < projMinLat || returnResult.maxLat > projMaxLat ||
+            returnResult.minLng < projMinLng || returnResult.minLng > projMaxLng ||
+            returnResult.maxLng < projMinLng || returnResult.maxLng > projMaxLng)
+        {
+          returnResult.minLat = projMinLat;
+          returnResult.minLng = projMinLng;
+          returnResult.maxLat = projMaxLat;
+          returnResult.maxLng = projMaxLng;
+        }
+
+        //Convert to degrees to return
+        returnResult.minLat = returnResult.minLat.LatRadiansToDegrees();
+        returnResult.minLng = returnResult.minLng.LonRadiansToDegrees();
+        returnResult.maxLat = returnResult.maxLat.LatRadiansToDegrees();
+        returnResult.maxLng = returnResult.maxLng.LonRadiansToDegrees();
 
         Log.LogInformation("GetProjectExtents result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
