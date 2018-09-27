@@ -189,7 +189,6 @@ node ('jenkinsslave-pod') {
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker push ${finalImage}"
 			sh "docker push ${dbFinalImage}"
-			archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
 		}
 		}
 	}
