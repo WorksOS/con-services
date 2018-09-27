@@ -27,13 +27,13 @@ namespace VSS.TRex.TAGFiles.Executors
             const int batchSize = 20;
             int batchCount = 0;
 
-            // Create the integration machinery responsibvle for tracking tasks and integrating them into the database
+            // Create the integration machinery responsible for tracking tasks and integrating them into the database
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess);
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-            // Note: This creates these elements within the project itself, not jsut class instances...
+            // Note: This creates these elements within the project itself, not just class instances...
             // SiteModel siteModel = SiteModels.SiteModels.Instance(StorageMutability.Mutable).GetSiteModel(ProjectID, true);
             // Machine machine = new Machine(null, "TestName", "TestHardwareID",  0, 0, Guid.NewGuid(), 0, false);
 

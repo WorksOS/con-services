@@ -222,7 +222,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
 
 //                    LeftInterpolationFence.UpdateExtents();
-                    InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machineside none
+                    InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machine side none
         }
                 else
                 {
@@ -236,7 +236,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     RightFence2.SetXY(ADataRight.X, ADataRight.Y);
 
 //                    RightInterpolationFence.UpdateExtents();
-                    InterpolationFences[MachineSideConst.Right].Add(RightInterpolationFence); // machineside right
+                    InterpolationFences[MachineSideConst.Right].Add(RightInterpolationFence); // machine side right
         }
             }
             else
@@ -245,7 +245,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
 
 //                LeftInterpolationFence.UpdateExtents();
-                InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machineside none
+                InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machine side none
             }
 
             Height1 = ADataLeft;
@@ -364,7 +364,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         }
 
         /// <summary>
-        /// Performs any required processing of the state acquired for the currnet time epoch in teh TAG values
+        /// Performs any required processing of the state acquired for the current time epoch in teh TAG values
         /// </summary>
         /// <returns></returns>
         public override bool ProcessEpochContext()
@@ -563,7 +563,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 ProcessedEpochCount++;
                 double MaxEpochIntervalSquared = MaxEpochInterval() * MaxEpochInterval();
 
-        // If the time intervalue between the two epochs is > kPausedLoggingInterval then
+        // If the time interval between the two epochs is > kPausedLoggingInterval then
         // don't process this epoch pair as this indicates logging has been paused.
         // If the distance between the two epochs is > kMaxEpochInterval, then don't process this epoch pair
         // Test both sides of the quadrilateral to see if either is longer than the largest inter-epoch gap
@@ -689,7 +689,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         /// DoEpochPreProcessAction is called in ProcessEpochContext immediately
         /// before any processing of the epoch information is done. It allows a
         /// descendent class to implement appropriate actions such as inspecting
-        /// or processing other information in the epoch not direclty related
+        /// or processing other information in the epoch not directly related
         /// to the epoch interval itself (such as proofing run information in
         /// intelligent compaction tag files.
         /// </summary>
