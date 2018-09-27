@@ -204,7 +204,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           folderName = configStore.GetValueString("TCCSynchProductionDataArchivedFolder") ?? "Production-Data (Archived)";
           break;
 
-        // todo what happens to these?
+        // These are not relavant to TRex
         //case TTAGProcServerProcessResult.tpsprOnChooseDataModelUnableToDetermineDataModel:
         //case TTAGProcServerProcessResult.tpsprOnChooseDataModelCouldNotConvertDataModelBoundaryToGrid:
         //case TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary:
@@ -212,8 +212,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         //  folderName = configStore.GetValueString("TCCSynchProjectBoundaryIssueFolder") ?? "Project Boundary (Issue)";
         //  break;
 
-        // todo what happens to these?
-        //    These indicate something wrong with VLink configuration (seldom to do with Subscriptions)
+        // These indicate something wrong with VLink configuration (seldom to do with Subscriptions)
         case TRexTagFileResultCode.TFAManualProjectNotFound:
         case TRexTagFileResultCode.TFAManualAssetFoundButNoSubsOrProjectFound:
         case TRexTagFileResultCode.TFAManualNoAssetFoundAndNoProjectSubs:
@@ -228,13 +227,30 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           folderName = configStore.GetValueString("TCCSynchSubscriptionIssueFolder") ?? "Subscription (Issue)";
           break;
 
-        // todo what happens to these?
+        // what should fall in this category from TRex? These should be retried.
         case TRexTagFileResultCode.TfaException:
         case TRexTagFileResultCode.TFAInternalDatabaseException:
           log.LogError("TFA is likely down for {0} org {1}", tagFileName, tccOrgId);
           break;
 
-        // todo what happens to these?
+        /* which folder should these resultCodes get stored under?
+        case TRexTagFileResultCode.TRexUnknownException:
+        case TRexTagFileResultCode.TRexBadRequestMissingProjectUid:
+        case TRexTagFileResultCode.TRexInvalidTagfile:
+        case TRexTagFileResultCode.TRexQueueSubmissionError:
+        case TRexTagFileResultCode.TrexTagFileReaderError:
+
+        case TRexTagFileResultCode.TFABadRequestInvalidLatitude:
+        case TRexTagFileResultCode.TFABadRequestInvalidLongitude:
+        case TRexTagFileResultCode.TFABadRequestInvalidTimeOfPosition:
+        case TRexTagFileResultCode.TFABadRequestInvalidDeviceType:
+        case TRexTagFileResultCode.TFABadRequestInvalidProjectUid:
+        case TRexTagFileResultCode.TFABadRequestMissingRadioSerialAndTccOrgId:
+        case TRexTagFileResultCode.TFAAutoNoAssetOrTccOrgIdFound:
+        
+        case TRexTagFileResultCode.TFAManualInternalErrorUnhandledPath:
+        
+        */
         default:
           folderName = configStore.GetValueString("TCCSynchOtherIssueFolder") ?? "Other... (Issue)";
           break;

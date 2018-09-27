@@ -11,7 +11,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -109,8 +108,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
       log.LogInformation($"PostTagFile (NonDirect TRex): result: {JsonConvert.SerializeObject(returnResult)}");
 
-      // todo should the return be split as in CallRaptorEndpoint()
-      //    to throw exception for some scenarios, if so which
+      // should the return be split as in CallRaptorEndpoint()
+      //     Valid = TagFilePostResult
+      //     tpsprOnChooseMachineInvalidSubscriptions (etal) ContractExecutionResult
+      //     else exception
       return returnResult;
     }
 
