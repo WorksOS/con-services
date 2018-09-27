@@ -27,7 +27,7 @@ node ('jenkinsslave-pod') {
 	def finalImage
 	def dbFinalImage
 
-	if (params.BRANCH_NAME = 'refs/heads/Dev') {
+	if (params.BRANCH_NAME == 'refs/remotes/origin/Dev') {
 	finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:latest"
 	dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:latest"
 	}
