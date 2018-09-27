@@ -8,6 +8,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.MasterDataConsumer</RootNamespace>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +32,7 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="Topshelf" Version="4.0.4" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="4.0.*" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
   </ItemGroup>
 
