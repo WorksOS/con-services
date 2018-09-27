@@ -108,13 +108,13 @@ namespace VSS.TRex.SiteModels
         public BoundingWorldExtent3D SiteModelExtent { get; } = BoundingWorldExtent3D.Inverted();
 
         /// <summary>
-        /// Local cached copy of the coordiante system CSIB
+        /// Local cached copy of the coordinate system CSIB
         /// </summary>
         private string csib = null;
 
         /// <summary>
         /// The string serialized CSIB gained from adding a coordinate system from a DC or similar file
-        /// to the project. This getter is reponsible for accessing the information from the persistent
+        /// to the project. This getter is responsible for accessing the information from the persistent
         /// store and caching it in the site model
         /// </summary>
         public string CSIB()
@@ -152,7 +152,7 @@ namespace VSS.TRex.SiteModels
         // public SiteProofingRuns ProofingRuns;
 
         // MachinesTargetValues stores a list of target values, one list per machine,
-        // that record how the cofigured target CCV and pass count settings on each
+        // that record how the configured target CCV and pass count settings on each
         // machine has changed over time.
         private IMachinesProductionEventLists machinesTargetValues;
         public IMachinesProductionEventLists MachinesTargetValues
@@ -268,7 +268,6 @@ namespace VSS.TRex.SiteModels
           // FCreationDate:= Now;
           // FName:= Format('SiteModel-%d', [AID]);
           // FDescription:= '';
-          // FActive:= True;
 
           IsTransient = false;
 
@@ -309,7 +308,6 @@ namespace VSS.TRex.SiteModels
             // FCreationDate:= Now;
             // FName:= Format('SiteModel-%d', [AID]);
             // FDescription:= '';
-            // FActive:= True;
 
             IsTransient = isTransient;
             // FSiteModelDesignNames:= TICClientDesignNames.Create(FID);
@@ -371,8 +369,6 @@ namespace VSS.TRex.SiteModels
             // writer.Write(Description);
             writer.Write(ID.ToByteArray());
 
-            // WriteBooleanToStream(Stream, FActive);
-
             //WriteBooleanToStream(Stream, FIgnoreInvalidPositions);
 
             writer.Write(Grid.CellSize);
@@ -388,10 +384,7 @@ namespace VSS.TRex.SiteModels
             writer.Write(LastModifiedDate.ToBinary());
         }
 
-        public void Write(BinaryWriter writer, byte[] buffer)
-        {
-          throw new NotImplementedException();
-        }
+        public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
     
         public void Read(BinaryReader reader)
         {
@@ -417,15 +410,6 @@ namespace VSS.TRex.SiteModels
             {
                 ID = LocalID;
             }
-
-            /* 
-            Active = reader.ReadBool();
-            if (!Active)
-            {
-                SIGLogMessage.PublishNoODS(Self, Format('Site model %d is not marked as active in the internal data model file, resetting to active', [FID]), slmcError);
-                Active = true;
-            }
-            */
 
             // FIgnoreInvalidPositions:= ReadBooleanFromStream(Stream);
 
@@ -466,17 +450,14 @@ namespace VSS.TRex.SiteModels
                 Result = false;
               }
 
-              if (MachinesLoaded)
+              try
               {
-                try
-                {
-                  Machines.SaveToPersistentStore(StorageProxy);
-                }
-                catch (Exception e)
-                {
-                   Log.LogError($"Failed to save machine list for site model {ID} to persistent store");
-                   Result = false;
-                }
+                machines?.SaveToPersistentStore(StorageProxy);
+              }
+              catch (Exception e)
+              {
+                 Log.LogError($"Failed to save machine list for site model {ID} to persistent store: {e}");
+                 Result = false;
               }
             }
 
@@ -606,7 +587,7 @@ namespace VSS.TRex.SiteModels
         /// <summary>
         /// GetAdjustedDataModelSpatialExtents returns the bounding extent of the production data held in the 
         /// data model expanded to include the bounding extents of the surveyed surfaces associated with the 
-        /// datamodel, excepting those identitied in the SurveyedSurfaceExclusionList
+        /// datamodel, excepting those identified in the SurveyedSurfaceExclusionList
         /// </summary>
         /// <returns></returns>
         public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
@@ -617,7 +598,7 @@ namespace VSS.TRex.SiteModels
             // Start with the data model extents
             BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
-            // Iterate over all non-exluded surveyed surfaces and expand the SpatialExtents as necessary
+            // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
             if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
             {
                 foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
