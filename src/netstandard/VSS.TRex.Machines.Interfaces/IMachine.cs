@@ -23,14 +23,14 @@ namespace VSS.TRex.Machines.Interfaces
     IProductionEventLists TargetValueChanges { get; }
 
     /// <summary>
-    /// Indicates if the machine has ever reported any compactrion realated data, such as CCV, MDP or CCA measurements
+    /// Indicates if the machine has ever reported any compaction related data, such as CCV, MDP or CCA measurements
     /// </summary>
     bool CompactionDataReported { get; set; }
 
     CompactionSensorType CompactionSensorType { get; set; }
 
     /// <summary>
-    /// Determines if the type of this machine is one of the machine tyeps that supports compaction operations
+    /// Determines if the type of this machine is one of the machine types that supports compaction operations
     /// </summary>
     /// <returns></returns>
     bool MachineIsCompactorType();

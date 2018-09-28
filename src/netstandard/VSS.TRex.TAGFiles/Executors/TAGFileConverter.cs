@@ -101,11 +101,21 @@ namespace VSS.TRex.TAGFiles.Executors
         {
             ProcessedEpochCount = Processor.ProcessedEpochCount;
             ProcessedCellPassCount = Processor.ProcessedCellPassesCount;
+
+            // Set the site model's last modified date...
+            SiteModel.LastModifiedDate = DateTime.UtcNow;
+        
+            //Update latest status for the machine
+            Machine.LastKnownX = Processor.DataLeft.X;
+            Machine.LastKnownY = Processor.DataLeft.Y;
+            Machine.LastKnownPositionTimeStamp = Processor.DataTime;
+            Machine.MachineHardwareID = Processor.HardwareID;
+            Machine.MachineType = Processor.MachineType;
         }
 
         /// <summary>
-        /// Execute the conversion operation on the TAG file, returning a booleam success result.
-        /// Sets up local state detailing the prescan fields retried from the ATG file
+        /// Execute the conversion operation on the TAG file, returning a boolean success result.
+        /// Sets up local state detailing the pre-scan fields retried from the ATG file
         /// </summary>
         /// <param name="TAGData"></param>
         /// <returns></returns>
