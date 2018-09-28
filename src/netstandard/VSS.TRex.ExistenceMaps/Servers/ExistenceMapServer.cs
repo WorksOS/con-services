@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
@@ -32,7 +32,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// Each existence map is stored in it's serialised byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        protected ICache<NonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
+        protected ICache<INonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
 
         /// <summary>
         /// Internal static instance variable for the server
@@ -60,11 +60,11 @@ namespace VSS.TRex.ExistenceMaps.Servers
 
             try
             {
-                DesignTopologyExistenceMapsCache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName());
+                DesignTopologyExistenceMapsCache = ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName());
             }
             catch // Exception is thrown if the cache does not exist
             {
-                DesignTopologyExistenceMapsCache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
+                DesignTopologyExistenceMapsCache = ignite.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
             }
 
             if (DesignTopologyExistenceMapsCache == null)
@@ -101,7 +101,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public byte [] GetExistenceMap(NonSpatialAffinityKey key)
+        public byte [] GetExistenceMap(INonSpatialAffinityKey key)
         {
             try
             {
@@ -119,7 +119,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         /// <param name="key"></param>
         /// <param name="map"></param>
-        public void SetExistenceMap(NonSpatialAffinityKey key, byte [] map)
+        public void SetExistenceMap(INonSpatialAffinityKey key, byte [] map)
         {
             DesignTopologyExistenceMapsCache.Put(key, map);
         }

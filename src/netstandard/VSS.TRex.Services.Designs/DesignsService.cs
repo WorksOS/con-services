@@ -7,7 +7,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Utilities.ExtensionMethods;
@@ -15,7 +15,7 @@ using VSS.TRex.Utilities.ExtensionMethods;
 namespace VSS.TRex.Services.Designs
 {
     /// <summary>
-    /// Service metaphor providing access andmanagement control over designs stored for site models
+    /// Service metaphor providing access and management control over designs stored for site models
     /// </summary>
     public class DesignsService : BaseService, IDesignsService 
     {
@@ -25,9 +25,9 @@ namespace VSS.TRex.Services.Designs
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
-        private ICache<NonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
+        private ICache<INonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
-        private ICache<NonSpatialAffinityKey, byte[]> MutableNonSpatialCache => mutableNonSpatialCache ?? (mutableNonSpatialCache = _Ignite.GetCache<NonSpatialAffinityKey, byte[]>(CacheName));
+        private ICache<INonSpatialAffinityKey, byte[]> MutableNonSpatialCache => mutableNonSpatialCache ?? (mutableNonSpatialCache = _Ignite.GetCache<INonSpatialAffinityKey, byte[]>(CacheName));
 
         /// <summary>
         /// Service name.
@@ -77,9 +77,9 @@ namespace VSS.TRex.Services.Designs
         /// <param name="DesignID"></param>
         public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, out Guid DesignID)
         {
-            // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
+            // This should be done under a lock on the cache key. For now, we will live with the race condition...
 
-            NonSpatialAffinityKey cacheKey = VSS.TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
+            INonSpatialAffinityKey cacheKey = VSS.TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
             DesignID = Guid.NewGuid();
 
             // Get the designs, creating it if it does not exist
@@ -149,7 +149,7 @@ namespace VSS.TRex.Services.Designs
                     _svcName = context.Name;
                 }
 
-                MutableNonSpatialCache = _ignite.GetCache<NonSpatialAffinityKey, Byte[]>(CacheName /*TRexCaches.MutableNonSpatialCacheName());
+                MutableNonSpatialCache = _ignite.GetCache<INonSpatialAffinityKey, Byte[]>(CacheName /*TRexCaches.MutableNonSpatialCacheName());
     */
 
         public bool Remove(Guid SiteModelID, Guid DesignID) => RemoveDirect(SiteModelID, DesignID);
@@ -187,7 +187,7 @@ namespace VSS.TRex.Services.Designs
             // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
             try
             {
-                NonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
+                INonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
 
                 // Get the designs, creating it if it does not exist
                 IDesigns designList = new TRex.Designs.Storage.Designs();
@@ -228,7 +228,7 @@ namespace VSS.TRex.Services.Designs
         {
             try
             {
-                NonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
+                INonSpatialAffinityKey cacheKey = TRex.Designs.Storage.Designs.CacheKey(SiteModelID);
 
                 // Get the designs, creating it if it does not exist
                 IDesigns designList = new TRex.Designs.Storage.Designs();

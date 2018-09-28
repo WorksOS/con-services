@@ -1,15 +1,16 @@
 ﻿using System;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
 
-namespace VSS.TRex.GridFabric.Models.Affinity
+namespace VSS.TRex.GridFabric.Affinity
 {
     /// <summary>
     /// The key type used to drive spatial affinity key mapping for elements stored in the Ignite cache. This controls
     /// which nodes in the PSNode layer the data for this key should reside. 
     /// </summary>
     [Serializable]
-    public struct SubGridSpatialAffinityKey
-    {
+    public struct SubGridSpatialAffinityKey : ISubGridSpatialAffinityKey
+  {
         /// <summary>
         /// A numeric ID for the project the subgrid data belongs to.
         /// </summary>
@@ -27,13 +28,13 @@ namespace VSS.TRex.GridFabric.Models.Affinity
 
         /// <summary>
         /// The segment identifier for the subgrid data. If the segment identifier is empty then the element represents
-        /// the subgrid directory (or SGL file). Otherwise, the segment identitier is a string representation of the start
+        /// the subgrid directory (or SGL file). Otherwise, the segment identifier is a string representation of the start
         /// and end times of the segment and the time duration the segment contains data for.
         /// </summary>
         public string SegmentIdentifier { get; set; }
 
         /// <summary>
-        /// A constructor for the subgrid spatial affinity key that acccepts the project and subgrid origin location
+        /// A constructor for the subgrid spatial affinity key that accepts the project and subgrid origin location
         /// and returns an instance of the spatial affinity key
         /// </summary>
         /// <param name="projectID"></param>
@@ -49,7 +50,7 @@ namespace VSS.TRex.GridFabric.Models.Affinity
         }
 
         /// <summary>
-        /// A constructor for the subgrid spatial affinity key that acccepts the project and a cell address structure for
+        /// A constructor for the subgrid spatial affinity key that accepts the project and a cell address structure for
         /// the subgrid origin location and returns an instance of the spatial affinity key
         /// </summary>
         /// <param name="projectID"></param>

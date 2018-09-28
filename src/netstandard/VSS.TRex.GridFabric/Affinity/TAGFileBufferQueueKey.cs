@@ -1,24 +1,26 @@
 ﻿using System;
+using VSS.TRex.GridFabric.Interfaces;
 
-namespace VSS.TRex.GridFabric.Models.Affinity
+namespace VSS.TRex.GridFabric.Affinity
 {
-    /// <summary>
-    /// The key used to identityf TAG files in the TAG file buffer queue
-    /// </summary>
-    public struct TAGFileBufferQueueKey
-    {
+ 
+  /// <summary>
+  /// The key used to identify TAG files in the TAG file buffer queue
+  /// </summary>
+  public struct TAGFileBufferQueueKey : ITAGFileBufferQueueKey
+  {
         /// <summary>
         /// The name of the TAG file being processed
         /// </summary>
-        public string FileName;
+        public string FileName { get; set; }
 
         /// <summary>
         /// The project to process that TAG file into.
         /// This field also provides the affinity key mapping to the nodes in the mutable data grid
         /// </summary>
-        public Guid ProjectID;
+        public Guid ProjectID { get; set; }
 
-        public Guid AssetID;
+        public Guid AssetID  { get; set; }
 
         /// <summary>
         /// TAG File Buffer Queue key constructor taking project, asset and filename

@@ -44,6 +44,8 @@ using VSS.TRex.Designs.Storage;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.GridFabric.Queues;
 using VSS.TRex.Profiling.GridFabric.Requests;
@@ -71,7 +73,7 @@ namespace TRexIgniteTest
 	  private byte[] tileData;
 	  private string tileParamsTemplate;
 
-    SiteModelAttributesChangedEventListener SiteModelAttrubutesChanged;
+    SiteModelAttributesChangedEventListener SiteModelAttributesChanged;
 
 		/// <summary>
 		/// Convert the Project ID in the text box into a number. It if is invalid return project ID 2 as a default
@@ -246,7 +248,7 @@ namespace TRexIgniteTest
 				displayMode.SelectedIndex = (int)DisplayMode.Height;
 
 				// Instantiate a site model changed listener to catch changes to site model attributes
-				SiteModelAttrubutesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
+				SiteModelAttributesChanged = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
@@ -475,7 +477,7 @@ namespace TRexIgniteTest
 				writer.WriteLine($"Number of items in cache: {metrics.Size}");
 		}
 
-		private void writeKeys(string title, StreamWriter writer, ICache<NonSpatialAffinityKey, byte[]> cache)
+		private void writeKeys(string title, StreamWriter writer, ICache<INonSpatialAffinityKey, byte[]> cache)
 		{
 				int count = 0;
 
@@ -490,11 +492,11 @@ namespace TRexIgniteTest
 
 				//            writeCacheMetrics(writer, cache.GetMetrics());
 
-				var scanQuery = new ScanQuery<NonSpatialAffinityKey, byte[]>();
-				IQueryCursor<ICacheEntry<NonSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
+				var scanQuery = new ScanQuery<INonSpatialAffinityKey, byte[]>();
+				IQueryCursor<ICacheEntry<INonSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
 				scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-				foreach (ICacheEntry<NonSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
+				foreach (ICacheEntry<INonSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
 				{
 						writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
 						//                writeCacheMetrics(writer, cache.GetMetrics());
@@ -528,7 +530,7 @@ namespace TRexIgniteTest
 				writer.WriteLine();
 		}
 
-		private void WriteKeysSpatial(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
+		private void WriteKeysSpatial(string title, StreamWriter writer, ICache<ISubGridSpatialAffinityKey, byte[]> cache)
 		{
 				int count = 0;
 
@@ -543,14 +545,14 @@ namespace TRexIgniteTest
 
 				// writeCacheMetrics(writer, cache.GetMetrics());
 
-				var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>
+				var scanQuery = new ScanQuery<ISubGridSpatialAffinityKey, byte[]>
 				{
 						PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
 				};
 
-				IQueryCursor<ICacheEntry<SubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
+				IQueryCursor<ICacheEntry<ISubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
 
-				foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
+				foreach (ICacheEntry<ISubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
 				{
 						writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Length}");
 						// writeCacheMetrics(writer, cache.GetMetrics());
@@ -559,25 +561,25 @@ namespace TRexIgniteTest
 				writer.WriteLine();
 		}
 
-		private void retriveAllItems(string title, StreamWriter writer, ICache<SubGridSpatialAffinityKey, byte[]> cache)
+		private void retrieveAllItems(string title, StreamWriter writer, ICache<ISubGridSpatialAffinityKey, byte[]> cache)
 		{
-				var scanQuery = new ScanQuery<SubGridSpatialAffinityKey, byte[]>
+				var scanQuery = new ScanQuery<ISubGridSpatialAffinityKey, byte[]>
 				{
 						PageSize = 1 // Restrict the number of keys requested in each page to reduce memory consumption
 				};
 
-				IQueryCursor<ICacheEntry<SubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
+				IQueryCursor<ICacheEntry<ISubGridSpatialAffinityKey, byte[]>> queryCursor = cache.Query(scanQuery);
 
-				List<SubGridSpatialAffinityKey> items = new List<SubGridSpatialAffinityKey>();
+				List<ISubGridSpatialAffinityKey> items = new List<ISubGridSpatialAffinityKey>();
 
-				foreach (ICacheEntry<SubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
+				foreach (ICacheEntry<ISubGridSpatialAffinityKey, byte[]> cacheEntry in queryCursor)
 				{
 						items.Add(cacheEntry.Key);
 				}
 
 				scanQuery = null;
 
-				foreach (SubGridSpatialAffinityKey item in items)
+				foreach (ISubGridSpatialAffinityKey item in items)
 				{
 						byte[] Entry = cache.Get(item);
 				}
@@ -605,7 +607,7 @@ namespace TRexIgniteTest
 										{
 												try
 												{
-														writeKeys(TRexCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.ImmutableNonSpatialCacheName()));
+														writeKeys(TRexCaches.ImmutableNonSpatialCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.ImmutableNonSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
@@ -613,7 +615,7 @@ namespace TRexIgniteTest
 												}
 												try
 												{
-														writeKeys(TRexCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName()));
+														writeKeys(TRexCaches.DesignTopologyExistenceMapsCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.DesignTopologyExistenceMapsCacheName()));
 												}
 												catch (Exception E)
 												{
@@ -621,7 +623,7 @@ namespace TRexIgniteTest
 												}
                         try
 												{
-														WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
+														WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
@@ -632,7 +634,7 @@ namespace TRexIgniteTest
 										{
 												try
 												{
-														writeKeys(TRexCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.MutableNonSpatialCacheName()));
+														writeKeys(TRexCaches.MutableNonSpatialCacheName(), writer, ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.MutableNonSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
@@ -640,7 +642,7 @@ namespace TRexIgniteTest
 												}
                         try
 												{
-														WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.MutableSpatialCacheName()));
+														WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.MutableSpatialCacheName()));
 												}
 												catch (Exception E)
 												{
@@ -902,11 +904,11 @@ namespace TRexIgniteTest
 
 				IIgnite ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
 
-				ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.MutableNonSpatialCacheName());
+				ICache<INonSpatialAffinityKey, byte[]> cache = ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.MutableNonSpatialCacheName());
 
 				byte[] bytes = new byte[100];
 
-				NonSpatialAffinityKey cacheKey = new NonSpatialAffinityKey(Guid.NewGuid(), "ProductionDataModel.XML");
+				INonSpatialAffinityKey cacheKey = new NonSpatialAffinityKey(Guid.NewGuid(), "ProductionDataModel.XML");
 
 				try
 				{

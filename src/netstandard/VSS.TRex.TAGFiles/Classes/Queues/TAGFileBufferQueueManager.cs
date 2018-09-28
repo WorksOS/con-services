@@ -32,8 +32,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private IIgnite ignite;
 
         /// <summary>
-        /// No-arg constructor. Instantiates the continouus query and performs initial scan of elements that the remote filter 
-        /// will populate into the node-local groupers within the mutable grid./
+        /// No-arg constructor. Instantiates the continuous query and performs initial scan of elements that the remote filter 
+        /// will populate into the node-local groupers within the mutable grid.
         /// </summary>
         public TAGFileBufferQueueManager(bool runLocally)
         {
@@ -49,7 +49,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
-            // Instantiate the queryHandle and start the continous query on the remote nodes
+            // Instantiate the queryHandle and start the continuous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
             queryHandle = queueCache.QueryContinuous
                 (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
@@ -64,7 +64,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     });
 
             // Perform the initial query to grab all existing elements and add them to the grouper
-            // All processing shoudl happen on the remote node in the implementation of the TAGFileFilter remote filter
+            // All processing should happen on the remote node in the implementation of the TAGFileFilter remote filter
             foreach (var item in queryHandle.GetInitialQueryCursor())
             {
                 Log.LogError(

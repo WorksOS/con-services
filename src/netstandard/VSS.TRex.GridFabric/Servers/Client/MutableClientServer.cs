@@ -14,7 +14,6 @@ using System.Reflection;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Logging;
 using VSS.TRex.Storage.Models;
@@ -181,14 +180,14 @@ namespace VSS.TRex.Servers.Client
     }
 
 
-    public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetCache<NonSpatialAffinityKey, byte[]>(CacheCfg.Name);
+      return mutableTRexGrid.GetCache<INonSpatialAffinityKey, byte[]>(CacheCfg.Name);
     }
 
-    public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
+      return mutableTRexGrid.GetCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
     }
   }
 }

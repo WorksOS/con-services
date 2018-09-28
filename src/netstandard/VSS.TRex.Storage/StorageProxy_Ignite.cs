@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -36,11 +37,11 @@ namespace VSS.TRex.Storage
 
         private void EstablishCaches()
         {
-            spatialCache = new StorageProxyCache<SubGridSpatialAffinityKey, byte[]>(
-                ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
+            spatialCache = new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(
+                ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
             nonSpatialCache =
-                new StorageProxyCache<NonSpatialAffinityKey, byte[]>(
-                    ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
+                new StorageProxyCache<INonSpatialAffinityKey, byte[]>(
+                    ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace VSS.TRex.Storage
 
             try
             {
-                SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
+                ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
                 //Log.LogInformation($"Getting key:{StreamName}");
 
@@ -107,7 +108,7 @@ namespace VSS.TRex.Storage
 
             try
             {
-                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 //Log.LogInformation($"Getting key:{cacheKey}");
 
@@ -145,7 +146,7 @@ namespace VSS.TRex.Storage
         {
             try
             {
-                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 Log.LogInformation($"Removing key:{cacheKey}");
 
@@ -188,7 +189,7 @@ namespace VSS.TRex.Storage
         {
             try
             {
-                SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
+                ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
@@ -230,7 +231,7 @@ namespace VSS.TRex.Storage
         {
             try
             {
-                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {

@@ -7,8 +7,9 @@ using System.Reflection;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Services.Surfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
@@ -29,7 +30,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         /// <summary>
         /// Cache storing sitemodel instances
         /// </summary>
-        private ICache<NonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
+        private ICache<INonSpatialAffinityKey, byte[]> mutableNonSpatialCache;
 
         /// <summary>
         /// Service name.
@@ -38,7 +39,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
 
         private string CacheName;
 
-        private NonSpatialAffinityKey CacheKey(Guid siteModelID) => new NonSpatialAffinityKey(siteModelID, "SurveyedSurfaces");
+        private INonSpatialAffinityKey CacheKey(Guid siteModelID) => new NonSpatialAffinityKey(siteModelID, "SurveyedSurfaces");
 
         /// <summary>
         /// Default no-arg constructor supplied default TRex grid and MutableNonSpatial cache name for surveyed surface information
@@ -75,12 +76,12 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         /// <param name="asAtDate"></param>
         /// <param name="extents"></param>
         /// <param name="SuveyedSurfaceID"></param>
-        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out Guid SuveyedSurfaceID)
+        public void AddDirect(Guid SiteModelID, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents, out Guid SurveyedSurfaceID)
         {
-            // TODO: This should be done under a lock on the cache key. For now, we will live with the race condition
+            // This should be done under a lock on the cache key. For now, we will live with the race condition...
 
-          NonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
-            SuveyedSurfaceID = Guid.NewGuid();
+            INonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
+            SurveyedSurfaceID = Guid.NewGuid();
 
             // Get the surveyed surfaces, creating it if it does not exist
             ISurveyedSurfaces ssList = DIContext.Obtain<ISurveyedSurfaces>();
@@ -99,7 +100,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
             }
 
             // Add the new surveyed surface, generating a random ID from a GUID
-            ssList.AddSurveyedSurfaceDetails(SuveyedSurfaceID, designDescriptor, asAtDate, extents);
+            ssList.AddSurveyedSurfaceDetails(SurveyedSurfaceID, designDescriptor, asAtDate, extents);
 
             // Put the list back into the cache with the new entry
             mutableNonSpatialCache.Put(cacheKey, ssList.ToBytes());
@@ -110,7 +111,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
         /// </summary>
         public ISurveyedSurfaces List(Guid SiteModelID)
         {
-            NonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
+            INonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
             Log.LogInformation($"Listing surveyed surfaces from {cacheKey}");
 
             try
@@ -160,7 +161,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
                 _svcName = context.Name;
             }
 
-            mutableNonSpatialCache = _Ignite.GetCache<NonSpatialAffinityKey, byte[]>(CacheName);
+            mutableNonSpatialCache = _Ignite.GetCache<INonSpatialAffinityKey, byte[]>(CacheName);
         }
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace VSS.TRex.Services.SurveyedSurfaces
 
             try
             {
-                NonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
+              INonSpatialAffinityKey cacheKey = CacheKey(SiteModelID);
 
                 // Get the surveyed surfaces, creating it if it does not exist
                 ISurveyedSurfaces ssList = DIContext.Obtain<ISurveyedSurfaces>();

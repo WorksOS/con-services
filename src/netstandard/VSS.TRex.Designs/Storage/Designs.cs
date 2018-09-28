@@ -4,7 +4,8 @@ using System.IO;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
@@ -151,6 +152,6 @@ namespace VSS.TRex.Designs.Storage
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
+        public static INonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
     }
 }

@@ -4,8 +4,9 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Reflection;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Storage.Utilities;
@@ -22,15 +23,15 @@ namespace VSS.TRex.Storage
 
         protected IIgnite ignite;
 
-        protected IStorageProxyCache<NonSpatialAffinityKey, byte[]> nonSpatialCache;
+        protected IStorageProxyCache<INonSpatialAffinityKey, byte[]> nonSpatialCache;
 
-        public IStorageProxyCache<NonSpatialAffinityKey, byte[]> NonSpatialCache
+        public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache
         {
           get { return nonSpatialCache; }
         }
 
-        protected IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> spatialCache;
-        public IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache
+        protected IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> spatialCache;
+        public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache
         {
           get { return spatialCache; }
         }
@@ -53,7 +54,7 @@ namespace VSS.TRex.Storage
         /// <param name="DataModelID"></param>
         /// <param name="Name"></param>
         /// <returns></returns>
-        protected static NonSpatialAffinityKey ComputeNamedStreamCacheKey(Guid DataModelID, string Name) => new NonSpatialAffinityKey(DataModelID, Name);
+        protected static INonSpatialAffinityKey ComputeNamedStreamCacheKey(Guid DataModelID, string Name) => new NonSpatialAffinityKey(DataModelID, Name);
 
         /// <summary>
         /// Computes the cache key name for the given data model and a given spatial data stream within that datamodel
@@ -76,9 +77,9 @@ namespace VSS.TRex.Storage
         /// <param name="cacheKey"></param>
         /// <param name="streamType"></param>
         /// <returns></returns>
-        protected MemoryStream PerformNonSpatialImmutabilityConversion(IStorageProxyCache<NonSpatialAffinityKey, byte[]> mutableCache,
-                                                                       IStorageProxyCache<NonSpatialAffinityKey, byte[]> immutableCache,
-                                                                       NonSpatialAffinityKey cacheKey,
+        protected MemoryStream PerformNonSpatialImmutabilityConversion(IStorageProxyCache<INonSpatialAffinityKey, byte[]> mutableCache,
+                                                                       IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
+                                                                       INonSpatialAffinityKey cacheKey,
                                                                        FileSystemStreamType streamType)
         {
             if (mutableCache == null || immutableCache == null)
@@ -112,8 +113,8 @@ namespace VSS.TRex.Storage
         /// <param name="streamType"></param>
         /// <returns></returns>
         protected MemoryStream PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
-                                                                       IStorageProxyCache<NonSpatialAffinityKey, byte[]> immutableCache,
-                                                                       NonSpatialAffinityKey cacheKey,
+                                                                       IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
+                                                                       INonSpatialAffinityKey cacheKey,
                                                                        FileSystemStreamType streamType)
         {
             if (mutableStream == null || immutableCache == null)
@@ -156,9 +157,9 @@ namespace VSS.TRex.Storage
         /// <param name="cacheKey"></param>
         /// <param name="streamType"></param>
         /// <returns></returns>
-        protected MemoryStream PerformSpatialImmutabilityConversion(IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> mutableCache,
-                                                                    IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> immutableCache,
-                                                                    SubGridSpatialAffinityKey cacheKey,
+        protected MemoryStream PerformSpatialImmutabilityConversion(IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> mutableCache,
+                                                                    IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
+                                                                    ISubGridSpatialAffinityKey cacheKey,
                                                                     FileSystemStreamType streamType)
         {
             if (mutableCache == null || immutableCache == null)
@@ -184,8 +185,8 @@ namespace VSS.TRex.Storage
         /// <param name="streamType"></param>
         /// <returns></returns>
         protected MemoryStream PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
-                                                                    IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> immutableCache,
-                                                                    SubGridSpatialAffinityKey cacheKey,
+                                                                    IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
+                                                                    ISubGridSpatialAffinityKey cacheKey,
                                                                     FileSystemStreamType streamType)
         {
             if (mutableStream == null || immutableCache == null)

@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.ExistenceMaps.Servers;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -20,12 +20,12 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         }
 
         /// <summary>
-        /// Executes the request to retrieve an existence map given it's key and returnsn a deserialised bit mask subgrid tree
+        /// Executes the request to retrieve an existence map given it's key and returns a deserialised bit mask subgrid tree
         /// representing the existence map
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static ISubGridTreeBitMask Execute(NonSpatialAffinityKey key)
+        public static ISubGridTreeBitMask Execute(INonSpatialAffinityKey key)
         {
             byte[] bytes = ExistenceMapServer.Instance().GetExistenceMap(key);
 
