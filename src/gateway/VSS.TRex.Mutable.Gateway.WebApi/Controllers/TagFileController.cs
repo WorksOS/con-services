@@ -49,7 +49,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     // [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
+    public async Task<ContractExecutionResult> PostTagNonDirectFile([FromBody]CompactionTagFileRequest request)
     {
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("PostTagFile: " + serializedRequest);

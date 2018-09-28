@@ -16,7 +16,7 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.0" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
-	  <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.10.0" />
+	  <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.10.1" />
   </ItemGroup>
 
   <ItemGroup>
