@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Http;
 
 namespace VSS.FlowJSHandler
@@ -14,6 +15,16 @@ namespace VSS.FlowJSHandler
     }
     public class FlowJsRepo : IFlowJsRepo
     {
+        /// <summary>
+        /// A lock to be used when accessing the File Locks dictionary
+        /// </summary>
+        private static object dictLock = new object();
+        
+        /// <summary>
+        /// A dictionary to hold locks per file being uploaded (to stop the file being merged multiple times when the chunks finish at the same time)
+        /// </summary>
+        private static Dictionary<string, object> fileLocks = new Dictionary<string, object>();
+
         public FlowJsPostChunkResponse PostChunk(HttpRequest request, string folder)
         {
             return PostChunkBase(request, folder, null);
@@ -99,34 +110,69 @@ namespace VSS.FlowJSHandler
                 }
             }
 
-            // if we are here, all chunks are uploaded
-            var fileAry = new List<string>();
-            Console.WriteLine($"All chunks done. the full list of chunks is:");
-            for (int i = 1, l = chunk.TotalChunks; i <= l; i++)
+            // Due to timing issues, we may have all chunks uploaded state for all chunks, causing the file to be merged up to n times, where n is the number of chunks
+            // To resolve this, we will have a global lock on a filename lock dict, and then lock the filename lock 
+            // Allowing multiple files to be uploaded at once, with one global lock to set the filename state
+            lock (dictLock)
             {
-                Console.WriteLine("flow-" + chunk.Identifier + "." + i);
-                fileAry.Add("flow-" + chunk.Identifier + "." + i);
+                if (!fileLocks.ContainsKey(chunk.Identifier))
+                {
+                    Console.WriteLine($"Created a lock for Identifier {chunk.Identifier} TID: {Thread.CurrentThread.ManagedThreadId}");
+                    fileLocks[chunk.Identifier] = new object();
+                }
             }
 
-            MultipleFilesToSingleFile(folder, fileAry, chunk.FileName);
-
-            Console.WriteLine($"Deleting old chunks");
-            for (int i = 0, l = fileAry.Count; i < l; i++)
+            var localLock = fileLocks[chunk.Identifier];
+            if (Monitor.TryEnter(localLock))
             {
                 try
                 {
-                    Console.WriteLine($"Deleting {fileAry[i]}");
-                    File.Delete(Path.Combine(folder, fileAry[i]));
+                    Console.WriteLine($"Claimed a lock for Identifier {chunk.Identifier} TID: {Thread.CurrentThread.ManagedThreadId}");
+
+                    // if we are here, all chunks are uploaded
+                    var fileAry = new List<string>();
+                    Console.WriteLine($"All chunks done. the full list of chunks is:");
+                    for (int i = 1, l = chunk.TotalChunks; i <= l; i++)
+                    {
+                        Console.WriteLine("flow-" + chunk.Identifier + "." + i);
+                        fileAry.Add("flow-" + chunk.Identifier + "." + i);
+                    }
+
+                    MultipleFilesToSingleFile(folder, fileAry, chunk.FileName);
+
+                    Console.WriteLine($"Deleting old chunks");
+                    for (int i = 0, l = fileAry.Count; i < l; i++)
+                    {
+                        try
+                        {
+                            Console.WriteLine($"Deleting {fileAry[i]}");
+                            File.Delete(Path.Combine(folder, fileAry[i]));
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine($"Error deleting chunk file");
+                        }
+                    }
+
+                    response.Status = PostChunkStatus.Done;
+                    return response;
                 }
-                catch (Exception)
+                finally
                 {
-                    Console.WriteLine($"Error deleting chunk file");
+                    // We can remove the lock here, as everyone else will have returned
+                    Console.WriteLine($"Released lock for Identifier {chunk.Identifier}");
+                    Monitor.Exit(localLock);
+                    // Don't need to lock here
+                    fileLocks.Remove(chunk.Identifier);
                 }
             }
-
-            response.Status = PostChunkStatus.Done;
-            return response;
-
+            else
+            {
+                // The file has already been locked, so we don't need to do anything as it's currently being merged, and that request will return 200
+                Console.WriteLine($"All chunks completed, but a lock has already been claimed for Identifier {chunk.Identifier} TID: {Thread.CurrentThread.ManagedThreadId}");
+                response.Status = PostChunkStatus.PartlyDone;
+                return response;
+            }
         }
 
 
