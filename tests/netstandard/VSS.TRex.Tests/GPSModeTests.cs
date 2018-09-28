@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using VSS.TRex.Types;
 using Xunit;
 
