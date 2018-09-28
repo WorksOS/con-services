@@ -4,24 +4,24 @@ using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.NodeFilters;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.TAGFiles.GridFabric.NodeFilters;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
 
   /// <summary>
-  /// Class responsible for deploying the TAG file buffered queue service
+  /// Class responsible for deploying the segment retirement queue service
   /// </summary>
-  public class TAGFileBufferQueueServiceProxy
-    {
+  public class SegmentRetirementQueueServiceProxy
+  {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueServiceProxy>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueServiceProxy>();
 
         /// <summary>
         /// The cluster wide name of the deployed service
         /// </summary>
-        public const string ServiceName = "TAGFileBufferQueueService";
+        public const string ServiceName = "SegmentRetirementQueueService";
 
         /// <summary>
         /// Services interface for the cluster group projection
@@ -31,21 +31,28 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <summary>
         /// The proxy to the deployed service
         /// </summary>
-        private ITAGFileBufferQueueService proxy;
+        private ISegmentRetirementQueueService proxy;
+
+        /// <summary>
+        /// The node filter to be used to control deployment of the segment retirement service
+        /// </summary>
+        public RoleBasedServerNodeFilter NodeFilter;
 
         /// <summary>
         /// No-arg constructor that instantiates the Ignite instance, cluster, service and proxy members
         /// </summary>
-        public TAGFileBufferQueueServiceProxy()
+        public SegmentRetirementQueueServiceProxy(StorageMutability mutability, RoleBasedServerNodeFilter nodeFilter)
         {
-            IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+            NodeFilter = nodeFilter;
+
+            IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetServices();
         }
 
         /// <summary>
-        /// Deploys the TAG file buffer queue service on to each TAG file processor node in the mjtable grid.
+        /// Deploys the segment retirement queue service on to each node in the grid.
         /// </summary>
         public void Deploy()
         {
@@ -68,10 +75,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 services.Deploy(new ServiceConfiguration()
                 {
                     Name = ServiceName,
-                    Service = new TAGFileBufferQueueService(),
+                    Service = new SegmentRetirementQueueService(),
                     TotalCount = 0,
                     MaxPerNodeCount = 1,
-                    NodeFilter = new TAGProcessorRoleBasedNodeFilter()
+                    NodeFilter = NodeFilter
                 });
             }
             catch (Exception E)
@@ -83,7 +90,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             try
             {
                 Log.LogInformation($"Obtaining service proxy for {ServiceName}");
-                proxy = services.GetServiceProxy<ITAGFileBufferQueueService>(ServiceName);
+                proxy = services.GetServiceProxy<ISegmentRetirementQueueService>(ServiceName);
             }
             catch (Exception E)
             {

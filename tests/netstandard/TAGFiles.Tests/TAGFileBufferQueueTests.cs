@@ -79,9 +79,7 @@ namespace TAGFiles.Tests
             queue.Add(tagKey, tagItem);
 
             // Read it back from the cache to ensure it was added as expected.
-            ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache =
-                ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(
-                    TRexCaches.TAGFileBufferQueueCacheName());
+            var QueueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             TAGFileBufferQueueItem tagItem2 = QueueCache.Get(tagKey);
 

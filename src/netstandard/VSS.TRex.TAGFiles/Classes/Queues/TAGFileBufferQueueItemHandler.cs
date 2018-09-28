@@ -22,10 +22,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        private static TAGFileBufferQueueItemHandler _Instance;
-
-        public static TAGFileBufferQueueItemHandler Instance() => _Instance ?? (_Instance = new TAGFileBufferQueueItemHandler());
-
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do
         /// </summary>

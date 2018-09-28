@@ -16,11 +16,18 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         ICacheEntryFilter<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>,
         ICacheEntryEventFilter<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>
     {
+        public readonly TAGFileBufferQueueItemHandler handler;
+
+        public RemoteTAGFileFilter(TAGFileBufferQueueItemHandler handler)
+        {
+            this.handler = handler;
+        }
+
         public bool Invoke(ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> entry)
         {
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them
-            TAGFileBufferQueueItemHandler.Instance().Add(entry.Key);
+            handler.Add(entry.Key);
 
             // Advise the caller this item is not filtered [as have already dealt with it so no further 
             // processing of the item is required.
@@ -31,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them
-            TAGFileBufferQueueItemHandler.Instance().Add(evt.Key);
+            handler.Add(evt.Key);
 
             // Advise the caller this item is not filtered [as have already dealt with it so no further 
             // processing of the item is required.

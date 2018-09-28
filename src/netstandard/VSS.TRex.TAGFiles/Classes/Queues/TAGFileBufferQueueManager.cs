@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
@@ -18,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueManager : IDisposable
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueManager>();
 
         /// <summary>
         /// The query handle created by the continuous query. Used to get the initial scan query handle and 
@@ -41,9 +40,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Get the ignite grid and cache references
             ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
-            ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
-
-            RemoteTAGFileFilter TAGFileFilter = new RemoteTAGFileFilter();
+            var queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            var handler = new TAGFileBufferQueueItemHandler();
+            var TAGFileFilter = new RemoteTAGFileFilter(handler);  
 
             Log.LogInformation("Creating continuous query");
 
@@ -52,7 +51,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Instantiate the queryHandle and start the continuous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
             queryHandle = queueCache.QueryContinuous
-                (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
+                (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler))
                     {
                         Local = runLocally,
                         Filter = TAGFileFilter
