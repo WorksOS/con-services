@@ -44,15 +44,8 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         "3dPm Unknown exception.");
 
-      if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out var useTrexGateway))
-      {
-        useTrexGateway = false;
-      }
-
-      if (!bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY"), out var useRaptorGateway))
-      {
-        useRaptorGateway = true;
-      }
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out var useTrexGateway);
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY"), out var useRaptorGateway);
 
       if (useTrexGateway)
       {

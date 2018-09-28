@@ -181,6 +181,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY")).Returns("true");
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprOK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
@@ -228,6 +229,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY")).Returns("true");
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
       mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IDictionary<string, string>>()))
         .ThrowsAsync(new NotImplementedException());
@@ -274,6 +276,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY")).Returns("true");
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprOK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
@@ -422,6 +425,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY")).Returns("true");
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprOK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
@@ -472,6 +476,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY")).Returns("true");
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprOK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
@@ -530,6 +535,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY")).Returns("false");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY")).Returns("true");
       var submitter = RequestExecutorContainerFactory.Build<TagFileNonDirectSubmissionExecutor>(_logger,
         mockRaptorClient.Object, mockTagProcessor.Object, mockConfigStore.Object);
 

@@ -250,7 +250,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
         {
           return (code: 26,
             message:
-            "TFA Processing Error: Manual Import: got asset. Unable to locate any valid project, or asset subscriptions.",
+            "TFA Processing Error: Manual Import: got Asset. Unable to locate any valid Project, or Asset subscriptions.",
             type: temporary, continuable: false);
         }
 
@@ -258,64 +258,64 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
         {
           return (code: 27,
             message:
-            "TFA Processing Error: Manual Import: no asset provided or identifyable. Unable to locate any valid project subscriptions.",
+            "TFA Processing Error: Manual Import: no Asset provided or identifyable. Unable to locate any valid Project subscriptions.",
             type: temporary, continuable: false);
         }
 
         case TRexTagFileResultCode.TFAManualNoIntersectingProjectsFound:
         {
-          return (code: 28, message: "TFA Processing Error: Manual Import: no intersecting projects found.",
+          return (code: 28, message: "TFA Processing Error: Manual Import: no intersecting Projects found.",
             type: temporary, continuable: false);
         }
 
         case TRexTagFileResultCode.TFAManualProjectDoesNotIntersectTimeAndLocation:
         {
           return (code: 29,
-            message: "TFA Processing Error: Manual Import: project does not intersect location and time provided.",
+            message: "TFA Processing Error: Manual Import: Project does not intersect location and time provided.",
             type: temporary, continuable: false);
         }
         case TRexTagFileResultCode.TFAManualProjectIsArchived:
         {
-          return (code: 30, message: "TFA Processing Error: Manual Import: annot import to an archived project.",
+          return (code: 30, message: "TFA Processing Error: Manual Import: cannot import to an archived Project.",
             type: temporary, continuable: false);
         }
         case TRexTagFileResultCode.TFAManualProjectIsCivilType:
         {
           return (code: 31,
-            message: "TFA Processing Error: Manual Import: cannot import to a Civil type project.", type: temporary,
+            message: "TFA Processing Error: Manual Import: cannot import to a Civil type Project.", type: temporary,
             continuable: false);
         }
         case TRexTagFileResultCode.TFAManualLandfillHasNoSubsAtThisTime:
         {
           return (code: 32,
             message:
-            "TFA Processing Error: Manual Import: landfill project does not have a valid subscription at that time.",
+            "TFA Processing Error: Manual Import: landfill Project does not have a valid subscription at that time.",
             type: temporary, continuable: false);
         }
         case TRexTagFileResultCode.TFAAutoNoAssetOrTccOrgIdFound:
         {
           return (code: 33,
-            message: "TFA Processing Error: Auto Import: no asset or tccOrgId is identifiable from the request.",
+            message: "TFA Processing Error: Auto Import: no Asset or TccOrgId is identifiable from the request.",
             type: temporary, continuable: false);
         }
         case TRexTagFileResultCode.TFAAutoAssetOrTccOrgIdFoundButNoProject:
         {
           return (code: 34,
             message:
-            "TFA Processing Error: Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements.",
+            "TFA Processing Error: Auto Import: for this RadioSerial/TccOrgId, no Project meets the time/location/subscription requirements.",
             type: temporary, continuable: false);
         }
         case TRexTagFileResultCode.TFAAutoMultipleProjectsMatchCriteria:
         {
           return (code: 35,
             message:
-            "TFA Processing Error: Auto Import: more than 1 project meets the time/location/subscription requirements.",
+            "TFA Processing Error: Auto Import: more than 1 Project meets the time/location/subscription requirements.",
             type: temporary, continuable: false);
         }
         case TRexTagFileResultCode.TFAManualValidProjectsFoundButNotRequestedOne:
         {
           return (code: 36,
-            message: "TFA Processing Error: Manual Import: intersecting projects found, but not the one requested.",
+            message: "TFA Processing Error: Manual Import: intersecting Projects found, but not the one requested.",
             type: temporary, continuable: false);
         }
 
