@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Reflection;
-
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Classes.Validator;
@@ -78,14 +76,14 @@ namespace VSS.TRex.TAGFiles.Executors
             var tagFileArchiving = config.GetValueBool("ENABLE_TAGFILE_ARCHIVING") ?? false;
             if (tagFileArchiving)
             {
-              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tagfile:{tagFileName}, ProjectID:{td.projectId}");
+              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);
             }
             // switch from nullable to not nullable
             Guid validProjectId = td.projectId ?? Guid.Empty;
             Guid validAssetId = td.assetId ?? Guid.Empty;
 
-            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectId}, AssetID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
+            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectID:{validProjectId}, AssetID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
             TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
@@ -107,7 +105,7 @@ namespace VSS.TRex.TAGFiles.Executors
             {
               response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
               response.Success = false;
-              response.Message = "SubmitTAGFileResponse. Failed to submit tagfile to processing queue. Request already exists";
+              response.Message = "SubmitTAGFileResponse. Failed to submit tag file to processing queue. Request already exists";
             }
           }
           else
