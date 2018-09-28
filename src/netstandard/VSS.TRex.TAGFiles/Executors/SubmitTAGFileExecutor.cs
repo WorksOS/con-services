@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.TAGFiles.Classes;
@@ -46,8 +47,8 @@ namespace VSS.TRex.TAGFiles.Executors
       {
         FileName = tagFileName,
         Success = false,
-        Message = "Unknown",
-        Code = -1
+        Message = "TRex unknown result (SubmitTAGFileResponse.Execute)",
+        Code = (int)TRexTagFileResultCode.TRexUnknownException
       };
 
       try
@@ -66,13 +67,11 @@ namespace VSS.TRex.TAGFiles.Executors
           };
 
           // Validate tagfile submission
-
           var result = TagfileValidator.ValidSubmission(td).Result;
           response.Code = result.Code;
           response.Message = result.Message;
-
           
-          if (result.Code == (int) ValidationResult.Valid && td.projectId != null) // If OK add to process queue
+          if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tagfile
             var config = DIContext.Obtain<IConfigurationStore>();
@@ -83,16 +82,16 @@ namespace VSS.TRex.TAGFiles.Executors
               TagFileRepository.ArchiveTagfile(td);
             }
             // switch from nullable to not nullable
-            Guid validProjectID = td.projectId ?? Guid.Empty;
-            Guid validAssetID = td.assetId ?? Guid.Empty;
+            Guid validProjectId = td.projectId ?? Guid.Empty;
+            Guid validAssetId = td.assetId ?? Guid.Empty;
 
-            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectID}, AssetID:{validAssetID}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
-            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectID, validAssetID);
+            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tagfile to TagfileBufferQueue. ProjectID:{validProjectId}, AssetID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
+            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
               InsertUTC = DateTime.Now,
-              ProjectID = validProjectID,
-              AssetID = validAssetID,
+              ProjectID = validProjectId,
+              AssetID = validAssetId,
               FileName = tagFileName,
               Content = tagFileContent,
               IsJohnDoe = td.IsJohnDoe
@@ -102,11 +101,11 @@ namespace VSS.TRex.TAGFiles.Executors
             {
               response.Success = true;
               response.Message = "";
-              response.Code = (int)ValidationResult.Valid;
+              response.Code = (int)TRexTagFileResultCode.Valid;
             }
             else
             {
-              response.Code = (int)ValidationResult.QueueSubmissionError;
+              response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
               response.Success = false;
               response.Message = "SubmitTAGFileResponse. Failed to submit tagfile to processing queue. Request already exists";
             }

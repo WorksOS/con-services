@@ -77,8 +77,8 @@ namespace VSS.TRex.TAGFiles.Executors
         }
 
         /// <summary>
-        /// Execute the pre-scan operation on the TAG file, returning a booleam success result.
-        /// Sets up local state detailing the prescan fields retried from the ATG file
+        /// Execute the pre-scan operation on the TAG file, returning a boolean success result.
+        /// Sets up local state detailing the pre-scan fields retried from the ATG file
         /// </summary>
         /// <param name="TAGData"></param>
         /// <returns></returns>

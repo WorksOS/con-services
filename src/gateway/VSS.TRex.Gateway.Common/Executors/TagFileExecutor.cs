@@ -4,8 +4,10 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 
@@ -42,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       var request = item as CompactionTagFileRequest;
 
-      ContractExecutionResult result = new ContractExecutionResult(1, "Unknown exception");
+      ContractExecutionResult result = new ContractExecutionResult((int)TRexTagFileResultCode.TRexUnknownException, "TRex unknown result (TagFileExecutor.ProcessEx)");
 
       try
       {
@@ -54,7 +56,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         arg = new SubmitTAGFileRequestArgument()
         {
           ProjectID = request.ProjectUid,
-          AssetID = null, // not supplied by interface
+          AssetID = null, // not available via TagFileController APIs
           TAGFileName = request.FileName,
           TagFileContent = request.Data,
           TCCOrgID = request.OrgId

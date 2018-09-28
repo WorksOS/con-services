@@ -191,6 +191,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             Task.TargetMachine.LastKnownY = processedTask.TargetMachine.LastKnownY;
                         }
 
+                        if (Task.TargetMachine.MachineHardwareID == "")  
+                          Task.TargetMachine.MachineHardwareID = processedTask.TargetMachine.MachineHardwareID;
+
+                        if (Task.TargetMachine.MachineType == 0)
+                          Task.TargetMachine.MachineType = processedTask.TargetMachine.MachineType;
+
                         processedTask.AggregatedCellPasses = null;
                     }
 

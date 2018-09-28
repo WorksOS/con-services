@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     static int GridDataTypeCount = GetGridDataTypeCount();
 
     private const int kGridDataTypeCount_Expected = 11;
-    private const int kGridDataTypeCount = 33;
+    private const int kGridDataTypeCount = 28;
 
     /// <summary>
     /// Which grid data types have implementations that should be tested?
@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [Fact]
     public void Test_GenericClientLeafSubgrid_EnsureThereAre33GridDataTypes()
     {
-      Assert.True(kGridDataTypeCount == GridDataTypeCount, "Number of grid date types is not 33 as expected");
+      Assert.True(kGridDataTypeCount == GridDataTypeCount, $"{GridDataTypeCount} grid date types found, but {kGridDataTypeCount} were expected");
     }
 
     /// <summary>

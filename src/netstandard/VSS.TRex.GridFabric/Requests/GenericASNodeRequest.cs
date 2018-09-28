@@ -5,7 +5,7 @@ using VSS.TRex.GridFabric.Interfaces;
 namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
-    /// Provides a highly genericised class for making a request to a member of the 'ASNode' node pool
+    /// Provides a highly generic class for making a request to a member of the 'ASNode' node pool
     /// </summary>
     /// <typeparam name="TArgument"></typeparam>
     /// <typeparam name="TComputeFunc"></typeparam>
@@ -30,7 +30,7 @@ namespace VSS.TRex.GridFabric.Requests
             // Construct the function to be used
             TComputeFunc func = new TComputeFunc();
 
-            // Send the request to the application service pool and retrieve the resul
+            // Send the request to the application service pool and retrieve the result
             //Task<TResponse> taskResult = _Compute.ApplyAsync(func, arg);
             TResponse Result = _Compute.Apply(func, arg);
 

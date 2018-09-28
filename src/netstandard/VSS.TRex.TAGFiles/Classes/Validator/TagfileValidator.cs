@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Machines;
@@ -49,7 +50,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
       catch (Exception e)
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, String.Empty, /* TTAGProcServerProcessResult.tpsprTFAServiceError 21 */ (int) ValidationResult.TfaException, e.Message);
+        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, String.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
       }
       
       return tfaResult;
@@ -103,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
       Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
-      if (tfaResult.Code == (int) ValidationResult.Valid)
+      if (tfaResult.Code == (int) TRexTagFileResultCode.Valid)
       {
         // if not overriding take TFA projectid
         if ((tagDetail.projectId == null || tagDetail.projectId == Guid.Empty) && (Guid.Parse(tfaResult.ProjectUid) != Guid.Empty))
@@ -123,9 +124,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     }
 
 
-    public static ValidationResult GetValidationResultName(ValidationResult en, ref string message, ref int code)
+    public static TRexTagFileResultCode GetValidationResultName(TRexTagFileResultCode en, ref string message, ref int code)
     {
-      message = Enum.GetName(typeof(ValidationResult), (int) en);
+      message = Enum.GetName(typeof(TRexTagFileResultCode), (int) en);
       code = (int) en;
       return en;
     }
@@ -138,7 +139,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     public static async Task<ContractExecutionResult> ValidSubmission(TagFileDetail tagDetail)
     {
       // Perform some Validation Checks 
-      var result = new ContractExecutionResult();
 
       // get our settings
       var config = DIContext.Obtain<IConfigurationStore>();
@@ -148,7 +148,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE") ?? true;
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
       {
-        return new ContractExecutionResult((int) ValidationResult.InvalidTagfile, ValidationResult.InvalidTagfile.ToString());
+        return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
       }
 
       // Now open tagfile and validate contents
@@ -167,7 +167,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       TAGReadResult readResult = tagFile.Read(reader, sink);
       if (readResult != TAGReadResult.NoError)
       {
-        return new ContractExecutionResult((int)readResult, readResult.ToString());
+        return new ContractExecutionResult((int)TRexTagFileResultCode.TrexTagFileReaderError, readResult.ToString());
       }
 
       // Tagfile contents are OK so proceed
@@ -178,11 +178,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         {
           if (tagDetail.assetId == null || tagDetail.assetId == Guid.Empty)
             tagDetail.IsJohnDoe = true;
-          return new ContractExecutionResult((int)ValidationResult.Valid, "success");
+          return new ContractExecutionResult((int)TRexTagFileResultCode.Valid);
         }
         
         // cannot process without asset and project id
-        return new ContractExecutionResult((int)ValidationResult.BadRequest, "ValidationResult.BadRequest");         
+        return new ContractExecutionResult((int)TRexTagFileResultCode.TRexBadRequestMissingProjectUid, "TRexTagFileResultCode.TRexBadRequestMissingProjectUid");         
       }
 
       // Contact TFA service to validate tagfile details
