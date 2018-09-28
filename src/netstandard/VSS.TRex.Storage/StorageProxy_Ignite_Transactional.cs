@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 

@@ -46,7 +46,6 @@ using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.GridFabric.Queues;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Rendering.GridFabric.Requests;
@@ -505,7 +504,7 @@ namespace TRexIgniteTest
 				writer.WriteLine();
 		}
 
-		private void writeTAGFileBufferQueueKeys(string title, StreamWriter writer, ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> cache)
+		private void writeTAGFileBufferQueueKeys(string title, StreamWriter writer, ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> cache)
 		{
 				int count = 0;
 
@@ -518,11 +517,11 @@ namespace TRexIgniteTest
 						return;
 				}
 
-				var scanQuery = new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>();
-				IQueryCursor<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryCursor = cache.Query(scanQuery);
+				var scanQuery = new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>();
+				IQueryCursor<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryCursor = cache.Query(scanQuery);
 				scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
 
-				foreach (ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem> cacheEntry in queryCursor)
+				foreach (ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> cacheEntry in queryCursor)
 				{
 						writer.WriteLine($"{count++}:{cacheEntry.Key}, size = {cacheEntry.Value.Content.Length}");
 				}
@@ -650,7 +649,7 @@ namespace TRexIgniteTest
 												}
                         try
 												{
-														writeTAGFileBufferQueueKeys(TRexCaches.TAGFileBufferQueueCacheName(), writer, ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName()));
+														writeTAGFileBufferQueueKeys(TRexCaches.TAGFileBufferQueueCacheName(), writer, ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName()));
 												}
 												catch (Exception E)
 												{

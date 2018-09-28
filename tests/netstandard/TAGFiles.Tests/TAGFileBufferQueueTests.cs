@@ -2,9 +2,10 @@
 using System.IO;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage.Caches;
@@ -64,12 +65,10 @@ namespace TAGFiles.Tests
                 tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
             }
 
-            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectID, assetID);
+            ITAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectID, assetID);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
                 InsertUTC = DateTime.Now,
-                //ProjectUID = projectUID,
-                //AssetUID = assetUID,
                 ProjectID = projectID,
                 AssetID = assetID,
                 FileName = tagFileName,
@@ -80,8 +79,8 @@ namespace TAGFiles.Tests
             queue.Add(tagKey, tagItem);
 
             // Read it back from the cache to ensure it was added as expected.
-            ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache =
-                ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(
+            ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache =
+                ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(
                     TRexCaches.TAGFileBufferQueueCacheName());
 
             TAGFileBufferQueueItem tagItem2 = QueueCache.Get(tagKey);

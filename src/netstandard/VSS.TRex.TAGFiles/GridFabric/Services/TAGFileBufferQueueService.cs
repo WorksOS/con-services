@@ -1,7 +1,6 @@
 ﻿using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Apache.Ignite.Core;
@@ -10,14 +9,14 @@ using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
     /// <summary>
-    /// Service metaphor providing access andmanagement control over designs stored for site models
+    /// Service metaphor providing access and management control over designs stored for site models
     /// </summary>
     [Serializable]
     public class TAGFileBufferQueueService : IService, ITAGFileBufferQueueService
@@ -69,8 +68,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             aborted = false;
             waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
-            List<long> ProjectsToAvoid = new List<long>();
-
             // Get the ignite grid and cache references
 
             IIgnite _ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
@@ -81,18 +78,18 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 return;
             }
 
-            ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
-                _ignite?.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache =
+                _ignite?.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             TAGFileBufferQueueItemHandler handler = TAGFileBufferQueueItemHandler.Instance();
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
-            // Instantiate the queryHandle and start the continous query on the remote nodes
+            // Instantiate the queryHandle and start the continuous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
-            using (IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle = queueCache.QueryContinuous
-                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener()) { Local = true },
-                 initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem> { Local = true }))
+            using (IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle = queueCache.QueryContinuous
+                (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener()) { Local = true },
+                 initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> { Local = true }))
             {
                 // Perform the initial query to grab all existing elements and add them to the grouper
                 foreach (var item in queryHandle.GetInitialQueryCursor())
