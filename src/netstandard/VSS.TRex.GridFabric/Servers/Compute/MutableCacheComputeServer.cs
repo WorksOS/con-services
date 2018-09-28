@@ -16,7 +16,6 @@ using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Affinity;
 using VSS.TRex.Logging;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage.Caches;
@@ -235,9 +234,9 @@ namespace VSS.TRex.Servers.Compute
       cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
     }
 
-    public /*ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>*/ void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
+    public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
     {
-      mutableTRexGrid.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
+      mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
     }
 
     public static bool SetGridActive(string gridName)

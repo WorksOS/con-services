@@ -6,7 +6,7 @@ using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.Models;
 
@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The query handle created by the continuous query. Used to get the initial scan query handle and 
         /// to dispose the continuous query when no longer needed.
         /// </summary>
-        private IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;
+        private IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;
 
         /// <summary>
         /// Local Ignite resource reference
@@ -41,7 +41,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Get the ignite grid and cache references
             ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
-            ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             RemoteTAGFileFilter TAGFileFilter = new RemoteTAGFileFilter();
 
@@ -52,12 +52,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Instantiate the queryHandle and start the continuous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
             queryHandle = queueCache.QueryContinuous
-                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
+                (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
                     {
                         Local = runLocally,
                         Filter = TAGFileFilter
                     },
-                    initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
+                    initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>
                     {
                         Local = runLocally,
                         Filter = TAGFileFilter

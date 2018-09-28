@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
@@ -47,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private TAGFileBufferQueueGrouper grouper;
 
         private IIgnite ignite;
-        private ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache;
+        private ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache;
 
         private List<Guid> ProjectsToAvoid = new List<Guid>();
 
@@ -55,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             Log.LogInformation("ProcessTAGFilesFromGrouper starting executing");
 
-            TAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey();
+            ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey();
 
             // Cycle looking for new work to do as TAG files arrive until aborted...
             do
@@ -179,7 +180,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// The package of TAG files contains files for a single project [and currently a single machine]
         /// </summary>
         /// <param name="package"></param>
-        private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<TAGFileBufferQueueKey> package)
+        private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
         {
             Guid projectID = package[0].ProjectID;
 
@@ -234,7 +235,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     TAGFiles = fileItems
                 });
 
-                TAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
+                ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
                 {
                     ProjectID = projectID,
                     AssetID = TAGQueueItems[0].AssetID
@@ -335,7 +336,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         public TAGFileBufferQueueItemHandler()
         {
             ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
-            queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             // Create the grouper responsible for grouping TAG files into project/asset combinations
             grouper = new TAGFileBufferQueueGrouper();
@@ -349,7 +350,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continuous query
         /// </summary>
         /// <param name="key"></param>
-        public void Add(TAGFileBufferQueueKey key)
+        public void Add(ITAGFileBufferQueueKey key)
         {
             grouper.Add(key);
         }

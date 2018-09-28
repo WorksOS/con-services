@@ -23,6 +23,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             QueueCache.Put(date.ToBinary(), new SegmentRetirementQueueItem(date.ToBinary(), value));
         }
 
+        /// <summary>
+        /// Constructs a segment retirement queue for a named grid.
+        /// </summary>
+        /// <param name="gridName"></param>
         public SegmentRetirementQueue(string gridName)
         {
             IIgnite Ignite = Ignition.GetIgnite(gridName);
@@ -39,6 +43,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 });
         }
 
+        /// <summary>
+        /// Finds all the items in the retirement queue ready for removal and returns them
+        /// </summary>
+        /// <param name="earlierThan"></param>
+        /// <returns></returns>
         public IEnumerable<SegmentRetirementQueueItem> Query(DateTime earlierThan)
         {
             var sql = new SqlQuery(typeof(SegmentRetirementQueueItem), $"_key < {earlierThan.ToBinary()}");
@@ -52,13 +61,5 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 return null;
             }
         }
-
-/*
-Add(DateTime.Now, "First");
-Add(DateTime.Now, "Second");
-Add(DateTime.Now, "Third");
-Add(DateTime.Now, "Fourth");
-Add(DateTime.Now, "Fifth");
-*/ 
     }
 }

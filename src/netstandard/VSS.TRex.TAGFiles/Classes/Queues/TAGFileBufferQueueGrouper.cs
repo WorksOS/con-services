@@ -4,13 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     /// <summary>
     /// The grouper accepts individual keys representing TAG files in the TAG file buffer queue and groups it with
-    /// TAG files to be processed with the smae project and asste. To reduce storage, only the key values are grouped,
+    /// TAG files to be processed with the same project and asset. To reduce storage, only the key values are grouped,
     /// the values may be requested from the cache at the time the TAG file is processed.
     /// </summary>
     public class TAGFileBufferQueueGrouper
@@ -27,37 +27,37 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyed on AssetUID) of
         /// TAG files to be processed for that projectUID/assetUID combination 
         /// </summary>
-        private Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>> groupMap;
+        private Dictionary<Guid, Dictionary<Guid, List<ITAGFileBufferQueueKey>>> groupMap;
 
         /// <summary>
         /// fullBuckets is a list of arrays of TAG files where each array is a collection of TAG files for a
         /// particular asset/project combination. New arrays of these keys are added as the groupMap dictionary
         /// for a project/assert ID combination hits a critical limit (eg: 100 TAG files)
         /// </summary>
-        private List<TAGFileBufferQueueKey[]> fullBuckets;
+        private List<ITAGFileBufferQueueKey[]> fullBuckets;
 
         /// <summary>
-        /// Defaultno-arg constructor
+        /// Default no-arg constructor
         /// </summary>
         public TAGFileBufferQueueGrouper()
         {
-            groupMap = new Dictionary<Guid, Dictionary<Guid, List<TAGFileBufferQueueKey>>>();
-            fullBuckets = new List<TAGFileBufferQueueKey[]>();
+            groupMap = new Dictionary<Guid, Dictionary<Guid, List<ITAGFileBufferQueueKey>>>();
+            fullBuckets = new List<ITAGFileBufferQueueKey[]>();
         }
 
         /// <summary>
         /// Adds another TAG file buffer queue key into the tracked groups for processing
         /// </summary>
         /// <param name="key"></param>
-        public void Add(TAGFileBufferQueueKey key)
+        public void Add(ITAGFileBufferQueueKey key)
         {
             lock (this)
             {
-                if (groupMap.TryGetValue(key.ProjectID, out Dictionary<Guid, List<TAGFileBufferQueueKey>> assetsDict))
+                if (groupMap.TryGetValue(key.ProjectID, out Dictionary<Guid, List<ITAGFileBufferQueueKey>> assetsDict))
                 {
-                    if (!assetsDict.TryGetValue(key.AssetID, out List<TAGFileBufferQueueKey> keyList))
+                    if (!assetsDict.TryGetValue(key.AssetID, out List<ITAGFileBufferQueueKey> keyList))
                     {
-                        assetsDict.Add(key.AssetID, new List<TAGFileBufferQueueKey> { key });
+                        assetsDict.Add(key.AssetID, new List<ITAGFileBufferQueueKey> { key });
                     }
                     else
                     {
@@ -73,7 +73,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 }
                 else
                 {
-                    groupMap.Add(key.ProjectID, new Dictionary<Guid, List<TAGFileBufferQueueKey>> { { key.AssetID, new List<TAGFileBufferQueueKey> {key} } });
+                    groupMap.Add(key.ProjectID, new Dictionary<Guid, List<ITAGFileBufferQueueKey>> { { key.AssetID, new List<ITAGFileBufferQueueKey> {key} } });
                 }
             }
         }
@@ -121,14 +121,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         /// <summary>
         /// Returns a list of TAG files for a project and asset within the set of project/asset pairs 
-        /// maintined in the grouper. The caller may provide an 'avoid' list of projects which the grouper
+        /// maintained in the grouper. The caller may provide an 'avoid' list of projects which the grouper
         /// will ignore when locating a group of TAG files to return.
         /// The returned list of TAG file keys is then removed from the grouper. It is the responsibility
         /// of the caller to ensure the TAG files are processed and removed from the overall TAGFileBufferQueue,
         /// and any appropriate failure mode handling while processing the bucket of TAG files returned.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TAGFileBufferQueueKey> Extract(List<Guid> avoidProjects, out Guid projectID)
+        public IEnumerable<ITAGFileBufferQueueKey> Extract(List<Guid> avoidProjects, out Guid projectID)
         {
             lock (this)
             {
@@ -137,7 +137,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     return null;
 
                 Guid _projectID = projectID;
-                IEnumerable<TAGFileBufferQueueKey> result;
+                IEnumerable<ITAGFileBufferQueueKey> result;
 
                 // Determine if there is a full bucket for the requested project
                 int resultIndex = fullBuckets.FindIndex(x => x[0].ProjectID == _projectID);

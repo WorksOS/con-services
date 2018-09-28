@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -27,7 +28,7 @@ namespace TAGFiles.Tests
             Guid projectID = Guid.NewGuid();
             Guid assetID = Guid.NewGuid();
 
-            TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectID, assetID);
+            ITAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectID, assetID);
 
             grouper.Add(tagKey);
 
