@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -64,8 +65,8 @@ namespace TAGFiles.Tests
 
       // Validate tagfile 
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) ValidationResult.InvalidTagfile, "Failed to return correct error code");
-      Assert.Equal("InvalidTagfile", result.Message);
+      Assert.True(result.Code == (int) TRexTagFileResultCode.TRexInvalidTagfile, "Failed to return correct error code");
+      Assert.Equal("TRexInvalidTagfile", result.Message);
     }
 
     [Fact]
@@ -85,7 +86,7 @@ namespace TAGFiles.Tests
 
       // Validate tagfile
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) TAGReadResult.InvalidValueTypeID, "Failed to return correct error code");
+      Assert.True(result.Code == (int)TRexTagFileResultCode.TrexTagFileReaderError, "Failed to return correct error code");
       Assert.Equal("InvalidValueTypeID", result.Message);
     }
 
@@ -116,7 +117,7 @@ namespace TAGFiles.Tests
       };
 
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) ValidationResult.Valid, "Failed to return a Valid request");
+      Assert.True(result.Code == (int) TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
 
@@ -149,7 +150,7 @@ namespace TAGFiles.Tests
       };
 
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) ValidationResult.Valid, "Failed to return a Valid request");
+      Assert.True(result.Code == (int) TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
 
