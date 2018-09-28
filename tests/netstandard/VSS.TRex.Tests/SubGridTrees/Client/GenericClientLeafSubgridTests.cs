@@ -65,9 +65,9 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     /// Fail if a new grid data type has been added to ensure tests are created for it
     /// </summary>
     [Fact]
-    public void Test_GenericClientLeafSubgrid_EnsureThereAre33GridDataTypes()
+    public void Test_GenericClientLeafSubgrid_EnsureExpectedGridDataTypes()
     {
-      Assert.True(kGridDataTypeCount == GridDataTypeCount, $"{GridDataTypeCount} grid date types found, but {kGridDataTypeCount} were expected");
+      Assert.True(kGridDataTypeCount == GridDataTypeCount, $"{GridDataTypeCount} grid data types found, but {kGridDataTypeCount} were expected");
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     [Fact]
     public void Test_GenericClientLeafSubgrid_EnsureThereAreNumberOfExpectedGridDataTypes()
     {
-      Assert.True(kGridDataTypeCount_Expected == ClientLeafDataTypes_ExpectedOnly(100).Count(), $"Number of expected grid date types is not {kGridDataTypeCount_Expected} as expected");
+      Assert.True(kGridDataTypeCount_Expected == ClientLeafDataTypes_ExpectedOnly(100).Count(), $"Number of expected grid data types is not {kGridDataTypeCount_Expected} as expected");
     }
 
     [Theory]
