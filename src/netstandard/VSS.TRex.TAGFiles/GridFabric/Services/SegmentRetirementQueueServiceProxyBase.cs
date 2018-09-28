@@ -13,10 +13,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// <summary>
   /// Class responsible for deploying the segment retirement queue service
   /// </summary>
-  public class SegmentRetirementQueueServiceProxy
+  public class SegmentRetirementQueueServiceProxyBase
   {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueServiceProxy>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueServiceProxyBase>();
 
         /// <summary>
         /// The cluster wide name of the deployed service
@@ -38,10 +38,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public RoleBasedServerNodeFilter NodeFilter;
 
-        /// <summary>
-        /// No-arg constructor that instantiates the Ignite instance, cluster, service and proxy members
-        /// </summary>
-        public SegmentRetirementQueueServiceProxy(StorageMutability mutability, RoleBasedServerNodeFilter nodeFilter)
+        public SegmentRetirementQueueServiceProxyBase(StorageMutability mutability, RoleBasedServerNodeFilter nodeFilter)
         {
             NodeFilter = nodeFilter;
 

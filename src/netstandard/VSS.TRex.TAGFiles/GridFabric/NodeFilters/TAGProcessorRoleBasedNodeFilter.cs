@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.NodeFilters
     /// Defines a node filter that filters nodes based on membership of the "TAG Processing" role
     /// </summary>
     [Serializable]
-    public class TAGProcessorRoleBasedNodeFilter : RoleBasedNodeFilter
+    public class TAGProcessorRoleBasedNodeFilter : RoleBasedServerNodeFilter
     {
         /// <summary>
         /// Default no-arg constructor that instantiate the appropriate role

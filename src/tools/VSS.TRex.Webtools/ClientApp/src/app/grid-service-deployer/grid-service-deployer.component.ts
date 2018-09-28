@@ -14,8 +14,18 @@ export class GridServiceDeployerComponent {
   ) { }
 
   public deployTagFileQueue() {
-    console.log(`Deploying tagfile buffer queue`)
+    console.log(`Deploying tagfile buffer queue`);
     this.gridServiceDeployerService.deployTagFileBufferQueueService();
+  }
+
+  public deployMutableSegmentRetirementQueue() {
+    console.log(`Deploying mutable segment retirement queue`);
+    this.gridServiceDeployerService.deployMutableSegmentRetirementQueueService();
+  }
+
+  public deployImmutableSegmentRetirementQueue() {
+    console.log(`Deploying immutable segment retirement queue`);
+    this.gridServiceDeployerService.deployImmutableSegmentRetirementQueueService();
   }
 }
 
