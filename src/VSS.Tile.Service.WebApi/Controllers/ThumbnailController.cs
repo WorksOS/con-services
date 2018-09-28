@@ -41,16 +41,16 @@ namespace VSS.Tile.Service.WebApi.Controllers
     }
 
     /// <summary>
-    /// Gets a project thumbnail image.
+    /// Gets a project thumbnail image as a raw png.
     /// </summary>
     [ProjectUidVerifier]
     [Route("api/v1/projectthumbnail/png")]
     [HttpGet]
-    public async Task<FileResult> GetProjectThumbnailRaw(
+    public async Task<FileResult> GetProjectThumbnailPng(
       [FromQuery] Guid projectUid, 
       [FromQuery] TileOverlayType[] additionalOverlays)
     {
-      Log.LogDebug("GetProjectThumbnailRaw: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetProjectThumbnailPng)}: {Request.QueryString}");
 
       var project = await ((TilePrincipal) User).GetProject(projectUid);
       var bbox = GetBoundingBoxFromWKT(project.ProjectGeofenceWKT);
@@ -78,28 +78,59 @@ namespace VSS.Tile.Service.WebApi.Controllers
     }
 
     /// <summary>
-    /// Gets a 3D project thumbnail image.
+    /// Gets a project thumbnail image as a Base64 encoded string.
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v1/projectthumbnail/base64")]
+    [HttpGet]
+    public async Task<byte[]> GetProjectThumbnailBase64(
+      [FromQuery] Guid projectUid,
+      [FromQuery] TileOverlayType[] additionalOverlays)
+    {
+      Log.LogDebug($"{nameof(GetProjectThumbnailBase64)}: {Request.QueryString}");
+      var result = await GetProjectThumbnailPng(projectUid, additionalOverlays);
+      return GetStreamContents(result);
+    }
+
+    /// <summary>
+    /// Gets a 3D project thumbnail image as a raw png.
     /// </summary>
     [ProjectUidVerifier]
     [Route("api/v1/projectthumbnail3d/png")]
     [HttpGet]
-    public async Task<FileResult> GetProjectThumbnailRaw3D(
+    public async Task<FileResult> GetProjectThumbnail3DPng(
       [FromQuery] Guid projectUid)
     {
-      Log.LogDebug("GetProjectThumbnailRaw3D: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetProjectThumbnail3DPng)}: {Request.QueryString}");
 
-      return await GetProjectThumbnailRaw(projectUid, new [] {TileOverlayType.ProductionData});
+      return await GetProjectThumbnailPng(projectUid, new [] {TileOverlayType.ProductionData});
     }
 
     /// <summary>
-    /// Gets a geofence thumbnail image.
+    /// Gets a 3D project thumbnail image as a Base64 encoded string.
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v1/projectthumbnail3d/base64")]
+    [HttpGet]
+    public async Task<byte[]> GetProjectThumbnail3DBase64(
+      [FromQuery] Guid projectUid)
+    {
+      Log.LogDebug($"{nameof(GetProjectThumbnail3DBase64)}: {Request.QueryString}");
+
+      var result = await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.ProductionData });
+      return GetStreamContents(result);
+    }
+
+
+    /// <summary>
+    /// Gets a geofence thumbnail image as a raw png.
     /// </summary>
     [Route("api/v1/geofencethumbnail/png")]
     [HttpGet]
-    public async Task<FileResult> GetGeofenceThumbnailRaw(
+    public async Task<FileResult> GetGeofenceThumbnailPng(
       [FromQuery] Guid geofenceUid)
     {
-      Log.LogDebug("GetGeofenceThumbnailRaw: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetGeofenceThumbnailPng)}: {Request.QueryString}");
 
       var geofence = await geofenceProxy.GetGeofenceForCustomer((User as TilePrincipal).CustomerUid, geofenceUid.ToString(), CustomHeaders);
       if (geofence == null)
@@ -115,6 +146,20 @@ namespace VSS.Tile.Service.WebApi.Controllers
       return tileResult;
     }
 
+    /// <summary>
+    /// Gets a geofence thumbnail image as a Base64 encoded string.
+    /// </summary>
+    [Route("api/v1/geofencethumbnail/base64")]
+    [HttpGet]
+    public async Task<byte[]> GetGeofenceThumbnailBase64(
+      [FromQuery] Guid geofenceUid)
+    {
+      Log.LogDebug($"{nameof(GetGeofenceThumbnailBase64)}: {Request.QueryString}");
+
+      var result = await GetGeofenceThumbnailPng(geofenceUid);
+      return GetStreamContents(result);
+    }
+
 
     /// <summary>
     /// Gets the bounding box of the WKT
@@ -127,6 +172,18 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var maxLat = points.Max(p => p.Lat).LatRadiansToDegrees();
       var maxLng = points.Max(p => p.Lon).LonRadiansToDegrees();
       return $"{minLat},{minLng},{maxLat},{maxLng}";
+    }
+
+    /// <summary>
+    /// Convert the raw PNG into an array of bytes
+    /// </summary>
+    private byte[] GetStreamContents(FileResult result)
+    {
+      using (MemoryStream ms = new MemoryStream())
+      {
+        (result as FileStreamResult).FileStream.CopyTo(ms);
+        return ms.ToArray();
+      }
     }
 
   }
