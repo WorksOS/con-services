@@ -14,6 +14,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { UploadDataComponent } from './upload-data/upload-data.component';
 import { SandboxComponent } from './sandbox/sandbox-component';
 import { ProjectComponent } from './project/project-component';
+import { SurveyedSurfacesComponent } from './surveyed-surfaces/surveyed-surfaces-component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ProjectComponent } from './project/project-component';
     GridStatusComponent,
     GridServiceDeployerComponent,
     SandboxComponent,
-    ProjectComponent
+    ProjectComponent,
+    SurveyedSurfacesComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
