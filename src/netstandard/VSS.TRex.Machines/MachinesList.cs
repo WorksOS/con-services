@@ -60,7 +60,7 @@ namespace VSS.TRex.Machines
             }
 
             // Determine the internal ID for the new machine.
-            // Note: This assumes machinesa are never removed from a project
+            // Note: This assumes machines are never removed from a project
 
             short internalMachineID = (short)Count;
 

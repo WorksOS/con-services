@@ -1,0 +1,9 @@
+<div class="container-fluid">
+  <H3>Surveyed Surfaces</H3>
+  <p><button (click)="addADummySurveyedSurface()">Add a dummy!</button> New SS Guid -> {{newSurveyedSurfaceGuid}}</p>
+
+  <p *ngFor="let surveyedSurface of surveyedSurfaces">
+    <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
+    Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} with offset {{surveyedSurface.designDescriptor.offset}} from file {{surveyedSurface.designDescriptor.fileName}}
+  </p>
+</div>
