@@ -27,5 +27,11 @@ export class GridServiceDeployerComponent {
     console.log(`Deploying immutable segment retirement queue`);
     this.gridServiceDeployerService.deployImmutableSegmentRetirementQueueService();
   }
+
+  public deployAllServices() {
+    this.deployTagFileQueue();
+    this.deployMutableSegmentRetirementQueue();
+    this.deployImmutableSegmentRetirementQueue();
+  }
 }
 
