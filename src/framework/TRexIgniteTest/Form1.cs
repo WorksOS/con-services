@@ -529,7 +529,35 @@ namespace TRexIgniteTest
 				writer.WriteLine();
 		}
 
-		private void WriteKeysSpatial(string title, StreamWriter writer, ICache<ISubGridSpatialAffinityKey, byte[]> cache)
+	  private void writeSegmentRetireeQueueKeys(string title, StreamWriter writer, ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> cache)
+	  {
+	    int count = 0;
+
+	    writer.WriteLine(title);
+	    writer.WriteLine("#####################");
+	    writer.WriteLine();
+
+	    if (cache == null)
+	    {
+	      return;
+	    }
+
+	    var scanQuery = new ScanQuery<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>();
+	    IQueryCursor<ICacheEntry<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>> queryCursor = cache.Query(scanQuery);
+	    scanQuery.PageSize = 1; // Restrict the number of keys requested in each page to reduce memory consumption
+
+	    foreach (ICacheEntry<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> cacheEntry in queryCursor)
+	    {
+	      writer.WriteLine($"{count++}:{cacheEntry.Key}: retiree count = {cacheEntry.Value.SegmentKeys.Length}");
+
+        foreach (var key in cacheEntry.Value.SegmentKeys)
+          writer.WriteLine($"  [{key.SubGridX}x{key.SubGridY}]: {key.SegmentIdentifier}");
+	    }
+
+	    writer.WriteLine();
+	  }
+
+    private void WriteKeysSpatial(string title, StreamWriter writer, ICache<ISubGridSpatialAffinityKey, byte[]> cache)
 		{
 				int count = 0;
 
@@ -655,6 +683,14 @@ namespace TRexIgniteTest
 												{
 												  writer.WriteLine($"Exception occurred: {E.Message}");
 												}
+  										  try
+	  									  {
+										      writeSegmentRetireeQueueKeys(TRexCaches.SegmentRetirementQueueCacheName(), writer, ignite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.SegmentRetirementQueueCacheName()));
+			  							  }
+				  						  catch (Exception E)
+					  					  {
+						  				    writer.WriteLine($"Exception occurred: {E.Message}");
+							  			  }             
                     }
 								}
 						}
