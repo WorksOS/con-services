@@ -101,6 +101,11 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         .Build<TagFileNonDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
         .ProcessAsync(requestExt).ConfigureAwait(false);
 
+      // when we disable Raptor, allowing Trex response to return to harvester,
+      //  will need to rewrite the Trex result and handle these new codes in the Harvester.
+      //  IMHO it would be nice to return the same response as for the DirectSubmission,
+      //        which indicates whether a failure is permanent etc
+     
       return responseObj.Code == 0
         ? (IActionResult)Ok(responseObj)
         : BadRequest(responseObj);
