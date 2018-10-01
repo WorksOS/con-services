@@ -92,6 +92,10 @@ namespace VSS.Productivity3D.Models.Models
           case DisplayMode.TargetSpeedSummary:
             count = 3;
             break;
+          case DisplayMode.TemperatureDetail:
+            count = 5;
+            break;
+
         }
 
         if ((mode != DisplayMode.Height && mode != DisplayMode.Design3D) && count != palettes.Count)
@@ -117,7 +121,7 @@ namespace VSS.Productivity3D.Models.Models
           }
         }
 
-        if (mode == DisplayMode.CCV || mode == DisplayMode.CCVPercent || mode == DisplayMode.MDP || mode == DisplayMode.MDPPercent)
+        if (mode == DisplayMode.CCV || mode == DisplayMode.CCVPercent || mode == DisplayMode.MDP || mode == DisplayMode.MDPPercent || mode == DisplayMode.TemperatureDetail)
           if (palettes[0].Value != 0)
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
