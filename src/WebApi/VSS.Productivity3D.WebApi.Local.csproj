@@ -9,6 +9,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>WebApi</PackageId>
     <RootNamespace>VSS.Productivity3D.WebApi</RootNamespace>
+    <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
@@ -52,6 +53,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="2.4.0" />
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
