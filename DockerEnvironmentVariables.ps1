@@ -39,6 +39,10 @@
 [Environment]::SetEnvironmentVariable("TCCUSERNAME", "vldev", "Machine")
 [Environment]::SetEnvironmentVariable("TCCPWD", "vldev_key", "Machine")
 [Environment]::SetEnvironmentVariable("TCCFILESPACEID", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "Machine")
+[Environment]::SetEnvironmentVariable("AWS_BUCKET_NAME", "vss-exports-stg", "Machine")
+[Environment]::SetEnvironmentVariable("AWS_ACCESS_KEY", "AKIAIBGOEETXHMANDX7A", "Machine")
+[Environment]::SetEnvironmentVariable("AWS_SECRET_KEY", "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", "Machine")
+[Environment]::SetEnvironmentVariable("AWS_PRESIGNED_URL_EXPIRY", "7.00:00:00", "Machine")
 <# #>
 <#  Dev environment 
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
@@ -65,6 +69,9 @@
 [Environment]::SetEnvironmentVariable("TCCORG", "vldev", "Machine")
 [Environment]::SetEnvironmentVariable("TCCUSERNAME", "vldev", "Machine")
 [Environment]::SetEnvironmentVariable("TCCPWD", "vldev_key", "Machine")
-
+[Environment]::SetEnvironmentVariable("AWS_BUCKET_NAME", "vss-exports-stg", "Machine")
+[Environment]::SetEnvironmentVariable("AWS_ACCESS_KEY", "AKIAIBGOEETXHMANDX7A", "Machine")
+[Environment]::SetEnvironmentVariable("AWS_SECRET_KEY", "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", "Machine")
+[Environment]::SetEnvironmentVariable("AWS_PRESIGNED_URL_EXPIRY", "7.00:00:00", "Machine")
 [Environment]::SetEnvironmentVariable("TCCFILESPACEID", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "Machine")
 #>

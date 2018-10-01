@@ -35,6 +35,7 @@
   </Target>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\MerinoSandbox\AWS.TransferProxy\src\VSS.AWS.TransferProxy.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\ITask\src\VSS.ITask.Local.csproj" />

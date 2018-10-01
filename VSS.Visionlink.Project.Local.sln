@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common.Local", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models.Local", "..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj", "{AE6FC0E4-F616-436E-976A-6C7A937FFA47}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.AWS.TransferProxy.Local", "..\MerinoSandbox\AWS.TransferProxy\src\VSS.AWS.TransferProxy.Local.csproj", "{6ED154E1-34C5-48C6-A441-58685DB227FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,10 @@ Global
 		{AE6FC0E4-F616-436E-976A-6C7A937FFA47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE6FC0E4-F616-436E-976A-6C7A937FFA47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE6FC0E4-F616-436E-976A-6C7A937FFA47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ED154E1-34C5-48C6-A441-58685DB227FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ED154E1-34C5-48C6-A441-58685DB227FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ED154E1-34C5-48C6-A441-58685DB227FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ED154E1-34C5-48C6-A441-58685DB227FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

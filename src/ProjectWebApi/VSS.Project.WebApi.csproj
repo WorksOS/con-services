@@ -31,7 +31,8 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Jaeger" Version="0.1.1" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
-    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.*" />
+    <PackageReference Include="VSS.AWS.TransferProxy" Version="1.4.2" />
+    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.2" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.16" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.12.2" />
