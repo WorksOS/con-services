@@ -257,7 +257,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       transferProxy.Upload(fileStream, s3Path);
 
       var baseUrl = configStore.GetValueString("PROJECT_INTERNAL_BASE_URL");
-      baseUrl = "http://localhost:3001";
       // The QueryString will have values in it, so it's safe to add extra queries with the & as opposed to ?, then &
       var callbackUrl = $"{baseUrl}/internal/v4/importedfile{Request.QueryString}";
       callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}";
