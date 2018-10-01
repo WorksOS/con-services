@@ -119,7 +119,16 @@ namespace VSS.Productivity3D.WebApi
       app.UseResponseCaching();
       app.UseResponseCompression();
       app.UseMvc();
-      
+
+      CheckRaptorAvailability(serviceProvider);
+    }
+
+    /// <summary>
+    /// Checks whether the Raptor is available.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    private void CheckRaptorAvailability(ServiceProvider serviceProvider)
+    {
       if (Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CMV") == "false" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PASSCOUNT") == "false" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MDP") == "false" ||
