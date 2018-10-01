@@ -5,6 +5,7 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.Models;
@@ -18,10 +19,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   /// </summary>
   public class SegmentRetirementQueue : ISegmentRetirementQueue
   {
+    [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueue>();
+
     private ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> QueueCache;
 
     public void Add(ISegmentRetirementQueueKey key, SegmentRetirementQueueItem value)
     {
+      Log.LogInformation($"Adding {value.SegmentKeys?.Length} retirees to queue for project {key.ProjectID}");
+
       QueueCache.Put(key, value);
     }
 

@@ -785,7 +785,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 if (FSError == FileSystemErrorStatus.FileDoesNotExist)
                   Log.LogError($"Expected leaf subgrid file {fileName} does not exist.");
                 else
-                   if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull)
+                   if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull && FSError != FileSystemErrorStatus.GranuleDoesNotExist)
                       Log.LogWarning($"Unable to load leaf subgrid file '{fileName}'. Details: {FSError}");
 
                 return false;

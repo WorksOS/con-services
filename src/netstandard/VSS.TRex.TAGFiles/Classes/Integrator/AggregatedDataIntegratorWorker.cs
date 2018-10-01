@@ -354,37 +354,44 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         storageProxy_Mutable.Commit();
 
                         // Advise the segment retirement manager of any segments/subgrids that needs to be retired as as result of this integration
-                        // Stamp all the invalidated spatial streams with the project ID
-                        foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
+
+                        if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
+                        {
+                          // Stamp all the invalidated spatial streams with the project ID
+                          foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
                             key.ProjectID = SiteModelFromDM.ID;
-
-                        try
-                        {
-                          ISegmentRetirementQueue retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
-
-                          if (retirementQueue == null)
+                   
+                          try
                           {
-                            Log.LogCritical("No registered segment retirement queue in DI context");
-                            Debug.Assert(false, "No registered segment retirement queue in DI context");
+                            ISegmentRetirementQueue retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
+                   
+                            if (retirementQueue == null)
+                            {
+                              Log.LogCritical("No registered segment retirement queue in DI context");
+                              Debug.Assert(false, "No registered segment retirement queue in DI context");
+                            }
+                   
+                            DateTime insertUTC = DateTime.Now;
+                   
+                            retirementQueue.Add(new SegmentRetirementQueueKey
+                              {
+                                ProjectID = SiteModelFromDM.ID,
+                                InsetUTCasLong = insertUTC.ToBinary()
+                              },
+                              new SegmentRetirementQueueItem
+                              {
+                                InsertUTC = insertUTC,
+                                ProjectUID = SiteModelFromDM.ID,
+                                SegmentKeys = subGridIntegrator.InvalidatedSpatialStreams.ToArray()
+                              });
                           }
-
-                          retirementQueue.Add(new SegmentRetirementQueueKey
-                            {
-                              ProjectID = SiteModelFromDM.ID
-                            }, 
-                            new SegmentRetirementQueueItem
-                            {
-                              InsertUTC = DateTime.Now,
-                              ProjectUID = SiteModelFromDM.ID,
-                              SegmentKeys = subGridIntegrator.InvalidatedSpatialStreams.ToArray()
-                            });
-                        }
-                        catch (Exception e)
-                        {
-                          Log.LogCritical($"Unable to add segment invalidation list to segment retirement queue due to exception: {e}");
-                          Log.LogCritical("The following segments will NOT be retired as a result:");
-                          foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
-                            Log.LogCritical($"{invalidatedItem}");
+                          catch (Exception e)
+                          {
+                            Log.LogCritical($"Unable to add segment invalidation list to segment retirement queue due to exception: {e}");
+                            Log.LogCritical("The following segments will NOT be retired as a result:");
+                            foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
+                              Log.LogCritical($"{invalidatedItem}");
+                          }
                         }
                     }
                     finally

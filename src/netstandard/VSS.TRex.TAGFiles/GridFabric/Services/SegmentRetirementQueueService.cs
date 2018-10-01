@@ -90,19 +90,23 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
         Debug.Assert(mutableStorageProxy.Mutability == StorageMutability.Mutable, "Non mutable storage proxy available to segment retirement queue");
 
+        Log.LogInformation("About to query retiree spatial streams from cache");
+
         // Retrieve the list of segments to be retired
         var retirees = mutableQueue.Query(DateTime.Now - retirementAge);
 
         // Pass the list to the handler for action
         if ((retirees?.Count ?? 0) > 0)
         {
+          Log.LogInformation($"About to attempt retiring {retirees?.Count} spatial streams from mutable and immutable contexts");
+
           if (handler.Process(mutableStorageProxy, mutableQueueCache, retirees))
           {
-
+            Log.LogInformation($"Successfully retired {retirees?.Count} spatial streams from mutable and immutable contexts");
           }
           else
           {
-            Log.LogInformation($"Successfully retired {retirees.Count} spatial streams from mutable and immutable contexts");
+            Log.LogError($"Failed to retire {retirees?.Count} spatial streams from mutable and immutable contexts");
           }
         }
 
