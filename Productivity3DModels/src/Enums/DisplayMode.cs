@@ -1,7 +1,7 @@
 ﻿namespace VSS.Productivity3D.Models.Enums
 {
     /// <summary>
-    /// The list of 'display modes' that Raptor understans in the context of rendering WMS tiles and other operations
+    /// The list of 'display modes' that Raptor understands in the context of rendering WMS tiles and other operations
     /// </summary>
     public enum DisplayMode
     {
@@ -175,10 +175,17 @@
         /// Analysed raw CCA summary information from recorded CCA values Landfill compactors.
         /// </summary>
         CCASummary,
-
         /// <summary>
-        /// 3D Design for map
+        /// Raw temperature information from recorded temperatures values from asphalt compactors.
+        /// </summary>
+        TemperatureDetail,
+        /// <summary>
+        /// 3D terrain for map
+        /// </summary>
+        Terrain3D,
+        /// <summary>
+        /// 3D design for map
         /// </summary>
         Design3D
-    }
+  }
 }

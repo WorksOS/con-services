@@ -6,6 +6,7 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.Models.Validation;
 
@@ -175,6 +176,17 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "customCMVTargets", Required = Required.Default)]
     public List<int> customCMVTargets { get; private set; }
+    /// <summary>
+    /// Flag to determine if machine default temperature details settings or custom settings are used. Default is true.
+    /// </summary>
+    [JsonProperty(PropertyName = "useDefaultTemperatureTargets", Required = Required.Default)]
+    public bool? useDefaultTemperatureTargets { get; private set; } = true;
+    /// <summary>
+    /// The collection of temperature targets when overriding the defaults. Values are in ascending order.
+    /// There must be 5 values and the first value must be 0.
+    /// </summary>
+    [JsonProperty(PropertyName = "customTemperatureTargets", Required = Required.Default)]
+    public List<int> customTemperatureTargets { get; private set; }
     #endregion
 
     #region Construction
@@ -215,7 +227,9 @@ namespace VSS.Productivity3D.Models.Models
       bool? useDefaultPassCountTargets = null,
       List<int> customPassCountTargets = null,
       bool? useDefaultCMVTargets = null,
-      List<int> customCMVTargets = null)
+      List<int> customCMVTargets = null,
+      bool? useDefaultTemperatureTargets = null,
+      List<int> customTemperatureTargets = null)
     {
       return new CompactionProjectSettings
       {
@@ -246,7 +260,9 @@ namespace VSS.Productivity3D.Models.Models
         useDefaultPassCountTargets = useDefaultPassCountTargets,
         customPassCountTargets = customPassCountTargets,
         useDefaultCMVTargets = useDefaultCMVTargets,
-        customCMVTargets = customCMVTargets
+        customCMVTargets = customCMVTargets,
+        useDefaultTemperatureTargets = useDefaultTemperatureTargets,
+        customTemperatureTargets = customTemperatureTargets
       };
     }
 
@@ -280,7 +296,9 @@ namespace VSS.Productivity3D.Models.Models
           useDefaultPassCountTargets = true,
           customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 },
           useDefaultCMVTargets = true,
-          customCMVTargets = new List<int> { 0, 40, 80, 120, 150 }
+          customCMVTargets = new List<int> { 0, 40, 80, 120, 150 },
+          useDefaultTemperatureTargets = true,
+          customTemperatureTargets = new List<int> { 0, 100, 200, 300, 400 }
         };
     #endregion
 
@@ -298,6 +316,10 @@ namespace VSS.Productivity3D.Models.Models
     /// Flag to determine if default or custom MDP used
     /// </summary>
     public bool OverrideMachineTargetMdp => useMachineTargetMdp.HasValue && !useMachineTargetMdp.Value;
+    /// <summary>
+    /// Flag to determine if default or custom Temperature targets used for details
+    /// </summary>
+    public bool OverrideDefaultTemperatureTargets => useDefaultTemperatureTargets.HasValue && !useDefaultTemperatureTargets.Value;
     /// <summary>
     /// Flag to determine if default or custom temperature used
     /// </summary>
@@ -397,10 +419,18 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Get the CMV details targets as a value for Raptor
     /// </summary>
-    public int[] CustomCMVs => (OverrideDefaultCMVTargets && OverrideDefaultCMVTargets && customCMVTargets != null && customCMVTargets.Count > 0
+    public int[] CustomCMVs => (OverrideDefaultCMVTargets && customCMVTargets != null && customCMVTargets.Count > 0
                                 ? customCMVTargets
                                 : DefaultSettings.customCMVTargets).Select(d => { d = d * 10; return d; }).ToArray();
-    
+
+    /// <summary>
+    /// Get the Temperature details targets as a value for Raptor
+    /// </summary>
+    public int[] CustomTemperatures => (OverrideDefaultTemperatureTargets && customTemperatureTargets != null && customTemperatureTargets.Count > 0
+      ? customTemperatureTargets
+      : DefaultSettings.customTemperatureTargets).Select(d => { d = d * 10; return d; }).ToArray();
+
+
     /// <summary>
     /// Get the cut-fill details targets as a value for Raptor
     /// </summary>
@@ -472,6 +502,7 @@ namespace VSS.Productivity3D.Models.Models
       ValidateCutFill();
       ValidatePassCounts();
       ValidateCMVs();
+      ValidateTemperatures();
     }
 
     /// <summary>
@@ -599,6 +630,49 @@ namespace VSS.Productivity3D.Models.Models
               "First CMV target must be 0"));
         }
       }
+    }
+
+    private void ValidateTemperatures()
+    {
+      if (useDefaultTemperatureTargets.HasValue && !useDefaultTemperatureTargets.Value)
+      {
+        const int TEMPERATURE_TARGETS_TOTAL = 5;
+        if (customTemperatureTargets == null || customTemperatureTargets.Count != TEMPERATURE_TARGETS_TOTAL)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Exactly {TEMPERATURE_TARGETS_TOTAL} Temperature targets must be specified"));
+        }
+
+        for (int i = 0; i < TEMPERATURE_TARGETS_TOTAL; i++)
+        {
+          if (customTemperatureTargets[i] < ValidationConstants.MIN_TEMPERATURE || customTemperatureTargets[i] > ValidationConstants.MAX_TEMPERATURE)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Temperature targets must be between {ValidationConstants.MIN_TEMPERATURE} and {ValidationConstants.MAX_TEMPERATURE}"));
+          }
+        }
+
+        for (int i = 1; i < TEMPERATURE_TARGETS_TOTAL; i++)
+        {
+          if (customTemperatureTargets[i - 1] > customTemperatureTargets[i])
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Temperature targets must be in ascending order"));
+          }
+        }
+
+        if (customTemperatureTargets[0] != 0)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "First Temperature target must be 0"));
+        }
+      }
+
+
     }
 
     /// <summary>
