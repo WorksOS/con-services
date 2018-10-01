@@ -156,7 +156,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         if (result1 != null && result1.ConstantTargetCmv == -1)
         {
           var result2 = RequestExecutorContainerFactory
-            .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
+            .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVSummaryResult;
 
           if (result2 != null && !result2.HasData())

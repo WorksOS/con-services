@@ -48,6 +48,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       if (result != null && result.HasData())
       {
         Percents = result.Percents;
+
+        if (settings == null) return;
+
         MinCMVPercent = settings.MinCMVPercent;
         MaxCMVPercent = settings.MaxCMVPercent;
         CmvTarget = new CmvTargetData

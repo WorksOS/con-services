@@ -1,10 +1,13 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -21,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class ReportController : IReportSvc
+  public class ReportController : Controller, IReportSvc
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -40,17 +43,29 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly IConfigurationStore configStore;
 
     /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
-    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore)
+    /// <param name="TRexCompactionDataProxy"></param>
+    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy TRexCompactionDataProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
+      this.TRexCompactionDataProxy = TRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -110,8 +125,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(logger, raptorClient).Process(request)
-          as PassCountSummaryResult;
+        RequestExecutorContainerFactory
+            .Build<SummaryPassCountsExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as PassCountSummaryResult;
     }
 
     /// <summary>
@@ -139,8 +155,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             "Pass count settings required for detailed pass count report"));
       }
       return
-        RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(logger, raptorClient).Process(request)
-          as PassCountDetailedResult;
+        RequestExecutorContainerFactory
+            .Build<DetailedPassCountExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as PassCountDetailedResult;
     }
 
     /// <summary>
@@ -160,8 +177,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(logger, raptorClient).Process(request) as
-          CMVSummaryResult;
+        RequestExecutorContainerFactory
+            .Build<SummaryCMVExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as CMVSummaryResult;
     }
 
     /// <summary>
@@ -181,9 +199,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(logger, raptorClient).Process(request) as
-          CMVDetailedResult;
-
+        RequestExecutorContainerFactory
+            .Build<DetailedCMVExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as CMVDetailedResult;
     }
 
     /// <summary>
@@ -262,8 +280,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger, raptorClient).Process(request) as
-          SpeedSummaryResult;
+        RequestExecutorContainerFactory
+            .Build<SummarySpeedExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as SpeedSummaryResult;
     }
 
     /// <summary>
@@ -282,8 +301,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
       return
-        RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger, raptorClient).Process(request)
-          as CMVChangeSummaryResult;
+        RequestExecutorContainerFactory
+            .Build<CMVChangeSummaryExecutor>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as CMVChangeSummaryResult;
     }
 
     /// <summary>
