@@ -126,6 +126,23 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     }
 
     [TestMethod]
+    public void MapProjectSettingsToTemperatureDetailsSettings()
+    {
+      var ps = CompactionProjectSettings.CreateProjectSettings(
+        useDefaultTemperatureTargets: false, customTemperatureTargets: new List<int> { 0, 150, 200, 250, 300 }
+      );
+
+      var temp = AutoMapperUtility.Automapper.Map<TemperatureDetailsSettings>(ps);
+      Assert.AreEqual(ps.customTemperatureTargets.Count, temp.CustomTemperatureDetailsTargets.Length, "Temperature total not mapped correctly");
+      for (int i = 0; i < temp.CustomTemperatureDetailsTargets.Length; i++)
+      {
+        //Values are mapped to what Raptor expects i.e. 10ths of degrees
+        Assert.AreEqual(ps.customTemperatureTargets[i], temp.CustomTemperatureDetailsTargets[i]/10, $"Temperature item {i} not mapped correctly");
+      }
+    }
+
+
+    [TestMethod]
     public void MapProjectSettingsToPassCountSettings()
     {
       var ps = CompactionProjectSettings.CreateProjectSettings(

@@ -144,6 +144,18 @@ namespace VSS.Productivity3D.Common.Models
     #endregion
 
     #region Temperature
+    /// <summary>
+    /// Flag to determine if default or custom Temperature details colour values are used. Default is true.
+    /// </summary>
+    [JsonProperty(PropertyName = "useDefaultTemperatureDetailsColors", Required = Required.Default)]
+    public bool? useDefaultTemperatureDetailsColors { get; private set; } = true;
+
+    /// <summary>
+    /// The Temperature details colour values when overriding the default ones.
+    /// There must be 5 values.
+    /// </summary>
+    [JsonProperty(PropertyName = "temperatureDetailsColors", Required = Required.Default)]
+    public List<uint> temperatureDetailsColors { get; private set; }
 
     /// <summary>
     /// Flag to determine if default or custom Temperature summary colour values are used. Default is true.
@@ -258,6 +270,8 @@ namespace VSS.Productivity3D.Common.Models
       uint? passCountUnderTargetColor = null,
       bool? useDefaultCutFillColors = true,
       List<uint> cutFillColors = null,
+      bool? useDefaultTemperatureDetailsColors = true,
+      List<uint> temperatureDetailsColors = null,
       bool? useDefaultTemperatureSummaryColors = true,
       uint? temperatureOnTargetColor = null,
       uint? temperatureOverTargetColor = null,
@@ -292,6 +306,8 @@ namespace VSS.Productivity3D.Common.Models
         passCountUnderTargetColor = passCountUnderTargetColor,
         useDefaultCutFillColors = useDefaultCutFillColors,
         cutFillColors = cutFillColors,
+        useDefaultTemperatureDetailsColors = useDefaultTemperatureDetailsColors,
+        temperatureDetailsColors = temperatureDetailsColors,
         useDefaultTemperatureSummaryColors = useDefaultTemperatureSummaryColors,
         temperatureOnTargetColor = temperatureOnTargetColor,
         temperatureOverTargetColor = temperatureOverTargetColor,
@@ -327,6 +343,8 @@ namespace VSS.Productivity3D.Common.Models
       passCountUnderTargetColor = UNDER_COLOR,
       useDefaultCutFillColors = true,
       cutFillColors = CutFillPalette,
+      useDefaultTemperatureDetailsColors = true,
+      temperatureDetailsColors = TemperatureDetailsPalette,
       useDefaultTemperatureSummaryColors = true,
       temperatureOnTargetColor = ON_COLOR,
       temperatureOverTargetColor = OVER_COLOR,
@@ -387,6 +405,7 @@ namespace VSS.Productivity3D.Common.Models
       ValidateColorValuesList(cutFillColors, nameof(cutFillColors), useDefaultCutFillColors, NUMBER_OF_CUT_FILL_COLORS);
 
       // Temperature...
+      ValidateColorValuesList(temperatureDetailsColors, nameof(temperatureDetailsColors), useDefaultTemperatureDetailsColors, NUMBER_OF_TEMPERATURE_DETAILS_COLORS);
       ValidateColorValue(temperatureOnTargetColor, nameof(temperatureOnTargetColor), useDefaultTemperatureSummaryColors);
       ValidateColorValue(temperatureOverTargetColor, nameof(temperatureOverTargetColor), useDefaultTemperatureSummaryColors);
       ValidateColorValue(temperatureUnderTargetColor, nameof(temperatureUnderTargetColor), useDefaultTemperatureSummaryColors);
@@ -514,6 +533,17 @@ namespace VSS.Productivity3D.Common.Models
       0xE57373,
       0xD50000
     };
+
+    private static List<uint> TemperatureDetailsPalette => new List<uint>()
+    {
+      // Decimal values: 87963, 9423080, 6594104, 15628926, 13959168
+      0x01579B, // 87963 (0)
+      0x8FC8E8, // 9423080 (100)
+      0x649E38, // 6594104 (200)
+      0xEE7A7E, // 15628926 (300)
+      0xD50000  // 13959168 (400)
+    };
+
     #endregion
 
     private const uint OVER_COLOR = 0xD50000;
@@ -525,5 +555,7 @@ namespace VSS.Productivity3D.Common.Models
     private const int NUMBER_OF_CMV_PERCENT_COLORS = 8;
     private const int NUMBER_OF_PASS_COUNT_DETAILS_COLORS = 9;
     private const int NUMBER_OF_CUT_FILL_COLORS = 7;
+    private const int NUMBER_OF_TEMPERATURE_DETAILS_COLORS = 5;
+
   }
 }
