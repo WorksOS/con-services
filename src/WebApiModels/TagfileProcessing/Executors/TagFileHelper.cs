@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         {
           tRexResult = await tagFileProxy.SendTagFileNonDirect(compactionTagFileRequest, customHeaders).ConfigureAwait(false);
         }
-
+        
         return tRexResult;
       }
       catch (Exception e)
