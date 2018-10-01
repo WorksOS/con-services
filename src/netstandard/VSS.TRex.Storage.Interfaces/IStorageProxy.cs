@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -22,8 +23,6 @@ namespace VSS.TRex.Storage.Interfaces
                                               string StreamName,
                                               uint SubgridX, uint SubgridY,
                                               string SegmentIdentifier,
-                                              // Don't implement yet.....
-                                              // const AInvalidatedSpatialStreams : TInvalidatedSpatialStreamArray;
                                               FileSystemStreamType StreamType,
                                               MemoryStream Stream);
 
@@ -43,6 +42,9 @@ namespace VSS.TRex.Storage.Interfaces
                                                               string StreamName);
 
         void SetImmutableStorageProxy(IStorageProxy immutableProxy);
+
+        IStorageProxy ImmutableProxy { get; }
+
 
         bool Commit();
         void Clear();

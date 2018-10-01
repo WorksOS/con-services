@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -36,7 +37,8 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName, uint SubgridX, uint SubgridY, string SegmentIdentifier, FileSystemStreamType StreamType, MemoryStream Stream)
+    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName, uint SubgridX, uint SubgridY, string SegmentIdentifier,
+      FileSystemStreamType StreamType, MemoryStream Stream)
     {
       throw new NotImplementedException();
     }
@@ -50,6 +52,8 @@ namespace VSS.TRex.Storage
     {
       throw new NotImplementedException();
     }
+
+    public IStorageProxy ImmutableProxy { get; }
 
     public bool Commit()
     {

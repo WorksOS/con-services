@@ -1,16 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
@@ -24,7 +23,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridIntegrator>();
 
       /// <summary>
-      /// The subgrid tree from which information is being integarted
+      /// The subgrid tree from which information is being integrated
       /// </summary>
       private IServerSubGridTree Source;
 
@@ -45,6 +44,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         private IStorageProxy StorageProxy;
 
+        public List<ISubGridSpatialAffinityKey> InvalidatedSpatialStreams = new List<ISubGridSpatialAffinityKey>(100);
+
         /// <summary>
         ///  Default no-args constructor
         /// </summary>
@@ -55,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// Constructor the initialises state ready for integration
         /// </summary>
-        /// <param name="source">The subgrid tree from which information is being integarted</param>
+        /// <param name="source">The subgrid tree from which information is being integrated</param>
         /// <param name="siteModel">The sitemodel representing the target subgrid tree</param>
         /// <param name="target">The subgrid tree into which the data from the source subgrid tree is integrated</param>
         /// <param name="storageProxy">The storage proxy providing storage semantics for persisting integration results</param>
@@ -112,38 +113,27 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             SubGridChangeNotifier?.Invoke(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
 
             // Save the integrated state of the subgrid segments to allow Ignite to store & socialise the update
-            // within the cluster. First ensure the latest pass information is calculated
+            // within the cluster. 
 
-            SubGridSegmentCleaver.PerformSegmentCleaving(SegmentIterator.StorageProxy, TargetSubGrid);
-
-            TargetSubGrid.ComputeLatestPassInformation(true, StorageProxy);
-
-            SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
-            foreach (var s in TargetSubGrid.Directory.SegmentDirectory)
+            if (Target.SaveLeafSubGrid(TargetSubGrid, SegmentIterator.StorageProxy, InvalidatedSpatialStreams))
             {
-                s.Segment?.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), out FileSystemErrorStatus FSError);
-            }
-
-            // Save the changed subgrid directory to allow Ignite to store & socialise the update within the cluster
-            if (TargetSubGrid.SaveDirectoryToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
-            {
-                // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
-                // in the sitemodel. Note this by including it within the SiteModel existence map
-
-                SiteModel.ExistenceMap.SetCell(TargetSubGrid.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-                                               TargetSubGrid.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-                                               true);
+              // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
+              // in the sitemodel. Note this by including it within the SiteModel existence map
+        
+              SiteModel.ExistenceMap.SetCell(TargetSubGrid.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                             TargetSubGrid.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                             true);
             }
             else
             {
-                // Failure to save a piece of data aborts the entire integration
-                return false;
-            }
-
+              // Failure to save a piece of data aborts the entire integration
+              return false;
+            }        
+        
             // Finally, mark the source subgrid as not being dirty. We need to do this to allow
             // the subgrid to permit its destruction as all changes have been merged into the target.
             SourceSubGrid.AllChangesMigrated();
-
+        
             return true;
         }
 

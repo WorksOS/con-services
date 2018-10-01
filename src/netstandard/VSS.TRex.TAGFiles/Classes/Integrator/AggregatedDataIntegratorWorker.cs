@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -15,6 +18,8 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.TAGFiles.Classes.Queues;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
@@ -339,20 +344,54 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         // all the changes to disk with the notification to the wider TRex stack
                         // that a set of subgrids have been changed
                         Task.SetAggregateModifiedSubgrids(ref WorkingModelUpdateMap);
+
+                        // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
+                        SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
+
+                        // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
+                        // All operations within the transaction to integrate the changes into the live model have completed successfully.
+                        // Now commit those changes as a block.
+                        storageProxy_Mutable.Commit();
+
+                        // Advise the segment retirement manager of any segments/subgrids that needs to be retired as as result of this integration
+                        // Stamp all the invalidated spatial streams with the project ID
+                        foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
+                            key.ProjectID = SiteModelFromDM.ID;
+
+                        try
+                        {
+                          ISegmentRetirementQueue retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
+
+                          if (retirementQueue == null)
+                          {
+                            Log.LogCritical("No registered segment retirement queue in DI context");
+                            Debug.Assert(false, "No registered segment retirement queue in DI context");
+                          }
+
+                          retirementQueue.Add(new SegmentRetirementQueueKey
+                            {
+                              ProjectID = SiteModelFromDM.ID
+                            }, 
+                            new SegmentRetirementQueueItem
+                            {
+                              InsertUTC = DateTime.Now,
+                              ProjectUID = SiteModelFromDM.ID,
+                              SegmentKeys = subGridIntegrator.InvalidatedSpatialStreams.ToArray()
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                          Log.LogCritical($"Unable to add segment invalidation list to segment retirement queue due to exception: {e}");
+                          Log.LogCritical("The following segments will NOT be retired as a result:");
+                          foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
+                            Log.LogCritical($"{invalidatedItem}");
+                        }
                     }
                     finally
                     {
-                        Task.AggregatedCellPasses = null;
-                        WorkingModelUpdateMap = null;
+                      Task.AggregatedCellPasses = null;
+                      WorkingModelUpdateMap = null;
                     }
-
-                    // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-                    SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
-
-                    // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
-                    // All operations within the transaction to integrate the changes into the live model have completed successfully.
-                    // Now commit those changes as a block.
-                    storageProxy_Mutable.Commit();
 
                     if (TRexConfig.AdviseOtherServicesOfDataModelChanges)
                     {

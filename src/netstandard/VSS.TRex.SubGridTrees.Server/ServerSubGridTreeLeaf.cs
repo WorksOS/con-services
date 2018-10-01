@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,12 +8,15 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
-using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.Types;
+using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -514,7 +518,7 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             if (!Dirty)
             {
-                Log.LogCritical($"Subgrid {Moniker()} not marked as dirty when computing lastest pass information");
+                Log.LogCritical($"Subgrid {Moniker()} not marked as dirty when computing latest pass information");
                 return;
             }
 
@@ -675,9 +679,8 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         public bool SaveDirectoryToFile(IStorageProxy storage,
-                                        string FileName
-                                        /* const AInvalidatedSpatialStreams : TInvalidatedSpatialStreamArray*/)
-        {
+                                        string FileName)
+    {
             MemoryStream MStream = new MemoryStream();
 
             bool Result;
@@ -688,7 +691,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             Result = storage.WriteSpatialStreamToPersistentStore
-             (Owner.ID, FileName, OriginX, OriginY, string.Empty, //AInvalidatedSpatialStreams,
+             (Owner.ID, FileName, OriginX, OriginY, string.Empty,
               FileSystemStreamType.SubGridDirectory, MStream) == FileSystemErrorStatus.OK;
 
             if (!Result)
@@ -699,7 +702,13 @@ namespace VSS.TRex.SubGridTrees.Server
             return Result;
         }
 
-        public bool LoadDirectoryFromStream(Stream stream)
+      /// <summary>
+      /// Generates the affinity key for this subgrid that identifies this element in the persistent data store
+      /// </summary>
+      /// <returns></returns>
+      public ISubGridSpatialAffinityKey AffinityKey() => new SubGridSpatialAffinityKey(Owner.ID, OriginX, OriginY);
+
+      public bool LoadDirectoryFromStream(Stream stream)
         {
             BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true);
             SubGridStreamHeader Header = new SubGridStreamHeader(reader);
@@ -889,6 +898,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="Origin"></param>
         /// <returns></returns>
         public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => $"{Origin.X:D10}-{Origin.Y:D10}.sgl";
+
     }
 }
 

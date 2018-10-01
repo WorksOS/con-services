@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Storage.Interfaces;
+﻿using System.Collections.Generic;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
@@ -17,5 +19,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
       bool loadAllPasses, bool loadLatestPasses,
       IServerLeafSubGrid SubGrid);
 
+    bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, IStorageProxy storageProxy, List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams);
   }
 }

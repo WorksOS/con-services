@@ -5,21 +5,11 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridDirectory
   {
-    List<ISubGridCellPassesDataSegmentInfo> SegmentDirectory { get; set; }
-    ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; }
+    bool ExistsInPersistentStore { get; }
 
-    /// <summary>
-    /// Adds a segment to the persistent list of cloven segments. The underlying list is created
-    /// on demand under a subgrid lock
-    /// </summary>
-    /// <param name="segment"></param>
-    void AddPersistedClovenSegment(ISubGridCellPassesDataSegmentInfo segment);
+    List<ISubGridCellPassesDataSegmentInfo> SegmentDirectory { get; }
 
-    /// <summary>
-    /// Extracts and returns the current list of persisted cloven segments. THe internal list is set to null
-    /// </summary>
-    /// <returns></returns>
-    List<ISubGridCellPassesDataSegmentInfo> ExtractPersistedClovenSegments();
+    ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set;  }
 
     void AllocateGlobalLatestCells();
     void DeAllocateGlobalLatestCells();

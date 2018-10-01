@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
@@ -13,6 +15,12 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public double MinElevation { get; set; } = Consts.NullDouble;
         public double MaxElevation { get; set; } = Consts.NullDouble;
+
+        public ISubGridSpatialAffinityKey AffinityKey()
+        {
+          return new SubGridSpatialAffinityKey(Guid.Empty, Segment.Owner.OriginX, Segment.Owner.OriginY, 
+                                               Segment.SegmentInfo.FileName(Segment.Owner.OriginX, Segment.Owner.OriginY));
+        }
 
         public bool ExistsInPersistentStore { get; set; }
 
@@ -28,9 +36,6 @@ namespace VSS.TRex.SubGridTrees.Server
             EndTime = endTime;
             Segment = segment;
         }
-
-        //        procedure SaveToStream(Stream: TStream);
-        //        procedure LoadFromStream(Stream: TStream);
 
         /// <summary>
         /// IncludesTimeWithinBounds determines if ATime is strictly greater than
@@ -48,7 +53,7 @@ namespace VSS.TRex.SubGridTrees.Server
             return (testTime > StartTime.ToOADate() + Epsilon) && (testTime < EndTime.ToOADate() - Epsilon);
         }
 
-        public string FileName(SubGridCellAddress Origin) => $"{Origin.X:d10}-{Origin.Y:d10}-({StartTime.ToOADate():F6}-{EndTime.ToOADate():F6}).sgs";
+        public string FileName(uint OriginX, uint OriginY) => $"{OriginX:d10}-{OriginY:d10}-({StartTime.ToOADate():F6}-{EndTime.ToOADate():F6}).sgs";
 
         public void Write(BinaryWriter writer)
         {

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -15,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegment : ISubGridCellPassesDataSegment
   {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
 
         /// <summary>
         /// Tracks whether there are unsaved changes in this segment
@@ -229,8 +230,6 @@ namespace VSS.TRex.SubGridTrees.Server
                                string FileName,
                                out FileSystemErrorStatus FSError)
         {
-            // TODO  InvalidatedSpatialStreams: TInvalidatedSpatialStreamArray;
-
             bool Result;
             FSError = FileSystemErrorStatus.OK;
 
@@ -255,13 +254,11 @@ namespace VSS.TRex.SubGridTrees.Server
                         return false;
                 }
 
-                // TODO          SetLength(InvalidatedSpatialStreams, 0);
-                FSError = storage.WriteSpatialStreamToPersistentStore(
+              FSError = storage.WriteSpatialStreamToPersistentStore(
                     Owner.Owner.ID,
                     FileName,
                     Owner.OriginX, Owner.OriginY,
                     FileName,
-                    //  TODO         InvalidatedSpatialStreams,
                     FileSystemStreamType.SubGridSegment,
                     MStream);
 
@@ -273,14 +270,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
         /// <summary>
         /// Determines if this segment violates either the maximum number of cell passes within a 
-        /// segment limit, or the maximum numebr of cell passes within a single cell within a
+        /// segment limit, or the maximum number of cell passes within a single cell within a
         /// segment limit.
         /// If either limit is breached, this segment requires cleaving
         /// </summary>
         /// <returns></returns>
-        public bool RequiresCleaving()
+        public bool RequiresCleaving(out uint TotalPasses, out uint MaxPassCount)
         {
-            SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out uint TotalPasses, out uint MaxPassCount);
+            SegmentTotalPassesCalculator.CalculateTotalPasses(PassesData, out TotalPasses, out MaxPassCount);
 
             return TotalPasses > TRexConfig.VLPD_SubGridSegmentPassCountLimit ||
                    MaxPassCount > TRexConfig.VLPD_SubGridMaxSegmentCellPassesLimit;

@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Apache.Ignite.Core;
 using VSS.TRex.DI;
@@ -9,6 +10,9 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
@@ -66,28 +70,41 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       // Get the ignite grid and cache references
 
-      IIgnite _ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
+      IIgnite mutableIgnite = Ignition.GetIgnite(TRexGrids.MutableGridName());
 
-      if (_ignite == null)
+      if (mutableIgnite == null)
       {
-        Log.LogError("Ignite reference in service is null - aborting service execution");
+        Log.LogError($"Mutable Ignite reference in service is null - aborting service execution");
         return;
       }
 
-      var queueCache = _ignite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+      var mutableQueueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
-      SegmentRetirementQueue queue = new SegmentRetirementQueue(DIContext.Obtain<ITRexGridFactory>().Grid(DIContext.Obtain<ISiteModels>().StorageProxy.Mutability));
+      SegmentRetirementQueue mutableQueue = new SegmentRetirementQueue(mutableIgnite);
       SegmentRetirementQueueItemHandler handler = new SegmentRetirementQueueItemHandler();
 
       // Cycle looking for new work to do until aborted...
       do
       {
+        IStorageProxy mutableStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+
+        Debug.Assert(mutableStorageProxy.Mutability == StorageMutability.Mutable, "Non mutable storage proxy available to segment retirement queue");
+
         // Retrieve the list of segments to be retired
-        var retirees = queue.Query(DateTime.Now - retirementAge);
+        var retirees = mutableQueue.Query(DateTime.Now - retirementAge);
 
         // Pass the list to the handler for action
         if ((retirees?.Count ?? 0) > 0)
-          handler.Process(retirees);
+        {
+          if (handler.Process(mutableStorageProxy, mutableQueueCache, retirees))
+          {
+
+          }
+          else
+          {
+            Log.LogInformation($"Successfully retired {retirees.Count} spatial streams from mutable and immutable contexts");
+          }
+        }
 
         waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
       } while (!aborted);

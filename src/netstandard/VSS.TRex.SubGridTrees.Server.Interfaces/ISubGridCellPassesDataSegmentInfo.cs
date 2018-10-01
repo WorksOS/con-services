@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
@@ -23,8 +24,10 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <returns></returns>
     bool IncludesTimeWithinBounds(DateTime time);
 
-    string FileName(SubGridCellAddress Origin);
+    string FileName(uint OriginX, uint OriginY);
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
+
+    ISubGridSpatialAffinityKey AffinityKey();
   }
 }

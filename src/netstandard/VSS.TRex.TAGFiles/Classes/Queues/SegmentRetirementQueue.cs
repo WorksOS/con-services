@@ -5,7 +5,9 @@ using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
@@ -14,13 +16,13 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   /// will be removed. This date is intended to be beyond the eventual consistency requirements of any active query in 
   /// progress on the immutable data grid.
   /// </summary>
-  public class SegmentRetirementQueue
+  public class SegmentRetirementQueue : ISegmentRetirementQueue
   {
-    private ICache<long, SegmentRetirementQueueItem> QueueCache;
+    private ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> QueueCache;
 
-    private void Add(DateTime date, string value)
+    public void Add(ISegmentRetirementQueueKey key, SegmentRetirementQueueItem value)
     {
-      QueueCache.Put(date.ToBinary(), new SegmentRetirementQueueItem(date.ToBinary(), value));
+      QueueCache.Put(key, value);
     }
 
     /// <summary>
@@ -29,13 +31,13 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// <param name="ignite"></param>
     public SegmentRetirementQueue(IIgnite ignite)
     {
-      QueueCache = ignite.GetOrCreateCache<long, SegmentRetirementQueueItem>(
+      QueueCache = ignite.GetOrCreateCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(
         new CacheConfiguration
         {
           Name = TRexCaches.SegmentRetirementQueueCacheName(),
           QueryEntities = new[]
           {
-            new QueryEntity(typeof(long), typeof(SegmentRetirementQueueItem))
+            new QueryEntity(typeof(ISegmentRetirementQueueKey), typeof(SegmentRetirementQueueItem))
           },
           KeepBinaryInStore = true
         });

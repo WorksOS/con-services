@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -19,14 +18,14 @@ namespace VSS.TRex.Storage
     /// </summary>
     public class StorageProxy_Ignite : StorageProxy_IgniteBase, IStorageProxy
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite>();
 
-        /// <summary>
-        /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
-        /// </summary>w
-        public IStorageProxy ImmutableProxy;
+      /// <summary>
+      /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
+      /// </summary>w
+      public IStorageProxy ImmutableProxy { get; private set; }
 
-        /// <summary>
+      /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
         /// </summary>
         /// <param name="mutability"></param>
@@ -284,7 +283,7 @@ namespace VSS.TRex.Storage
 
             ImmutableProxy = immutableProxy;
         }
-
+        
         /// <summary>
         /// Commits unsaved changes in the storage proxy.
         /// No implementation for non-transactional storage proxy
