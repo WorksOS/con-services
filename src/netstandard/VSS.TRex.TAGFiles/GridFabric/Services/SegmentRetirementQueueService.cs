@@ -86,31 +86,39 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
       // Cycle looking for new work to do until aborted...
       do
       {
-        IStorageProxy mutableStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
-
-        Debug.Assert(mutableStorageProxy.Mutability == StorageMutability.Mutable, "Non mutable storage proxy available to segment retirement queue");
-
-        Log.LogInformation("About to query retiree spatial streams from cache");
-
-        // Retrieve the list of segments to be retired
-        var retirees = mutableQueue.Query(DateTime.Now - retirementAge);
-
-        // Pass the list to the handler for action
-        if ((retirees?.Count ?? 0) > 0)
+        try
         {
-          Log.LogInformation($"About to attempt retiring {retirees?.Count} spatial streams from mutable and immutable contexts");
+          IStorageProxy mutableStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
 
-          if (handler.Process(mutableStorageProxy, mutableQueueCache, retirees))
+          Debug.Assert(mutableStorageProxy.Mutability == StorageMutability.Mutable, "Non mutable storage proxy available to segment retirement queue");
+
+          Log.LogInformation("About to query retiree spatial streams from cache");
+
+          // Retrieve the list of segments to be retired
+          var retirees = mutableQueue.Query(DateTime.Now - retirementAge);
+
+          // Pass the list to the handler for action
+          if ((retirees?.Count ?? 0) > 0)
           {
-            Log.LogInformation($"Successfully retired {retirees?.Count} spatial streams from mutable and immutable contexts");
+            Log.LogInformation($"About to attempt retiring {retirees?.Count} spatial streams from mutable and immutable contexts");
+
+            if (handler.Process(mutableStorageProxy, mutableQueueCache, retirees))
+            {
+              Log.LogInformation($"Successfully retired {retirees?.Count} spatial streams from mutable and immutable contexts");
+            }
+            else
+            {
+              Log.LogError($"Failed to retire {retirees?.Count} spatial streams from mutable and immutable contexts");
+            }
           }
-          else
-          {
-            Log.LogError($"Failed to retire {retirees?.Count} spatial streams from mutable and immutable contexts");
-          }
+
+          waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
         }
-
-        waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
+        catch (Exception e)
+        {
+          Log.LogError("Exception reported while obtaining new group of retirees to process: {e}"); 
+          throw;
+        }
       } while (!aborted);
 
       Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} completed executing");

@@ -55,14 +55,18 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// <returns></returns>
     public List<SegmentRetirementQueueItem> Query(DateTime earlierThan)
     {
-      var sql = new SqlQuery(typeof(SegmentRetirementQueueItem), $"_key < {earlierThan.ToBinary()}");
+      var sql = new SqlQuery(typeof(SegmentRetirementQueueItem), $"_key < {earlierThan.ToBinary()}")
+      {
+        Local = true
+      };
 
       try
       {
         return QueueCache.Query(sql).Select(x => x.Value).ToList();
       }
-      catch
+      catch (Exception e)
       {
+        Log.LogError($"{nameof(Query)} experienced exception while querying retirees: {e}");
         return null;
       }
     }
