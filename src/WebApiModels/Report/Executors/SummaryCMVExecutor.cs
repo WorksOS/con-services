@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return trexCompactionDataProxy.SendCMVSummaryRequest(cmvSummaryRequest, customHeaders).Result;
         }
 
-        var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId,
+        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
           request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
         var raptorResult = raptorClient.GetCMVSummary(request.ProjectId ?? -1,

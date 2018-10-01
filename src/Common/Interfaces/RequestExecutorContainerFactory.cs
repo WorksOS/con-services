@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient = null,
       ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null,
       ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
-      ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, TRexCompactionDataProxy trexCompactionDataProxy = null,
+      ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
       IDictionary<string, string> customHeaders = null)
       where TExecutor : RequestExecutorContainer, new()
     {

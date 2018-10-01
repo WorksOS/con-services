@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      MDPRequest request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter,
+      var request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter, -1, null, null, null);
       request.Validate();
 
       try
