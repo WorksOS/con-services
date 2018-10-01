@@ -11,6 +11,8 @@ using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
+using VSS.TRex.Types;
+using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -34,6 +36,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested Pass Count details data";
+
       PassCountDetailsRequest request = item as PassCountDetailsRequest;
 
       if (request == null)
@@ -52,17 +56,21 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (passCountDetailsResult != null)
-        return new PassCountDetailedResult(
-          new TargetPassCountRange(
-            passCountDetailsResult.ConstantTargetPassCountRange.Min, 
-            passCountDetailsResult.ConstantTargetPassCountRange.Max),
-          passCountDetailsResult.IsTargetPassCountConstant,
-          passCountDetailsResult.Percents,
-          passCountDetailsResult.TotalAreaCoveredSqMeters
-        );
+      {
+        if (passCountDetailsResult.ResultStatus == RequestErrorStatus.OK)
+          return new PassCountDetailedResult(
+            new TargetPassCountRange(
+              passCountDetailsResult.ConstantTargetPassCountRange.Min,
+              passCountDetailsResult.ConstantTargetPassCountRange.Max),
+            passCountDetailsResult.IsTargetPassCountConstant,
+            passCountDetailsResult.Percents,
+            passCountDetailsResult.TotalAreaCoveredSqMeters
+          );
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested Pass Count details data"));
+        throw CreateServiceException(ERROR_MESSAGE, passCountDetailsResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
   }
 }

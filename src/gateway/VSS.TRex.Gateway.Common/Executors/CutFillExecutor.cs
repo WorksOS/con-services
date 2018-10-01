@@ -11,6 +11,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -34,6 +35,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested cut-fill details data";
+
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
       if (request == null)
@@ -58,10 +61,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (cutFillResult != null)
-        return new CompactionCutFillDetailedResult(cutFillResult.Percents);
+      {
+        if (cutFillResult.ResultStatus == RequestErrorStatus.OK)
+          return new CompactionCutFillDetailedResult(cutFillResult.Percents);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested cut-fill details data"));
+        throw CreateServiceException(ERROR_MESSAGE, cutFillResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -32,6 +33,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested CMV details data";
+
       CMVDetailsRequest request = item as CMVDetailsRequest;
 
       if (request == null)
@@ -50,10 +53,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (cmvDetailsResult != null)
-        return new CMVDetailedResult(cmvDetailsResult.Percents, cmvDetailsResult.ConstantTargetCMV, cmvDetailsResult.IsTargetCMVConstant);
+      {
+        if (cmvDetailsResult.ResultStatus == RequestErrorStatus.OK)
+          return new CMVDetailedResult(cmvDetailsResult.Percents, cmvDetailsResult.ConstantTargetCMV, cmvDetailsResult.IsTargetCMVConstant);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested CMV details data"));
+        throw CreateServiceException(ERROR_MESSAGE, cmvDetailsResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
 
   }
