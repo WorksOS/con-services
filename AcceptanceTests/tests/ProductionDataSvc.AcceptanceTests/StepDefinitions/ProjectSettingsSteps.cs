@@ -77,8 +77,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(message, settingsValidationRequester.CurrentResponse.Message);
     }
 
-    [Then(@"the reuslt should contain code (.*) and message ""(.*)""")]
-    public void ThenTheReusltShouldContainCodeAndMessage(int code, string msg)
+    [Then(@"the result should contain code (.*) and message ""(.*)""")]
+    public void ThenTheResultShouldContainCodeAndMessage(int code, string msg)
     {
       Assert.IsTrue(
         settingsValidationRequester.CurrentResponse.Code == code &&

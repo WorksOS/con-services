@@ -15,6 +15,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
@@ -250,6 +251,37 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RequestExecutorContainerFactory
           .Build<CompactionCutFillExecutor>(LoggerFactory, RaptorClient)
           .Process(cutFillRequest) as CompactionCutFillDetailedResult);
+    }
+
+    /// <summary>
+    /// Get temperature details from Raptor for the specified project and date range.
+    /// </summary>
+    [Route("api/v2/temperature/details")]
+    [HttpGet]
+    public async Task<CompactionTemperatureDetailResult> GetTemperatureDetails(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation("GetTemperatureDetails: " + Request.QueryString);
+
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var projectId = await GetLegacyProjectId(projectUid);
+
+      var temperatureRequest = RequestFactory.Create<TemperatureRequestHelper>(r => r
+          .ProjectId(projectId)
+          .Headers(this.CustomHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
+        .CreateTemperatureDetailsRequest();
+
+      temperatureRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<CompactionTemperatureDetailsExecutor>(LoggerFactory, RaptorClient)
+          .Process(temperatureRequest) as CompactionTemperatureDetailResult);
+
     }
   }
 }

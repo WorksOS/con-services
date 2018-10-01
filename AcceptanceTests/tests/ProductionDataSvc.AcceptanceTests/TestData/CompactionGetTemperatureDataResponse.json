@@ -101,15 +101,81 @@
   },
   "PassCountFilter_Summary": {
     "temperatureSummaryData": {
-      "percentEqualsTarget": 0.0,
+      "percents": [],
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
-      "totalAreaCoveredSqMeters": 726.19920000000013,	  
+      "totalAreaCoveredSqMeters": 726.19920000000013,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
         "maxTemperatureMachineTarget": 143.0,
         "targetVaries": false
       }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details": {
+    "temperatureDetailsData": {
+      "percents": [],
+      "totalAreaCoveredSqMeters": 953.93120000000022
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details_PS": {
+    "temperatureDetailsData": {
+      "percents": [],
+      "totalAreaCoveredSqMeters": 953.93120000000022
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Details": {
+    "temperatureDetailsData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Details": {
+    "temperatureDetailsData": {
+      "percents": [],
+      "totalAreaCoveredSqMeters": 72.9436
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryTempFilter_Det": {
+    "temperatureDetailsData": {
+      "percents": [],
+      "totalAreaCoveredSqMeters": 364.14000000000004
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_Details": {
+    "temperatureDetailsData": {
+      "percents": [],
+      "totalAreaCoveredSqMeters": 22.542000000000005
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TemperatureFilter_Details": {
+    "temperatureDetailsData": {
+      "percents": [],
+      "totalAreaCoveredSqMeters": 226.46040000000005
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TempBoundaryFilter_Details": {
+    "temperatureDetailsData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Details": {
+    "temperatureDetailsData": {
+      "percents": [], 
+      "totalAreaCoveredSqMeters": 726.19920000000013
     },
     "Code": 0,
     "Message": "success"

@@ -7,7 +7,7 @@ Scenario Outline: Project Settings Validate Default Settings
   And a projectSettings ""
   And a settingsType "<ProjectSettingsType>"
 	When I request settings validation
-  Then the reuslt should contain code <Code> and message "<Message>"
+  Then the result should contain code <Code> and message "<Message>"
   Examples: 
   | RequestName | ProjectUID                           | ProjectSettingsType | Code | Message                            |
   | Targets     | ff91dd40-1569-4765-a2bc-014321f76ace | 1                   | 0    | Project settings Targets are valid |
@@ -19,7 +19,7 @@ Scenario Outline:  Project Settings Validate Partial Custom Settings
   And a projectSettings "<ProjectSettings>"
   And a settingsType "<ProjectSettingsType>"
 	When I request settings validation
-  Then the reuslt should contain code <Code> and message "<Message>"
+  Then the result should contain code <Code> and message "<Message>"
   Examples: 
   | RequestName | ProjectUID                           | ProjectSettings                                                                                                                   | ProjectSettingsType | Code | Message                            |
   | Targets     | ff91dd40-1569-4765-a2bc-014321f76ace | { useMachineTargetPassCount : false, customTargetPassCountMinimum : 5, customTargetPassCountMaximum : 7 }                         | 1                   | 0    | Project settings Targets are valid |
@@ -31,7 +31,7 @@ Scenario Outline:  Project Settings Validate Partial Custom Settings
 #  And a settingsType "<ProjectSettingsType>"  
 #  And supplying "<ProjectSettingsName>" paramters from the repository
 #  When I request settings validation
-#  Then the reuslt should contain code <Code> and message "<Message>"
+#  Then the result should contain code <Code> and message "<Message>"
 #  Examples: 
 #  | ProjectSettingsName | ProjectUID                           | ProjectSettingsType | Code | Message                            |
 #  | Targets             | ff91dd40-1569-4765-a2bc-014321f76ace | 1                   | 0    | Project settings Targets are valid |
@@ -72,7 +72,9 @@ Scenario:  Project Settings Validate Full Custom Settings Targets
     useDefaultPassCountTargets: false,
     customPassCountTargets: [1,3,5,8,11,16,20,25],
     useDefaultCMVTargets: false, 
-    customCMVTargets: [0,20,50,100,130]
+    customCMVTargets: [0,20,50,100,130],
+    useDefaultTemperatureTargets: false, 
+    customTemperatureTargets: [0,75,150,250,375]
   }
   """
 	When I request settings validation
@@ -117,6 +119,8 @@ Scenario:  Project Settings Validate Full Custom Settings Colors
     temperatureOnTargetColor: 0x8BC34A,
     temperatureOverTargetColor: 0xD50000,
     temperatureUnderTargetColor: 0x1579B,
+    useDefaultTemperatureDetailsColors: true,
+    temperatureDetailsColors: [0x01579B, 0x6BACD5, 0x99CB65, 0xF6A3A8, 0xD50000],
     useDefaultSpeedSummaryColors: true,
     speedOnTargetColor: 0x8BC34A,
     speedOverTargetColor: 0xD50000,
@@ -144,7 +148,7 @@ Scenario Outline:  Project Settings Validate Invalid Settings Missing Values
   And a settingsType "<ProjectSettingsType>"
 	When I request settings validation expecting bad request
 	#Then I should get error code -1 and message "Both minimum and maximum target pass count must be specified"
-  Then the reuslt should contain code <Code> and message "<Message>"
+  Then the result should contain code <Code> and message "<Message>"
   Examples: 
   | RequestName | ProjectUID                           | ProjectSettings                                                                                    | ProjectSettingsType | Code | Message                                                      |
   | Targets     | ff91dd40-1569-4765-a2bc-014321f76ace | { useMachineTargetPassCount : false, customTargetPassCountMinimum : 5 }                            | 1                   | -1   | Both minimum and maximum target pass count must be specified |
