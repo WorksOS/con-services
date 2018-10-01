@@ -6,6 +6,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.MasterData.Proxies
 {
@@ -19,7 +20,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="configurationStore"></param>
     /// <param name="logger"></param>
-    protected TRexCompactionDataProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
+    public TRexCompactionDataProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
     {
     }
 
@@ -31,9 +32,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendCMVChangeDetailsRequest(CMVChangeDetailsRequest cmvChangeDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendCMVChangeDetailsRequest)}: Sending the request: {cmvChangeDetailsRequest}");
+      var request = JsonConvert.SerializeObject(cmvChangeDetailsRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(cmvChangeDetailsRequest), customHeaders, "/cmv/percentchange");
+      log.LogDebug($"{nameof(SendCMVChangeDetailsRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<CMVChangeSummaryResult>(request, customHeaders, "/cmv/percentchange");
     }
 
     /// <summary>
@@ -44,9 +47,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendCMVDetailsRequest(CMVDetailsRequest cmvDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendCMVDetailsRequest)}: Sending the request: {cmvDetailsRequest}");
+      var request = JsonConvert.SerializeObject(cmvDetailsRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(cmvDetailsRequest), customHeaders, "/cmv/details");
+      log.LogDebug($"{nameof(SendCMVDetailsRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<CMVDetailedResult>(request, customHeaders, "/cmv/details");
     }
 
     /// <summary>
@@ -57,9 +62,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendCMVSummaryRequest(CMVSummaryRequest cmvSummaryRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendCMVSummaryRequest)}: Sending the request: {cmvSummaryRequest}");
+      var request = JsonConvert.SerializeObject(cmvSummaryRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(cmvSummaryRequest), customHeaders, "/cmv/summary");
+      log.LogDebug($"{nameof(SendCMVSummaryRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<CMVSummaryResult>(request, customHeaders, "/cmv/summary");
     }
 
     /// <summary>
@@ -70,9 +77,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendPassCountDetailsRequest(PassCountDetailsRequest pcDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendPassCountDetailsRequest)}: Sending the request: {pcDetailsRequest}");
+      var request = JsonConvert.SerializeObject(pcDetailsRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(pcDetailsRequest), customHeaders, "/passcounts/details");
+      log.LogDebug($"{nameof(SendPassCountDetailsRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<PassCountDetailedResult>(request, customHeaders, "/passcounts/details");
     }
 
     /// <summary>
@@ -83,9 +92,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendPassCountSummaryRequest(PassCountSummaryRequest pcSummaryRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendPassCountSummaryRequest)}: Sending the request: {pcSummaryRequest}");
+      var request = JsonConvert.SerializeObject(pcSummaryRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(pcSummaryRequest), customHeaders, "/passcounts/summary");
+      log.LogDebug($"{nameof(SendPassCountSummaryRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<PassCountSummaryResult>(request, customHeaders, "/passcounts/summary");
     }
 
     /// <summary>
@@ -96,9 +107,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendCutFillDetailsRequest(CutFillDetailsRequest cfDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendCutFillDetailsRequest)}: Sending the request: {cfDetailsRequest}");
+      var request = JsonConvert.SerializeObject(cfDetailsRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(cfDetailsRequest), customHeaders, "/cutfill/details");
+      log.LogDebug($"{nameof(SendCutFillDetailsRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<CompactionCutFillDetailedResult>(request, customHeaders, "/cutfill/details");
     }
 
     /// <summary>
@@ -109,9 +122,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendMDPSummaryRequest(MDPSummaryRequest mdpSummaryRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendMDPSummaryRequest)}: Sending the request: {mdpSummaryRequest}");
+      var request = JsonConvert.SerializeObject(mdpSummaryRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(mdpSummaryRequest), customHeaders, "/mdp/summary");
+      log.LogDebug($"{nameof(SendMDPSummaryRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<MDPSummaryResult>(request, customHeaders, "/mdp/summary");
     }
 
     /// <summary>
@@ -123,9 +138,11 @@ namespace VSS.MasterData.Proxies
     public async Task<ContractExecutionResult> SendTemperatureSummaryRequest(TemperatureSummaryRequest temperatureSummaryRequest,
       IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendTemperatureSummaryRequest)}: Sending the request: {temperatureSummaryRequest}");
+      var request = JsonConvert.SerializeObject(temperatureSummaryRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(temperatureSummaryRequest), customHeaders, "/temperature/summary");
+      log.LogDebug($"{nameof(SendTemperatureSummaryRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<TemperatureSummaryResult>(request, customHeaders, "/temperature/summary");
     }
 
     /// <summary>
@@ -136,9 +153,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendSpeedSummaryRequest(SpeedSummaryRequest speedSummaryRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendSpeedSummaryRequest)}: Sending the request: {speedSummaryRequest}");
+      var request = JsonConvert.SerializeObject(speedSummaryRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(speedSummaryRequest), customHeaders, "/speed/summary");
+      log.LogDebug($"{nameof(SendSpeedSummaryRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<SpeedSummaryResult>(request, customHeaders, "/speed/summary");
     }
 
     /// <summary>
@@ -149,9 +168,11 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the request: {summaryVolumesRequest}");
+      var request = JsonConvert.SerializeObject(summaryVolumesRequest);
 
-      return await SendRequestPost(JsonConvert.SerializeObject(summaryVolumesRequest), customHeaders, "/volumes/summary");
+      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<SummaryVolumesResult>(request, customHeaders, "/volumes/summary");
     }
 
     /// <summary>
@@ -161,9 +182,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
     /// <returns></returns>
-    private async Task<ContractExecutionResult> SendRequestPost(string payload, IDictionary<string, string> customHeaders, string route)
+    private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
     {
-      var response = await SendRequest<ContractExecutionResult>("TREX_GATEWAY_API_URL", payload, customHeaders, route, "POST", string.Empty);
+      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, "POST", string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 

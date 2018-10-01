@@ -9,9 +9,9 @@ namespace VSS.Productivity3D.Models.ResultHandling
   public class CMVChangeSummaryResult : ContractExecutionResult
   {
     /// <summary>
-    /// Default public constructor.
+    /// Default private constructor.
     /// </summary>
-    public CMVChangeSummaryResult()
+    private CMVChangeSummaryResult()
     { }
 
     /// <summary>
