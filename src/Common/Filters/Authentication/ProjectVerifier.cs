@@ -1,8 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {
@@ -18,20 +21,26 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     {
       object projectIdentifier = null;
 
+      // Identify any query parameter called 'request'.
       if (actionContext.ActionArguments.ContainsKey("request"))
       {
         var request = actionContext.ActionArguments["request"];
 
-        // Ignore any query parameter called 'request'.
         if (request.GetType() != typeof(string))
         {
           projectIdentifier = request.GetType()
-            .GetProperty(PROJECT_ID, BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)?.GetValue(request);
+                                     .GetProperty(PROJECT_ID, BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)?.GetValue(request);
 
           if (projectIdentifier == null)
           {
-            projectIdentifier = request.GetType()
+            projectIdentifier = request
+              .GetType()
               .GetProperty(PROJECT_UID, BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)?.GetValue(request);
+
+            var projectUid = Convert.ToString(projectIdentifier);
+            var projectDescriptor = ((RaptorPrincipal)actionContext.HttpContext.User).GetProject(projectUid).Result;
+
+            ((ProjectID) request).ProjectId = projectDescriptor.LegacyProjectId;
           }
         }
       }
