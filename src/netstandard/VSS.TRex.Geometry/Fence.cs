@@ -6,7 +6,7 @@ using VSS.TRex.Common;
 namespace VSS.TRex.Geometry
 {
   /// <summary>
-  /// A simple polygon desribing a fence and including tests for different geometry elements
+  /// A simple polygon describing a fence and including tests for different geometry elements
   /// </summary>
   [Serializable]
   public class Fence
@@ -37,7 +37,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Constructor that creates a rectangular fence from a woorld coordinate bounding extent
+    /// Constructor that creates a rectangular fence from a world coordinate bounding extent
     /// </summary>
     /// <param name="extent"></param>
     public Fence(BoundingWorldExtent3D extent) : this(extent.MinX, extent.MinY, extent.MaxX, extent.MaxY)
@@ -114,7 +114,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Is the fence intrincically a rectangle?
+    /// Is the fence intrinsically a rectangle?
     /// </summary>
     public bool IsRectangle { get; set; }
 
@@ -181,7 +181,7 @@ namespace VSS.TRex.Geometry
         // Get the last point of the fence. }
 
         int crosses = 0;
-        FencePoint pt1; //, pt3;
+        FencePoint pt1; 
         FencePoint pt2 = Points.Last();
 
         //  No intersections found yet 
@@ -262,8 +262,7 @@ namespace VSS.TRex.Geometry
 
         if (LineIntersection.LinesIntersect(x1, y1, x2, y2,
           pt1.X, pt1.Y, pt2.X, pt2.Y,
-          out double X, out double Y, true,
-          out bool LinesAreColinear))
+          out _, out _, true, out _))
         {
           return true;
         }
@@ -294,8 +293,7 @@ namespace VSS.TRex.Geometry
 
         if (LineIntersection.LinesIntersect(x1, y1, x2, y2,
           pt1.X, pt1.Y, pt2.X, pt2.Y,
-          out double X, out double Y, true,
-          out bool LinesAreColinear))
+          out _, out _, true, out _))
         {
           return true;
         }
@@ -406,7 +404,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Detemrine if the shape of the fence is a square
+    /// Determine if the shape of the fence is a square
     /// </summary>
     /// <returns></returns>
     public bool IsSquare => IsRectangle && (Math.Abs((MaxX - MinX) - (MaxY - MinY)) < 0.0001);
@@ -469,17 +467,16 @@ namespace VSS.TRex.Geometry
         return 0;
       }
 
-      // Calc the area by suming the trapeziums to a base line
+      // Calc the area by summing the trapeziums to a base line
       double BaseY = Points.Last().Y;
       double LastX = Points.Last().X;
       double LastY = Points.Last().Y - BaseY;
-      double X, Y;
       double result = 0.0;
 
       foreach (FencePoint pt in Points)
       {
-        X = pt.X;
-        Y = pt.Y - BaseY;
+        double X = pt.X;
+        double Y = pt.Y - BaseY;
 
         result += (LastY + Y) / 2.0 * (X - LastX);
 
@@ -487,7 +484,7 @@ namespace VSS.TRex.Geometry
         LastY = Y;
       }
 
-      return result < 0 ? -result : result;
+      return Math.Abs(result);
     }
 
     /// <summary>
@@ -501,13 +498,13 @@ namespace VSS.TRex.Geometry
     /// <param name="source"></param>
     public void Assign(Fence source)
     {
-      Points = source.Points.Select(pt => new Geometry.FencePoint(pt)).ToList();
+      Points = source.Points.Select(pt => new FencePoint(pt)).ToList();
     }
 
     /// <summary>
     /// Clears all vertices in the fence and replaces them with a rectangle
-    //  of points as per the two coordinates given. The coordinates may be any
-    // two diagonally opposite corners of the rectangle.
+    ///  of points as per the two coordinates given. The coordinates may be any
+    /// two diagonally opposite corners of the rectangle.
     /// </summary>
     /// <param name="X1"></param>
     /// <param name="Y1"></param>

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using Draw = System.Drawing;
-using System.Reflection;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
