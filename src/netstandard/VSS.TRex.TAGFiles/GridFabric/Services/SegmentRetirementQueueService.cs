@@ -80,7 +80,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       var queueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
-      SegmentRetirementQueue queue = new SegmentRetirementQueue(mutableIgnite);
+      SegmentRetirementQueue queue = new SegmentRetirementQueue();
       SegmentRetirementQueueItemHandler handler = new SegmentRetirementQueueItemHandler();
 
       // Cycle looking for new work to do until aborted...

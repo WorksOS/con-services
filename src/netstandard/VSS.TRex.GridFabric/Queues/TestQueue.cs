@@ -33,7 +33,8 @@ namespace VSS.TRex.GridFabric.Queues
 
         private void Add(DateTime date, string value)
         {
-            QueueCache.Put(date.Ticks, new TestQueueItem(date.Ticks, value));
+            long ticks = date.Ticks;
+            QueueCache.Put(ticks, new TestQueueItem(ticks, value));
         }
 
         public TestQueueHolder()
