@@ -130,22 +130,23 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Update the local max/min x/y boufning box for all the points in the fence
+    /// Update the local max/min x/y bounding box for all the points in the fence
     /// </summary>
     protected void UpdateMaxMins()
     {
       InitialiseMaxMins();
-      Points.ForEach(pt =>
+
+      foreach(var pt in Points)
       {
         if (pt.X < minX) minX = pt.X;
         if (pt.Y < minY) minY = pt.Y;
         if (pt.X > maxX) maxX = pt.X;
         if (pt.Y > maxY) maxY = pt.Y;
-      });
+      };
     }
 
     /// <summary>
-    /// Determine if a given point (x, y) lies insode the boundary defined by the fence points
+    /// Determine if a given point (x, y) lies inside the boundary defined by the fence points
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -486,7 +487,7 @@ namespace VSS.TRex.Geometry
         LastY = Y;
       }
 
-      return (result < 0) ? -result : result;
+      return result < 0 ? -result : result;
     }
 
     /// <summary>
