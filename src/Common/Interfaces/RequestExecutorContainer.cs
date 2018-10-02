@@ -168,12 +168,14 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.customHeaders = customHeaders;
     }
 
-    protected void ThrowRequestTypeCastException(Type requestClassType)
+    protected void ThrowRequestTypeCastException<T>(string errorMessage = null)
     {
+      if (errorMessage == null)
+        errorMessage = $"{nameof(T)} cast failed.";
+
       throw new ServiceException(
         HttpStatusCode.InternalServerError,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"{requestClassType} cast failed."));
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
     }
 
     /// <summary>

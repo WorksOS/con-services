@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var request = item as CompactionReportStationOffsetRequest;
 
         if (request == null)
-          ThrowRequestTypeCastException(typeof(CompactionReportStationOffsetRequest));
+          ThrowRequestTypeCastException<CompactionReportStationOffsetRequest>();
 
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);

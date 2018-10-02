@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         CCARequest request = item as CCARequest;
 
         if (request == null)
-          ThrowRequestTypeCastException(typeof(CCARequest));
+          ThrowRequestTypeCastException<CCARequest>();
 
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
 

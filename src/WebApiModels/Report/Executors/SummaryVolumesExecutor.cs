@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         var request = item as SummaryVolumesRequest;
 
         if (request == null)
-          ThrowRequestTypeCastException(typeof(SummaryVolumesRequest));
+          ThrowRequestTypeCastException<SummaryVolumesRequest>();
 
         TASNodeSimpleVolumesResult result;
 

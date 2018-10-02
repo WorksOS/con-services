@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       ElevationStatisticsRequest request = item as ElevationStatisticsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(ElevationStatisticsRequest));
+        ThrowRequestTypeCastException<ElevationStatisticsRequest>();
       
       TASNodeElevationStatisticsResult result = new TASNodeElevationStatisticsResult();
 

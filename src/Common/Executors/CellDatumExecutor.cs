@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Common.Executors
       CellDatumRequest request = item as CellDatumRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CellDatumRequest));
+        ThrowRequestTypeCastException<CellDatumRequest>();
 
       if (GetCellDatumData(request, out var data))
         result = ConvertCellDatumResult(data);

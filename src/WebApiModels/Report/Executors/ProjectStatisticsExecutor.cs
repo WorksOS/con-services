@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       ProjectStatisticsRequest request = item as ProjectStatisticsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(ProjectStatisticsRequest));
+        ThrowRequestTypeCastException<ProjectStatisticsRequest>();
 
       bool success = raptorClient.GetDataModelStatistics(
         request.ProjectId ?? -1,

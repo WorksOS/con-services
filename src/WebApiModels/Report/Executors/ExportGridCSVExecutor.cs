@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         ExportGridCSV request = item as ExportGridCSV;
 
         if (request == null)
-          ThrowRequestTypeCastException(typeof(ExportGridCSV));
+          ThrowRequestTypeCastException<ExportGridCSV>();
 
         TICFilterSettings raptorFilter =
           RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);

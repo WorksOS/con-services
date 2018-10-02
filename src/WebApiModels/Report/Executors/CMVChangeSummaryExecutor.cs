@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       CMVChangeSummaryRequest request = item as CMVChangeSummaryRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CMVChangeSummaryRequest));
+        ThrowRequestTypeCastException<CMVChangeSummaryRequest>();
 
       try
       {
