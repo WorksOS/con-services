@@ -46,8 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request == null)
           ThrowRequestTypeCastException<PassCounts>();
 
-        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway))
-          useTrexGateway = false;
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway);
 
         if (useTrexGateway)
         {

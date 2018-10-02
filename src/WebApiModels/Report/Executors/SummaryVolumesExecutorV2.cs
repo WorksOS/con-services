@@ -62,8 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request == null)
           ThrowRequestTypeCastException<SummaryVolumesRequest>();
 
-        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_VOLUMES"), out var useTrexGateway))
-          useTrexGateway = false;
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_VOLUMES"), out var useTrexGateway);
 
         if (useTrexGateway)
         {

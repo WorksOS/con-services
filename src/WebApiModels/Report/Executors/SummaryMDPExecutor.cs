@@ -43,8 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request == null)
           ThrowRequestTypeCastException<MDPRequest>();
 
-        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway))
-          useTrexGateway = false;
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway);
 
         if (useTrexGateway)
         {

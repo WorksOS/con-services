@@ -48,8 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request == null)
           ThrowRequestTypeCastException<SummarySpeedRequest>();
 
-        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SPEED"), out var useTrexGateway))
-          useTrexGateway = false;
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SPEED"), out var useTrexGateway);
 
         if (useTrexGateway)
         {
