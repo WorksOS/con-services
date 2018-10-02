@@ -315,7 +315,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
-      return await ImportFile(filename, fileResult.FileStream, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+      using (var ms = new MemoryStream())
+      {
+        // Depending on the size of the file in S3, the stream returned may or may not support seeking
+        // Which we need to TCC to know the length of the file (can't find the length, if you can't seek).
+        // To solve this, we have to download the entire stream here and copy to memory.
+        // Allowing TCC to upload the file.
+        // Not the best solution for extra large files, but TCC doesn't support uploading without file size AFAIK
+        fileResult.FileStream.CopyTo(ms);
+        return await ImportFile(filename, ms, projectUid, importedFileType, dxfUnitsType,
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+      }
     }
 
     /// <summary>
