@@ -98,6 +98,9 @@ namespace MockProjectWebApi.Controllers
             case DisplayMode.CMVChange:
               color = Rgba32.Orange;
               break;
+            case DisplayMode.TemperatureDetail:
+              color = Rgba32.Lavender;
+              break;
           }
           var rect = new RectangleF(x, y, w, h);
           bitmap.Mutate(ctx => ctx.Fill(color, rect));          
