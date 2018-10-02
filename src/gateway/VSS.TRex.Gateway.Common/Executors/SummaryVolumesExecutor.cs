@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       SummaryVolumesDataRequest request = item as SummaryVolumesDataRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(SummaryVolumesDataRequest));
+        ThrowRequestTypeCastException<SummaryVolumesDataRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -57,8 +57,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         BaseFilter = baseFilter,
         TopFilter = topFilter,
         AdditionalSpatialFilter = additionalSpatialFilter,
-        BaseDesignID = request.BaseDesignUid ?? new Guid(),
-        TopDesignID = request.TopDesignUid ?? new Guid(),
+        BaseDesignID = request.BaseDesignUid ?? Guid.Empty,
+        TopDesignID = request.TopDesignUid ?? Guid.Empty,
         VolumeType = ConvertVolumesType(request.VolumeCalcType),
         CutTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE,
         FillTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE
@@ -87,7 +87,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         case VolumesType.Between2Filters: return VolumeComputationType.Between2Filters;
         case VolumesType.BetweenFilterAndDesign: return VolumeComputationType.BetweenFilterAndDesign;
         case VolumesType.BetweenDesignAndFilter: return VolumeComputationType.BetweenDesignAndFilter;
-        default: throw new Exception($"Unknown VolumesType {Convert.ToInt16(volumesType)}");
+        default: throw new ArgumentException($"Unknown VolumesType {Convert.ToInt16(volumesType)}");
       }
     }
 

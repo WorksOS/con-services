@@ -52,18 +52,16 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cmv/details")]
     [HttpPost]
-    public CompactionCmvDetailedResult PostCmvDetails([FromBody] CMVDetailsRequest cmvDetailsRequest)
+    public CMVDetailedResult PostCmvDetails([FromBody] CMVDetailsRequest cmvDetailsRequest)
     {
       Log.LogInformation($"{nameof(PostCmvDetails)}: {Request.QueryString}");
 
       cmvDetailsRequest.Validate();
 
-      var result = WithServiceExceptionTryExecute(() =>
+      return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<DetailedCMVExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cmvDetailsRequest) as CMVDetailedResult);
-
-      return new CompactionCmvDetailedResult(result, null, null);
     }
 
     /// <summary>

@@ -64,7 +64,7 @@
         DCToIRecFailedToWriteGeoid,
         DCToIRecFailedToWriteCSIB,
         DCToIRecFailedToSetZoneInfo,
-        DCToIRecInifiniteAdjustmentSlopeValue,
+        DCToIRecInfiniteAdjustmentSlopeValue,
         DCToIRecInvalidEllipsoid,
         DCToIRecDatumFailedToLoad,
         DCToIRecFailedToLoadCSIB,

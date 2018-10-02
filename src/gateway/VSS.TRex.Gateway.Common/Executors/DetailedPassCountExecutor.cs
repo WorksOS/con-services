@@ -1,16 +1,14 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Requests;
+using VSS.TRex.Types;
+using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -34,14 +32,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const ushort MIN_TARGET_PASS_COUNT = 1;
-      const ushort MAX_TARGET_PASS_COUNT = ushort.MaxValue;
-      const double DUMMY_TOTAL_AREA = 0.0;
-
       PassCountDetailsRequest request = item as PassCountDetailsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(PassCountDetailsRequest));
+        ThrowRequestTypeCastException<PassCountDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -56,16 +50,21 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (passCountDetailsResult != null)
-        return new PassCountDetailedResult(new TargetPassCountRange(
-          MIN_TARGET_PASS_COUNT, MAX_TARGET_PASS_COUNT),  
-          false,
-          passCountDetailsResult.Percents,
-          DUMMY_TOTAL_AREA
-        );
+      {
+        if (passCountDetailsResult.ResultStatus == RequestErrorStatus.OK)
+          return new PassCountDetailedResult(
+            new TargetPassCountRange(
+              passCountDetailsResult.ConstantTargetPassCountRange.Min,
+              passCountDetailsResult.ConstantTargetPassCountRange.Max),
+            passCountDetailsResult.IsTargetPassCountConstant,
+            passCountDetailsResult.Percents,
+            passCountDetailsResult.TotalAreaCoveredSqMeters
+          );
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested Pass Count details data"));
+        throw CreateServiceException<DetailedPassCountExecutor>(passCountDetailsResult.ResultStatus);
+      }
+
+      throw CreateServiceException<DetailedPassCountExecutor>();
     }
-
   }
 }
