@@ -159,7 +159,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(request) as CMVSummaryResult;
 
-          if (result2 != null && !result2.HasData())
+          if (result2 != null && result2.HasData())
           {
             result1.ConstantTargetCmv = result2.ConstantTargetCmv;
             result1.IsTargetCmvConstant = result2.IsTargetCmvConstant;
