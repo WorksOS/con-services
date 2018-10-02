@@ -63,6 +63,8 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ITRexTagFileProxy tRexTagFileProxy;
 
+    protected ITRexCompactionDataProxy trexCompactionDataProxy;
+
     protected IDictionary<string, string> customHeaders;
 
 
@@ -150,7 +152,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     public void Initialise(ILogger logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, 
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
-      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IDictionary<string, string> customHeaders)
+      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy, IDictionary<string, string> customHeaders)
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
@@ -162,7 +164,16 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.profileResultHelper = profileResultHelper;
       this.transferProxy = transferProxy;
       this.tRexTagFileProxy = tRexTagFileProxy;
+      this.trexCompactionDataProxy = trexCompactionDataProxy;
       this.customHeaders = customHeaders;
+    }
+
+    protected void ThrowRequestTypeCastException(Type requestClassType)
+    {
+      throw new ServiceException(
+        HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"{requestClassType} cast failed."));
     }
 
     /// <summary>

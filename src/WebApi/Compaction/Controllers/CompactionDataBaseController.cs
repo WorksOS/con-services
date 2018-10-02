@@ -10,7 +10,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -30,13 +29,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected readonly IProductionDataRequestFactory RequestFactory;
 
     /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionDataBaseController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+    public CompactionDataBaseController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
       : base(configStore, fileListProxy, settingsManager)
     {
       RaptorClient = raptorClient;
       RequestFactory = requestFactory;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -69,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      return CMVRequest.CreateCMVRequest(projectId, null, cmvSettings, liftSettings, filter, -1, null, null, null, isCustomCMVTargets);
+      return new CMVRequest(projectId, projectUid, null, cmvSettings, liftSettings, filter, -1, null, null, null, isCustomCMVTargets);
     }
 
     /// <summary>
@@ -83,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      return PassCounts.CreatePassCountsRequest(projectId, null, passCountSettings, liftSettings, filter, -1, null, null, null);
+      return new PassCounts(projectId, projectUid, null, passCountSettings, liftSettings, filter, -1, null, null, null);
     }
 
     /// <summary>

@@ -72,6 +72,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ISchedulerProxy, SchedulerProxy>();
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
       services.AddScoped<ITRexTagFileProxy, TRexTagFileProxy>();
+      services.AddScoped<ITRexCompactionDataProxy, TRexCompactionDataProxy>();
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();

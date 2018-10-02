@@ -18,7 +18,6 @@ using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -34,8 +33,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionSummaryDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
-      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory)
+    public CompactionSummaryDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
     { }
 
     /// <summary>
@@ -62,10 +61,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-              .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
+              .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
               .Process(request) as CMVSummaryResult;
 
-        var cmvSummaryResult = new CompactionCmvSummaryResult(result, request.cmvSettings);
+        var cmvSummaryResult = new CompactionCmvSummaryResult(result, request.CmvSettings);
         Log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(cmvSummaryResult));
 
         await SetCacheControlPolicy(projectUid);
@@ -111,13 +110,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      var request = MDPRequest.CreateMDPRequest(projectId, null, mdpSettings, liftSettings, filter, -1, null, null, null);
+      var request = new MDPRequest(projectId, projectUid, null, mdpSettings, liftSettings, filter, -1, null, null, null);
       request.Validate();
 
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryMDPExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
+                     .Build<SummaryMDPExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as MDPSummaryResult;
 
         var mdpSummaryResult = new CompactionMdpSummaryResult(result, mdpSettings);
@@ -165,7 +164,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryPassCountsExecutor>(LoggerFactory, RaptorClient)
+                     .Build<SummaryPassCountsExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as PassCountSummaryResult;
 
         var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
@@ -213,13 +212,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
-      var request = TemperatureRequest.CreateTemperatureRequest(projectId, null, temperatureSettings, liftSettings, filter, -1, null, null, null);
+      TemperatureRequest request = new TemperatureRequest(projectId, projectUid, null,
+        temperatureSettings, liftSettings, filter, -1, null, null, null);
       request.Validate();
-
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient)
+                     .Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as TemperatureSummaryResult;
 
         var temperatureSummaryResult = new CompactionTemperatureSummaryResult(result);
@@ -267,13 +266,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
 
-      var request = SummarySpeedRequest.CreateSummarySpeedRequest(projectId, null, liftSettings, filter, -1);
+      SummarySpeedRequest request = new SummarySpeedRequest(projectId, projectUid, null, liftSettings, filter, -1);
       request.Validate();
-
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummarySpeedExecutor>(LoggerFactory, RaptorClient)
+                     .Build<SummarySpeedExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as SpeedSummaryResult;
 
         var speedSummaryResult = new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
@@ -359,14 +357,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
       }
       var projectId = await GetLegacyProjectId(projectUid);
-      var request = SummaryVolumesRequest.CreateAndValidate(projectId, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
+      var request = SummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter, topFilter, baseDesign, topDesign, volumeCalcType);
 
       CompactionVolumesSummaryResult volumesSummaryResult;
 
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<SummaryVolumesExecutorV2>(LoggerFactory, RaptorClient)
+                     .Build<SummaryVolumesExecutorV2>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as SummaryVolumesResult;
 
         volumesSummaryResult = CompactionVolumesSummaryResult.Create(result, await GetProjectSettingsTargets(projectUid));

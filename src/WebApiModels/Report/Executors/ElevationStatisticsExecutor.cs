@@ -11,7 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
@@ -44,6 +44,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ElevationStatisticsRequest request = item as ElevationStatisticsRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException(typeof(ElevationStatisticsRequest));
+      
       TASNodeElevationStatisticsResult result = new TASNodeElevationStatisticsResult();
 
       TICFilterSettings Filter =

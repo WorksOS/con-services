@@ -39,12 +39,16 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         TCCASummary ccaSummary;
         CCARequest request = item as CCARequest;
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
+
+        if (request == null)
+          ThrowRequestTypeCastException(typeof(CCARequest));
+
+        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
 
         bool success = raptorClient.GetCCASummary(request.ProjectId ?? -1,
-                            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtCCASummary),
+                            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtCCASummary),
                             raptorFilter,
-                            RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
+                            RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
                             out ccaSummary);
          
         if (success)

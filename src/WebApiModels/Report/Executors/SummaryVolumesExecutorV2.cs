@@ -11,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
@@ -57,12 +58,24 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         SummaryVolumesRequest request = item as SummaryVolumesRequest;
+
         if (request == null)
+          ThrowRequestTypeCastException(typeof(SummaryVolumesRequest));
+
+        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_VOLUMES"), out var useTrexGateway))
+          useTrexGateway = false;
+
+        if (useTrexGateway)
         {
-          throw new ServiceException(
-            HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "SummaryVolumesRequest cast failed."));
+          var summaryVolumesRequest = new SummaryVolumesDataRequest(
+            request.ProjectUid,
+            request.BaseFilter,
+            request.TopFilter,
+            request.BaseDesignDescriptor.Uid,
+            request.TopDesignDescriptor.Uid,
+            request.VolumeCalcType);
+
+          return trexCompactionDataProxy.SendSummaryVolumesRequest(summaryVolumesRequest, customHeaders).Result;
         }
 
         TASNodeSimpleVolumesResult result;
@@ -119,9 +132,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         }
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
           return ConvertResult(result);
-        }
 
         throw new ServiceException(
           HttpStatusCode.BadRequest,

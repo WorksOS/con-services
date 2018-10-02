@@ -34,12 +34,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = item as CompactionReportStationOffsetRequest;
+
         if (request == null)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Request item is not compatible with Station Offset request."));
-        }
+          ThrowRequestTypeCastException(typeof(CompactionReportStationOffsetRequest));
 
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);

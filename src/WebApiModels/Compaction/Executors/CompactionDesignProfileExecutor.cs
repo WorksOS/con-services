@@ -69,7 +69,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ContractExecutionResult result;
       try
       {
-        var profile = PerformProductionDataProfilePost(item as CompactionProfileDesignRequest);
+        CompactionProfileDesignRequest request = item as CompactionProfileDesignRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException(typeof(CompactionProfileDesignRequest));
+
+        var profile = PerformProductionDataProfilePost(request);
 
         if (profile != null)
         {
