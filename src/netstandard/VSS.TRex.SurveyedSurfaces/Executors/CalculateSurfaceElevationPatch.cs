@@ -126,7 +126,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                   Args.OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
                   continue;
 
-                long AsAtDate = ThisSurveyedSurface.AsAtDate.ToBinary();
+                long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
                 double Offset = ThisSurveyedSurface.Get_DesignDescriptor().Offset;
 
                 // Walk across the subgrid checking for a design elevation for each appropriate cell

@@ -1,4 +1,5 @@
 ﻿using System;
+using Apache.Ignite.Core.Cache.Configuration;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Models
@@ -16,7 +17,8 @@ namespace VSS.TRex.TAGFiles.Models
     /// <summary>
     /// The date at which the segment to be retired was inserted into the buffer queue. 
     /// </summary>
-    public DateTime InsertUTC;
+//    [QuerySqlField(IsIndexed = true)]
+    public long InsertUTCAsLong;
 
     /// <summary>
     /// The list of keys of the subgrid and segment streams to be retired.

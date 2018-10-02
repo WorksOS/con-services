@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public void Clear()
     {
-      Time = DateTime.MinValue.ToBinary();
+      Time = DateTime.MinValue.Ticks;
       Height = Consts.NullHeight;
     }
 

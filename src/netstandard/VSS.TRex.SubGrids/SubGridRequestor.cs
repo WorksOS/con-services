@@ -481,7 +481,7 @@ namespace VSS.TRex.SubGrids
                     */
                     {
                         ProdHeight = Consts.NullHeight; // should not get here
-                        ProdTime = DateTime.MinValue.ToBinary();
+                        ProdTime = DateTime.MinValue.Ticks;
                     }
 
                     // Determine if the elevation from the surveyed surface data is required based on the nullness of the production data elevation, and

@@ -1,8 +1,11 @@
-﻿namespace VSS.TRex.GridFabric.Interfaces
+﻿using Apache.Ignite.Core.Cache.Configuration;
+
+namespace VSS.TRex.GridFabric.Interfaces
 {
   public interface ISegmentRetirementQueueKey : IProjectAffinity
   {
-    long InsetUTCasLong { get; set; }
+    [QuerySqlField(IsIndexed = true)]
+    long InsertUTCAsLong { get; set; }
 
     string ToString();
   }

@@ -376,11 +376,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             retirementQueue.Add(new SegmentRetirementQueueKey
                               {
                                 ProjectID = SiteModelFromDM.ID,
-                                InsetUTCasLong = insertUTC.ToBinary()
+                                InsertUTCAsLong = insertUTC.Ticks
                               },
                               new SegmentRetirementQueueItem
                               {
-                                InsertUTC = insertUTC,
+                                InsertUTCAsLong = insertUTC.Ticks,
                                 ProjectUID = SiteModelFromDM.ID,
                                 SegmentKeys = subGridIntegrator.InvalidatedSpatialStreams.ToArray()
                               });

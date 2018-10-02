@@ -1,4 +1,5 @@
 ﻿using System;
+using Apache.Ignite.Core.Cache.Configuration;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Affinity
@@ -7,8 +8,9 @@ namespace VSS.TRex.GridFabric.Affinity
   {
     public Guid ProjectID { get; set; }
 
-    public long InsetUTCasLong { get; set; }
+    [QuerySqlField(IsIndexed = true)]
+    public long InsertUTCAsLong { get; set; }
 
-    public override string ToString() => $"Project: {ProjectID}, InsertUTCasLong:{InsetUTCasLong}";
+    public override string ToString() => $"Project: {ProjectID}, InsertUTCAsLong:{InsertUTCAsLong}";
   }
 }
