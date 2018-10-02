@@ -363,7 +363,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         {
                           // Stamp all the invalidated spatial streams with the project ID
                           foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
-                            key.ProjectID = SiteModelFromDM.ID;
+                            key.ProjectUID = SiteModelFromDM.ID;
                    
                           try
                           {
@@ -379,7 +379,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                    
                             retirementQueue.Add(new SegmentRetirementQueueKey
                               {
-                                ProjectID = SiteModelFromDM.ID,
+                                ProjectUID = SiteModelFromDM.ID,
                                 InsertUTCAsLong = insertUTC.Ticks
                               },
                               new SegmentRetirementQueueItem

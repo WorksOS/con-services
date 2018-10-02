@@ -53,7 +53,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (this)
             {
-                if (groupMap.TryGetValue(key.ProjectID, out Dictionary<Guid, List<ITAGFileBufferQueueKey>> assetsDict))
+                if (groupMap.TryGetValue(key.ProjectUID, out Dictionary<Guid, List<ITAGFileBufferQueueKey>> assetsDict))
                 {
                     if (!assetsDict.TryGetValue(key.AssetID, out List<ITAGFileBufferQueueKey> keyList))
                     {
@@ -73,7 +73,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 }
                 else
                 {
-                    groupMap.Add(key.ProjectID, new Dictionary<Guid, List<ITAGFileBufferQueueKey>> { { key.AssetID, new List<ITAGFileBufferQueueKey> {key} } });
+                    groupMap.Add(key.ProjectUID, new Dictionary<Guid, List<ITAGFileBufferQueueKey>> { { key.AssetID, new List<ITAGFileBufferQueueKey> {key} } });
                 }
             }
         }
@@ -93,10 +93,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 foreach (var bucket in fullBuckets)
                     if (bucket.Any())
                     {
-                        if (avoidProjects != null && avoidProjects.Any(x => x == bucket[0].ProjectID))
+                        if (avoidProjects != null && avoidProjects.Any(x => x == bucket[0].ProjectUID))
                             continue;
 
-                        selectedProject = bucket[0].ProjectID;
+                        selectedProject = bucket[0].ProjectUID;
                         return true;
                     }
             }
@@ -140,7 +140,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 IEnumerable<ITAGFileBufferQueueKey> result;
 
                 // Determine if there is a full bucket for the requested project
-                int resultIndex = fullBuckets.FindIndex(x => x[0].ProjectID == _projectID);
+                int resultIndex = fullBuckets.FindIndex(x => x[0].ProjectUID == _projectID);
                 if (resultIndex >= 0)
                 {
                     result = fullBuckets[resultIndex];

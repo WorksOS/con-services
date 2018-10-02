@@ -1224,7 +1224,7 @@ namespace TRexIgniteTest
                                   };
 
                 td = TagFileRepository.GetTagfile(td);
-                MessageBox.Show($@"ProjectID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
+                MessageBox.Show($@"ProjectUID:{td.projectId}, Asset:{td.assetId}, TCCOrg:{td.tccOrgId},IsJohnDoe:{td.IsJohnDoe}, FileLenght:{td.tagFileContent.Length}");
 
             }
             catch (Exception exception)

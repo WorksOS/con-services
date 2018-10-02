@@ -29,7 +29,7 @@ namespace VSS.TRex.GridFabric.Affinity
             IProjectAffinity value = (IProjectAffinity)key;
 
             // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-            return Math.Abs(value.ProjectID.GetHashCode()) % NumPartitions;
+            return Math.Abs(value.ProjectUID.GetHashCode()) % NumPartitions;
         }
     }
 }

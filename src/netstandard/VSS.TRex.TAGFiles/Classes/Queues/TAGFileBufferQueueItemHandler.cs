@@ -66,7 +66,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                 if (packageCount > 0)
                 {
-                    Log.LogInformation($"Extracted package from grouper, ProjectID:{projectID}, with {packageCount} items");
+                    Log.LogInformation($"Extracted package from grouper, ProjectUID:{projectID}, with {packageCount} items");
 
                     hadWorkToDo = true;
 
@@ -121,7 +121,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                 TAGFiles = fileItems
                             });
 
-                            removalKey.ProjectID = projectID;
+                            removalKey.ProjectUID = projectID;
                             removalKey.AssetID = TAGQueueItems[0].AssetID;
 
                             // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
@@ -178,7 +178,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="package"></param>
         private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
         {
-            Guid projectID = package[0].ProjectID;
+            Guid projectID = package[0].ProjectUID;
 
             List<TAGFileBufferQueueItem> TAGQueueItems = null;
             List<ProcessTAGFileRequestFileItem> fileItems = null;
@@ -233,7 +233,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                 ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
                 {
-                    ProjectID = projectID,
+                    ProjectUID = projectID,
                     AssetID = TAGQueueItems[0].AssetID
                 };
 
@@ -284,7 +284,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     if (packageCount > 0)
                     {
                         Log.LogInformation(
-                            $"Extracted package from grouper, ProjectID:{projectID}, with {packageCount} items in thread {Thread.CurrentThread.ManagedThreadId}");
+                            $"Extracted package from grouper, ProjectUID:{projectID}, with {packageCount} items in thread {Thread.CurrentThread.ManagedThreadId}");
 
                         hadWorkToDo = true;
                         try

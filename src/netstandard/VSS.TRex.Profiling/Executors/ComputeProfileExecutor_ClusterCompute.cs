@@ -135,7 +135,7 @@ namespace VSS.TRex.Profiling.Executors
 
           // Raptor profile implementation did not use the overall existence map, so this commented out code
           // has no effect in Raptor and has been exluced for this reason in TRex.
-          //if (DesignProfilerService.RequestCombinedDesignSubgridIndexMap(ProjectID, SiteModel.Grid.CellSize, SiteModel.SurveyedSurfaces, OverallExistenceMap) = dppiOK)
+          //if (DesignProfilerService.RequestCombinedDesignSubgridIndexMap(ProjectUID, SiteModel.Grid.CellSize, SiteModel.SurveyedSurfaces, OverallExistenceMap) = dppiOK)
           //  OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
           //else
           //  return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
@@ -149,14 +149,14 @@ namespace VSS.TRex.Profiling.Executors
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
           //{$IFDEF DEBUG}
-          //Log.LogInformation($"RequestProfile: BuildCellPassProfile for sitemodel {ProjectID}");
+          //Log.LogInformation($"RequestProfile: BuildCellPassProfile for sitemodel {ProjectUID}");
           //{$ENDIF}
 
           Log.LogInformation("Building cell profile");
           if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
             // {$IFDEF DEBUG}
-            // Log.LogInformation($"RequestProfile: BuildLiftProfileFromInitialLayer for sitemodel {ProjectID}");
+            // Log.LogInformation($"RequestProfile: BuildLiftProfileFromInitialLayer for sitemodel {ProjectUID}");
             // {$ENDIF}
 
             SetupForCellPassStackExamination(PassFilter);
@@ -177,7 +177,7 @@ namespace VSS.TRex.Profiling.Executors
           }
 
           // {$IFDEF DEBUG}
-          // Log.LogInformation($"RequestProfile: completed construction for sitemodel {ProjectID}");
+          // Log.LogInformation($"RequestProfile: completed construction for sitemodel {ProjectUID}");
           // {$ENDIF}
 
           /*       if ServerResult = icsrrNoError then

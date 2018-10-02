@@ -42,9 +42,9 @@ namespace TAGFiles.Tests
             Assert.True(null != tagFiles, "Returned list of grouped tag files is null");
             Assert.True(1 == tagFiles.Count, $"Returned list of grouped tag files does not have a single item (count = {tagFiles.Count}");
 
-            Assert.True(extractedProjectID == tagFiles[0].ProjectID, $"Project UID does not match project UID out parameter from extract call {extractedProjectID} versus {tagFiles[0].ProjectID}");
+            Assert.True(extractedProjectID == tagFiles[0].ProjectUID, $"Project UID does not match project UID out parameter from extract call {extractedProjectID} versus {tagFiles[0].ProjectUID}");
             Assert.True(tagKey.AssetID == tagFiles[0].AssetID, $"Asset UIDs do not match {tagKey.AssetID} versus {tagFiles[0].AssetID}");
-            Assert.True(tagKey.ProjectID == tagFiles[0].ProjectID, $"Project UIDs do not match {tagKey.ProjectID} versus {tagFiles[0].ProjectID}");
+            Assert.True(tagKey.ProjectUID == tagFiles[0].ProjectUID, $"Project UIDs do not match {tagKey.ProjectUID} versus {tagFiles[0].ProjectUID}");
             Assert.True(tagKey.FileName == tagFiles[0].FileName, $"File names do not match {tagKey.FileName} versus {tagFiles[0].FileName}");
 
             //Test there are no more TAG files to extract from the grouper

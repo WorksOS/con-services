@@ -11,9 +11,9 @@ namespace VSS.TRex.GridFabric.Affinity
     public struct NonSpatialAffinityKey : INonSpatialAffinityKey
   {
         /// <summary>
-        /// A numeric ID for the project the subgrid data belongs to.
+        /// The GUID for the project the subgrid data belongs to.
         /// </summary>
-        public Guid ProjectID { get; set; }
+        public Guid ProjectUID { get; set; }
 
         /// <summary>
         /// Name of the object in the cache, encoded as a string
@@ -28,7 +28,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <param name="keyName"></param>
         public NonSpatialAffinityKey(Guid projectID, string keyName)
         {
-            ProjectID = projectID;
+            ProjectUID = projectID;
             KeyName = keyName;
         }
 
@@ -37,6 +37,6 @@ namespace VSS.TRex.GridFabric.Affinity
         /// identifying this data element in the cache.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $"{ProjectID}-{KeyName}";
+        public override string ToString() => $"{ProjectUID}-{KeyName}";
     }
 }

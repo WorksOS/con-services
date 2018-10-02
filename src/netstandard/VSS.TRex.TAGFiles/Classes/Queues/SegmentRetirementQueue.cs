@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
     public void Add(ISegmentRetirementQueueKey key, SegmentRetirementQueueItem value)
     {
-      Log.LogInformation($"Adding {value.SegmentKeys?.Length} retirees to queue for project {key.ProjectID}");
+      Log.LogInformation($"Adding {value.SegmentKeys?.Length} retirees to queue for project {key.ProjectUID}");
 
       QueueCache.Put(key, value);
     }

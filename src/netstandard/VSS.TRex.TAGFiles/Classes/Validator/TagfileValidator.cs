@@ -91,7 +91,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       if (processor.RadioSerial == String.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty)
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
-        var message = "Must have either a valid TCCOrgID or RadioSerialNo or ProjectID";
+        var message = "Must have either a valid TCCOrgID or RadioSerialNo or ProjectUID";
         Log.LogWarning(message);
         return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }

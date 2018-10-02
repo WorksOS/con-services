@@ -174,7 +174,7 @@ namespace VSS.TRex.Servers.Compute
       //// Non-spatial (event) data is replicated to all nodes for local access
       //cfg.CacheMode = CacheMode.Partitioned;
 
-      //// Note: The AffinityFunction is longer supplied as the ProjectID (Guid) member of the
+      //// Note: The AffinityFunction is longer supplied as the ProjectUID (Guid) member of the
       //// NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
       //// this means the values are spread amongst the servers per the default
       //cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();

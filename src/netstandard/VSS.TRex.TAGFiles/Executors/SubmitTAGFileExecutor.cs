@@ -39,7 +39,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <returns></returns>
     public static SubmitTAGFileResponse Execute(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
-      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectID:{projectId}");
+      Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}");
       
       SubmitTAGFileResponse response = new SubmitTAGFileResponse
       {
@@ -76,14 +76,14 @@ namespace VSS.TRex.TAGFiles.Executors
             var tagFileArchiving = config.GetValueBool("ENABLE_TAGFILE_ARCHIVING") ?? false;
             if (tagFileArchiving)
             {
-              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectID:{td.projectId}");
+              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);
             }
             // switch from nullable to not nullable
             Guid validProjectId = td.projectId ?? Guid.Empty;
             Guid validAssetId = td.assetId ?? Guid.Empty;
 
-            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectID:{validProjectId}, AssetID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
+            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
             TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {

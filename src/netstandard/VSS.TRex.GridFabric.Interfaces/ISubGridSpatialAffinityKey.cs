@@ -5,9 +5,9 @@ namespace VSS.TRex.GridFabric.Interfaces
   public interface ISubGridSpatialAffinityKey
   {
     /// <summary>
-    /// A numeric ID for the project the subgrid data belongs to.
+    /// The GUID for the project the subgrid data belongs to.
     /// </summary>
-    Guid ProjectID { get; set; }
+    Guid ProjectUID { get; set; }
 
     /// <summary>
     /// The X ordinate cell address of the origin cell for the subgrid

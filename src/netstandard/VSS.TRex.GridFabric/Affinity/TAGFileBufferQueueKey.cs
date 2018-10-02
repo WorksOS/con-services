@@ -18,7 +18,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// The project to process that TAG file into.
         /// This field also provides the affinity key mapping to the nodes in the mutable data grid
         /// </summary>
-        public Guid ProjectID { get; set; }
+        public Guid ProjectUID { get; set; }
 
         public Guid AssetID  { get; set; }
 
@@ -31,7 +31,7 @@ namespace VSS.TRex.GridFabric.Affinity
         public TAGFileBufferQueueKey(string fileName, Guid projectID, Guid assetID)
         {
             FileName = fileName;
-            ProjectID = projectID;
+            ProjectUID = projectID;
             AssetID = assetID;
         }
 
@@ -39,6 +39,6 @@ namespace VSS.TRex.GridFabric.Affinity
         /// Provides string representation of the state of the key
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => $"Project: {ProjectID}, Asset: {AssetID}, FileName: {FileName}"; //$"Project: {ProjectUID}, Asset: {AssetUID}, FileName: {FileName}";
+        public override string ToString() => $"Project: {ProjectUID}, Asset: {AssetID}, FileName: {FileName}"; //$"Project: {ProjectUID}, Asset: {AssetUID}, FileName: {FileName}";
     }
 }

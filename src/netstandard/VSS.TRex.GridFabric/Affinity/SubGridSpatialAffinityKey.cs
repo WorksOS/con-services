@@ -12,9 +12,9 @@ namespace VSS.TRex.GridFabric.Affinity
     public struct SubGridSpatialAffinityKey : ISubGridSpatialAffinityKey
   {
         /// <summary>
-        /// A numeric ID for the project the subgrid data belongs to.
+        /// The GUID for the project the subgrid data belongs to.
         /// </summary>
-        public Guid ProjectID { get; set; }
+        public Guid ProjectUID { get; set; }
 
         /// <summary>
         /// The X ordinate cell address of the origin cell for the subgrid
@@ -43,7 +43,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <param name="segmentIdentifier"></param>
         public SubGridSpatialAffinityKey(Guid projectID, uint subGridX, uint subGridY, string segmentIdentifier)
         {
-            ProjectID = projectID;
+            ProjectUID = projectID;
             SubGridX = subGridX;
             SubGridY = subGridY;
             SegmentIdentifier = segmentIdentifier;
@@ -58,7 +58,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <param name="segmentIdentifier"></param>
         public SubGridSpatialAffinityKey(Guid projectID, SubGridCellAddress address, string segmentIdentifier)
         {
-            ProjectID = projectID;
+            ProjectUID = projectID;
             SubGridX = address.X;
             SubGridY = address.Y;
             SegmentIdentifier = segmentIdentifier;
@@ -93,8 +93,8 @@ namespace VSS.TRex.GridFabric.Affinity
         public override string ToString()
         {
             return SegmentIdentifier == string.Empty
-                ? $"{ProjectID}-{SubGridX}-{SubGridY}"
-                : $"{ProjectID}-{SubGridX}-{SubGridY}-{SegmentIdentifier}";
+                ? $"{ProjectUID}-{SubGridX}-{SubGridY}"
+                : $"{ProjectUID}-{SubGridX}-{SubGridY}-{SegmentIdentifier}";
         }
     }
 }
