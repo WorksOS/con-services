@@ -1,6 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -8,7 +6,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
 using CMVStatisticsResult = VSS.TRex.Analytics.CMVStatistics.CMVStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.CMVSummaryResult;
@@ -38,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       CMVSummaryRequest request = item as CMVSummaryRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CMVSummaryRequest));
+        ThrowRequestTypeCastException<CMVSummaryRequest>();
       
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -58,10 +55,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       );
 
       if (cmvSummaryResult != null)
-        return ConvertResult(cmvSummaryResult);
+      {
+        if (cmvSummaryResult.ResultStatus == RequestErrorStatus.OK)
+          return ConvertResult(cmvSummaryResult);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested CMV summary data"));
+        throw CreateServiceException<SummaryCMVExecutor>(cmvSummaryResult.ResultStatus);
+      }
+
+      throw CreateServiceException<SummaryCMVExecutor>();
     }
 
     private SummaryResult ConvertResult(CMVStatisticsResult summary)

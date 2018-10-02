@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as TINSurfaceExportRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(TINSurfaceExportRequest));
+        ThrowRequestTypeCastException<TINSurfaceExportRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -11,6 +9,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CutFillStatistics;
 using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -36,6 +35,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException<CutFillDetailsRequest>();
+
       var siteModel = GetSiteModel(request.ProjectUid);
       
       // TODO: Configure design and lift build settings
@@ -55,10 +57,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (cutFillResult != null)
-        return new CompactionCutFillDetailedResult(cutFillResult.Percents);
+      {
+        if (cutFillResult.ResultStatus == RequestErrorStatus.OK)
+          return new CompactionCutFillDetailedResult(cutFillResult.Percents);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested cut-fill details data"));
+        throw CreateServiceException<CutFillExecutor>(cutFillResult.ResultStatus);
+      }
+
+      throw CreateServiceException<CutFillExecutor>();
     }
 
     /// <summary>

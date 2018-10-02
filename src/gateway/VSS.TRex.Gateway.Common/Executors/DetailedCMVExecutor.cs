@@ -1,6 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -9,6 +7,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -35,7 +34,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       CMVDetailsRequest request = item as CMVDetailsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CMVDetailsRequest));
+        ThrowRequestTypeCastException<CMVDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -50,11 +49,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (cmvDetailsResult != null)
-        return new CMVDetailedResult(cmvDetailsResult.Percents);
+      {
+        if (cmvDetailsResult.ResultStatus == RequestErrorStatus.OK)
+          return new CMVDetailedResult(cmvDetailsResult.Percents, cmvDetailsResult.ConstantTargetCMV, cmvDetailsResult.IsTargetCMVConstant);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested CMV details data"));
+        throw CreateServiceException<DetailedCMVExecutor>(cmvDetailsResult.ResultStatus);
+      }
+
+      throw CreateServiceException<DetailedCMVExecutor>();
     }
-
   }
 }
