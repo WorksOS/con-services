@@ -9,8 +9,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.45.1" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.11.1" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.46.0" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.12.0" />
   </ItemGroup>
 
   <ItemGroup>

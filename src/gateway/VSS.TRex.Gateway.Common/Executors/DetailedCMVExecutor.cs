@@ -1,6 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -33,12 +31,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested CMV details data";
-
       CMVDetailsRequest request = item as CMVDetailsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CMVDetailsRequest));
+        ThrowRequestTypeCastException<CMVDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -57,11 +53,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (cmvDetailsResult.ResultStatus == RequestErrorStatus.OK)
           return new CMVDetailedResult(cmvDetailsResult.Percents, cmvDetailsResult.ConstantTargetCMV, cmvDetailsResult.IsTargetCMVConstant);
 
-        throw CreateServiceException(ERROR_MESSAGE, cmvDetailsResult.ResultStatus);
+        throw CreateServiceException<DetailedCMVExecutor>(cmvDetailsResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<DetailedCMVExecutor>();
     }
-
   }
 }

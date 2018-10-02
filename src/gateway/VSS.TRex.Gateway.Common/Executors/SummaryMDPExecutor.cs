@@ -1,6 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -34,12 +32,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested MDP summary data";
-
       MDPSummaryRequest request = item as MDPSummaryRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(MDPSummaryRequest));
+        ThrowRequestTypeCastException<MDPSummaryRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -63,10 +59,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (mdpSummaryResult.ResultStatus == RequestErrorStatus.OK)
           return ConvertResult(mdpSummaryResult);
 
-        throw CreateServiceException(ERROR_MESSAGE, mdpSummaryResult.ResultStatus);
+        throw CreateServiceException<SummaryMDPExecutor>(mdpSummaryResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<SummaryMDPExecutor>();
     }
 
     private SummaryResult ConvertResult(MDPStatisticsResult summary)

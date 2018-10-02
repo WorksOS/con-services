@@ -1,6 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -36,12 +34,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested Pass Count summary data";
-
       PassCountSummaryRequest request = item as PassCountSummaryRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(PassCountSummaryRequest));
+        ThrowRequestTypeCastException< PassCountSummaryRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -67,10 +63,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (passCountSummaryResult.ResultStatus == RequestErrorStatus.OK)
           return ConvertResult(passCountSummaryResult);
 
-        throw CreateServiceException(ERROR_MESSAGE, passCountSummaryResult.ResultStatus);
+        throw CreateServiceException<SummaryPassCountExecutor>(passCountSummaryResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<SummaryPassCountExecutor>();
     }
 
     private SummaryResult ConvertResult(PassCountStatisticsResult summary)

@@ -40,7 +40,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as TileRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(TileRequest));
+        ThrowRequestTypeCastException<TileRequest>();
 
       //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
       //Raymond: how are designs implemented in TRex?

@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       SummaryVolumesDataRequest request = item as SummaryVolumesDataRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(SummaryVolumesDataRequest));
+        ThrowRequestTypeCastException<SummaryVolumesDataRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 

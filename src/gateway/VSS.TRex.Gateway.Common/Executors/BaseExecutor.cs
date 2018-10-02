@@ -59,12 +59,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       return combinedFilter;
     }
 
-    protected void ThrowRequestTypeCastException(Type requestClassType)
+    protected void ThrowRequestTypeCastException<T>()
     {
       throw new ServiceException(
         HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"{requestClassType} cast failed."));
+          $"{nameof(T)} cast failed."));
     }
 
     protected sealed override void ProcessErrorCodes()
@@ -76,7 +76,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.UnsupportedCSDFileType);
       ContractExecutionStates.DynamicAddwithOffset("Could not convert coordinate system definition file",
         (int)RequestErrorStatus.CouldNotConvertCSDFile);
-      ContractExecutionStates.DynamicAddwithOffset("CToolbox failed to complete",
+      ContractExecutionStates.DynamicAddwithOffset("CToolBox failed to complete",
         (int)RequestErrorStatus.CToolBoxFailedToComplete);
       ContractExecutionStates.DynamicAddwithOffset("Failed to write coordinate system definition stream",
         (int)RequestErrorStatus.FailedToWriteCSDStream);
@@ -86,7 +86,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.NoSuchDataModel);
       ContractExecutionStates.DynamicAddwithOffset("Unsupported display type",
         (int)RequestErrorStatus.UnsupportedDisplayType);
-      ContractExecutionStates.DynamicAddwithOffset("Failed on request of colour graduated profilee",
+      ContractExecutionStates.DynamicAddwithOffset("Failed on request of colour graduated profile",
         (int)RequestErrorStatus.FailedOnRequestColourGraduatedProfile);
       ContractExecutionStates.DynamicAddwithOffset("Failed to convert client WGS84 coordinates",
         (int)RequestErrorStatus.FailedToConvertClientWGSCoords);
@@ -183,8 +183,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.DCToIRecFailedToWriteCSIB);
       ContractExecutionStates.DynamicAddwithOffset("Failed to set zone info",
         (int)RequestErrorStatus.DCToIRecFailedToSetZoneInfo);
-      ContractExecutionStates.DynamicAddwithOffset("Inifinite adjustment slope value",
-        (int)RequestErrorStatus.DCToIRecInifiniteAdjustmentSlopeValue);
+      ContractExecutionStates.DynamicAddwithOffset("Infinite adjustment slope value",
+        (int)RequestErrorStatus.DCToIRecInfiniteAdjustmentSlopeValue);
       ContractExecutionStates.DynamicAddwithOffset("Invalid ellipsoid",
         (int)RequestErrorStatus.DCToIRecInvalidEllipsoid);
       ContractExecutionStates.DynamicAddwithOffset("The datum CSIB failed to load",
@@ -244,13 +244,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.FailedToConfigureInternalPipeline);
     }
 
-    protected ServiceException CreateServiceException(string errorMessage, RequestErrorStatus resultStatus = RequestErrorStatus.OK)
+    protected ServiceException CreateServiceException<T>(RequestErrorStatus resultStatus = RequestErrorStatus.OK)
     {
-      var errorStr = resultStatus == RequestErrorStatus.OK ? 
-        errorMessage : 
-        $"{errorMessage} with error: {ContractExecutionStates.FirstNameWithOffset((int) resultStatus)}";
+      var errorMessage = $"Failed to get data requested by {nameof(T)}";
 
-      return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorStr));
+      if (resultStatus != RequestErrorStatus.OK)
+        errorMessage = $"{errorMessage} with error: {ContractExecutionStates.FirstNameWithOffset((int) resultStatus)}";
+
+      return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
     }
   }
 }

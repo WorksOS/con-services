@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Net;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -9,7 +7,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.SpeedStatistics;
 using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
 using SpeedSummaryResult = VSS.TRex.Analytics.SpeedStatistics.SpeedStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.SpeedSummaryResult;
@@ -39,12 +36,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested machine speed summary data";
-
       SpeedSummaryRequest request = item as SpeedSummaryRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(SpeedSummaryRequest));
+        ThrowRequestTypeCastException<SpeedSummaryRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -69,10 +64,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (speedSummaryResult.ResultStatus == RequestErrorStatus.OK)
           return ConvertResult(speedSummaryResult);
 
-        throw CreateServiceException(ERROR_MESSAGE, speedSummaryResult.ResultStatus);
+        throw CreateServiceException<SummarySpeedExecutor>(speedSummaryResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<SummarySpeedExecutor>();
     }
 
     private SummaryResult ConvertResult(SpeedSummaryResult result)

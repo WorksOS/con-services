@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Net;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -37,12 +35,10 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested material temperature summary data";
-
       TemperatureSummaryRequest request = item as TemperatureSummaryRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(TemperatureSummaryRequest));
+        ThrowRequestTypeCastException<TemperatureSummaryRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -66,10 +62,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (temperatureSummaryResult.ResultStatus == RequestErrorStatus.OK)
           return ConvertResult(temperatureSummaryResult);
 
-        throw CreateServiceException(ERROR_MESSAGE, temperatureSummaryResult.ResultStatus);
+        throw CreateServiceException<SummaryTemperatureExecutor>(temperatureSummaryResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<SummaryTemperatureExecutor>();
     }
 
     private TemperatureSummaryResult ConvertResult(TemperatureStatisticsResult summary)

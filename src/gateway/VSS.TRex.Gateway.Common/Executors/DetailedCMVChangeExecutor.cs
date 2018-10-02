@@ -1,6 +1,4 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -33,12 +31,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested CMV Change details data";
-
       CMVChangeDetailsRequest request = item as CMVChangeDetailsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CMVChangeDetailsRequest));
+        ThrowRequestTypeCastException<CMVChangeDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -57,10 +53,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (cmvChangeDetailsResult.ResultStatus == RequestErrorStatus.OK)
           return new CMVChangeSummaryResult(cmvChangeDetailsResult.Percents, cmvChangeDetailsResult.TotalAreaCoveredSqMeters);
 
-        throw CreateServiceException(ERROR_MESSAGE, cmvChangeDetailsResult.ResultStatus);
+        throw CreateServiceException<DetailedCMVChangeExecutor>(cmvChangeDetailsResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<DetailedCMVChangeExecutor>();
     }
   }
 }

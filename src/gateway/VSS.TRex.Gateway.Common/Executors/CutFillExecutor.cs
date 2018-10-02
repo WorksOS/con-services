@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -35,12 +33,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested cut-fill details data";
-
       CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CutFillDetailsRequest));
+        ThrowRequestTypeCastException<CutFillDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
       
@@ -65,10 +61,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (cutFillResult.ResultStatus == RequestErrorStatus.OK)
           return new CompactionCutFillDetailedResult(cutFillResult.Percents);
 
-        throw CreateServiceException(ERROR_MESSAGE, cutFillResult.ResultStatus);
+        throw CreateServiceException<CutFillExecutor>(cutFillResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<CutFillExecutor>();
     }
 
     /// <summary>

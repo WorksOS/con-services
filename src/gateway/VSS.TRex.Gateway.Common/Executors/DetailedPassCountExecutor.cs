@@ -1,16 +1,12 @@
-﻿using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Analytics.Foundation.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Types;
 using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
 
@@ -36,12 +32,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      const string ERROR_MESSAGE = "Failed to get requested Pass Count details data";
-
       PassCountDetailsRequest request = item as PassCountDetailsRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(PassCountDetailsRequest));
+        ThrowRequestTypeCastException<PassCountDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
@@ -67,10 +61,10 @@ namespace VSS.TRex.Gateway.Common.Executors
             passCountDetailsResult.TotalAreaCoveredSqMeters
           );
 
-        throw CreateServiceException(ERROR_MESSAGE, passCountDetailsResult.ResultStatus);
+        throw CreateServiceException<DetailedPassCountExecutor>(passCountDetailsResult.ResultStatus);
       }
 
-      throw CreateServiceException(ERROR_MESSAGE);
+      throw CreateServiceException<DetailedPassCountExecutor>();
     }
   }
 }
