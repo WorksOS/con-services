@@ -36,45 +36,48 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <returns>a CMVSummaryResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
       try
       {
         MDPRequest request = item as MDPRequest;
 
         if (request == null)
+          ThrowRequestTypeCastException<MDPRequest>();
+
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway);
+
+        if (useTrexGateway)
         {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Undefined requested data MDPRequest"));
+          var mdpSummaryRequest = new MDPSummaryRequest(
+            request.ProjectUid,
+            request.Filter,
+            request.MdpSettings.MdpTarget,
+            request.MdpSettings.OverrideTargetMDP,
+            request.MdpSettings.MaxMDPPercent,
+            request.MdpSettings.MinMDPPercent);
+
+          return trexCompactionDataProxy.SendMDPSummaryRequest(mdpSummaryRequest, customHeaders).Result;
         }
 
         string fileSpaceName = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
         TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId,
-            request.OverrideStartUtc, request.OverrideEndUtc, request.OverrideAssetIds, fileSpaceName);
+          request.OverrideStartUtc, request.OverrideEndUtc, request.OverrideAssetIds, fileSpaceName);
         var raptorResult = raptorClient.GetMDPSummary(request.ProjectId ?? -1,
-                            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
-                            ConvertSettings(request.MdpSettings),
-                            raptorFilter,
-                            RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
-                            out TMDPSummary mdpSummary);
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
+          ConvertSettings(request.MdpSettings),
+          raptorFilter,
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
+          out TMDPSummary mdpSummary);
         if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          result = ConvertResult(mdpSummary);
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int) raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested MDP summary data with error: {ContractExecutionStates.FirstNameWithOffset((int) raptorResult)}"));
-        }
+          return ConvertResult(mdpSummary);
 
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
+          $"Failed to get requested MDP summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
       }
-
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
     }
 
     protected sealed override void ProcessErrorCodes()

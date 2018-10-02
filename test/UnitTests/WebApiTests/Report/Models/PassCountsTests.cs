@@ -9,7 +9,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
 {
@@ -20,19 +19,19 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void CanCreatePassCountsTest()
     {
       var validator = new DataAnnotationsValidator();
-      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, null, null, null);
+      PassCounts passCounts = new PassCounts(projectId, null, callId, passCountSettings, liftSettings, null, 0, null, null, null);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(passCounts, out results));
 
       //missing project id
-      passCounts = PassCounts.CreatePassCountsRequest(0, callId, passCountSettings, liftSettings, null, 0, null, null, null);
+      passCounts = new PassCounts(0, null, callId, passCountSettings, liftSettings, null, 0, null, null, null);
       Assert.IsFalse(validator.TryValidate(passCounts, out results));
     }
 
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, null, null, null);
+      PassCounts passCounts = new PassCounts(projectId, null, callId, passCountSettings, liftSettings, null, 0, null, null, null);
       passCounts.Validate();
     }
 
@@ -41,7 +40,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void ValidateFailInvalidOverrideDatesTest()
     {
       //override startUTC > override end UTC
-      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
+      PassCounts passCounts = new PassCounts(projectId, null, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
       Assert.ThrowsException<ServiceException>(() => passCounts.Validate());
     }
 
@@ -49,7 +48,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void ValidateFailMissingOverrideDatesTest()
     {
       //missing override end UTC
-      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
+      PassCounts passCounts = new PassCounts(projectId, null, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
       Assert.ThrowsException<ServiceException>(() => passCounts.Validate());
     }
 

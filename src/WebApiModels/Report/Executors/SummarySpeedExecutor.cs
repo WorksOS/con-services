@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
@@ -43,6 +44,21 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = item as SummarySpeedRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException<SummarySpeedRequest>();
+
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SPEED"), out var useTrexGateway);
+
+        if (useTrexGateway)
+        {
+        	var speedSummaryRequest = new SpeedSummaryRequest(
+            request.ProjectUid,
+            request.Filter,
+            request.LiftBuildSettings.MachineSpeedTarget);
+
+          return trexCompactionDataProxy.SendSpeedSummaryRequest(speedSummaryRequest, customHeaders).Result;
+        }
 
         var raptorResult = raptorClient.GetSummarySpeed(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((request.CallId ?? Guid.NewGuid()), 0,

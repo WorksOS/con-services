@@ -8,6 +8,7 @@ using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -47,12 +48,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [TestMethod]
     public void CutFillExecutorNoResult()
     {
-      var request = new CutFillDetailsRequest(0, null, null, null, null);
+      var request = new CutFillDetailsRequest(0, null, null, null, null, null);
 
       TCutFillDetails details = new TCutFillDetails();
 
       var raptorClient = new Mock<IASNodeClient>();
-
+      var configStore = new Mock<IConfigurationStore>();
+      
       raptorClient
         .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
           It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
@@ -60,18 +62,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(false);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object);
+        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, null, configStore.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
 
     [TestMethod]
     public void CutFillExecutorSuccess()
     {
-      var request = new CutFillDetailsRequest(0, null, null, null, null);
+      var request = new CutFillDetailsRequest(0, null, null, null, null, null);
 
       TCutFillDetails details = new TCutFillDetails { Percents = new[] { 5.0, 20.0, 13.0, 10.0, 22.0, 12.0, 18.0 } };
 
       var raptorClient = new Mock<IASNodeClient>();
+      var configStore = new Mock<IConfigurationStore>();
 
       raptorClient
         .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
@@ -80,7 +83,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(true);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object);
+        .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, null, configStore.Object);
       var result = executor.Process(request) as CompactionCutFillDetailedResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(details.Percents, result.Percents, "Wrong percents");

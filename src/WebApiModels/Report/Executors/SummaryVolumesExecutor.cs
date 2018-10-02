@@ -46,12 +46,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       try
       {
         var request = item as SummaryVolumesRequest;
+
         if (request == null)
-        {
-          throw new ServiceException(
-            HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "SummaryVolumesRequest cast failed."));
-        }
+          ThrowRequestTypeCastException<SummaryVolumesRequest>();
 
         TASNodeSimpleVolumesResult result;
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
@@ -60,11 +61,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Creates a <see cref="SummaryVolumesRequest"/> object for use with the v2 API.
     /// </summary>
     /// <returns>New instance of <see cref="SummaryVolumesRequest"/>.</returns>
-    public static SummaryVolumesRequest CreateAndValidate(long projectId, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, VolumesType volumeCalcType)
+    public static SummaryVolumesRequest CreateAndValidate(long projectId, Guid? projectUid, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, VolumesType volumeCalcType)
     {
       var request = new SummaryVolumesRequest
       {
         ProjectId = projectId,
+        ProjectUid = projectUid,
         BaseFilter = baseFilter,
         TopFilter = topFilter,
         BaseDesignDescriptor = baseDesignDescriptor,

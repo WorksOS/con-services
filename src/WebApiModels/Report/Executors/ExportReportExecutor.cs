@@ -10,7 +10,6 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
@@ -28,6 +27,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = item as ExportReport;
+
+      if (request == null)
+        ThrowRequestTypeCastException<ExportReport>();
+      
       if (request == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -119,7 +120,23 @@ namespace VSS.Productivity3D.WebApi
       app.UseResponseCompression();
       app.UseMvc();
 
-      ConfigureRaptor(serviceProvider);
+      CheckRaptorAvailabilityIfRequired(serviceProvider);
+    }
+
+    /// <summary>
+    /// Checks whether the Raptor is available if the condition is met.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    private void CheckRaptorAvailabilityIfRequired(ServiceProvider serviceProvider)
+    {
+      if (Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CMV") == "false" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PASSCOUNT") == "false" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MDP") == "false" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CUTFILL") == "false" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SPEED") == "false" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TEMPERATURE") == "false" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VOLUMES") == "false")
+        ConfigureRaptor(serviceProvider);
     }
 
     /// <summary>

@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object,
+          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object, null,
           _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
@@ -141,7 +141,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object,
+          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object, null,
           _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
@@ -190,7 +190,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object,
+          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object, null,
           _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
@@ -236,7 +236,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object,
+          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object, null,
           _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
@@ -285,7 +285,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object,
+          mockConfigStore.Object, null, null, null, null, mockTransferProxy.Object, mockTRexTagFileProxy.Object, null,
           _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
@@ -334,7 +334,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileNonDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, _customHeaders);
+          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, null, _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
 
@@ -384,7 +384,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileNonDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, _customHeaders);
+          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, null, _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
 
@@ -434,7 +434,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileNonDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, _customHeaders);
+          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, null, _customHeaders);
 
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
 
@@ -485,7 +485,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var submitter = RequestExecutorContainerFactory
         .Build<TagFileNonDirectSubmissionExecutor>(_logger, mockRaptorClient.Object, mockTagProcessor.Object,
-          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, _customHeaders);
+          mockConfigStore.Object, null, null, null, null, null, mockTRexTagFileProxy.Object, null, _customHeaders);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await submitter.ProcessAsync(request))
         .ConfigureAwait(false);

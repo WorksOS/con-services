@@ -71,16 +71,28 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     public List<long> OverrideAssetIds { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     protected MDPRequest()
     { }
 
     /// <summary>
-    /// Create instance of MDPRequest
+    /// Overload constructor with parameters.
     /// </summary>
-    public static MDPRequest CreateMDPRequest(
+    /// <param name="projectID"></param>
+    /// <param name="projectUID"></param>
+    /// <param name="callId"></param>
+    /// <param name="mdpSettings"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="filter"></param>
+    /// <param name="filterId"></param>
+    /// <param name="overrideStartUtc"></param>
+    /// <param name="overrideEndUtc"></param>
+    /// <param name="overrideAssetIds"></param>
+    /// <returns></returns>
+    public MDPRequest(
       long projectID,
+      Guid? projectUID,
       Guid? callId,
       MDPSettings mdpSettings,
       LiftBuildSettings liftBuildSettings,
@@ -90,18 +102,16 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
       DateTime? overrideEndUtc,
       List<long> overrideAssetIds)
     {
-      return new MDPRequest
-      {
-        ProjectId = projectID,
-        CallId = callId,
-        MdpSettings = mdpSettings,
-        LiftBuildSettings = liftBuildSettings,
-        Filter = filter,
-        FilterId = filterId,
-        OverrideStartUtc = overrideStartUtc,
-        OverrideEndUtc = overrideEndUtc,
-        OverrideAssetIds = overrideAssetIds
-      };
+      ProjectId = projectID;
+      ProjectUid = projectUID;
+      CallId = callId;
+      MdpSettings = mdpSettings;
+      LiftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterId = filterId;
+      OverrideStartUtc = overrideStartUtc;
+      OverrideEndUtc = overrideEndUtc;
+      OverrideAssetIds = overrideAssetIds;
     }
 
     /// <summary>

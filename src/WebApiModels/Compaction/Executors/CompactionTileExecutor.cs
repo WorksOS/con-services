@@ -35,6 +35,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       ContractExecutionResult result;
       TileRequest request = item as TileRequest;
 
+      if (request == null)
+        ThrowRequestTypeCastException<TileRequest>();
+
       try
       {
         RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
