@@ -50,9 +50,6 @@ namespace VSS.TRex.Servers.Compute
       //cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
       base.ConfigureTRexGrid(cfg);
 
-
-
-
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
       cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
@@ -124,7 +121,6 @@ namespace VSS.TRex.Servers.Compute
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
       cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
-
     }
 
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
@@ -136,8 +132,6 @@ namespace VSS.TRex.Servers.Compute
         LocalPort = 48100,
       };
       return cfg;
-
-
     }
 
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)

@@ -51,8 +51,6 @@ namespace VSS.TRex.Servers.Compute
     {
       base.ConfigureTRexGrid(cfg);
 
-      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable");
-
       cfg.IgniteInstanceName = TRexGrids.ImmutableGridName();
 
       cfg.JvmOptions = new List<string>() {
@@ -95,8 +93,7 @@ namespace VSS.TRex.Servers.Compute
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
-      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
-
+      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable");
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 
@@ -106,7 +103,6 @@ namespace VSS.TRex.Servers.Compute
       cfg.PublicThreadPoolSize = 50;
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
-
 
       //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
     }
