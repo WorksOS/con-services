@@ -35,7 +35,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         if (retirees == null)
         {
-          Log.LogError($"Retirees list supplied to segment retirement queue processor is null. Aborting");
+          Log.LogError("Retirees list supplied to segment retirement queue processor is null. Aborting");
           return false;
         }
 
@@ -49,12 +49,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
           if (group == null)
           {
-            Log.LogError($"Retirees list supplied to segment retirement queue processor contains null items. Aborting");
+            Log.LogError("Retirees list supplied to segment retirement queue processor contains null items. Aborting");
+            return false;
           }
 
           if (group.SegmentKeys == null || group.SegmentKeys.Length == 0)
           {
-            Log.LogError($"Retiree groups segment keys list is null or empty. Aborting");
+            Log.LogError("Retiree groups segment keys list is null or empty. Aborting");
+            return false;
           }
 
           foreach (var key in group.SegmentKeys)

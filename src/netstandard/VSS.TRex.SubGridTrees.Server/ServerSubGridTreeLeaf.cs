@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,7 +13,6 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
-using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.Types;
 using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 
@@ -293,7 +291,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
                     case GridDataType.GPSMode:
                         {
-                            // Also grab flags for halfpass and rearaxle
+                            // Also grab flags for half pass and rear axle
                             LatestData.HalfPass = CellPasses[I].HalfPass;
                             LatestData.PassType = CellPasses[I].PassType;
 
@@ -493,7 +491,7 @@ namespace VSS.TRex.SubGridTrees.Server
             AllocateLeafLatestPassGrid();
 
             // This statement does assume that the last segment has at least it's latest
-            // passes in the cache. This is, currently, a safe assumption as the directoy
+            // passes in the cache. This is, currently, a safe assumption as the directory
             // is only written in response to changes in the cell passes in the segments,
             // which in turn will cause the latest cells in the affected segments to be
             // modified which will always cause the latest cells in the latest segment to be
@@ -578,7 +576,7 @@ namespace VSS.TRex.SubGridTrees.Server
                     }
                     else
                     {
-                        Log.LogCritical($"Failed to load segment from subgrid where segment was marked as present in persistant store for {new SubGridCellAddress(OriginX, OriginY)}");
+                        Log.LogCritical($"Failed to load segment from subgrid where segment was marked as present in persistent store for {new SubGridCellAddress(OriginX, OriginY)}");
                     }
                 }
             }

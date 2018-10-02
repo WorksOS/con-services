@@ -1,11 +1,11 @@
 ﻿using System;
-using Apache.Ignite.Core.Cache.Configuration;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Models
 {
   /// <summary>
-  /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.
+  /// Represents a segment that has been stored in the persistent layer as a result on TAG file processing that
+  /// has subsequently been updated with a later TAG file generated update.
   /// </summary>
   public class SegmentRetirementQueueItem
   {

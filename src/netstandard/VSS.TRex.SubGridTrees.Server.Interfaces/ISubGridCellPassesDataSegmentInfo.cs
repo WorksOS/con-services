@@ -6,6 +6,12 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridCellPassesDataSegmentInfo
   {
+    /// <summary>
+    /// The version number of this segment when it is stored in the persistent layer, defined
+    /// as the number of ticks in DateTime.Now at the time it is written.
+    /// </summary>
+    long Version { get; set; }
+
     ISubGridCellPassesDataSegment Segment { get; set; }
     DateTime StartTime { get; set; }
     DateTime EndTime { get; set; }
@@ -29,5 +35,10 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void Read(BinaryReader reader);
 
     ISubGridSpatialAffinityKey AffinityKey();
+
+    /// <summary>
+    /// Updates the version of the segment to reflect the current date time
+    /// </summary>
+    void Touch();
   }
 }

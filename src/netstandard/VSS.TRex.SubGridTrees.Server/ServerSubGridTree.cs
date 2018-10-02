@@ -244,7 +244,7 @@ namespace VSS.TRex.SubGridTrees.Server
         invalidatedSpatialStreams.AddRange(ModifiedOriginaSegments.Select(x => x.SegmentInfo.AffinityKey()));
 
         //**********************************************************************
-        //*** Construct list of new segment files that have been creating    ***
+        //*** Construct list of new segment files that have been created     ***
         //*** by the cleaving of other segments in the subgrid               ***
         //**********************************************************************
 
@@ -272,6 +272,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
           foreach (var segment in NewSegmentsFromCleaving)
           {
+            // Update the version of the segment as it is about to be written
+            segment.SegmentInfo.Touch();
+
             segment.SaveToFile(storageProxy, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out FileSystemErrorStatus FSError);
 
             if (FSError == FileSystemErrorStatus.OK)
@@ -300,6 +303,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
           foreach (var segment in ModifiedOriginaSegments)
           {
+            // Update the version of the segment as it is about to be written
+            segment.SegmentInfo.Touch();
+
             if (segment.SaveToFile(storageProxy, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out FileSystemErrorStatus FSError))
               Log.LogDebug($"Saved modified grid segment file: {segment}");
             else
