@@ -37,6 +37,8 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested material temperature summary data";
+
       TemperatureSummaryRequest request = item as TemperatureSummaryRequest;
 
       if (request == null)
@@ -60,10 +62,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       );
 
       if (temperatureSummaryResult != null)
-        return ConvertResult(temperatureSummaryResult);
+      {
+        if (temperatureSummaryResult.ResultStatus == RequestErrorStatus.OK)
+          return ConvertResult(temperatureSummaryResult);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested material temperature summary data"));
+        throw CreateServiceException(ERROR_MESSAGE, temperatureSummaryResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
 
     private TemperatureSummaryResult ConvertResult(TemperatureStatisticsResult summary)

@@ -35,6 +35,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested CMV summary data";
+
       CMVSummaryRequest request = item as CMVSummaryRequest;
 
       if (request == null)
@@ -58,10 +60,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       );
 
       if (cmvSummaryResult != null)
-        return ConvertResult(cmvSummaryResult);
+      {
+        if (cmvSummaryResult.ResultStatus == RequestErrorStatus.OK)
+          return ConvertResult(cmvSummaryResult);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested CMV summary data"));
+        throw CreateServiceException(ERROR_MESSAGE, cmvSummaryResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
 
     private SummaryResult ConvertResult(CMVStatisticsResult summary)

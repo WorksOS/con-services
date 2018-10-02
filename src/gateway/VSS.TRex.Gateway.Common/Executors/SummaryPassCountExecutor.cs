@@ -36,6 +36,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested Pass Count summary data";
+
       PassCountSummaryRequest request = item as PassCountSummaryRequest;
 
       if (request == null)
@@ -61,10 +63,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       );
 
       if (passCountSummaryResult != null)
-        return ConvertResult(passCountSummaryResult);
+      {
+        if (passCountSummaryResult.ResultStatus == RequestErrorStatus.OK)
+          return ConvertResult(passCountSummaryResult);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested Pass Count summary data"));
+        throw CreateServiceException(ERROR_MESSAGE, passCountSummaryResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
 
     private SummaryResult ConvertResult(PassCountStatisticsResult summary)

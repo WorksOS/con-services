@@ -39,6 +39,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested machine speed summary data";
+
       SpeedSummaryRequest request = item as SpeedSummaryRequest;
 
       if (request == null)
@@ -63,10 +65,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       );
 
       if (speedSummaryResult != null)
-        return ConvertResult(speedSummaryResult);
+      {
+        if (speedSummaryResult.ResultStatus == RequestErrorStatus.OK)
+          return ConvertResult(speedSummaryResult);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested machine speed summary data"));
+        throw CreateServiceException(ERROR_MESSAGE, speedSummaryResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
 
     private SummaryResult ConvertResult(SpeedSummaryResult result)

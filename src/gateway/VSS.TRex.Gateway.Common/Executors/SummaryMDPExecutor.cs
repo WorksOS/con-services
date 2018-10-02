@@ -34,6 +34,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      const string ERROR_MESSAGE = "Failed to get requested MDP summary data";
+
       MDPSummaryRequest request = item as MDPSummaryRequest;
 
       if (request == null)
@@ -57,10 +59,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       );
 
       if (mdpSummaryResult != null)
-        return ConvertResult(mdpSummaryResult);
+      {
+        if (mdpSummaryResult.ResultStatus == RequestErrorStatus.OK)
+          return ConvertResult(mdpSummaryResult);
 
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested MDP summary data"));
+        throw CreateServiceException(ERROR_MESSAGE, mdpSummaryResult.ResultStatus);
+      }
+
+      throw CreateServiceException(ERROR_MESSAGE);
     }
 
     private SummaryResult ConvertResult(MDPStatisticsResult summary)
