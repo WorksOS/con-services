@@ -78,9 +78,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         return;
       }
 
-      var mutableQueueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+      var queueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
-      SegmentRetirementQueue mutableQueue = new SegmentRetirementQueue(mutableIgnite);
+      SegmentRetirementQueue queue = new SegmentRetirementQueue(mutableIgnite);
       SegmentRetirementQueueItemHandler handler = new SegmentRetirementQueueItemHandler();
 
       // Cycle looking for new work to do until aborted...
@@ -88,24 +88,30 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
       {
         try
         {
-          IStorageProxy mutableStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+          // Obtain a specific local mutable storage proxy so as to have a local transactional proxy
+          // for this activity
+          IStorageProxy storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-          Debug.Assert(mutableStorageProxy.Mutability == StorageMutability.Mutable, "Non mutable storage proxy available to segment retirement queue");
+          Debug.Assert(storageProxy.Mutability == StorageMutability.Mutable, "Non mutable storage proxy available to segment retirement queue");
 
           Log.LogInformation("About to query retiree spatial streams from cache");
 
+          DateTime earlierThan = DateTime.Now - retirementAge;
           // Retrieve the list of segments to be retired
-          var retirees = mutableQueue.Query(DateTime.Now - retirementAge);
+          var retirees = queue.Query(earlierThan);
 
           // Pass the list to the handler for action
           var retireesCount = retirees?.Count ?? 0;
           if (retireesCount > 0)
           {
-            Log.LogInformation($"About to attempt retiring {retireesCount} spatial streams from mutable and immutable contexts");
+            Log.LogInformation($"About to retire {retireesCount} groups of spatial streams from mutable and immutable contexts");
 
-            if (handler.Process(mutableStorageProxy, mutableQueueCache, retirees))
+            if (handler.Process(storageProxy, queueCache, retirees))
             {
               Log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
+
+              // Remove the elements from the segment retirement queue
+              queue.Remove(earlierThan);
             }
             else
             {

@@ -151,7 +151,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         /// <summary>
         /// Creates the default segment metadata within the segment directory. This is only called to create the first 
-        /// segment metadta spanning the entire time range.
+        /// segment metadata spanning the entire time range.
         /// </summary>
         public void CreateDefaultSegment()
         {
@@ -535,8 +535,7 @@ namespace VSS.TRex.SubGridTrees.Server
             ISubGridCellPassesDataSegmentInfo SeedSegmentInfo = null;
             ISubGridCellPassesDataSegment LastSegment = null;
 
-            // Locate the segment immediately previous to the first dirty segment in the
-            // list of segments
+            // Locate the segment immediately previous to the first dirty segment in the list of segments
 
             for (int I = 0; I < Directory.SegmentDirectory.Count; I++)
             {
@@ -570,7 +569,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 if (SeedSegmentInfo.Segment != null)
                 {
                     if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(storageProxy, new SubGridCellAddress(OriginX, OriginY), true, false,
-                                                                          this, SeedSegmentInfo.Segment /*, null*/))
+                                                                          this, SeedSegmentInfo.Segment))
                     {
                         LastSegment = SeedSegmentInfo.Segment;
                     }
@@ -617,35 +616,26 @@ namespace VSS.TRex.SubGridTrees.Server
                 return false;
             }
 
-                FileSystemErrorStatus FSError = storageProxy.ReadSpatialStreamFromPersistentStore
-                            (Owner.ID, FileName, OriginX, OriginY, FileName,
-                             FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
+             FileSystemErrorStatus FSError = storageProxy.ReadSpatialStreamFromPersistentStore
+                         (Owner.ID, FileName, OriginX, OriginY, FileName, FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
 
-                Result = FSError == FileSystemErrorStatus.OK;
+             Result = FSError == FileSystemErrorStatus.OK;
 
-                if (!Result)
-                {
-                    /*
-                    if (FSError == icfseFileDoesNotExist)
-              SIGLogMessage.PublishNoODS(Self,
-                                     Format('Expected leaf subgrid segment %s, model %d does not exist.',
-                                            [FileName, (FOwner as TICServerSubGridTree).DataModelID]),
-                                     slmcError)
-            else
-          SIGLogMessage.PublishNoODS(Self,
-                                     Format('Unable to load leaf subgrid segment %s, model %d. Details: %s',
-                                            [FileName, (FOwner as TICServerSubGridTree).DataModelID, FSErrorStatusName(FSError)]),
-                                     slmcError);
-                     */
+             if (!Result)
+             {
+               if (FSError == FileSystemErrorStatus.FileDoesNotExist)
+                 Log.LogError($"Expected leaf subgrid segment {FileName}, model {Owner.ID} does not exist.");
+               else
+                 Log.LogError($"Unable to load leaf subgrid segment {FileName}, model {Owner.ID}. Details: {FSError}");
 
-                    return false;
-                }
+               return false;
+             }
 
-                SMS.Position = 0;
-                using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
-                {
-                    Result = Segment.Read(reader, loadLatestData, loadAllPasses);
-                }
+             SMS.Position = 0;
+             using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+             {
+                 Result = Segment.Read(reader, loadLatestData, loadAllPasses);
+             }
 
             return Result;
         }
@@ -751,9 +741,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 switch (Header.MinorVersion)
                 {
                     case 0:
-                        Result = Directory.Read_2p0(reader);//,
-                                                            // Directory.GlobalLatestCells.PassData,
-                                                            //out LatestCellPassDataSize, out CellPassStacksDataSize);
+                        Result = Directory.Read_2p0(reader);//, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
                         break;
                     default:
                         Log.LogError($"Subgrid directory file version or header mismatch (expected [Version: 2.0, found {Header.MajorVersion}.{Header.MinorVersion}] [Header: {SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker}, found {Header.Identifier}]).");

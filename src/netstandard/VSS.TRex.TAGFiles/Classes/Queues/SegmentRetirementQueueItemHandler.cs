@@ -26,6 +26,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     {
       try
       {
+        int count = 0;
+        storageProxy.Clear();
+
         // Process all entries in the retirees list, removing each in turn from the cache.
         if (cache == null)
         {
@@ -59,13 +62,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             return false;
           }
 
+          count += group.SegmentKeys.Length;
+
+          Log.LogInformation($"Retiring a group containing {group.SegmentKeys.Length} keys");
           foreach (var key in group.SegmentKeys)
           {
-            var affinityKey = new SubGridSpatialAffinityKey(key.ProjectID, key.SubGridX, key.SubGridY, key.SegmentIdentifier);
-
             Log.LogInformation($"About to retire {key}");
 
-            if (!storageProxy.SpatialCache.Remove(affinityKey))
+            if (!storageProxy.SpatialCache.Remove(key))
             {
               Log.LogError($"Mutable segment retirement cache removal for {key} returned false, aborting");
               return false;
@@ -77,7 +81,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
               return false;
             }
 
-            if (!storageProxy.ImmutableProxy.SpatialCache.Remove(affinityKey))
+            if (!storageProxy.ImmutableProxy.SpatialCache.Remove(key))
             {
               Log.LogError($"Immutable segment retirement cache removal for {key} returned false, aborting");
               return false;
@@ -85,6 +89,16 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           }
         }
 
+        Log.LogInformation($"Prepared {count} retires for removal");
+
+        // Commit all the deletes for this retiree group
+        if (!storageProxy.Commit())
+        {
+          Log.LogInformation("Segment retirement commit failed");
+          return false;
+        }
+
+        Log.LogInformation($"{count} retirees removed from queue cache");
         return true;
       }
       catch (Exception e)

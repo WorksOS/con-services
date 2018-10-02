@@ -351,7 +351,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
                         // All operations within the transaction to integrate the changes into the live model have completed successfully.
                         // Now commit those changes as a block.
+
+                        var startTime = DateTime.Now;
+                        Log.LogInformation("Starting storage proxy Commit()");
                         storageProxy_Mutable.Commit();
+                        Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}");
 
                         // Advise the segment retirement manager of any segments/subgrids that needs to be retired as as result of this integration
 

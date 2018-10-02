@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using Apache.Ignite.Core.Cache;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.Storage
 {
     /// <summary>
-    /// A transacted Storeage Proxy that collects mutating changes (write and delete operations) that
-    /// may be commited at a single time
+    /// A transacted Storage Proxy that collects mutating changes (write and delete operations) that
+    /// may be committed at a single time
     /// </summary>
     /// <typeparam name="TK"></typeparam>
     /// <typeparam name="TV"></typeparam>
     public class StorageProxyCacheTransacted<TK, TV> : StorageProxyCache<TK, TV>
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxyCacheTransacted<TK, TV>>();
+
         private HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
         private Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
 
@@ -28,21 +31,40 @@ namespace VSS.TRex.Storage
         public override TV Get(TK key) => PendingTransactedWrites.TryGetValue(key, out TV value) ? value : base.Get(key);
 
         /// <summary>
-        /// Removes the given key from the cache. If there has been a previou un-committed remove for the key
+        /// Removes the given key from the cache. If there has been a previous un-committed remove for the key
         /// then an argument exception is thrown
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public override bool Remove(TK key)
         {
-            if (!PendingTransactedDeletes.Add(key))
-                throw new ArgumentException($"Key {key} is already present in the set of transacted deletes for the cache");
+          if (!PendingTransactedDeletes.Add(key))
+          {
+            Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [Remove]");
+          }
 
-            return base.Remove(key);
+          return true;
         }
 
         /// <summary>
-        /// Provides Put semantics into the cache. If there has been a previous uncommited put for the same key then
+        /// Removes the given keys from the cache. If there has been a previous un-committed remove for the key
+        /// then an argument exception is thrown
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public override void RemoveAll(IEnumerable<TK> keys)
+        {
+          foreach (var key in keys)
+          {
+            if (!PendingTransactedDeletes.Add(key))
+            {
+              Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [RemoveAll]"); 
+            }
+          }
+        }
+
+        /// <summary>
+        /// Provides Put semantics into the cache. If there has been a previous uncommitted put for the same key then
         /// the previous value put is discarded and the new value used to replace it.
         /// </summary>
         /// <param name="key"></param>
@@ -50,7 +72,7 @@ namespace VSS.TRex.Storage
         public override void Put(TK key, TV value)
         {
             // If there is an existing pending write for the give key, then replace the
-            // element in the directionary with the new element
+            // element in the dictionary with the new element
             if (PendingTransactedWrites.ContainsKey(key))
                 PendingTransactedWrites.Remove(key);
 

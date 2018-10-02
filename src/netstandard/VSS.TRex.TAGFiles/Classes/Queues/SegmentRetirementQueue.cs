@@ -63,6 +63,37 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     /// <param name="earlierThan"></param>
     /// <returns></returns>
+    public void Remove(DateTime earlierThan)
+    {
+      // Do it the simple scan query way
+      try
+      {
+        var filter = new SegmentRetirementQueueQueryFilter(earlierThan.Ticks);
+        var query = new ScanQuery<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>
+        {
+          Filter = filter,
+          Local = true
+        };
+
+        List<ISegmentRetirementQueueKey> toRemove = QueueCache.Query(query).GetAll().Select(x => x.Key).ToList();
+
+        Log.LogInformation($"Removing {toRemove.Count} retirement groups from retirement queue cache");
+
+        QueueCache.RemoveAll(toRemove);
+
+        Log.LogInformation($"Removed {toRemove.Count} retirement groups from retirement queue cache");
+      }
+      catch (Exception e)
+      {
+        Log.LogError($"{nameof(Remove)} experienced exception while removing retirees from retirement queue: {e}");
+      }
+    }
+
+    /// <summary>
+    /// Finds all the items in the retirement queue ready for removal and returns them
+    /// </summary>
+    /// <param name="earlierThan"></param>
+    /// <returns></returns>
     public List<SegmentRetirementQueueItem> Query(DateTime earlierThan)
     {
       // Do it the simple scan query way

@@ -22,11 +22,11 @@ using VSS.TRex.Utilities;
 namespace VSS.TRex.Rendering.Executors
 {
   /// <summary>
-  /// Renders a tile of themmatic imagery for a location in the project
+  /// Renders a tile of thematic imagery for a location in the project
   /// </summary>
   public class RenderOverlayTile
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<RenderOverlayTile>();
 
     /// <summary>
     /// Details the error status of the bmp result returned by the renderer

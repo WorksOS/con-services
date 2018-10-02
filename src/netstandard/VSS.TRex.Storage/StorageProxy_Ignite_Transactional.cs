@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
@@ -15,7 +14,7 @@ namespace VSS.TRex.Storage
     /// </summary>
     public class StorageProxy_Ignite_Transactional : StorageProxy_Ignite
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite_Transactional>();
 
         /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
