@@ -7,6 +7,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
   /// </summary>
   public class CompactionDataPoint
   {
+    public const int TOTAL_NUMBER_OF_PROFILES = 16;
     public const string FIRST_PASS = "firstPass";
     public const string HIGHEST_PASS = "highestPass";
     public const string LAST_PASS = "lastPass";
