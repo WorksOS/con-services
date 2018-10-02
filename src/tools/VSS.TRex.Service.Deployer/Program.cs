@@ -69,6 +69,7 @@ namespace VSS.TRex.Service.Deployer
 
             Log.LogInformation("Complected service deployment for mutable segment retirement queue service");
 
+          /* Currently the segment retirement service is only deployed to the mutable grid
             var segmentRetirementProxyImmutable = new SegmentRetirementQueueServiceProxyImmutable();
             try
             {
@@ -81,6 +82,7 @@ namespace VSS.TRex.Service.Deployer
             }
          
             Log.LogInformation("Complected service deployment for immutable segment retirement queue service");
+*/
           }
     }
 }

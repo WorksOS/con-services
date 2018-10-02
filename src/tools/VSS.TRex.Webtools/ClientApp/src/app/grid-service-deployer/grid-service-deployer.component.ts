@@ -31,7 +31,9 @@ export class GridServiceDeployerComponent {
   public deployAllServices() {
     this.deployTagFileQueue();
     this.deployMutableSegmentRetirementQueue();
-    this.deployImmutableSegmentRetirementQueue();
+
+    // Currently the segment retirement service is only deployed to the mutable grid
+    // this.deployImmutableSegmentRetirementQueue();
   }
 }
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.Models;
@@ -40,11 +41,20 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         new CacheConfiguration
         {
           Name = TRexCaches.SegmentRetirementQueueCacheName(),
-          QueryEntities = new[]
-          {
-            new QueryEntity(typeof(ISegmentRetirementQueueKey), typeof(SegmentRetirementQueueItem))
-          },
-          KeepBinaryInStore = true
+
+          // Replicate the maps across nodes
+          CacheMode = CacheMode.Partitioned,
+
+//          AffinityFunction = new MutableNonSpatialAffinityFunction(),
+
+          // No backups for now
+          Backups = 0,
+          KeepBinaryInStore = true,
+
+          //QueryEntities = new[]
+          //{
+          //  new QueryEntity(typeof(ISegmentRetirementQueueKey), typeof(SegmentRetirementQueueItem))
+          //}
         });
     }
 
@@ -55,20 +65,41 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// <returns></returns>
     public List<SegmentRetirementQueueItem> Query(DateTime earlierThan)
     {
-      var sql = new SqlQuery(typeof(SegmentRetirementQueueItem), $"_key < {earlierThan.ToBinary()}")
-      {
-        Local = true
-      };
-
+      // Do it the simple scan query way
       try
       {
-        return QueueCache.Query(sql).Select(x => x.Value).ToList();
+        var filter = new SegmentRetirementQueueQueryFilter(earlierThan.Ticks);
+        var query = new ScanQuery<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>
+        {
+          Filter = filter,
+          Local = true
+        };
+        return QueueCache.Query(query).GetAll().Select(x => x.Value).ToList();
       }
       catch (Exception e)
       {
         Log.LogError($"{nameof(Query)} experienced exception while querying retirees: {e}");
         return null;
       }
+
+      /*  var sql = new SqlQuery(typeof(SegmentRetirementQueueItem), $"_KEY.InsertUTCAsLong < {earlierThan.Ticks}")
+        {
+          Local = true
+        };
+  
+        Log.LogInformation($"Retirement queue SQL string is {sql.Sql}");
+        Log.LogInformation($"Retirement queue SQL string is {sql}");
+  
+        try
+        {
+          return QueueCache.Query(sql).Select(x => x.Value).ToList();
+        }
+        catch (Exception e)
+        {
+          Log.LogError($"{nameof(Query)} experienced exception while querying retirees: {e}");
+          return null;
+        }
+  */
     }
   }
 }

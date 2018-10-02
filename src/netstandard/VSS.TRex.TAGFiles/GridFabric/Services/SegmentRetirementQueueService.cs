@@ -98,17 +98,18 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
           var retirees = mutableQueue.Query(DateTime.Now - retirementAge);
 
           // Pass the list to the handler for action
-          if ((retirees?.Count ?? 0) > 0)
+          var retireesCount = retirees?.Count ?? 0;
+          if (retireesCount > 0)
           {
-            Log.LogInformation($"About to attempt retiring {retirees?.Count} spatial streams from mutable and immutable contexts");
+            Log.LogInformation($"About to attempt retiring {retireesCount} spatial streams from mutable and immutable contexts");
 
             if (handler.Process(mutableStorageProxy, mutableQueueCache, retirees))
             {
-              Log.LogInformation($"Successfully retired {retirees?.Count} spatial streams from mutable and immutable contexts");
+              Log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
             }
             else
             {
-              Log.LogError($"Failed to retire {retirees?.Count} spatial streams from mutable and immutable contexts");
+              Log.LogError($"Failed to retire {retireesCount} spatial streams from mutable and immutable contexts");
             }
           }
 
@@ -116,8 +117,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         }
         catch (Exception e)
         {
-          Log.LogError("Exception reported while obtaining new group of retirees to process: {e}"); 
-          throw;
+          Log.LogError($"Exception reported while obtaining new group of retirees to process: {e}"); 
         }
       } while (!aborted);
 
