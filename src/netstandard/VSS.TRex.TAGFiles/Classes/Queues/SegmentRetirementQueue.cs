@@ -6,9 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -34,9 +37,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// <summary>
     /// Constructs a segment retirement queue for the given ignite grid.
     /// </summary>
-    /// <param name="ignite"></param>
-    public SegmentRetirementQueue(IIgnite ignite)
+    public SegmentRetirementQueue()
     {
+      IIgnite ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+
       QueueCache = ignite.GetOrCreateCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(
         new CacheConfiguration
         {

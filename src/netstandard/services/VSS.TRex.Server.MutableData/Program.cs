@@ -56,7 +56,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
-        .Add(x => x.AddSingleton<ISegmentRetirementQueue>(factory => new SegmentRetirementQueue(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable))))
+        .Add(x => x.AddSingleton<ISegmentRetirementQueue>(factory => new SegmentRetirementQueue()))
         .Build()
         .Add(x => x.AddSingleton(new TagProcComputeServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
