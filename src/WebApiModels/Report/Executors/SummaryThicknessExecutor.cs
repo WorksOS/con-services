@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       SummaryParametersBase request = item as SummaryParametersBase;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(SummaryParametersBase));
+        ThrowRequestTypeCastException<SummaryParametersBase>();
 
       TASNodeThicknessSummaryResult result = new TASNodeThicknessSummaryResult();
 

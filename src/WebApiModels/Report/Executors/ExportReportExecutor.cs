@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       var request = item as ExportReport;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(ExportReport));
+        ThrowRequestTypeCastException<ExportReport>();
       
       if (request == null)
       {

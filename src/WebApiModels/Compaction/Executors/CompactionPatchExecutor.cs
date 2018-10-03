@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var request = item as PatchRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(PatchRequest));
+        ThrowRequestTypeCastException<PatchRequest>();
 
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.

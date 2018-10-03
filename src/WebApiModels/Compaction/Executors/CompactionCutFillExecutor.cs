@@ -27,11 +27,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         CutFillDetailsRequest request = item as CutFillDetailsRequest;
 
         if (request == null)
-          ThrowRequestTypeCastException(typeof(CutFillDetailsRequest));
+          ThrowRequestTypeCastException<CutFillDetailsRequest>();
 
-        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL"), out var useTrexGateway))
-          useTrexGateway = false;
-      
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL"), out var useTrexGateway);
+
         if (useTrexGateway)
           return trexCompactionDataProxy.SendCutFillDetailsRequest(request, customHeaders).Result;
 

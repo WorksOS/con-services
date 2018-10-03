@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         CompactionProfileProductionDataRequest request = item as CompactionProfileProductionDataRequest;
 
         if (request == null)
-          ThrowRequestTypeCastException(typeof(CompactionProfileProductionDataRequest));
+          ThrowRequestTypeCastException<CompactionProfileProductionDataRequest>();
 
         var totalResult = ProcessProductionData(request);
         var summaryVolumesResult = ProcessSummaryVolumes(request, totalResult);

@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var request = item as ExportReport;
 
         if (request == null)
-          ThrowRequestTypeCastException(typeof(ExportReport));
+          ThrowRequestTypeCastException<ExportReport>();
         
         var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
 

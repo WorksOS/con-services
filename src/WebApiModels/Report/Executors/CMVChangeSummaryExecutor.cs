@@ -44,14 +44,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       CMVChangeSummaryRequest request = item as CMVChangeSummaryRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(CMVChangeSummaryRequest));
+        ThrowRequestTypeCastException<CMVChangeSummaryRequest>();
 
       try
       {
         TASNodeCMVChangeResult result = new TASNodeCMVChangeResult();
 
-        if (!bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
-          useTrexGateway = false;
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway);
         
         if (useTrexGateway)
         {

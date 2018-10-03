@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       DxfTileRequest request = item as DxfTileRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException(typeof(DxfTileRequest));
+        ThrowRequestTypeCastException<DxfTileRequest>();
 
       string filespaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
