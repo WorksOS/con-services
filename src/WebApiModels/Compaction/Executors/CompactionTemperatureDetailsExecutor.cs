@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using ASNodeDecls;
 using SVOICOptionsDecls;
+using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -23,31 +24,26 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 
-      /*
       bool success = raptorClient.GetTemperatureDetails(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtTemperatureDetailed),
         new TTemperatureDetailSettings
         {
-          TemperatureList = request.Targets.Select(t => t * 10).ToArray(),//Raptor expects 10ths of degrees
+          TemperatureList = request.Targets.Select(t => (int)(t * 10)).ToArray(),//Raptor expects 10ths of degrees
         },
         filter,
         liftBuildSettings,
-        out var temperatureDetails);
+        out var temperatureDetails) == TASNodeErrorStatus.asneOK;
   
 
       if (success)
       {
-        result = new CompactionTemperatureDetailResult(temperatureDetails.Percents, temperatureDetails.TotalAreaCoveredSqMeters);
+        result = new CompactionTemperatureDetailResult(temperatureDetails.Percents);
       }
       else
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           "Failed to get requested temperature details data"));
       }
-      */
-      //TEMP until Raptor implemented
-      result = new CompactionTemperatureDetailResult(new [] {2.4, 10.12, 45.6, 33.82, 6.98}, 1234.56);
-      //END TEMP
 
       return result;
     }

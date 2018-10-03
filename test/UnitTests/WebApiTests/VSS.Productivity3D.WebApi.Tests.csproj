@@ -88,6 +88,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="VSS.MasterData.Models">
+      <HintPath>..\..\..\..\MerinoSandbox\MasterDataModels\src\bin\Debug\netstandard2.0\VSS.MasterData.Models.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

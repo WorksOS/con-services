@@ -11,10 +11,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   public class CompactionTemperatureDetailResult : ContractExecutionResult
   {
     /// <summary>
-    /// The temperature details data results
+    /// An array of percentages relating to the temperature targets.
     /// </summary>
-    [JsonProperty(PropertyName = "temperatureDetailsData")]
-    public TemperatureDetailsData DetailsData { get; private set; }
+    [JsonProperty(PropertyName = "percents")]
+    public double[] Percents { get; private set; }
 
     /// <summary>
     /// Default public constructor.
@@ -25,16 +25,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    public CompactionTemperatureDetailResult(double[] result, double totalArea)
+    public CompactionTemperatureDetailResult(double[] result)
     {
-      if (result != null && result.Length > 0 && Math.Abs(totalArea) > 0.001)
-      {
-        DetailsData = new TemperatureDetailsData
-        {
-          Percents = result,
-          TotalAreaCoveredSqMeters = totalArea
-        };
-      }
+      Percents = result;
     }
   }
 }

@@ -29,7 +29,7 @@
     <PackageReference Include="NodaTime" Version="2.2.6" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
-    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
+    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.73" />
   </ItemGroup>
 
   <ItemGroup>

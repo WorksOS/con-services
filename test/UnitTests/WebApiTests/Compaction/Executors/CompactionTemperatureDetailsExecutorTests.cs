@@ -1,4 +1,5 @@
-﻿using ASNodeRPC;
+﻿using ASNodeDecls;
+using ASNodeRPC;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -19,8 +20,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [TestMethod]
     public void TemperatureDetailsExecutorNoResult()
     {
-      /*
-      var request = new TemperatureDetailsRequest(0, null, null, null);
+      var request = new TemperatureDetailsRequest(0, new double[0], null, null);
 
       TTemperatureDetails details = new TTemperatureDetails();
 
@@ -31,20 +31,17 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetTemperatureDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
           It.IsAny<TTemperatureDetailSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
           out details))
-        .Returns(false);
+        .Returns(TASNodeErrorStatus.asneNoResultReturned);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionTemperatureDetailsExecutor>(logger.Object, raptorClient.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
-      */
-      Assert.Inconclusive("Include this test when Raptor temperature details implemented");
     }
 
     [TestMethod]
     public void TemperatureDetailsExecutorSuccess()
     {
-      /*
-      var request = new TemperatureDetailsRequest(0, null, null, null);
+      var request = new TemperatureDetailsRequest(0, new double[0], null, null);
 
       TTemperatureDetails details = new TTemperatureDetails { Percents = new[] { 5.0, 40.0, 23.0, 10.0, 22.0 } };
 
@@ -53,18 +50,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       raptorClient
         .Setup(x => x.GetTemperatureDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
-          It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
+          It.IsAny<TTemperatureDetailSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
           out details))
-        .Returns(true);
+        .Returns(TASNodeErrorStatus.asneOK);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionTemperatureDetailsExecutor>(logger.Object, raptorClient.Object);
       var result = executor.Process(request) as CompactionTemperatureDetailResult;
       Assert.IsNotNull(result, "Result should not be null");
-      Assert.IsNotNull(result.DetailsData, "Details should not be null");
-      Assert.AreEqual(details.Percents, result.DetailsData.Percents, "Wrong percents");
-      */
-      Assert.Inconclusive("Include this test when Raptor temperature details implemented");
+      Assert.AreEqual(details.Percents, result.Percents, "Wrong percents");
     }
   }
 }

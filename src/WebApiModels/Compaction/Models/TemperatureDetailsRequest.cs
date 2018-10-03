@@ -31,18 +31,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       LiftBuildSettings = liftBuildSettings;
     }
 
-    /*
-    /// <summary>
-    /// Overload constructor with parameters.
-    /// </summary>
-    public TemperatureDetailsRequest(long projectId, double[] targets, FilterResult filter)
-    {
-      ProjectId = projectId;
-      Targets = targets;
-      Filter = filter;
-    }
-    */
-
     /// <summary>
     /// Validates the request and throws if validation fails.
     /// </summary>
