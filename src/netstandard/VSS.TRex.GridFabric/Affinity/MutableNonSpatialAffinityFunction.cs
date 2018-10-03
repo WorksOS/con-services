@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Affinity
 {
@@ -20,16 +20,10 @@ namespace VSS.TRex.GridFabric.Affinity
             // Pull the subgrid origin location for the subgrid or segment represented in the cache key and calculate the 
             // spatial processing division descriptor to use as the partition affinity key
 
-            if (key is NonSpatialAffinityKey affinityKey)
+            if (key is IProjectAffinity affinityKey)
             {
                 // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-                return Math.Abs(affinityKey.ProjectID.GetHashCode()) % Partitions;
-            }
-
-            if (key is TAGFileBufferQueueKey bufferQueueyKey)
-            {
-                // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-                return Math.Abs(bufferQueueyKey.ProjectID.GetHashCode()) % Partitions;
+                return Math.Abs(affinityKey.ProjectUID.GetHashCode()) % Partitions;
             }
 
             Log.LogInformation($"Unknown key type to compute non spatial affinity partition key for: {key}");

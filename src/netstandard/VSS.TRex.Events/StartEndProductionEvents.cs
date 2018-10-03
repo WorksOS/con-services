@@ -170,7 +170,7 @@ namespace VSS.TRex.Events
                 TimeSpan eventTimeDelta = Events[I].Date - Events[I + 1].Date; 
                 bool eventTimesAreEqual = Math.Abs(eventTimeDelta.Ticks) < TimeSpan.TicksPerSecond;
 
-                // Log.LogInformation($"Comparing at {I}->{I + 1}: {Events[I].Date}[{Events[I].Date.ToBinary()}] -> {Events[I + 1].Date}[{Events[I + 1].Date.ToBinary()}] (close enough?:{eventTimesAreEqual}, {Events[I].State} -> {Events[I + 1].State}");
+                // Log.LogInformation($"Comparing at {I}->{I + 1}: {Events[I].Date}[{Events[I].Date.Ticks)}] -> {Events[I + 1].Date}[{Events[I + 1].Date.Ticks}] (close enough?:{eventTimesAreEqual}, {Events[I].State} -> {Events[I + 1].State}");
 
                 if (eventTimesAreEqual &&
                     Events[I].State == ProductionEventType.EndEvent &&

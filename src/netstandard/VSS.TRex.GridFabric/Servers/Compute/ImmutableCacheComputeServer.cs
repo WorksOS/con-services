@@ -16,7 +16,7 @@ using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Logging;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage.Caches;
@@ -50,8 +50,6 @@ namespace VSS.TRex.Servers.Compute
     public override void ConfigureTRexGrid(IgniteConfiguration cfg)
     {
       base.ConfigureTRexGrid(cfg);
-
-      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable");
 
       cfg.IgniteInstanceName = TRexGrids.ImmutableGridName();
 
@@ -95,8 +93,7 @@ namespace VSS.TRex.Servers.Compute
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
-      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
-
+      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable");
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 
@@ -106,7 +103,6 @@ namespace VSS.TRex.Servers.Compute
       cfg.PublicThreadPoolSize = 50;
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
-
 
       //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
     }
@@ -170,12 +166,12 @@ namespace VSS.TRex.Servers.Compute
       cfg.Backups = 0;
     }
 
-    public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
       Console.WriteLine($"CacheConfig is: {CacheCfg}");
       Console.WriteLine($"immutableTRexGrid is : {immutableTRexGrid}");
 
-      return immutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
@@ -194,9 +190,9 @@ namespace VSS.TRex.Servers.Compute
       cfg.AffinityFunction = new ImmutableSpatialAffinityFunction();
     }
 
-    public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return immutableTRexGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public static bool SetGridActive(string gridName)
@@ -256,10 +252,10 @@ namespace VSS.TRex.Servers.Compute
       NonSpatialImmutableCache = InstantiateTRexCacheReference(CacheCfg);
 
       //CacheCfg = new CacheConfiguration();
-      var spatialcacheConfiguration = immutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.ImmutableSpatialCacheName()));
+      var spatialCacheConfiguration = immutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.ImmutableSpatialCacheName()));
 
       //ConfigureImmutableSpatialCache(CacheCfg);
-      SpatialImmutableCache = InstantiateSpatialCacheReference(spatialcacheConfiguration);
+      SpatialImmutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
     }
 
 

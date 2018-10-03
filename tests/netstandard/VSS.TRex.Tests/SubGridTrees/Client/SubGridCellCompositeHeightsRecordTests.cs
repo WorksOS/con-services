@@ -6,7 +6,7 @@ using Xunit;
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   /// <summary>
-  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// Includes tests not covered in GenericClientLeafSubgridTests
   /// </summary>
   public class SubGridCellCompositeHeightsRecordTests
   {
@@ -22,10 +22,10 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       Assert.True(rec.LowestHeight == Consts.NullHeight);
       Assert.True(rec.HighestHeight == Consts.NullHeight);
 
-      Assert.True(rec.FirstHeightTime == DateTime.MinValue.ToBinary());
-      Assert.True(rec.LastHeightTime == DateTime.MinValue.ToBinary());
-      Assert.True(rec.LowestHeightTime == DateTime.MinValue.ToBinary());
-      Assert.True(rec.HighestHeightTime == DateTime.MinValue.ToBinary());
+      Assert.True(rec.FirstHeightTime == DateTime.MinValue.Ticks);
+      Assert.True(rec.LastHeightTime == DateTime.MinValue.Ticks);
+      Assert.True(rec.LowestHeightTime == DateTime.MinValue.Ticks);
+      Assert.True(rec.HighestHeightTime == DateTime.MinValue.Ticks);
     }
   }
 }

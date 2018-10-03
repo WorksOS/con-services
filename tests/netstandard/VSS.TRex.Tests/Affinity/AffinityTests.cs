@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.Affinity
         {
             EnsureServer();
 
-            ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(
+            var cache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(
                 new CacheConfiguration
                 {
                     Name = "MyCache",

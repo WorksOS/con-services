@@ -7,7 +7,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Implements base semantics of ICache support for Storage proxies by shadowing it with a class member
     /// that is a concrete implementation of ICache
-    /// implem
     /// </summary>
     /// <typeparam name="TK"></typeparam>
     /// <typeparam name="TV"></typeparam>
@@ -43,6 +42,11 @@ namespace VSS.TRex.Storage
         public virtual bool Remove(TK key)
         {
             return Cache.Remove(key);
+        }
+
+        public virtual void RemoveAll(IEnumerable<TK> keys)
+        {
+            Cache.RemoveAll(keys);
         }
 
         public virtual void Put(TK key, TV value)

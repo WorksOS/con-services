@@ -7,27 +7,20 @@ using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;
 
-//using VSS.TRex.TAGFiles.GridFabric.Arguments;
-//using VSS.TRex.TAGFiles.GridFabric.Requests;
-//using VSS.TRex.TAGFiles.GridFabric.Responses;
-
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class TAGFileBufferQueueItemHandler : IDisposable
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
-        private static TAGFileBufferQueueItemHandler _Instance;
-
-        public static TAGFileBufferQueueItemHandler Instance() => _Instance ?? (_Instance = new TAGFileBufferQueueItemHandler());
 
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do
@@ -50,14 +43,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         private TAGFileBufferQueueGrouper grouper;
 
-        /// <summary>
-        /// The thread providing independent lifecycle activity
-        /// </summary>
-//        private Thread thread1;
-//        private Thread thread2;
-
         private IIgnite ignite;
-        private ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache;
+        private ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache;
 
         private List<Guid> ProjectsToAvoid = new List<Guid>();
 
@@ -65,21 +52,21 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             Log.LogInformation("ProcessTAGFilesFromGrouper starting executing");
 
-            TAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey();
+            ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey();
 
             // Cycle looking for new work to do as TAG files arrive until aborted...
             do
             {
                 var hadWorkToDo = false;
 
-                // Check to see if there is a work package to feed to the processing pipline
+                // Check to see if there is a work package to feed to the processing pipeline
                 // -> Ask the grouper for a package 
                 var package = grouper.Extract(ProjectsToAvoid, out Guid projectID)?.ToList();
                 int packageCount = package?.Count ?? 0;
 
                 if (packageCount > 0)
                 {
-                    Log.LogInformation($"Extracted package from grouper, ProjectID:{projectID}, with {packageCount} items");
+                    Log.LogInformation($"Extracted package from grouper, ProjectUID:{projectID}, with {packageCount} items");
 
                     hadWorkToDo = true;
 
@@ -89,7 +76,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         List<ProcessTAGFileRequestFileItem> fileItems = null;
                         try
                         {
-                            TAGQueueItems = package.Select(x =>
+                            TAGQueueItems = package?.Select(x =>
                             {
                                 try
                                 {
@@ -108,6 +95,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     throw;
                                 }
                             }).ToList();
+
                             fileItems = TAGQueueItems
                                 .Where(x => x != null)
                                 .Select(x => new ProcessTAGFileRequestFileItem
@@ -128,13 +116,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             ProcessTAGFileRequest request = new ProcessTAGFileRequest();
                             ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                             {
-                                //ProjectUID = TAGQueueItems[0].ProjectUID,
                                 ProjectID = projectID,
                                 AssetID = TAGQueueItems[0].AssetID,
                                 TAGFiles = fileItems
                             });
 
-                            removalKey.ProjectID = projectID;
+                            removalKey.ProjectUID = projectID;
                             removalKey.AssetID = TAGQueueItems[0].AssetID;
 
                             // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
@@ -144,9 +131,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                 {
                                     // TODO: Determine what to do in this failure more: - Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
                                     if (!tagFileResponse.Success)
-                                        Log.LogInformation($"Grpr1 TAG file {tagFileResponse.FileName} successfully processed");
+                                        Log.LogInformation($"Grouper1 TAG file {tagFileResponse.FileName} successfully processed");
                                     else
-                                        Log.LogError($"Grpr1 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                                        Log.LogError($"Grouper1 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
 
                                     removalKey.FileName = tagFileResponse.FileName;
 
@@ -186,12 +173,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         /// <summary>
         /// Contains the business logic for managing the processing of a package of TAG files into TRex
-        /// The package of TAG files contains files for a single project [and currentlyu a single machine]
+        /// The package of TAG files contains files for a single project [and currently a single machine]
         /// </summary>
         /// <param name="package"></param>
-        private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<TAGFileBufferQueueKey> package)
+        private void ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
         {
-            Guid projectID = package[0].ProjectID;
+            Guid projectID = package[0].ProjectUID;
 
             List<TAGFileBufferQueueItem> TAGQueueItems = null;
             List<ProcessTAGFileRequestFileItem> fileItems = null;
@@ -239,15 +226,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 ProcessTAGFileRequest request = new ProcessTAGFileRequest();
                 ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                 {
-                    //ProjectUID = TAGQueueItems[0].ProjectUID,
                     ProjectID = projectID,
                     AssetID = TAGQueueItems[0].AssetID,
                     TAGFiles = fileItems
                 });
 
-                TAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
+                ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
                 {
-                    ProjectID = projectID,
+                    ProjectUID = projectID,
                     AssetID = TAGQueueItems[0].AssetID
                 };
 
@@ -258,16 +244,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     {
                         // TODO: Determine what to do in this failure mode: Leave in place? Copy to dead letter queue? Place in S3 bucket pending downstream handling?
                         if (tagFileResponse.Success)
-                            Log.LogInformation($"Grpr2 TAG file {tagFileResponse.FileName} successfully processed");
+                            Log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
                         else
-                            Log.LogError($"Grpr2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
+                            Log.LogError($"Grouper2 TAG file failed to process, with exception {tagFileResponse.Exception}. WARNING: FILE REMOVED FROM QUEUE");
 
                         removalKey.FileName = tagFileResponse.FileName;
 
                         if (!queueCache.Remove(removalKey))
-                        {
                             Log.LogError($"Failed to remove TAG file {removalKey}");
-                        }
                     }
                     catch (Exception e)
                     {
@@ -279,7 +263,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         }
 
         /// <summary>
-        /// A version of ProcessTAGFilesFromGrouper2 that uses task parallelisation
+        /// A version of ProcessTAGFilesFromGrouper2 that uses task parallelism
         /// </summary>
         private void ProcessTAGFilesFromGrouper2()
         {
@@ -292,7 +276,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     var hadWorkToDo = false;
 
-                    // Check to see if there is a work package to feed to the processing pipline
+                    // Check to see if there is a work package to feed to the processing pipeline
                     // -> Ask the grouper for a package 
                     var package = grouper.Extract(ProjectsToAvoid, out Guid projectID)?.ToList();
                     int packageCount = package?.Count ?? 0;
@@ -300,7 +284,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     if (packageCount > 0)
                     {
                         Log.LogInformation(
-                            $"Extracted package from grouper, ProjectID:{projectID}, with {packageCount} items in thread {Thread.CurrentThread.ManagedThreadId}");
+                            $"Extracted package from grouper, ProjectUID:{projectID}, with {packageCount} items in thread {Thread.CurrentThread.ManagedThreadId}");
 
                         hadWorkToDo = true;
                         try
@@ -342,32 +326,27 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         }
 
         /// <summary>
-        /// No-arg constructor that creates the intermal grouper, thread and waithandle for managing incoming TAG files
+        /// No-arg constructor that creates the internal grouper, thread and wait handle for managing incoming TAG files
         /// into the cache and supplied by the continuous query
         /// </summary>
         public TAGFileBufferQueueItemHandler()
         {
             ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
-            queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
-            // Create the grouper responsible for grouping TAG files into projecft/asset combinations
+            // Create the grouper responsible for grouping TAG files into project/asset combinations
             grouper = new TAGFileBufferQueueGrouper();
             // waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
             const int NumTasks = 1;
             Task[] tasks = Enumerable.Range(0, NumTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
-
-            //thread1 = new Thread(ProcessTAGFilesFromGrouper2);
-            //thread1.Start();
-            //thread2 = new Thread(ProcessTAGFilesFromGrouper2);
-            //thread2.Start();
         }
 
         /// <summary>
-        /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continous query
+        /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continuous query
         /// </summary>
         /// <param name="key"></param>
-        public void Add(TAGFileBufferQueueKey key)
+        public void Add(ITAGFileBufferQueueKey key)
         {
             grouper.Add(key);
         }
@@ -378,8 +357,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             //waitHandle?.Set();
             //waitHandle?.Dispose();
             //waitHandle = null;
-            //thread1?.Abort();
-            //thread2?.Abort();
         }
     }
 }

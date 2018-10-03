@@ -13,6 +13,8 @@ namespace VSS.TRex.Storage.Interfaces
 
         bool Remove(TK key);
 
+        void RemoveAll(IEnumerable<TK> key);
+
         void Put(TK key, TV value);
 
         void PutAll(IEnumerable<KeyValuePair<TK, TV>> values);

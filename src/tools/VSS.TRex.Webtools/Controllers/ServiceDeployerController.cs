@@ -21,13 +21,12 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpPut("tagfilebuffer")]
     public string DeployTagFileBufferService()
     {
-      Log.LogInformation($"Obtaining proxy for TAG file buffer queue service");
+      Log.LogInformation("Obtaining proxy for TAG file buffer queue service");
 
       try
       {
-        // Ensure the continuous query service is installed that supports TAG file processing
-        TAGFileBufferQueueServiceProxy proxy = new TAGFileBufferQueueServiceProxy();
-        Log.LogInformation($"Deploying TAG file buffer queue service");
+        var proxy = new TAGFileBufferQueueServiceProxy();
+        Log.LogInformation("Deploying TAG file buffer queue service");
         proxy.Deploy();
       }
       catch (Exception e)
@@ -36,8 +35,58 @@ namespace VSS.TRex.Webtools.Controllers
         return $"Exception occurred deploying service: {e}";
       }
 
-      Log.LogInformation($"Complected service deployment for TAG file buffer queue service");
-      return $"Complected service deployment for TAG file buffer queue service";
+      Log.LogInformation("Complected service deployment for TAG file buffer queue service");
+      return "Complected service deployment for TAG file buffer queue service";
+    }
+
+    /// <summary>
+    /// Deploys the segment retirement service to the mutable grid
+    /// </summary>
+    /// <returns></returns>
+    [HttpPut("segmentretirement/mutable")]
+    public string DeployMutableSegmentRetirementService()
+    {
+      Log.LogInformation("Obtaining proxy for mutable segment retirement service");
+
+      try
+      {
+        var proxy = new SegmentRetirementQueueServiceProxyMutable();
+        Log.LogInformation("Deploying mutable segment retirement service");
+        proxy.Deploy();
+      }
+      catch (Exception e)
+      {
+        Log.LogError($"Exception occurred deploying service: {e}");
+        return $"Exception occurred deploying service: {e}";
+      }
+
+      Log.LogInformation("Complected service deployment for mutable segment retirement service");
+      return "Complected service deployment for mutable segment retirement service";
+    }
+
+    /// <summary>
+    /// Deploys the segment retirement service to the immutable grid
+    /// </summary>
+    /// <returns></returns>
+    [HttpPut("segmentretirement/immutable")]
+    public string DeployImmutableSegmentRetirementService()
+    {
+      Log.LogInformation("Obtaining proxy for mutable segment retirement service");
+
+      try
+      {
+        var proxy = new SegmentRetirementQueueServiceProxyImmutable();
+        Log.LogInformation("Deploying mutable segment retirement service");
+        proxy.Deploy();
+      }
+      catch (Exception e)
+      {
+        Log.LogError($"Exception occurred deploying service: {e}");
+        return $"Exception occurred deploying service: {e}";
+      }
+
+      Log.LogInformation("Complected service deployment for mutable segment retirement service");
+      return "Complected service deployment for mutable segment retirement service";
     }
   }
 }

@@ -5,7 +5,6 @@ namespace VSS.TRex.TAGFiles.Models
     /// <summary>
     /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.
     /// </summary>
-    [Serializable]
     public class TAGFileBufferQueueItem
     {
         /// <summary>
@@ -37,7 +36,7 @@ namespace VSS.TRex.TAGFiles.Models
         public Guid AssetID;
 
         /// <summary>
-        ///   Is machine a JohnDoe. No telematic device onboard to identify machine or No AssetID in system
+        ///   Is machine a JohnDoe. No telematic device on board to identify machine or No AssetID in system
         ///   JohnDoe machine are assigned a unique Guid
         /// </summary>
         public bool IsJohnDoe;

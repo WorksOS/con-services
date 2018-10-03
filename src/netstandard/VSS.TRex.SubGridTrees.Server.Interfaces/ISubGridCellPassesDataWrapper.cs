@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
@@ -9,7 +11,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void Clear();
     void Initialise();
     ISubGridCellPassesDataSegment SelectSegment(DateTime time);
-    bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment);
+    bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment, 
+      List<ISubGridSpatialAffinityKey> PersistedClovenSegments);
 
     bool MergeSegments(ISubGridCellPassesDataSegment MergeToSegment,
       ISubGridCellPassesDataSegment MergeFromSegment);

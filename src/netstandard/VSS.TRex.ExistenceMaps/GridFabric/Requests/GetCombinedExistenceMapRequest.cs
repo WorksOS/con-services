@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
@@ -23,11 +23,11 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public static ISubGridTreeBitMask Execute(NonSpatialAffinityKey[] keys)
+    public static ISubGridTreeBitMask Execute(INonSpatialAffinityKey[] keys)
     {
       ISubGridTreeBitMask combinedMask = null;
 
-      foreach (NonSpatialAffinityKey key in keys)
+      foreach (INonSpatialAffinityKey key in keys)
       {
         ISubGridTreeBitMask Mask = GetSingleExistenceMapRequest.Execute(key);
 

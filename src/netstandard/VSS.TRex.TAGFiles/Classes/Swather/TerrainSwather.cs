@@ -23,6 +23,8 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
         /// </summary>
         private const int kMaxNumberCellPassesPerSwathingEpoch = 25000;
 
+        private BoundingWorldExtent3D swathBounds = new BoundingWorldExtent3D();
+
         public int ProcessedEpochNumber { get; set; }
 
         public TerrainSwather(TAGProcessorBase processor,
@@ -53,9 +55,9 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             try
             {
                 // Calculate the grid coverage of the bounding rectangle for the
-                // quadritateral held in the fence
+                // quadrilateral held in the fence
                 InterpolationFence.UpdateExtents();
-                InterpolationFence.GetExtents(out double fMinX, out double fMinY, out double fMaxX, out double fMaxY);
+                InterpolationFence.GetExtents(out swathBounds.MinX, out swathBounds.MinY, out swathBounds.MaxX, out swathBounds.MaxY);
 
                 // SIGLogMessage.PublishNoODS(Self,
                 //                            Format('Swathing over rectangle: (%.3f, %.3f) -> (%.3f, %.3f) [%.3f wide by %.3f tall]', {SKIP}
@@ -64,12 +66,12 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
                 // We assume that we have a pair of epochs to compute IC information between
                 // Determine the rectangle of cells that overlap the interval between the two epochs
-                if (!Grid.CalculateRegionGridCoverage(new BoundingWorldExtent3D(fMinX, fMinY, fMaxX, fMaxY), out BoundingIntegerExtent2D CellExtent))
+                if (!Grid.CalculateRegionGridCoverage(swathBounds, out BoundingIntegerExtent2D CellExtent))
                 {
                     return true;
                 }
 
-                Debug.Assert(fMinX <= fMaxX && fMinY <= fMaxY, "Invalid rectangle for processing cell passes over");
+                Debug.Assert(swathBounds.IsValidPlanExtent, "Invalid rectangle for processing cell passes over");
 
                 // Check that the swathing of this epoch will not create an inordinate number of cell passes
                 // If so, prevent swathing of this epoch interval

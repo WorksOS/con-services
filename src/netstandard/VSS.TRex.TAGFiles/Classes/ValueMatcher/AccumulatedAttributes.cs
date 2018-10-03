@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
@@ -10,28 +9,16 @@ using VSS.TRex.Types;
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
 {
     /// <summary>
-    /// AccumulatedAttribute records the state of an attribute supplied to the
-    /// snail trail processor, in conjunction with the date/time it was recorded
-    /// </summary>
-    public struct AccumulatedAttribute
-    {
-        public DateTime dateTime;
-        public object value;
-
-        public AccumulatedAttribute(DateTime dateTime, object value)
-        {
-            this.dateTime = dateTime;
-            this.value = value;
-        }
-    }
-
-    /// <summary>
-    /// AccumulatedAttributes stores a list of TAccumulatedAttribute instances
-    /// the record a series of attribute value obsevations
+    /// AccumulatedAttributes stores a list of AccumulatedAttribute instances
+    /// the record a series of attribute value observations
     /// </summary>
     public class AccumulatedAttributes
     {
-        // List of items being tracked
+        /// <summary>
+        /// List of items being tracked. This list is managed with the aid of the NumAttrs field to
+        /// remove the need to resize the attributes list frequently when all but the latest attributes are
+        /// discarded.
+        /// </summary>
         private List<AccumulatedAttribute> list = new List<AccumulatedAttribute>();
 
         public AccumulatedAttributes()
@@ -42,15 +29,16 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// Provides the count of the internal list of attributes being maintained
         /// </summary>
         /// <returns></returns>
-        public int NumAttrs => list.Count;
+        public int NumAttrs { get; set; }
 
         // DiscardAllButLatest discards all but the most recently added
         // value from the list;
         public void DiscardAllButLatest()
         {
-            if (list.Count > 1)
+            if (NumAttrs > 1)
             {
-                list = list.GetRange(list.Count - 1, 1);
+                list[0] = list[NumAttrs - 1];
+                NumAttrs = 1;
             }
         }
 
@@ -61,15 +49,23 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="value"></param>
-        public void Add(DateTime dateTime, object value) => list.Add(new AccumulatedAttribute(dateTime, value));
+        public void Add(DateTime dateTime, object value)
+        {
+          // If there are available entries to reuse, then reuse them...
+          if (NumAttrs < list.Count)
+            list[NumAttrs - 1] = new AccumulatedAttribute(dateTime, value);
+          else
+            list.Add(new AccumulatedAttribute(dateTime, value));
 
+          NumAttrs++;
+        }
 
         // GetLatest simply returns the last value in the list
         public object GetLatest()
         {
-            Debug.Assert(list.Count > 0, "List length is zero in GetLatest");
+            Debug.Assert(NumAttrs > 0, "NumAttrs is zero in GetLatest");
 
-            return list.Last().value;
+            return list[NumAttrs - 1].value;
         }
 
         // GetValueAtDateTime locates the value appropriate for the given datetime
@@ -80,15 +76,13 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         {
             value = null;
 
-            switch (list.Count)
+            switch (NumAttrs)
             {
                 case 0:
                     return false;
                 case 1:
                     value = list[0].value;
                     return true;
-            //    default:
-            //        break;
             }
 
             if (dateTime < list[0].dateTime)
@@ -96,28 +90,24 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
                 value = list[0].value;
                 return true;
             }
-            else
+
+            if (dateTime >= list[NumAttrs - 1].dateTime)
             {
-                if (dateTime >= list.Last().dateTime)
+                value = list[NumAttrs - 1].value;
+                return true;
+            }
+
+            for (int I = 0; I < NumAttrs - 1; I++)
+            {
+                if (dateTime >= list[I].dateTime && dateTime < list[I + 1].dateTime)
                 {
-                    value = list.Last().value;
+                    value = list[I].value;
                     return true;
                 }
-                else
-                {
-                    for (int I = 0; I < list.Count - 1; I++)
-                    {
-                        if ((dateTime >= list[I].dateTime) && (dateTime < list[I + 1].dateTime))
-                        {
-                            value = list[I].value;
-                            return true;
-                        }
-                    }
-
-                    // It should not be possible to get here...
-                    return false;
-                }
             }
+            
+            // It should not be possible to get here...
+            return false;                     
         }
 
         /// <summary>
