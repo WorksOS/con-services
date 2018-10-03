@@ -50,7 +50,7 @@ services:
       - TILE_RENDER_MAX_ZOOM_LEVEL=21
       - TILE_RENDER_MAX_ZOOM_RANGE=14
       - TILE_RENDER_WAIT_INTERVAL=2000
-      - TREX_TAGFILE_API_URL=http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles    
+      - TREX_TAGFILE_API_URL=http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
     ports:
      - "5001:80"
     restart: always
