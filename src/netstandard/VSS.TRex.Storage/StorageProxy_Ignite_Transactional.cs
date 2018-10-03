@@ -37,12 +37,17 @@ namespace VSS.TRex.Storage
                     ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
         }
 
+       
         /// <summary>
         /// Commits all unsaved changes in the spatial and non-spatial stores
         /// </summary>
         /// <returns></returns>
-        public override bool Commit()
+        public override bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
+            numDeleted = 0;
+            numUpdated = 0;
+            numBytesWritten = 0;
+
             try
             {
                 spatialCache.Commit();
@@ -65,6 +70,8 @@ namespace VSS.TRex.Storage
 
             return ImmutableProxy?.Commit() ?? true;
         }
+
+        public override bool Commit() => Commit(out _, out _, out _);
 
         /// <summary>
         /// Clears all changes in the spatial and non spatial stores

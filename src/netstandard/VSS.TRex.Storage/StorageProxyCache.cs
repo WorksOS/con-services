@@ -24,6 +24,11 @@ namespace VSS.TRex.Storage
             throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");
         }
 
+        public virtual void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
+        {
+            throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour"); ;
+        }
+
         public virtual void Clear()
         {
             throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");

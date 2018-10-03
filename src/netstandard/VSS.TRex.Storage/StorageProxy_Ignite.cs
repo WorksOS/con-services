@@ -297,7 +297,7 @@ namespace VSS.TRex.Storage
         /// Commits unsaved changes in the storage proxy.
         /// No implementation for non-transactional storage proxy
         /// </summary>
-        public bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
+        public virtual bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
           numDeleted = -1;
           numUpdated = -1;

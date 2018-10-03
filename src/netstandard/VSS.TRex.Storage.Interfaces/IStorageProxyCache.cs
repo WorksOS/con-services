@@ -22,6 +22,9 @@ namespace VSS.TRex.Storage.Interfaces
         string Name { get; }
 
         void Commit();
+
+        void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+
         void Clear();
     }
 }

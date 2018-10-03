@@ -89,13 +89,22 @@ namespace VSS.TRex.Storage
               Put(x.Key, x.Value);
         }
 
-        /// <summary>
-        /// Commits all pending deletes and writes to the underlying cache
-        /// </summary>
-        public override void Commit()
+      /// <summary>
+      /// Commits all pending deletes and writes to the underlying cache
+      /// </summary>
+        public override void Commit() => Commit(out _, out _, out _);
+
+        public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
+            // The generic transactional cache cannot track the size of the elements being 'put' to the cache
+            numBytesWritten = -1;
+
+            numDeleted = PendingTransactedDeletes.Count;
             foreach (var x in PendingTransactedDeletes)
               base.Remove(x);
+
+            numUpdated = PendingTransactedWrites.Count;
+
             base.PutAll(PendingTransactedWrites);
 
             Clear();
