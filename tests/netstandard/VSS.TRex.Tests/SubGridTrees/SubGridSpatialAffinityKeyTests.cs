@@ -29,8 +29,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_SubGridOriginAndSegmentConstructor()
         {
             Guid ID = Guid.NewGuid();
-            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(ID, 12345678, 34567890, "123-456-890-012.sgs");
-            Assert.True(key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentIdentifier == "123-456-890-012.sgs",
+            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(ID, 12345678, 34567890, "123-456-890-012");
+            Assert.True(key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentIdentifier == "123-456-890-012",
                 "Subgrid origin constructor subgrid spatial affinity key produced unexpected result");
         }
 
@@ -47,8 +47,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_CellAddressAndSegmentConstructor()
         {
             Guid ID = Guid.NewGuid();
-            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(ID, new SubGridCellAddress(12345678, 34567890), "123-456-890-012.sgs");
-            Assert.True(key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentIdentifier == "123-456-890-012.sgs",
+            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(ID, new SubGridCellAddress(12345678, 34567890), "123-456-890-012");
+            Assert.True(key.ProjectUID == ID && key.SubGridX == 12345678 && key.SubGridY == 34567890 && key.SegmentIdentifier == "123-456-890-012",
                 "Cell address constructor subgrid spatial affinity key produced unexpected result");
         }
 
@@ -64,8 +64,8 @@ namespace VSS.TRex.Tests.SubGridTrees
         public void Test_SubGridSpatialAffinityKey_ToStringSegment()
         {
             Guid ID = Guid.NewGuid();
-            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(ID, new SubGridCellAddress(12345678, 34567890), "123-456-890-012.sgs");
-            Assert.Equal($"{ID}-12345678-34567890-123-456-890-012.sgs", key.ToString());
+            ISubGridSpatialAffinityKey key = new SubGridSpatialAffinityKey(ID, new SubGridCellAddress(12345678, 34567890), "123-456-890-012");
+            Assert.Equal($"{ID}-12345678-34567890-123-456-890-012", key.ToString());
         }
     }
 }

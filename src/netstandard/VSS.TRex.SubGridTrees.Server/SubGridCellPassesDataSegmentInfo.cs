@@ -68,7 +68,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="OriginX"></param>
         /// <param name="OriginY"></param>
         /// <returns></returns>
-        public string FileName(uint OriginX, uint OriginY) => $"{Version}-{OriginX:d10}-{OriginY:d10}-({StartTime.ToOADate():F6}-{EndTime.ToOADate():F6}).sgs";
+        public string FileName(uint OriginX, uint OriginY) => $"{Version}-{OriginX:d10}-{OriginY:d10}-({StartTime.ToOADate():F6}-{EndTime.ToOADate():F6})";
 
         public void Write(BinaryWriter writer)
         {
