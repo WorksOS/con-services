@@ -13,7 +13,7 @@ namespace VSS.TRex.Storage
     public class StorageProxyCache<TK, TV> : IStorageProxyCache<TK, TV>
     {
         private ICache<TK, TV> Cache;
-
+      
         public string Name
         {
             get => Cache.Name;
@@ -32,6 +32,11 @@ namespace VSS.TRex.Storage
         public virtual void Clear()
         {
             throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");
+        }
+
+        public virtual void IncrementBytesWritten(long bytesWritten)
+        {
+          // No implementation for base class;
         }
 
         public StorageProxyCache(ICache<TK, TV> cache)

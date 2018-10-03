@@ -8,7 +8,7 @@ namespace VSS.TRex.Storage.Interfaces
     /// <typeparam name="TK"></typeparam>
     /// <typeparam name="TV"></typeparam>
     public interface IStorageProxyCache<TK, TV>
-    {
+    {        
         TV Get(TK key);
 
         bool Remove(TK key);
@@ -26,5 +26,7 @@ namespace VSS.TRex.Storage.Interfaces
         void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
 
         void Clear();
+
+        void IncrementBytesWritten(long bytesWritten);
     }
 }
