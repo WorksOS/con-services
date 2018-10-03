@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Returns the 'filename', and string that encodes the segment version, spatial location and time range it \
+        /// Returns the 'filename', and string that encodes the segment version, spatial location and time range it 
         /// is responsible for. 
         /// </summary>
         /// <param name="OriginX"></param>
