@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -47,6 +46,9 @@ namespace VSS.TRex.Storage.Interfaces
 
 
         bool Commit();
+
+        bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+
         void Clear();
 
         /*

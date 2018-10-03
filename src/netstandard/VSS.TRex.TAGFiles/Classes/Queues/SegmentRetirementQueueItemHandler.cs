@@ -92,13 +92,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         Log.LogInformation($"Prepared {count} retires for removal");
 
         // Commit all the deletes for this retiree group
-        if (!storageProxy.Commit())
+        if (storageProxy.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten))
+        {
+          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
+
+        }
+        else
         {
           Log.LogInformation("Segment retirement commit failed");
           return false;
         }
 
-        Log.LogInformation($"{count} retirees removed from queue cache");
         return true;
       }
       catch (Exception e)

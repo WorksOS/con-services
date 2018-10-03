@@ -33,9 +33,9 @@ namespace VSS.TRex.Types
         CellPasses,
         MachineSpeed,
         CCVPercentChange,    //This calculates Percent of Percent change of CCV over Target
-        TargetThicknessSummary, //Renders tiles with thickness between lifts above\below or equeal target values
+        TargetThicknessSummary, //Renders tiles with thickness between lifts above, below or equal target values
         TargetSpeedSummary, //Renders SPeed summary looking through all cell passes for a cell
-        CCVChange, //Renders CCV chnage in absolute values (compared to CCV percent change)
+        CCVChange, //Renders CCV change in absolute values (compared to CCV percent change)
         CCA,
         CCASummary,
         TemperatureDetail,
