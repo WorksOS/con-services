@@ -50,7 +50,11 @@ namespace VSS.TRex.Storage
 
             try
             {
-                spatialCache.Commit();
+                spatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+
+                numDeleted += _numDeleted;
+                numUpdated += _numUpdated;
+                numBytesWritten += _numBytesWritten;
             }
             catch ( Exception e)
             {
@@ -60,7 +64,11 @@ namespace VSS.TRex.Storage
 
             try
             {
-                nonSpatialCache.Commit();
+                nonSpatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+
+                numDeleted += _numDeleted;
+                numUpdated += _numUpdated;
+                numBytesWritten += _numBytesWritten;
             }
             catch (Exception e)
             {
