@@ -153,9 +153,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 MachineTargetValueChangesAggregator,
                 SiteModel,
                 SiteModelGridAggregator,
-                //Machine.ID,
-                Machine.InternalSiteModelMachineIndex,
-                //     FICMachine.ConnectedMachineLevel,
                 InterpolationFence)
             {
                 ProcessedEpochNumber = ProcessedEpochCount
@@ -683,6 +680,12 @@ end;               */
           }
 
         /// <summary>
+        /// Reference to the persistent swather used for swathing all epoch contexts within the file
+        /// being processed
+        /// </summary>
+        private SwatherBase Swather;
+
+        /// <summary>
         /// DoProcessEpochContext is the method that does the actual processing
         /// of the epoch intervals into the appropriate data structures. Descendant
         /// classes must override this function.
@@ -695,7 +698,7 @@ end;               */
             Debug.Assert(SiteModel != null, "Null site model/data store for processor");
             Debug.Assert(Machine != null, "Null machine reference for processor");
 
-            SwatherBase Swather = CreateSwather(InterpolationFence);
+            (Swather ?? (Swather = CreateSwather(null))).InterpolationFence = InterpolationFence;
 
             if (Swather == null)
             {
