@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace VSS.TRex.Types
 {
@@ -9,7 +8,6 @@ namespace VSS.TRex.Types
   /// of All which represents fully attributed call passes. This type is only used on server side
   /// full stack cell pass subgrids.
   /// </summary>
-  [Serializable]
   public enum GridDataType
   {
     All = 0x00000000, // Could possilbly remove this from the enumeration

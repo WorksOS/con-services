@@ -12,7 +12,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// Note that the pipeline and compute function are operating in the same context and cooperate through
     /// the Task member on the instance
     /// </summary>
-    [Serializable]
     public class SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()

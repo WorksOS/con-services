@@ -29,14 +29,12 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// <summary>
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
-    [Serializable]
     public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
         private const int addressBucketSize = 20;
 
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
@@ -81,7 +79,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         private IClientLeafSubGrid[][] clientGrids;
 
         /// <summary>
-        /// The list of address being constructed prior to summission to the processing engine
+        /// The list of address being constructed prior to submission to the processing engine
         /// </summary>
         [NonSerialized]
         private ISubGridCellAddress[] addresses;

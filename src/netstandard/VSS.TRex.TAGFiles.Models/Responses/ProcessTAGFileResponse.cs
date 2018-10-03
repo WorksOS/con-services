@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
-    [Serializable]
     public class ProcessTAGFileResponse
     {
         public List<ProcessTAGFileResponseItem> Results { get; set; } = new List<ProcessTAGFileResponseItem>();

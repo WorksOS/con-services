@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -56,6 +55,11 @@ namespace VSS.TRex.Storage
     public IStorageProxy ImmutableProxy { get; }
 
     public bool Commit()
+    {
+      throw new NotImplementedException();
+    }
+
+    public bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
       throw new NotImplementedException();
     }

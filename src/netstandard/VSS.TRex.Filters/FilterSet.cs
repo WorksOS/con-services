@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters.Interfaces;
 
@@ -8,7 +7,6 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// FilterSet represents a set of filters to be applied to each subgrid in a query within a single operation
   /// </summary>
-  [Serializable]
   public class FilterSet : IFilterSet
   {
     /// <summary>

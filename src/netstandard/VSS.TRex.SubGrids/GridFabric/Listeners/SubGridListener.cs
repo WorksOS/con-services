@@ -12,17 +12,15 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 {
     /// <summary>
     /// SubGridListener implements a listening post for subgrid results being sent by processing nodes back
-    /// to the local context for further processing when using a proressive style of subgrid requesting. 
+    /// to the local context for further processing when using a progressive style of subgrid requesting. 
     /// Subgrids are sent in groups as serialised streams held in memory streams to minimise serialization/deserialisation overhead
     /// </summary>
-    [Serializable]
     public class SubGridListener : IMessageListener<byte[]>
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
-        /// Count of the number of responses recieved by this listener
+        /// Count of the number of responses received by this listener
         /// </summary>
         [NonSerialized]
         private int responseCounter;

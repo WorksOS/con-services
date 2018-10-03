@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -22,7 +20,6 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>

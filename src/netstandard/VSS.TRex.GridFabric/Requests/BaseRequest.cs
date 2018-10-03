@@ -5,7 +5,6 @@ namespace VSS.TRex.GridFabric.Requests
     /// <summary>
     /// The base class for requests. This provides common aspects such as the injected Ignite instance
     /// </summary>
-    [Serializable]
     public abstract class BaseRequest<TArgument, TResponse> : BaseIgniteClass
     {
         /// <summary>

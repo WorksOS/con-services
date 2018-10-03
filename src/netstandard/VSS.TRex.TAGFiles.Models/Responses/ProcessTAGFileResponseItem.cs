@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace VSS.TRex.TAGFiles.GridFabric.Responses
+﻿namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
-    [Serializable]
     public class ProcessTAGFileResponseItem
     {
         public string FileName { get; set; }

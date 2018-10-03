@@ -883,7 +883,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         /// <param name="Origin"></param>
         /// <returns></returns>
-        public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => $"{Origin.X:D10}-{Origin.Y:D10}.sgl";
+        public static string FileNameFromOriginPosition(SubGridCellAddress Origin) => $"{Origin.X:D10}-{Origin.Y:D10}";
 
     }
 }

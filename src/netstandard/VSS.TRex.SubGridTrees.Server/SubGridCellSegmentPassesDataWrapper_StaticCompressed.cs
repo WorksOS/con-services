@@ -17,7 +17,6 @@ namespace VSS.TRex.SubGridTrees.Server
     /// The compression achieves approximately 10:1 reduction in memory use while preserving random access with
     /// good performance.
     /// </summary>
-    [Serializable]
     public class SubGridCellSegmentPassesDataWrapper_StaticCompressed : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
         /// <summary>

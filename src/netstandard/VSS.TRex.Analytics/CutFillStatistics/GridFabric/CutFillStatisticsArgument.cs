@@ -6,7 +6,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
     /// <summary>
     /// Argument containing the parameters required for a Cut/Fill statistics request
     /// </summary>    
-    [Serializable]
     public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>

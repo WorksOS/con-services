@@ -18,7 +18,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// map records which cells in the subgrid contain information that has been
     /// retrieved from the server.
     /// </summary>
-    [Serializable]
     public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid
     {
         /// <summary>
@@ -60,7 +59,6 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <summary>
         /// A map of flags indicating which grid data types are supported by the intermediary subgrid result cache
         /// </summary>
-        [NonSerialized]
         private static bool[] SupportsAssignationFromCachedPreProcessedClientSubgrid = // GridDataType
         {
           false, // All = $00000000;

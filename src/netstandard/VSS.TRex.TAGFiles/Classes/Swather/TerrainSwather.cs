@@ -31,10 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                               IProductionEventLists machineTargetValueChanges,
                               ISiteModel siteModel,
                               IServerSubGridTree grid,
-                              // long machineID,
-                              short internalSiteModelMachineIndex,
-        //                         AMachineConnectionLevel : MachineLevelEnum;
-                              Fence interpolationFence) : base(processor, machineTargetValueChanges, siteModel, grid, internalSiteModelMachineIndex /*machineID*/, interpolationFence)
+                              Fence interpolationFence) : base(processor, machineTargetValueChanges, siteModel, grid, interpolationFence)
         {
         }
 

@@ -18,6 +18,8 @@ namespace VSS.TRex.Storage
         private HashSet<TK> PendingTransactedDeletes = new HashSet<TK>();
         private Dictionary<TK, TV> PendingTransactedWrites = new Dictionary<TK, TV>();
 
+        public long BytesWritten { get; set; }
+
         public StorageProxyCacheTransacted(ICache<TK, TV> cache) : base(cache)
         {
         }
@@ -77,6 +79,9 @@ namespace VSS.TRex.Storage
                 PendingTransactedWrites.Remove(key);
 
             PendingTransactedWrites.Add(key, value);
+
+            if (value is byte[] bytes) 
+              IncrementBytesWritten(bytes.Length);
         }
 
         /// <summary>
@@ -85,18 +90,27 @@ namespace VSS.TRex.Storage
         /// <param name="values"></param>
         public override void PutAll(IEnumerable<KeyValuePair<TK, TV>> values)
         {
-            foreach (var x in values)
-              Put(x.Key, x.Value);
+          foreach (var x in values)
+            Put(x.Key, x.Value);
         }
 
         /// <summary>
         /// Commits all pending deletes and writes to the underlying cache
         /// </summary>
-        public override void Commit()
+        public override void Commit() => Commit(out _, out _, out _);
+
+        public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
+            // The generic transactional cache cannot track the size of the elements being 'put' to the cache
+            numDeleted = PendingTransactedDeletes.Count;
             foreach (var x in PendingTransactedDeletes)
               base.Remove(x);
+
+            numUpdated = PendingTransactedWrites.Count;
+
             base.PutAll(PendingTransactedWrites);
+
+            numBytesWritten = BytesWritten;
 
             Clear();
         }
@@ -108,6 +122,10 @@ namespace VSS.TRex.Storage
         {
             PendingTransactedDeletes.Clear();
             PendingTransactedWrites.Clear();
+
+            BytesWritten = 0;
         }
-    }
+
+        public override void IncrementBytesWritten(long bytesWritten) => BytesWritten += bytesWritten;
+  }
 }

@@ -1,12 +1,10 @@
-﻿using System;
-using VSS.TRex.Filters.Interfaces;
+﻿using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.Filters
 {
   /// <summary>
   /// Combined filter represents both spatial and attribute based filtering considerations
   /// </summary>
-  [Serializable]
   public class CombinedFilter : ICombinedFilter
   {
     /// <summary>

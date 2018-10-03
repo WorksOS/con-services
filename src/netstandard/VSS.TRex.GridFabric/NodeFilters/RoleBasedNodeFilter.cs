@@ -8,7 +8,6 @@ namespace VSS.TRex.GridFabric.NodeFilters
     /// <summary>
     /// Defines a node filter that filters nodes based on a defined role attribute
     /// </summary>
-    [Serializable]
     public abstract class RoleBasedNodeFilter : IClusterNodeFilter
     {
         /// <summary>

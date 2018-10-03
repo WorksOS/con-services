@@ -4,7 +4,6 @@ using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs.Models
 {
-    [Serializable]
     public struct DesignDescriptor : IEquatable<DesignDescriptor>
     {
         public Guid DesignID;

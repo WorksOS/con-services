@@ -18,10 +18,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// <summary>
   /// Service metaphor providing access and management control over designs stored for site models
   /// </summary>
-  [Serializable]
   public class SegmentRetirementQueueService : IService, ISegmentRetirementQueueService
   {
-    [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
 
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do. Set to 30 seconds.

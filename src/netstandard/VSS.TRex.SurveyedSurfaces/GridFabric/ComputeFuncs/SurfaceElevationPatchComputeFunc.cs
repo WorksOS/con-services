@@ -9,17 +9,13 @@ using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 {
-  [Serializable]
-  public class SurfaceElevationPatchComputeFunc :
-    IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
+  public class SurfaceElevationPatchComputeFunc : IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
   {
-    [NonSerialized]
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
-    [NonSerialized]
     private static IClientLeafSubgridFactory clientLeafSubGridFactory;
 
     private IClientLeafSubgridFactory ClientLeafSubGridFactory

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
@@ -18,11 +17,9 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 
   /// a client server instance requesting it.
   /// </summary>
-  [Serializable]
   public class TINSurfaceRequestComputeFunc : BaseComputeFunc, IComputeFunc<TINSurfaceRequestArgument, TINSurfaceResult>
   {
-    [NonSerialized] private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
@@ -48,7 +45,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
         Log.LogInformation("Executing request.Execute()");
 
         if (!request.Execute())
-          Log.LogError($"Request execution failed");
+          Log.LogError("Request execution failed");
 
         TINSurfaceResult result = new TINSurfaceResult();
         using (MemoryStream ms = new MemoryStream())

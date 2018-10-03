@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.GridFabric.Models.Arguments;
+﻿using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
@@ -7,7 +6,6 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a CMV statistics request
   /// </summary>    
-  [Serializable]
   public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>

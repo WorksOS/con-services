@@ -19,7 +19,6 @@ namespace VSS.TRex.Services.Designs
     /// </summary>
     public class DesignsService : BaseService, IDesignsService 
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>

@@ -24,7 +24,6 @@ namespace VSS.TRex.Services.SurveyedSurfaces
     /// </summary>
     public class SurveyedSurfaceService : BaseService, IService, ISurveyedSurfaceService
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>

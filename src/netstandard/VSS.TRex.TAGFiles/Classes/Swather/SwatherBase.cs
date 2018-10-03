@@ -15,7 +15,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     /// SwatherBase provides a base class for the process of computing swathing
     /// information.Swathing is the general term for analysing a machine's activities
     /// and contributing relevant records (cell passes, events etc) to the production
-    /// server database.This class implements much of the infractruture relevant to
+    /// server database.This class implements much of the infractructure relevant to
     ///swathing, but does not define the semantics of how the swathing is to be performed    
     /// </summary>
     public class SwatherBase
@@ -31,15 +31,13 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
         //public long MachineID { get; set; }
         public short InternalSiteModelMachineIndex { get; set; }
 
-        //      FMachineConnectionLevel : MachineLevelEnum;
-
         //MachineTargetValueChanges is a reference to an object that records all the
         // machine state events of interest that we encounter while processing the file
         protected IProductionEventLists MachineTargetValueChanges { get; set; }
 
         protected TAGProcessorBase Processor { get; set; }
 
-        protected Fence InterpolationFence { get; set; }
+        public Fence InterpolationFence { get; set; }
 
         public void CommitCellPassToModel(uint cellX, uint cellY,
                                           double gridX, double gridY,
@@ -107,18 +105,13 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
                            IProductionEventLists machineTargetValueChanges,
                            ISiteModel siteModel,
                            IServerSubGridTree grid,
-            //long machineID,
-            short internalSiteModelMachineIndex,
-        //                         AMachineConnectionLevel : MachineLevelEnum;
                            Fence interpolationFence)
         {
             Processor = processor;
             MachineTargetValueChanges = machineTargetValueChanges;
             SiteModel = siteModel;
             Grid = grid;
-            InterpolationFence = interpolationFence;
-            //MachineID = machineID;
-            
+            InterpolationFence = interpolationFence;           
         }
     }
 }

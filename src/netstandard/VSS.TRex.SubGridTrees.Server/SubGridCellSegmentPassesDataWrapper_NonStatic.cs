@@ -11,7 +11,6 @@ using VSS.TRex.Utilities;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
-    [Serializable]
     public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
         public Cell_NonStatic[,] PassData = new Cell_NonStatic[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];

@@ -8,7 +8,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// The affinity function used by TRex to spread spatial data amongst processing servers
     /// </summary>
-    [Serializable]
     public class ImmutableSpatialAffinityFunction : AffinityFunctionBase
     {
         /// <summary>

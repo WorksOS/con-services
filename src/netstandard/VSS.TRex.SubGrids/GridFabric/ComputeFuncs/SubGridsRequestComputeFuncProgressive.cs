@@ -17,12 +17,10 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// <summary>
     /// The base closure/function that implements subgrid request processing on compute nodes
     /// </summary>
-    [Serializable]
     public class SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         [NonSerialized]

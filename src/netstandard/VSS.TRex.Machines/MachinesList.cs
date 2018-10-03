@@ -14,7 +14,6 @@ namespace VSS.TRex.Machines
     /// <summary>
     /// Implements a container for all the machines that have had activity within a Site Model
     /// </summary>
-//    [Serializable]
     public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
     {
         private const string kMachinesListStreamName = "Machines";

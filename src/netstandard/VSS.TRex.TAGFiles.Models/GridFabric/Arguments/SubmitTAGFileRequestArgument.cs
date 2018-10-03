@@ -2,7 +2,6 @@
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
-    [Serializable]
     public class SubmitTAGFileRequestArgument
     {
         /// <summary>

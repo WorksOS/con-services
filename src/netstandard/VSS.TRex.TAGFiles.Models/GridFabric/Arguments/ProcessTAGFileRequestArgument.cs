@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {   
-    [Serializable]
     public class ProcessTAGFileRequestArgument
     {
         /// <summary>

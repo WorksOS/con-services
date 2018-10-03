@@ -33,7 +33,6 @@ namespace VSS.TRex.Filters
     ///   The result of this filter is YES the cell may be used for cell pass
     ///   filtering, or NO the cell should not be considered for cell pass filtering.
     /// </summary>
-    [Serializable]
     public class CellSpatialFilter : ICellSpatialFilter
     {
         /// <summary>

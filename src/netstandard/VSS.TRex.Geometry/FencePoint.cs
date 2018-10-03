@@ -1,12 +1,10 @@
-﻿using System;
-using VSS.TRex.Common;
+﻿using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
 {
   /// <summary>
-  /// A simple class containined a 3D point location expressed as double ordinates in the X, Y & Z axes
+  /// A simple class containing a 3D point location expressed as double ordinates in the X, Y & Z axes
   /// </summary>
-  [Serializable]
   public class FencePoint
   {
     /// <summary>

@@ -354,8 +354,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                         var startTime = DateTime.Now;
                         Log.LogInformation("Starting storage proxy Commit()");
-                        storageProxy_Mutable.Commit();
-                        Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}");
+                        storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+                        Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.Now - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
                         // Advise the segment retirement manager of any segments/subgrids that needs to be retired as as result of this integration
 
