@@ -53,7 +53,6 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// TICGridDataFilter provides filtering support for grid data requested by the client
   /// </summary>
-  [Serializable]
   public class CellPassAttributeFilter : DataPassFilter, ICellPassAttributeFilter
   {
     [NonSerialized]

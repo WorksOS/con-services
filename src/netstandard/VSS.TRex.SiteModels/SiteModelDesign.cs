@@ -8,7 +8,6 @@ namespace VSS.TRex.SiteModels
   /// Describes a single design used in the site model. It's chief purpose is to record the name of the design 
   /// and the plan extents of the cell pass information stored within the sitemodel for that design.
   /// </summary>
-  [Serializable]
   public class SiteModelDesign : IEquatable<string>, ISiteModelDesign
   {
     public string Name { get; }

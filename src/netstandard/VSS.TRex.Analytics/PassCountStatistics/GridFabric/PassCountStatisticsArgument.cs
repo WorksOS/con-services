@@ -7,7 +7,6 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a Pass Count statistics request
   /// </summary>    
-  [Serializable]
   public class PassCountStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>

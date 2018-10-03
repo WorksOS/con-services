@@ -7,7 +7,6 @@ namespace VSS.TRex.GridFabric.Models.Arguments
   ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include
   ///  containing the identifier of a TRex Application Service Node that originated the request
   /// </summary>
-  [Serializable]
   public class BaseApplicationServiceRequestArgument
   {
     // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor

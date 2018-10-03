@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Reflection;
 using VSS.TRex.Exports.Patches.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -15,12 +14,9 @@ namespace VSS.TRex.Exports.Patches.GridFabric
   /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 
   /// a client server instance requesting it.
   /// </summary>
-  [Serializable]
   public class PatchRequestComputeFunc : BaseComputeFunc, IComputeFunc<PatchRequestArgument, PatchRequestResponse>
   {
-    [NonSerialized]
-    private static readonly ILogger
-      Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection

@@ -6,13 +6,11 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
 {
-  [Serializable]
-    public class Designs : List<IDesign>, IBinaryReaderWriter, IDesigns
-  {
+    public class Designs : List<IDesign>, IDesigns
+    {
         private const byte kMajorVersion = 1;
         private const byte kMinorVersion = 0;
 

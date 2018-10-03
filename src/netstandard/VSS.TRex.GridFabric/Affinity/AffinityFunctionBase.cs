@@ -12,7 +12,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// The affinity function used by TRex to spread data amongst processing servers
     /// </summary>
-    [Serializable]
     public class AffinityFunctionBase : IAffinityFunction
     {
         protected static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);

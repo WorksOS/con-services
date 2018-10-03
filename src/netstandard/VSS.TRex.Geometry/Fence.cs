@@ -8,7 +8,6 @@ namespace VSS.TRex.Geometry
   /// <summary>
   /// A simple polygon describing a fence and including tests for different geometry elements
   /// </summary>
-  [Serializable]
   public class Fence
   {
     private double minX;

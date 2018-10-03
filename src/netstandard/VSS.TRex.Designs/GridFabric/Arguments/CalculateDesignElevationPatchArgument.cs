@@ -4,7 +4,6 @@ using VSS.TRex.GridFabric.Models.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
-    [Serializable]
     public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>

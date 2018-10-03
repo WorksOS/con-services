@@ -13,10 +13,8 @@ namespace VSS.TRex.Machines
     /// are relevant to individual sitemodels. There will be a machine instance within each site model that the machine has
     /// contributed to.
     /// </summary>
-    [Serializable]
     public class Machine : IMachine
     {
-        [NonSerialized]
         public MachinesList Owner;
 
         public Guid ID { get; set; }
@@ -46,20 +44,19 @@ namespace VSS.TRex.Machines
         private bool _compactionDataReported;
 
         /// <summary>
-        /// Indicates if the machine has ever reported any compactrion realated data, such as CCV, MDP or CCA measurements
+        /// Indicates if the machine has ever reported any compaction related data, such as CCV, MDP or CCA measurements
         /// </summary>
         public bool CompactionDataReported { get => _compactionDataReported; set => _compactionDataReported = _compactionDataReported | value; }
 
         public CompactionSensorType CompactionSensorType { get; set; } = CompactionSensorType.NoSensor;
 
-        [NonSerialized]
         private IProductionEventLists _TargetValueChange = null;
 
         public IProductionEventLists TargetValueChanges
         {
           get { return _TargetValueChange; }
           set { _TargetValueChange = value; }
-        } // new ProductionEventChanges(null, -1);
+        } 
 
 
         /// <summary>

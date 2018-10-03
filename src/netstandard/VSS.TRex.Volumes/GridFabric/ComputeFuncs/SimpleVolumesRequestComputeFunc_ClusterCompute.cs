@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
@@ -12,12 +11,11 @@ using VSS.TRex.Volumes.GridFabric.Responses;
 namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 {
     /// <summary>
-    /// The cimple volumes compute function that runs in the context of the cluster compute nodes. This function
-    /// performs a volumes calculation across the paritions on this node only.
+    /// The simple volumes compute function that runs in the context of the cluster compute nodes. This function
+    /// performs a volumes calculation across the partitions on this node only.
     /// </summary>
     public class SimpleVolumesRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>

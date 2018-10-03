@@ -6,7 +6,6 @@ namespace VSS.TRex.SubGridTrees.Server
     /// Base class to hold common aspects of the segment implementation data wrapper between NonStatic, Static and 
     /// StaticCompressed implementations
     /// </summary>
-    [Serializable]
     public class SubGridCellSegmentPassesDataWrapperBase
     {
         /// <summary>

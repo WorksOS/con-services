@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.GridFabric.Models.Arguments;
+﻿using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
@@ -7,11 +6,10 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// <summary>
 	/// Argument containing the parameters required for a Temperature statistics request
 	/// </summary>    
-	[Serializable]
 	public class TemperatureStatisticsArgument : BaseApplicationServiceRequestArgument
   {
 		/// <summary>
-		/// The flag is to indicate wehther or not the temperature warning levels to be user overrides.
+		/// The flag is to indicate whether or not the temperature warning levels to be user overrides.
 		/// </summary>
 	  public bool OverrideTemperatureWarningLevels { get; set; }
 

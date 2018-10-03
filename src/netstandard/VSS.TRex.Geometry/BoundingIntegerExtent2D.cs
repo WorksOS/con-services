@@ -2,7 +2,6 @@
 
 namespace VSS.TRex.Geometry
 {
-  [Serializable]
   public struct BoundingIntegerExtent2D : IEquatable<BoundingIntegerExtent2D>
   {
     public int MinX, MinY, MaxX, MaxY;

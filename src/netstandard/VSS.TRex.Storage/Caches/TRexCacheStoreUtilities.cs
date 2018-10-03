@@ -6,7 +6,6 @@ namespace VSS.TRex.Storage.Caches
     /// <summary>
     /// Implements the Ignite ICacheStore interface
     /// </summary>
-    [Serializable]
     public class TRexCacheStoreUtilities 
     {
         /// <summary>

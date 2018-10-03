@@ -21,11 +21,10 @@ namespace VSS.TRex.GridFabric.Requests
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
-        /// The listener to which the processing mengine may send in-progress updates during processing of the overall subgrids request
+        /// The listener to which the processing engine may send in-progress updates during processing of the overall subgrids request
         /// </summary>
         public SubGridListener Listener { get; set; }
 
@@ -35,14 +34,14 @@ namespace VSS.TRex.GridFabric.Requests
         private IMessaging MsgGroup { get; set; }
 
         /// <summary>
-        /// Default no-arg constructor thje delgates construction to the base class
+        /// Default no-arg constructor that delegates construction to the base class
         /// </summary>
         public SubGridRequestsProgressive()
         {
         }
 
         /// <summary>
-        /// Creates the subgrid listener on the MessageTopic defined in th eargument to be sent to the cache cluster
+        /// Creates the subgrid listener on the MessageTopic defined in the argument to be sent to the cache cluster
         /// </summary>
         private void CreateSubGridListener()
         {
@@ -67,14 +66,14 @@ namespace VSS.TRex.GridFabric.Requests
 
         public void StopListening()
         {
-            // Unregister the listener from the message group
+            // De-register the listener from the message group
             MsgGroup?.StopLocalListen(Listener);
 
             MsgGroup = null;
         }
 
         /// <summary>
-        /// Overrides the base Execut() semantics to add a listener available for in-progress updates of information
+        /// Overrides the base Execute() semantics to add a listener available for in-progress updates of information
         /// from the processing engine.
         /// </summary>
         /// <returns></returns>
@@ -110,10 +109,10 @@ namespace VSS.TRex.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.LogInformation($"TaskResult {taskResult?.Status}: SubgidRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
+                Log.LogInformation($"TaskResult {taskResult?.Status}: SubgridRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
-            // Notify the pipline that all processing has been completed for it
+            // Notify the pipeline that all processing has been completed for it
             //Task.PipeLine.PipelineCompleted = true;
 
             // Send the appropriate response to the caller

@@ -17,10 +17,8 @@ namespace VSS.TRex.Events
     /// ProductionEvents implements a generic event list without using class instances for each event
     /// </summary>
     /// <typeparam name="V"></typeparam>
-    [Serializable]
     public class ProductionEvents<V> : IProductionEvents<V>
-  {
-        [NonSerialized]
+    {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         private const int MajorVersion = 1;
@@ -33,7 +31,6 @@ namespace VSS.TRex.Events
         /// All events occur at a point in time, have some optional flags and contain a state 
         /// defined by the generic V type
         /// </summary>
-        [Serializable]
         public struct Event
         {
             /// <summary>

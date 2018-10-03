@@ -12,7 +12,6 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces
 {
-    [Serializable]
     public class SurveyedSurfaces : List<ISurveyedSurface>, IComparable<ISurveyedSurface>, ISurveyedSurfaces
     {
         private const byte kMajorVersion = 1;

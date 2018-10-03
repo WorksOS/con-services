@@ -13,10 +13,9 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
   /// </summary>
-  [Serializable]
   public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>, IClientHeightLeafSubGrid
   {
-    [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// First pass map records which cells hold cell pass heights that were derived

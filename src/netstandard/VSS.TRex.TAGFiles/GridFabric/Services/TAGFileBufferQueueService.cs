@@ -16,10 +16,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Service metaphor providing access and management control over designs stored for site models
     /// </summary>
-    [Serializable]
     public class TAGFileBufferQueueService : IService, ITAGFileBufferQueueService
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueService>();
 
         /// <summary>

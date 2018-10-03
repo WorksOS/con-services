@@ -9,7 +9,6 @@ using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.GridFabric.Queues
 {
-    [Serializable]
     public class TestQueueItem
     {
         /// <summary>

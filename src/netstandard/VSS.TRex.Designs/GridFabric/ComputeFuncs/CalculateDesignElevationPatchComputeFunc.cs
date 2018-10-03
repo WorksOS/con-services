@@ -10,15 +10,12 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
     /// <summary>
     /// Ignite ComputeFunc responsible for executing the elevation patch calculator
     /// </summary>
-    [Serializable]
     public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     // TODO: Ignite 2.4 has a fix for the two dimensional array serialisation bug that requires this result to be a byte array - this can be changed back but...
     // Work out if our serialisation is preferred over Ignite's
-    // The [Serializable] annotation means we are using the .Net serialisation. Which sucks bananas...
         public byte[] /*ClientHeightLeafSubGrid */Invoke(CalculateDesignElevationPatchArgument arg)
         {
             try

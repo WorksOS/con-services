@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -23,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   /// </summary>
   public class SegmentRetirementQueue : ISegmentRetirementQueue
   {
-    [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueue>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueue>();
 
     private ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> QueueCache;
 

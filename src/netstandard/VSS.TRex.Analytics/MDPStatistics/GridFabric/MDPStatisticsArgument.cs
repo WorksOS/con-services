@@ -7,7 +7,6 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a MDP statistics request
   /// </summary>    
-  [Serializable]
   public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>

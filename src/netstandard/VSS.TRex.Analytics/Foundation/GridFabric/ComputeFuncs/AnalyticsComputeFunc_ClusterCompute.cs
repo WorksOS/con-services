@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Reflection;
 using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
@@ -17,7 +16,6 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
         where TResponse : BaseAnalyticsResponse, IAggregateWith<TResponse>, new()
         where TCoordinator : BaseAnalyticsCoordinator<TArgument, TResponse>, new()
     {
-        [NonSerialized]
         // ReSharper disable once StaticMemberInGenericType
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 

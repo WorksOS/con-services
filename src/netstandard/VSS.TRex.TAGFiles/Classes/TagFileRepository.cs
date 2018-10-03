@@ -2,7 +2,6 @@
 using System.IO;
 using System.Reflection;
 using System.Xml.Serialization;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.DI;
@@ -11,11 +10,10 @@ using VSS.TRex.TAGFiles.Classes.Validator;
 namespace VSS.TRex.TAGFiles.Classes
 {
   /// <summary>
-  /// Archiving will intially write tagfiles toa local folder before another process either internal or external will move the files to a S3 bucket on Amazon
-  /// Ideas. Add functions like get all tagfiles for productid
+  /// Archiving will intially write tag files to a local folder before another process either internal or external will move the files to a S3 bucket on Amazon
+  /// Ideas. 
   /// </summary>
 
-  [Serializable]
   public class TagfileMetaData
   {
     [XmlAttribute]

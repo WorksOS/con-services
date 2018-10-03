@@ -12,10 +12,9 @@ namespace VSS.TRex.SubGridTrees.Client
   /// This class is derived from the height leaf subgrid and decorated with times to allow efficient copy
   /// operations for serialisation and assignation to the height leaf subgrid where the times are removed.
   /// </summary>
-  [Serializable]
-  public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
+ public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
   {
-    [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightAndTimeLeafSubGrid>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightAndTimeLeafSubGrid>();
 
     /// <summary>
     /// Time values for the heights stored in the height and time structure. Times are expressed as the DateTime ticks format to promote efficient copying of arrays

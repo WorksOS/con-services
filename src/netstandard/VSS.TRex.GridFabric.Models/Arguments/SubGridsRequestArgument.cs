@@ -6,7 +6,6 @@ namespace VSS.TRex.GridFabric.Models.Arguments
     /// <summary>
     /// Contains all the parameters necessary to be sent for a generic subgrids request made to the compute cluster
     /// </summary>
-    [Serializable]
     public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>

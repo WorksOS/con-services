@@ -9,7 +9,6 @@ namespace VSS.TRex.Geometry
   /// rectangular area of the world in world coordinates, and a height range
   /// within that extent
   /// </summary>
-  [Serializable]
   public class BoundingWorldExtent3D : IEquatable<BoundingWorldExtent3D>
   {
     /// <summary>

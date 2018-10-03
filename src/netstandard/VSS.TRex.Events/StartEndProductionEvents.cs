@@ -11,7 +11,6 @@ namespace VSS.TRex.Events
     /// Implements an event list containing events that detail when a machine started recording production data, and when it stopped
     /// recording production data.
     /// </summary>
-    [Serializable]
     public class StartEndProductionEvents : ProductionEvents<ProductionEventType>, IStartEndProductionEvents
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);

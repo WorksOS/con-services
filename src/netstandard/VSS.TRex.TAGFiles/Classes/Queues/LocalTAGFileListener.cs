@@ -9,7 +9,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class LocalTAGFileListener : ICacheEntryEventListener<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger<LocalTAGFileListener>();
 
         public readonly TAGFileBufferQueueItemHandler handler;

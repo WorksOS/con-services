@@ -25,7 +25,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         /// <summary>
         /// Local reference to the client subgrid factory
         /// </summary>
-        [NonSerialized]
         private static IClientLeafSubgridFactory clientLeafSubGridFactory;
 
         private IClientLeafSubgridFactory ClientLeafSubGridFactory

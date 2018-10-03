@@ -1,14 +1,12 @@
-﻿using System;
-using VSS.TRex.Designs.Models;
+﻿using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Patches.GridFabric
 {
   /// <summary>
-  /// The argument to be supplied to the Patchs request
+  /// The argument to be supplied to the Patches request
   /// </summary>
-  [Serializable]
   public class PatchRequestArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>

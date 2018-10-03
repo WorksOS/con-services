@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Event;
-using System;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.Models;
 
@@ -11,7 +10,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// performs some orchestration of the elements ready for further processing but does not pass the TAG file
     /// so as to suppress the TAG file being sent to the local context that emitted the continuous query itself
     /// </summary>
-    [Serializable]
     public class RemoteTAGFileFilter : 
         ICacheEntryFilter<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>,
         ICacheEntryEventFilter<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>

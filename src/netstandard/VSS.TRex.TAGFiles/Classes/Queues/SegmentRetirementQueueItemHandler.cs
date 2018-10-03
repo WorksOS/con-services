@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.Models;
@@ -90,12 +89,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         }
 
         Log.LogInformation($"Prepared {count} retires for removal");
+        DateTime startTime = DateTime.Now;
 
         // Commit all the deletes for this retiree group
         if (storageProxy.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten))
         {
-          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
-
+          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {DateTime.Now - startTime}");
         }
         else
         {

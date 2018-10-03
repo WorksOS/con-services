@@ -7,9 +7,8 @@ namespace VSS.TRex.GridFabric.Affinity
     /// The key type used to drive non-spatial affinity key mapping for elements stored in the Ignite cache. This controls
     /// which nodes in the PSNode layer the data for this key should reside. 
     /// </summary>
-    [Serializable]
     public struct NonSpatialAffinityKey : INonSpatialAffinityKey
-  {
+    {
         /// <summary>
         /// The GUID for the project the subgrid data belongs to.
         /// </summary>
