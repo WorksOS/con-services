@@ -180,7 +180,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         Task.TargetSiteModel.Include(processedTask.TargetSiteModel);
 
                         // Integrate the machine events
-                        eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false);
+                        eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, Task.TargetSiteModel);
 
                         //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
@@ -258,7 +258,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                     // Perform machine event integration outside of the SiteModel write access interlock as the
                     // individual event lists have independent exclusive locks event integration uses.
-                    eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true);
+                    eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, SiteModelFromDM);
 
                     // Integrate the machine events into the main site model. This requires the
                     // sitemodel interlock as aspects of the sitemodel state (machine) are being changed.
@@ -270,10 +270,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
                             if (Comparison < 1)
                             {
-                                // TODO: Convert design name list and id event list structure from Raptor
-                                // Something like this: MachineFromDM.LastKnownDesignName = SiteModelFromDM.DesignNames[SiteModelMachineTargetValues.DesignNameStateEvents.LastStateValue()];
-
-                                 MachineFromDM.LastKnownDesignName = ""; // Todo: remove when above todo done
+                                MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()];
 
                                 if (SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0)
                                 {

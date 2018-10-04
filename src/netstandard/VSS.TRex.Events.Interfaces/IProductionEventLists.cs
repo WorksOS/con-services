@@ -42,7 +42,7 @@ namespace VSS.TRex.Events.Interfaces
     /// <summary>
     /// Records the IDs of the designs selected on a machine at the time production measurements were being made
     /// </summary>
-    IProductionEvents<int> DesignNameIDStateEvents { get; }
+    IProductionEvents<int> MachineDesignNameIDStateEvents { get; }
 
     /// <summary>
     /// Records the state of the automatic machine control on the machine at the time measurements were being made.
@@ -68,12 +68,7 @@ namespace VSS.TRex.Events.Interfaces
     /// Records the selected Layer ID on the machine at the time measurements were being made
     /// </summary>
     IProductionEvents<ushort> LayerIDStateEvents { get; }
-
-    /// <summary>
-    /// Records the selected design on the machine at the time the measurements were made
-    /// </summary>
-//        public ProductionEvents<string> DesignNameStateEvents;
-
+    
     /// <summary>
     /// ICFlags control flags change events
     /// </summary>

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
@@ -17,6 +19,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         private IProductionEventLists SourceLists;
         private IProductionEventLists TargetLists;
         private bool IntegratingIntoPersistentDataModel;
+        private ISiteModel TargetSiteModel;
 
         public EventIntegrator()
         {
@@ -33,47 +36,26 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         private void IntegrateMachineDesignEventNames()
         {
-            /*
-            // TODO: readd when design name events are supported
-            EventDesignName: TEventDesignName;
-            string DesignName;
+          // ensure that 1 copy of the machineDesignName exists in the targetSiteModels List,
+          //    and we reflect THAT Id in the source list
+          for (int I = 0; I < SourceLists.MachineDesignNameIDStateEvents.Count(); I++)
+          {
+            int machineDesignId;
+            SourceLists.MachineDesignNameIDStateEvents.GetStateAtIndex(I, out DateTime dateTime, out machineDesignId);
+            if (machineDesignId > -1)
+            {
+              string machineDesignName = TargetSiteModel.SiteModelMachineDesigns[machineDesignId];
 
-                //  with Source.SiteModel as TICSiteModel do
-                for (int I = 0; I < Source.DesignNameIDStateEvents.Count; I++)
-                {
-                    if (SiteModelDesignNames.GetDesignName(Source.DesignNameIDStateEvents[I].State, DesignName))
-                    {
-                        EventDesignName = Target.SiteModel.SiteModelDesignNames.AddDesignName(DesignName);
-                        if (EventDesignName != null)
-                        {
-                            Source.DesignNameIDStateEvents[I].State = EventDesignName.ID;
-                        }
-                    }
-                    else
-                    {
-                        Log.LogError("Failed to locate design name in the design change events list");
-                        return;
-                    }
-                }
-
-                // with Source.SiteModel as TICSiteModel do
-                for (int I = 0; I < Source.MapResets.Count; I++)
-                {
-                    if (SiteModelDesignNames.GetDesignName((Source.MapResets[I] as TICEventMapReset).DesignNameID, DesignName))
-                    {
-                        EventDesignName = Target.SiteModel.SiteModelDesignNames.AddDesignName(DesignName);
-                        if (EventDesignName != null)
-                        {
-                            (Source.MapResets[I] as TICEventMapReset).DesignNameID = EventDesignName.ID;
-                        }
-                    }
-                    else
-                    {
-                        Log.LogError("Failed to locate design name in the map reset events list");
-                        return;
-                    }
-                }
-            */
+              if (machineDesignName != null)
+              {
+                SourceLists.MachineDesignNameIDStateEvents.PutValueAtDate(dateTime, machineDesignId);
+              }
+            }
+            else
+            {
+              Log.LogError($"Failed to locate machine design name at dateTime: {dateTime} in the design change events list");
+            }
+          }
         }
 
         // IntegrateList takes a list of machine events and merges them into the machine event list.
@@ -98,12 +80,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         public void IntegrateMachineEvents(IProductionEventLists sourceLists,
                                            IProductionEventLists targetLists,
-                                           bool integratingIntoPersistentDataModel)
+                                           bool integratingIntoPersistentDataModel,
+                                           ISiteModel targetSiteModel)
         {
             SourceLists = sourceLists;
             TargetLists = targetLists;
             IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
-
+            TargetSiteModel = targetSiteModel;
             IntegrateMachineEvents();
         }
 

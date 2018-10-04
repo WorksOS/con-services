@@ -49,6 +49,13 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     ISiteModelDesignList SiteModelDesigns { get; }
 
+    /// <summary>
+    /// SiteModelMachineDesigns records all the machineDesignNames retrieved from tag file Change events.
+    /// An indexed list is maintained in the sitemodel reported into.
+    /// The event is stored with the index into the sitemodel list.
+    /// </summary>
+    ISiteModelMachineDesignList SiteModelMachineDesigns { get; }
+
     ISurveyedSurfaces SurveyedSurfaces { get; }
     bool SurveyedSurfacesLoaded { get; }
 

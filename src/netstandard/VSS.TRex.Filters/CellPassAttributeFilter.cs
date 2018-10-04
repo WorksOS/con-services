@@ -848,7 +848,7 @@ namespace VSS.TRex.Filters
 
       if (HasDesignFilter)
       {
-        DesignNameIDValue = machineTargetValues.DesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, DesignNameIDValue);
+        DesignNameIDValue = machineTargetValues.MachineDesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, DesignNameIDValue);
 
         if ((DesignNameIDValue != Consts.kAllDesignsNameID) && (DesignNameID != DesignNameIDValue))
           return false;

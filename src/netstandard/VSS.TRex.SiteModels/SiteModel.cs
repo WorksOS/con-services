@@ -212,17 +212,17 @@ namespace VSS.TRex.SiteModels
             get => designs != null;
         }
 
-        // FSiteModelDesignNames is an integrated list of all the design names that have appeared
-        // in design change events. It shadows the FSiteModelDesigns to an alarming degree
-        // and FSiteModelDesigns could either be refactored to use it, or the two could be
-        // merged in intent.
-        // public SiteModelDesignNames : TICClientDesignNames;
-      
-        // Machines contains a list of compactor machines that this site model knows
-        // about. Each machine contains a link to the machine hardware ID for the
-        // appropriate machine
+      private SiteModelMachineDesignList siteModelMachineDesigns = new SiteModelMachineDesignList();
+      /// <summary>
+      /// SiteModelMachineDesigns records all the designs that have been seen in tagfiles for this sitemodel.
+      /// </summary>
+      public ISiteModelMachineDesignList SiteModelMachineDesigns { get { return siteModelMachineDesigns; } }
 
-        private IMachinesList machines { get; set; }
+    // Machines contains a list of compactor machines that this site model knows
+    // about. Each machine contains a link to the machine hardware ID for the
+    // appropriate machine
+
+    private IMachinesList machines { get; set; }
      
         public IMachinesList Machines
         {
