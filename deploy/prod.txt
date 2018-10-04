@@ -1,6 +1,6 @@
-PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
-IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
-PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
+PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project?includeLandfill=true
+IMPORTED_FILE_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles
+PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
 CUSTOMERSERVICE_API_URL: https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
 RAPTOR_3DPM_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
 TCCBASEURL: https://www.myconnectedsite.com
