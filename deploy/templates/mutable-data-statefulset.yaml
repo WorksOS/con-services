@@ -55,7 +55,7 @@ spec:
         - name: ENABLE_TAGFILE_ARCHIVING_METADATA
           value: {{ .Values.mutableData.environment.enableTagFileArchivingMetadata | quote }}
         - name: MIN_TAGFile_LENGTH
-          value: {{ .Values.mutableData.environment.minTagFileLength }}
+          value: {{ .Values.mutableData.environment.minTagFileLength | quote }}
         - name: TAGFILE_ARCHIVE_FOLDER
           value: {{ .Values.mutableData.environment.tagfileArchiveFolder }}
 

@@ -66,8 +66,6 @@ mutableData:
     minTagFileLength: 99
     tagfileArchiveFolder: ""
 
-
-
 mutableGateway:
   replicaCount: 1
   resources: 
