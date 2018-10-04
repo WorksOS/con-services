@@ -96,6 +96,7 @@ namespace MockProjectWebApi.Controllers
             customTargetSpeedMinimum: 7,
             customTargetTemperatureMaximum: 130,
             customTargetTemperatureMinimum: 75,
+            customTemperatureTargets: [0, 1, 2, 3, 4],
             useDefaultCutFillTolerances: false,
             useDefaultPassCountTargets: false,
             useDefaultTargetRangeCmvPercent: false,
@@ -105,7 +106,8 @@ namespace MockProjectWebApi.Controllers
             useMachineTargetCmv: false,
             useMachineTargetMdp: false,
             useMachineTargetPassCount: false,
-            useMachineTargetTemperature: false
+            useMachineTargetTemperature: false,
+            useDefaultTemperatureTargets: false
           }";
 
     private readonly string projectSettingsTargetsEx = @"{
@@ -136,7 +138,7 @@ namespace MockProjectWebApi.Controllers
             useMachineTargetMdp: false,
             useMachineTargetPassCount: false,
             useMachineTargetTemperature: false,
-            useDefaultCMVTargets: false            
+            useDefaultCMVTargets: false
           }";
     private readonly string projectSettingsColors = @"{
             useDefaultElevationColors: false,
@@ -161,6 +163,8 @@ namespace MockProjectWebApi.Controllers
             passCountUnderTargetColor: 0x1579B,
             useDefaultCutFillColors: false,
             cutFillColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, 0x039BE5, 0x01579B],
+            useDefaultTemperatureDetailsColors: false,
+            temperatureDetailsColors: [0xD50000, 0xFFCDD2, 0xB3E5FC, 0x01579B, 0xC13037],
             useDefaultTemperatureSummaryColors: false,
             temperatureOnTargetColor: 0x8BC34A,
             temperatureOverTargetColor: 0xD50000,
