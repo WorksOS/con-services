@@ -10,7 +10,7 @@ using VSS.TRex.GridFabric.Models.Responses;
 namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
-    /// Performs subgrid requests where the procesing result is aggregated and returned as one of set of partitioned responses
+    /// Performs subgrid requests where the processing result is aggregated and returned as one of set of partitioned responses
     /// from the cache compute cluster
     /// </summary>
     public class SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse> 
@@ -65,7 +65,7 @@ namespace VSS.TRex.GridFabric.Requests
             // Advise the pipeline of all the subgrids that were examined in the aggregative processing
             Task.PipeLine.SubgridsProcessed(taskResult.NumSubgridsExamined);
 
-            // Notify the pipline that all processing has been completed for it
+            // Notify the pipeline that all processing has been completed for it
             Task.PipeLine.PipelineCompleted = true;
 
             // Send the appropriate response to the caller

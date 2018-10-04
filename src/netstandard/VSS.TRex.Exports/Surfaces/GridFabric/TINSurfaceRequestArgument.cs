@@ -1,10 +1,9 @@
-﻿using System;
-using VSS.TRex.GridFabric.Models.Arguments;
+﻿using VSS.TRex.GridFabric.Models.Arguments;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
 {
   /// <summary>
-  /// The argument to be supplied to the Patchs request
+  /// The argument to be supplied to the Patches request
   /// </summary>
   public class TINSurfaceRequestArgument : BaseApplicationServiceRequestArgument
   {

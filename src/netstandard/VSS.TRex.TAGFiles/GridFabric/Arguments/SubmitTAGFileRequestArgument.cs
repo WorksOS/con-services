@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
-    public class SubmitTAGFileRequestArgument
-    {
+  public class SubmitTAGFileRequestArgument : BaseRequestBinarizableArgument
+  {
+        private const byte versionNumber = 1;
+
         /// <summary>
         /// Overridden ID of the project to process the TAG files into
         /// </summary>
@@ -36,5 +41,28 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         public SubmitTAGFileRequestArgument()
         {
         }
+
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteByte(versionNumber);
+      writer.WriteGuid(ProjectID);
+      writer.WriteGuid(AssetID);
+      writer.WriteString(TAGFileName);
+      writer.WriteString(TCCOrgID);
+      writer.WriteByteArray(TagFileContent);
     }
+
+    public override void FromBinary(IBinaryRawReader reader)
+    {
+      byte readVersionNumber = reader.ReadByte();
+
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+
+      ProjectID = reader.ReadGuid();
+      AssetID = reader.ReadGuid();
+      TAGFileName = reader.ReadString();
+      TCCOrgID = reader.ReadString();
+      TagFileContent = reader.ReadByteArray();
+    }
+  }
 }
