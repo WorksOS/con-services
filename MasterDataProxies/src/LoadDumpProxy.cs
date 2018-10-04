@@ -26,7 +26,8 @@ namespace VSS.MasterData.Proxies
       string url = configurationStore.GetValueString(urlKey);
       log.LogDebug($"LoadDumpProxy.GetLoadDumpLocations: urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
 
-      var response = await GetContainedMasterDataList<LoadDumpResult>(projectUid, null, "LOADDUMP_CACHE_LIFE", urlKey, customHeaders);
+      var queryParams = $"?projectUid={projectUid}";
+      var response = await GetContainedMasterDataList<LoadDumpResult>(projectUid, null, "LOADDUMP_CACHE_LIFE", urlKey, customHeaders, queryParams);
       return response.cycles;
     }
   }
