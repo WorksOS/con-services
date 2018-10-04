@@ -41,7 +41,7 @@ namespace VSS.TRex.GridFabric.Affinity
         }
 
         /// <summary>
-        /// The reference to the Ignite cache the parittion map relates
+        /// The reference to the Ignite cache the partition map relates
         /// </summary>
         private ICache<TK, TV> Cache { get; set; }
 
@@ -49,7 +49,7 @@ namespace VSS.TRex.GridFabric.Affinity
         private IClusterNode LocalNode { get; set; }
 
         /// <summary>
-        /// Constructor accepting a cache reference to obtain the parition map information for
+        /// Constructor accepting a cache reference to obtain the partition map information for
         /// </summary>
         /// <param name="cache"></param>
         public AffinityPartitionMap(ICache<TK, TV> cache)
@@ -61,7 +61,7 @@ namespace VSS.TRex.GridFabric.Affinity
         }
 
         /// <summary>
-        /// Asks Ignite for the list of primary partitions this node is reponsible for in the provided cache 
+        /// Asks Ignite for the list of primary partitions this node is responsible for in the provided cache 
         /// </summary>
         /// <returns></returns>
         private bool[] GetPrimaryPartitions()
@@ -75,7 +75,7 @@ namespace VSS.TRex.GridFabric.Affinity
         }
 
         /// <summary>
-        /// Asks Ignite for the list of primary partitions this node is reponsible for in the provided cache 
+        /// Asks Ignite for the list of primary partitions this node is responsible for in the provided cache 
         /// </summary>
         /// <returns></returns>
         private Dictionary<int, bool> GetBackupPartitions() => Affinity.GetBackupPartitions(LocalNode).ToDictionary(k => k, v => true);
@@ -90,18 +90,18 @@ namespace VSS.TRex.GridFabric.Affinity
         public int PartitionFor(TK key) => Cache.Ignite.GetAffinity(Cache.Name).GetPartition(key);
 
         /// <summary>
-        /// Determines if this node hold the primary parition for the given key
+        /// Determines if this node hold the primary partition for the given key
         /// This is not so performant as it performant as it involves a full lookup of the cache affinity context from Ignite.
-        /// If performance is important, use the PrimaryParitionMap ditionary availalble from this class.
+        /// If performance is important, use the PrimaryParitionMap dictionary available from this class.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public bool HasPrimaryPartitionFor(TK key) => PrimaryPartitions[PartitionFor(key)];
 
         /// <summary>
-        /// Determines if this node holds a backup parition for the given key
+        /// Determines if this node holds a backup partition for the given key
         /// This is not so performant as it performant as it involves a full lookup of the cache affinity context from Ignite.
-        /// If performance is important, use the BackupParitionMap ditionary availalble from this class.
+        /// If performance is important, use the BackupParitionMap dictionary availalble from this class.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>

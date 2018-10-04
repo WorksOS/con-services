@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Arguments;
 using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs

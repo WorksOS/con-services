@@ -1,4 +1,4 @@
-﻿using VSS.TRex.GridFabric.Models.Arguments;
+﻿using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
@@ -21,7 +21,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
     /// <summary>
     /// CMV percentage range.
     /// </summary>
-    public CMVRangePercentageRecord CMVPercentageRange;
+   public CMVRangePercentageRecord CMVPercentageRange;
 
     /// <summary>
     /// CMV details values.
