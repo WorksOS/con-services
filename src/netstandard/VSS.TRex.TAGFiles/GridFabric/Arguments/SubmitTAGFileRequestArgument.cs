@@ -56,7 +56,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}");
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
 
       ProjectID = reader.ReadGuid();
       AssetID = reader.ReadGuid();

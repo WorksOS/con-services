@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}");
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
 
       for (int i = 0; i < reader.ReadInt(); i++)
       {
