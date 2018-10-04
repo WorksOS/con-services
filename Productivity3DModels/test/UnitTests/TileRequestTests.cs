@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Models.UnitTests
 {
   public class TileRequestTests
   {
-    BoundingBox2DLatLon boundingBox2DLatLon = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(
+    BoundingBox2DLatLon boundingBox2DLatLon = new BoundingBox2DLatLon(
       35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
       -106.604076 * ConversionConstants.DEGREES_TO_RADIANS,
       35.39012 * ConversionConstants.DEGREES_TO_RADIANS,
@@ -25,29 +25,29 @@ namespace VSS.Productivity3D.Models.UnitTests
     {
 
       var validator = new DataAnnotationsValidator();
-      TileRequest request = TileRequest.CreateTileRequest(
+      TileRequest request = new TileRequest(
         projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0,
         FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(request, out results));
 
       //missing project id
-      request = TileRequest.CreateTileRequest(-1, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0,
+      request = new TileRequest(-1, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0,
         FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //vol no change tolerance out of range
-      request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 10.1, null, null, 0, null, 0,
+      request = new TileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 10.1, null, null, 0, null, 0,
         FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //width out of range
-      request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0,
+      request = new TileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0,
         FilterLayerMethod.None, boundingBox2DLatLon, null, 16, 256);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //height out of range
-      request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0,
+      request = new TileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0,
         FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 16000);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       request.Validate();
 
     }
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidPaletteNumberTest()
     {
       //wrong number of palettes for display mode
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CCVPercent, palettes, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.CCVPercent, palettes, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidPaletteOrderTest()
     {
       //palettes out of order
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, invalidPalettes, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.Height, invalidPalettes, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailMissingDesignTest()
     {
       //missing design (for cutfill display mode)
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CutFill, null, liftSettings,
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.CutFill, null, liftSettings,
         VolumesType.BetweenDesignAndFilter, 0.0, null, null, 0, null, 0,
         FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       Assert.ThrowsException<MissingDesignDescriptorException>(() => request.Validate());
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailMissingFilterTest()
     {
       //missing filter (for volumes display mode)
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.VolumeCoverage, null, liftSettings, VolumesType.Between2Filters, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.VolumeCoverage, null, liftSettings, VolumesType.Between2Filters, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       Assert.ThrowsException<TwoFiltersRequiredException>(() => request.Validate());
     }
 
@@ -102,7 +102,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidVolumeTypeTest()
     {
       //Unsupported volume type (for volumes display mode)
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.VolumeCoverage, null, liftSettings, VolumesType.AboveLevel, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.VolumeCoverage, null, liftSettings, VolumesType.AboveLevel, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, null, 256, 256);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -110,17 +110,17 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailMissingBoundingBoxTest()
     {
       //missing bounding box
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, null, null, 256, 256);
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, null, null, 256, 256);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod]
     public void ValidateFailTwoBoundingBoxesTest()
     {
-      var boundingBox2dGrid = BoundingBox2DGrid.CreateBoundingBox2DGrid(380646.982394, 812634.205106, 380712.19834, 812788.92875);
+      var boundingBox2dGrid = new BoundingBox2DGrid(380646.982394, 812634.205106, 380712.19834, 812788.92875);
 
       //Two bounding boxes
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, boundingBox2dGrid, 256, 256);
+      TileRequest request = new TileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, VolumesType.None, 0.0, null, null, 0, null, 0, FilterLayerMethod.None, boundingBox2DLatLon, boundingBox2dGrid, 256, 256);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -133,22 +133,22 @@ namespace VSS.Productivity3D.Models.UnitTests
 
     private const long projectId = 1234;
     private readonly Guid callId = new Guid();
-    private readonly LiftBuildSettings liftSettings = LiftBuildSettings.CreateLiftBuildSettings(
-      CCVRangePercentage.CreateCcvRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
-      MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);
+    private readonly LiftBuildSettings liftSettings = new LiftBuildSettings(
+      new CCVRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
+      new MDPRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget, null);
 
     private readonly List<ColorPalette> palettes = new List<ColorPalette>
     {
-      ColorPalette.CreateColorPalette(Red, 0.0),
-      ColorPalette.CreateColorPalette(Lime, 90.0),
-      ColorPalette.CreateColorPalette(Blue, 120.0)
+      new ColorPalette(Red, 0.0),
+      new ColorPalette(Lime, 90.0),
+      new ColorPalette(Blue, 120.0)
     };
 
     private readonly List<ColorPalette> invalidPalettes = new List<ColorPalette>
     {
-      ColorPalette.CreateColorPalette(Lime, 90.0),
-      ColorPalette.CreateColorPalette(Red, 0.0),
-      ColorPalette.CreateColorPalette(Blue, 120.0)
+      new ColorPalette(Lime, 90.0),
+      new ColorPalette(Red, 0.0),
+      new ColorPalette(Blue, 120.0)
     };
 
     //These are from 3dpm Colors class, copied here as only for unit tests and actually any colors will do

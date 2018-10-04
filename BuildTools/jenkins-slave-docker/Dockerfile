@@ -77,7 +77,10 @@ RUN mkdir /etc/docker && echo  '{ "insecure-registries":["registry.k8s.vspengg.c
 RUN tail /etc/docker/daemon.json
 
 #Try this out
-COPY super-entrypoint.sh /usr/local/bin/ 
+COPY *.sh /usr/local/bin/ 
+COPY *.tar /usr/local/bin/ 
+
+RUN chmod 755 /usr/local/bin/*.sh
 
 # Supervisor does not support entrypoint must use CMD
 # https://stackoverflow.com/questions/22465003/error-positional-arguments-are-not-supported

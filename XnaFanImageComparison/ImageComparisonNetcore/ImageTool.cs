@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 // see https://www.codeproject.com/Articles/374386/Simple-image-comparison-in-NET
 
@@ -33,8 +34,8 @@ namespace XnaFan.ImageComparison.Netcore
         {
             if (CheckIfFileExists(image1Path) && CheckIfFileExists(image2Path))
             {
-                Image img1 = Image.FromFile(image1Path);
-                Image img2 = Image.FromFile(image2Path);
+                Image<Rgba32> img1 = Image.Load<Rgba32>(image1Path);
+                Image<Rgba32> img2 = Image.Load<Rgba32>(image2Path);
 
                 float difference = img1.PercentageDifference(img2, threshold);
 
@@ -58,8 +59,8 @@ namespace XnaFan.ImageComparison.Netcore
         {
             if (CheckIfFileExists(image1Path) && CheckIfFileExists(image2Path))
             {
-                Image img1 = Image.FromFile(image1Path);
-                Image img2 = Image.FromFile(image2Path);
+                Image<Rgba32> img1 = Image.Load<Rgba32>(image1Path);
+                Image<Rgba32> img2 = Image.Load<Rgba32>(image2Path);
 
                 float difference = img1.BhattacharyyaDifference(img2);
 
@@ -111,7 +112,7 @@ namespace XnaFan.ImageComparison.Netcore
             var imagePathsAndGrayValues = new List<Tuple<string, byte[,]>>();
             foreach (var imagePath in pathsOfPossibleDuplicateImages)
             {
-                using (Image image = Image.FromFile(imagePath))
+                using (Image<Rgba32> image = Image.Load<Rgba32>(imagePath))
                 {
                     byte[,] grayValues = image.GetGrayScaleValues();
                     var tuple = new Tuple<string, byte[,]>(imagePath, grayValues);

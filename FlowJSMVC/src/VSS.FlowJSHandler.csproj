@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.FlowJSHandler.netcore</Product>
     <Description>MVC5 action filter to support Angular flow.js directive (multipart file upload, chunks, progress etc.)</Description>
-    <VersionPrefix>2.1.0</VersionPrefix>
+    <VersionPrefix>2.1.2</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.FlowJSHandler</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

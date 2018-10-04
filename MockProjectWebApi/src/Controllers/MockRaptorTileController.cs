@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MockProjectWebApi.Utils;
+using Newtonsoft.Json;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
+using System.Security.Cryptography;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -38,12 +42,12 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"GetMockProductionDataTileRaw: {Request.QueryString}");
 
-      using (Bitmap bitmap = new Bitmap(width, height))
+      using (Image<Rgba32> bitmap = new Image<Rgba32>(width, height))
       {
         if (projectUid.ToString() == "ff91dd40-1569-4765-a2bc-014321f76ace")
         {
           //Just do a fixed block of color to represent production data
-          uint color = 0x000000;
+          Rgba32 color = Rgba32.Black;
           const int w = 100;
           const int h = 100;
           int x = (width - w) / 2;
@@ -51,65 +55,85 @@ namespace MockProjectWebApi.Controllers
           switch (mode)
           {
             case DisplayMode.Height:
-              color = Colors.Red;
+              color = Rgba32.Red;
               break;
             case DisplayMode.CCV:
-              color = Colors.Aqua;
+              color = Rgba32.Aqua;
               break;
             case DisplayMode.PassCount:
-              color = Colors.Fuchsia;
+              color = Rgba32.Fuchsia;
               break;
             case DisplayMode.PassCountSummary:
-              color = Colors.Green;
+              color = Rgba32.Green;
               break;
             case DisplayMode.CutFill:
               switch (volumeCalcType)
               {
                 case VolumeCalcType.None:
-                  color = Colors.Yellow;
+                  color = Rgba32.Yellow;
                   break;
                 case VolumeCalcType.DesignToGround:
-                  color = Colors.Maroon;
+                  color = Rgba32.Maroon;
                   break;
                 case VolumeCalcType.GroundToDesign:
-                  color = Colors.Teal;
+                  color = Rgba32.Teal;
                   break;
                 case VolumeCalcType.GroundToGround:
-                  color = Colors.Navy;
+                  color = Rgba32.Navy;
                   break;
               }
               break;
             case DisplayMode.TemperatureSummary:
-              color = Colors.Purple;
+              color = Rgba32.Purple;
               break;
             case DisplayMode.CCVPercentSummary:
-              color = Colors.Blue;
+              color = Rgba32.Blue;
               break;
             case DisplayMode.MDPPercentSummary:
-              color = Colors.Lime;
+              color = Rgba32.Lime;
               break;
             case DisplayMode.TargetSpeedSummary:
-              color = Colors.Brown;
+              color = Rgba32.Brown;
               break;
             case DisplayMode.CMVChange:
-              color = Colors.Orange;
+              color = Rgba32.Orange;
+              break;
+            case DisplayMode.TemperatureDetail:
+              color = Rgba32.Lavender;
               break;
           }
-
-          using (Graphics g = Graphics.FromImage(bitmap))
-          {
-            Brush brush = new SolidBrush(Color.FromArgb(0xFF, Color.FromArgb((int) color)));
-            g.FillRectangle(brush, x, y, w, h);
-          }
+          var rect = new RectangleF(x, y, w, h);
+          bitmap.Mutate(ctx => ctx.Fill(color, rect));          
         }
         //else return Empty tile
  
         var bitmapStream = new MemoryStream();
-        bitmap.Save(bitmapStream, ImageFormat.Png);
+        bitmap.SaveAsPng(bitmapStream);
+        //Console.WriteLine($"GetMockProductionDataTileRaw result: MD5={CreateMD5(bitmapStream)}");
         bitmapStream.Position = 0;
-        return new FileStreamResult(bitmapStream, "image/png");        
+        return new FileStreamResult(bitmapStream, "image/png");
       }
     }
+
+    /*
+    private string CreateMD5(MemoryStream ms)
+    {
+      //Create MD5 hash
+      using (MD5 md5 = MD5.Create())
+      {
+        ms.Position = 0;
+        byte[] hashBytes = md5.ComputeHash(ms.ToArray());
+
+        // Convert the hash byte array to hexadecimal string
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < hashBytes.Length; i++)
+        {
+          sb.Append(hashBytes[i].ToString("X2"));
+        }
+        return sb.ToString();
+      }
+    }
+    */
 
     [Route("api/v2/raptor/boundingbox")]
     [HttpGet]

@@ -125,7 +125,7 @@ namespace MockProjectWebApi.Controllers
             customTargetSpeedMinimum: 7,
             customTargetTemperatureMaximum: 130,
             customTargetTemperatureMinimum: 75,
-            customCMVTargets: [0, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145],
+            customCMVTargets: [0, 75, 150, 300, 480],
             useDefaultCutFillTolerances: false,
             useDefaultPassCountTargets: false,
             useDefaultTargetRangeCmvPercent: false,
@@ -146,9 +146,7 @@ namespace MockProjectWebApi.Controllers
                                 0x00E6C8, 0x00E6D2, 0x00DCDC, 0x00E6E6, 0x00C8E6, 0x00B4F0, 0x0096F5,
                                 0x0078FA, 0x005AFF, 0x0000FF],
             useDefaultCMVDetailsColors: false,
-            cmvDetailsColors: [0x01579B, 0x2473AE, 0x488FC1, 0x6BACD5, 0x8FC8E8, 0xB3E5FC, 0xDBECC8, 
-                                0x99CB65, 0x649E38, 0x2D681D, 0xFFCCD2, 0xF6A3A8, 0xEE7A7E, 0xE55154,
-                                0xDD282A, 0xD50000],
+            cmvDetailsColors: [0x01579B, 0x2473AE, 0x488FC1, 0x2D681D, 0xE55154],
             useDefaultCMVSummaryColors: false,
             cmvOnTargetColor: 0x8BC34A,
             cmvOverTargetColor: 0xD50000,
@@ -212,7 +210,12 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1001186, ProjectUid = "8590b7fc-079e-4b5a-b5ff-8514dadfe985"},
       new ProjectData {LegacyProjectId = 1001191, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001209, ProjectUid = Guid.NewGuid().ToString()},
-      new ProjectData {LegacyProjectId = 1001210, ProjectUid = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb"},
+      new ProjectData {
+        LegacyProjectId = 1001210,
+        ProjectUid = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb",
+        ProjectGeofenceWKT = "POLYGON((3.010411822 -0.759611604,3.010913674 -0.759617032,3.010916659 -0.759813626,3.010414824 -0.759812544))",
+      },
+
       new ProjectData {LegacyProjectId = 1001214, ProjectUid = "8aed6003-b8eb-47b1-941f-096a17468bf0"},
       new ProjectData {LegacyProjectId = 1001276, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001280, ProjectUid = "04c94921-6343-4ffb-9d35-db9d281743fc"},
@@ -236,6 +239,7 @@ namespace MockProjectWebApi.Controllers
         ProjectType = ProjectType.LandFill
       },
       new ProjectData {
+        LegacyProjectId = 1111111,
         ProjectUid = "b7f4af55-2fdb-4878-b3d0-ce748d5dde08",
         ProjectType = ProjectType.Standard,
         IsArchived = true

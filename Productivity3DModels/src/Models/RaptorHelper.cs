@@ -10,14 +10,16 @@ namespace VSS.Productivity3D.Models.Models
 {
   public abstract class RaptorHelper : ProjectID
   {
-    protected uint cmvDetailsColorNumber = CMV_DETAILS_NUMBER_OF_COLORS;
-    protected uint cmvPercentChangeColorNumber = CMV_PERCENT_CHANGE_NUMBER_OF_COLORS;
-    public bool setSummaryDataLayersVisibility = true;
-
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
     private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 6;
     private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2 = 9;
 
+    protected uint p_cmvDetailsColorNumber = CMV_DETAILS_NUMBER_OF_COLORS;
+    protected uint p_cmvPercentChangeColorNumber = CMV_PERCENT_CHANGE_NUMBER_OF_COLORS;
+
+    public bool SetSummaryDataLayersVisibility { get; protected set; } = true;
+
+    
     public void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
     {
       if (palettes != null)
@@ -26,21 +28,22 @@ namespace VSS.Productivity3D.Models.Models
         switch (mode)
         {
           case DisplayMode.Height:
+          case DisplayMode.Design3D:
             //VL has 30 hardwired but Raptor can handle anything
             //count = 30;
             break;
           case DisplayMode.CCV:
-            count = cmvDetailsColorNumber;
+            count = p_cmvDetailsColorNumber;
             break;
           case DisplayMode.CCVPercentChange:
           case DisplayMode.CCVPercent:
             count = 5;
             break;
           case DisplayMode.CMVChange:
-            count = palettes.Count == CMV_PERCENT_CHANGE_NUMBER_OF_COLORS - 1 ? cmvPercentChangeColorNumber : CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2;
+            count = palettes.Count == CMV_PERCENT_CHANGE_NUMBER_OF_COLORS - 1 ? p_cmvPercentChangeColorNumber : CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2;
 
             if (count == CMV_PERCENT_CHANGE_NUMBER_OF_COLORS)
-              palettes.Insert(0, ColorPalette.CreateColorPalette(0, 0));
+              palettes.Insert(0, new ColorPalette(0, 0));
             break;
           case DisplayMode.Latency:
             break;
@@ -89,9 +92,13 @@ namespace VSS.Productivity3D.Models.Models
           case DisplayMode.TargetSpeedSummary:
             count = 3;
             break;
+          case DisplayMode.TemperatureDetail:
+            count = 5;
+            break;
+
         }
 
-        if (mode != DisplayMode.Height && count != palettes.Count)
+        if ((mode != DisplayMode.Height && mode != DisplayMode.Design3D) && count != palettes.Count)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -101,10 +108,10 @@ namespace VSS.Productivity3D.Models.Models
         for (int i = 1; i < palettes.Count; i++)
         {
           //Special case of below/above colors for elevation
-          var invalid = (mode == DisplayMode.Height && ((i == 1 && palettes[0].value == -1) || (i == palettes.Count - 1 && palettes[i].value == -1))) ? false :
+          var invalid = ((mode == DisplayMode.Height || mode == DisplayMode.Design3D) && ((i == 1 && palettes[0].Value == -1) || (i == palettes.Count - 1 && palettes[i].Value == -1))) ? false :
             mode == DisplayMode.CutFill
-              ? palettes[i].value > palettes[i - 1].value
-              : palettes[i].value < palettes[i - 1].value;
+              ? palettes[i].Value > palettes[i - 1].Value
+              : palettes[i].Value < palettes[i - 1].Value;
 
           if (invalid)
           {
@@ -114,8 +121,8 @@ namespace VSS.Productivity3D.Models.Models
           }
         }
 
-        if (mode == DisplayMode.CCV || mode == DisplayMode.CCVPercent || mode == DisplayMode.MDP || mode == DisplayMode.MDPPercent)
-          if (palettes[0].value != 0)
+        if (mode == DisplayMode.CCV || mode == DisplayMode.CCVPercent || mode == DisplayMode.MDP || mode == DisplayMode.MDPPercent || mode == DisplayMode.TemperatureDetail)
+          if (palettes[0].Value != 0)
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 string.Format("First value in palette must be 0 for this type of tile.")));

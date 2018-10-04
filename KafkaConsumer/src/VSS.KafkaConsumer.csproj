@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.KafkaConsumer.netcore</Product>
     <Description>Shared across Merino apps kafka consumer based on RD Kafka</Description>
-    <VersionPrefix>3.7.16</VersionPrefix>
+    <VersionPrefix>4.0.3</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.KafkaConsumer</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -16,11 +16,11 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Confluent.Kafka" Version="0.11.4" />
+    <PackageReference Include="Confluent.Kafka" Version="1.0.0-beta" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.18" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

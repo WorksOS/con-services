@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 
@@ -32,6 +33,14 @@ namespace MockProjectWebApi.Controllers
             GeometryWKT = "POLYGON((-115.020 36.207,-115.021 36.2075,-115.023 36.208,-115.020 36.207))",
             FillColor = 16711680, //red
             IsTransparent = false
+          },
+          new GeofenceData
+          {
+            GeofenceName = "Dimensions project boundary",
+            GeofenceUID = Guid.Parse("eee23e91-5682-45ec-a4a7-9dfe0d6b7a64"),
+            GeometryWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))",
+            FillColor = 65280, //green
+            IsTransparent = false
           }
         };
       }
@@ -39,9 +48,9 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v1/mock/geofences")]
     [HttpGet]
-    public GeofenceDataResult GetMockGeofences()
+    public GeofenceDataResult GetMockGeofences(long[] geofenceTypeIds)
     {
-      Console.WriteLine("GetMockGeofences");
+      Console.WriteLine($"GetMockGeofences: {JsonConvert.SerializeObject(geofenceTypeIds)}");
       var geofences = GeofenceData;
       return new GeofenceDataResult { Geofences = geofences };
     }

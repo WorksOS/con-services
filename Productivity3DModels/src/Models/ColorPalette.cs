@@ -15,31 +15,30 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "color", Required = Required.Always)]
     [Required]
-    public uint color { get; private set; }
+    public uint Color { get; private set; }
 
     /// <summary>
     /// The datum value at which the color defined in color should be used.
     /// </summary>
     [JsonProperty(PropertyName = "value", Required = Required.Always)]
     [Required]
-    public double value { get; private set; }
+    public double Value { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private ColorPalette()
     { }
 
     /// <summary>
-    /// Create instance of ColorPalette
+    /// Overload constructor with parameters.
     /// </summary>
-    public static ColorPalette CreateColorPalette(uint color, double value)
+    /// <param name="color"></param>
+    /// <param name="value"></param>
+    public ColorPalette(uint color, double value)
     {
-      return new ColorPalette
-      {
-        color = color,
-        value = value
-      };
+      Color = color;
+      Value = value;
     }
 
     /// <summary>

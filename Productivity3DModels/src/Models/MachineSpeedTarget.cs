@@ -43,9 +43,15 @@ namespace VSS.Productivity3D.Models.Models
       }
     }
 
-    public static MachineSpeedTarget CreateMachineSpeedTarget(ushort min, ushort max)
+    /// <summary>
+    /// Overload constructor with parameters.
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    public MachineSpeedTarget(ushort min, ushort max)
     {
-      return new MachineSpeedTarget { MinTargetMachineSpeed = min, MaxTargetMachineSpeed = max };
+      MinTargetMachineSpeed = min;
+      MaxTargetMachineSpeed = max;
     }
   }
 }

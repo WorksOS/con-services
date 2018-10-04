@@ -79,9 +79,19 @@ namespace VSS.TCCFileAccess
       tccUserName = configuration.GetValueString("TCCUSERNAME");
       tccPassword = configuration.GetValueString("TCCPWD");
       tccOrganization = configuration.GetValueString("TCCORG");
+      if (string.IsNullOrEmpty(tccBaseUrl) || string.IsNullOrEmpty(tccUserName) || 
+          string.IsNullOrEmpty(tccPassword) || string.IsNullOrEmpty(tccOrganization))
+      {
+        throw new Exception("Missing environment variable TCCBASEURL, TCCUSERNAME, TCCPWD or TCCORG");
+      }
+      if (!tccBaseUrl.ToLower().StartsWith("http"))
+      {
+        throw new Exception($"Invalid TCC URL {tccBaseUrl}");
+      }
       logFactory = logger;
       Log = logger.CreateLogger<FileRepository>();
       configStore = configuration;
+      Log.LogInformation($"TCCBASEURL={tccBaseUrl}");
     }
 
     public async Task<List<Organization>> ListOrganizations()

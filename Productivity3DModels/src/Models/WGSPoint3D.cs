@@ -13,6 +13,9 @@ namespace VSS.Productivity3D.Models.Models
   [DataContract(Name = "WGSPoint")]
   public class WGSPoint3D 
   {
+    /// <summary>
+    /// Default private constructor.
+    /// </summary>
     private WGSPoint3D()
     { }
 
@@ -33,14 +36,15 @@ namespace VSS.Productivity3D.Models.Models
     public double Lon { get; private set; }
 
     /// <summary>
-    /// Creates the point.
+    /// Overload constructor with parameters.
     /// </summary>
     /// <param name="lat">The latitude.</param>
     /// <param name="lon">The longtitude.</param>
     /// <returns></returns>
-    public static WGSPoint3D CreatePoint(double lat, double lon)
+    public WGSPoint3D(double lat, double lon)
     {
-      return new WGSPoint3D { Lat = lat, Lon = lon };
+      Lat = lat;
+      Lon = lon;
     }
 
     /// <summary>

@@ -23,8 +23,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
     <PackageReference Include="Moq" Version="4.8.2" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.22.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.32.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
   </ItemGroup>
 

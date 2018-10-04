@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// The result representation of a detailed CMV request
   /// </summary>
-  public class CMVDetailedResult : ContractExecutionResult
+  public class CMVDetailedResult : CMVBaseResult
   {
     /// <summary>
     /// An array of percentages relating to the CMV values encountered in the processed cells.
@@ -33,14 +32,20 @@ namespace VSS.Productivity3D.Models.ResultHandling
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CMVDetailedResult Create(double[] percents)
+    /// <param name="percents"></param>
+    /// <param name="constantTargetCmv"></param>
+    /// <param name="isTargetCmvConstant"></param>
+    public CMVDetailedResult(
+      double[] percents, 
+      short constantTargetCmv = -1,
+      bool isTargetCmvConstant = false
+     )
     {
-      return new CMVDetailedResult
-      {
-        Percents = percents
-      };
+      Percents = percents;
+      ConstantTargetCmv = constantTargetCmv;
+      IsTargetCmvConstant = isTargetCmvConstant;
     }
 
     /// <summary>
@@ -49,7 +54,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <returns>A comma separated list of the percentages in the array.</returns>
     public override string ToString()
     {
-      return string.Join("%, ", Percents) + "%";
+      return $"Percents: {string.Join("%, ", Percents)}%, IsTargetCmvConstant: {IsTargetCmvConstant}, ConstantTargetCmv: {ConstantTargetCmv}";
     }
   }
 }

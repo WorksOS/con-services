@@ -22,9 +22,9 @@ namespace VSS.Productivity3D.Models.UnitTests
       //everything filter
       List<WGSPoint3D> latLngs = new List<WGSPoint3D>
       {
-        WGSPoint3D.CreatePoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
-        WGSPoint3D.CreatePoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
-        WGSPoint3D.CreatePoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
+        new WGSPoint3D(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint3D(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint3D(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
       };
       List<Point> gridPoints = new List<Point>
       {
@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Models.UnitTests
         Point.CreatePoint(15.2, 45.2),
         Point.CreatePoint(21.5, 89.3)
       };
-      DesignDescriptor desc = DesignDescriptor.CreateDesignDescriptor(1111, null, 0);
+      DesignDescriptor desc = new DesignDescriptor(1111, null, 0);
       List<MachineDetails> machines = new List<MachineDetails>
       {
         MachineDetails.Create(12345678, "Acme Compactor 1", false)
@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     [TestMethod]
     public void ValidateSuccessTest()
     {
-      DesignDescriptor desc = DesignDescriptor.CreateDesignDescriptor(1, null, 2.0);
+      DesignDescriptor desc = new DesignDescriptor(1, null, 2.0);
       var filter = FilterResult.CreateFilter(null, null, null, new DateTime(2014, 1, 1), new DateTime(2014, 1, 31), null, null,
         null, null, null, null, null, null, desc, 100.0, 500.0, 1.0, 2.0, null, FilterLayerMethod.OffsetFromDesign, desc,
         null, 2, 0.5, null, null, null, null, null, null, null, null, desc, null, null, null, null, null);
@@ -175,9 +175,9 @@ namespace VSS.Productivity3D.Models.UnitTests
       //both LL and grid points specified
       List<WGSPoint3D> latLngs = new List<WGSPoint3D>
       {
-        WGSPoint3D.CreatePoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
-        WGSPoint3D.CreatePoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
-        WGSPoint3D.CreatePoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
+        new WGSPoint3D(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint3D(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint3D(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
       };
       List<Point> gridPoints = new List<Point>
       {
@@ -258,7 +258,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     {
       var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, true);
-      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(filter, null, null, null, null, null, null);
       filterResult.Validate();
     }
 
@@ -268,7 +268,7 @@ namespace VSS.Productivity3D.Models.UnitTests
       //Need to use filter JSON as cannot set DateRangeType directly
       var filterJson = "{\"asAtDate\":true, \"dateRangeType\":0}";
       var filter = JsonConvert.DeserializeObject<Filter>(filterJson);
-      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(filter, null, null, null, null, null, null);
       filterResult.Validate();
     }
 
@@ -277,7 +277,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     {
       var filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, true);
-      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
     }
 
@@ -286,7 +286,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     {
       var filter = Filter.CreateFilter(null, DateTime.UtcNow.AddDays(-1), null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, false);
-      var filterResult = FilterResult.CreateFilter(filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(filter, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filterResult.Validate());
     }
   }

@@ -298,9 +298,9 @@ namespace VSS.Productivity3D.Models.Models
     public bool? AsAtDate { get; protected set; }
 
     /// <summary>
-    /// Default private constructor.
+    /// Default public constructor.
     /// </summary>
-    private FilterResult()
+    public FilterResult()
     { }
 
     private bool isFilterEmpty()
@@ -470,9 +470,17 @@ namespace VSS.Productivity3D.Models.Models
     }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static FilterResult CreateFilter(
+    /// <param name="filter"></param>
+    /// <param name="polygonLL"></param>
+    /// <param name="alignmentFile"></param>
+    /// <param name="layerType"></param>
+    /// <param name="surveyedSurfaceExclusionList"></param>
+    /// <param name="returnEarliest"></param>
+    /// <param name="designFile"></param>
+    public FilterResult
+    (
       Filter filter,
       List<WGSPoint3D> polygonLL,
       DesignDescriptor alignmentFile,
@@ -481,34 +489,31 @@ namespace VSS.Productivity3D.Models.Models
       bool? returnEarliest,
       DesignDescriptor designFile)
     {
-      return new FilterResult
-      {
-        StartUtc = filter.StartUtc,
-        EndUtc = filter.EndUtc,
-        OnMachineDesignId = filter.OnMachineDesignId,
-        VibeStateOn = filter.VibeStateOn,
-        ElevationType = filter.ElevationType,
-        PolygonLL = polygonLL,
-        ForwardDirection = filter.ForwardDirection,
-        AlignmentFile = alignmentFile,
-        StartStation = filter.StartStation,
-        EndStation = filter.EndStation,
-        LeftOffset = filter.LeftOffset,
-        RightOffset = filter.RightOffset,
-        LayerType = layerType,
-        LayerNumber = filter.LayerNumber,
-        ContributingMachines = filter.ContributingMachines,
-        SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList,
-        ReturnEarliest = returnEarliest,
-        DesignFile = designFile,
-        DateRangeType = filter.DateRangeType,
-        AsAtDate = filter.AsAtDate,
-        AutomaticsType = filter.AutomaticsType,
-        TemperatureRangeMin = filter.TemperatureRangeMin,
-        TemperatureRangeMax = filter.TemperatureRangeMax,
-        PassCountRangeMin = filter.PassCountRangeMin,
-        PassCountRangeMax = filter.PassCountRangeMax
-      };
+      StartUtc = filter.StartUtc;
+      EndUtc = filter.EndUtc;
+      OnMachineDesignId = filter.OnMachineDesignId;
+      VibeStateOn = filter.VibeStateOn;
+      ElevationType = filter.ElevationType;
+      PolygonLL = polygonLL;
+      ForwardDirection = filter.ForwardDirection;
+      AlignmentFile = alignmentFile;
+      StartStation = filter.StartStation;
+      EndStation = filter.EndStation;
+      LeftOffset = filter.LeftOffset;
+      RightOffset = filter.RightOffset;
+      LayerType = layerType;
+      LayerNumber = filter.LayerNumber;
+      ContributingMachines = filter.ContributingMachines;
+      SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList;
+      ReturnEarliest = returnEarliest;
+      DesignFile = designFile;
+      DateRangeType = filter.DateRangeType;
+      AsAtDate = filter.AsAtDate;
+      AutomaticsType = filter.AutomaticsType;
+      TemperatureRangeMin = filter.TemperatureRangeMin;
+      TemperatureRangeMax = filter.TemperatureRangeMax;
+      PassCountRangeMin = filter.PassCountRangeMin;
+      PassCountRangeMax = filter.PassCountRangeMax;
     }
 
     /// <summary>

@@ -180,10 +180,9 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
     }
 
     /// <summary>
-    /// Gets the frist available name of a error code taking into account 
+    /// Gets the first available name of a error code taking into account .
     /// </summary>
-    /// <param name="value">The code vale to get the name against.</param>
-    /// <returns></returns>
+    /// <param name="value">The code value to get the name against.</param>
     public string FirstNameWithOffset(int value)
     {
       return FirstNameWith(value + executionResultOffset);

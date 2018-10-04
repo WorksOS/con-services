@@ -16,6 +16,11 @@ namespace VSS.MasterData.Proxies
 {
   public class GracefulWebRequest
   {
+    /// <summary>
+    /// If there is no provided LOG_MAX_CHAR env variable, then we will default to this
+    /// </summary>
+    private const int DefaultLogMaxChar = 1000;
+
     private readonly ILogger log;
     private readonly int logMaxChar;
 
@@ -24,9 +29,11 @@ namespace VSS.MasterData.Proxies
       log = logger.CreateLogger<GracefulWebRequest>();
       logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR");
 
-      if (logMaxChar == 0)
+      // Config Store may return -1 if the variable doesn't exist
+      if (logMaxChar <= 0)
       {
-        log.LogWarning("Missing environment variable LOG_MAX_CHAR, long web api responses will not be truncated");
+        log.LogInformation($"Missing environment variable LOG_MAX_CHAR, defaulting to {DefaultLogMaxChar}");
+        logMaxChar = DefaultLogMaxChar;
       }
     }
 
@@ -40,6 +47,7 @@ namespace VSS.MasterData.Proxies
       private const int BUFFER_MAX_SIZE = 1024;
       private readonly int logMaxChar;
       private readonly int? timeout;
+      private Stream stream;
 
       private async Task<string> GetStringFromResponseStream(WebResponse response)
       {
@@ -191,6 +199,16 @@ namespace VSS.MasterData.Proxies
         return request;
       }
 
+      /// <summary>
+      /// Request Executor with String Payload
+      /// </summary>
+      /// <param name="endpoint">Endpoint for the request</param>
+      /// <param name="method">Method for the request</param>
+      /// <param name="customHeaders">Any custom headers to be added to the request</param>
+      /// <param name="payloadData">Any data to be used in the body</param>
+      /// <param name="log">Logger</param>
+      /// <param name="logMaxChar">Max chars to log</param>
+      /// <param name="timeout">Timeout in milliseconds</param>
       public RequestExecutor(string endpoint, string method, IDictionary<string, string> customHeaders,
         string payloadData, ILogger log, int logMaxChar, int? timeout)
       {
@@ -203,6 +221,16 @@ namespace VSS.MasterData.Proxies
         this.log = log;
         this.logMaxChar = logMaxChar;
         this.timeout = timeout;
+      }
+
+      /// <summary>
+      /// Request Executor with Stream payload
+      /// </summary>
+      /// <param name="stream">Stream to data for the body content</param>
+      public RequestExecutor(string endpoint, string method, IDictionary<string, string> customHeaders,
+        Stream stream, ILogger log, int logMaxChar, int? timeout) : this(endpoint, method, customHeaders, string.Empty, log, logMaxChar, timeout)
+      {
+        this.stream = stream;
       }
 
       /// <summary>
@@ -232,7 +260,7 @@ namespace VSS.MasterData.Proxies
       /// <returns>StreamContent to the response if successful, otherwise null</returns>
       public async Task<StreamContent> ExecuteActualStreamContentRequest()
       {
-        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, null, timeout);
+        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, stream, timeout);
 
         WebResponse response = null;
 
@@ -430,6 +458,7 @@ namespace VSS.MasterData.Proxies
         method,
         customHeaders,
         payloadData,
+        null,
         timeout,
         retries,
         suppressExceptionLogging);
@@ -450,16 +479,21 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">The method.</param>
     /// <param name="customHeaders">The custom headers.</param>
     /// <param name="payloadData">The payload data.</param>
+    /// <param name="payloadStream">Stream to payload data, will be used instead of payloadData if set</param>
     /// <param name="timeout">Optional timeout in millisecs for the request</param>
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <returns>A stream content representing the result returned from the endpoint if successful, otherwise null</returns>
     public async Task<StreamContent> ExecuteRequestAsStreamContent(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null, string payloadData = null,
+      IDictionary<string, string> customHeaders = null, string payloadData = null, Stream payloadStream = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} payloadData {payloadData.Truncate(logMaxChar)}");
+        $"ExecuteRequest() Stream: endpoint {endpoint} " +
+        $"method {method}, " +
+        $"customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} " +
+        $"payloadData {payloadData.Truncate(logMaxChar)} " +
+        $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}" );
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -467,7 +501,11 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar, timeout);
+
+          var executor = payloadStream == null
+            ? new RequestExecutor(endpoint, method, customHeaders, payloadData, log, logMaxChar, timeout)
+            : new RequestExecutor(endpoint, method, customHeaders, payloadStream, log, logMaxChar, timeout);
+
           return await executor.ExecuteActualStreamContentRequest();
         });
 

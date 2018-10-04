@@ -55,17 +55,18 @@ namespace VSS.Productivity3D.Models.ResultHandling
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static PassCountDetailedResult Create(TargetPassCountRange constantTargetPassCountRange, bool isTargetPassCountConstant, double[] percents, double totalArea)
+    /// <param name="constantTargetPassCountRange"></param>
+    /// <param name="isTargetPassCountConstant"></param>
+    /// <param name="percents"></param>
+    /// <param name="totalArea"></param>
+    public PassCountDetailedResult(TargetPassCountRange constantTargetPassCountRange, bool isTargetPassCountConstant, double[] percents, double totalArea)
     {
-      return new PassCountDetailedResult
-      {
-        ConstantTargetPassCountRange = constantTargetPassCountRange,
-        IsTargetPassCountConstant = isTargetPassCountConstant,
-        Percents = percents,
-        TotalCoverageArea = totalArea
-      };
+      ConstantTargetPassCountRange = constantTargetPassCountRange;
+      IsTargetPassCountConstant = isTargetPassCountConstant;
+      Percents = percents;
+      TotalCoverageArea = totalArea;
     }
     
     /// <summary>
@@ -75,7 +76,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     public override string ToString()
     {
       return
-        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.min}, {this.ConstantTargetPassCountRange.max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percents:{string.Join("%, ", this.Percents) + "%"}";
+        $"constantTargetPassCountRange:({this.ConstantTargetPassCountRange.Min}, {this.ConstantTargetPassCountRange.Max}), isTargetPassCountConstant:{this.IsTargetPassCountConstant}, percents:{string.Join("%, ", this.Percents) + "%"}";
     }
   }
 }

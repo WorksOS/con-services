@@ -1,7 +1,11 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using System.Text;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 
 // Created in 2012 by Jakob Krarup (www.xnafan.net).
 // Use, alter and redistribute this code freely,
@@ -9,7 +13,6 @@ using System.Text;
 
 namespace XnaFan.ImageComparison.Netcore
 {
-
     /// <summary>
     /// A class which facilitates working with RGB histograms
     /// It encapsulates a Bitmap and lets you get information about the Bitmap
@@ -34,9 +37,9 @@ namespace XnaFan.ImageComparison.Netcore
         /// <summary>
         /// The bitmap to get histogram info for
         /// </summary>
-        public Bitmap Bitmap { get; private set; }
+        public Image<Rgba32> Bitmap { get; private set; }
 
-        public Histogram(Bitmap bitmap)
+        public Histogram(Image<Rgba32> bitmap)
         {
             Bitmap = bitmap;
             Red = new byte[256];
@@ -49,7 +52,7 @@ namespace XnaFan.ImageComparison.Netcore
         /// Constructs a new Histogram from a file, given its path
         /// </summary>
         /// <param name="filePath">The path to the image to work with</param>
-        public Histogram(string filePath) : this((Bitmap)Image.FromFile(filePath)) { }
+        public Histogram(string filePath) : this(Image.Load<Rgba32>(filePath)) { }
 
 
         /// <summary>
@@ -57,13 +60,13 @@ namespace XnaFan.ImageComparison.Netcore
         /// </summary>
         private void CalculateHistogram()
         {
-            Bitmap newBmp = (Bitmap)this.Bitmap.Resize(16, 16);
-            Color c;
+            Image<Rgba32> newBmp = (Image<Rgba32>)this.Bitmap.Resize(16, 16);
+            Rgba32 c;
             for (int x = 0; x < newBmp.Width; x++)
             {
                 for (int y = 0; y < newBmp.Height; y++)
                 {
-                    c = newBmp.GetPixel(x, y);
+                    c = newBmp[x,y];
                     Red[c.R]++;
                     Green[c.G]++;
                     Blue[c.B]++;
@@ -72,14 +75,18 @@ namespace XnaFan.ImageComparison.Netcore
             newBmp.Dispose();
         }
 
-        static readonly Pen[] p = new Pen[] { Pens.Red, Pens.Green, Pens.Blue };
+      static readonly Pen<Rgba32>[] p = { Graphics.RedPen, Graphics.GreenPen, Graphics.BluePen };
+      static readonly string[] penNames = { "Red", "Green", "Blue" };
+
+      private static readonly Font smallCaptionFont =
+        SystemFonts.CreateFont("Microsoft Sans Serif", 11f, FontStyle.Regular);
 
 
-        /// <summary>
-        /// Gets a bitmap with the RGB histograms
-        /// </summary>
-        /// <returns>Three histograms for R, G and B values in the Histogram</returns>
-        public Bitmap Visualize()
+    /// <summary>
+    /// Gets a bitmap with the RGB histograms
+    /// </summary>
+    /// <returns>Three histograms for R, G and B values in the Histogram</returns>
+    public Image<Rgba32> Visualize()
         {
             int oneColorHeight = 100;
             int margin = 10;
@@ -88,26 +95,34 @@ namespace XnaFan.ImageComparison.Netcore
             byte[][] values = new byte[][] { Red, Green, Blue };
 
 
-            Bitmap histogramBitmap = new Bitmap(276, oneColorHeight * 3 + margin * 4);
-            Graphics g = Graphics.FromImage(histogramBitmap);
-            g.FillRectangle(Brushes.White, 0, 0, histogramBitmap.Width, histogramBitmap.Height);
+            Image<Rgba32> histogramBitmap = new Image<Rgba32>(276, oneColorHeight * 3 + margin * 4);
+            ///Graphics g = Graphics.FromImage(histogramBitmap);
+            var rect = new RectangleF(0, 0, histogramBitmap.Width, histogramBitmap.Height);
+            histogramBitmap.Mutate(ctx => ctx.Fill(Rgba32.White, rect));
             int yOffset = margin + oneColorHeight;
 
             for (int i = 0; i < 256; i++)
             {
                 for (int color = 0; color < 3; color++)
                 {
-                    g.DrawLine(p[color], margin + i, yOffset * (color + 1), margin + i, yOffset * (color + 1) - (values[color][i] / maxValues[color]) * oneColorHeight);
+                  PointF[] points =
+                  {
+                    new PointF(margin + i, yOffset * (color + 1)),
+                    new PointF(margin + i, yOffset * (color + 1) - (values[color][i] / maxValues[color]) * oneColorHeight)
+                  };
+                  histogramBitmap.Mutate(ctx => ctx.DrawLines(p[color], points));
                 }
             }
 
             for (int i = 0; i < 3; i++)
             {
-                g.DrawString(p[i].Color.ToKnownColor() + ", max value: " + maxValues[i], SystemFonts.SmallCaptionFont, Brushes.Silver, margin + 11, yOffset * i + margin + margin + 1);
-                g.DrawString(p[i].Color.ToKnownColor() + ", max value: " + maxValues[i], SystemFonts.SmallCaptionFont, Brushes.Black, margin + 10, yOffset * i + margin + margin);
-                g.DrawRectangle(p[i], margin, yOffset * i + margin, 256, oneColorHeight);
+              var point = new PointF(margin + 11, yOffset * i + margin + margin + 1);
+              histogramBitmap.Mutate(ctx => ctx.DrawText(penNames[i] + ", max value: " + maxValues[i], smallCaptionFont, Rgba32.Silver, point));
+              point = new PointF(margin + 10, yOffset * i + margin + margin);
+              histogramBitmap.Mutate(ctx => ctx.DrawText(penNames[i] + ", max value: " + maxValues[i], smallCaptionFont, Rgba32.Black, point));
+              rect = new RectangleF(margin, yOffset * i + margin, 256, oneColorHeight);
+              histogramBitmap.Mutate(ctx => ctx.Draw(p[i], rect));
             }
-            g.Dispose();
 
             return histogramBitmap;
         }

@@ -1,40 +1,29 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using System.Linq;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 
 namespace XnaFan.ImageComparison.Netcore
 {
     public static class ExtensionMethods
     {
-
-
         //the font to use for the DifferenceImages
-        private static readonly Font DefaultFont = new Font("Arial", 8);
+        private static readonly Font DefaultFont = SystemFonts.CreateFont(SystemFonts.Collection.Families.First().Name, 6);
 
         //the brushes to use for the DifferenceImages
-        private static Brush[] brushes = new Brush[256];
+        private static Rgba32[] brushes = new Rgba32[256];
 
         //Create the brushes in varying intensities
         static ExtensionMethods()
         {
-            for (int i = 0; i < 256; i++)
-            {
-                brushes[i] = new SolidBrush(Color.FromArgb(255, i, i / 3, i / 2));
-            }
+          for (int i = 0; i < 256; i++)
+          {
+            brushes[i] = new Rgba32(i, i / 3, i / 2, 255);
+          }
         }
-
-
-        //the colormatrix needed to grayscale an image
-        //http://www.switchonthecode.com/tutorials/csharp-tutorial-convert-a-color-image-to-grayscale
-        static readonly ColorMatrix ColorMatrix = new ColorMatrix(new float[][] 
-        {
-            new float[] {.3f, .3f, .3f, 0, 0},
-            new float[] {.59f, .59f, .59f, 0, 0},
-            new float[] {.11f, .11f, .11f, 0, 0},
-            new float[] {0, 0, 0, 1, 0},
-            new float[] {0, 0, 0, 0, 1}
-        });
 
         /// <summary>
         /// Gets the difference between two images as a percentage
@@ -43,7 +32,7 @@ namespace XnaFan.ImageComparison.Netcore
         /// <param name="img2">The image to compare to</param>
         /// <param name="threshold">How big a difference (out of 255) will be ignored - the default is 3.</param>
         /// <returns>The difference between the two images as a percentage</returns>
-        public static float PercentageDifference(this Image img1, Image img2, byte threshold = 3)
+        public static float PercentageDifference(this Image<Rgba32> img1, Image<Rgba32> img2, byte threshold = 3)
         {
             byte[,] differences = img1.GetDifferences(img2);
 
@@ -64,7 +53,7 @@ namespace XnaFan.ImageComparison.Netcore
         /// <param name="img1">The first image to compare</param>
         /// <param name="img2">The second image to compare</param>
         /// <returns>The difference between the images' normalized histograms</returns>
-        public static float BhattacharyyaDifference(this Image img1, Image img2)
+        public static float BhattacharyyaDifference(this Image<Rgba32> img1, Image<Rgba32> img2)
         {
             byte[,] img1GrayscaleValues = img1.GetGrayScaleValues();
             byte[,] img2GrayscaleValues = img2.GetGrayScaleValues();
@@ -123,68 +112,85 @@ namespace XnaFan.ImageComparison.Netcore
         /// A false value would still have differences of 255 as bright pink resulting in the 12 difference still being very dark.</param>
         /// <param name="percentages">Whether to write percentages in each of the 255 squares (true) or the absolute value (false)</param>
         /// <returns>an image which displays the differences between two images</returns>
-        public static Bitmap GetDifferenceImage(this Image img1, Image img2, bool adjustColorSchemeToMaxDifferenceFound = false, bool absoluteText = false)
+        public static Image<Rgba32> GetDifferenceImage(this Image<Rgba32> img1, Image<Rgba32> img2, bool adjustColorSchemeToMaxDifferenceFound = false, bool absoluteText = false)
         {
             //create a 16x16 tiles image with information about how much the two images differ
             int cellsize = 16;  //each tile is 16 pixels wide and high
-            Bitmap bmp = new Bitmap(16 * cellsize + 1, 16 * cellsize + 1); //16 blocks * 16 pixels + a borderpixel at left/bottom
+            Image<Rgba32> bmp = new Image<Rgba32>(16 * cellsize + 1, 16 * cellsize + 1); //16 blocks * 16 pixels + a borderpixel at left/bottom
+ 
+            var rect = new RectangleF(0, 0, bmp.Width, bmp.Height);
+            bmp.Mutate(ctx => ctx.Fill(Rgba32.Black, rect));
+            byte[,] differences = img1.GetDifferences(img2);
+            byte maxDifference = 255;
 
-            using (Graphics g = Graphics.FromImage(bmp))
+            //if wanted - adjust the color scheme, by finding the new maximum difference
+            if (adjustColorSchemeToMaxDifferenceFound)
             {
-                g.FillRectangle(Brushes.Black, 0, 0, bmp.Width, bmp.Height);
-                byte[,] differences = img1.GetDifferences(img2);
-                byte maxDifference = 255;
-
-                //if wanted - adjust the color scheme, by finding the new maximum difference
-                if (adjustColorSchemeToMaxDifferenceFound)
+                maxDifference = 0;
+                foreach (byte b in differences)
                 {
-                    maxDifference = 0;
-                    foreach (byte b in differences)
+                    if (b > maxDifference)
                     {
-                        if (b > maxDifference)
-                        {
-                            maxDifference = b;
-                        }
-                    }
-
-                    if (maxDifference == 0)
-                    {
-                        maxDifference = 1;
+                        maxDifference = b;
                     }
                 }
 
-                DrawDifferencesToBitmap(absoluteText, cellsize, g, differences, maxDifference);
+                if (maxDifference == 0)
+                {
+                    maxDifference = 1;
+                }
             }
+
+            DrawDifferencesToBitmap(absoluteText, cellsize, bmp, differences, maxDifference);
+            
             return bmp;
         }
 
-        private static void DrawDifferencesToBitmap(bool absoluteText, int cellsize, Graphics g, byte[,] differences, byte maxDifference)
+        private static void DrawDifferencesToBitmap(bool absoluteText, int cellsize, Image<Rgba32> img, byte[,] differences, byte maxDifference)
         {
             for (int y = 0; y < differences.GetLength(1); y++)
             {
-                for (int x = 0; x < differences.GetLength(0); x++)
+              for (int x = 0; x < differences.GetLength(0); x++)
+              {
+                byte cellValue = differences[x, y];
+                string cellText = null;
+
+                if (absoluteText)
                 {
-                    byte cellValue = differences[x, y];
-                    string cellText = null;
-
-                    if (absoluteText)
-                    {
-                        cellText = cellValue.ToString();
-                    }
-                    else
-                    {
-                        cellText = string.Format("{0}%", (int)cellValue);
-                    }
-
-                    float percentageDifference = (float)differences[x, y] / maxDifference;
-                    int colorIndex = (int)(255 * percentageDifference);
-
-                    g.FillRectangle(brushes[colorIndex], x * cellsize, y * cellsize, cellsize, cellsize);
-                    g.DrawRectangle(Pens.Blue, x * cellsize, y * cellsize, cellsize, cellsize);
-                    SizeF size = g.MeasureString(cellText, DefaultFont);
-                    g.DrawString(cellText, DefaultFont, Brushes.Black, x * cellsize + cellsize / 2 - size.Width / 2 + 1, y * cellsize + cellsize / 2 - size.Height / 2 + 1);
-                    g.DrawString(cellText, DefaultFont, Brushes.White, x * cellsize + cellsize / 2 - size.Width / 2, y * cellsize + cellsize / 2 - size.Height / 2);
+                  cellText = cellValue.ToString();
                 }
+                else
+                {
+                  cellText = string.Format("{0}%", (int) cellValue);
+                }
+
+                float percentageDifference = (float) differences[x, y] / maxDifference;
+                int colorIndex = (int) (255 * percentageDifference);
+
+                var rect = new RectangleF(x * cellsize, y * cellsize, cellsize, cellsize);
+                img.Mutate(ctx => ctx.Fill(brushes[colorIndex], rect).Draw(Graphics.BluePen, rect));
+                SizeF size = TextMeasurer.Measure(cellText, new RendererOptions(DefaultFont));
+                PointF point = new PointF((int) (x * cellsize + cellsize / 2 - size.Width / 2 + 1),
+                  (int) (y * cellsize + cellsize / 2 - size.Height / 2 + 1));
+                //Sometimes the string is too long to fit and gives an exception. 
+                //Font reduced from 8 to 6 to lessen chance of it happening but for safety we'll ignore.
+                try
+                {
+                  img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.Black, point));
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                }
+                point = new PointF((int) (x * cellsize + cellsize / 2 - size.Width / 2),
+                  (int) (y * cellsize + cellsize / 2 - size.Height / 2));
+                try
+                {
+                  img.Mutate(ctx => ctx.DrawText(cellText, DefaultFont, Rgba32.White, point));
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                }
+              }
             }
         }
 
@@ -195,10 +201,10 @@ namespace XnaFan.ImageComparison.Netcore
         /// <param name="img1">The first image</param>
         /// <param name="img2">The image to compare with</param>
         /// <returns>the differences between the two images as a doublearray</returns>
-        public static byte[,] GetDifferences(this Image img1, Image img2)
+        public static byte[,] GetDifferences(this Image<Rgba32> img1, Image<Rgba32> img2)
         {
-            Bitmap thisOne = (Bitmap)img1.Resize(16, 16).GetGrayScaleVersion();
-            Bitmap theOtherOne = (Bitmap)img2.Resize(16, 16).GetGrayScaleVersion();
+            Image<Rgba32> thisOne = (Image<Rgba32>)img1.Resize(16, 16).GetGrayScaleVersion();
+            Image<Rgba32> theOtherOne = (Image<Rgba32>)img2.Resize(16, 16).GetGrayScaleVersion();
             byte[,] differences = new byte[16, 16];
             byte[,] firstGray = thisOne.GetGrayScaleValues();
             byte[,] secondGray = theOtherOne.GetGrayScaleValues();
@@ -220,9 +226,9 @@ namespace XnaFan.ImageComparison.Netcore
         /// </summary>
         /// <param name="img">The image to get the lightness for</param>
         /// <returns>A doublearray (16x16) containing the lightness of the 256 sections</returns>
-        public static byte[,] GetGrayScaleValues(this Image img)
+        public static byte[,] GetGrayScaleValues(this Image<Rgba32> img)
         {
-            using (Bitmap thisOne = (Bitmap)img.Resize(16, 16).GetGrayScaleVersion())
+            using (Image<Rgba32> thisOne = (Image<Rgba32>)img.Resize(16, 16).GetGrayScaleVersion())
             {
                 byte[,] grayScale = new byte[16, 16];
 
@@ -230,7 +236,7 @@ namespace XnaFan.ImageComparison.Netcore
                 {
                     for (int x = 0; x < 16; x++)
                     {
-                        grayScale[x, y] = (byte)Math.Abs(thisOne.GetPixel(x, y).R);
+                        grayScale[x, y] = (byte)Math.Abs(thisOne[x,y].R);
                     }
                 }
                 return grayScale;
@@ -243,28 +249,12 @@ namespace XnaFan.ImageComparison.Netcore
         /// </summary>
         /// <param name="original">The image to grayscale</param>
         /// <returns>A grayscale version of the image</returns>
-        public static Image GetGrayScaleVersion(this Image original)
+        public static Image<Rgba32> GetGrayScaleVersion(this Image<Rgba32> original)
         {
-            //http://www.switchonthecode.com/tutorials/csharp-tutorial-convert-a-color-image-to-grayscale
-            //create a blank bitmap the same size as original
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
-
-            //get a graphics object from the new image
-            using (Graphics g = Graphics.FromImage(newBitmap))
-            {
-                //create some image attributes
-                ImageAttributes attributes = new ImageAttributes();
-
-                //set the color matrix attribute
-                attributes.SetColorMatrix(ColorMatrix);
-
-                //draw the original image on the new image
-                //using the grayscale color matrix
-                g.DrawImage(original, new Rectangle(0, 0, original.Width, original.Height),
-                   0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
-            }
+            Image<Rgba32> newBitmap = new Image<Rgba32>(original.Width, original.Height);
+            newBitmap.Mutate(ctx => ctx.DrawImage(original, 1f));
+            newBitmap.Mutate(ctx => ctx.Grayscale());
             return newBitmap;
-
         }
 
         /// <summary>
@@ -274,17 +264,10 @@ namespace XnaFan.ImageComparison.Netcore
         /// <param name="newWidth">The new width in pixels</param>
         /// <param name="newHeight">The new height in pixels</param>
         /// <returns>A resized version of the original image</returns>
-        public static Image Resize(this Image originalImage, int newWidth, int newHeight)
+        public static Image<Rgba32> Resize(this Image<Rgba32> originalImage, int newWidth, int newHeight)
         {
-            Image smallVersion = new Bitmap(newWidth, newHeight);
-            using (Graphics g = Graphics.FromImage(smallVersion))
-            {
-                g.SmoothingMode = SmoothingMode.HighQuality;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                g.DrawImage(originalImage, 0, 0, newWidth, newHeight);
-            }
-
+            Image<Rgba32> smallVersion = originalImage.Clone();
+            smallVersion.Mutate(ctx => ctx.Resize(newWidth, newHeight));           
             return smallVersion;
         }
 
@@ -311,7 +294,7 @@ namespace XnaFan.ImageComparison.Netcore
         /// </summary>
         /// <param name="bmp">The bitmap to get the histogram for</param>
         /// <returns>A bitmap with the histogram for R, G and B values</returns>
-        public static Bitmap GetRgbHistogramBitmap(this Bitmap bmp)
+        public static Image<Rgba32> GetRgbHistogramBitmap(this Image<Rgba32> bmp)
         {
             return new Histogram(bmp).Visualize();
         }
@@ -321,7 +304,7 @@ namespace XnaFan.ImageComparison.Netcore
         /// </summary>
         /// <param name="bmp">The bitmap to get the histogram for</param>
         /// <returns>A histogram for the bitmap</returns>
-        public static Histogram GetRgbHistogram(this Bitmap bmp)
+        public static Histogram GetRgbHistogram(this Image<Rgba32> bmp)
         {
             return new Histogram(bmp);
         }

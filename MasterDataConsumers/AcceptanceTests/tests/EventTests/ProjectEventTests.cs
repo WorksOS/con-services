@@ -93,7 +93,7 @@ namespace EventTests
       var projectId = testSupport.SetLegacyProjectId();
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
-      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("300d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
         "| EventType          | EventDate   | ProjectID   | ProjectUID      | ProjectName     | ProjectType            | ProjectTimezone            | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
@@ -119,7 +119,7 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject8";
       DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
-      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("300d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
          "| EventType          | EventDate   | ProjectID   | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
@@ -197,7 +197,7 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 12";
       DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
-      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("300d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
         " | EventType          | EventDate   | ProjectID   | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
@@ -223,7 +223,7 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 13";
       DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
-      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("200d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 13", "Create one project, then delete it");
       var eventArray = new[] {
          "| EventType          | EventDate   | ProjectID   | ProjectUID      | ProjectName    | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
@@ -250,7 +250,7 @@ namespace EventTests
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 14";
       DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
-      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("300d+00:00:00",testSupport.FirstEventDate);
       var customerEventArray = new[] {
              "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
             $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerGuid} |"};
@@ -294,7 +294,7 @@ namespace EventTests
       var userGuid = Guid.NewGuid();
       string projectName = $"Test Project 15";
       DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
-      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("300d+00:00:00",testSupport.FirstEventDate);
 
 
       var geofenceEventArray = new[] {
