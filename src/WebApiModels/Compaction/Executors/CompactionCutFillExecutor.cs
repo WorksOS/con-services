@@ -22,35 +22,44 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ContractExecutionResult result;
-      CutFillDetailsRequest request = item as CutFillDetailsRequest;
-
-      var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
-      var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
-      var liftBuildSettings =
-        RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
-
-      bool success = raptorClient.GetCutFillDetails(request.ProjectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
-        new TCutFillSettings
-        {
-          Offsets = request.CutFillTolerances,
-          DesignDescriptor = designDescriptor
-        },
-        filter,
-        liftBuildSettings,
-        out var cutFillDetails);
-
-      if (success)
+      try
       {
-        result = new CompactionCutFillDetailedResult(cutFillDetails.Percents);
-      }
-      else
-      {
+        CutFillDetailsRequest request = item as CutFillDetailsRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException<CutFillDetailsRequest>();
+
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL"), out var useTrexGateway);
+
+        if (useTrexGateway)
+          return trexCompactionDataProxy.SendCutFillDetailsRequest(request, customHeaders).Result;
+
+        var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
+        var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
+        var liftBuildSettings =
+          RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
+
+        bool success = raptorClient.GetCutFillDetails(request.ProjectId ?? -1,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
+          new TCutFillSettings
+          {
+            Offsets = request.CutFillTolerances,
+            DesignDescriptor = designDescriptor
+          },
+          filter,
+          liftBuildSettings,
+          out var cutFillDetails);
+
+        if (success)
+          return new CompactionCutFillDetailedResult(cutFillDetails.Percents);
+
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           "Failed to get requested cut-fill details data"));
       }
-
-      return result;
+      finally
+      {
+        ContractExecutionStates.ClearDynamic();
+      }
     }
   }
 }

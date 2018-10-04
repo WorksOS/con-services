@@ -62,7 +62,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         DisplayMode.CCVPercentSummary,
         DisplayMode.MDPPercentSummary,
         DisplayMode.TargetSpeedSummary,
-        DisplayMode.CMVChange
+        DisplayMode.CMVChange,
+        DisplayMode.TemperatureDetail
       };
 
       DetailPalette cmvDetailPalette = null;
@@ -74,23 +75,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       SummaryPalette mdpSummaryPalette = null;
       DetailPalette cmvPercentChangePalette = null;
       SummaryPalette speedSummaryPalette = null;
-
-      //This is temporary until temperature details implemented in Raptor.
-      DetailPalette temperatureDetailPalette = DetailPalette.CreateDetailPalette(
-        new List<ColorValue>
-        {
-          ColorValue.CreateColorValue(0x2D5783, 70),
-          ColorValue.CreateColorValue(0x439BDC, 80),
-          ColorValue.CreateColorValue(0xBEDFF1, 90),
-          ColorValue.CreateColorValue(0xDCEEC7, 100),
-          ColorValue.CreateColorValue(0x9DCE67, 110),
-          ColorValue.CreateColorValue(0x6BA03E, 120),
-          ColorValue.CreateColorValue(0x3A6B25, 130),
-          ColorValue.CreateColorValue(0xF6CED3, 140),
-          ColorValue.CreateColorValue(0xD57A7C, 150),
-          ColorValue.CreateColorValue(0xC13037, 160)
-        },
-        null, null);
+      DetailPalette temperatureDetailPalette = null;
 
       foreach (var mode in modes)
       {
@@ -155,6 +140,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             }
             cmvPercentChangePalette = DetailPalette.CreateDetailPalette(colorValues,
               compactionPalette[compactionPalette.Count - 1].Color, compactionPalette[0].Color);
+            break;
+          case DisplayMode.TemperatureDetail:
+            colorValues = new List<ColorValue>();
+            for (int i = 0; i < compactionPalette.Count; i++)
+            {
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
+                compactionPalette[i].Value / 10));//Raptor Temperature is 10ths but return actual Temperature to UI
+            }
+            temperatureDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
         }
 

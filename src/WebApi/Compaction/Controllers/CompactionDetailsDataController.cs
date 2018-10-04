@@ -15,11 +15,11 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -33,8 +33,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionDetailsDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
-      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory)
+    public CompactionDetailsDataController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+      : base(raptorClient, configStore, fileListProxy, settingsManager, requestFactory, trexCompactionDataProxy)
     { }
 
     /// <summary>
@@ -61,12 +61,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       double[] cmvChangeSummarySettings = this.SettingsManager.CompactionCmvPercentChangeSettings(projectSettings);
       var projectId = await GetLegacyProjectId(projectUid);
 
-      CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
-        projectId, null, liftSettings, filter, -1, cmvChangeSummarySettings);
+      CMVChangeSummaryRequest request = new CMVChangeSummaryRequest(
+        projectId, projectUid, null, liftSettings, filter, -1, cmvChangeSummarySettings);
       request.Validate();
       try
       {
-        var result = RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(LoggerFactory, RaptorClient)
+        var result = RequestExecutorContainerFactory
+          .Build<CMVChangeSummaryExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(request) as CMVChangeSummaryResult;
         var returnResult = new CompactionCmvPercentChangeResult(result);
         Log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
@@ -108,10 +109,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient)
+        var result = RequestExecutorContainerFactory
+          .Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(request) as CMVDetailedResult;
 
-        var returnResult = new CompactionCmvDetailedResult(result, null, null);
+        var returnResult = new CompactionCmvDetailedResult(result, null);
         Log.LogInformation("GetCmvDetailsTargets result: " + JsonConvert.SerializeObject(returnResult));
 
         return returnResult;
@@ -148,14 +150,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result1 = RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient)
+        var result1 = RequestExecutorContainerFactory
+          .Build<DetailedCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy:TRexCompactionDataProxy, customHeaders:CustomHeaders)
           .Process(request) as CMVDetailedResult;
 
-        var result2 = RequestExecutorContainerFactory
-          .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient)
-          .Process(request) as CMVSummaryResult;
+        if (result1 != null && result1.ConstantTargetCmv == -1)
+        {
+          var result2 = RequestExecutorContainerFactory
+            .Build<SummaryCMVExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(request) as CMVSummaryResult;
 
-        var returnResult = new CompactionCmvDetailedResult(result1, result2, request.cmvSettings);
+          if (result2 != null && result2.HasData())
+          {
+            result1.ConstantTargetCmv = result2.ConstantTargetCmv;
+            result1.IsTargetCmvConstant = result2.IsTargetCmvConstant;
+          }
+        }
+
+        var returnResult = new CompactionCmvDetailedResult(result1, request.CmvSettings);
 
         Log.LogInformation("GetCmvDetails result: " + JsonConvert.SerializeObject(returnResult));
 
@@ -194,7 +206,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainerFactory
-                     .Build<DetailedPassCountExecutor>(LoggerFactory, RaptorClient)
+                     .Build<DetailedPassCountExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .Process(request) as PassCountDetailedResult;
 
         var returnResult = new CompactionPassCountDetailedResult(result);
@@ -237,6 +249,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await GetLegacyProjectId(projectUid);
 
       var cutFillRequest = RequestFactory.Create<CutFillRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -248,8 +261,39 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionCutFillExecutor>(LoggerFactory, RaptorClient)
+          .Build<CompactionCutFillExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(cutFillRequest) as CompactionCutFillDetailedResult);
+    }
+
+    /// <summary>
+    /// Get temperature details from Raptor for the specified project and date range.
+    /// </summary>
+    [Route("api/v2/temperature/details")]
+    [HttpGet]
+    public async Task<CompactionTemperatureDetailResult> GetTemperatureDetails(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? filterUid)
+    {
+      Log.LogInformation("GetTemperatureDetails: " + Request.QueryString);
+
+      var projectSettings = await GetProjectSettingsTargets(projectUid);
+      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var projectId = await GetLegacyProjectId(projectUid);
+
+      var temperatureRequest = RequestFactory.Create<TemperatureRequestHelper>(r => r
+          .ProjectId(projectId)
+          .Headers(this.CustomHeaders)
+          .ProjectSettings(projectSettings)
+          .Filter(filter))
+        .CreateTemperatureDetailsRequest();
+
+      temperatureRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainerFactory
+          .Build<CompactionTemperatureDetailsExecutor>(LoggerFactory, RaptorClient)
+          .Process(temperatureRequest) as CompactionTemperatureDetailResult);
+
     }
   }
 }

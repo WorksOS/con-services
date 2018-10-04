@@ -166,6 +166,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Map3dTile.feature</DependentUpon>
     </Compile>
+    <Compile Include="Models\CompactionTemperatureDetailResult.cs" />
     <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
     <Compile Include="GetMachineDesigns.feature.cs">
       <AutoGen>True</AutoGen>

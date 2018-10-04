@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using TechTalk.SpecFlow;
@@ -10,13 +9,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class CompactionTemperatureSteps : BaseCompactionSteps
   {
     private Getter<CompactionTemperatureSummaryResult> temperatureSummaryRequester;
+    private Getter<CompactionTemperatureDetailResult> temperatureDetailsRequester;
+
     [Given(@"the result file ""(.*)""")]
     public void GivenTheResultFile(string resultFileName)
     {
       switch (operation)
       {
         case "TemperatureSummary": temperatureSummaryRequester = new Getter<CompactionTemperatureSummaryResult>(url, resultFileName); break;
-        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        case "TemperatureDetails": temperatureDetailsRequester = new Getter<CompactionTemperatureDetailResult>(url, resultFileName); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
@@ -27,7 +28,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       switch (operation)
       {
         case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
-        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        case "TemperatureDetails": temperatureDetailsRequester.QueryString.Add("ProjectUid", projectUid); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
@@ -38,7 +39,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       switch (operation)
       {
         case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("filterUid", filterUid); break;
-        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        case "TemperatureDetails": temperatureDetailsRequester.QueryString.Add("filterUid", filterUid); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
@@ -49,7 +50,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       switch (operation)
       {
         case "TemperatureSummary": Assert.AreEqual(temperatureSummaryRequester.ResponseRepo[resultName], temperatureSummaryRequester.CurrentResponse); break;
-        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        case "TemperatureDetails": Assert.AreEqual(temperatureDetailsRequester.ResponseRepo[resultName], temperatureDetailsRequester.CurrentResponse); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }
@@ -60,7 +61,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       switch (operation)
       {
         case "TemperatureSummary": temperatureSummaryRequester.DoValidRequest(url); break;
-        case "TemperatureDetails": ScenarioContext.Current.Pending(); break;
+        case "TemperatureDetails": temperatureDetailsRequester.DoValidRequest(url); break;
         default: Assert.Fail(TEST_FAIL_MESSAGE); break;
       }
     }

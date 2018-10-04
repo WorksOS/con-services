@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// An identifier from the caller. 
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; protected set; }
+    public Guid? CallId { get; protected set; }
 
     /// <summary>
     /// Setting and configuration values related to processing pass count related queries
@@ -37,46 +37,47 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; protected set; }
+    public FilterResult Filter { get; protected set; }
 
     /// <summary>
     /// The filter ID to used in the request.
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
-    public long filterID { get; protected set; }
+    public long FilterID { get; protected set; }
 
     /// <summary>
     /// An override start date that applies to the operation in conjunction with any date range specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideStartUTC", Required = Required.Default)]
-    public DateTime? overrideStartUTC { get; protected set; }
+    public DateTime? OverrideStartUTC { get; protected set; }
 
     /// <summary>
     /// An override end date that applies to the operation in conjunction with any date range specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideEndUTC", Required = Required.Default)]
-    public DateTime? overrideEndUTC { get; protected set; }
+    public DateTime? OverrideEndUTC { get; protected set; }
 
     /// <summary>
     /// An override set of asset IDs that applies to the operation in conjunction with any asset IDs specified in a filter.
     /// </summary>
     [JsonProperty(PropertyName = "overrideAssetIds", Required = Required.Default)]
-    public List<long> overrideAssetIds { get; protected set; }
+    public List<long> OverrideAssetIds { get; protected set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor.
     /// </summary>
     protected PassCounts()
     {}
 
     /// <summary>
-    /// Create instance of CreatePassCountsRequest
+    /// Overload constructor with parameters.
     /// </summary>
-    public static PassCounts CreatePassCountsRequest(
+    public PassCounts(
         long projectId,
+        Guid? projectUid,
         Guid? callId,
         PassCountSettings passCountSettings,
         LiftBuildSettings liftBuildSettings,
@@ -87,17 +88,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         List<long> overrideAssetIds
         )
     {
-      return new PassCounts
-             {
-                 ProjectId = projectId,
-                 passCountSettings = passCountSettings,
-                 liftBuildSettings = liftBuildSettings,
-                 filter = filter,
-                 filterID = filterID,
-                 overrideStartUTC = overrideStartUTC,
-                 overrideEndUTC = overrideEndUTC,
-                 overrideAssetIds = overrideAssetIds
-             };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
+      this.passCountSettings = passCountSettings;
+      this.liftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterID = filterID;
+      OverrideStartUTC = overrideStartUTC;
+      OverrideEndUTC = overrideEndUTC;
+      OverrideAssetIds = overrideAssetIds;
     }
     
     /// <summary>
@@ -110,14 +109,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
       passCountSettings?.Validate();
       liftBuildSettings?.Validate();
 
-      if (filter != null)
-        filter.Validate();
+      if (Filter != null)
+        Filter.Validate();
 
-      if (overrideStartUTC.HasValue || overrideEndUTC.HasValue)
+      if (OverrideStartUTC.HasValue || OverrideEndUTC.HasValue)
       {
-        if (overrideStartUTC.HasValue && overrideEndUTC.HasValue)
+        if (OverrideStartUTC.HasValue && OverrideEndUTC.HasValue)
         {
-          if (overrideStartUTC.Value > overrideEndUTC.Value)
+          if (OverrideStartUTC.Value > OverrideEndUTC.Value)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

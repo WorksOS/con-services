@@ -1282,7 +1282,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var result = MockGetCombinedProfile(pdPackager, svPackager, calcType);
 
       Assert.IsNotNull(result, ExecutorFailed);
-      Assert.AreEqual(15, result.results.Count, "Wrong number of profiles");
+      Assert.AreEqual(CompactionDataPoint.TOTAL_NUMBER_OF_PROFILES, result.results.Count, "Wrong number of profiles");
 
       //Production data
       var lastPassResult = (from r in result.results where r.type == CompactionDataPoint.LAST_PASS select r).SingleOrDefault();

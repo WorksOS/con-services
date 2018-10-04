@@ -1,7 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApiModels.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {

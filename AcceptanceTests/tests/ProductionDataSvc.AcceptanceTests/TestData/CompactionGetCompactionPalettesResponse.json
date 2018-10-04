@@ -299,44 +299,24 @@
     "temperatureDetailPalette": {
       "colorValues": [
         {
-          "color": 2971523,
-          "value": 70.0
+          "color": 87963,
+          "value": 0.0
         },
         {
-          "color": 4430812,
-          "value": 80.0
-        },
-        {
-          "color": 12509169,
-          "value": 90.0
-        },
-        {
-          "color": 14479047,
+          "color": 9423080,
           "value": 100.0
         },
         {
-          "color": 10341991,
-          "value": 110.0
+          "color": 6594104,
+          "value": 200.0
         },
         {
-          "color": 7053374,
-          "value": 120.0
+          "color": 15628926,
+          "value": 300.0
         },
         {
-          "color": 3828517,
-          "value": 130.0
-        },
-        {
-          "color": 16174803,
-          "value": 140.0
-        },
-        {
-          "color": 13990524,
-          "value": 150.0
-        },
-        {
-          "color": 12660791,
-          "value": 160.0
+          "color": 13959168,
+          "value": 400.0
         }
       ],
       "aboveLastColor": null,

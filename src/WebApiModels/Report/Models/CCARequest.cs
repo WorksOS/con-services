@@ -13,39 +13,45 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// An identifying string from the caller
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; private set; }
+    public Guid? CallId { get; private set; }
 
     /// <summary>
     /// The lift build settings to use in the request.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings LiftBuildSettings { get; private set; }
 
     /// <summary>
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The filter ID to used in the request.
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
-    public long filterID { get; private set; }
+    public long FilterID { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private CCARequest()
     {
     }
 
     /// <summary>
-    /// Create instance of CCARequest
+    /// Overload constructor with parameters.
     /// </summary>
-    public static CCARequest CreateCCARequest(
+    /// <param name="projectID"></param>
+    /// <param name="callId"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="filter"></param>
+    /// <param name="filterID"></param>
+    /// <returns></returns>
+    public CCARequest(
       long projectID,
       Guid? callId,
       LiftBuildSettings liftBuildSettings,
@@ -53,14 +59,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
       long filterID
         )
     {
-      return new CCARequest
-      {
-        ProjectId = projectID,
-        callId = callId,
-        liftBuildSettings = liftBuildSettings,
-        filter = filter,
-        filterID = filterID
-      };
+      ProjectId = projectID;
+      CallId = callId;
+      LiftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterID = filterID;
     }
     
     /// <summary>
@@ -70,8 +73,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     {
       base.Validate();
 
-      liftBuildSettings?.Validate();
-      filter?.Validate();
+      LiftBuildSettings?.Validate();
+      Filter?.Validate();
     }
   }
 }

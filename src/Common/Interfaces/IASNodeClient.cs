@@ -175,6 +175,10 @@ namespace VSS.Productivity3D.Common.Interfaces
       TTemperatureSettings temperatureSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TTemperature temperatureSummary);
 
+    TASNodeErrorStatus GetTemperatureDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+      TTemperatureDetailSettings temperatureDetailsSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+      out TTemperatureDetails temperatureDetails);
+
     /// <summary>
     /// Stores Surveyed Surface data.
     /// </summary>

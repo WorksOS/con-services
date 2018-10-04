@@ -37,6 +37,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         CompactionReportGridRequest request = item as CompactionReportGridRequest;
 
+        if (request == null)
+          ThrowRequestTypeCastException<CompactionReportGridRequest>();
+
         TICFilterSettings raptorFilter =
           RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
 

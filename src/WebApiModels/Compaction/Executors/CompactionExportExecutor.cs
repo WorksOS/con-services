@@ -36,13 +36,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = item as ExportReport;
-        if (request == null)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              $"Conversion from {item.GetType()} to {typeof(ExportReport)} failed"));
-        }
 
+        if (request == null)
+          ThrowRequestTypeCastException<ExportReport>();
+        
         var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
 
         bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,

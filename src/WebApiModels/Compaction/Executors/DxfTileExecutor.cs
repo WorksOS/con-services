@@ -34,9 +34,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-
-
       DxfTileRequest request = item as DxfTileRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException<DxfTileRequest>();
 
       string filespaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 

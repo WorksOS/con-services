@@ -8,7 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
   /// <summary>
   /// The request representation used to request summary Temperature requests.
@@ -19,55 +19,55 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// An identifying string from the caller
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; private set; }
+    public Guid? CallId { get; private set; }
 
     /// <summary>
     /// The various summary and target values to use in preparation of the result
     /// </summary>
     [JsonProperty(PropertyName = "temperatureSettings", Required = Required.Always)]
     [Required]
-    public TemperatureSettings temperatureSettings { get; private set; }
+    public TemperatureSettings TemperatureSettings { get; private set; }
 
     /// <summary>
     /// The lift build settings to use in the request.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings LiftBuildSettings { get; private set; }
 
     /// <summary>
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// The filter ID to used in the request.
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
-    public long filterID { get; private set; }
+    public long FilterID { get; private set; }
 
     /// <summary>
     /// An override start date that applies to the operation in conjunction with any date range specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideStartUTC", Required = Required.Default)]
-    public DateTime? overrideStartUTC { get; private set; }
+    public DateTime? OverrideStartUTC { get; private set; }
 
     /// <summary>
     /// An override end date that applies to the operation in conjunction with any date range specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideEndUTC", Required = Required.Default)]
-    public DateTime? overrideEndUTC { get; private set; }
+    public DateTime? OverrideEndUTC { get; private set; }
 
     /// <summary>
     /// An override set of asset IDs that applies to the operation in conjunction with any asset IDs specified in a filter.
     /// Value may be null
     /// </summary>
     [JsonProperty(PropertyName = "overrideAssetIds", Required = Required.Default)]
-    public List<long> overrideAssetIds { get; private set; }
+    public List<long> OverrideAssetIds { get; private set; }
 
     /// <summary>
     /// Default private constructor.
@@ -76,10 +76,22 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Overload constructor with parameters.
     /// </summary>
-    public static TemperatureRequest CreateTemperatureRequest(
+    /// <param name="projectID"></param>
+    /// <param name="projectUID"></param>
+    /// <param name="callId"></param>
+    /// <param name="temperatureSettings"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="filter"></param>
+    /// <param name="filterID"></param>
+    /// <param name="overrideStartUTC"></param>
+    /// <param name="overrideEndUTC"></param>
+    /// <param name="overrideAssetIds"></param>
+    /// <returns></returns>
+    public TemperatureRequest(
       long projectID,
+      Guid? projectUID,
       Guid? callId,
       TemperatureSettings temperatureSettings,
       LiftBuildSettings liftBuildSettings,
@@ -88,20 +100,18 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       DateTime? overrideStartUTC,
       DateTime? overrideEndUTC,
       List<long> overrideAssetIds
-        )
+      )
     {
-      return new TemperatureRequest
-      {
-        ProjectId = projectID,
-        callId = callId,
-        temperatureSettings = temperatureSettings,
-        liftBuildSettings = liftBuildSettings,
-        filter = filter,
-        filterID = filterID,
-        overrideStartUTC = overrideStartUTC,
-        overrideEndUTC = overrideEndUTC,
-        overrideAssetIds = overrideAssetIds
-      };
+      ProjectId = projectID;
+      ProjectUid = projectUID;
+      CallId = callId;
+      TemperatureSettings = temperatureSettings;
+      LiftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterID = filterID;
+      OverrideStartUTC = overrideStartUTC;
+      OverrideEndUTC = overrideEndUTC;
+      OverrideAssetIds = overrideAssetIds;
     }
 
     /// <summary>
@@ -110,17 +120,17 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     public override void Validate()
     {
       base.Validate();
-      temperatureSettings.Validate();
-      if (liftBuildSettings != null)
-        liftBuildSettings.Validate();
-      if (filter != null)
-        filter.Validate();
+      TemperatureSettings.Validate();
+      if (LiftBuildSettings != null)
+        LiftBuildSettings.Validate();
+      if (Filter != null)
+        Filter.Validate();
 
-      if (overrideStartUTC.HasValue || overrideEndUTC.HasValue)
+      if (OverrideStartUTC.HasValue || OverrideEndUTC.HasValue)
       {
-        if (overrideStartUTC.HasValue && overrideEndUTC.HasValue)
+        if (OverrideStartUTC.HasValue && OverrideEndUTC.HasValue)
         {
-          if (overrideStartUTC.Value > overrideEndUTC.Value)
+          if (OverrideStartUTC.Value > OverrideEndUTC.Value)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

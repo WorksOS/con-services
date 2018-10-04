@@ -8,7 +8,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Validation;
-using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Report.Models
 {
@@ -20,28 +20,28 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     {
       //******************* isCustomCMVTargets = false **************************
       var validator = new DataAnnotationsValidator();
-      CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, null, null, null);
+      CMVRequest request = new CMVRequest(projectId, null, callId, cmvSettings, liftSettings, null, 0, null, null, null);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(request, out results));
 
       //missing project id
-      request = CMVRequest.CreateCMVRequest(-1, callId, cmvSettings, liftSettings, null, 0, null, null, null);
+      request = new CMVRequest(-1, null, callId, cmvSettings, liftSettings, null, 0, null, null, null);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //missing CMV settings
-      request = CMVRequest.CreateCMVRequest(projectId, callId, null, liftSettings, null, 0, null, null, null);
+      request = new CMVRequest(projectId, null, callId, null, liftSettings, null, 0, null, null, null);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //******************* isCustomCMVTargets = true ***************************
-      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
+      request = new CMVRequest(projectId, null, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
       Assert.IsTrue(validator.TryValidate(request, out results));
 
       //missing project id
-      request = CMVRequest.CreateCMVRequest(-1, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
+      request = new CMVRequest(-1, null, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //missing CMV settings
-      request = CMVRequest.CreateCMVRequest(projectId, callId, null, liftSettings, null, 0, null, null, null, true);
+      request = new CMVRequest(projectId, null, callId, null, liftSettings, null, 0, null, null, null, true);
       Assert.IsFalse(validator.TryValidate(request, out results));
     }
 
@@ -49,11 +49,11 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     public void ValidateSuccessTest()
     {
       //******************* isCustomCMVTargets = false **************************
-      CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, null, null, null);
+      CMVRequest request = new CMVRequest(projectId, null, callId, cmvSettings, liftSettings, null, 0, null, null, null);
       request.Validate();
 
       //******************* isCustomCMVTargets = true **************************
-      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
+      request = new CMVRequest(projectId, null, callId, cmvSettingsEx, liftSettings, null, 0, null, null, null, true);
       request.Validate();
     }
 
@@ -62,11 +62,11 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     {
       // override startUTC > override end UTC
       //******************* isCustomCMVTargets = false **************************
-      CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
+      CMVRequest request = new CMVRequest(projectId, null, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
 
       //******************* isCustomCMVTargets = true **************************
-      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null, true);
+      request = new CMVRequest(projectId, null, callId, cmvSettingsEx, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null, true);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
@@ -75,11 +75,11 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     {
       //missing override end UTC
       //******************* isCustomCMVTargets = false **************************
-      CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
+      CMVRequest request = new CMVRequest(projectId, null, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
 
       //******************* isCustomCMVTargets = true **************************
-      request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettingsEx, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null, true);
+      request = new CMVRequest(projectId, null, callId, cmvSettingsEx, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null, true);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 

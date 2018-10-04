@@ -40,6 +40,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       return AutoMapperUtility.Automapper.Map<TemperatureSettings>(ps);
     }
 
+    public double[] CompactionTemperatureDetailsSettings(CompactionProjectSettings ps)
+    {
+      return AutoMapperUtility.Automapper.Map<TemperatureDetailsSettings>(ps).CustomTemperatureDetailsTargets;
+    }
+
     public double[] CompactionCmvPercentChangeSettings(CompactionProjectSettings ps)
     {
       return AutoMapperUtility.Automapper.Map<CmvPercentChangeSettings>(ps).percents;
@@ -274,6 +279,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           palette.Add(new ColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1],
             NO_CCV));
 
+          break;
+        case DisplayMode.TemperatureDetail:
+          var temperatureDetailsSettings = CompactionTemperatureDetailsSettings(projectSettings);
+          var temperatureColors = projectSettingsColors.useDefaultTemperatureDetailsColors.HasValue &&
+                          projectSettingsColors.useDefaultTemperatureDetailsColors.Value
+            ? CompactionProjectSettingsColors.DefaultSettings.temperatureDetailsColors
+            : projectSettingsColors.temperatureDetailsColors;
+
+          for (var i = 0; i < temperatureDetailsSettings.Length; i++)
+          {
+            palette.Add(new ColorPalette(temperatureColors[i], temperatureDetailsSettings[i]));
+          }
           break;
       }
       return palette;

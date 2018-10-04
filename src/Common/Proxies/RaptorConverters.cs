@@ -306,6 +306,14 @@ namespace VSS.Productivity3D.Common.Proxies
             new ColorPalette(cs.machineSpeedTargetColor, 1 ),
             new ColorPalette(cs.machineSpeedMaximumColor, 2 ) };
           break;
+        case DisplayMode.TemperatureDetail:
+          palettes = new List<ColorPalette> {
+            new ColorPalette(0x01579B, 0 ),
+            new ColorPalette(0x8FC8E8, 1000 ),
+            new ColorPalette(0x649E38, 2000 ),
+            new ColorPalette(0xEE7A7E, 3000 ),
+            new ColorPalette(0xD50000, 4000 ) };
+          break;
       }
 
       return palettes;
@@ -367,6 +375,8 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICDisplayMode.icdmCCVChange: return DisplayMode.CMVChange;
         case TICDisplayMode.icdmCCA: return DisplayMode.CCA;
         case TICDisplayMode.icdmCCASummary: return DisplayMode.CCASummary;
+        case TICDisplayMode.icdmTemperatureDetail: return DisplayMode.TemperatureDetail;
+        case TICDisplayMode.icdm3DTerrain: return DisplayMode.Terrain3D;
         case TICDisplayMode.icdm3DDesign: return DisplayMode.Design3D;
         default: throw new Exception($"Unknown TICDisplayMode {Convert.ToInt16(mode)}");
       }
@@ -406,6 +416,8 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.CMVChange: return TICDisplayMode.icdmCCVChange;
         case DisplayMode.CCA: return TICDisplayMode.icdmCCA;
         case DisplayMode.CCASummary: return TICDisplayMode.icdmCCASummary;
+        case DisplayMode.TemperatureDetail: return TICDisplayMode.icdmTemperatureDetail;
+        case DisplayMode.Terrain3D: return TICDisplayMode.icdm3DTerrain;
         case DisplayMode.Design3D: return TICDisplayMode.icdm3DDesign;
         default: throw new Exception($"Unknown DisplayMode {Convert.ToInt16(mode)}");
       }
