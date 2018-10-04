@@ -35,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ignitePersistentImmutableKubeConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
