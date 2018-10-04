@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             SourceLists.MachineDesignNameIDStateEvents.GetStateAtIndex(I, out DateTime dateTime, out machineDesignId);
             if (machineDesignId > -1)
             {
-              string machineDesignName = TargetSiteModel.SiteModelMachineDesigns[machineDesignId];
+              string machineDesignName = TargetSiteModel.SiteModelMachineDesigns[machineDesignId].Name;
 
               if (machineDesignName != null)
               {

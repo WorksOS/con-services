@@ -212,11 +212,32 @@ namespace VSS.TRex.SiteModels
             get => designs != null;
         }
 
-      private SiteModelMachineDesignList siteModelMachineDesigns = new SiteModelMachineDesignList();
       /// <summary>
       /// SiteModelMachineDesigns records all the designs that have been seen in tagfiles for this sitemodel.
       /// </summary>
-      public ISiteModelMachineDesignList SiteModelMachineDesigns { get { return siteModelMachineDesigns; } }
+      private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; }
+    
+      public ISiteModelMachineDesignList SiteModelMachineDesigns
+    {
+        get
+        {
+          if (siteModelMachineDesigns == null)
+          {
+            siteModelMachineDesigns = new SiteModelMachineDesignList
+            {
+              DataModelID = ID
+            };
+            siteModelMachineDesigns.LoadFromPersistentStore();
+          }
+
+          return siteModelMachineDesigns;
+        }
+      }
+
+      public bool SiteModelMachineDesignsLoaded
+    {
+        get => siteModelMachineDesigns != null;
+      }
 
     // Machines contains a list of compactor machines that this site model knows
     // about. Each machine contains a link to the machine hardware ID for the
@@ -290,8 +311,11 @@ namespace VSS.TRex.SiteModels
           machines = originModel.MachinesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachines) != 0
             ? originModel.Machines: null;
 
-          // Machine target values are an extension vector from machines. If the machine have not changed
-          machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
+          siteModelMachineDesigns = originModel.SiteModelMachineDesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineDesigns) != 0
+            ? originModel.SiteModelMachineDesigns : null;
+
+      // Machine target values are an extension vector from machines. If the machine have not changed
+      machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
             ? originModel.MachinesTargetValues
             : null;
 
@@ -459,7 +483,17 @@ namespace VSS.TRex.SiteModels
                  Log.LogError($"Failed to save machine list for site model {ID} to persistent store: {e}");
                  Result = false;
               }
-            }
+
+              try
+              {
+                siteModelMachineDesigns?.SaveToPersistentStore(StorageProxy);
+              }
+              catch (Exception e)
+              {
+                Log.LogError($"Failed to save machine design name list for site model {ID} to persistent store: {e}");
+                Result = false;
+              }
+      }
 
             if (!Result)
             {

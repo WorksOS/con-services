@@ -270,7 +270,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
                             if (Comparison < 1)
                             {
-                                MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()];
+                                MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
 
                                 if (SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0)
                                 {
@@ -343,7 +343,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         Task.SetAggregateModifiedSubgrids(ref WorkingModelUpdateMap);
 
                         // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-                        SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
+                        SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable); 
 
                         // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
                         // All operations within the transaction to integrate the changes into the live model have completed successfully.

@@ -11,6 +11,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     PreserveDesigns = 0x8,
     PreserveSurveyedSurfaces = 0x10,
     PreserveMachines = 0x20,
-    PreserveMachineTargetValues = 0x40
+    PreserveMachineTargetValues = 0x40,
+    PreserveMachineDesigns = 0x80,
   }
 }

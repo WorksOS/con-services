@@ -187,13 +187,13 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         if (DataTime != DateTime.MinValue)
         {
           Value = Value.Trim();
-          var designId = SiteModel.SiteModelMachineDesigns.IndexOf(Value);
-          if (designId == -1)
+          var siteModelMachineDesign = SiteModel.SiteModelMachineDesigns.Locate(Value);
+          if (siteModelMachineDesign == null)
           {
-            designId = SiteModel.SiteModelMachineDesigns.CreateNew(Value);
+            siteModelMachineDesign = SiteModel.SiteModelMachineDesigns.CreateNew(Value);
           }
 
-          MachineTargetValueChangesAggregator.MachineDesignNameIDStateEvents.PutValueAtDate(DataTime, designId);
+          MachineTargetValueChangesAggregator.MachineDesignNameIDStateEvents.PutValueAtDate(DataTime, siteModelMachineDesign.Id);
         }
 
         // Get the current design extent for the newly selected design
