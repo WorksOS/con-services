@@ -9,7 +9,7 @@ namespace VSS.TRex.GridFabric.Requests
     /// <typeparam name="TArgument"></typeparam>
     /// <typeparam name="TComputeFunc"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class GenericASNodeRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest<TArgument, TResponse>, IGenericASNodeRequest<TArgument, TResponse>
+    public abstract class GenericASNodeRequest<TArgument, TComputeFunc, TResponse> : ApplicationServicePoolRequest<TArgument, TResponse>, IGenericASNodeRequest<TArgument, TResponse>
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
         where TResponse : class, new()
     {

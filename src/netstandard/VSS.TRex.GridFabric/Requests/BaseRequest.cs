@@ -24,8 +24,9 @@ namespace VSS.TRex.GridFabric.Requests
         }
 
         public virtual TResponse Execute(TArgument arg)
-        {            
-            throw new NotImplementedException("BaseRequest has no implementation - don't call it!");
+        {
+          // No implementation in base class - complain if we are called
+          throw new NotImplementedException("BaseRequest.Execute invalid to call.");
         }
     }
 }

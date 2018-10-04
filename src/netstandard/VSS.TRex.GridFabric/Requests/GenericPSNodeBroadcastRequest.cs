@@ -13,7 +13,7 @@ namespace VSS.TRex.GridFabric.Requests
     /// <typeparam name="TArgument"></typeparam>
     /// <typeparam name="TComputeFunc"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
-    public class GenericPSNodeBroadcastRequest<TArgument, TComputeFunc, TResponse> : CacheComputePoolRequest<TArgument, TResponse>
+    public abstract class GenericPSNodeBroadcastRequest<TArgument, TComputeFunc, TResponse> : CacheComputePoolRequest<TArgument, TResponse>
         where TComputeFunc : IComputeFunc<TArgument, TResponse>, new()
         where TResponse : class, IAggregateWith<TResponse>
     {
@@ -31,7 +31,7 @@ namespace VSS.TRex.GridFabric.Requests
             //            Task<ICollection<TResponse>> taskResult = _Compute?.BroadcastAsync(func, arg);
             ICollection<TResponse> Result = _Compute?.Broadcast(func, arg);
 
-            // Reduce the set of results to a single aggreted result and send the result back
+            // Reduce the set of results to a single aggregated result and send the result back
             // If there is no task result then return a null response
             //return taskResult?.Result?.Count > 0 ? taskResult.Result.Aggregate((first, second) => first.AggregateWith(second))
             return Result?.Count > 0 ? Result.Aggregate((first, second) => first.AggregateWith(second)) : null;

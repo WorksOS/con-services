@@ -23,6 +23,10 @@ namespace VSS.TRex.GridFabric.Requests
     {
     }
 
-    public abstract TResponse Execute(TArgument arg);
+    public virtual TResponse Execute(TArgument arg)
+    {
+      // No implementation in base class - complain if we are called
+      throw new NotImplementedException("BaseRequest.Execute invalid to call.");
+    }
   }
 }

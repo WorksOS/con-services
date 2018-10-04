@@ -2,8 +2,8 @@
 
 namespace VSS.TRex.GridFabric
 {
-    public class BaseImmutableIgniteClass : BaseIgniteClass
-    {
+    public abstract class BaseImmutableIgniteClass : BaseBinarizableIgniteClass
+  {
         /// <summary>
         /// Default no-arg constructor that sets up cluster and compute projections available for use
         /// </summary>
