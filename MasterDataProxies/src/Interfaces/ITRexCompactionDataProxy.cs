@@ -92,6 +92,15 @@ namespace VSS.MasterData.Proxies.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
+    /// Sends a request to get production data tile from the TRex database.
+    /// </summary>
+    /// <param name="tileRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<ContractExecutionResult> SendProductionDataTileRequest(TileRequest tileRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
     /// Sends a request to get Summary Volumes statistics from the TRex database.
     /// </summary>
     /// <param name="summaryVolumesRequest"></param>

@@ -168,6 +168,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="setSummaryDataLayersVisibility"></param>
     public TileRequest(
       long projectId,
+      Guid? projectUid,
       Guid? callId,
       DisplayMode mode,
       List<ColorPalette> palettes,
@@ -190,6 +191,7 @@ namespace VSS.Productivity3D.Models.Models
       bool setSummaryDataLayersVisibility = true)
     {
       ProjectId = projectId;
+      ProjectUid = projectUid;
       CallId = callId;
       Mode = mode;
       Palettes = palettes;

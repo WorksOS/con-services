@@ -161,6 +161,21 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Sends a request to get production data tile from the TRex database.
+    /// </summary>
+    /// <param name="tileRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendProductionDataTileRequest(TileRequest tileRequest, IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(tileRequest);
+
+      log.LogDebug($"{nameof(SendSpeedSummaryRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<TileResult>(request, customHeaders, "/tile");
+    }
+
+    /// <summary>
     /// Sends a request to get Summary Volumes statistics from the TRex database.
     /// </summary>
     /// <param name="summaryVolumesRequest"></param>
