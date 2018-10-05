@@ -1,6 +1,6 @@
 version: '3'
 services:
-  webapi-dev:
+  webapi_dev:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:[VERSION]
     environment:
       - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
