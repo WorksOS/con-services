@@ -16,6 +16,12 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     /// </summary>
     [JsonProperty(PropertyName = "percents")]
     public double[] Percents { get; set; }
+
+    /// <summary>
+    /// Temperature machine target range and whether it is constant or varies.
+    /// </summary>
+    [JsonProperty(PropertyName = "temperatureTarget")]
+    public CompactionTemperatureSummaryResult.TemperatureTargetData TemperatureTarget { get; set; }
     #endregion
 
     #region Constructors
@@ -33,7 +39,10 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      return Common.ArraysOfDoublesAreEqual(this.Percents, other.Percents, DECIMAL_PLACES) &&
+      var tempEquals = this.TemperatureTarget?.Equals(other.TemperatureTarget) ?? true;
+
+      return tempEquals &&
+             Common.ArraysOfDoublesAreEqual(this.Percents, other.Percents, DECIMAL_PLACES) &&
              this.Code == other.Code &&
              this.Message == other.Message;
     }

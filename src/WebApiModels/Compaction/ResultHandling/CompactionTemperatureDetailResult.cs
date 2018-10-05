@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -17,6 +20,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public double[] Percents { get; private set; }
 
     /// <summary>
+    /// Temperature machine target range and whether it is constant or varies.
+    /// </summary>
+    [JsonProperty(PropertyName = "temperatureTarget")]
+    public TemperatureTargetData TemperatureTarget { get; set; }
+
+    /// <summary>
     /// Default public constructor.
     /// </summary>
     public CompactionTemperatureDetailResult()
@@ -25,9 +34,33 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    public CompactionTemperatureDetailResult(double[] result)
+    public CompactionTemperatureDetailResult(double[] result1, TemperatureSummaryResult result2=null)
     {
-      Percents = result;
+      if (HasData(result1))
+      {
+        Percents = result1;
+        SetTargets(result2);
+      }
+    }
+
+    public void SetTargets(TemperatureSummaryResult result)
+    {
+      if (result != null && result.HasData())
+      {
+        TemperatureTarget = new TemperatureTargetData
+        {
+          MinTemperatureMachineTarget = result.MinimumTemperature / 10,
+          MaxTemperatureMachineTarget = result.MaximumTemperature / 10,
+          TargetVaries = !result.IsTargetTemperatureConstant
+        };
+      }
+    }
+
+    private bool HasData(double[] percents)
+    {
+      if (percents == null)
+        return false;
+      return ((IEnumerable<double>)percents).Any<double>((Func<double, bool>)(d => Math.Abs(d) > 0.001));
     }
   }
 }

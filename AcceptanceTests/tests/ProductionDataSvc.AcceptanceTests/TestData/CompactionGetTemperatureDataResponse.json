@@ -115,12 +115,34 @@
     "Message": "success"
   },
   "NoDesignFilter_Details": {
-    "percents": [],
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
     "Code": 0,
     "Message": "success"
   },
   "NoDesignFilter_Details_PS": {
-    "percents": [],
+    "percents": [
+      22.527872031022785,
+      39.348036839554048,
+      37.918080465341738,
+      0.20601066408143481,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 75.0,
+      "maxTemperatureMachineTarget": 130.0,
+      "targetVaries": false
+    },
     "Code": 0,
     "Message": "success"
   },
@@ -130,22 +152,66 @@
     "Message": "success"
   },
   "DesignIntersects_Details": {
-    "percents": [],
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
     "Code": 0,
     "Message": "success"
   },
   "BoundaryTempFilter_Det": {
-    "percents": [],
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
     "Code": 0,
     "Message": "success"
   },
   "AlignmentFilter_Details": {
-    "percents": [],
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
     "Code": 0,
     "Message": "success"
   },
   "TemperatureFilter_Details": {
-    "percents": [],
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
     "Code": 0,
     "Message": "success"
   },
@@ -155,7 +221,18 @@
     "Message": "success"
   },
   "PassCountFilter_Details": {
-    "percents": [],
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
     "Code": 0,
     "Message": "success"
   }

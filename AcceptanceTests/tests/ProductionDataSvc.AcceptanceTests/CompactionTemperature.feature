@@ -31,8 +31,6 @@ Examples:
 | PassCountFilter    | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 | PassCountFilter_Summary    |
 
 ######################################################## Temperature Details ####################################################
-# TODO: When temperature details implemented in Raptor un-ignore and fix test results
-@Ignore
 Scenario Outline: Compaction Get Temperature Details - No Design Filter
 Given the Compaction service URI "/api/v2/temperature/details" for operation "TemperatureDetails"
 And the result file "CompactionGetTemperatureDataResponse.json"
@@ -44,7 +42,6 @@ Examples:
 |                 | ff91dd40-1569-4765-a2bc-014321f76ace | NoDesignFilter_Details    |
 | ProjectSettings | 3335311a-f0e2-4dbe-8acd-f21135bafee4 | NoDesignFilter_Details_PS |
 
-@Ignore
 Scenario Outline: Compaction Get Temperature Details
 Given the Compaction service URI "/api/v2/temperature/details" for operation "TemperatureDetails"
 And the result file "CompactionGetTemperatureDataResponse.json"

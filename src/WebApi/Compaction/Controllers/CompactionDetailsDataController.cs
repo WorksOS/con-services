@@ -279,21 +279,54 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var projectId = await GetLegacyProjectId(projectUid);
+      var temperatureSettings = SettingsManager.CompactionTemperatureSettings(projectSettings, false);
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
-      var temperatureRequest = RequestFactory.Create<TemperatureRequestHelper>(r => r
+      var detailsRequest = RequestFactory.Create<TemperatureRequestHelper>(r => r
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
           .Filter(filter))
         .CreateTemperatureDetailsRequest();
 
-      temperatureRequest.Validate();
+      detailsRequest.Validate();
 
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainerFactory
-          .Build<CompactionTemperatureDetailsExecutor>(LoggerFactory, RaptorClient)
-          .Process(temperatureRequest) as CompactionTemperatureDetailResult);
+      var summaryRequest = new TemperatureRequest(projectId, projectUid, null,
+        temperatureSettings, liftSettings, filter, -1, null, null, null);
+      summaryRequest.Validate();
 
+      try
+      {
+        var result1 = WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainerFactory
+            .Build<CompactionTemperatureDetailsExecutor>(LoggerFactory, RaptorClient)
+            .Process(detailsRequest) as CompactionTemperatureDetailResult);
+
+        //When TRex done for temperature details, assume it will set target in details call
+        if (result1 != null && result1.TemperatureTarget == null)
+        {
+          var result2 = RequestExecutorContainerFactory
+            .Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore,
+              trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            .Process(summaryRequest) as TemperatureSummaryResult;
+          result1.SetTargets(result2);
+        }
+
+        return result1;
+      }
+      catch (ServiceException exception)
+      {
+        Log.LogError($"{nameof(GetTemperatureDetails)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        //return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+        var statusCode = (TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics ? HttpStatusCode.NoContent : HttpStatusCode.BadRequest;
+
+        throw new ServiceException(statusCode,
+          new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+      }
+      finally
+      {
+        Log.LogInformation("GetTemperatureDetails returned: " + Response.StatusCode);
+      }
     }
   }
 }
