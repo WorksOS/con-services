@@ -19,59 +19,59 @@ namespace MockProjectWebApi.Controllers
         {
           new LoadDumpLocation
           {
-            loadLatitude = 36.2062,
-            loadLongitude = -115.0258,
-            dumpLatitude = 36.2068,
-            dumpLongitude = -115.0262
+            loadLatitude = 36.206,
+            loadLongitude = -115.0230,
+            dumpLatitude = 36.208,
+            dumpLongitude = -115.0200
           },
           new LoadDumpLocation
           {
-          loadLatitude = 36.2062,
-          loadLongitude = -115.0179,
-          dumpLatitude = 36.2068,
-          dumpLongitude = -115.0177
+          loadLatitude = 36.206,
+          loadLongitude = -115.0235,
+          dumpLatitude = 36.208,
+          dumpLongitude = -115.0205
         },
           new LoadDumpLocation
           {
-            loadLatitude = 36.2072,
-            loadLongitude = -115.0258,
-            dumpLatitude = 36.2078,
-            dumpLongitude = -115.0262
+            loadLatitude = 36.206,
+            loadLongitude = -115.0220,
+            dumpLatitude = 36.208,
+            dumpLongitude = -115.0190
           },
           new LoadDumpLocation
           {
-            loadLatitude = 36.2072,
-            loadLongitude = -115.0179,
-            dumpLatitude = 36.2078,
-            dumpLongitude = -115.0177
+            loadLatitude = 36.206,
+            loadLongitude = -115.0225,
+            dumpLatitude = 36.208,
+            dumpLongitude = -115.0195
           },
           new LoadDumpLocation
           {
-            loadLatitude = 36.2082,
-            loadLongitude = -115.0258,
-            dumpLatitude = 36.2088,
-            dumpLongitude = -115.0262
+            loadLatitude = 36.207,
+            loadLongitude = -115.0230,
+            dumpLatitude = 36.209,
+            dumpLongitude = -115.0200
           },
           new LoadDumpLocation
           {
-            loadLatitude = 36.2082,
-            loadLongitude = -115.0179,
-            dumpLatitude = 36.2088,
-            dumpLongitude = -115.0177
+            loadLatitude = 36.207,
+            loadLongitude = -115.0235,
+            dumpLatitude = 36.209,
+            dumpLongitude = -115.0205
           },
           new LoadDumpLocation
           {
-            loadLatitude = 36.2092,
-            loadLongitude = -115.0258,
-            dumpLatitude = 36.2098,
-            dumpLongitude = -115.0262
+            loadLatitude = 36.207,
+            loadLongitude = -115.0220,
+            dumpLatitude = 36.209,
+            dumpLongitude = -115.0190
           },
           new LoadDumpLocation
           {
-            loadLatitude = 36.2092,
-            loadLongitude = -115.0179,
-            dumpLatitude = 36.2098,
-            dumpLongitude = -115.0177
+            loadLatitude = 36.207,
+            loadLongitude = -115.0225,
+            dumpLatitude = 36.209,
+            dumpLongitude = -115.0195
           }
         };
       }
