@@ -32,10 +32,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         private bool aborted;
 
-        /// <summary>
-        /// The event wait handle used to mediate sleep periods between operation epochs of the service
-        /// </summary>
-//        private EventWaitHandle waitHandle;
+        // <summary>
+        // The event wait handle used to mediate sleep periods between operation epochs of the service
+        // </summary>
+        // private EventWaitHandle waitHandle;
 
         /// <summary>
         /// The grouper responsible for grouping TAG files into Project/Asset groups ready for processing into a

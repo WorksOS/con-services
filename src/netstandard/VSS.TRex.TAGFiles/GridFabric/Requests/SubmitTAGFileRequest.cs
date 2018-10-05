@@ -8,9 +8,9 @@ using VSS.TRex.GridFabric.Requests;
 namespace VSS.TRex.TAGFiles.GridFabric.Requests
 {
     /// <summary>
-    /// Supports submitting a single TAG file to be considered for processing depending on TAG File Auhthorization checks.
+    /// Supports submitting a single TAG file to be considered for processing depending on TAG File Authorization checks.
     /// </summary>
-    public class SubmitTAGFileRequest : TAGFileProcessingPoolRequest<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>
+    public class SubmitTAGFileRequest : TAGFileProcessingPoolBinarizableRequest<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>
     {
         /// <summary>
         /// Local reference to the compute func used to execute the submission request on the grid.
@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
         private IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse> func;
 
         /// <summary>
-        /// No-arg constructor that creates a default TAG file submission request with a singleton ConputeFunc
+        /// No-arg constructor that creates a default TAG file submission request with a singleton ComputeFunc
         /// </summary>
         public SubmitTAGFileRequest()
         {
