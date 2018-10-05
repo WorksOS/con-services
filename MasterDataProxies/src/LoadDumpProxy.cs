@@ -10,12 +10,18 @@ using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
 {
+  /// <summary>
+  /// Proxy for getting load/dump locations for asset cycles from unified productivity
+  /// </summary>
   public class LoadDumpProxy : BaseProxy, ILoadDumpProxy
   {
     public LoadDumpProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
     {
     }
 
+    /// <summary>
+    /// Gets a list of load/dump locations for all cycles for all assets for a project
+    /// </summary>
     public async Task<List<LoadDumpLocation>> GetLoadDumpLocations(string projectUid, IDictionary<string, string> customHeaders)
     {
       //single asset
