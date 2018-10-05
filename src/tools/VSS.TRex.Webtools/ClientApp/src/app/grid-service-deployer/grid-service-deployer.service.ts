@@ -23,11 +23,26 @@ export class GridServiceDeployerService {
   }
 
   public deployTagFileBufferQueueService(): void {
-    let url = `${this.baseUrl}api/services/tagfilebuffer`
+    let url = `${this.baseUrl}api/services/tagfilebuffer`;
     console.log(url);
     this.http.put<string>(url, null).subscribe((result) => {
-      console.log(result)
+      console.log(result);
     });
   }
 
+  public deployMutableSegmentRetirementQueueService(): void {
+    let url = `${this.baseUrl}api/services/segmentretirement/mutable`;
+    console.log(url);
+    this.http.put<string>(url, null).subscribe((result) => {
+      console.log(result);
+    });
+  }
+    
+  public deployImmutableSegmentRetirementQueueService(): void {
+    let url = `${this.baseUrl}api/services/segmentretirement/immutable`;
+    console.log(url);
+    this.http.put<string>(url, null).subscribe((result) => {
+      console.log(result);
+    });
+  }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
@@ -12,8 +12,8 @@ namespace VSS.TRex.Storage
   /// </summary>
   public class StorageProxy_FileSystem : IStorageProxy
   {
-    public IStorageProxyCache<NonSpatialAffinityKey, byte[]> NonSpatialCache { get; } = null; // Not implemented
-    public IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache { get; } = null; // Not implemented
+    public IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; } = null; // Not implemented
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; } = null; // Not implemented
 
     public StorageMutability Mutability { get; set; } = StorageMutability.Immutable;
 
@@ -36,7 +36,8 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName, uint SubgridX, uint SubgridY, string SegmentIdentifier, FileSystemStreamType StreamType, MemoryStream Stream)
+    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName, uint SubgridX, uint SubgridY, string SegmentIdentifier,
+      FileSystemStreamType StreamType, MemoryStream Stream)
     {
       throw new NotImplementedException();
     }
@@ -51,7 +52,14 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
+    public IStorageProxy ImmutableProxy { get; }
+
     public bool Commit()
+    {
+      throw new NotImplementedException();
+    }
+
+    public bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
       throw new NotImplementedException();
     }

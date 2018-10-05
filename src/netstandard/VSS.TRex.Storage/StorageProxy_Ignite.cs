@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -18,14 +18,14 @@ namespace VSS.TRex.Storage
     /// </summary>
     public class StorageProxy_Ignite : StorageProxy_IgniteBase, IStorageProxy
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite>();
 
-        /// <summary>
-        /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
-        /// </summary>w
-        public IStorageProxy ImmutableProxy;
+      /// <summary>
+      /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
+      /// </summary>w
+      public IStorageProxy ImmutableProxy { get; private set; }
 
-        /// <summary>
+      /// <summary>
         /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
         /// </summary>
         /// <param name="mutability"></param>
@@ -36,11 +36,11 @@ namespace VSS.TRex.Storage
 
         private void EstablishCaches()
         {
-            spatialCache = new StorageProxyCache<SubGridSpatialAffinityKey, byte[]>(
-                ignite.GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
+            spatialCache = new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(
+                ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
             nonSpatialCache =
-                new StorageProxyCache<NonSpatialAffinityKey, byte[]>(
-                    ignite.GetCache<NonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
+                new StorageProxyCache<INonSpatialAffinityKey, byte[]>(
+                    ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace VSS.TRex.Storage
 
             try
             {
-                SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
+                ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
                 //Log.LogInformation($"Getting key:{StreamName}");
 
@@ -107,7 +107,7 @@ namespace VSS.TRex.Storage
 
             try
             {
-                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 //Log.LogInformation($"Getting key:{cacheKey}");
 
@@ -145,7 +145,7 @@ namespace VSS.TRex.Storage
         {
             try
             {
-                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 Log.LogInformation($"Removing key:{cacheKey}");
 
@@ -188,7 +188,7 @@ namespace VSS.TRex.Storage
         {
             try
             {
-                SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
+                ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
@@ -230,7 +230,7 @@ namespace VSS.TRex.Storage
         {
             try
             {
-                NonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+                INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
                 {
@@ -283,7 +283,7 @@ namespace VSS.TRex.Storage
 
             ImmutableProxy = immutableProxy;
         }
-
+        
         /// <summary>
         /// Commits unsaved changes in the storage proxy.
         /// No implementation for non-transactional storage proxy
@@ -294,6 +294,19 @@ namespace VSS.TRex.Storage
         }
 
         /// <summary>
+        /// Commits unsaved changes in the storage proxy.
+        /// No implementation for non-transactional storage proxy
+        /// </summary>
+        public virtual bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
+        {
+          numDeleted = -1;
+          numUpdated = -1;
+          numBytesWritten = -1;
+
+          return true;
+        }
+
+      /// <summary>
         /// Clears changes in the storage proxy.
         /// No implementation for non-transactional storage proxy
         /// </summary>

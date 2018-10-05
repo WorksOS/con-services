@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -51,7 +53,10 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool SaveDirectoryToStream(Stream stream);
         bool LoadDirectoryFromFile(IStorageProxy storage, string fileName);
 
-        bool SaveDirectoryToFile(IStorageProxy storage, string FileName
-            /* const AInvalidatedSpatialStreams : TInvalidatedSpatialStreamArray*/);
+        bool SaveDirectoryToFile(IStorageProxy storage, string FileName);
+
+        //bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, IStorageProxy storageProxy);
+
+        ISubGridSpatialAffinityKey AffinityKey();
     }
 }

@@ -5,7 +5,6 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
   /// <summary>
   /// Contains the prepared result for the client to consume
   /// </summary>
-  [Serializable]
   public class TINSurfaceResult
   {
     public byte[] data;

@@ -9,7 +9,6 @@ namespace VSS.TRex.Geometry
   /// rectangular area of the world in world coordinates, and a height range
   /// within that extent
   /// </summary>
-  [Serializable]
   public class BoundingWorldExtent3D : IEquatable<BoundingWorldExtent3D>
   {
     /// <summary>
@@ -440,7 +439,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Set the coodinates to a maximal coordinate range to indicate this is an all encompassing bounding extent
+    /// Set the coordinates to a maximal coordinate range to indicate this is an all encompassing bounding extent
     /// </summary>
     public void SetMaximalCoverage()
     {
@@ -528,6 +527,21 @@ namespace VSS.TRex.Geometry
       MaxX = reader.ReadDouble();
       MaxY = reader.ReadDouble();
       MaxZ = reader.ReadDouble();
+    }
+
+    /// <summary>
+    /// Sets the plan min/max X/Y bounds for this bounding rectangle
+    /// </summary>
+    /// <param name="minX"></param>
+    /// <param name="minY"></param>
+    /// <param name="maxX"></param>
+    /// <param name="maxY"></param>
+    public void Set(double minX, double minY, double maxX, double maxY)
+    {
+      MinX = minX;
+      MinY = minY;
+      MaxX = maxX;
+      MaxY = maxY;
     }
   }
 }

@@ -9,7 +9,6 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// The base class representing the concept of a subgrid within a subgrid throw
     /// </summary>
-    [Serializable]
     public class SubGrid : ISubGrid
     {
         /// <summary>

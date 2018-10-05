@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Reflection;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -11,20 +10,19 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// Client leaf sub grid that tracks height and time for each cell
   /// This class is derived from the height leaf subgrid and decorated with times to allow efficient copy
-  /// operations for serialisation and asignation to the height leaf subgrid where the times are removed.
+  /// operations for serialisation and assignation to the height leaf subgrid where the times are removed.
   /// </summary>
-  [Serializable]
-  public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
+ public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
   {
-    [NonSerialized] private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightAndTimeLeafSubGrid>();
 
     /// <summary>
-    /// Time values for the heights stored in the height and time structure. Times are expressed as the binary DateTime format to promote efficient copying of arrays
+    /// Time values for the heights stored in the height and time structure. Times are expressed as the DateTime ticks format to promote efficient copying of arrays
     /// </summary>
     public long[,] Times = new long[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     /// <summary>
-    /// An array containing the content of null times for all the cell in the subgrid
+    /// An array containing the content of null times for all the cells in the subgrid
     /// </summary>
     public static long[,] nullTimes = new long[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
@@ -33,8 +31,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientHeightAndTimeLeafSubGrid()
     {
-      DateTime min = DateTime.MinValue;
-      long nullValue = min.ToBinary();
+      long nullValue = DateTime.MinValue.Ticks;
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = nullValue);
     }
@@ -76,7 +73,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.AssignFilteredValue(cellX, cellY, Context);
 
-      Times[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Time.ToBinary();
+      Times[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Time.Ticks;
     }
 
     /// <summary>

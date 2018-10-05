@@ -1,24 +1,29 @@
 ﻿using System;
 using Apache.Ignite.Core.Cache.Event;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
-    public class LocalTAGFileListener : ICacheEntryEventListener<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
+    public class LocalTAGFileListener : ICacheEntryEventListener<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>
     {
-        [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<LocalTAGFileListener>();
+
+        public readonly TAGFileBufferQueueItemHandler handler;
+
+        public LocalTAGFileListener(TAGFileBufferQueueItemHandler handler)
+        {
+            this.handler = handler;
+        }
 
         /// <summary>
         /// Event called whenever there are new items in the TAG file buffer queue discovered by the continuous query
         /// Events include creation, modification and deletion of cache entries
         /// </summary>
-        /// <param name="evts"></param>
-        public void OnEvent(IEnumerable<ICacheEntryEvent<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> evts)
+        /// <param name="events"></param>
+        public void OnEvent(IEnumerable<ICacheEntryEvent<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> events)
         {
             // Add the keys for the given events into the Project/Asset mapping buckets ready for a processing context
             // to acquire them. 
@@ -26,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // Log.LogInformation("About to add TAG file items to the grouper");
             int countOfCreatedEvents = 0;
 
-            foreach (var evt in evts)
+            foreach (var evt in events)
             {
                 // Only interested in newly added items to the cache. Updates and deletes are ignored.
                 if (evt.EventType != CacheEntryEventType.Created)
@@ -35,7 +40,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 countOfCreatedEvents++;
                 try
                 {
-                    TAGFileBufferQueueItemHandler.Instance().Add(evt.Key /*, evt.Value*/);
+                    handler.Add(evt.Key);
                     Log.LogInformation($"#Progress# Added TAG file item [{evt.Key}] to the grouper");
                 }
                 catch (Exception e)

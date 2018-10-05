@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Reflection;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.TAGFiles.Models;
 
@@ -18,13 +17,13 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueManager : IDisposable
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueManager>();
 
         /// <summary>
         /// The query handle created by the continuous query. Used to get the initial scan query handle and 
         /// to dispose the continuous query when no longer needed.
         /// </summary>
-        private IContinuousQueryHandle<ICacheEntry<TAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;
+        private IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;
 
         /// <summary>
         /// Local Ignite resource reference
@@ -32,8 +31,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private IIgnite ignite;
 
         /// <summary>
-        /// No-arg constructor. Instantiates the continouus query and performs initial scan of elements that the remote filter 
-        /// will populate into the node-local groupers within the mutable grid./
+        /// No-arg constructor. Instantiates the continuous query and performs initial scan of elements that the remote filter 
+        /// will populate into the node-local groupers within the mutable grid.
         /// </summary>
         public TAGFileBufferQueueManager(bool runLocally)
         {
@@ -41,30 +40,30 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
             // Get the ignite grid and cache references
             ignite = Ignition.GetIgnite(TRexGrids.MutableGridName());
-            ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem> queueCache = ignite.GetCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
-
-            RemoteTAGFileFilter TAGFileFilter = new RemoteTAGFileFilter();
+            var queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            var handler = new TAGFileBufferQueueItemHandler();
+            var TAGFileFilter = new RemoteTAGFileFilter(handler);  
 
             Log.LogInformation("Creating continuous query");
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
-            // Instantiate the queryHandle and start the continous query on the remote nodes
+            // Instantiate the queryHandle and start the continuous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
             queryHandle = queueCache.QueryContinuous
-                (qry: new ContinuousQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener())
+                (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler))
                     {
                         Local = runLocally,
                         Filter = TAGFileFilter
                     },
-                    initialQry: new ScanQuery<TAGFileBufferQueueKey, TAGFileBufferQueueItem>
+                    initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>
                     {
                         Local = runLocally,
                         Filter = TAGFileFilter
                     });
 
             // Perform the initial query to grab all existing elements and add them to the grouper
-            // All processing shoudl happen on the remote node in the implementation of the TAGFileFilter remote filter
+            // All processing should happen on the remote node in the implementation of the TAGFileFilter remote filter
             foreach (var item in queryHandle.GetInitialQueryCursor())
             {
                 Log.LogError(

@@ -4,14 +4,13 @@ using System.IO;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Affinity;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
 {
-  [Serializable]
-    public class Designs : List<IDesign>, IBinaryReaderWriter, IDesigns
-  {
+    public class Designs : List<IDesign>, IDesigns
+    {
         private const byte kMajorVersion = 1;
         private const byte kMinorVersion = 0;
 
@@ -151,6 +150,6 @@ namespace VSS.TRex.Designs.Storage
         /// </summary>
         /// <param name="SiteModelID"></param>
         /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
+        public static INonSpatialAffinityKey CacheKey(Guid SiteModelID) => new NonSpatialAffinityKey(SiteModelID, "Designs");
     }
 }

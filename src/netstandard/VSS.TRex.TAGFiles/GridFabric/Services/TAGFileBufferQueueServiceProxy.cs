@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Reflection;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Reflection;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Storage.Models;
@@ -19,7 +16,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   public class TAGFileBufferQueueServiceProxy
     {
         [NonSerialized]
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueServiceProxy>();
 
         /// <summary>
         /// The cluster wide name of the deployed service
@@ -27,7 +24,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         public const string ServiceName = "TAGFileBufferQueueService";
 
         /// <summary>
-        /// Services interface for the clustergroup projection
+        /// Services interface for the cluster group projection
         /// </summary>
         private IServices services;
 
@@ -42,8 +39,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         public TAGFileBufferQueueServiceProxy()
         {
             IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
-
-            //var cacheGroup = _ignite.GetCluster().ForCacheNodes(TRexCaches.TAGFileBufferQueueCacheName());
 
             // Get an instance of IServices for the cluster group.
             services = _ignite.GetServices();

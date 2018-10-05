@@ -31,9 +31,9 @@ namespace TAGFiles.Tests
             var MachineTargetValueChangesAggregator = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
             var processor = new TAGProcessor(siteModel, machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
-            TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, machine.InternalSiteModelMachineIndex /*machine.ID*/, fence);
+            TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
 
-            Assert.True(swather != null && swather.InternalSiteModelMachineIndex == machine.InternalSiteModelMachineIndex, //swather.MachineID == machine.ID,
+            Assert.True(swather != null && swather.InternalSiteModelMachineIndex == machine.InternalSiteModelMachineIndex, 
                 "TerrainSwather not created as expected");
         }
 
@@ -50,7 +50,7 @@ namespace TAGFiles.Tests
             var fence = new Fence();
             fence.SetRectangleFence(0, 0, 10, 2);
 
-            TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, machine.InternalSiteModelMachineIndex /*machine.ID*/, fence);
+            TerrainSwather swather = new TerrainSwather(processor, MachineTargetValueChangesAggregator, siteModel, grid, fence);
 
             // Create four corner vertices for location of the processing context
             var V00 = new XYZ(0, 0, 0);

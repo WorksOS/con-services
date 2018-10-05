@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace VSS.TRex.Events
+﻿namespace VSS.TRex.Events
 {
     /// <summary>
     /// Denotes the types of events processed and stored from ingested production data
     /// </summary>
-    [Serializable]
     public enum ProductionEventType
     {
         Unknown = 0x00000000,

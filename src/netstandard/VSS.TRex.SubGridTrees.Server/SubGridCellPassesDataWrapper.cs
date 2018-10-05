@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using Apache.Ignite.Core.Cache.Affinity;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataWrapper : ISubGridCellPassesDataWrapper
   {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataWrapper>();
 
         public IServerLeafSubGrid Owner { get; set; }   
 
@@ -92,7 +94,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
         // CleaveSegment does the donkey work of taking a segment and splitting it into
         // two segments that each contain half the cell passes of the segment passed in
-        public bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment)
+        public bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment,
+                                  List<ISubGridSpatialAffinityKey> PersistedClovenSegments)
         {
             if (!CleavingSegment.HasAllPasses)
             {
@@ -124,6 +127,13 @@ namespace VSS.TRex.SubGridTrees.Server
             // Preserve the allotted time range of the segment being cleaved
             DateTime OldEndTime = CleavingSegment.SegmentInfo.EndTime;
 
+            // Record the segment that was cleaved in the list of those that need to be removed
+            // when the subgrid is next persisted (but only if it has previously been persisted
+            // to disk). If not, it is only in memory and can represent one part of the set
+            // of cloven segments waiting for persistence.
+            if (CleavingSegment.SegmentInfo.ExistsInPersistentStore)
+              PersistedClovenSegments.Add(CleavingSegment.SegmentInfo.AffinityKey());
+
             // Look for the time that splits the segment. Stop when we are within 100 cell passes
             // of the exact time.
 
@@ -138,7 +148,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
                 CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange, out uint _);
 
-                if (PassesInFirstTimeRange < (TotalPassCount / NumRequiredClovenSegments))
+                if (PassesInFirstTimeRange < TotalPassCount / NumRequiredClovenSegments)
                     TestTimeRangeStart = TestTime;
                 else
                     TestTimeRangeEnd = TestTime;
@@ -179,16 +189,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Add the new created segment into the segment list for the subgrid
             PassesData.Add(NewSegment);
 
-            // Record the segment that was cleaved in the list of those that need to be removed
-            // when the subgrid is next persisted (but only if it has previously been persisted
-            // to disk). If not, it is only in memory and can represent one part of the set
-            // of cloven segments waiting for persistence.
-            if (CleavingSegment.SegmentInfo.ExistsInPersistentStore)
-                Owner.Directory.AddPersistedClovenSegment(new SubGridCellPassesDataSegmentInfo(
-                    CleavingSegment.SegmentInfo.StartTime, OldEndTime,
-                    CleavingSegment));
-
-            // Tidy up, marking both segments as dirty, and not existant in the persitant data store!
+            // Tidy up, marking both segments as dirty, and not existing in the persistent data store!
             CleavingSegment.Dirty = true;
             CleavingSegment.SegmentInfo.ExistsInPersistentStore = false;
 
@@ -216,12 +217,12 @@ namespace VSS.TRex.SubGridTrees.Server
           // information for the segments
 
           // Determine the actual time range of the passes within the segment
-         CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
-         if (CleavingSegment.RequiresCleaving())
+          CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
+          if (CleavingSegment.RequiresCleaving(out _, out _))
             Log.LogDebug($"Info: After cleave first segment {Owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{CleavingSegment.SegmentInfo.EndTime}) of subgrid {Owner.Moniker()} failed to reduce cell pass count below maximums");
 
           NewSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
-          if (NewSegment.RequiresCleaving())
+          if (NewSegment.RequiresCleaving(out _, out _))
             Log.LogDebug($"Info: New cloven segment {Owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{OldEndTime}) (resulting from cleave) of subgrid %s failed to reduce cell pass count below maximums");
 #endif
 

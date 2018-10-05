@@ -7,14 +7,13 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Implements base semantics of ICache support for Storage proxies by shadowing it with a class member
     /// that is a concrete implementation of ICache
-    /// implem
     /// </summary>
     /// <typeparam name="TK"></typeparam>
     /// <typeparam name="TV"></typeparam>
     public class StorageProxyCache<TK, TV> : IStorageProxyCache<TK, TV>
     {
         private ICache<TK, TV> Cache;
-
+      
         public string Name
         {
             get => Cache.Name;
@@ -25,9 +24,19 @@ namespace VSS.TRex.Storage
             throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");
         }
 
+        public virtual void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
+        {
+            throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour"); ;
+        }
+
         public virtual void Clear()
         {
             throw new System.NotImplementedException("Base StorageProxyCache does not support transactional behaviour");
+        }
+
+        public virtual void IncrementBytesWritten(long bytesWritten)
+        {
+          // No implementation for base class;
         }
 
         public StorageProxyCache(ICache<TK, TV> cache)
@@ -43,6 +52,11 @@ namespace VSS.TRex.Storage
         public virtual bool Remove(TK key)
         {
             return Cache.Remove(key);
+        }
+
+        public virtual void RemoveAll(IEnumerable<TK> keys)
+        {
+            Cache.RemoveAll(keys);
         }
 
         public virtual void Put(TK key, TV value)

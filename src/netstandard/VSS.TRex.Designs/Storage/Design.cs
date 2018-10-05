@@ -15,7 +15,6 @@ namespace VSS.TRex.Designs.Storage
   /// <summary>
     /// Represents the information known about a design
     /// </summary>
-    [Serializable]
     public class Design : IEquatable<IDesign>, IBinaryReaderWriter, IDesign
   {
         /// <summary>

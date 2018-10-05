@@ -10,9 +10,8 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
     /// <summary>
-    /// The listener that responds to site model change notifications emiited by actors such as TAG file processing
+    /// The listener that responds to site model change notifications emitted by actors such as TAG file processing
     /// </summary>
-    [Serializable]
     public class SiteModelAttributesChangedEventListener : IMessageListener<ISiteModelAttributesChangedEvent>, IDisposable, ISiteModelAttributesChangedEventListener
     {
         [NonSerialized]

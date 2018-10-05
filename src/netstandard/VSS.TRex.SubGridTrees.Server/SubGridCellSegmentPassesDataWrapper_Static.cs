@@ -14,7 +14,6 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <summary>
     /// This is a static, immutable, version of the cell and cell passes that make up a subgrid segment
     /// </summary>
-    [Serializable]
     public class SubGridCellSegmentPassesDataWrapper_Static : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
         /// <summary>

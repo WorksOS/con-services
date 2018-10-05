@@ -11,9 +11,8 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Defines all the state information describing a surveyed surface based on a design descriptor
     /// </summary>
-    [Serializable]
     public class SurveyedSurface : IEquatable<ISurveyedSurface>, IBinaryReaderWriter, ISurveyedSurface
-  {
+    {
         /// <summary>
         /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
         /// </summary>

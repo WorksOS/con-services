@@ -21,65 +21,28 @@ namespace VSS.TRex.SubGrids
 {
     public class SubGridRequestor
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
-        [NonSerialized]
         private SubGridRetriever retriever;
-
-        [NonSerialized]
         private ISiteModel SiteModel;
-
-        [NonSerialized]
         private ICombinedFilter Filter;
-
-        [NonSerialized]
         private SurfaceElevationPatchRequest surfaceElevationPatchRequest;
-
-        [NonSerialized]
         private byte TreeLevel;
-
-        [NonSerialized]
         private bool HasOverrideSpatialCellRestriction;
-
-        [NonSerialized]
         private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
-
-        [NonSerialized]
         private int MaxNumberOfPassesToReturn;
-
-        [NonSerialized]
         private bool ProdDataRequested;
-
-        [NonSerialized]
         private bool SurveyedSurfaceDataRequested;
-
-        [NonSerialized]
         private  IClientLeafSubGrid ClientGrid;
-
-        [NonSerialized]
         private SurfaceElevationPatchArgument SurfaceElevationPatchArg;
-
-        [NonSerialized]
         private uint CellX;
-
-        [NonSerialized]
         private uint CellY;
-
-        [NonSerialized]
         public SubGridTreeBitmapSubGridBits CellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-        [NonSerialized]
         public AreaControlSet AreaControlSet;
 
         // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
-        [NonSerialized]
         private SubGridTreeBitmapSubGridBits ProcessingMap; // = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-        [NonSerialized]
-        private ISurveyedSurfaces FilteredSurveyedSurfaces;
-
-        [NonSerialized]
+      private ISurveyedSurfaces FilteredSurveyedSurfaces;
         private bool ReturnEarliestFilteredCellPass;
 
         /// <summary>
@@ -481,7 +444,7 @@ namespace VSS.TRex.SubGrids
                     */
                     {
                         ProdHeight = Consts.NullHeight; // should not get here
-                        ProdTime = DateTime.MinValue.ToBinary();
+                        ProdTime = DateTime.MinValue.Ticks;
                     }
 
                     // Determine if the elevation from the surveyed surface data is required based on the nullness of the production data elevation, and
@@ -548,7 +511,7 @@ namespace VSS.TRex.SubGrids
 
         /// <summary>
         /// Responsible for coordinating the retrieval of production data for a subgrid from a site model and also annotating it with
-        /// surveyd surface informationk for requests involving height data.
+        /// surveyed surface information for requests involving height data.
         /// </summary>
         /// <param name="subGridAddress"></param>
         /// <param name="prodDataRequested"></param>

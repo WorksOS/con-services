@@ -1,12 +1,9 @@
-﻿using System;
-
-namespace VSS.TRex.Exports.Patches
+﻿namespace VSS.TRex.Exports.Patches
 {
   /// <summary>
-  /// Comntains the prepared result for the client to consume
+  /// Contains the prepared result for the client to consume
   /// </summary>
-  [Serializable]
-    public class PatchResult
+  public class PatchResult
   {
     public int TotalNumberOfPagesToCoverFilteredData;
     public int MaxPatchSize;

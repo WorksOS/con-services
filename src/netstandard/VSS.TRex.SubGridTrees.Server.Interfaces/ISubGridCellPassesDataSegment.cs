@@ -22,7 +22,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     ISubGridCellLatestPassDataWrapper LatestPasses { get; set; }
 
     /// <summary>
-    /// Determines if this segments tiume range bounds the data tiem givein in the time argument
+    /// Determines if this segments time range bounds the data time given in the time argument
     /// </summary>
     /// <param name="time"></param>
     /// <returns></returns>
@@ -50,12 +50,12 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 
     /// <summary>
     /// Determines if this segment violates either the maximum number of cell passes within a 
-    /// segment limit, or the maximum numebr of cell passes within a single cell within a
+    /// segment limit, or the maximum number of cell passes within a single cell within a
     /// segment limit.
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
     /// <returns></returns>
-    bool RequiresCleaving();
+    bool RequiresCleaving(out uint TotalPasses, out uint MaxPassCount);
 
     /// <summary>
     /// Verifies if the segment time range bounds are consistent with the cell passes it contains

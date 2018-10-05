@@ -1,7 +1,7 @@
 ﻿using Apache.Ignite.Core.Cache;
 using System;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Utilities.ExtensionMethods;
 
@@ -10,10 +10,9 @@ namespace VSS.TRex.Services.SurveyedSurfaces
     /// <summary>
     /// Service processor to handle removing a surveyed surface from the list for a sitemodel
     /// </summary>
-    [Serializable]
-    public class RemoveSurveyedSurfaceProcessor : ICacheEntryProcessor<NonSpatialAffinityKey, byte[], Guid, bool>
+    public class RemoveSurveyedSurfaceProcessor : ICacheEntryProcessor<INonSpatialAffinityKey, byte[], Guid, bool>
     {
-        public bool Process(IMutableCacheEntry<NonSpatialAffinityKey, byte[]> entry, Guid arg)
+        public bool Process(IMutableCacheEntry<INonSpatialAffinityKey, byte[]> entry, Guid arg)
         {
             try
             {

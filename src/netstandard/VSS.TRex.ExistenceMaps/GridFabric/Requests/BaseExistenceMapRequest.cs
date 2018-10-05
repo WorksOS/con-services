@@ -1,10 +1,11 @@
 ﻿using System;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
 {
     /// <summary>
-    /// Base class for existence maps requests. Defines existence map type descriptors and related base functionality such as cachy key calculation
+    /// Base class for existence maps requests. Defines existence map type descriptors and related base functionality such as cache key calculation
     /// </summary>
     public class BaseExistenceMapRequest
     {
@@ -15,6 +16,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
         /// <param name="typeDescriptor"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public static NonSpatialAffinityKey CacheKey(Guid siteModelID, long typeDescriptor, Guid ID) => new NonSpatialAffinityKey(siteModelID, $"Descriptor:{typeDescriptor}-ID:{ID}");
+        public static INonSpatialAffinityKey CacheKey(Guid siteModelID, long typeDescriptor, Guid ID) => new NonSpatialAffinityKey(siteModelID, $"Descriptor:{typeDescriptor}-ID:{ID}");
     }
 }

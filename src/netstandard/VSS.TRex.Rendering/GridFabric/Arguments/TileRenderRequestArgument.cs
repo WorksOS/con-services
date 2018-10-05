@@ -6,7 +6,6 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
-    [Serializable]
     public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>

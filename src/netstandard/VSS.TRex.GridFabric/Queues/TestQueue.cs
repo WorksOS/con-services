@@ -9,7 +9,6 @@ using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.GridFabric.Queues
 {
-    [Serializable]
     public class TestQueueItem
     {
         /// <summary>
@@ -33,7 +32,8 @@ namespace VSS.TRex.GridFabric.Queues
 
         private void Add(DateTime date, string value)
         {
-            QueueCache.Put(date.ToBinary(), new TestQueueItem(date.ToBinary(), value));
+            long ticks = date.Ticks;
+            QueueCache.Put(ticks, new TestQueueItem(ticks, value));
         }
 
         public TestQueueHolder()
@@ -59,7 +59,7 @@ namespace VSS.TRex.GridFabric.Queues
 
         public IEnumerable<TestQueueItem> Query(DateTime earlierThan)
         {
-            var sql = new SqlQuery(typeof(TestQueueItem), $"_key < {earlierThan.ToBinary().ToString()}");
+            var sql = new SqlQuery(typeof(TestQueueItem), $"_key < {earlierThan.Ticks.ToString()}");
             var cursor = QueueCache.Query(sql);
 
             return cursor.Select(x => x.Value).ToArray();

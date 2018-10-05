@@ -9,25 +9,20 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces
 {
-    [Serializable]
-    public class SurveyedSurfaces : List<ISurveyedSurface>, IComparable<ISurveyedSurface>, IBinaryReaderWriter, ISurveyedSurfaces
+    public class SurveyedSurfaces : List<ISurveyedSurface>, IComparable<ISurveyedSurface>, ISurveyedSurfaces
     {
         private const byte kMajorVersion = 1;
         private const byte kMinorVersion = 3;
 
-        //    var
-        //     FMREWSyncInterlock : TMultiReadExclusiveWriteSynchronizer;
-
         private bool FSorted;
-        private bool FSortDescending;
+        private bool SortDescending;
 
         public bool Sorted { get { return FSorted; } }
 
-        private IExistenceMaps existenceMaps = null;
+        private IExistenceMaps existenceMaps;
         private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
         /// <summary>
@@ -142,7 +137,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
         public void SortChronologically(bool Descending = true)
         {
-            FSortDescending = Descending;
+            SortDescending = Descending;
 
             Sort();
 
@@ -151,7 +146,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
         public new void Sort()
         {
-            base.Sort((x, y) => FSortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
+            base.Sort((x, y) => SortDescending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
         }
 
         /// <summary>
@@ -298,11 +293,6 @@ namespace VSS.TRex.SurveyedSurfaces
                 }
             }
         }
-
-        //    procedure AcquireReadAccessInterlock; inline;
-        //    procedure AcquireWriteAccessInterlock; inline;
-        //    procedure ReleaseReadAccessInterlock; inline;
-        //    procedure ReleaseWriteAccessInterlock; inline;
 
         public int CompareTo(ISurveyedSurface other)
         {

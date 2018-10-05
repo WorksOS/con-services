@@ -3,13 +3,12 @@
 namespace VSS.TRex.CoordinateSystems.GridFabric.Arguments
 {
   /// <summary>
-  /// Contains a coordiante system expressed as a CSIB (Coordinate System Informatio Block) encoded as a string to s project
+  /// Contains a coordinate system expressed as a CSIB (Coordinate System Information Block) encoded as a string to s project
   /// </summary>
-  [Serializable]
-    public class AddCoordinateSystemArgument
+  public class AddCoordinateSystemArgument
   {
     /// <summary>
-    /// The ID of the project to assign the coordiante system to
+    /// The ID of the project to assign the coordinate system to
     /// </summary>
     public Guid ProjectID;
 

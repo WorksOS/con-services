@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
     public static class SegmentCellPassAdopter
     {
+        private static readonly ILogger Log = Logging.Logger.CreateLogger("SegmentCellPassAdopter");
+
         /// <summary>
         /// Causes segment to adopt all cell passes from sourceSegment where those cell passes were 
         /// recorded at or later than a specific date
@@ -33,22 +37,28 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         break; // No more passes in the cell will satisfy the condition
                 }
 
-                // countInCell represents the number of cells that should remain in the
-                // source segment. The remainder are to be moved to this segment
+                // countInCell represents the number of cells that should remain in the source segment.
+                // The remainder are to be moved to this segment
 
                 int adoptedPassCount = thePassCount - countInCell;
                 if (adoptedPassCount > 0)
                 {
                     // Copy the adopted passes from the 'from' cell to the 'to' cell
-                    uint OldCellPassCount = segment.PassCount(i, j);
+                    for (int PassIndex = countInCell; PassIndex < thePassCount; PassIndex++)
+                    {
+                      if (sourceSegment.Pass(i, j, (uint)PassIndex).Time < atAndAfterTime)
+                      {
+                        string msg = $"Pass with inappropriate time being added to segment: {sourceSegment.Pass(i, j, (uint)PassIndex).Time} < {atAndAfterTime}";
+                        Log.LogInformation(msg);
+                        //Debug.Assert(false, "Pass with inappropriate time being added to segment");
+                      }
+                      segment.AddPass(i, j, sourceSegment.Pass(i, j, (uint)PassIndex));
+                    }
 
-                    for (uint PassIndex = OldCellPassCount; PassIndex < OldCellPassCount + adoptedPassCount; PassIndex++)
-                        segment.AddPass(i, j, sourceSegment.Pass(i, j, PassIndex));
-
-                    // Set the new number of passes and reset the length of the cell passes
-                    // in the cell the passes were adopted from
-                    sourceSegment.SegmentPassCount -= adoptedPassCount;
-                    sourceSegment.AllocatePasses(i, j, (uint)countInCell);
+                  // Set the new number of passes and reset the length of the cell passes
+                  // in the cell the passes were adopted from
+                  sourceSegment.SegmentPassCount -= adoptedPassCount;
+                  sourceSegment.AllocatePasses(i, j, (uint)countInCell);
                 }
             });
         }

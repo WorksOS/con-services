@@ -2,7 +2,7 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Servers
@@ -22,10 +22,10 @@ namespace VSS.TRex.Servers
         /// </summary>
         protected IIgnite immutableTRexGrid = null;
 
-        protected static ICache<NonSpatialAffinityKey, byte[]> NonSpatialMutableCache = null;
-        protected static ICache<NonSpatialAffinityKey, byte[]> NonSpatialImmutableCache = null;
-        protected static ICache<SubGridSpatialAffinityKey, byte[]> SpatialMutableCache = null;
-        protected static ICache<SubGridSpatialAffinityKey, byte[]> SpatialImmutableCache = null;
+        protected static ICache<INonSpatialAffinityKey, byte[]> NonSpatialMutableCache = null;
+        protected static ICache<INonSpatialAffinityKey, byte[]> NonSpatialImmutableCache = null;
+        protected static ICache<ISubGridSpatialAffinityKey, byte[]> SpatialMutableCache = null;
+        protected static ICache<ISubGridSpatialAffinityKey, byte[]> SpatialImmutableCache = null;
 
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
@@ -74,7 +74,7 @@ namespace VSS.TRex.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg);
 
         /// <summary>
         /// Base configuration for the mutable spatial cache
@@ -94,7 +94,7 @@ namespace VSS.TRex.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_SPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
 
         #region IDisposable Support
         private bool disposedValue; // To detect redundant calls

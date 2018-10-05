@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Apache.Ignite.Core;
-using Apache.Ignite.Core.Binary;
-using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Affinity;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cluster;
@@ -11,7 +9,6 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Affinity
 {
-    [Serializable]
     public class MutableNonSpatialAffinityFunction : IAffinityFunction
     {
         public int Partitions => 1024;
@@ -35,7 +32,6 @@ namespace VSS.TRex.Tests.Affinity
         public int GetPartition(object key) => Math.Abs(((NonSpatialAffinityKey)key).ProjectID.GetHashCode()) % Partitions;
     }
 
-    [Serializable]
     public struct NonSpatialAffinityKey
     {
         public Guid ProjectID { get; set; }
@@ -74,7 +70,7 @@ namespace VSS.TRex.Tests.Affinity
         {
             EnsureServer();
 
-            ICache<NonSpatialAffinityKey, byte[]> cache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(
+            var cache = ignite.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(
                 new CacheConfiguration
                 {
                     Name = "MyCache",

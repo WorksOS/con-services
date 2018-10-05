@@ -1,7 +1,4 @@
-﻿using System;
-using VSS.TRex.Common;
-
-namespace VSS.TRex.GridFabric.Models.Responses
+﻿namespace VSS.TRex.GridFabric.Models.Responses
 {
     /// <summary>
     /// SubGridRequestsResponse represents the formal completion response sent back to a requestor from a 
@@ -9,7 +6,6 @@ namespace VSS.TRex.GridFabric.Models.Responses
     /// code covering the request plus additional statistical data such as the number of subgrids processed by 
     /// that cluster node from the overall pool of subgrid requested
     /// </summary>
-    [Serializable]
     public class SubGridRequestsResponse
     {
         /// <summary>

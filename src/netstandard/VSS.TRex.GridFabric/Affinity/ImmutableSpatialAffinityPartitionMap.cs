@@ -1,14 +1,14 @@
 ﻿using Apache.Ignite.Core;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 
 namespace VSS.TRex.GridFabric.Affinity
 {
     /// <summary>
-    /// Defines a spatial cache parition map for the subgrid data maintained in the immutable data grid
+    /// Defines a spatial cache partition map for the subgrid data maintained in the immutable data grid
     /// </summary>
-    public class ImmutableSpatialAffinityPartitionMap : AffinityPartitionMap<SubGridSpatialAffinityKey, byte[]>
+    public class ImmutableSpatialAffinityPartitionMap : AffinityPartitionMap<ISubGridSpatialAffinityKey, byte[]>
     {
         /// <summary>
         /// Local static instance variable to hold the partition map singleton
@@ -20,7 +20,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// </summary>
         public ImmutableSpatialAffinityPartitionMap() :
             base(Ignition.GetIgnite(TRexGrids.ImmutableGridName())
-                .GetCache<SubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()))
+                .GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.ImmutableSpatialCacheName()))
         {
         }
 

@@ -12,7 +12,6 @@ namespace VSS.TRex.SubGridTrees
     /// Represents a subgrid in terms of one bit per cell in the subgrid. Many bit-wise operations are supported
     /// allowing efficient manipulation of bitmasks representing subgrids and trees.
     /// </summary>
-    [Serializable]
     public struct SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
     {
         /// <summary>

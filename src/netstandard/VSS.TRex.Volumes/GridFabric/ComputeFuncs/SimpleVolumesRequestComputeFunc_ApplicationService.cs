@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Grids;
@@ -17,7 +16,6 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// </summary>
     public class SimpleVolumesRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>

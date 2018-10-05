@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System;
 using Draw = System.Drawing;
 using System.Reflection;
 using VSS.TRex.DI;
@@ -21,10 +20,8 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     /// The grid compute function responsible for coordinating rendering of a tile on a server compute node in response to 
     /// a client server instance requesting it.
     /// </summary>
-    [Serializable]
     public class TileRenderRequestComputeFunc : BaseComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>

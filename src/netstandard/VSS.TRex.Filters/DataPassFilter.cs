@@ -12,7 +12,6 @@ namespace VSS.TRex.Filters
     /// server data grid is prepared before returning it to the client to fulfill client
     /// grid data requests
     /// </summary>
-    [Serializable]
     public abstract class DataPassFilter
     {
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
@@ -37,13 +36,13 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Default no-arg constructor. Made private to enforce prpvision of storage proxy
+    /// Default no-arg constructor. Made private to enforce provision of storage proxy
     /// </summary>
     private SiteModels() {}
 
     /// <summary>
     /// Constructs a SiteModels instance taking a storageProxyFactory delegate that will create the
-    /// proorpoate primary storage proxy
+    /// appropriate primary storage proxy
     /// </summary>
     /// <param name="storageProxyFactory"></param>
     public SiteModels(Func<IStorageProxy> storageProxyFactory) : this()

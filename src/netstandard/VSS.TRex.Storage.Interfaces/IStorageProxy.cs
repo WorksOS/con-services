@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
@@ -8,8 +8,8 @@ namespace VSS.TRex.Storage.Interfaces
 {
     public interface IStorageProxy
     {
-        IStorageProxyCache<NonSpatialAffinityKey, byte[]> NonSpatialCache { get; }
-        IStorageProxyCache<SubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
+        IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; }
+        IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
 
         StorageMutability Mutability { get; set; }
 
@@ -22,8 +22,6 @@ namespace VSS.TRex.Storage.Interfaces
                                               string StreamName,
                                               uint SubgridX, uint SubgridY,
                                               string SegmentIdentifier,
-                                              // Don't implement yet.....
-                                              // const AInvalidatedSpatialStreams : TInvalidatedSpatialStreamArray;
                                               FileSystemStreamType StreamType,
                                               MemoryStream Stream);
 
@@ -44,7 +42,13 @@ namespace VSS.TRex.Storage.Interfaces
 
         void SetImmutableStorageProxy(IStorageProxy immutableProxy);
 
+        IStorageProxy ImmutableProxy { get; }
+
+
         bool Commit();
+
+        bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+
         void Clear();
 
         /*

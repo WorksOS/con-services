@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.GridFabric.Affinity
@@ -8,7 +8,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// The affinity function used by TRex to spread spatial data amongst processing servers
     /// </summary>
-    [Serializable]
     public class ImmutableSpatialAffinityFunction : AffinityFunctionBase
     {
         /// <summary>
@@ -21,13 +20,13 @@ namespace VSS.TRex.GridFabric.Affinity
             // Pull the subgrid origin location for the subgrid or segment represented in the cache key and calculate the 
             // spatial processing division descriptor to use as the partition affinity key
 
-            if (!(key is SubGridSpatialAffinityKey))
+            if (!(key is ISubGridSpatialAffinityKey))
             {
                 Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: {key}");
                 throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: {key}");
             }
 
-            SubGridSpatialAffinityKey value = (SubGridSpatialAffinityKey)key;
+            ISubGridSpatialAffinityKey value = (ISubGridSpatialAffinityKey)key;
 
             // Compute partition number against the subgrid location in the spatial affinity key
             return (int)SubGridCellAddress.ToSpatialPartitionDescriptor(value.SubGridX, value.SubGridY);

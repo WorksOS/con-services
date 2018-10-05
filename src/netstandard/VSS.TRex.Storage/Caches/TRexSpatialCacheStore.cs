@@ -1,11 +1,11 @@
 ﻿using Apache.Ignite.Core.Cache.Store;
 using System;
 using System.IO;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Storage.Caches
 {
-    public class TRexSpatialCacheStore : CacheStoreAdapter<SubGridSpatialAffinityKey, MemoryStream>
+    public class TRexSpatialCacheStore : CacheStoreAdapter<ISubGridSpatialAffinityKey, MemoryStream>
     {
         private TRexCacheStoreUtilities Utilities;
 
@@ -14,17 +14,17 @@ namespace VSS.TRex.Storage.Caches
             Utilities = new TRexCacheStoreUtilities(mutabilitySuffix);
         }
 
-        public override void Delete(SubGridSpatialAffinityKey key)
+        public override void Delete(ISubGridSpatialAffinityKey key)
         {
             Utilities.Delete(key.ToString());
         }
 
-        public override MemoryStream Load(SubGridSpatialAffinityKey key)
+        public override MemoryStream Load(ISubGridSpatialAffinityKey key)
         {
             return Utilities.Load(key.ToString());
         }
 
-        public override void LoadCache(Action<SubGridSpatialAffinityKey, MemoryStream> act, params object[] args)
+        public override void LoadCache(Action<ISubGridSpatialAffinityKey, MemoryStream> act, params object[] args)
         {
             // Ignore - not a supported activity
             // throw new NotImplementedException();
@@ -32,11 +32,11 @@ namespace VSS.TRex.Storage.Caches
 
         public override void SessionEnd(bool commit)
         {
-            // Ignore, nothign to do
+            // Ignore, nothing to do
             // throw new NotImplementedException();
         }
 
-        public override void Write(SubGridSpatialAffinityKey key, MemoryStream val)
+        public override void Write(ISubGridSpatialAffinityKey key, MemoryStream val)
         {
             Utilities.Write(key.ToString(), val);
         }

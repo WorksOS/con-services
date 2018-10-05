@@ -15,7 +15,7 @@ using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Logging;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.Storage.Caches;
@@ -49,9 +49,6 @@ namespace VSS.TRex.Servers.Compute
     {
       //cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
       base.ConfigureTRexGrid(cfg);
-
-
-
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
@@ -124,7 +121,6 @@ namespace VSS.TRex.Servers.Compute
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
       cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
-
     }
 
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
@@ -136,8 +132,6 @@ namespace VSS.TRex.Servers.Compute
         LocalPort = 48100,
       };
       return cfg;
-
-
     }
 
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
@@ -180,7 +174,7 @@ namespace VSS.TRex.Servers.Compute
       //// Non-spatial (event) data is replicated to all nodes for local access
       //cfg.CacheMode = CacheMode.Partitioned;
 
-      //// Note: The AffinityFunction is longer supplied as the ProjectID (Guid) member of the
+      //// Note: The AffinityFunction is longer supplied as the ProjectUID (Guid) member of the
       //// NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
       //// this means the values are spread amongst the servers per the default
       //cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
@@ -188,9 +182,9 @@ namespace VSS.TRex.Servers.Compute
       //cfg.Backups = 0;
     }
 
-    public override ICache<NonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateTRexCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<NonSpatialAffinityKey, byte[]>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
@@ -212,9 +206,9 @@ namespace VSS.TRex.Servers.Compute
       cfg.AffinityFunction = new MutableSpatialAffinityFunction();
     }
 
-    public override ICache<SubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<SubGridSpatialAffinityKey, byte[]>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg);
     }
 
     public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
@@ -234,9 +228,9 @@ namespace VSS.TRex.Servers.Compute
       cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
     }
 
-    public /*ICache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>*/ void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
+    public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
     {
-      mutableTRexGrid.GetOrCreateCache<TAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
+      mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
     }
 
     public static bool SetGridActive(string gridName)
@@ -289,20 +283,20 @@ namespace VSS.TRex.Servers.Compute
 
       //CacheConfiguration CacheCfg = new CacheConfiguration();
       //ConfigureNonSpatialMutableCache(CacheCfg);
-      var nonspatialcacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
-      NonSpatialMutableCache = InstantiateTRexCacheReference(nonspatialcacheConfiguration);
+      var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
+      NonSpatialMutableCache = InstantiateTRexCacheReference(nonSpatialCacheConfiguration);
 
       //CacheCfg = new CacheConfiguration();
       //ConfigureMutableSpatialCache(CacheCfg);
       //SpatialMutableCache = InstantiateSpatialCacheReference(CacheCfg);
-      var spacialcacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableSpatialCacheName()));
-      SpatialMutableCache = InstantiateSpatialCacheReference(spacialcacheConfiguration);
+      var spatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableSpatialCacheName()));
+      SpatialMutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
 
       //CacheCfg = new CacheConfiguration();
       //ConfigureTAGFileBufferQueueCache(CacheCfg);
       //InstantiateTAGFileBufferQueueCacheReference(CacheCfg);
-      var tagcacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
-      InstantiateTAGFileBufferQueueCacheReference(tagcacheConfiguration);
+      var tagCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
+      InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
     }
 
   }

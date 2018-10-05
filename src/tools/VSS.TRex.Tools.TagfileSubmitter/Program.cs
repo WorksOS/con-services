@@ -180,7 +180,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         // Pull relevant arguments off the command line
         if (args.Length < 2)
         {
-          Console.WriteLine("Usage: ProcessTAGFiles <ProjectID> <FolderPath>");
+          Console.WriteLine("Usage: ProcessTAGFiles <ProjectUID> <FolderPath>");
           Console.ReadKey();
           return;
         }
