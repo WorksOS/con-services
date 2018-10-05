@@ -36,6 +36,7 @@ namespace VSS.TRex.SiteModels
     public ISiteModelMachineDesign Locate(string name) => Find(x => name.Equals(x.Name));
     public ISiteModelMachineDesign Locate(int id) => Find(x => id.Equals(x.Id));
 
+    // for testing only
     public ISiteModelMachineDesign AddExisting(ISiteModelMachineDesign siteModelMachineDesign)
     {
       Add(siteModelMachineDesign);
