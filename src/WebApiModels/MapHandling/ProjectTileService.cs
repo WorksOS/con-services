@@ -1,10 +1,8 @@
 ﻿using System.Drawing;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Extensions;
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

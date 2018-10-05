@@ -21,7 +21,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       try
       {
         CutFillDetailsRequest request = item as CutFillDetailsRequest;

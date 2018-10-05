@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -16,6 +18,7 @@ using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Exceptions;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -27,16 +30,20 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     private readonly IProductionDataRequestFactory requestFactory;
     private readonly IElevationExtentsProxy elevProxy;
     private readonly IASNodeClient raptorClient;
+    private readonly IConfigurationStore ConfigStore;
+    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
 
-    public ProductionDataTileService(IProductionDataRequestFactory prodDataFactory, ILoggerFactory logger, IElevationExtentsProxy extentsProxy, IASNodeClient raptor)
+    public ProductionDataTileService(IProductionDataRequestFactory prodDataFactory, ILoggerFactory logger, IElevationExtentsProxy extentsProxy, IASNodeClient raptor, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       requestFactory = prodDataFactory;
       log = logger.CreateLogger<ProductionDataTileService>();
       this.logger = logger;
       raptorClient = raptor;
       elevProxy = extentsProxy;
+      ConfigStore = configStore;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -46,6 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="projectSettingsColors"></param>
     /// <param name="filter">Filter to use for Raptor</param>
     /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Unique project identifier</param>
     /// <param name="mode">Display mode; type of data requested</param>
     /// <param name="width">Width of the tile</param>
     /// <param name="height">Height of the tile in pixels</param>
@@ -57,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="volumeCalcType">Type of summary volumes calculation</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
+    public TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders)
     {
       var getTile = true;
       ElevationStatisticsResult elevationExtents = null;
@@ -77,6 +85,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (getTile)
       {
         tileRequest = requestFactory.Create<TileRequestHelper>(r => r
+           .ProjectUid(projectUid)
            .ProjectId(projectId)
            .Headers(customHeaders)
            .ProjectSettings(projectSettings)
@@ -124,7 +133,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         try
         {
           tileResult = RequestExecutorContainerFactory
-            .Build<CompactionTileExecutor>(logger, raptorClient)
+            .Build<CompactionTileExecutor>(logger, raptorClient, null, ConfigStore, null, null, null, null, null, null, TRexCompactionDataProxy, customHeaders)
             .Process(tileRequest) as TileResult;
         }
         catch (Exception ex)
@@ -133,7 +142,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         }
       }
 
-      return tileResult ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
+      return tileResult?.TileData != null
+        ? tileResult
+        : TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
     }
 
     /// <summary>

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Extensions;
 using VSS.Productivity3D.Models.Models;
 using CommonModels=VSS.Productivity3D.Common.Models;
 

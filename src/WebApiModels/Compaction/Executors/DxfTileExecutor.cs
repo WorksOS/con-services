@@ -9,10 +9,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Extensions;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         {
           emptyOverlayData = bitmap.BitmapToByteArray();
         }
-        return TileResult.CreateTileResult(emptyOverlayData, TASNodeErrorStatus.asneOK);
+        return new TileResult(emptyOverlayData);
       }
 
       log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         overlayData = bitmap.BitmapToByteArray();
       }
 
-      return TileResult.CreateTileResult(overlayData, TASNodeErrorStatus.asneOK);
+      return new TileResult(overlayData);
     }
 
     /// <summary>

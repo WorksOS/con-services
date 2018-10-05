@@ -7,10 +7,10 @@ using SVOICVolumeCalculationsDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -32,14 +32,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-      TileRequest request = item as TileRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<TileRequest>();
-
       try
       {
+        TileRequest request = item as TileRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException<TileRequest>();
+
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
+
+        if (useTrexGateway)
+          return trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
+
         RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
           out bool coordsAreGrid);
 
@@ -86,36 +90,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange)
         {
           if (tile != null)
-          {
-            result = ConvertResult(tile, raptorResult);
-          }
+            return ConvertResult(tile, raptorResult);
           else
-          {
-            result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Null tile returned");
-          }
+            return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null tile returned");
         }
-        else
-        {
-          log.LogTrace(
-            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}.");
 
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
-            ContractExecutionStatesEnum.InternalProcessingError,
-            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
-        }
+        log.LogTrace(
+          $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}.");
+
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+          ContractExecutionStatesEnum.InternalProcessingError,
+          $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
     }
 
     private TileResult ConvertResult(MemoryStream tile, TASNodeErrorStatus raptorResult)
     {
       log.LogDebug("Raptor result for Tile: " + raptorResult);
-      return TileResult.CreateTileResult(tile.ToArray(), raptorResult);
+      return new TileResult(tile.ToArray(), raptorResult != TASNodeErrorStatus.asneOK);
     }
 
     protected sealed override void ProcessErrorCodes()

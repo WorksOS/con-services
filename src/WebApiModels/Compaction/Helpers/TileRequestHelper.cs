@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       }
 
       TileRequest tileRequest = new TileRequest(
-        ProjectId, null, mode, palette, liftSettings, (VolumesType)computeVolType,
+        ProjectId, ProjectUid, null, mode, palette, liftSettings, (VolumesType)computeVolType,
         0, design, filter1, 0, filter2, 0,
         Filter == null || !Filter.LayerType.HasValue ? FilterLayerMethod.None : Filter.LayerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, CMV_PERCENT_CHANGE_NUMBER_OF_COLORS, false);
