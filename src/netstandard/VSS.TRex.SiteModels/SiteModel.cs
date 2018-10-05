@@ -122,12 +122,14 @@ namespace VSS.TRex.SiteModels
           if (csib != null)
             return csib;
 
-          FileSystemErrorStatus readResult = 
-            DIContext.Obtain<ISiteModels>().StorageProxy.
-              ReadStreamFromPersistentStore(ID, 
-                                            CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, 
-                                            FileSystemStreamType.CoordinateSystemCSIB, 
-                                            out MemoryStream csibStream);
+          if (!IsTransient)
+            return string.Empty;
+          
+          FileSystemErrorStatus readResult =
+            DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID,
+              CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
+              FileSystemStreamType.CoordinateSystemCSIB,
+              out MemoryStream csibStream);
 
           if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
             return null;
@@ -135,7 +137,7 @@ namespace VSS.TRex.SiteModels
           using (csibStream)
           {
             return Encoding.ASCII.GetString(csibStream.ToArray());
-          }
+          }          
         }
 
 
@@ -215,7 +217,7 @@ namespace VSS.TRex.SiteModels
       /// <summary>
       /// SiteModelMachineDesigns records all the designs that have been seen in tagfiles for this sitemodel.
       /// </summary>
-      private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; }
+      private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; } = null;
     
       public ISiteModelMachineDesignList SiteModelMachineDesigns
     {
@@ -227,7 +229,8 @@ namespace VSS.TRex.SiteModels
             {
               DataModelID = ID
             };
-            siteModelMachineDesigns.LoadFromPersistentStore();
+            if (!IsTransient)
+              siteModelMachineDesigns.LoadFromPersistentStore();
           }
 
           return siteModelMachineDesigns;
@@ -255,7 +258,8 @@ namespace VSS.TRex.SiteModels
               {
                 DataModelID = ID
               };
-              machines.LoadFromPersistentStore();
+              if (!IsTransient)
+                machines.LoadFromPersistentStore();
             }
 
             return machines;

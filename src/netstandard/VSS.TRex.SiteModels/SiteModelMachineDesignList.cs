@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.DI;
-using VSS.TRex.Machines;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
@@ -35,6 +34,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="name"></param>
     /// <returns></returns>
     public ISiteModelMachineDesign Locate(string name) => Find(x => name.Equals(x.Name));
+    public ISiteModelMachineDesign Locate(int id) => Find(x => id.Equals(x.Id));
 
     public ISiteModelMachineDesign AddExisting(ISiteModelMachineDesign siteModelMachineDesign)
     {

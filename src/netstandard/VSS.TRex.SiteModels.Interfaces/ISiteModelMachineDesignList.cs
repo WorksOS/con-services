@@ -15,6 +15,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     int LastIndex { get; set; }
 
     ISiteModelMachineDesign Locate(string name);
+    ISiteModelMachineDesign Locate(int id);
 
     ISiteModelMachineDesign AddExisting(ISiteModelMachineDesign siteModelMachineDesign);
     

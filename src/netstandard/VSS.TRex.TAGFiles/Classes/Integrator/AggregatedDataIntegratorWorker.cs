@@ -180,7 +180,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         Task.TargetSiteModel.Include(processedTask.TargetSiteModel);
 
                         // Integrate the machine events
-                        eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, Task.TargetSiteModel);
+                        eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.TargetSiteModel, Task.TargetSiteModel);
 
                         //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
@@ -258,7 +258,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                     // Perform machine event integration outside of the SiteModel write access interlock as the
                     // individual event lists have independent exclusive locks event integration uses.
-                    eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, SiteModelFromDM);
+                    eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.TargetSiteModel, SiteModelFromDM);
 
                     // Integrate the machine events into the main site model. This requires the
                     // sitemodel interlock as aspects of the sitemodel state (machine) are being changed.

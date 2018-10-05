@@ -192,13 +192,27 @@ namespace VSS.TRex.Events
             state = Events[index].State;
         }
 
-        /// <summary>
-        /// Adds an event of type T with the given date into the list. 
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <param name="value"></param>
-        /// <returns>The event instance that was added to the list</returns>
-        public virtual void PutValueAtDate(DateTime dateTime, V value)
+      /// <summary>
+      /// Modfies the event state at a specific location in the events list
+      /// </summary>
+      /// <param name="index"></param>
+      /// <param name="state"></param>
+      public void SetStateAtIndex(int index, V state)
+      {
+        Events[index] = new Event
+          {
+            Date = Events[index].Date,
+            State = state
+          };
+      }
+
+    /// <summary>
+    /// Adds an event of type T with the given date into the list. 
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="value"></param>
+    /// <returns>The event instance that was added to the list</returns>
+    public virtual void PutValueAtDate(DateTime dateTime, V value)
         {
             PutValueAtDate(new Event
             {
