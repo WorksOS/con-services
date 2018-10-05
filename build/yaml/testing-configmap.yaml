@@ -19,3 +19,4 @@ data:
   WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/
   TILE_WEBSERVICES_URL: http://localhost:80
+  LOADDUMP_API_URL: http://localhost:5001/api/v1/mock/loaddump

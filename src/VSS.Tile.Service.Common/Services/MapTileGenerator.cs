@@ -28,15 +28,18 @@ namespace VSS.Tile.Service.Common.Services
     private readonly IMapTileService mapTileService;
     private readonly IProjectTileService projectTileService;
     private readonly IGeofenceTileService geofenceTileService;
+    private readonly ILoadDumpTileService loadDumpTileService;
     private readonly IAlignmentTileService alignmentTileService;
     private readonly IDxfTileService dxfTileService;
     private readonly IBoundingBoxHelper boundingBoxHelper;
     private readonly IBoundingBoxService boundingBoxService;
     private readonly IRaptorProxy raptorProxy;
+    private readonly ILoadDumpProxy loadDumpProxy;
 
     public MapTileGenerator(ILoggerFactory logger, IBoundingBoxService bboxService, IRaptorProxy raptorProxy,
       IMapTileService mapTileService, IProjectTileService projectTileService, IGeofenceTileService geofenceTileService,
-      IAlignmentTileService alignmentTileService, IDxfTileService dxfTileService, IBoundingBoxHelper boundingBoxHelper)
+      IAlignmentTileService alignmentTileService, IDxfTileService dxfTileService, IBoundingBoxHelper boundingBoxHelper,
+      ILoadDumpTileService loadDumpTileService, ILoadDumpProxy loadDumpProxy)
     {
       log = logger.CreateLogger<MapTileGenerator>();
       this.mapTileService = mapTileService;
@@ -47,6 +50,8 @@ namespace VSS.Tile.Service.Common.Services
       this.boundingBoxHelper = boundingBoxHelper;
       boundingBoxService = bboxService;
       this.raptorProxy = raptorProxy;
+      this.loadDumpTileService = loadDumpTileService;
+      this.loadDumpProxy = loadDumpProxy;
     }
 
     /// <summary>
@@ -143,7 +148,8 @@ namespace VSS.Tile.Service.Common.Services
             bitmap = await dxfTileService.GetDxfBitmap(request.mapParameters, request.dxfFiles);
             break;
           case TileOverlayType.LoadDumpData:
-            //not implemented yet
+            var loadDumpLocations = await loadDumpProxy.GetLoadDumpLocations(request.project.ProjectUid, request.customHeaders);
+            bitmap = loadDumpTileService.GetLoadDumpBitmap(request.mapParameters, loadDumpLocations);
             break;
         }
         if (bitmap != null)

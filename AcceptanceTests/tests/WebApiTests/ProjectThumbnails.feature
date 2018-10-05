@@ -34,3 +34,15 @@ Scenario: ProjectBoundaryOnlyBase64
 	When I request a Report Tile for project UID "ff91dd40-1569-4765-a2bc-014321f76ace" 
 	Then The resulting thumbnail should match "ProjectBoundaryOnly" from the response repository within "3" percent
 
+Scenario: WithLoadDumpData
+  Given The project thumbnail URI is "/api/v1/projectthumbnail2d/png" for operation "png"
+  And the expected response is in the "ProjectThumbnailResponse.json" respository
+	When I request a Report Tile for project UID "ff91dd40-1569-4765-a2bc-014321f76ace" 
+	Then The resulting thumbnail should match "LoadDumpData" from the response repository within "3" percent
+
+Scenario: WithLoadDumpDataBase64
+  Given The project thumbnail URI is "/api/v1/projectthumbnail2d/base64" for operation "base64"
+  And the expected response is in the "ProjectThumbnailResponse.json" respository
+	When I request a Report Tile for project UID "ff91dd40-1569-4765-a2bc-014321f76ace" 
+	Then The resulting thumbnail should match "LoadDumpData" from the response repository within "3" percent
+

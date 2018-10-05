@@ -121,6 +121,34 @@ namespace VSS.Tile.Service.WebApi.Controllers
       return GetStreamContents(result);
     }
 
+    /// <summary>
+    /// Gets a 2D (unified productivity) project thumbnail image as a raw png.
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v1/projectthumbnail2d/png")]
+    [HttpGet]
+    public async Task<FileResult> GetProjectThumbnail2DPng(
+      [FromQuery] Guid projectUid)
+    {
+      Log.LogDebug($"{nameof(GetProjectThumbnail2DPng)}: {Request.QueryString}");
+
+      return await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.LoadDumpData });
+    }
+
+    /// <summary>
+    /// Gets a 2D (unified productivity) project thumbnail image as a Base64 encoded string.
+    /// </summary>
+    [ProjectUidVerifier]
+    [Route("api/v1/projectthumbnail2d/base64")]
+    [HttpGet]
+    public async Task<byte[]> GetProjectThumbnail2DBase64(
+      [FromQuery] Guid projectUid)
+    {
+      Log.LogDebug($"{nameof(GetProjectThumbnail2DBase64)}: {Request.QueryString}");
+
+      var result = await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.LoadDumpData });
+      return GetStreamContents(result);
+    }
 
     /// <summary>
     /// Gets a geofence thumbnail image as a raw png.

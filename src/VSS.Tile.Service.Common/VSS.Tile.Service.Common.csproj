@@ -9,8 +9,8 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
     <PackageReference Include="SixLabors.ImageSharp.drawing" Version="1.0.0-beta0005" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.45.1" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.0" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.46.1" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.1" />
     <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.12.1" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.10" />
@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Authentication\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

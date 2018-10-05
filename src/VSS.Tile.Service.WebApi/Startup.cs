@@ -45,6 +45,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddScoped<IMapTileGenerator, MapTileGenerator>();
       services.AddScoped<IMapTileService, MapTileService>();
       services.AddScoped<IProjectTileService, ProjectTileService>();
+      services.AddScoped<ILoadDumpTileService, LoadDumpTileService>();
       services.AddScoped<IGeofenceTileService, GeofenceTileService>();
       services.AddScoped<IAlignmentTileService, AlignmentTileService>();
       services.AddScoped<IDxfTileService, DxfTileService>();
@@ -54,6 +55,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
+      services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
 
       services.AddOpenTracing(builder =>
       {
