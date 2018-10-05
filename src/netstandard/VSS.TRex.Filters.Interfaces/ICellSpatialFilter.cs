@@ -1,9 +1,10 @@
 ﻿using System;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellSpatialFilter
+  public interface ICellSpatialFilter : IToFromBinary
   {
     /// <summary>
     /// The fence used for polygon based spatial filtering

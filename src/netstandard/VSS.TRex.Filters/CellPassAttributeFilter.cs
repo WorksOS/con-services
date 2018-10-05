@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Linq;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -29,7 +30,7 @@ namespace VSS.TRex.Filters
          Positional: Point and radius for inclusion area
 
 
-       The result of ElevationangeOffset filter is <YES> the cell may be used for cell pass
+       The result of ElevationRangeOffset filter is <YES> the cell may be used for cell pass
        filtering, or<NO> the cell should not be considered for cell pass
        filtering.
 
@@ -55,12 +56,11 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilter : DataPassFilter, ICellPassAttributeFilter
   {
-    [NonSerialized]
-    private ISiteModel siteModel;
+    [NonSerialized] private ISiteModel siteModel;
 
     /// <summary>
     /// Owner is the SiteModel instance to which this filter relates and is used in cases where machine related
-    /// attriutes are included in the filter
+    /// attributes are included in the filter
     /// </summary>
     public object /*ISiteModel*/ SiteModel
     {
@@ -170,11 +170,10 @@ namespace VSS.TRex.Filters
     /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
     /// an elevation range filter.
     /// </summary>
-    [NonSerialized]
-    public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
+    [NonSerialized] public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
 
     /// <summary>
-    /// Denotes whether analysis of cell passes in a cell are analysed into separate layers accodring to 
+    /// Denotes whether analysis of cell passes in a cell are analysed into separate layers according to 
     /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
     public LayerState LayerState { get; set; } = LayerState.Invalid;
@@ -190,17 +189,17 @@ namespace VSS.TRex.Filters
     public bool RestrictFilteredDataToCompactorsOnly { get; set; }
 
     /// <summary>
-    /// The list of surveyed surface identifiers to be exluded from the filtered result
+    /// The list of surveyed surface identifiers to be excluded from the filtered result
     /// </summary>
     public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
 
     /// <summary>
-    /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filtrer is being applied to
+    /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filter is being applied to
     /// </summary>
     public short[] MachineIDs { get; set; }
 
     /// <summary>
-    /// The machines present in the filter represented as a bitset
+    /// The machines present in the filter represented as a bit set
     /// </summary>
     public BitArray MachineIDSet { get; set; }
 
@@ -215,12 +214,12 @@ namespace VSS.TRex.Filters
     public ushort MaterialTemperatureMax { get; set; }
 
     /// <summary>
-    /// takes final filtered passes and reduces to the set to passes within the min max passcount range
+    /// takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
     public ushort PasscountRangeMin { get; set; }
 
     /// <summary>
-    ///  takes final filtered passes and reduces to the set to passes within the min max passcount range
+    ///  takes final filtered passes and reduces to the set to passes within the min max pass count range
     /// </summary>
     public ushort PasscountRangeMax { get; set; }
 
@@ -231,6 +230,11 @@ namespace VSS.TRex.Filters
     public CellPassAttributeFilter()
     {
       ClearFilter();
+    }
+
+    public CellPassAttributeFilter(IBinaryRawReader reader)
+    {
+      FromBinary(reader);
     }
 
     public override void Prepare()
@@ -375,7 +379,7 @@ namespace VSS.TRex.Filters
       if (Result != 0)
         return Result;
 
-      if (HasPassTypeFilter) // Check the contents of the passtype filter
+      if (HasPassTypeFilter) // Check the contents of the pass type filter
         if (PassTypeSet == AFilter.PassTypeSet)
           Result = 0;
         else
@@ -844,7 +848,7 @@ namespace VSS.TRex.Filters
 
       // Extract the list of events for the machine referred to in the cell pass. Use this
       // reference for all filter criteria that depend on machine events
-      ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? (ProductionEventLists)siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex] : null;
+      ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? (ProductionEventLists) siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex] : null;
 
       if (HasDesignFilter)
       {
@@ -1194,7 +1198,8 @@ namespace VSS.TRex.Filters
 
 
       if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behavours depending on display or grid type etc
-      { // filtering on every cell here
+      {
+        // filtering on every cell here
         if (!FilterPassUsingTemperatureRange(ref PassValue))
           return false;
       }
@@ -1223,16 +1228,16 @@ namespace VSS.TRex.Filters
     /// </summary>
     /// <returns></returns>
     public bool FilterSinglePass(CellPass[] PassValues,
-        int PassValueCount,
-        ref FilteredSinglePassInfo FilteredPassInfo,
-        object /*IProfileCell*/ profileCell)
+      int PassValueCount,
+      ref FilteredSinglePassInfo FilteredPassInfo,
+      object /*IProfileCell*/ profileCell)
     {
       return base.FilterSinglePass(PassValues,
-          PassValueCount,
-          ReturnEarliestFilteredCellPass,
-          ref FilteredPassInfo,
-          (IProfileCell)profileCell,
-          true);
+        PassValueCount,
+        ReturnEarliestFilteredCellPass,
+        ref FilteredPassInfo,
+        (IProfileCell) profileCell,
+        true);
     }
 
     public void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY)
@@ -1264,7 +1269,7 @@ namespace VSS.TRex.Filters
     public void InitialiseElevationRangeFilter(IClientHeightLeafSubGrid DesignElevations)
     {
       // If there is a design specified then intialise the filter using the design elevations
-      // queried and supplied by the caller, otherwise the specified Elevation level, offset and thickess
+      // queried and supplied by the caller, otherwise the specified Elevation level, offset and thickness
       // are used to calculate an elevation bracket.
 
       ElevationRangeIsLevelAndThicknessOnly = DesignElevations == null;
@@ -1325,8 +1330,8 @@ namespace VSS.TRex.Filters
     /// <param name="filteredPassInfo"></param>
     /// <returns></returns>
     public override bool FilterMultiplePasses(CellPass[] passValues,
-        int PassValueCount,
-        ref FilteredMultiplePassInfo filteredPassInfo)
+      int PassValueCount,
+      ref FilteredMultiplePassInfo filteredPassInfo)
     {
       if (!AnyFilterSelections)
       {
@@ -1347,6 +1352,143 @@ namespace VSS.TRex.Filters
       }
 
       return Result;
+    }
+
+    /// <summary>
+    /// Serialise the state of the cell pass attribute filter using the ToFromBinary serialization approach
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      const byte versionNumber = 1;
+      writer.WriteByte(versionNumber);
+
+      writer.WriteLong(StartTime.Ticks);
+      writer.WriteLong(EndTime.Ticks);
+
+      writer.WriteInt(MachinesList.Length);
+      foreach (var guid in MachinesList)
+        writer.WriteGuid(guid);
+
+      writer.WriteInt(DesignNameID);
+      writer.WriteInt((int) VibeState);
+      writer.WriteInt((int) MachineDirection);
+      writer.WriteInt((int) PassTypeSet);
+      writer.WriteBoolean(MinElevationMapping);
+
+      writer.WriteInt((int) PositioningTech);
+      writer.WriteInt(GPSTolerance); // No WriteUShort is provided, use an int...
+
+      writer.WriteBoolean(GPSAccuracyIsInclusive);
+      writer.WriteInt((int) GPSAccuracy);
+
+      writer.WriteBoolean(GPSToleranceIsGreaterThan);
+      writer.WriteInt((int) ElevationType);
+      writer.WriteInt((int) GCSGuidanceMode);
+
+      writer.WriteBoolean(ReturnEarliestFilteredCellPass);
+
+      writer.WriteDouble(ElevationRangeLevel);
+      writer.WriteDouble(ElevationRangeOffset);
+      writer.WriteDouble(ElevationRangeThickness);
+
+      writer.WriteGuid(ElevationRangeDesignID);
+
+      //DesignDescriptor ElevationRangeDesign = DesignDescriptor.Null();
+      //    bool ElevationRangeIsInitialised { get; set; }  Processing state
+      //    bool ElevationRangeIsLevelAndThicknessOnly { get; set; }   Processing state
+      //    double ElevationRangeTopElevationForCell { get; set; } = Consts.NullDouble;   Processing state
+      //    double ElevationRangeBottomElevationForCell { get; set; } = Consts.NullDouble;   Processing state
+
+      writer.WriteInt((int) LayerState);
+      writer.WriteInt((int) LayerID);
+
+      writer.WriteBoolean(RestrictFilteredDataToCompactorsOnly);
+
+      writer.WriteInt(SurveyedSurfaceExclusionList.Length);
+      foreach (var guid in SurveyedSurfaceExclusionList)
+        writer.WriteGuid(guid);
+
+      writer.WriteShortArray(MachineIDs);
+
+      // BitArray MachineIDSet { get; set; } Processing state
+
+      writer.WriteInt(MaterialTemperatureMin); // No Writer.WriteUShort, use int instead
+      writer.WriteInt(MaterialTemperatureMax); // No Writer.WriteUShort, use int instead
+      writer.WriteInt(PasscountRangeMin); // No Writer.WriteUShort, use int instead   
+      writer.WriteInt(PasscountRangeMax); // No Writer.WriteUShort, use int instead
+    }
+
+    /// <summary>
+    /// Deserialise the state of the cell pass attribute filter using the ToFromBinary serialization approach
+    /// </summary>
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      const byte versionNumber = 1;
+
+      byte readVersionNumber = reader.ReadByte();
+
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+
+      StartTime = new DateTime(reader.ReadLong());
+      EndTime = new DateTime(reader.ReadLong());
+
+      MachinesList = new Guid[reader.ReadInt()];
+      for (int i = 0; i < MachinesList.Length; i++)
+        MachinesList[i] = reader.ReadGuid().Value;
+
+      DesignNameID = reader.ReadInt();
+      VibeState = (VibrationState) reader.ReadInt();
+      MachineDirection = (MachineDirection) reader.ReadInt();
+      PassTypeSet = (PassTypeSet) reader.ReadInt();
+
+      MinElevationMapping = reader.ReadBoolean();
+
+      PositioningTech = (PositioningTech) reader.ReadInt();
+      GPSTolerance = (ushort) reader.ReadInt();
+
+      GPSAccuracyIsInclusive = reader.ReadBoolean();
+      GPSAccuracy = (GPSAccuracy) reader.ReadInt();
+
+      GPSToleranceIsGreaterThan = reader.ReadBoolean();
+
+      ElevationType = (ElevationType) reader.ReadInt();
+      GCSGuidanceMode = (MachineAutomaticsMode) reader.ReadInt();
+
+      ReturnEarliestFilteredCellPass = reader.ReadBoolean();
+
+      ElevationRangeLevel = reader.ReadDouble();
+      ElevationRangeOffset = reader.ReadDouble();
+      ElevationRangeThickness = reader.ReadDouble();
+
+      ElevationRangeDesignID = reader.ReadGuid().Value;
+
+      //DesignDescriptor ElevationRangeDesign = DesignDescriptor.Null();
+
+      //    bool ElevationRangeIsInitialised { get; set; }  Processing state
+      //    bool ElevationRangeIsLevelAndThicknessOnly { get; set; }   Processing state
+      //    double ElevationRangeTopElevationForCell { get; set; } = Consts.NullDouble;   Processing state
+      //    double ElevationRangeBottomElevationForCell { get; set; } = Consts.NullDouble;   Processing state
+
+      LayerState = (LayerState) reader.ReadInt();
+      LayerID = reader.ReadInt();
+
+      RestrictFilteredDataToCompactorsOnly = reader.ReadBoolean();
+
+      SurveyedSurfaceExclusionList = new Guid[reader.ReadInt()];
+      for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
+        SurveyedSurfaceExclusionList[i] = reader.ReadGuid().Value;
+
+      MachineIDs = reader.ReadShortArray();
+
+      // BitArray MachineIDSet { get; set; } Processing state
+
+      MaterialTemperatureMin = (ushort) reader.ReadInt();
+      MaterialTemperatureMax = (ushort) reader.ReadInt();
+      PasscountRangeMin = (ushort) reader.ReadInt();
+      PasscountRangeMax = (ushort) reader.ReadInt();
+
+      throw new NotImplementedException();
     }
   }
 }

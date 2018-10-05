@@ -2,12 +2,13 @@
 using System.Collections;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters.Models;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellPassAttributeFilter
+  public interface ICellPassAttributeFilter : IToFromBinary
   {
     object /*ISiteModel*/ SiteModel { get; set; }
 

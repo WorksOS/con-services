@@ -1,8 +1,9 @@
 ﻿using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface IFilterSet
+  public interface IFilterSet : IToFromBinary
   {
     /// <summary>
     /// The list of combined attribute and spatial filters to be used
@@ -15,5 +16,4 @@ namespace VSS.TRex.Filters.Interfaces
     /// <param name="extents"></param>
     void ApplyFilterAndSubsetBoundariesToExtents(BoundingWorldExtent3D extents);
   }
-
 }
