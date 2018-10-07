@@ -129,7 +129,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public void MapProjectSettingsToTemperatureDetailsSettings()
     {
       var ps = CompactionProjectSettings.CreateProjectSettings(
-        useDefaultTemperatureTargets: false, customTemperatureTargets: new List<int> { 0, 150, 200, 250, 300 }
+        useDefaultTemperatureTargets: false, customTemperatureTargets: new List<double> { 0, 150, 200, 250, 300 }
       );
 
       var temp = AutoMapperUtility.Automapper.Map<TemperatureDetailsSettings>(ps);
