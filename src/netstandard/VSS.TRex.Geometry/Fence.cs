@@ -158,13 +158,11 @@ namespace VSS.TRex.Geometry
         {
           return false;
         }
-        else
+
+        if (IsRectangle)
         {
-          if (IsRectangle)
-          {
-            // The point lies in the known rectangular area, so is contained in the filter
-            return true;
-          }
+          // The point lies in the known rectangular area, so is contained in the filter
+          return true;
         }
 
         int pointsCount = Points.Count;
@@ -517,9 +515,8 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Delegates GetHashCode to the default object hash code
     /// </summary>
-    /// <param name="obj"></param>
     /// <returns></returns>
-    public int GetHashCode(Fence obj) => obj.GetHashCode();
+    public override int GetHashCode() => GetHashCode();
 
     public override bool Equals(object obj)
     {
