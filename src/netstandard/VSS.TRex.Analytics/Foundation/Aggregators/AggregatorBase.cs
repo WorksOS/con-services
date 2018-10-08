@@ -5,7 +5,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 namespace VSS.TRex.Analytics.Foundation.Aggregators
 {
   /// <summary>
-  /// Base class used by all analytics aggregators supporting funcitons such as pass count summary/details, cut/fill summary, speed summary/details etc
+  /// Base class used by all analytics aggregators supporting functions such as pass count summary/details, cut/fill summary, speed summary/details etc
   /// where the analytics are calculated at the cluster compute layer and reduced at the application service layer.
   /// </summary>
   public class AggregatorBase : ISubGridRequestsAggregator

@@ -515,27 +515,6 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Determines is the content of this fence is the same as the 2D content in the other fence
-    /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <returns></returns>
-    public bool Equals(Fence x, Fence y)
-    {
-      if (!x.HasVertices || !y.HasVertices)
-        return false;
-
-      if (x.Points.Count != y.Points.Count)
-        return false;
-
-      for (int i = 0; i < x.Points.Count; i++)
-        if (x.Points[i].SameInPlan(y.Points[i]))
-          return false;
-
-      return true;
-    }
-
-    /// <summary>
     /// Delegates GetHashCode to the default object hash code
     /// </summary>
     /// <param name="obj"></param>

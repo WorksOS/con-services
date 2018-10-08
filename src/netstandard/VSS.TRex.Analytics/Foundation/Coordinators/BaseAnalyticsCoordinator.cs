@@ -67,7 +67,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
         }
 
         /// <summary>
-        /// Constructs the aggegator to be used as the reduction function for the MapReduceReduce computation
+        /// Constructs the aggregator to be used as the reduction function for the MapReduceReduce computation
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>
