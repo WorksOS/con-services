@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
@@ -27,6 +29,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         RequestExecutorContainer
           .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(request)) as TileResult;
+    }
+
+    [HttpPost]
+    [Route("api/v1/tile/filestream")]
+    public FileResult GetTileFileStream([FromBody] TileRequest request)
+    {
+      Log.LogInformation($"{nameof(GetTileFileStream)}: {Request.QueryString}");
+
+      request.Validate();
+
+      var tileResult = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(request)) as TileResult;
+
+      if (tileResult?.TileData == null)
+        tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
+
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
   }
 }
