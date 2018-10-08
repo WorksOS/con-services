@@ -8,7 +8,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Combined filter represents both spatial and attribute based filtering considerations
   /// </summary>
-  public class CombinedFilter : ICombinedFilter, IToFromBinary
+  public class CombinedFilter : ICombinedFilter, IFromToBinary
   {
     private const byte versionNumber = 1;
 

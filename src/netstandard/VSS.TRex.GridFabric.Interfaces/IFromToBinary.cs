@@ -6,7 +6,7 @@ namespace VSS.TRex.GridFabric.Interfaces
   /// Defines a 'ToFromBinary' interface defining reader and writer methods for classes implementing IBinarizable
   /// serialization in the TRex Ignite grid
   /// </summary>
-  public interface IToFromBinary
+  public interface IFromToBinary
   {
     void ToBinary(IBinaryRawWriter writer);
     void FromBinary(IBinaryRawReader reader);

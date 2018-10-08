@@ -10,7 +10,7 @@ using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric
 {
-  public abstract class BaseBinarizableIgniteClass : IBinarizable, IToFromBinary
+  public abstract class BaseBinarizableIgniteClass : IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 

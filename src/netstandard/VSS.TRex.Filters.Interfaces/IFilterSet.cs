@@ -3,7 +3,7 @@ using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface IFilterSet : IToFromBinary
+  public interface IFilterSet : IFromToBinary
   {
     /// <summary>
     /// The list of combined attribute and spatial filters to be used

@@ -8,7 +8,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellPassAttributeFilter : IToFromBinary
+  public interface ICellPassAttributeFilter : IFromToBinary
   {
     object /*ISiteModel*/ SiteModel { get; set; }
 

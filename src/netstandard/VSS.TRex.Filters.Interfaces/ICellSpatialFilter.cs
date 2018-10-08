@@ -4,7 +4,7 @@ using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellSpatialFilter : IToFromBinary
+  public interface ICellSpatialFilter : IFromToBinary
   {
     /// <summary>
     /// The fence used for polygon based spatial filtering

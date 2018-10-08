@@ -378,6 +378,18 @@ namespace VSS.TRex.Geometry
     public bool IsMaximalPlanConverage => (MinX < -1E99) && (MaxX > 1E99) && (MinY < -1E99) && (MaxY > 1E99);
 
     /// <summary>
+    /// Delegates GetHashCode to the default object hash code
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public int GetHashCode(Fence obj) => obj.GetHashCode();
+
+    public override bool Equals(object obj)
+    {
+      return this == obj || Equals(obj as BoundingWorldExtent3D);
+    }
+
+    /// <summary>
     /// Determine if this bounding box is equal to another
     /// </summary>
     /// <param name="Extent"></param>

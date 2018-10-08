@@ -10,7 +10,7 @@ namespace VSS.TRex.GridFabric.Arguments
   ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include
   ///  containing the identifier of a TRex Application Service Node that originated the request
   /// </summary>
-  public class BaseApplicationServiceRequestBinarizableArgument : BaseRequestBinarizableArgument, IToFromBinary
+  public class BaseApplicationServiceRequestBinarizableArgument : BaseRequestBinarizableArgument, IFromToBinary
   {
     private const byte versionNumber = 1;
 

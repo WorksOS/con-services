@@ -1355,7 +1355,7 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// Serialise the state of the cell pass attribute filter using the ToFromBinary serialization approach
+    /// Serialise the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -1420,7 +1420,7 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// Deserialise the state of the cell pass attribute filter using the ToFromBinary serialization approach
+    /// Deserialise the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
     public void FromBinary(IBinaryRawReader reader)
     {

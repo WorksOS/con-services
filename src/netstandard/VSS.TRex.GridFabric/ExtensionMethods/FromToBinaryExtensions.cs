@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Xml.Schema;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Geometry;
 
@@ -10,7 +8,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
   /// <summary>
   /// Provides extension methods supporting IBinarizable style Ignite grid serialisation for a collection of common object in TRex
   /// </summary>
-  public static class ToFromBinary
+  public static class FromToBinary
   {
     /// <summary>
     /// An extension method providing a ToBinary() semantic to Fence
@@ -83,7 +81,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     /// <summary>
     /// An extension method providing a ToBinary() semantic to BoundingIntegerExtent2D
     /// </summary>
-    public static void ToBinary(this BoundingIntegerExtent2D item, IBinaryRawWriter writer)
+    public static BoundingIntegerExtent2D ToBinary(this BoundingIntegerExtent2D item, IBinaryRawWriter writer)
     {
       const byte versionNumber = 1;
 
@@ -93,12 +91,14 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       writer.WriteInt(item.MinY);
       writer.WriteInt(item.MaxX);
       writer.WriteInt(item.MaxY);
+
+      return item;
     }
 
     /// <summary>
     /// An extension method providing a ToBinary() semantic to BoundingIntegerExtent2D
     /// </summary>
-    public static void FromBinary(this BoundingIntegerExtent2D item, IBinaryRawReader reader)
+    public static BoundingIntegerExtent2D FromBinary(this BoundingIntegerExtent2D item, IBinaryRawReader reader)
     {
       const byte versionNumber = 1;
       byte readVersionNumber = reader.ReadByte();
@@ -109,8 +109,20 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       item.MinY = reader.ReadInt();
       item.MaxX = reader.ReadInt();
       item.MaxY = reader.ReadInt();
+
+      return item;
     }
 
+/*    /// <summary>
+    /// An extension method providing a FromBinary() semantic to BoundingIntegerExtent2D
+    /// </summary>
+    public static BoundingIntegerExtent2D FromBinary(IBinaryRawReader reader)
+    {
+      BoundingIntegerExtent2D result = new BoundingIntegerExtent2D();
+      result.FromBinary(reader);
+      return result;
+    }
+*/
 
     /*
     /// <summary>

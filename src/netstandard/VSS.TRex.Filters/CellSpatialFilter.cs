@@ -4,7 +4,6 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Utilities;
 using VSS.TRex.GridFabric.ExtensionMethods;
 
@@ -37,7 +36,7 @@ namespace VSS.TRex.Filters
     ///   The result of this filter is YES the cell may be used for cell pass
     ///   filtering, or NO the cell should not be considered for cell pass filtering.
     /// </summary>
-    public class CellSpatialFilter : ICellSpatialFilter, IToFromBinary
+    public class CellSpatialFilter : ICellSpatialFilter, IEquatable<CellSpatialFilter>
   {
         /// <summary>
         /// The fence used for polygon based spatial filtering
@@ -150,7 +149,7 @@ namespace VSS.TRex.Filters
         /// </summary>
         public CellSpatialFilter()
         {
-            Clear();
+          Clear();
         }
 
         public CellSpatialFilter(IBinaryRawReader reader)
@@ -335,7 +334,8 @@ namespace VSS.TRex.Filters
       writer.WriteDouble(PositionRadius);
       writer.WriteBoolean(IsSquare);
 
-      OverrideSpatialCellRestriction.ToBinary(writer);
+      BoundingIntegerExtent2D overrideSpatialCellRestriction = OverrideSpatialCellRestriction;
+      overrideSpatialCellRestriction.ToBinary(writer);
 
       writer.WriteBoolean(StartStation.HasValue);
       if (StartStation.HasValue)
@@ -384,8 +384,11 @@ namespace VSS.TRex.Filters
       PositionX = reader.ReadDouble();
       PositionY = reader.ReadDouble();
       PositionRadius = reader.ReadDouble();
+      IsSquare = reader.ReadBoolean();
 
-      OverrideSpatialCellRestriction.FromBinary(reader);
+      BoundingIntegerExtent2D overrideSpatialCellRestriction = new BoundingIntegerExtent2D();
+      overrideSpatialCellRestriction.FromBinary(reader);
+      OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
 
       StartStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
       EndStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
@@ -400,6 +403,50 @@ namespace VSS.TRex.Filters
       SurfaceDesignMaskDesignUid = reader.ReadGuid() ?? Guid.Empty;
       IsAlignmentMask = reader.ReadBoolean();
       AlignmentMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
+    }
+
+    /// <summary>
+    /// Delegates hash code to default object implementation
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public int GetHashCode(object obj) => obj.GetHashCode();
+
+    /// <summary>
+    /// Overrides generic object equals implementation to call custom implementation
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public override bool Equals(object obj)
+    {
+      return this == obj || Equals(obj as CellSpatialFilter);
+    }
+
+    /// <summary>
+    /// Equality comparision function
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(CellSpatialFilter other)
+    {
+      return Fence.Equals(other.Fence) &&
+             AlignmentFence.Equals(other.AlignmentFence) &&
+             PositionX == other.PositionX &&
+             PositionY == other.PositionY &&
+             PositionRadius == other.PositionRadius &&
+             IsSquare == other.IsSquare &&
+             OverrideSpatialCellRestriction.Equals(OverrideSpatialCellRestriction) &&
+             StartStation == other.StartStation &&
+             EndStation == other.EndStation &&
+             LeftOffset == other.LeftOffset &&
+             RightOffset == other.RightOffset &&
+             CoordsAreGrid == CoordsAreGrid &&
+             IsSpatial == other.IsSpatial &&
+             IsPositional == other.IsPositional &&
+             IsDesignMask == other.IsDesignMask &&
+             SurfaceDesignMaskDesignUid == other.SurfaceDesignMaskDesignUid &&
+             IsAlignmentMask == other.IsAlignmentMask &&
+             AlignmentMaskDesignUID == other.AlignmentMaskDesignUID;
     }
   }
 }

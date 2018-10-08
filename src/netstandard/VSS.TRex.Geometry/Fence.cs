@@ -8,7 +8,7 @@ namespace VSS.TRex.Geometry
   /// <summary>
   /// A simple polygon describing a fence and including tests for different geometry elements
   /// </summary>
-  public class Fence
+  public class Fence : IEquatable<Fence>
   {
     private double minX;
     private double maxX;
@@ -512,6 +512,54 @@ namespace VSS.TRex.Geometry
     public void SetRectangleFence(double X1, double Y1, double X2, double Y2)
     {
       SetExtents(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Max(X1, X2), Math.Max(Y1, Y2));
+    }
+
+    /// <summary>
+    /// Determines is the content of this fence is the same as the 2D content in the other fence
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public bool Equals(Fence x, Fence y)
+    {
+      if (!x.HasVertices || !y.HasVertices)
+        return false;
+
+      if (x.Points.Count != y.Points.Count)
+        return false;
+
+      for (int i = 0; i < x.Points.Count; i++)
+        if (x.Points[i].SameInPlan(y.Points[i]))
+          return false;
+
+      return true;
+    }
+
+    /// <summary>
+    /// Delegates GetHashCode to the default object hash code
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public int GetHashCode(Fence obj) => obj.GetHashCode();
+
+    public override bool Equals(object obj)
+    {
+      return this == obj || Equals(obj as Fence);
+    }
+
+    public bool Equals(Fence other)
+    {
+      if (other == null || HasVertices ^ other.HasVertices)
+        return false;
+
+      if (Points.Count != other.Points.Count)
+        return false;
+
+      for (int i = 0; i < Points.Count; i++)
+        if (!Points[i].SameInPlan(other.Points[i]))
+          return false;
+
+      return true;
     }
   }
 }

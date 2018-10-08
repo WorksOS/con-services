@@ -94,5 +94,26 @@ namespace VSS.TRex.Geometry
       Y = source.Y;
       Z = source.Z;
     }
+
+    /// <summary>
+    /// Determines if this 3D point is the same as the point supplied in other
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(FencePoint other)
+    {
+      return X == other.X && Y == other.Y && Z == other.Z;
+    }
+
+    /// <summary>
+    /// Determines if the 2D location of this point is the same as the point supplied in other
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool SameInPlan(FencePoint other)
+    {
+      return X == other.X && Y == other.Y;
+    }
+
   }
 }

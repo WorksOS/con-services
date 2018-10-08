@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICombinedFilter : IToFromBinary
+  public interface ICombinedFilter : IFromToBinary
   {
     /// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
