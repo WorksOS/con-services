@@ -1,0 +1,45 @@
+{{- $name :=       printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    app: {{ $name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      initContainers:
+      - name: init-schedulerdb
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-db:{{ .Values.image.tag }}
+        tty: true
+        envFrom:
+        - configMapRef:
+            name: {{ $configName }}
+      containers:
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi:{{ .Values.image.tag }}
+        name: {{ $name }}     
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /ping
+            port: 80
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 80
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        envFrom:
+        - configMapRef:
+            name: {{ $configName }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80 

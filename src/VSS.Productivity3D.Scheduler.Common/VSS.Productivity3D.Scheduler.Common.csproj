@@ -24,7 +24,7 @@
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.22.*" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.33.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.42.3" />
     <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.10.*" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.10.*" />
 

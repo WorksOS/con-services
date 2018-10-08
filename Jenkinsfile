@@ -1,6 +1,7 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
 def result = ''
+
 def branch = env.BRANCH_NAME
 def buildNumber = env.BUILD_NUMBER
 def versionPrefix = ""
@@ -44,8 +45,6 @@ node('Ubuntu_Slave') {
 			sh "bash ./unittests.sh" 
 		}
 		stage ('Prepare Acceptance tests') {
-			sh "(cp ./AcceptanceTests/DockerfileJenkins ./AcceptanceTests/Dockerfile)"
-			sh "(cp ./AcceptanceTests/scripts/runtestsjenkins.sh ./AcceptanceTests/scripts/runtests.sh)"
 			sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
 		}
 		stage ('Compose containers') {
@@ -162,7 +161,7 @@ node ('Jenkins-Win2016-Raptor') {
         }
 
         step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
-        publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+        publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])	
     }
 }
 

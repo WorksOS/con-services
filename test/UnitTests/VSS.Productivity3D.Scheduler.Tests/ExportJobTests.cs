@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,10 +12,12 @@ using Logging=Microsoft.Extensions.Logging;
 using Moq;
 using Hangfire;
 using Hangfire.Common;
+using Hangfire.MySql;
 using Hangfire.Server;
 using Hangfire.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -33,7 +38,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var jobId = "Some id";
       var filename = "dummy";
       var key = ExportJob.GetS3Key(jobId, filename);
-      var expectedKey = $"3dpm/{jobId}/{filename}.zip";
+      var expectedKey = $"3dpm/{jobId}/{filename}";
       Assert.AreEqual(expectedKey, key, "Wrong S3 key");
     }
 
@@ -61,11 +66,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var customHeaders = new Dictionary<string, string>();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy"};
-
       var context = GetMockHangfireContext(TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).ReturnsAsync(new MemoryStream());
+      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).ReturnsAsync(new StreamContent(new MemoryStream()));
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
@@ -73,7 +77,46 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
 
       var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
-      var result = exportJob.GetExportData(scheduleRequest, customHeaders, context);
+      var result = exportJob.GetExportData(Guid.NewGuid(), customHeaders, context);
+    }
+
+    [TestMethod]
+    [DataRow("Export Success")]
+    public void CanGetUpdatedFilename(string message)
+    {
+      // We will say our filename is named something different to the content type, and make sure the export function gives us back the correct file name
+
+      const string extension = ".json";
+      const string contentType = "application/json";
+      var customHeaders = new Dictionary<string, string>();
+
+      var scheduleRequest = new ScheduleJobRequest {Url = "some url", Filename = "dummy.mp3"};
+      var expectedFilename = scheduleRequest.Filename + extension; 
+
+      var ms = new MemoryStream(Encoding.UTF8.GetBytes( JsonConvert.SerializeObject(scheduleRequest)));
+      var fileStreamResult = new FileStreamResult(ms, "application/json");
+
+      var context = GetMockHangfireContext(TestContext.TestName, message);
+
+      Mock<IApiClient> apiClient = new Mock<IApiClient>();
+      var apiresult = new StreamContent(new MemoryStream());
+      apiresult.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+      apiClient.Setup(a => a.SendRequest(It.IsAny<ScheduleJobRequest>(), customHeaders)).ReturnsAsync(apiresult);
+
+      Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
+      transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
+        .Returns((Stream stream, string filename, string ct) => filename + ".json"); // Match the filename to the content type for testings
+      transferProxy.Setup(t => t.Download(It.IsAny<string>())).Returns(() => Task.FromResult(fileStreamResult));
+
+      Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
+
+      var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
+
+      exportJob.GetExportData(Guid.NewGuid(), customHeaders, context).Wait();
+
+      var key = JobStorage.Current.GetConnection().GetJobParameter(context.BackgroundJob.Id, ExportJob.S3KeyStateKey);
+      Assert.AreEqual(key, ExportJob.GetS3Key(context.BackgroundJob.Id, expectedFilename));
+      ms.Dispose();
     }
 
     [TestMethod]
@@ -85,35 +128,55 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var customHeaders = new Dictionary<string, string>();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
+      var ms = new MemoryStream(Encoding.UTF8.GetBytes( JsonConvert.SerializeObject(scheduleRequest)));
+      var fileStreamResult = new FileStreamResult(ms, "application/json");
 
       var context = GetMockHangfireContext(TestContext.TestName, message);
 
       var exception = new Exception(message);
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).Throws(exception);
+      apiClient.Setup(a => a.SendRequest(It.IsAny<ScheduleJobRequest>(), customHeaders)).Throws(exception);
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
+      transferProxy.Setup(t => t.Download(It.IsAny<string>())).Returns(() => Task.FromResult(fileStreamResult));
 
       Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
 
       var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
  
-      await exportJob.GetExportData(scheduleRequest, customHeaders, context);
+      await exportJob.GetExportData(Guid.NewGuid(), customHeaders, context);
+      ms.Dispose();
     }
 
     private PerformContext GetMockHangfireContext(string testName, string message = "")
     {
+      var jobParameters = new Dictionary<string, string>();
       //Unfortunately Hangfire doesn't have interfaces for everything so we need to
       //explicitly create some objects rather than letting Moq do it.
-      Mock<IStorageConnection> connection = new Mock<IStorageConnection>();
-      Mock<IJobCancellationToken> token = new Mock<IJobCancellationToken>();
+      var connection = new Mock<IStorageConnection>();
+
+      // Mock the job parameters to a dictionary, but ignore the Job ID as it is constant
+      connection.Setup(x => x.SetJobParameter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        .Callback((string id, string key, string value) => { jobParameters[key] = value; });
+
+      connection.Setup(x => x.GetJobParameter(It.IsAny<string>(), It.IsAny<string>()))
+        .Returns((string id, string key) => jobParameters[key]);
+
+      var token = new Mock<IJobCancellationToken>();
+      var storage = new Mock<JobStorage>();
+
+      storage.Setup(x => x.GetConnection()).Returns(connection.Object);
+      // Assigned the job storage to our mocked object, as it's used by some implementations
+      JobStorage.Current = storage.Object;
+
       var jobId = "Some id";
       var methodInfo = typeof(ExportJobTests).GetMethod(testName);
       var args = string.IsNullOrEmpty(message) ? null : new object[] {message};
       var job = new Job(methodInfo, args);
       var backJob = new BackgroundJob(jobId, job, DateTime.Now);
       var context = new PerformContext(connection.Object, backJob, token.Object);
+      
       return context;
     }
   }
