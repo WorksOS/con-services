@@ -17,8 +17,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     ISiteModelMachineDesign Locate(string name);
     ISiteModelMachineDesign Locate(int id);
 
-    ISiteModelMachineDesign AddExisting(ISiteModelMachineDesign siteModelMachineDesign);
-    
     ISiteModelMachineDesign CreateNew(string name);
 
 

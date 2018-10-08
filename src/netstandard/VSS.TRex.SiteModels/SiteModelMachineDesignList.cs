@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -26,7 +28,7 @@ namespace VSS.TRex.SiteModels
     {
       LastIndex = -1;
     }
-    
+
     /// <summary>
     /// Finds the machine design in the list whose name matches the given name
     /// It returns NIL if there is no matching design name
@@ -34,15 +36,8 @@ namespace VSS.TRex.SiteModels
     /// <param name="name"></param>
     /// <returns></returns>
     public ISiteModelMachineDesign Locate(string name) => Find(x => name.Equals(x.Name));
-    public ISiteModelMachineDesign Locate(int id) => Find(x => id.Equals(x.Id));
 
-    // for testing only
-    public ISiteModelMachineDesign AddExisting(ISiteModelMachineDesign siteModelMachineDesign)
-    {
-      Add(siteModelMachineDesign);
-      LastIndex = siteModelMachineDesign.Id > LastIndex ? siteModelMachineDesign.Id : LastIndex;
-      return siteModelMachineDesign;
-    }
+    public ISiteModelMachineDesign Locate(int id) => Find(x => id.Equals(x.Id));
 
     public ISiteModelMachineDesign CreateNew(string name)
     {
@@ -52,7 +47,7 @@ namespace VSS.TRex.SiteModels
       {
         return existingOne;
       }
-      
+
       ISiteModelMachineDesign Result = new SiteModelMachineDesign(LastIndex + 1, name);
       Add(Result);
       LastIndex += 1;
@@ -66,9 +61,9 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write((int)1); //Version number
+      writer.Write((int) 1); //Version number
 
-      writer.Write((int)Count);
+      writer.Write((int) Count);
       for (int i = 0; i < Count; i++)
         this[i].Write(writer);
     }
@@ -123,7 +118,12 @@ namespace VSS.TRex.SiteModels
       {
         this.FromStream(MS);
       }
+
+      base.ForEach(delegate (ISiteModelMachineDesign dn)
+      {
+        LastIndex = dn.Id > LastIndex ? dn.Id : LastIndex;
+      });
+
     }
   }
-
 }
