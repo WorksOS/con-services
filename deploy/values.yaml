@@ -61,7 +61,10 @@ mutableData:
   environment:
     tfaProjectV2ApiUrl: "http://tagfileauth.dev.k8s.vspengg.com/api/v2/project"
     enableTfa: true
-
+    enableTagFileArchiving: false
+    enableTagFileArchivingMetadata: false
+    minTagFileLength: 99
+    tagfileArchiveFolder: ""
 
 mutableGateway:
   replicaCount: 1
