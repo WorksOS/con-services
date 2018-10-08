@@ -26,6 +26,6 @@
     <level value="DEBUG" />
     <appender-ref ref="RollingFile" />
     <appender-ref ref="Console" />
-    <appender-ref ref="ElasticSearchAppender" />
+    <!--<appender-ref ref="ElasticSearchAppender" />-->
   </root>
 </log4net>
