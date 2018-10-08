@@ -392,6 +392,40 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
+    [TestMethod]
+    public void ValidateTemperatureDetailsSettingsTest()
+    {
+      //Temperature details missing values
+      CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 }, false, new List<int> { 0, 40, 80, 120, 150 }, false, null);
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Temperature details too many values
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25, 30 }, false, new List<int> { 0, 40, 80, 120, 150 }, false, new List<double> { 0, 100, 200, 300, 400, 600 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Temperature details too few values
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20 }, false, new List<int> { 0, 40, 80, 120, 150 }, false, new List<double> { 0, 100, 200, 300 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Temperature details out of range value
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 500, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 100 }, false, new List<int> { 0, 40, 80, 120, 150 }, false, new List<double> { 0, 100, 200, 300, 1000 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Temperature details out of order value
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 20, 16, 25 }, false, new List<int> { 0, 40, 80, 120, 150 }, false, new List<double> { 0, 100, 200, 400, 300 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+
+      //Temperature details first value not 0
+      settings = CompactionProjectSettings.CreateProjectSettings(
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 0, 3, 5, 8, 11, 16, 20, 25 }, false, new List<int> { 0, 40, 80, 120, 150 }, false, new List<double> { 50, 100, 200, 300, 400 });
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
+    }
+
 
     [TestMethod]
     public void ValidateUpdatingCmvDetailsColorsTest()

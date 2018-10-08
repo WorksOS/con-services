@@ -1,56 +1,56 @@
 version: '3'
 services:
   webapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:[VERSION]
     environment:
-     - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
-     - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
-     - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
-     - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
-     - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
-     - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
-     - FILTER_API_URL=http://filter.dev.k8s.vspengg.com/api/v1
-     - TREX_TAGFILE_API_URL=http://api-stg.trimble.com/t/trimble.com/vss-alpha-trexgateway/2.0/tagfiles
-     - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.dev.k8s.vspengg.com/internal/v1/export
-     - GEOFENCE_CACHE_LIFE=00:15:00
-     - PROJECT_CACHE_LIFE=00:30:00
-     - IMPORTED_FILE_CACHE_LIFE=00:15:00
-     - CUSTOMER_CACHE_LIFE=00:30:00
-     - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
-     - FILTER_CACHE_LIFE=00:15:00
-     - ELEVATION_EXTENTS_CACHE_LIFE=00:30:00
-     - ASNODEIP=10.97.96.134
-     - IONODEIP=10.97.96.92
-     - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
-     - TCCBASEURL=https://www.myconnectedsite.com
-     - TCCUSERNAME=vldev
-     - TCCPWD=vldev_key
-     - TCCORG=vldev
-     - TCCFILESPACEID=u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
-     - TCCFILESPACENAME=vldatastore-dev
-     - TILE_RENDER_MAX_ZOOM_LEVEL=21
-     - TILE_RENDER_MAX_ZOOM_RANGE=14
-     - TILE_RENDER_WAIT_INTERVAL=2000
-     - TILE_RENDER_JOB_TIMEOUT=00:00:10
-     - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
-     - AWS_TAGFILE_BUCKET_NAME=vss-stg-directtagfile-archives
-     - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
-     - AWS_SECRET_KEY=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
-     - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
-     - LOG_MAX_CHAR=1000
-     - ENABLE_TREX_GATEWAY=false
-     - ENABLE_RAPTOR_GATEWAY=true
-     - SCHEDULED_JOB_TIMEOUT=900000
-     - LIBUV_THREAD_COUNT=32
-     - MAX_WORKER_THREADS=512
-     - MAX_IO_THREADS=1024
-     - MIN_WORKER_THREADS=512
-     - MIN_IO_THREADS=1024
-     - DEFAULT_CONNECTION_LIMIT=64
-     - TCCSynchProductionDataArchivedFolder=Production-Data (Archived)
-     - TCCSynchProjectBoundaryIssueFolder=Project Boundary (Issue)
-     - TCCSynchSubscriptionIssueFolder=Subscription (Issue)
-     - TCCSynchOtherIssueFolder=Other... (Issue)    
+      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
+      - ASNODEIP=10.97.96.134
+      - AWS_ACCESS_KEY=AKIAIBGOEETXHMANDX7A
+      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
+      - AWS_SECRET_KEY=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
+      - AWS_TAGFILE_BUCKET_NAME=vss-stg-directtagfile-archives
+      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
+      - CUSTOMER_CACHE_LIFE=00:30:00
+      - DEFAULT_CONNECTION_LIMIT=64
+      - ELEVATION_EXTENTS_CACHE_LIFE=00:30:00
+      - ENABLE_RAPTOR_GATEWAY=true
+      - ENABLE_TREX_GATEWAY=true
+      - FILTER_API_URL=http://filter.dev.k8s.vspengg.com/api/v1
+      - FILTER_CACHE_LIFE=00:15:00
+      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
+      - GEOFENCE_CACHE_LIFE=00:15:00
+      - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
+      - IMPORTED_FILE_CACHE_LIFE=00:15:00
+      - IONODEIP=10.97.96.92
+      - LIBUV_THREAD_COUNT=32
+      - LOG_MAX_CHAR=1000
+      - MAX_IO_THREADS=1024
+      - MAX_WORKER_THREADS=512
+      - MIN_IO_THREADS=1024
+      - MIN_WORKER_THREADS=512
+      - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
+      - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
+      - PROJECT_CACHE_LIFE=00:30:00
+      - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
+      - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
+      - SCHEDULED_JOB_TIMEOUT=900000
+      - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.dev.k8s.vspengg.com/internal/v1/export
+      - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
+      - TCCBASEURL=https://www.myconnectedsite.com
+      - TCCFILESPACEID=u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
+      - TCCFILESPACENAME=vldatastore-dev
+      - TCCORG=vldev
+      - TCCPWD=vldev_key
+      - TCCSynchOtherIssueFolder=Other... (Issue)
+      - TCCSynchProductionDataArchivedFolder=Production-Data (Archived)
+      - TCCSynchProjectBoundaryIssueFolder=Project Boundary (Issue)
+      - TCCSynchSubscriptionIssueFolder=Subscription (Issue)
+      - TCCUSERNAME=vldev
+      - TILE_RENDER_JOB_TIMEOUT=00:00:10
+      - TILE_RENDER_MAX_ZOOM_LEVEL=21
+      - TILE_RENDER_MAX_ZOOM_RANGE=14
+      - TILE_RENDER_WAIT_INTERVAL=2000
+      - TREX_TAGFILE_API_URL=http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
     ports:
      - "5001:80"
     restart: always

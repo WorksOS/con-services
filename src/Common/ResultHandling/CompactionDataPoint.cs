@@ -7,6 +7,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
   /// </summary>
   public class CompactionDataPoint
   {
+    public const int TOTAL_NUMBER_OF_PROFILES = 16;
     public const string FIRST_PASS = "firstPass";
     public const string HIGHEST_PASS = "highestPass";
     public const string LAST_PASS = "lastPass";
@@ -17,6 +18,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
     public const string CMV_PERCENT_CHANGE = "cmvPercentChange";
     public const string MDP_SUMMARY = "mdpSummary";
     public const string TEMPERATURE_SUMMARY = "temperatureSummary";
+    public const string TEMPERATURE_DETAIL = "temperatureDetail";
     public const string SPEED_SUMMARY = "speedSummary";
     public const string PASS_COUNT_SUMMARY = "passCountSummary";
     public const string PASS_COUNT_DETAIL = "passCountDetail";

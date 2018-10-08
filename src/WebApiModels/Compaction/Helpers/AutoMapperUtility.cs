@@ -51,6 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           cfg.AddProfile<CmvSettingsExProfile>(); 
           cfg.AddProfile<MdpSettingsProfile>();
           cfg.AddProfile<TemperatureSettingsProfile>();
+          cfg.AddProfile<TemperatureDetailsSettingsProfile>();
           cfg.AddProfile<PassCountSettingsProfile>();
           cfg.AddProfile<CmvPercentChangeSettingsProfile>();
           cfg.AddProfile<CutFillSettingsProfile>();
@@ -171,6 +172,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
             opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMinimum))
           .ForMember(x => x.MaxTemperature,
             opt => opt.MapFrom(ps => ps.CustomTargetTemperatureMaximum));
+      }
+    }
+
+    public class TemperatureDetailsSettingsProfile : Profile
+    {
+      public TemperatureDetailsSettingsProfile()
+      {
+        CreateMap<CompactionProjectSettings, TemperatureDetailsSettings>()
+          .ForMember(x => x.CustomTemperatureDetailsTargets,
+            opt => opt.MapFrom(ps => ps.CustomTemperatures));
       }
     }
 

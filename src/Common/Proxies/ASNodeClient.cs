@@ -287,6 +287,14 @@ namespace VSS.Productivity3D.Common.Proxies
           liftBuildSettings, out temperatureSummary);
     }
 
+    public TASNodeErrorStatus GetTemperatureDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+      TTemperatureDetailSettings temperatureDetailsSettings, TICFilterSettings filter,
+      TICLiftBuildSettings liftBuildSettings,
+      out TTemperatureDetails temperatureDetails)
+    {
+      return client.GetTemperatureDetails(projectId, externalRequestDescriptor, temperatureDetailsSettings, filter,
+        liftBuildSettings, out temperatureDetails);
+    }
 
     /// <summary>
     /// Stores Surveyed Surface data.

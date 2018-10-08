@@ -98,7 +98,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 9
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
-  testRunner.Then(string.Format("the reuslt should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the result should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -151,7 +151,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 21
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 22
-  testRunner.Then(string.Format("the reuslt should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the result should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -238,12 +238,14 @@ this.ScenarioSetup(scenarioInfo);
   useDefaultPassCountTargets: false,
   customPassCountTargets: [1,3,5,8,11,16,20,25],
   useDefaultCMVTargets: false, 
-  customCMVTargets: [0,20,50,100,130]
+  customCMVTargets: [0,20,50,100,130],
+  useDefaultTemperatureTargets: false, 
+  customTemperatureTargets: [0,75,150,250,375]
 }", ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 78
+#line 80
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 79
+#line 81
  testRunner.Then("the settings validation result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"Project settings Targets are valid\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -255,16 +257,16 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateFullCustomSettingsColors()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Full Custom Settings Colors", ((string[])(null)));
-#line 87
-this.ScenarioSetup(scenarioInfo);
-#line 88
- testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 89
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 90
+ testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 91
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 92
   testRunner.And("a settingsType \"3\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 91
+#line 93
   testRunner.And("a projectSettings (multiline)", "{\r\n  useDefaultElevationColors: true,\r\n  elevationColors: [0xC80000, 0xFF0000, 0x" +
                     "FF3C00, 0xFF5A00, 0xFF8200, 0xFFAA00, 0xFFC800, \r\n                      0xFFDC00" +
                     ", 0xFAE600, 0xDCE600, 0xD2E600, 0xC8E600, 0xB4E600, 0x96E600, \r\n                " +
@@ -283,14 +285,16 @@ this.ScenarioSetup(scenarioInfo);
                     "ors: true,\r\n  cutFillColors: [0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0xB3E5FC, " +
                     "0x039BE5, 0x01579B],\r\n  useDefaultTemperatureSummaryColors: true,\r\n  temperature" +
                     "OnTargetColor: 0x8BC34A,\r\n  temperatureOverTargetColor: 0xD50000,\r\n  temperature" +
-                    "UnderTargetColor: 0x1579B,\r\n  useDefaultSpeedSummaryColors: true,\r\n  speedOnTarg" +
-                    "etColor: 0x8BC34A,\r\n  speedOverTargetColor: 0xD50000,\r\n  speedUnderTargetColor: " +
-                    "0x1579B,\r\n  useDefaultMDPSummaryColors: true,\r\n  mdpOnTargetColor: 0x8BC34A,\r\n  " +
-                    "mdpOverTargetColor: 0xD50000,\r\n  mdpUnderTargetColor: 0x1579B\r\n}", ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 130
+                    "UnderTargetColor: 0x1579B,\r\n  useDefaultTemperatureDetailsColors: true,\r\n  tempe" +
+                    "ratureDetailsColors: [0x01579B, 0x6BACD5, 0x99CB65, 0xF6A3A8, 0xD50000],\r\n  useD" +
+                    "efaultSpeedSummaryColors: true,\r\n  speedOnTargetColor: 0x8BC34A,\r\n  speedOverTar" +
+                    "getColor: 0xD50000,\r\n  speedUnderTargetColor: 0x1579B,\r\n  useDefaultMDPSummaryCo" +
+                    "lors: true,\r\n  mdpOnTargetColor: 0x8BC34A,\r\n  mdpOverTargetColor: 0xD50000,\r\n  m" +
+                    "dpUnderTargetColor: 0x1579B\r\n}", ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 134
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 131
+#line 135
  testRunner.Then("the settings validation result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"Project settings Colors are valid\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -299,20 +303,20 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void ProjectSettingsValidateInvalidSettingsMissingValues(string requestName, string projectUID, string projectSettings, string projectSettingsType, string code, string message, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Missing Values", exampleTags);
-#line 140
-this.ScenarioSetup(scenarioInfo);
-#line 141
- testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 142
- testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 143
-  testRunner.And(string.Format("a projectSettings \"{0}\"", projectSettings), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 144
-  testRunner.And(string.Format("a settingsType \"{0}\"", projectSettingsType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 145
- testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 146
+ testRunner.And(string.Format("a projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 147
-  testRunner.Then(string.Format("the reuslt should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.And(string.Format("a projectSettings \"{0}\"", projectSettings), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 148
+  testRunner.And(string.Format("a settingsType \"{0}\"", projectSettingsType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 149
+ testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 151
+  testRunner.Then(string.Format("the result should contain code {0} and message \"{1}\"", code, message), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -329,7 +333,7 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "Both minimum and maximum target pass count must be specified")]
         public virtual void ProjectSettingsValidateInvalidSettingsMissingValues_Targets()
         {
-#line 140
+#line 144
 this.ProjectSettingsValidateInvalidSettingsMissingValues("Targets", "ff91dd40-1569-4765-a2bc-014321f76ace", "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 5 }", "1", "-1", "Both minimum and maximum target pass count must be specified", ((string[])(null)));
 #line hidden
         }
@@ -347,7 +351,7 @@ this.ProjectSettingsValidateInvalidSettingsMissingValues("Targets", "ff91dd40-15
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Message", "mdpUnderTargetColor colour values must be specified")]
         public virtual void ProjectSettingsValidateInvalidSettingsMissingValues_Colors()
         {
-#line 140
+#line 144
 this.ProjectSettingsValidateInvalidSettingsMissingValues("Colors", "ff91dd40-1569-4765-a2bc-014321f76ace", "{ useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetC" +
                     "olor : 0xD50000 }", "3", "-1", "mdpUnderTargetColor colour values must be specified", ((string[])(null)));
 #line hidden
@@ -359,20 +363,20 @@ this.ProjectSettingsValidateInvalidSettingsMissingValues("Colors", "ff91dd40-156
         public virtual void ProjectSettingsValidateInvalidSettingsOutOfRangeValues()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Out Of Range Values", ((string[])(null)));
-#line 154
+#line 158
  this.ScenarioSetup(scenarioInfo);
-#line 155
+#line 159
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 156
+#line 160
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 157
+#line 161
   testRunner.And("a projectSettings \"{ useMachineTargetPassCount : false, customTargetPassCountMini" +
                     "mum : 0, customTargetPassCountMaximum : 7 }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 158
+#line 162
   testRunner.And("a settingsType \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 159
+#line 163
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 160
+#line 164
  testRunner.Then("I should get error code -1 and message \"The field customTargetPassCountMinimum mu" +
                     "st be between 1 and 80.\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -385,20 +389,20 @@ this.ProjectSettingsValidateInvalidSettingsMissingValues("Colors", "ff91dd40-156
         public virtual void ProjectSettingsValidateInvalidSettingsOutOfOrderValues()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project Settings Validate Invalid Settings Out Of Order Values", ((string[])(null)));
-#line 162
+#line 166
 this.ScenarioSetup(scenarioInfo);
-#line 163
+#line 167
  testRunner.Given("the Project Settings Validation service URI \"/api/v2/validatesettings\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 164
+#line 168
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 165
+#line 169
   testRunner.And("a projectSettings \"{ useDefaultCutFillTolerances : false, customCutFillTolerances" +
                     " : [3,2,1,0,-1,-3,-2] }\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 166
+#line 170
   testRunner.And("a settingsType \"1\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 167
+#line 171
  testRunner.When("I request settings validation expecting bad request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 168
+#line 172
  testRunner.Then("I should get error code -1 and message \"Cut-fill tolerances must be in order of h" +
                     "ighest cut to lowest fill\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

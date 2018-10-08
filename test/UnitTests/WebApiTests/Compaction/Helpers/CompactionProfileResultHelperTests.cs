@@ -476,14 +476,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.IsNotNull(result);
       Assert.AreEqual(slicerProfileResult.gridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints,
         "Wrong gridDistanceBetweenProfilePoints");
-      const int expectedCount = 14;
-      Assert.AreEqual(expectedCount, result.results.Count, "Wrong number of profiles");
       string[] expectedTypes =
       {
         CompactionDataPoint.FIRST_PASS, CompactionDataPoint.HIGHEST_PASS, CompactionDataPoint.LAST_PASS, CompactionDataPoint.LOWEST_PASS, CompactionDataPoint.LAST_COMPOSITE,
         CompactionDataPoint.CMV_SUMMARY, CompactionDataPoint.CMV_DETAIL, CompactionDataPoint.CMV_PERCENT_CHANGE, CompactionDataPoint.MDP_SUMMARY, CompactionDataPoint.TEMPERATURE_SUMMARY,
-        CompactionDataPoint.SPEED_SUMMARY, CompactionDataPoint.PASS_COUNT_SUMMARY, CompactionDataPoint.PASS_COUNT_DETAIL, CompactionDataPoint.CUT_FILL
+        CompactionDataPoint.TEMPERATURE_DETAIL, CompactionDataPoint.SPEED_SUMMARY, CompactionDataPoint.PASS_COUNT_SUMMARY, CompactionDataPoint.PASS_COUNT_DETAIL, CompactionDataPoint.CUT_FILL
       };
+      int expectedCount = expectedTypes.Length;
+      Assert.AreEqual(expectedCount, result.results.Count, "Wrong number of profiles");
+
       for (int i = 0; i < expectedCount; i++)
       {
         ValidateList(expectedTypes[i], i, slicerProfileResult.results, result.results);
@@ -549,22 +550,26 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             expectedValue = expectedList[j].temperature;
             expectedValueType = expectedList[j].temperatureIndex;
             break;
-          case 10: //speedSummary
+          case 10: //temperatureDetail
+            expectedHeight = expectedList[j].temperatureHeight;
+            expectedValue = expectedList[j].temperature;
+            break;
+          case 11: //speedSummary
             expectedHeight = expectedList[j].lastPassHeight;
             expectedValue = expectedList[j].minSpeed;
             expectedValue2 = expectedList[j].maxSpeed;
             expectedValueType = expectedList[j].speedIndex;
             break;
-          case 11: //passCountSummary
+          case 12: //passCountSummary
             expectedHeight = expectedList[j].lastPassHeight;
             expectedValue = expectedList[j].topLayerPassCount;
             expectedValueType = expectedList[j].passCountIndex;
             break;
-          case 12: //passCountDetail
+          case 13: //passCountDetail
             expectedHeight = expectedList[j].lastPassHeight;
             expectedValue = expectedList[j].topLayerPassCount;
             break;
-          case 13: //cutFill
+          case 14: //cutFill
             expectedHeight = expectedList[j].lastCompositeHeight;
             expectedValue = expectedList[j].cutFill;
             expectedY2 = float.NaN;

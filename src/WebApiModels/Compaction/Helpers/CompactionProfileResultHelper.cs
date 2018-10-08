@@ -349,6 +349,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           },
           new CompactionProfileDataResult
           {
+            type = CompactionDataPoint.TEMPERATURE_DETAIL,
+            data = (from p in slicerProfileResult.results
+              select new CompactionDataPoint
+              {
+                type = CompactionDataPoint.TEMPERATURE_DETAIL,
+                cellType = p.cellType,
+                x = p.station,
+                y = p.temperatureHeight,
+                value = p.temperature
+              }).ToList()
+          },
+          new CompactionProfileDataResult
+          {
             type = CompactionDataPoint.SPEED_SUMMARY,
             data = (from p in slicerProfileResult.results
               select new CompactionDataPoint
