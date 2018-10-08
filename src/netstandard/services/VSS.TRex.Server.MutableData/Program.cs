@@ -114,7 +114,7 @@ namespace VSS.TRex.Server.MutableData
       Configuration = new ConfigurationBuilder()
           //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-          .AddEnvironmentVariables() // this should override appsettings.json with environment variables with but does not appear to work!
+          .AddEnvironmentVariables() // this should override appsettings.json with environment variables but does not seem to work!
           .Build();
 
       DependencyInjection();
