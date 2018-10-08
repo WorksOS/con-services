@@ -186,7 +186,7 @@ namespace VSS.Productivity3D.Models.Models
     /// There must be 5 values and the first value must be 0.
     /// </summary>
     [JsonProperty(PropertyName = "customTemperatureTargets", Required = Required.Default)]
-    public List<int> customTemperatureTargets { get; private set; }
+    public List<double> customTemperatureTargets { get; private set; }
     #endregion
 
     #region Construction
@@ -229,7 +229,7 @@ namespace VSS.Productivity3D.Models.Models
       bool? useDefaultCMVTargets = null,
       List<int> customCMVTargets = null,
       bool? useDefaultTemperatureTargets = null,
-      List<int> customTemperatureTargets = null)
+      List<double> customTemperatureTargets = null)
     {
       return new CompactionProjectSettings
       {
@@ -298,7 +298,7 @@ namespace VSS.Productivity3D.Models.Models
           useDefaultCMVTargets = true,
           customCMVTargets = new List<int> { 0, 40, 80, 120, 150 },
           useDefaultTemperatureTargets = true,
-          customTemperatureTargets = new List<int> { 0, 100, 200, 300, 400 }
+          customTemperatureTargets = new List<double> { 0, 100, 200, 300, 400 }
         };
     #endregion
 
@@ -426,7 +426,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Get the Temperature details targets as a value for Raptor
     /// </summary>
-    public int[] CustomTemperatures => (OverrideDefaultTemperatureTargets && customTemperatureTargets != null && customTemperatureTargets.Count > 0
+    public double[] CustomTemperatures => (OverrideDefaultTemperatureTargets && customTemperatureTargets != null && customTemperatureTargets.Count > 0
       ? customTemperatureTargets
       : DefaultSettings.customTemperatureTargets).Select(d => { d = d * 10; return d; }).ToArray();
 
