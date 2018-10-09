@@ -129,13 +129,13 @@ namespace VSS.Productivity3D.WebApi
     /// <param name="serviceProvider"></param>
     private void CheckRaptorAvailabilityIfRequired(ServiceProvider serviceProvider)
     {
-      if (Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CMV") == "false" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PASSCOUNT") == "false" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MDP") == "false" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CUTFILL") == "false" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SPEED") == "false" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TEMPERATURE") == "false" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VOLUMES") == "false")
+      if (Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CMV") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_PASSCOUNT") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_MDP") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CUTFILL") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SPEED") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TEMPERATURE") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VOLUMES") != "true")
         ConfigureRaptor(serviceProvider);
     }
 
