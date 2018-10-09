@@ -5,7 +5,7 @@ using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Analytics.Foundation.Coordinators
@@ -67,7 +67,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
         }
 
         /// <summary>
-        /// Constructs the aggegator to be used as the reduction function for the MapReduceReduce computation
+        /// Constructs the aggregator to be used as the reduction function for the MapReduceReduce computation
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>

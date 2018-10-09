@@ -1,7 +1,7 @@
 ﻿using System;
+using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
+using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 

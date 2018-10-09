@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.GridFabric.Models.Arguments;
+﻿using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.MDPStatistics.GridFabric

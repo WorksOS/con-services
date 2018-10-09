@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Filters.Interfaces;
+﻿using System.Diagnostics;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.Filters
 {
@@ -7,8 +9,10 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CombinedFilter : ICombinedFilter
   {
+    private const byte versionNumber = 1;
+
     /// <summary>
-    /// The filter reponsible for selection of cell passes based on attribute filtering criteria related to cell passes
+    /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
     /// </summary>
     public ICellPassAttributeFilter AttributeFilter { get; set; }
 
@@ -18,12 +22,17 @@ namespace VSS.TRex.Filters
     public ICellSpatialFilter SpatialFilter { get; set; }
 
     /// <summary>
-    /// Defautl no-arg constructor
+    /// Default no-arg constructor
     /// </summary>
     public CombinedFilter()
     {
       AttributeFilter = new CellPassAttributeFilter();
       SpatialFilter = new CellSpatialFilter();
+    }
+
+    public CombinedFilter(IBinaryRawReader reader)
+    {
+      FromBinary(reader);
     }
 
     /// <summary>
@@ -35,6 +44,30 @@ namespace VSS.TRex.Filters
     {
       AttributeFilter = attributeFilter;
       SpatialFilter = spatialFilter;
+    }
+
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteBoolean(AttributeFilter != null);
+      AttributeFilter?.ToBinary(writer);
+
+      writer.WriteBoolean(SpatialFilter != null);
+      SpatialFilter?.ToBinary(writer);
+    }
+
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      byte readVersionNumber = reader.ReadByte();
+
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+
+      if (reader.ReadBoolean())
+        (AttributeFilter ?? new CellPassAttributeFilter()).FromBinary(reader);
+
+      if (reader.ReadBoolean())
+        (SpatialFilter ?? new CellSpatialFilter()).FromBinary(reader);
+
+      throw new System.NotImplementedException();
     }
   }
 }
