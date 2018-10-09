@@ -3,8 +3,6 @@ services:
   webapi_alpha:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:[VERSION]
     restart: always
-    deploy:
-      replicas: 1
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=prod-aslv01.vssengg.com
