@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtTemperatureDetailed),
         new TTemperatureDetailSettings
         {
-          TemperatureList = request.Targets.Select(t => (int)(t * 10)).ToArray(),//Raptor expects 10ths of degrees
+          TemperatureList = request.Targets.Select(t => (int)t).ToArray(),//already converted to 10ths 
         },
         filter,
         liftBuildSettings,
