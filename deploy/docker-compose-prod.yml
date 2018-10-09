@@ -54,6 +54,7 @@ services:
      - TILE_RENDER_MAX_ZOOM_LEVEL=21
      - TILE_RENDER_MAX_ZOOM_RANGE=14
      - TILE_RENDER_WAIT_INTERVAL=2000
+     - RAPTORUSERNAME=svcRaptor
     ports:
       - "4001:80"
 networks:

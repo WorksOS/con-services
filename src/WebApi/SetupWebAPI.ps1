@@ -18,6 +18,12 @@ Write-host "IONODEIP=$IONIP"
 $SHAREUNC = (Get-ChildItem Env:\SHAREUNC).Value
 Write-host "SHAREUNC=$SHAREUNC"
 
+$RAPTORUSERNAME = (Get-ChildItem Env:\RAPTORUSERNAME).Value
+Write-host "RAPTORUSERNAME=$RAPTORUSERNAME"
+
+
+if ($RAPTORUSERNAME -eq $null)
+{ $RAPTORUSERNAME = "ad-vspengg\svcRaptor" }
 
 if ($ASNIP -eq $null)
   { Write-host "Error! Environment variable ASNODEIP is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
@@ -40,7 +46,7 @@ else
    & sc.exe start lanmanworkstation
    Write-Host "Mapping Raptor ProductionData folder to Z: drive"
    $mappedDrivePassword = ConvertTo-SecureString "v3L0c1R^pt0R!" -AsPlainText -Force
-   $mappedDriveUsername = "ad-vspengg\svcRaptor"
+   $mappedDriveUsername = $RAPTORUSERNAME
    $mappedDriveCredentials = New-Object System.Management.Automation.PSCredential ($mappedDriveUsername, $mappedDrivePassword)
    New-PSDrive -Name "Z" -PSProvider FileSystem -Root $SHAREUNC -Persist -Credential $mappedDriveCredentials
    & Z:
