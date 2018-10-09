@@ -1,9 +1,9 @@
-﻿using DesignProfilerDecls;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using DesignProfilerDecls;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -13,7 +13,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   /// <summary>
   /// Processes the request to get design boundaries from Raptor's Project/DataModel.
@@ -27,14 +27,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       {
         log.LogDebug("Getting GeoJson design boundaries from Raptor");
 
-        DesignBoundariesRequest request = item as DesignBoundariesRequest;
+        var request = item as DesignBoundariesRequest;
 
         if (request == null)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Undefined requested data DesignRequest"));
-        }
+          ThrowRequestTypeCastException<DesignBoundariesRequest>();
 
         JObject[] geoJsons = null;
 

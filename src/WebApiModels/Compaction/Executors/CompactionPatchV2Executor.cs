@@ -26,16 +26,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-      var request = item as PatchRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<PatchRequest>();
-
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
+        var request = item as PatchRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException<PatchRequest>();
+
         var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
         var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
         var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
@@ -64,22 +63,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
         {
-          result = patch != null
+          return patch != null
             ? ConvertPatchResult(patch.ToArray(), request.IncludeTimeOffsets)
             : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
         }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested patch with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
-        }
+
+        throw CreateServiceException<CompactionPatchV2Executor>((int)raptorResult);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
 
     protected sealed override void ProcessErrorCodes()

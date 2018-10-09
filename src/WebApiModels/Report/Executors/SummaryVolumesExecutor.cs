@@ -19,6 +19,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class SummaryVolumesExecutor : RequestExecutorContainer
   {
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public SummaryVolumesExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
     private static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(
@@ -101,14 +109,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         }
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
           return ConvertResult(result);
-        }
 
-        throw new ServiceException(
-          HttpStatusCode.BadRequest,
-          new ContractExecutionResult((int) raptorResult,
-            $"Failed to get requested volumes summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<SummaryVolumesExecutor>((int)raptorResult);
       }
       finally
       {

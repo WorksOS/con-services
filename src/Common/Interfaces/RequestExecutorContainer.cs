@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
@@ -9,6 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -19,6 +21,10 @@ namespace VSS.Productivity3D.Common.Interfaces
   /// </summary>
   public abstract class RequestExecutorContainer
   {
+    private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
+    private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
+    private const int ERROR_STATUS_OK = 0;
+
     /// <summary>
     /// Raptor client used in ProcessEx
     /// </summary>
@@ -176,6 +182,16 @@ namespace VSS.Productivity3D.Common.Interfaces
       throw new ServiceException(
         HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
+    }
+
+    protected ServiceException CreateServiceException<T>(int errorStatus = ERROR_STATUS_OK)
+    {
+      var errorMessage = string.Format(ERROR_MESSAGE, nameof(T));
+
+      if (errorStatus > ERROR_STATUS_OK)
+        errorMessage = string.Format(ERROR_MESSAGE_EX, ERROR_MESSAGE, ContractExecutionStates.FirstNameWithOffset(errorStatus));
+
+      return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
     }
 
     /// <summary>

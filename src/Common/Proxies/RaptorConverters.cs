@@ -340,7 +340,6 @@ namespace VSS.Productivity3D.Common.Proxies
               );
     }
 
-
     public static DisplayMode convertDisplayMode(TICDisplayMode mode)
     {
       switch (mode)

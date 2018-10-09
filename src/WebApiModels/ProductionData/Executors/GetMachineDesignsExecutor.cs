@@ -16,8 +16,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       var request = item as ProjectID;
+
+      if (request == null)
+        ThrowRequestTypeCastException<ProjectID>();
+
       var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
 
       if (raptorDesigns != null)
@@ -47,16 +50,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             DateTime.UtcNow));
         }
         
-        result = MachineDesignsExecutionResult.Create(designDetails);
-      }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to get requested machines designs details"));
+        return MachineDesignsExecutionResult.Create(designDetails);
       }
 
-      return result;
+      throw CreateServiceException<GetMachineDesignsExecutor>();
     }
   }
 }

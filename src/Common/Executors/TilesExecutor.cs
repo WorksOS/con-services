@@ -35,8 +35,7 @@ namespace VSS.Productivity3D.Common.Executors
         TileRequest request = item as TileRequest;
 
         if (request == null)
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"{nameof(TileRequest)} cast failed."));
+          ThrowRequestTypeCastException<TileRequest>();
 
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
 

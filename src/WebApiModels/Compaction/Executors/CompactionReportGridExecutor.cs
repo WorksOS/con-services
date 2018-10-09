@@ -1,14 +1,12 @@
 ﻿using ASNodeDecls;
 using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
-using SVOICFilterSettings;
 using System;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -31,17 +29,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-
       try
       {
-        CompactionReportGridRequest request = item as CompactionReportGridRequest;
+        var request = item as CompactionReportGridRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportGridRequest>();
 
-        TICFilterSettings raptorFilter =
-          RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
 
         var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
           request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
@@ -111,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             var gridReport = GridReport.CreateGridReport(startTime, endTime, gridRows);
 
-            result = CompactionReportResult.CreateExportDataResult(gridReport, (short)returnedResult);
+            return CompactionReportResult.CreateExportDataResult(gridReport, (short)returnedResult);
           }
           catch (Exception ex)
           {
@@ -120,19 +115,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
                 "Failed to retrieve received grid report data: " + ex.Message));
           }
         }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested grid report data"));
-        }
+
+        throw CreateServiceException<CompactionReportGridExecutor>();
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
   }
 }

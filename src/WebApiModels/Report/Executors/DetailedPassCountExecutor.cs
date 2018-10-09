@@ -40,8 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       try
       {
-        TPassCountDetails passCountDetails;
-        PassCounts request = item as PassCounts;
+        var request = item as PassCounts;
 
         if (request == null)
           ThrowRequestTypeCastException<PassCounts>();
@@ -54,7 +53,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return trexCompactionDataProxy.SendPassCountDetailsRequest(pcDetailsRequest, customHeaders).Result;
         }
 
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
+        TPassCountDetails passCountDetails;
+
+        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
             request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds, log: log);
         var raptorResult = raptorClient.GetPassCountDetails(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
@@ -68,8 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (raptorResult == TASNodeErrorStatus.asneOK)
             return ConvertResult(passCountDetails, request.liftBuildSettings);
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to get requested pass count details data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<DetailedPassCountExecutor>((int)raptorResult);
       }
       finally
       {

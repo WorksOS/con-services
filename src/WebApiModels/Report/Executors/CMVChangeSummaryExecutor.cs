@@ -41,14 +41,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      CMVChangeSummaryRequest request = item as CMVChangeSummaryRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<CMVChangeSummaryRequest>();
-
       try
       {
-        TASNodeCMVChangeResult result = new TASNodeCMVChangeResult();
+        var request = item as CMVChangeSummaryRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException<CMVChangeSummaryRequest>();
 
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway);
         
@@ -57,6 +55,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(request.ProjectUid, request.Filter, request.CMVChangeSummaryValues);
           return trexCompactionDataProxy.SendCMVChangeDetailsRequest(cmvChangeDetailsRequest, customHeaders).Result;
         }
+
+        new TASNodeCMVChangeResult();
 
         TASNodeCMVChangeSettings settings = new TASNodeCMVChangeSettings(request.CMVChangeSummaryValues);
 
@@ -67,13 +67,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId, null, null,
             new List<long>()),
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
-          out result);
+          out var result);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(result);
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to get requested CMV change summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<CMVChangeSummaryExecutor>((int)raptorResult);
       }
       finally
       {

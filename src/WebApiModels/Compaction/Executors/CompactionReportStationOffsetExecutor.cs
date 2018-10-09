@@ -29,8 +29,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// <returns>Returns an instance of the <see cref="CompactionReportResult"/> class if successful.</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-
       try
       {
         var request = item as CompactionReportStationOffsetRequest;
@@ -79,11 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var success = 1;
 
         if (returnedResult != success)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested station offset report data"));
-        }
+          throw CreateServiceException<CompactionReportStationOffsetExecutor>();
 
         try
         {
@@ -115,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           var startAndEndTime = request.Filter.StartUtc ?? DateTime.Now;
           var stationOffsetReport = StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
 
-          result = CompactionReportResult.CreateExportDataResult(stationOffsetReport, (short)returnedResult);
+          return CompactionReportResult.CreateExportDataResult(stationOffsetReport, (short)returnedResult);
         }
         catch (Exception ex)
         {
@@ -128,8 +122,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
   }
 }

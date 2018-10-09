@@ -1,31 +1,25 @@
-﻿using Microsoft.Extensions.Logging;
-using SVOICOptionsDecls;
-using SVOICProfileCell;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApi.Models.Common;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Velociraptor.PDSInterface;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
-using SVOICVolumeCalculationsDecls;
+using Microsoft.Extensions.Logging;
+using SVOICOptionsDecls;
+using SVOICProfileCell;
 using SVOICSummaryVolumesProfileCell;
-using SVOICFilterSettings;
+using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
-using SVOICLiftBuildSettings;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
-using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.WebApi.Models.Common;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Velociraptor.PDSInterface;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   /// <summary>
   /// Get production data profile calculations executor.
@@ -34,10 +28,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       try
       {
-        CompactionProfileProductionDataRequest request = item as CompactionProfileProductionDataRequest;
+        var request = item as CompactionProfileProductionDataRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<CompactionProfileProductionDataRequest>();
@@ -53,13 +46,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
         profileResultHelper.AddMidPoints(totalResult);
         profileResultHelper.InterpolateEdges(totalResult, request.volumeCalcType);
 
-        result = totalResult;
+        return totalResult;
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
     }
 
     #region Production Data

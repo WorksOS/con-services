@@ -1,12 +1,11 @@
-﻿using ASNodeDecls;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -19,7 +18,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Point = VSS.MasterData.Models.Models.Point;
 using WebMercatorProjection = VSS.MasterData.Models.Models.WebMercatorProjection;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   /// <summary>
   /// Processes the request to get a DXF tile.
@@ -34,7 +33,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      DxfTileRequest request = item as DxfTileRequest;
+      var request = item as DxfTileRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<DxfTileRequest>();

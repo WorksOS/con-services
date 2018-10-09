@@ -498,12 +498,12 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
 
-    public bool GetCutFillDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+    public TASNodeErrorStatus GetCutFillDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
       TCutFillSettings cutFillSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCutFillDetails cutFillDetails)
     {
       return client.GetCutFillDetails(projectID, externalRequestDescriptor, cutFillSettings, filter,
-               liftBuildSettings, out cutFillDetails) == TASNodeErrorStatus.asneOK;
+               liftBuildSettings, out cutFillDetails);
     }
 
     public bool GetStationExtents(long projectID, TVLPDDesignDescriptor designDescriptor, out double startStation,

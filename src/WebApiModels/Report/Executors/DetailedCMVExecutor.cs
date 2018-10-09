@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        CMVRequest request = item as CMVRequest;
+        var request = item as CMVRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<CMVRequest>();
@@ -89,8 +89,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(cmvDetails);
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to get requested CMV details data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<DetailedCMVExecutor>((int)raptorResult);
       }
       finally
       {

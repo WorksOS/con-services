@@ -32,26 +32,23 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <returns>a PassCountSummaryResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
       try
       {
-        ExportGridCSV request = item as ExportGridCSV;
+        var request = item as ExportGridCSV;
 
         if (request == null)
           ThrowRequestTypeCastException<ExportGridCSV>();
 
-        TICFilterSettings raptorFilter =
-          RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
+        var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
         MemoryStream outputStream = null;
 
         Stream writerStream = null;
 
-        MemoryStream ResponseData = null;
         ZipArchive archive = null;
 
         log.LogDebug("About to call GetGriddedOrAlignmentCSVExport");
 
-        int Result = raptorClient.GetGriddedOrAlignmentCSVExport
+        var Result = raptorClient.GetGriddedOrAlignmentCSVExport
         (request.ProjectId ?? -1,
           (int) request.reportType,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid) (request.callId ?? Guid.NewGuid()), 0,
@@ -73,11 +70,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           raptorFilter,
           RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
           new SVOICOptionsDecls.TSVOICOptions(), // ICOptions, need to resolve what this should be
-          out ResponseData);
+          out var ResponseData);
 
         log.LogDebug("Completed call to GetGriddedOrAlignmentCSVExport");
 
-        bool success = Result == 1; // icsrrNoError
+        var success = Result == 1; // icsrrNoError
 
         if (success)
         {
@@ -96,7 +93,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           }
 
           // Unpack the data for the report and construct a stream containing the result
-          TRaptorReportsPackager ReportPackager = new TRaptorReportsPackager(TRaptorReportType.rrtGridReport);
+          var ReportPackager = new TRaptorReportsPackager(TRaptorReportType.rrtGridReport);
 
           ReportPackager.ReturnCode = TRaptorReportReturnCode.rrrcUnknownError;
 
@@ -130,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
           ReportPackager.ReadFromStream(ResponseData);
 
-          StringBuilder sb = new StringBuilder();
+          var sb = new StringBuilder();
 
           if (request.reportType == GriddedCSVReportType.Gridded)
           {
@@ -202,18 +199,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
           log.LogDebug("Returning result");
 
-          result = ExportResult.Create(outputStream.ToArray(), (short) Result);
+          return ExportResult.Create(outputStream.ToArray(), (short) Result);
         }
         catch
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get requested export data"));
+          throw CreateServiceException<ExportGridCSVExecutor>();
         }
       }
       finally { }
-
-      return result;
     }
   }
 }

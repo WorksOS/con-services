@@ -17,6 +17,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class ElevationStatisticsExecutor : RequestExecutorContainer
   {
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public ElevationStatisticsExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(
@@ -43,31 +51,31 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ElevationStatisticsRequest request = item as ElevationStatisticsRequest;
+      var request = item as ElevationStatisticsRequest;
 
       if (request == null)
         ThrowRequestTypeCastException<ElevationStatisticsRequest>();
-      
-      TASNodeElevationStatisticsResult result = new TASNodeElevationStatisticsResult();
 
-      TICFilterSettings Filter =
-        RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+      new TASNodeElevationStatisticsResult();
 
-      bool success = raptorClient.GetElevationStatistics(request.ProjectId ?? -1,
-                       ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
-                         ASNodeDecls.TASNodeCancellationDescriptorType.cdtElevationStatistics),
-                       Filter,
-                       RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
-                       out result) == TASNodeErrorStatus.asneOK;
+      var Filter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
 
-      if (success)
-      {
+      var raptorResult = raptorClient.GetElevationStatistics(request.ProjectId ?? -1,
+                           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
+                             TASNodeCancellationDescriptorType.cdtElevationStatistics),
+                          Filter,
+                          RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmAutomatic),
+                          out var result);
+
+      if (raptorResult == TASNodeErrorStatus.asneOK)
         return ConvertResult(result);
-      }
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to calculate elevation statistics data"));
+      throw CreateServiceException<ElevationStatisticsExecutor>((int)raptorResult);
+    }
+
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
   }
 }

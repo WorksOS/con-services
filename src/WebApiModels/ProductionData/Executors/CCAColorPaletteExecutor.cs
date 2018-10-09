@@ -7,7 +7,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   /// <summary>
   /// Executes GET method on the CCA data colour palettes resource.
@@ -31,8 +31,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-
       if (item != null)
       {
         try
@@ -40,7 +38,10 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
           //ProjectID projectId = (item as Tuple<ProjectID, DataID>).Item1;
           //DataID assetId = (item as Tuple<ProjectID, DataID>).Item2;
 
-          CCAColorPaletteRequest request = item as CCAColorPaletteRequest;
+          var request = item as CCAColorPaletteRequest;
+
+          if (request == null)
+            ThrowRequestTypeCastException<CCAColorPaletteRequest>();
 
           TColourPalettes palettes;
           
@@ -56,28 +57,22 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
                   "Failed to process CCA data colour palettes request sent to Raptor."));
             }
 
-            result = CCAColorPaletteResult.CreateCCAColorPaletteResult(palettes.Transitions);
+            return CCAColorPaletteResult.CreateCCAColorPaletteResult(palettes.Transitions);
           }
-          else
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Failed to process CCA data colour palettes request."));
-          }
+
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              "Failed to process CCA data colour palettes request."));
         }
         finally
         {
           ContractExecutionStates.ClearDynamic();
         }
       }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "No CCA data colour palettes request sent."));
-      }
 
-      return result;
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          "No CCA data colour palettes request sent."));
     }
 
     /// <summary>

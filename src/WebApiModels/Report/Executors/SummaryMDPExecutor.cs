@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        MDPRequest request = item as MDPRequest;
+        var request = item as MDPRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<MDPRequest>();
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         string fileSpaceName = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
 
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId,
+        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId,
           request.OverrideStartUtc, request.OverrideEndUtc, request.OverrideAssetIds, fileSpaceName);
         var raptorResult = raptorClient.GetMDPSummary(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
@@ -68,11 +68,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           raptorFilter,
           RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
           out TMDPSummary mdpSummary);
+
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(mdpSummary);
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to get requested MDP summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<SummaryMDPExecutor>((int)raptorResult);
       }
       finally
       {

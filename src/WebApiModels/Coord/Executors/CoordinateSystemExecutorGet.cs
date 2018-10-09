@@ -13,15 +13,11 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
   {
     protected override TASNodeErrorStatus SendRequestToPDSClient(object item)
     {
-      TCoordinateSystemSettings tempCoordSystemSettings;
-
-      ProjectID request = item as ProjectID;
-      TASNodeErrorStatus code = raptorClient.RequestCoordinateSystemDetails(request.ProjectId ?? -1, out tempCoordSystemSettings);
+      var request = item as ProjectID;
+      var code = raptorClient.RequestCoordinateSystemDetails(request.ProjectId ?? -1, out var tempCoordSystemSettings);
 
       if (code == TASNodeErrorStatus.asneOK)
-      {
         coordSystemSettings = tempCoordSystemSettings;
-      }
 
       return code;
     }

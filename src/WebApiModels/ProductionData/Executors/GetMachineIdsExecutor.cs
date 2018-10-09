@@ -6,32 +6,27 @@ using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   public class GetMachineIdsExecutor : RequestExecutorContainer
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-      ProjectID request = item as ProjectID;
+      var request = item as ProjectID;
+
+      if (request == null)
+        ThrowRequestTypeCastException<ProjectID>();
+
       TMachineDetail[] machines = raptorClient.GetMachineIDs(request.ProjectId ?? -1);
       if (machines != null)
-        result =
-          MachineExecutionResult.CreateMachineExecutionResult(
-            convertMachineStatus(machines).ToArray());
-      else
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to get requested machines details"));
+        return MachineExecutionResult.CreateMachineExecutionResult(convertMachineStatus(machines).ToArray());
 
-      return result;
+      throw CreateServiceException<GetMachineIdsExecutor>();
     }
 
     private IEnumerable<MachineStatus> convertMachineStatus(TMachineDetail[] machines)

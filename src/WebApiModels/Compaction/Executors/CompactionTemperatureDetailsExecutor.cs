@@ -17,14 +17,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-      TemperatureDetailsRequest request = item as TemperatureDetailsRequest;
+      var request = item as TemperatureDetailsRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException<TemperatureDetailsRequest>();
 
       var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
       var liftBuildSettings =
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 
-      bool success = raptorClient.GetTemperatureDetails(request.ProjectId ?? -1,
+      var raptorResult = raptorClient.GetTemperatureDetails(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtTemperatureDetailed),
         new TTemperatureDetailSettings
         {
@@ -32,20 +34,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         },
         filter,
         liftBuildSettings,
-        out var temperatureDetails) == TASNodeErrorStatus.asneOK;
+        out var temperatureDetails);
   
+      if (raptorResult == TASNodeErrorStatus.asneOK)
+        return new CompactionTemperatureDetailResult(temperatureDetails.Percents);
 
-      if (success)
-      {
-        result = new CompactionTemperatureDetailResult(temperatureDetails.Percents);
-      }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to get requested temperature details data"));
-      }
-
-      return result;
+      throw CreateServiceException<CompactionTemperatureDetailsExecutor>((int)raptorResult);
     }
   }
 }

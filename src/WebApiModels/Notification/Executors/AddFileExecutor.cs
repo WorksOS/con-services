@@ -54,9 +54,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
     {
       try
       {
-        ZoomRangeResult zoomResult = new ZoomRangeResult();
-        ProjectFileDescriptor request = item as ProjectFileDescriptor;
-        ImportedFileType fileType = request.FileType;
+        var request = item as ProjectFileDescriptor;
+
+        if (request == null)
+          ThrowRequestTypeCastException<ProjectFileDescriptor>();
+
+        var zoomResult = new ZoomRangeResult();
+        var fileType = request.FileType;
         log.LogDebug($"FileType is: {fileType}");
 
         //Tell Raptor to update its cache. 
@@ -159,8 +163,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             break;
           case ImportedFileType.SurveyedSurface:
             log.LogDebug("Storing ground surface file in Raptor");
-            DesignDescriptor dd = new DesignDescriptor(request.FileId, request.File, 0.0);
-            ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
+            var dd = new DesignDescriptor(request.FileId, request.File, 0.0);
+            var args = ASNode.GroundSurface.RPC.__Global
               .Construct_GroundSurface_Args(
                 request.ProjectId.Value,
                 request.FileId,

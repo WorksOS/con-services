@@ -8,6 +8,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
@@ -18,6 +19,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// </summary>
   public class ExportReportExecutor : RequestExecutorContainer
   {
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public ExportReportExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
     /// <summary>
     /// Processes the summary pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
@@ -30,15 +39,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
       if (request == null)
         ThrowRequestTypeCastException<ExportReport>();
-      
-      if (request == null)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Conversion from {item.GetType()} to {typeof(ExportReport)} failed"));
-      }
 
-      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
+      var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
         request.ProjectId);
 
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
@@ -52,13 +54,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         request.dateFromUTC, request.dateToUTC,
         request.translations, request.projectExtents, out TDataExport dataexport);
 
-      ContractExecutionResult result;
-
       if (success)
       {
         try
         {
-          result = ExportResult.Create(
+          return ExportResult.Create(
             File.ReadAllBytes(BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true)),
             dataexport.ReturnCode);
         }
@@ -69,13 +69,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
               "Failed to retrieve received export data: " + ex.Message));
         }
       }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to get requested export data"));
-      }
-      return result;
+
+      throw CreateServiceException<ExportReportExecutor>(dataexport.ReturnCode);
     }
     
     private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)
@@ -83,6 +78,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       string prodFolder = configStore.GetValueString("RaptorProductionDataFolder");
       return
         $"{prodFolder}\\DataModels\\{projectid}\\Exports\\{callerid}\\{Path.GetFileNameWithoutExtension(filename) + (zipped ? ".zip" : ".csv")}";
+    }
+
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddExportErrorMessages(ContractExecutionStates);
     }
   }
 }

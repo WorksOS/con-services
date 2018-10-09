@@ -7,6 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
@@ -19,11 +20,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   /// </summary>
   public class CompactionCutFillExecutor : RequestExecutorContainer
   {
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public CompactionCutFillExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
-        CutFillDetailsRequest request = item as CutFillDetailsRequest;
+        var request = item as CutFillDetailsRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<CutFillDetailsRequest>();
@@ -38,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var liftBuildSettings =
           RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmNone);
 
-        bool success = raptorClient.GetCutFillDetails(request.ProjectId ?? -1,
+        var raptorResult = raptorClient.GetCutFillDetails(request.ProjectId ?? -1,
           ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtCutfillDetailed),
           new TCutFillSettings
           {
@@ -49,16 +58,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           liftBuildSettings,
           out var cutFillDetails);
 
-        if (success)
+        if (raptorResult == TASNodeErrorStatus.asneOK)
           return new CompactionCutFillDetailedResult(cutFillDetails.Percents);
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to get requested cut-fill details data"));
+        throw CreateServiceException<CompactionCutFillExecutor>((int)raptorResult);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
+    }
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
   }
 }

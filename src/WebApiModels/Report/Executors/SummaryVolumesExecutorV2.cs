@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        SummaryVolumesRequest request = item as SummaryVolumesRequest;
+        var request = item as SummaryVolumesRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<SummaryVolumesRequest>();
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         var baseDesignDescriptor = RaptorConverters.DesignDescriptor(request.BaseDesignDescriptor);
         var topDesignDescriptor = RaptorConverters.DesignDescriptor(request.TopDesignDescriptor);
 
-        TComputeICVolumesType volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
+        var volType = RaptorConverters.ConvertVolumesType(request.VolumeCalcType);
 
         // #68799 - Temporarily revert v2 executor behaviour to match that of v1 by adjusting filter dates on Filter to Filter calculations.
         if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
@@ -133,10 +133,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(result);
 
-        throw new ServiceException(
-          HttpStatusCode.BadRequest,
-          new ContractExecutionResult((int) raptorResult,
-            $"Failed to get requested volumes summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<SummaryVolumesExecutor>((int)raptorResult);
       }
       finally
       {

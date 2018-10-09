@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        TileRequest request = item as TileRequest;
+        var request = item as TileRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<TileRequest>();

@@ -1,10 +1,9 @@
 ﻿using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   /// <summary>
   /// Executes PUT method on Surveyed Surfaces resource.
@@ -21,11 +20,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// 
     protected override bool SendRequestToPdsClient(object item, out TSurveyedSurfaceDetails[] surveyedSurfaces)
     {
+      var request = item as SurveyedSurfaceRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException<SurveyedSurfaceRequest>();
+
       surveyedSurfaces = null;
 
-      SurveyedSurfaceRequest request = item as SurveyedSurfaceRequest;
-
-      ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
+      var args = ASNode.GroundSurface.RPC.__Global
         .Construct_GroundSurface_Args(
           request.ProjectId ?? -1,
           request.SurveyedSurface.Id,

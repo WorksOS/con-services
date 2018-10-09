@@ -272,8 +272,8 @@ namespace VSS.Productivity3D.Common.Interfaces
                                        TSVOICOptions ICOptions,
                                        out MemoryStream DataExport);
 
-    
-    bool GetCutFillDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+
+    TASNodeErrorStatus GetCutFillDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
       TCutFillSettings cutFillSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
       out TCutFillDetails cutFillDetails);
 

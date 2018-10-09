@@ -1,7 +1,9 @@
 ﻿using ASNodeDecls;
 using DesignProfilerDecls;
 using TAGProcServiceDecls;
+using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.Common.ResultHandling
 {
@@ -236,7 +238,7 @@ namespace VSS.Productivity3D.Common.ResultHandling
       contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on target data validation.",
         (int) TTAGProcServerProcessResult.tpsprFailedValidation);
       contractExecutionStates.DynamicAddwithOffset("TFA service error. Cannot request Project or Asset from TFA.",
-        (int)TTAGProcServerProcessResult.tpsprTFAServiceError);
+        (int) TTAGProcServerProcessResult.tpsprTFAServiceError);
 
     }
 
@@ -296,21 +298,48 @@ namespace VSS.Productivity3D.Common.ResultHandling
     public static void AddExportErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
     {
       contractExecutionStates.DynamicAddwithOffset("Export OK",
-        (int)TASNodeExportStatus.asnesOK);
+        (int) TASNodeExportStatus.asnesOK);
       contractExecutionStates.DynamicAddwithOffset("Export Unknown Error",
-        (int)TASNodeExportStatus.asnesUnknown);
+        (int) TASNodeExportStatus.asnesUnknown);
       contractExecutionStates.DynamicAddwithOffset("No data for export",
-        (int)TASNodeExportStatus.asnesNoData);
+        (int) TASNodeExportStatus.asnesNoData);
       contractExecutionStates.DynamicAddwithOffset("Export timeout",
-        (int)TASNodeExportStatus.asnesTimeOut);
+        (int) TASNodeExportStatus.asnesTimeOut);
       contractExecutionStates.DynamicAddwithOffset("Export cancelled",
-        (int)TASNodeExportStatus.asnesCancelled);
+        (int) TASNodeExportStatus.asnesCancelled);
       contractExecutionStates.DynamicAddwithOffset("Export limit reached",
-        (int)TASNodeExportStatus.asnesLimitReached);
+        (int) TASNodeExportStatus.asnesLimitReached);
       contractExecutionStates.DynamicAddwithOffset("Invalid date range for export",
-        (int)TASNodeExportStatus.asnesInvalidDateRange);
+        (int) TASNodeExportStatus.asnesInvalidDateRange);
       contractExecutionStates.DynamicAddwithOffset("No overlap for export date ranges",
-        (int)TASNodeExportStatus.asnesDateRangesDoNotOverlap);
+        (int) TASNodeExportStatus.asnesDateRangesDoNotOverlap);
+    }
+
+    public static void AddMissingTargetDataResultMessages(ContractExecutionStatesEnum contractExecutionStates)
+    {
+      contractExecutionStates.DynamicAddwithOffset(
+        "No problems due to missing target data could still be no data however",
+        (int) MissingTargetDataResultType.NoProblems);
+      contractExecutionStates.DynamicAddwithOffset("No result due to missing target datar",
+        (int) MissingTargetDataResultType.NoResult);
+      contractExecutionStates.DynamicAddwithOffset("Partial result due to missing target data",
+        (int) MissingTargetDataResultType.PartialResult);
+      contractExecutionStates.DynamicAddwithOffset("Partial result with some values Missing Machine Target",
+        (int) MissingTargetDataResultType.PartialResultMissingTarget);
+    }
+
+    public static void AddCoordinateResultErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
+    {
+      contractExecutionStates.DynamicAddwithOffset("No error",
+        (int) TCoordReturnCode.nercNoError);
+      contractExecutionStates.DynamicAddwithOffset("Unknown error",
+        (int) TCoordReturnCode.nercUnknownError);
+      contractExecutionStates.DynamicAddwithOffset("Failed to connect to server",
+        (int) TCoordReturnCode.nercNoConnectionToServer);
+      contractExecutionStates.DynamicAddwithOffset("Missing coordinates",
+        (int) TCoordReturnCode.nercMissingCoords);
+      contractExecutionStates.DynamicAddwithOffset("Failed to convert coordinate",
+        (int) TCoordReturnCode.nercFailedToConvertCoords);
     }
   }
 }

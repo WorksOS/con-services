@@ -6,7 +6,6 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -67,34 +66,26 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-
       if (item != null)
       {
         try
         {
           if (SendRequestToPdsClient(item, out var surveyedSurfaces))
-            result = ExecutionResult(surveyedSurfaces != null ? ConvertToSurveyedSurfaceDetails(surveyedSurfaces).ToArray() : null);
-          else
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Failed to process Surveyed Surface data request."));
-          }
+            return ExecutionResult(surveyedSurfaces != null ? ConvertToSurveyedSurfaceDetails(surveyedSurfaces).ToArray() : null);
+
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              "Failed to process Surveyed Surface data request."));
         }
         finally
         {
           ContractExecutionStates.ClearDynamic();
         }
       }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "No Surveyed Surface data request sent."));
-      }
 
-      return result;
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          "No Surveyed Surface data request sent."));
     }
 
     private IEnumerable<SurveyedSurfaceDetails> ConvertToSurveyedSurfaceDetails(IEnumerable<TSurveyedSurfaceDetails> surveyedSurfaces)

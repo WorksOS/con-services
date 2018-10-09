@@ -41,6 +41,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
 
       var request = item as CompactionTagFileRequestExtended;
+
+      if (request == null)
+        ThrowRequestTypeCastException<CompactionTagFileRequestExtended>();
+
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         "3dPm Unknown exception.");
 
