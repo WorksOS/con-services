@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Filters
 {
   /// <summary>
   /// Combined filter represents both spatial and attribute based filtering considerations
   /// </summary>
-  public class CombinedFilter : ICombinedFilter, IFromToBinary
+  public class CombinedFilter : ICombinedFilter
   {
     private const byte versionNumber = 1;
 

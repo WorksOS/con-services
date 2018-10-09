@@ -5,7 +5,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
-  public class ToFromBinary_CellSpatialFitler
+  public class ToFromBinary_CellSpatialFilter
   {
     [Fact]
     public void Test_CellSpatialFilter_Simple()
