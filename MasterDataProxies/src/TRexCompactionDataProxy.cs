@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
@@ -191,17 +193,45 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    /// Executes a POST request against the TRex Gateway service.
+    /// Sends a request to get project extents for a site model from the TRex database.
     /// </summary>
-    /// <param name="payload"></param>
+    /// <param name="siteModelID"></param>
     /// <param name="customHeaders"></param>
-    /// <param name="route"></param>
     /// <returns></returns>
+    public async Task<BoundingBox3DGrid> SendProjectExtentsRequest(string siteModelID, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the get project extents request for site model ID: {siteModelID}");
+
+      return await SendRequestGet(customHeaders, $"/sitemodels/{siteModelID}/extents");
+    }
+    
+    /// <summary>
+         /// Executes a POST request against the TRex Gateway service.
+         /// </summary>
+         /// <param name="payload"></param>
+         /// <param name="customHeaders"></param>
+         /// <param name="route"></param>
+         /// <returns></returns>
     private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
     {
       var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, "POST", string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
+
+      return response;
+    }
+
+    /// <summary>
+    /// Executes a GET request against the TRex Gateway service.
+    /// </summary>
+    /// <param name="customHeaders"></param>
+    /// <param name="route"></param>
+    /// <returns></returns>
+    private async Task<BoundingBox3DGrid> SendRequestGet(IDictionary<string, string> customHeaders, string route)
+    {
+      var response = await SendRequest<BoundingBox3DGrid>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route, "GET", string.Empty);
+
+      log.LogDebug($"{nameof(SendRequestGet)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
       return response;
     }

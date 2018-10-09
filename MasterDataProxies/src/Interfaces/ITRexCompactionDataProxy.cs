@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 
@@ -107,6 +108,15 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="customHeaders"></param>
     /// <returns></returns>
     Task<ContractExecutionResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get project extents for a site model from the TRex database.
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<BoundingBox3DGrid> SendProjectExtentsRequest(string siteModelID,
       IDictionary<string, string> customHeaders = null);
   }
 }
