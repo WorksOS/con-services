@@ -19,7 +19,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   [Route("api/v1/sitemodels")]
   public class SiteModelController : BaseController
   {
-    public SiteModelController(ILoggerFactory loggerFactory, ILogger log, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore) : base(loggerFactory, log, serviceExceptionHandler, configStore)
+    public SiteModelController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore) 
+      : base(loggerFactory, loggerFactory.CreateLogger<SiteModelController>(), serviceExceptionHandler, configStore)
     {
     }
 
