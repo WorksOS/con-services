@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Filters.Interfaces;
 
@@ -7,11 +8,9 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Combined filter represents both spatial and attribute based filtering considerations
   /// </summary>
-  public class CombinedFilter : ICombinedFilter
+  public class CombinedFilter : ICombinedFilter, IEquatable<ICombinedFilter>
   {
-    private const byte versionNumber = 1;
-
-    /// <summary>
+/// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
     /// </summary>
     public ICellPassAttributeFilter AttributeFilter { get; set; }
@@ -40,7 +39,7 @@ namespace VSS.TRex.Filters
     /// </summary>
     /// <param name="attributeFilter"></param>
     /// <param name="spatialFilter"></param>
-    public CombinedFilter(ICellPassAttributeFilter attributeFilter, ICellSpatialFilter spatialFilter) : this()
+    public CombinedFilter(ICellPassAttributeFilter attributeFilter, ICellSpatialFilter spatialFilter)
     {
       AttributeFilter = attributeFilter;
       SpatialFilter = spatialFilter;
@@ -48,6 +47,10 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
+      const byte versionNumber = 1;
+
+      writer.WriteByte(versionNumber);
+
       writer.WriteBoolean(AttributeFilter != null);
       AttributeFilter?.ToBinary(writer);
 
@@ -57,17 +60,37 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
+      const byte versionNumber = 1;
       byte readVersionNumber = reader.ReadByte();
 
       Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
 
       if (reader.ReadBoolean())
-        (AttributeFilter ?? new CellPassAttributeFilter()).FromBinary(reader);
+        (AttributeFilter ?? (AttributeFilter = new CellPassAttributeFilter())).FromBinary(reader);
 
       if (reader.ReadBoolean())
-        (SpatialFilter ?? new CellSpatialFilter()).FromBinary(reader);
+        (SpatialFilter ?? (SpatialFilter = new CellSpatialFilter())).FromBinary(reader);
+    }
 
-      throw new System.NotImplementedException();
+    public bool Equals(ICombinedFilter other)
+    {
+      return AttributeFilter.Equals(other.AttributeFilter) && SpatialFilter.Equals(other.SpatialFilter);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != GetType()) return false;
+      return Equals((ICombinedFilter) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        return ((AttributeFilter != null ? AttributeFilter.GetHashCode() : 0) * 397) ^ (SpatialFilter != null ? SpatialFilter.GetHashCode() : 0);
+      }
     }
   }
 }
