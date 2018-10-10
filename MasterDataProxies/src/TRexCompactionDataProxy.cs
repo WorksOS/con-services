@@ -206,12 +206,12 @@ namespace VSS.MasterData.Proxies
     }
     
     /// <summary>
-         /// Executes a POST request against the TRex Gateway service.
-         /// </summary>
-         /// <param name="payload"></param>
-         /// <param name="customHeaders"></param>
-         /// <param name="route"></param>
-         /// <returns></returns>
+    /// Executes a POST request against the TRex Gateway service.
+    /// </summary>
+    /// <param name="payload"></param>
+    /// <param name="customHeaders"></param>
+    /// <param name="route"></param>
+    /// <returns></returns>
     private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
     {
       var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, "POST", string.Empty);
