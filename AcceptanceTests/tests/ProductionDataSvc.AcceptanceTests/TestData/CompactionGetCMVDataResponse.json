@@ -117,18 +117,18 @@
     "Message": "success"
   },
   "PassCountFilter_PercentChangeSummary": {
-  "cmvChangeData": {
-    "percents": [
-      2.726602800294768,
-      9.39572586588062,
-      3.2792925571112748,
-      4.274134119380987,
-      2.8002947678703021,
-      2.3949889462048639,
-      7.0007369196757558,
-      68.128224023581424
-    ],
-    "totalAreaCoveredSqMeters": 313.73840000000007
+    "cmvChangeData": {
+      "percents": [
+        2.8559602649006623,
+        11.506622516556291,
+        4.6564569536423841,
+        5.1945364238410594,
+        4.056291390728477,
+        3.80794701986755,
+        9.064569536423841,
+        58.857615894039739
+      ],
+      "totalAreaCoveredSqMeters": 558.57920000000013
     },
     "Code": 0,
     "Message": "success"
@@ -235,20 +235,20 @@
     "Message": "success"
   },
   "PassCountFilter_Summary": {
-  "cmvSummaryData": {
-    "percentEqualsTarget": 0.22641509433962265,
-    "percentGreaterThanTarget": 0.0,
-    "percentLessThanTarget": 99.773584905660371,
-    "totalAreaCoveredSqMeters": 306.34000000000003,
-    "cmvTarget": {
-      "cmvMachineTarget": 70.0,
-      "targetVaries": false
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.12620950778291964,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 99.873790492217083,
+      "totalAreaCoveredSqMeters": 549.56240000000014,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
     },
-    "minCMVPercent": 80.0,
-    "maxCMVPercent": 130.0
-  },
-  "Code": 0,
-  "Message": "success"
+    "Code": 0,
+    "Message": "success"
   },
   "AutomaticsFilter_Summary": {
     "cmvSummaryData": null,
