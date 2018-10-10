@@ -5,11 +5,12 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric
 {
-  public abstract class BaseBinarizableIgniteClass : IBinarizable
+  public abstract class BaseBinarizableIgniteClass : IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 

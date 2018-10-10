@@ -33,7 +33,7 @@ namespace VSS.TRex.Servers
         public string TRexNodeID = string.Empty;
 
         /// <summary>
-        /// Permits configuration of server specific parameters that influence the initialisation of the server type
+        /// Permits configuration of server specific parameters that influence the initialization of the server type
         /// </summary>
         public virtual void SetupServerSpecificConfiguration()
         {

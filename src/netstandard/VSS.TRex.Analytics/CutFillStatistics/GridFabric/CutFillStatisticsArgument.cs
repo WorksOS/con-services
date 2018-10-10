@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
 {

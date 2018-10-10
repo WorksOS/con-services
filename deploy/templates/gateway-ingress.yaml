@@ -1,5 +1,4 @@
 {{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
-{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -16,6 +15,6 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: {{ $serviceName }}-gateway
+              serviceName: {{ template "trex.deployname" . }}-gateway
               servicePort: 80
 

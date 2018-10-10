@@ -3,7 +3,7 @@
 namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
 {
   /// <summary>
-   /// Base class for analytics response. Defines common state such as ResutlStatus for each response type
+   /// Base class for analytics response. Defines common state such as ResultStatus for each response type
   /// </summary>
    public class BaseAnalyticsResponse : SubGridsPipelinedReponseBase
   {

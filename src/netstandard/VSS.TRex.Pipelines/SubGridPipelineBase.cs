@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
 using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.Types;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -69,7 +68,7 @@ namespace VSS.TRex.Pipelines
         public ISubGridTreeBitMask ProdDataExistenceMap { get; set; }
 
         /// <summary>
-        /// Notes if the underlyinf query needs to include surveyed surface information in its results
+        /// Notes if the underlying query needs to include surveyed surface information in its results
         /// </summary>
         public bool IncludeSurveyedSurfaceInformation { get; set; } = true;
 
@@ -102,7 +101,7 @@ namespace VSS.TRex.Pipelines
             {
                 pipelineCompleted = value;
 
-                // The pipeline has been signalled as complete so set its completion signal
+                // The pipeline has been signaled as complete so set its completion signal
                 // Don't modify AllFinished as all results may not have been received/processed before completion
                 PipelineSignalEvent.Set();
             }
@@ -113,7 +112,7 @@ namespace VSS.TRex.Pipelines
         //  property Terminated : Boolean read FTerminated;
       
         /// <summary>
-        /// The type of grid data to be seleted from the data model
+        /// The type of grid data to be selected from the data model
         /// </summary>
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
@@ -140,7 +139,7 @@ namespace VSS.TRex.Pipelines
         /// Advises that a single subgrid has been processed and can be removed from the tally of
         /// subgrids awaiting results. 
         /// This is typically used by progressive queries where a SubGridListener
-        /// is reponsible for receiving and coordinating handling of subgrid results
+        /// is responsible for receiving and coordinating handling of subgrid results
         /// </summary>
         public void SubgridProcessed()
         {
@@ -262,11 +261,11 @@ namespace VSS.TRex.Pipelines
 
         /// <summary>
         /// Waits until the set of requests injected into the pipeline have yielded all required results
-        /// (passed into the relevant Task and signalled), or the pipeline timeout has expired
+        /// (passed into the relevant Task and signaled), or the pipeline timeout has expired
         /// </summary>
         public void WaitForCompletion()
         {
-      /* TODO: Add logging for peridoc wait time reporting... ?
+      /* TODO: Add logging for periodic wait time reporting... ?
             // WaitResult            : TWaitResult;
             // bool ShouldAbortDueToCompletedEventSet  = false;
 
@@ -332,8 +331,7 @@ namespace VSS.TRex.Pipelines
 //              Inc(FEpochCount);
 */
 
-
-      if (PipelineSignalEvent.WaitOne(30000)) // Don't wait for more than two minutes...
+            if (PipelineSignalEvent.WaitOne(120000)) // Don't wait for more than two minutes...
             {
                 Log.LogInformation($"WaitForCompletion received signal with wait handle: {PipelineSignalEvent.SafeWaitHandle.GetHashCode()}");
             }
