@@ -1,6 +1,6 @@
 ﻿using System;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Volumes.GridFabric.Arguments
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Filters.Interfaces;
 
-namespace VSS.TRex.GridFabric.Models.Arguments
+namespace VSS.TRex.GridFabric.Arguments
 {
   /// <summary>
   ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include

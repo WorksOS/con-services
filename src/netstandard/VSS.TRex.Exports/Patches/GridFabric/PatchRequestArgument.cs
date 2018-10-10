@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.Designs.Models;
-using VSS.TRex.GridFabric.Models.Arguments;
+using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Patches.GridFabric

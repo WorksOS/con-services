@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.GridFabric.Models.Arguments
+namespace VSS.TRex.GridFabric.Arguments
 {
     /// <summary>
     /// Contains all the parameters necessary to be sent for a generic subgrids request made to the compute cluster

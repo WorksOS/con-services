@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters.Interfaces;
 
@@ -9,6 +11,8 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class FilterSet : IFilterSet
   {
+    private const byte versionNumber = 1;
+
     /// <summary>
     /// The list of combined attribute and spatial filters to be used
     /// </summary>
@@ -50,7 +54,7 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// Constructor accepting a preinitialised array of filters to be included in the filter set
+    /// Constructor accepting a pre-initialized array of filters to be included in the filter set
     /// </summary>
     /// <param name="filters"></param>
     public FilterSet(ICombinedFilter[] filters)
@@ -71,6 +75,31 @@ namespace VSS.TRex.Filters
       {
         filter?.SpatialFilter?.CalculateIntersectionWithExtents(extents);
       }
+    }
+
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteByte(versionNumber);
+      writer.WriteInt(Filters.Length);
+      foreach (var filter in Filters)
+      { 
+        // Handle cases where filter entry is null
+        writer.WriteBoolean(filter != null);
+        filter?.ToBinary(writer);
+      }
+
+      throw new System.NotImplementedException();
+    }
+
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      byte readVersionNumber = reader.ReadByte();
+
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+
+      Filters = new ICombinedFilter[reader.ReadInt()];
+      for(int i = 0; i < Filters.Length; i++)
+        Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
     }
   }
 }

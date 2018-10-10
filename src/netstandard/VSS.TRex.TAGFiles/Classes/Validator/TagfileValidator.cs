@@ -46,7 +46,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       try
       {
         var customHeaders = new Dictionary<string, string>();
-        tfaResult = await tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest, customHeaders).ConfigureAwait(false) as GetProjectAndAssetUidsResult;
+        tfaResult = await tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest, customHeaders).ConfigureAwait(false);
       }
       catch (Exception e)
       {
@@ -104,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
       Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
-      if (tfaResult.Code == (int) TRexTagFileResultCode.Valid)
+      if (tfaResult?.Code == (int) TRexTagFileResultCode.Valid)
       {
         // if not overriding take TFA projectid
         if ((tagDetail.projectId == null || tagDetail.projectId == Guid.Empty) && (Guid.Parse(tfaResult.ProjectUid) != Guid.Empty))

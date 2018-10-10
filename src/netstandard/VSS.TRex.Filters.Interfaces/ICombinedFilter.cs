@@ -1,9 +1,11 @@
-﻿namespace VSS.TRex.Filters.Interfaces
+﻿using VSS.TRex.GridFabric.Interfaces;
+
+namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICombinedFilter
+  public interface ICombinedFilter : IFromToBinary
   {
     /// <summary>
-    /// The filter reponsible for selection of cell passes based on attribute filtering criteria related to cell passes
+    /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
     /// </summary>
     ICellPassAttributeFilter AttributeFilter { get; set; }
 

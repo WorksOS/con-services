@@ -1,152 +1,55 @@
 ﻿using System;
+using System.Diagnostics;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Utilities;
+using VSS.TRex.GridFabric.ExtensionMethods;
 
 namespace VSS.TRex.Filters
 {
-    /*  Of the two varieties of filtering used, this unit supports:
-        - Cell selection filtering
+  /*  Of the two varieties of filtering used, this unit supports:
+      - Cell selection filtering
 
-          Based on:
-            Spatial: Arbitrary fence specifying inclusion area
-            Positional: Point and radius for inclusion area
+        Based on:
+          Spatial: Arbitrary fence specifying inclusion area
+          Positional: Point and radius for inclusion area
 
-          The result of this filter is <YES> the cell may be used for cell pass
-          filtering, or<NO> the cell should not be considered for cell pass
-          filtering. 
-    */
+        The result of this filter is <YES> the cell may be used for cell pass
+        filtering, or<NO> the cell should not be considered for cell pass
+        filtering. 
+  */
 
   /// <summary>
-    /// CellSpatialFilter is a filter designed to filter cells for inclusion
-    /// in the returned result. The aim of the filter is to say YES or NO to the inclusion
-    /// of the cell. It does not choose which pass in the cell should be returned.
-    /// 
-    /// Of the two varieties of filtering used, this unit supports:
-    /// - Cell selection filtering
-    ///
-    ///   Based on:
-    ///     Spatial: Arbitrary fence specifying inclusion area
-    ///     Positional: Point and radius for inclusion area
-    ///
-    ///   The result of this filter is YES the cell may be used for cell pass
-    ///   filtering, or NO the cell should not be considered for cell pass filtering.
-    /// </summary>
-    public class CellSpatialFilter : ICellSpatialFilter
-    {
+  /// CellSpatialFilter is a filter designed to filter cells for inclusion
+  /// in the returned result. The aim of the filter is to say YES or NO to the inclusion
+  /// of the cell. It does not choose which pass in the cell should be returned.
+  /// 
+  /// Of the two varieties of filtering used, this unit supports:
+  /// - Cell selection filtering
+  ///
+  ///   Based on:
+  ///     Spatial: Arbitrary fence specifying inclusion area
+  ///     Positional: Point and radius for inclusion area
+  ///
+  ///   The result of this filter is YES the cell may be used for cell pass
+  ///   filtering, or NO the cell should not be considered for cell pass filtering.
+  /// </summary>
+  public class CellSpatialFilter : CellSpatialFilterModel, ICellSpatialFilter
+  {
+ 
         /// <summary>
-        /// The fence used for polygon based spatial filtering
-        /// </summary>
-        public Fence Fence { get; set; } = new Fence();
-
-        /// <summary>
-        /// The fence used to represent the spatial restriction derived from an alignment filter expressed as a 
-        /// station and offset range with respect tot he alignment centerline geometry expressed as a polygon
-        /// </summary>
-        public Fence AlignmentFence { get; set; } = new Fence(); // contains alignment boundary to help speed up filtering on alignment files
-
-        // Positional based filtering
-
-        /// <summary>
-        /// The X ordinate of the positional spatial filter
-        /// </summary>
-        public double PositionX { get; set; } = Consts.NullDouble;
-
-        /// <summary>
-        /// The Y ordinate of the positional spatial filter
-        /// </summary>
-        public double PositionY { get; set; } = Consts.NullDouble;
-
-        /// <summary>
-        /// The radius of the positional spatial filter for point-radius positional filters
-        /// </summary>
-        public double PositionRadius { get; set; } = Consts.NullDouble;
-
-        /// <summary>
-        /// Determines if the point-radius shoudl be applied as a square rather than a circle
-        /// </summary>
-        public bool IsSquare { get; set; }
-
-        /// <summary>
-        /// OverrideSpatialCellRestriction provides a rectangular, cell address based,
-        /// restrictive boundary that overrides all other cell selection filter considerations
-        /// in that it is always evaluated first. This is useful in contexts such as Web Map Service
-        /// tile generation where the tile region itself is an overriding constraint
-        /// on the data that needs to be queried
-        /// </summary>
-        public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = new BoundingIntegerExtent2D();
-
-      /// <summary>
-      /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
-      /// design recorded in DesignFilter will be included
-      /// </summary>
-      //    public Guid DesignFilterUID = Guid.Empty;
-      //        public DesignDescriptor DesignFilter = DesignDescriptor.Null(); // : TVLPDDesignDescriptor;
-
-        /// <summary>
-        /// The starting station of the parametrically defined alignment spatial filter
-        /// </summary>
-        public double? StartStation { get; set; }
-
-        /// <summary>
-        /// The ending station of the parametrically defined alignment spatial filter
-        /// </summary>
-        public double? EndStation { get; set; }
-
-        /// <summary>
-        /// The left offset of the parametrically defined alignment spatial filter
-        /// </summary>
-        public double? LeftOffset { get; set; }
-
-        /// <summary>
-        /// The right offset of the parametrically defined alignment spatial filter
-        /// </summary>
-        public double? RightOffset { get; set; }
-
-        /// <summary>
-        /// CoordsAreGrid controls whether the plan (XY/NE) coordinates in the spatial filters are to 
-        /// be interpreted as rectangular cartesian coordinates or as WGS84 latitude/longitude coordinates
-        /// </summary>
-        public bool CoordsAreGrid { get; set; }
-
-        /// <summary>
-        /// Restricts cells to spatial fence
-        /// </summary>
-        public bool IsSpatial { get; set; }
-
-        /// <summary>
-        /// Restricts cells to spatial fence
-        /// </summary>
-        public bool IsPositional { get; set; }
-
-        /// <summary>
-        /// Using a loaded surface design to 'mask' the cells that should be included in the filter
-        /// </summary>
-        public bool IsDesignMask { get; set; }
-
-        /// <summary>
-        /// A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
-        /// design recorded in DesignMask will be included
-        /// </summary>
-        public Guid SurfaceDesignMaskDesignUid { get; set; } = Guid.Empty;
-
-        /// <summary>
-        /// Using a load alignment design to 'mask' the cells that should be included in the filter
-        /// </summary>
-        public bool IsAlignmentMask { get; set; }
-
-        /// <summary>
-        /// The design used as an alignment mask spatial filter
-        /// </summary>
-        public Guid AlignmentMaskDesignUID { get; set; } = Guid.Empty;
-
-        /// <summary>
-        ///  Spatial cell fitler constructor
+        ///  Spatial cell filter constructor
         /// </summary>
         public CellSpatialFilter()
         {
-            Clear();
+          Clear();
+        }
+
+        public CellSpatialFilter(IBinaryRawReader reader)
+        {
+            FromBinary(reader);
         }
 
         /// <summary>

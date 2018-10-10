@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.TAGFiles.GridFabric.Responses;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {

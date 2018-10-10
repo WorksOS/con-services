@@ -156,7 +156,7 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="extent"></param>
     /// <returns></returns>
-    public bool Equals(BoundingIntegerExtent2D extent) => (MinX == extent.MinX) && (MinY == extent.MinY) && (MaxX == extent.MaxX) && (MaxY == extent.MaxY);
+    public bool Equals(BoundingIntegerExtent2D extent) => MinX == extent.MinX && MinY == extent.MinY && MaxX == extent.MaxX && MaxY == extent.MaxY;
 
     /// <summary>
     /// Creates a new 2D bounding extents structure with the corner points 'inverted'

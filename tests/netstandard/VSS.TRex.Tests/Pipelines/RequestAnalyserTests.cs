@@ -1,8 +1,8 @@
 ﻿using System;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models.Arguments;
-using VSS.TRex.GridFabric.Models.Responses;
+using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Tests.TestFixtures;

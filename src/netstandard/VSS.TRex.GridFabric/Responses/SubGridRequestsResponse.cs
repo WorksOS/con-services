@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.GridFabric.Models.Responses
+﻿using VSS.TRex.GridFabric.Models;
+
+namespace VSS.TRex.GridFabric.Responses
 {
     /// <summary>
     /// SubGridRequestsResponse represents the formal completion response sent back to a requestor from a 

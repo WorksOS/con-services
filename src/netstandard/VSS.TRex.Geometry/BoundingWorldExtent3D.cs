@@ -85,7 +85,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Constructor taking min/max X&Y values but allowing Z values to default to null
+    /// Constructor taking min/max X & Y values but allowing Z values to default to null
     /// </summary>
     /// <param name="AMinX"></param>
     /// <param name="AMinY"></param>
@@ -136,7 +136,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Creates a new bounding extent, sets its parameters to be the largest extent possiblel and returns the result
+    /// Creates a new bounding extent, sets its parameters to be the largest extent possible and returns the result
     /// </summary>
     /// <returns></returns>
     public static BoundingWorldExtent3D Full()
@@ -378,7 +378,19 @@ namespace VSS.TRex.Geometry
     public bool IsMaximalPlanConverage => (MinX < -1E99) && (MaxX > 1E99) && (MinY < -1E99) && (MaxY > 1E99);
 
     /// <summary>
-    /// Detemine if this bounding box is equal to another
+    /// Delegates GetHashCode to the default object hash code
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public int GetHashCode(Fence obj) => obj.GetHashCode();
+
+    public override bool Equals(object obj)
+    {
+      return this == obj || Equals(obj as BoundingWorldExtent3D);
+    }
+
+    /// <summary>
+    /// Determine if this bounding box is equal to another
     /// </summary>
     /// <param name="Extent"></param>
     /// <returns></returns>
@@ -391,7 +403,7 @@ namespace VSS.TRex.Geometry
     public bool IsValidHeightExtent => (MinZ != Consts.NullDouble) && (MaxZ != Consts.NullDouble) && (MaxZ >= MinZ);
 
     /// <summary>
-    /// Determine if the plan extent of the boudning box is not null and does not specify a negative interval.
+    /// Determine if the plan extent of the bounding box is not null and does not specify a negative interval.
     /// </summary>
     public bool IsValidPlanExtent => (MaxX != Consts.NullDouble) && (MinX != Consts.NullDouble) &&
                                      (MaxY != Consts.NullDouble) && (MinY != Consts.NullDouble) &&
@@ -426,7 +438,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Set the coodinates to in invalid (inverted) coordinate range to indicate this is a null bounding extents
+    /// Set the coordinates to in invalid (inverted) coordinate range to indicate this is a null bounding extents
     /// </summary>
     public void SetInverted()
     {
