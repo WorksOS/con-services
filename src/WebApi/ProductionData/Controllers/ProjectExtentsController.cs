@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
@@ -15,7 +17,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class ProjectExtentsController : IProjectExtentsContract
+  public class ProjectExtentsController : Controller, IProjectExtentsContract
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -30,12 +32,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
-    protected IConfigurationStore configStore;
+    private readonly IConfigurationStore configStore;
 
     /// <summary>
     /// For requesting data from TRex database.
     /// </summary>
-    protected ITRexCompactionDataProxy trexCompactionDataProxy;
+    private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
+
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Constructor with injection
@@ -66,7 +73,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     public ProjectExtentsResult Post([FromBody] ExtentRequest request)
     {
-      return RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy).Process(request) as ProjectExtentsResult;
+      return RequestExecutorContainerFactory.
+        Build<ProjectExtentsSubmitter>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(request) as ProjectExtentsResult;
     }
   }
 }

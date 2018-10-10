@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       // create submitter
       var submitter = RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
       // make request parameters
-      ExtentRequest request = ExtentRequest.CreateExtentRequest(544, excludedSsIds);
+      ExtentRequest request = new ExtentRequest(544, null, excludedSsIds);
 
       // Act
       // Call controller
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       // create submitter
       ProjectExtentsSubmitter submitter = RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(mockLogger.Object, mockRaptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
       // make request parameters
-      ExtentRequest request = ExtentRequest.CreateExtentRequest(544, excludedSsIds);
+      ExtentRequest request = new ExtentRequest(544, null, excludedSsIds);
 
       // Act
       // Call controller

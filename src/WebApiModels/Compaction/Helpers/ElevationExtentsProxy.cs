@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -58,6 +61,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     private readonly IConfigurationStore configStore;
 
     /// <summary>
+    /// For requesting data from TRex database.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -65,7 +73,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="cache">Elevation extents cache</param>
     /// <param name="settingsManager">Compaction settings manager</param>
     /// <param name="configStore">Configuration store</param>
-    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore)
+    /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
+    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -73,6 +82,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       elevationExtentsCache = cache;
       this.settingsManager = settingsManager;
       this.configStore = configStore;
+      this.trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
 
@@ -83,8 +93,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="filter">Compaction filter</param>
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(long projectId, FilterResult filter,
-      CompactionProjectSettings projectSettings)
+    public ElevationStatisticsResult GetElevationRange(long projectId, Guid projectUid, FilterResult filter,
+      CompactionProjectSettings projectSettings, IDictionary<string, string> customHeaders)
     {
       var cacheKey = ElevationCacheKey(projectId, filter);
       var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
@@ -98,10 +108,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           log.LogDebug(
             $"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
 
-          var projectExtentsRequest = ExtentRequest.CreateExtentRequest(projectId,
+          var projectExtentsRequest = new ExtentRequest(projectId, projectUid,
             filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
           var extents =
-            RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient)
+            RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger, raptorClient, configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
               .Process(projectExtentsRequest) as ProjectExtentsResult;
           result = ElevationStatisticsResult.CreateElevationStatisticsResult(
             BoundingBox3DGrid.CreatBoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,

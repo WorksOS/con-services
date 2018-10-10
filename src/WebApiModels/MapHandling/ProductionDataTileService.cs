@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       try
       {
-        elevationExtents = GetElevationExtents(projectSettings, filter, projectId, mode);
+        elevationExtents = GetElevationExtents(projectSettings, filter, projectId, projectUid, mode, customHeaders);
       }
       catch (ServiceException se)
       {
@@ -155,10 +155,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="mode">Display mode; type of data requested</param>
     /// <returns>Elevation extents to use</returns>
-    private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, DisplayMode mode)
+    private ElevationStatisticsResult GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, IDictionary<string, string> customHeaders)
     {
       var elevExtents = (mode == DisplayMode.Height || mode == DisplayMode.Design3D)
-        ? elevProxy.GetElevationRange(projectId, filter, projectSettings)
+        ? elevProxy.GetElevationRange(projectId, projectUid, filter, projectSettings, customHeaders)
         : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();
