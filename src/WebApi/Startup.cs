@@ -96,8 +96,8 @@ namespace VSS.Productivity3D.WebApi
     /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
+      /*loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();*/
       
       serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
