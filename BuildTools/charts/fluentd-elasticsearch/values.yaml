@@ -21,7 +21,7 @@ elasticsearch:
   host: 'elasticsearch-client'
   port: 9200
   buffer_chunk_limit: 2M
-  buffer_queue_limit: 8
+  buffer_queue_limit: 1024
 
 rbac:
   create: true
@@ -54,6 +54,7 @@ service: {}
 configMaps:
   system.conf: |-
     <system>
+      log_level trace
       root_dir /tmp/fluentd-buffers/
     </system>
   containers.input.conf: |-
@@ -157,7 +158,9 @@ configMaps:
     <source>
       @id fluentd-containers.log
       @type tail
+      @log_level trace
       path /var/log/containers/*.log
+      exclude_path /var/log/containers/*fluentd*.log
       pos_file /var/log/fluentd-containers.log.pos
       time_format %Y-%m-%dT%H:%M:%S.%NZ
       tag raw.kubernetes.*
@@ -187,6 +190,7 @@ configMaps:
     <source>
       @id minion
       @type tail
+      @log_level trace
       format /^(?<time>[^ ]* [^ ,]*)[^\[]*\[[^\]]*\]\[(?<severity>[^ \]]*) *\] (?<message>.*)$/
       time_format %Y-%m-%d %H:%M:%S
       path /var/log/salt/minion
@@ -198,6 +202,7 @@ configMaps:
     <source>
       @id startupscript.log
       @type tail
+      @log_level trace
       format syslog
       path /var/log/startupscript.log
       pos_file /var/log/startupscript.log.pos
@@ -209,6 +214,7 @@ configMaps:
     <source>
       @id docker.log
       @type tail
+      @log_level trace
       format /^time="(?<time>[^)]*)" level=(?<severity>[^ ]*) msg="(?<message>[^"]*)"( err="(?<error>[^"]*)")?( statusCode=($<status_code>\d+))?/
       path /var/log/docker.log
       pos_file /var/log/docker.log.pos
@@ -219,6 +225,7 @@ configMaps:
     <source>
       @id etcd.log
       @type tail
+      @log_level trace
       # Not parsing this, because it doesn't have anything particularly useful to
       # parse out of it (like severities).
       format none
@@ -234,6 +241,7 @@ configMaps:
     <source>
       @id kubelet.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -248,6 +256,7 @@ configMaps:
     <source>
       @id kube-proxy.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -262,6 +271,7 @@ configMaps:
     <source>
       @id kube-apiserver.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -276,6 +286,7 @@ configMaps:
     <source>
       @id kube-controller-manager.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -290,6 +301,7 @@ configMaps:
     <source>
       @id kube-scheduler.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -304,6 +316,7 @@ configMaps:
     <source>
       @id rescheduler.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -318,6 +331,7 @@ configMaps:
     <source>
       @id glbc.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -332,6 +346,7 @@ configMaps:
     <source>
       @id cluster-autoscaler.log
       @type tail
+      @log_level trace
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -345,6 +360,7 @@ configMaps:
     <source>
       @id journald-docker
       @type systemd
+      @log_level trace
       matches [{ "_SYSTEMD_UNIT": "docker.service" }]
       <storage>
         @type local
@@ -357,6 +373,7 @@ configMaps:
     <source>
       @id journald-kubelet
       @type systemd
+      @log_level trace
       matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       <storage>
         @type local
@@ -369,6 +386,7 @@ configMaps:
     <source>
       @id journald-node-problem-detector
       @type systemd
+      @log_level trace
       matches [{ "_SYSTEMD_UNIT": "node-problem-detector.service" }]
       <storage>
         @type local
@@ -422,7 +440,7 @@ configMaps:
     <match **>
       @id elasticsearch
       @type elasticsearch
-      @log_level info
+      @log_level trace
       include_tag_key true
       type_name fluentd
       host "#{ENV['OUTPUT_HOST']}"
@@ -433,14 +451,14 @@ configMaps:
         path /var/log/fluentd-buffers/kubernetes.system.buffer
         flush_mode interval
         retry_type exponential_backoff
-        flush_thread_count 2
-        flush_interval 5s
+        flush_thread_count 8
+        flush_interval 2s
         retry_forever
-        retry_max_interval 30
+        retry_max_interval 5
         chunk_limit_size "#{ENV['OUTPUT_BUFFER_CHUNK_LIMIT']}"
         queue_limit_length "#{ENV['OUTPUT_BUFFER_QUEUE_LIMIT']}"
         overflow_action block
-      </buffer>
+     </buffer>
     </match>
 
 # extraVolumes:
