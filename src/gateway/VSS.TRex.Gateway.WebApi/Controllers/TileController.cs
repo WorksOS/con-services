@@ -10,6 +10,10 @@ using VSS.TRex.Gateway.Common.Executors;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
+  /// <summary>
+  /// Controller for getting production data image tiles.
+  /// </summary>
+  [Route("api/v1/tile")]
   public class TileController : BaseController
   {
     public TileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, 
@@ -18,7 +22,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     [HttpPost]
-    [Route("api/v1/tile")]
     public TileResult GetTile([FromBody] TileRequest request)
     {
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
@@ -31,8 +34,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Process(request)) as TileResult;
     }
 
-    [HttpPost]
-    [Route("api/v1/tile/filestream")]
+    [HttpPost("filestream")]
     public FileResult GetTileFileStream([FromBody] TileRequest request)
     {
       Log.LogInformation($"{nameof(GetTileFileStream)}: {Request.QueryString}");
