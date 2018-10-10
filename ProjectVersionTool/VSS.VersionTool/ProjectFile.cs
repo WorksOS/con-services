@@ -80,11 +80,10 @@ namespace VSS.VersionTool
       var versions = xmlDoc.GetElementsByTagName("VersionPrefix");
       res.Version = new VersionNumber(versions.Count == 1 ? versions[0].InnerText : "undefined");
 
-      var packageId = xmlDoc.GetElementsByTagName("PackageId");
-      res.PackageName = packageId.Count == 1 ? packageId[0].InnerText : Path.GetFileNameWithoutExtension(filename);
+      res.PackageName = Path.GetFileNameWithoutExtension(filename);
 
       var assemblyName = xmlDoc.GetElementsByTagName("AssemblyName");
-      res.AssemblyName = packageId.Count == 1 ? assemblyName[0].InnerText : Path.GetFileNameWithoutExtension(filename);
+      res.AssemblyName = assemblyName.Count == 1 ? assemblyName[0].InnerText : Path.GetFileNameWithoutExtension(filename);
 
       var tags = xmlDoc.GetElementsByTagName("PackageTags");
       if (tags.Count == 1)
