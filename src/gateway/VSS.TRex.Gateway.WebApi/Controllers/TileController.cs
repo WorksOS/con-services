@@ -26,12 +26,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
 
-      request.Validate();
-
-      return WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request)) as TileResult;
+      return GetTileResult(request);
     }
 
     [HttpPost("filestream")]
@@ -39,17 +34,22 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(GetTileFileStream)}: {Request.QueryString}");
 
-      request.Validate();
-
-      var tileResult = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request)) as TileResult;
+      var tileResult = GetTileResult(request);
 
       if (tileResult?.TileData == null)
         tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+    }
+
+    private TileResult GetTileResult(TileRequest request)
+    {
+      request.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<TileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(request)) as TileResult;
     }
   }
 }
