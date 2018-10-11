@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
-  public interface ISiteModelMachineDesignList : IList<ISiteModelMachineDesign>
+  public interface ISiteModelMachineDesignList : IList<ISiteModelMachineDesign>, IBinaryReaderWriter
   {
     /// <summary>
     /// The identifier of the site model owning this list of machine design names
@@ -16,21 +16,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     ISiteModelMachineDesign Locate(int id);
 
     ISiteModelMachineDesign CreateNew(string name);
-
-
-
-    /// <summary>
-    /// Deserialises the list of design names using the given reader
-    /// </summary>
-    /// <param name="reader"></param>
-    void Read(BinaryReader reader);
-
-    /// <summary>
-    /// Serialise the list of design names using the given writer
-    /// </summary>
-    /// <param name="writer"></param>
-    void Write(BinaryWriter writer);
-
+    
     void SaveToPersistentStore(IStorageProxy StorageProxy);
     void LoadFromPersistentStore();
   }

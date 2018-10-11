@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
@@ -28,11 +29,13 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write((int)1); //Version number
+      writer.Write(UtilitiesConsts.ReaderWriterVersion); 
 
       writer.Write(Id);
       writer.Write(Name);
     }
+
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
     /// <summary>
     /// Deserialises the machine design names using the given reader
@@ -41,7 +44,7 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != 1)
+      if (version != UtilitiesConsts.ReaderWriterVersion)
         throw new Exception($"Invalid version number ({version}) reading machine design names, expected version (1)");
 
       Id = reader.ReadInt32();

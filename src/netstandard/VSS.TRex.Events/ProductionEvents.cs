@@ -193,7 +193,7 @@ namespace VSS.TRex.Events
         }
 
       /// <summary>
-      /// Modfies the event state at a specific location in the events list
+      /// Modifies the event state at a specific location in the events list
       /// </summary>
       /// <param name="index"></param>
       /// <param name="state"></param>

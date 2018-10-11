@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
-using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList, IBinaryReaderWriter
+  public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList
   {
     private const string kMachineDesignsListStreamName = "MachineDesigns";
 
@@ -22,15 +22,7 @@ namespace VSS.TRex.SiteModels
     // maintain an actual Index along with the name, in case items get sorted or something
     private int GetLastId()
     {
-      int lastId = -1;
-      ForEach(delegate(ISiteModelMachineDesign dn) 
-        { lastId = dn.Id > lastId ? dn.Id : lastId; });
-
-      return lastId;
-    }
-
-    public SiteModelMachineDesignList()
-    {
+      return this.Count > 0 ? this.Max(x => x.Id) : -1;
     }
 
     /// <summary>
@@ -71,10 +63,7 @@ namespace VSS.TRex.SiteModels
         this[i].Write(writer);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer)
-    {
-      throw new NotImplementedException();
-    }
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
     /// <summary>
     /// Deserialises the list of machine designs using the given reader
