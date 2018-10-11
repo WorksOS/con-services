@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
@@ -53,7 +54,7 @@ namespace VSS.TRex.Webtools.Controllers
         referenceDesignId: Guid.Empty
       )) as TileRenderResponse_Core2;
 
-      return new JsonResult(TileResult.CreateTileResult(response.TileBitmapData));
+      return new JsonResult(new TileResult(response?.TileBitmapData));
     }
 
     /// <summary>

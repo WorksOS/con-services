@@ -132,7 +132,7 @@ namespace TRexIgniteTest
     public async Task<byte[]> GetTile(string siteUrl, string json)
     {
 
-      string route = "api/v1/tile";
+      string route = "api/v1/tile/filestream";
       var client = GetClient(siteUrl, route);
       if (client == null)
       {
@@ -155,10 +155,7 @@ namespace TRexIgniteTest
         }
       }
 
-      LastHttpStatusCode = responseMessage.StatusCode.ToString();
       return null;
-
     }
-
   }
 }
