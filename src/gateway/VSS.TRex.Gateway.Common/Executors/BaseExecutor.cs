@@ -18,6 +18,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 {
   public abstract class BaseExecutor : RequestExecutorContainer
   {
+    private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
+    private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
+
     protected BaseExecutor()
     {
     }
@@ -64,7 +67,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       throw new ServiceException(
         HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"{nameof(T)} cast failed."));
+          $"{typeof(T).Name} cast failed."));
     }
 
     protected sealed override void ProcessErrorCodes()
@@ -246,10 +249,10 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected ServiceException CreateServiceException<T>(RequestErrorStatus resultStatus = RequestErrorStatus.OK)
     {
-      var errorMessage = $"Failed to get data requested by {nameof(T)}";
+      var errorMessage = string.Format(ERROR_MESSAGE, typeof(T).Name);
 
       if (resultStatus != RequestErrorStatus.OK)
-        errorMessage = $"{errorMessage} with error: {ContractExecutionStates.FirstNameWithOffset((int) resultStatus)}";
+        errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset((int) resultStatus));
 
       return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
     }
