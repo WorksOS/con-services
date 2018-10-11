@@ -18,6 +18,5 @@ Scenario Outline: SummaryThickness - Bad Request
 	Then the response body should contain Code <ErrorCode> and Message "<ErrorMessage>"
 	Examples: 
 	| ParameterName           | ErrorCode | ErrorMessage                                                    |
-	| ParameterName           | ErrorCode | ErrorMessage                                                    |
 	| NegativeThicknessTarget | -1        | Targte thickness settings must be positive.                     |
 	| NonExistentBaseSurface  | -4        | Failed to get/update data requested by SummaryThicknessExecutor |
