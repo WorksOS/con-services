@@ -6,6 +6,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
@@ -76,7 +77,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           Guid.Empty //TODO: request.DesignDescriptor
         )) as TileRenderResponse_Core2;
 
-      return TileResult.CreateTileResult(response?.TileBitmapData);
+      return new TileResult(response?.TileBitmapData);
     }
 
     /// <summary>
