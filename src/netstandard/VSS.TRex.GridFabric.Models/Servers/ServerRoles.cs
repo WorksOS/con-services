@@ -26,7 +26,7 @@
     public const string ASNODE_PROFILER = "ASNode-Profiler";
 
     /// <summary>
-    /// The generaic 'ASNode', application service, client role
+    /// The generic 'ASNode', application service, client role
     /// </summary>
     public const string ASNODE_CLIENT = "ASNodeClient";
 

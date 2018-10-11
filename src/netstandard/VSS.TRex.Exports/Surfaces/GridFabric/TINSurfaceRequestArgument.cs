@@ -1,4 +1,4 @@
-﻿using VSS.TRex.GridFabric.Models.Arguments;
+﻿using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Exports.Surfaces.GridFabric
 {

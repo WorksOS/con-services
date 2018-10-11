@@ -25,7 +25,7 @@ namespace VSS.TRex.Events
         private const int MinorVersion = 0;
 
         public bool EventsChanged { get; set; }
-
+    
         /// <summary>
         /// The structure that contains all information about this type of event.
         /// All events occur at a point in time, have some optional flags and contain a state 

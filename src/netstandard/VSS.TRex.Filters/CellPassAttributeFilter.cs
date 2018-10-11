@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Linq;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -29,7 +30,7 @@ namespace VSS.TRex.Filters
          Positional: Point and radius for inclusion area
 
 
-       The result of ElevationangeOffset filter is <YES> the cell may be used for cell pass
+       The result of ElevationRangeOffset filter is <YES> the cell may be used for cell pass
        filtering, or<NO> the cell should not be considered for cell pass
        filtering.
 
@@ -46,21 +47,18 @@ namespace VSS.TRex.Filters
 
    Filtering is accomplished via the use of filters (a set of parameters that
    govern how cells are to be included/excluded from the filter).
-
-   <DataPassFilter> Represents a base class from which filter classes may be derived 
    */
 
   /// <summary>
   /// TICGridDataFilter provides filtering support for grid data requested by the client
   /// </summary>
-  public class CellPassAttributeFilter : DataPassFilter, ICellPassAttributeFilter
+  public class CellPassAttributeFilter : CellPassAttributeFilterModel, ICellPassAttributeFilter
   {
-    [NonSerialized]
-    private ISiteModel siteModel;
+    [NonSerialized] private ISiteModel siteModel;
 
     /// <summary>
     /// Owner is the SiteModel instance to which this filter relates and is used in cases where machine related
-    /// attriutes are included in the filter
+    /// attributes are included in the filter
     /// </summary>
     public object /*ISiteModel*/ SiteModel
     {
@@ -68,162 +66,27 @@ namespace VSS.TRex.Filters
       set { siteModel = (ISiteModel) value; }
     }
 
-    // Time based filtering members
-    /// <summary>
-    /// The earliest time that a measured cell pass must have to be included in the filter
-    /// </summary>
-    public DateTime StartTime { get; set; } = DateTime.MinValue;
-
-    /// <summary>
-    /// The latest time that a measured cell pass must have to be included in the filter
-    /// </summary>
-    public DateTime EndTime { get; set; } = DateTime.MaxValue;
-
-    // Machine based filtering members
-    public Guid[] MachinesList { get; set; }
-
-    // Design based filtering member (for designs reported by name from machine via TAG files)
-    public int DesignNameID { get; set; } // DesignNameID :TICDesignNameID;
-
-    // Auto Vibe state filtering member
-    public VibrationState VibeState { get; set; } = VibrationState.Invalid;
-
-    public MachineDirection MachineDirection { get; set; } = MachineDirection.Unknown;
-
-    public PassTypeSet PassTypeSet { get; set; }
-
-    public bool MinElevationMapping { get; set; } //MinElevationMapping : TICMinElevMappingState;
-    public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
-
-    public ushort GPSTolerance { get; set; } = CellPassConsts.NullGPSTolerance;
-
-    public bool GPSAccuracyIsInclusive { get; set; }
-
-    public GPSAccuracy GPSAccuracy { get; set; } = GPSAccuracy.Unknown;
-
-    /// <summary>
-    /// The filter will select cell passes with a measure GPS tolerance value greater than the limit specified
-    /// in GPSTolerance
-    /// </summary>
-    public bool GPSToleranceIsGreaterThan { get; set; }
-
-    public ElevationType ElevationType { get; set; } = ElevationType.Last;
-
-    /// <summary>
-    /// The machine automatics guidance mode to be in used to record cell passes that will meet the filter.
-    /// </summary>
-    public MachineAutomaticsMode GCSGuidanceMode { get; set; } = MachineAutomaticsMode.Unknown;
-
-    /// <summary>
-    /// ReturnEarliestFilteredCellPass details how we choose a cell pass from a set of filtered
-    /// cell passes within a cell. If set, then the first cell pass is chosen. If not set, then
-    /// the latest cell pass is chosen
-    /// </summary>
-    public bool ReturnEarliestFilteredCellPass { get; set; }
-
-    /// <summary>
-    /// The elevation to uses as a level benchmark plane for an elevation filter
-    /// </summary>
-    public double ElevationRangeLevel { get; set; } = Consts.NullDouble;
-
-    /// <summary>
-    /// The vertical separation to apply from the benchmark elevation defined as a level or surface elevation
-    /// </summary>
-    public double ElevationRangeOffset { get; set; } = Consts.NullDouble;
-
-    /// <summary>
-    /// The thickness of the range from the level/surface benchmark + Offset to level/surface benchmark + Offset + thickness
-    /// </summary>
-    public double ElevationRangeThickness { get; set; } = Consts.NullDouble;
-
-    /// <summary>
-    /// The design to be used as the benchmark for a surface based elevation range filter
-    /// </summary>
-    public Guid ElevationRangeDesignID { get; set; } = Guid.Empty;
-    //public DesignDescriptor ElevationRangeDesign = DesignDescriptor.Null();
-
-    /// <summary>
-    /// Elevation parameters have been initialised in preparation for elevation range filtering, either
-    /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
-    /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
-    /// </summary>
-    public bool ElevationRangeIsInitialised { get; set; }
-
-    /// <summary>
-    /// The defined elevation range is defined only by a level plan and thickness
-    /// </summary>
-    public bool ElevationRangeIsLevelAndThicknessOnly { get; set; }
-
-    /// <summary>
-    /// The top of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    public double ElevationRangeTopElevationForCell { get; set; } = Consts.NullDouble;
-
-    /// <summary>
-    /// The bottom of the elevation range permitted for an individual cell being filtered against as
-    /// elevation range filter.
-    /// </summary>
-    public double ElevationRangeBottomElevationForCell { get; set; } = Consts.NullDouble;
-
     /// <summary>
     /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
     /// an elevation range filter.
     /// </summary>
-    [NonSerialized]
-    public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
+    [NonSerialized] public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
 
     /// <summary>
-    /// Denotes whether analysis of cell passes in a cell are analysed into separate layers accodring to 
-    /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
-    /// </summary>
-    public LayerState LayerState { get; set; } = LayerState.Invalid;
-
-    /// <summary>
-    /// ID of layer we are only interested in
-    /// </summary>
-    public int LayerID { get; set; } = -1;
-
-    /// <summary>
-    /// Only permit cell passes recorded from a compaction type machine to be considered for filtering
-    /// </summary>
-    public bool RestrictFilteredDataToCompactorsOnly { get; set; }
-
-    /// <summary>
-    /// The list of surveyed surface identifiers to be exluded from the filtered result
-    /// </summary>
-    public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
-
-    /// <summary>
-    /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filtrer is being applied to
+    /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filter is being applied to
     /// </summary>
     public short[] MachineIDs { get; set; }
 
     /// <summary>
-    /// The machines present in the filter represented as a bitset
+    /// The machines present in the filter represented as a bit set
     /// </summary>
     public BitArray MachineIDSet { get; set; }
 
-    /// <summary>
-    /// Only permit cell passes for temperature values within min max range
-    /// </summary>
-    public ushort MaterialTemperatureMin { get; set; }
+    public bool AnyFilterSelections { get; set; }
 
-    /// <summary>
-    /// Only permit cell passes for temperature values within min max range
-    /// </summary>
-    public ushort MaterialTemperatureMax { get; set; }
+    public bool AnyMachineEventFilterSelections { get; set; }
 
-    /// <summary>
-    /// takes final filtered passes and reduces to the set to passes within the min max passcount range
-    /// </summary>
-    public ushort PasscountRangeMin { get; set; }
-
-    /// <summary>
-    ///  takes final filtered passes and reduces to the set to passes within the min max passcount range
-    /// </summary>
-    public ushort PasscountRangeMax { get; set; }
-
+    public bool AnyNonMachineEventFilterSelections { get; set; }
 
     /// <summary>
     /// Default no-arg constructor the produces a filter with all aspects set to their defaults
@@ -233,9 +96,55 @@ namespace VSS.TRex.Filters
       ClearFilter();
     }
 
-    public override void Prepare()
+    public CellPassAttributeFilter(IBinaryRawReader reader)
     {
-      base.Prepare();
+      FromBinary(reader);
+    }
+
+    /// <summary>
+    /// Performs operations that prepares the filter for active use. Prepare() must be called prior to
+    /// active use of the filter.
+    /// </summary>
+    public void Prepare()
+    {
+      AnyFilterSelections =
+        HasCompactionMachinesOnlyFilter ||
+        HasDesignFilter ||
+        HasElevationRangeFilter ||
+        HasElevationTypeFilter ||
+        HasGCSGuidanceModeFilter ||
+        HasGPSAccuracyFilter ||
+        HasGPSToleranceFilter ||
+        HasLayerIDFilter ||
+        HasLayerStateFilter ||
+        HasMachineDirectionFilter ||
+        HasMachineFilter ||
+        HasMinElevMappingFilter ||
+        HasPassTypeFilter ||
+        HasPositioningTechFilter ||
+        HasTimeFilter ||
+        HasVibeStateFilter ||
+        HasTemperatureRangeFilter ||
+        HasPassCountRangeFilter;
+
+      AnyMachineEventFilterSelections =
+        HasDesignFilter ||
+        HasVibeStateFilter ||
+        HasMachineDirectionFilter ||
+        HasMinElevMappingFilter ||
+        HasGCSGuidanceModeFilter ||
+        HasGPSAccuracyFilter ||
+        HasGPSToleranceFilter ||
+        HasPositioningTechFilter ||
+        HasLayerIDFilter ||
+        HasPassTypeFilter;
+
+      AnyNonMachineEventFilterSelections =
+        HasTimeFilter ||
+        HasMachineFilter ||
+        HasElevationRangeFilter ||
+        HasCompactionMachinesOnlyFilter ||
+        HasTemperatureRangeFilter;
 
       InitialiseMachineIDsSet();
     }
@@ -375,7 +284,7 @@ namespace VSS.TRex.Filters
       if (Result != 0)
         return Result;
 
-      if (HasPassTypeFilter) // Check the contents of the passtype filter
+      if (HasPassTypeFilter) // Check the contents of the pass type filter
         if (PassTypeSet == AFilter.PassTypeSet)
           Result = 0;
         else
@@ -795,7 +704,7 @@ namespace VSS.TRex.Filters
 
     // Returns true if the specified pass meets the set filter (if any)
     // FilterPass determines if a single pass conforms to the current filtering configuration
-    public override bool FilterPass(ref CellPass PassValue)
+    public bool FilterPass(ref CellPass PassValue)
     {
       int DesignNameIDValue = Consts.kNoDesignNameID;
       VibrationState VibeStateValue = VibrationState.Invalid;
@@ -844,7 +753,7 @@ namespace VSS.TRex.Filters
 
       // Extract the list of events for the machine referred to in the cell pass. Use this
       // reference for all filter criteria that depend on machine events
-      ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? (ProductionEventLists)siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex] : null;
+      ProductionEventLists machineTargetValues = AnyMachineEventFilterSelections ? (ProductionEventLists) siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex] : null;
 
       if (HasDesignFilter)
       {
@@ -937,7 +846,7 @@ namespace VSS.TRex.Filters
       return true;
     }
 
-    public override bool FilterPass(ref FilteredPassData PassValue)
+    public bool FilterPass(ref FilteredPassData PassValue)
     {
       if (!AnyFilterSelections)
       {
@@ -1194,7 +1103,8 @@ namespace VSS.TRex.Filters
 
 
       if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behavours depending on display or grid type etc
-      { // filtering on every cell here
+      {
+        // filtering on every cell here
         if (!FilterPassUsingTemperatureRange(ref PassValue))
           return false;
       }
@@ -1223,17 +1133,175 @@ namespace VSS.TRex.Filters
     /// </summary>
     /// <returns></returns>
     public bool FilterSinglePass(CellPass[] PassValues,
-        int PassValueCount,
-        ref FilteredSinglePassInfo FilteredPassInfo,
-        object /*IProfileCell*/ profileCell)
+      int PassValueCount,
+      ref FilteredSinglePassInfo FilteredPassInfo,
+      object /*IProfileCell*/ profileCell)
     {
-      return base.FilterSinglePass(PassValues,
-          PassValueCount,
-          ReturnEarliestFilteredCellPass,
-          ref FilteredPassInfo,
-          (IProfileCell)profileCell,
-          true);
+      return FilterSinglePass(PassValues,
+        PassValueCount,
+        ReturnEarliestFilteredCellPass,
+        ref FilteredPassInfo,
+        (IProfileCell) profileCell,
+        true);
     }
+
+    // FilterSinglePass selects a single passes from the list of passes in
+    // <PassValues> where <PassValues> contains the entire list of passes for
+    // a cell in the database.
+    public bool FilterSinglePass(CellPass[] passValues,
+                                 int passValueCount,
+                                 bool wantEarliestPass,
+                                 ref FilteredSinglePassInfo filteredPassInfo,
+                                 object /* IProfileCell */ profileCell,
+                                 bool performAttributeSubFilter)
+    {
+      bool Accept;
+      bool Result = false;
+
+      if (passValueCount == 0)
+      {
+        return false;
+      }
+
+      bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
+      int AcceptedIndex = -1;
+
+      if (wantEarliestPass)
+      {
+        for (int I = 0; I < passValueCount; I++)
+        {
+          if (CheckAttributes && !FilterPass(ref passValues[I]))
+          {
+            return false;
+          }
+
+          Accept = profileCell == null
+            ? PassIsAcceptable(ref passValues[I])
+            : PassIsAcceptable(ref passValues[I]) && !((IProfileCell)profileCell).IsInSupersededLayer(passValues[I]);
+
+          if (Accept)
+          {
+            AcceptedIndex = I;
+            Result = true;
+            break;
+          }
+        }
+      }
+      else
+      {
+        for (int I = passValueCount - 1; I >= 0; I--)
+        {
+          if (CheckAttributes && !FilterPass(ref passValues[I]))
+          {
+            return false;
+          }
+
+          Accept = profileCell == null
+            ? PassIsAcceptable(ref passValues[I])
+            : PassIsAcceptable(ref passValues[I]) && !((IProfileCell)profileCell).IsInSupersededLayer(passValues[I]);
+
+          if (Accept)
+          {
+            AcceptedIndex = I;
+            Result = true;
+            break;
+          }
+        }
+      }
+
+      if (Result)
+      {
+        filteredPassInfo.FilteredPassData.FilteredPass = passValues[AcceptedIndex];
+        filteredPassInfo.FilteredPassData.TargetValues.TargetCCV = 1;
+        filteredPassInfo.FilteredPassData.TargetValues.TargetMDP = 1;
+        filteredPassInfo.FilteredPassData.TargetValues.TargetPassCount = 1;
+        filteredPassInfo.PassCount = passValueCount;
+      }
+
+      return Result;
+    }
+
+    /// <summary>
+    /// FilterSinglePass selects a single passes from the list of passes in
+    /// PassValues where PassValues contains the entire list of passes for
+    /// a cell in the database.
+    /// </summary>
+    /// <param name="filteredPassValues"></param>
+    /// <param name="passValueCount"></param>
+    /// <param name="wantEarliestPass"></param>
+    /// <param name="filteredPassInfo"></param>
+    /// <param name="profileCell"></param>
+    /// <param name="performAttributeSubFilter"></param>
+    /// <returns></returns>
+    public bool FilterSinglePass(FilteredPassData[] filteredPassValues,
+                                 int passValueCount,
+                                 bool wantEarliestPass,
+                                 ref FilteredSinglePassInfo filteredPassInfo,
+                                 object /*IProfileCell*/ profileCell,
+                                 bool performAttributeSubFilter)
+    {
+      bool Accept;
+      bool Result = false;
+
+      if (passValueCount == 0)
+      {
+        return false;
+      }
+
+      bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
+      int AcceptedIndex = -1;
+
+      if (wantEarliestPass)
+      {
+        for (int I = 0; I < passValueCount; I++)
+        {
+          if (CheckAttributes && !FilterPass(ref filteredPassValues[I]))
+          {
+            return false;
+          }
+
+          Accept = profileCell == null
+            ? PassIsAcceptable(ref filteredPassValues[I].FilteredPass)
+            : PassIsAcceptable(ref filteredPassValues[I].FilteredPass) && !((IProfileCell)profileCell).IsInSupersededLayer(filteredPassValues[I].FilteredPass);
+
+          if (Accept)
+          {
+            AcceptedIndex = I;
+            Result = true;
+            break;
+          }
+        }
+      }
+      else
+      {
+        for (int I = passValueCount - 1; I >= 0; I--)
+        {
+          if (CheckAttributes && !FilterPass(ref filteredPassValues[I]))
+          {
+            return false;
+          }
+
+          Accept = profileCell == null
+            ? PassIsAcceptable(ref filteredPassValues[I].FilteredPass)
+            : PassIsAcceptable(ref filteredPassValues[I].FilteredPass) && !((IProfileCell)profileCell).IsInSupersededLayer(filteredPassValues[I].FilteredPass);
+
+          if (Accept)
+          {
+            AcceptedIndex = I;
+            Result = true;
+            break;
+          }
+        }
+      }
+
+      if (Result)
+      {
+        filteredPassInfo.FilteredPassData = filteredPassValues[AcceptedIndex];
+        filteredPassInfo.PassCount = passValueCount;
+      }
+      return Result;
+    }
+
 
     public void InitaliaseFilteringForCell(byte ASubgridCellX, byte ASubgridCellY)
     {
@@ -1264,7 +1332,7 @@ namespace VSS.TRex.Filters
     public void InitialiseElevationRangeFilter(IClientHeightLeafSubGrid DesignElevations)
     {
       // If there is a design specified then intialise the filter using the design elevations
-      // queried and supplied by the caller, otherwise the specified Elevation level, offset and thickess
+      // queried and supplied by the caller, otherwise the specified Elevation level, offset and thickness
       // are used to calculate an elevation bracket.
 
       ElevationRangeIsLevelAndThicknessOnly = DesignElevations == null;
@@ -1321,21 +1389,31 @@ namespace VSS.TRex.Filters
     /// list of passes for a cell in the database.
     /// </summary>
     /// <param name="passValues"></param>
-    /// <param name="PassValueCount"></param>
+    /// <param name="passValueCount"></param>
     /// <param name="filteredPassInfo"></param>
     /// <returns></returns>
-    public override bool FilterMultiplePasses(CellPass[] passValues,
-        int PassValueCount,
-        ref FilteredMultiplePassInfo filteredPassInfo)
+    public bool FilterMultiplePasses(CellPass[] passValues,
+      int passValueCount,
+      ref FilteredMultiplePassInfo filteredPassInfo)
     {
       if (!AnyFilterSelections)
       {
-        return base.FilterMultiplePasses(passValues, PassValueCount, ref filteredPassInfo);
+        if (passValueCount == 0) // There's nothing to do
+          return true;
+
+        // Note: We make an independent copy of the Passes array for the cell.
+        // Simply doing CellPasses = Passes just copies a reference to the
+        // array of passes.
+
+        for (int I = 0; I < passValueCount; I++)
+          filteredPassInfo.AddPass(passValues[I]);
+
+        return true;
       }
 
       bool Result = false;
 
-      for (int i = 0; i < PassValueCount; i++)
+      for (int i = 0; i < passValueCount; i++)
       {
         CellPass PassValue = passValues[i];
 
@@ -1347,6 +1425,52 @@ namespace VSS.TRex.Filters
       }
 
       return Result;
+    }
+
+    public bool ExcludeSurveyedSurfaces()
+    {
+      return HasDesignFilter || HasMachineFilter || HasMachineDirectionFilter ||
+             HasVibeStateFilter || HasCompactionMachinesOnlyFilter ||
+             HasGPSAccuracyFilter || HasPassTypeFilter || HasTemperatureRangeFilter;
+    }
+
+    public string ActiveFiltersText() => "Not implemented";
+
+    private bool PassIsAcceptable(ref CellPass PassValue)
+    {
+      // Certain types of grid attribute data requests may need us to select
+      // a pass that is not the latest pass in the pass list. Such an instance is
+      // when request CCV value where null CCV values are passed over in favour of
+      // non-null CCV values in passes that are older in the pass list for the cell.
+
+      // Important: Also see the CalculateLatestPassDataForPassStack() function in
+      // TICServerSubGridTreeLeaf.CalculateLatestPassGrid() to ensure that the logic
+      // here is consistent (or at least not contradictory) with the logic here.
+      // The checks are duplicated as there may be different logic applied to the
+      // selection of the 'latest' pass from a cell pass state versus selection of
+      // an appropriate filtered pass given other filtering criteria in play.
+
+      switch (RequestedGridDataType)
+      {
+        case GridDataType.CCV:
+          return PassValue.CCV != CellPassConsts.NullCCV;
+        case GridDataType.MDP:
+          return PassValue.MDP != CellPassConsts.NullMDP;
+        case GridDataType.RMV:
+          return PassValue.RMV != CellPassConsts.NullRMV;
+        case GridDataType.Frequency:
+          return PassValue.Frequency != CellPassConsts.NullFrequency;
+        case GridDataType.Amplitude:
+          return PassValue.Amplitude != CellPassConsts.NullAmplitude;
+        case GridDataType.Temperature:
+          return PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
+        case GridDataType.TemperatureDetail:
+          return PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
+        case GridDataType.GPSMode:
+          return PassValue.gpsMode != CellPassConsts.NullGPSMode;
+        default:
+          return true;
+      }
     }
   }
 }

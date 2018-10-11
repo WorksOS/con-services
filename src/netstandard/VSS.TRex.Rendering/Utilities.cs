@@ -70,7 +70,7 @@ namespace VSS.TRex.Rendering
         /// <returns></returns>
         public static bool SubgridShouldBeRenderedAsRepresentationalDueToScale(double WorldTileWidth, double WorldTileHeight, int NPixelsX, int NPixelsY, double SubGridCellSize)
         {
-            return ((WorldTileWidth / NPixelsX) >= SubGridCellSize || (WorldTileHeight / NPixelsY) >= SubGridCellSize);
+            return (WorldTileWidth / NPixelsX) >= SubGridCellSize || (WorldTileHeight / NPixelsY) >= SubGridCellSize;
         }
     }
 }

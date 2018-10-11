@@ -4,9 +4,9 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
   /// <summary>
-  /// Contains all relevant informationk detailing a mutating change event made to a site model that effects the metadata and
+  /// Contains all relevant information detailing a mutating change event made to a site model that effects the metadata and
   /// other information either directly contained within a site model (eg: project extents, cell size etc) or referenced by it
-  /// (eg: machins, target event lists, designs, sitemodels etc)
+  /// (eg: machines, target event lists, designs, sitemodels etc)
   /// </summary>
   public class SiteModelAttributesChangedEvent : ISiteModelAttributesChangedEvent
   {
@@ -21,7 +21,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
     /// <summary>
     /// A serialised bit mask subgrid tree representing the set of subgrids that have been changed in a
-    /// mutating event on the sitemodel sucg as TAG file processing
+    /// mutating event on the sitemodel such as TAG file processing
     /// </summary>
     public byte[] ExistenceMapChangeMask { get; set;  }
   }

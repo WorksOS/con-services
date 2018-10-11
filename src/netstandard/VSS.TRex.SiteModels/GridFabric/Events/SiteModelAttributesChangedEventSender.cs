@@ -7,7 +7,6 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 
-
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
   /// <summary>
@@ -23,30 +22,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <summary>
     /// Notify all interested nodes in the immutable grid a site model has changed attributes
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="existenceMapChanged"></param>
-    /// <param name="existenceMapChangeMask"></param>
-    /// <param name="designsChanged"></param>
-    /// <param name="surveyedSurfacesChanged"></param>
-    /// <param name="machinesChanged"></param>
-    /// <param name="machineTargetValuesChanged"></param>
-    /// <param name="machineDesignsModified"></param>
-    public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
-      Guid siteModelID,
-      bool existenceMapChanged = false,
-      ISubGridTreeBitMask existenceMapChangeMask = null,
-      bool designsChanged = false,
-      bool surveyedSurfacesChanged = false,
-      bool machinesChanged = false,
-      bool machineTargetValuesChanged = false,
-      bool machineDesignsModified = false)
-    {
-      ModelAttributesChanged(targetGrids, siteModelID, existenceMapChanged, existenceMapChangeMask, designsChanged, surveyedSurfacesChanged, false, machinesChanged, machineTargetValuesChanged, machineDesignsModified);
-    }
 
-    /// <summary>
-    /// Notify all interested nodes in the immutable grid a site model has changed attributes
-    /// </summary>
     /// <param name="targetGrids"></param>
     /// <param name="siteModelID"></param>
     /// <param name="existenceMapChanged"></param>

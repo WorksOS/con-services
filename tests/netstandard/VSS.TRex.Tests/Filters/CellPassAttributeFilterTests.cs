@@ -24,11 +24,11 @@ namespace VSS.TRex.Tests.Filters
         {
             CellPassAttributeFilter filter = new CellPassAttributeFilter();
 
-            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialised");
+            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is initialized");
 
             filter.Prepare();
 
-            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is not initialised");
+            Assert.False(filter.ElevationRangeIsInitialised, "Elevation range is not initialized");
 
             filter.ClearFilter();
 
