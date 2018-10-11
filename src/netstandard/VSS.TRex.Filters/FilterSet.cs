@@ -49,7 +49,7 @@ namespace VSS.TRex.Filters
           ? new[] { filter1 } 
           : filter1 == null 
             ? new [] {filter2} 
-            : new[] { filter1, filter2 };
+            : new [] { filter1, filter2 };
     }
 
     /// <summary>

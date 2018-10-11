@@ -74,6 +74,9 @@ namespace VSS.TRex.Filters
 
     public bool Equals(ICombinedFilter other)
     {
+      if (other == null)
+        return false;
+
       return AttributeFilter.Equals(other.AttributeFilter) && SpatialFilter.Equals(other.SpatialFilter);
     }
 
