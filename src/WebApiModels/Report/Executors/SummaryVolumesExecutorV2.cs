@@ -133,7 +133,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(result);
 
-        throw CreateServiceException<SummaryVolumesExecutor>((int)raptorResult);
+        throw CreateServiceException<SummaryVolumesExecutorV2>((int)raptorResult);
       }
       finally
       {

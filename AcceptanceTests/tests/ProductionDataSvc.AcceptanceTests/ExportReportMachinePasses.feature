@@ -62,8 +62,8 @@ And fileName is "<FileName>"
 When I request an Export Report Machine Passes expecting BadRequest
 Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 Examples:
-| RequestName     | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage                                                       |
-|                 | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 1         | 1          | false          | false         | Test     | 2002      | Failed to get requested export data with error: No data for export |
+| RequestName     | ProjectUID                           | FilterUID                            | CoordType | OutputType | RestrictOutput | RawDataOutput | FileName | ErrorCode | ErrorMessage                                                                                   |
+|                 | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | 1         | 1          | false          | false         | Test     | -4        | Failed to get/update data requested by CompactionExportExecutor with error: No data for export |
 
 Scenario Outline: ExportReportMachinePasses - Good Request with Filter
 And projectUid "<ProjectUID>"

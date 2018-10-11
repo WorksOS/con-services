@@ -71,6 +71,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
     /// <param name="logger">LoggerFactory</param>
     /// <param name="raptorClient">Raptor client</param>
+    /// <param name="configStore">Configuration Store</param>
+    /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
     public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       this.geofenceProxy = geofenceProxy;

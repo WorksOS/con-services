@@ -162,6 +162,20 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryThickness - Bad Request: ParameterName")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryThickness")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "ParameterName")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "ParameterName")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "ErrorCode")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "ErrorMessage")]
+        public virtual void SummaryThickness_BadRequest_ParameterName()
+        {
+#line 16
+this.SummaryThickness_BadRequest("ParameterName", "ErrorCode", "ErrorMessage", ((string[])(null)));
+#line hidden
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("SummaryThickness - Bad Request: NegativeThicknessTarget")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "SummaryThickness")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NegativeThicknessTarget")]
@@ -181,11 +195,11 @@ this.SummaryThickness_BadRequest("NegativeThicknessTarget", "-1", "Targte thickn
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NonExistentBaseSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NonExistentBaseSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested thickness summary data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get/update data requested by SummaryThicknessExecutor")]
         public virtual void SummaryThickness_BadRequest_NonExistentBaseSurface()
         {
 #line 16
-this.SummaryThickness_BadRequest("NonExistentBaseSurface", "-4", "Failed to get requested thickness summary data", ((string[])(null)));
+this.SummaryThickness_BadRequest("NonExistentBaseSurface", "-4", "Failed to get/update data requested by SummaryThicknessExecutor", ((string[])(null)));
 #line hidden
         }
     }

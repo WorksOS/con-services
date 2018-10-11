@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
-  ///   from controller logic for testability and possible executor versioning.
+  ///   from controller logic for testability and possible executor versioning.%
   /// </summary>
   public abstract class RequestExecutorContainer
   {
@@ -177,7 +177,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected void ThrowRequestTypeCastException<T>(string errorMessage = null)
     {
       if (errorMessage == null)
-        errorMessage = $"{nameof(T)} cast failed.";
+        errorMessage = $"{typeof(T).Name} cast failed.";
 
       throw new ServiceException(
         HttpStatusCode.InternalServerError,
@@ -186,10 +186,10 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ServiceException CreateServiceException<T>(int errorStatus = ERROR_STATUS_OK)
     {
-      var errorMessage = string.Format(ERROR_MESSAGE, nameof(T));
+      var errorMessage = string.Format(ERROR_MESSAGE, typeof(T).Name);
 
       if (errorStatus > ERROR_STATUS_OK)
-        errorMessage = string.Format(ERROR_MESSAGE_EX, ERROR_MESSAGE, ContractExecutionStates.FirstNameWithOffset(errorStatus));
+        errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset(errorStatus));
 
       return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
     }

@@ -17,6 +17,7 @@ Scenario Outline: SummaryThickness - Bad Request
 	When I make invalid request for Summary Thickness supplying "<ParameterName>" paramters from the repository 
 	Then the response body should contain Code <ErrorCode> and Message "<ErrorMessage>"
 	Examples: 
-	| ParameterName           | ErrorCode | ErrorMessage                                   |
-	| NegativeThicknessTarget | -1        | Targte thickness settings must be positive.    |
-	| NonExistentBaseSurface  | -4        | Failed to get requested thickness summary data |
+	| ParameterName           | ErrorCode | ErrorMessage                                                    |
+	| ParameterName           | ErrorCode | ErrorMessage                                                    |
+	| NegativeThicknessTarget | -1        | Targte thickness settings must be positive.                     |
+	| NonExistentBaseSurface  | -4        | Failed to get/update data requested by SummaryThicknessExecutor |

@@ -388,12 +388,14 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FilterUID", "1cf81668-1739-42d5-b068-ea025588796a")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:FileName", "Test")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "2002")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data with error: No data for export")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get/update data requested by CompactionExportExecutor with error: No da" +
+            "ta for export")]
         public virtual void ExportReportToVETA_BadRequestWithFilter_NoMachines_()
         {
 #line 65
-this.ExportReportToVETA_BadRequestWithFilter_NoMachines("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "Test", "2002", "Failed to get requested export data with error: No data for export", ((string[])(null)));
+this.ExportReportToVETA_BadRequestWithFilter_NoMachines("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "1cf81668-1739-42d5-b068-ea025588796a", "Test", "-4", "Failed to get/update data requested by CompactionExportExecutor with error: No da" +
+                    "ta for export", ((string[])(null)));
 #line hidden
         }
         

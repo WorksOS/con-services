@@ -271,11 +271,13 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NoDateRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NoDateRange")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get/update data requested by ExportReportExecutor with error: Invalid d" +
+            "ate range for export")]
         public virtual void ExportReport_BadRequest_NoDateRange()
         {
 #line 24
-this.ExportReport_BadRequest("NoDateRange", "-4", "Failed to get requested export data", ((string[])(null)));
+this.ExportReport_BadRequest("NoDateRange", "-4", "Failed to get/update data requested by ExportReportExecutor with error: Invalid d" +
+                    "ate range for export", ((string[])(null)));
 #line hidden
         }
     }

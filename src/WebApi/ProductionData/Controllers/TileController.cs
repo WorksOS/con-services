@@ -1,6 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -28,12 +32,33 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    private readonly IConfigurationStore ConfigStore;
+
+    /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
-    public TileController(IASNodeClient raptorClient, ILoggerFactory logger)
+    /// <param name="raptorClient">Raptor client</param>
+    /// <param name="logger">LoggerFactory</param>
+    /// <param name="configStore">Configuration Store</param>
+    /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
+    public TileController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
+      ConfigStore = configStore;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -49,7 +74,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public TileResult Post([FromBody] TileRequest request)
     {
       request.Validate();
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) as TileResult;
+      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) as TileResult;
       return tileResult;
     }
 
@@ -66,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public FileResult PostRaw([FromBody] TileRequest request)
     {
       request.Validate();
-      if (RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient).Process(request) is TileResult tileResult)
+      if (RequestExecutorContainerFactory.Build<TilesExecutor>(logger, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).Process(request) is TileResult tileResult)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 

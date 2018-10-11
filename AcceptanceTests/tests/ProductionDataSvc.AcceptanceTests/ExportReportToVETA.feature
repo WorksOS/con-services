@@ -69,8 +69,8 @@ Scenario Outline: ExportReportToVETA - Bad Request with Filter - No Machines
   When I request an Export Report To VETA expecting BadRequest
   Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 Examples: 
-  | RequestName | ProjectUID                           | FilterUID                            | FileName | ErrorCode | ErrorMessage                                                       |
-  |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | Test     | 2002      | Failed to get requested export data with error: No data for export |
+  | RequestName | ProjectUID                           | FilterUID                            | FileName | ErrorCode | ErrorMessage                                                                                   |
+  |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | Test     | -4        | Failed to get/update data requested by CompactionExportExecutor with error: No data for export |
 
 Scenario Outline: ExportReportToVETA - Good Request with Filter - No Machines
   And projectUid "<ProjectUID>"
