@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -409,7 +410,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         // Notify the immutable grid listeners that attributes of this sitemodel have changed.
                         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
                         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, SiteModelFromDM.ID, 
-                          existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+                          existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true, machineDesignsModified: true);
                     }
 
                     // Update the metadata for the site model

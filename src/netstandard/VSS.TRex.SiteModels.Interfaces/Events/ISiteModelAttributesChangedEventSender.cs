@@ -12,6 +12,6 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
     void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrid, Guid siteModelID, 
       bool existenceMapChanged = false, ISubGridTreeBitMask existenceMapChangeMask = null,
       bool designsChanged = false, bool surveyedSurfacesChanged = false, bool CsibChanged = false,
-      bool machinesChanged = false, bool machineTargetValuesChanged = false);
+      bool machinesChanged = false, bool machineTargetValuesChanged = false, bool machineDesignsModified = false);
   }
 }

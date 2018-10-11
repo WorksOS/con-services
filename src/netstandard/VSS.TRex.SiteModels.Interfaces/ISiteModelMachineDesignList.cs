@@ -12,8 +12,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     Guid DataModelID { get; set; }
 
-    int LastIndex { get; set; }
-
     ISiteModelMachineDesign Locate(string name);
     ISiteModelMachineDesign Locate(int id);
 

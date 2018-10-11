@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -22,11 +20,17 @@ namespace VSS.TRex.SiteModels
     public Guid DataModelID { get; set; }
 
     // maintain an actual Index along with the name, in case items get sorted or something
-    public int LastIndex { get; set; }
+    private int GetLastId()
+    {
+      int lastId = -1;
+      ForEach(delegate(ISiteModelMachineDesign dn) 
+        { lastId = dn.Id > lastId ? dn.Id : lastId; });
+
+      return lastId;
+    }
 
     public SiteModelMachineDesignList()
     {
-      LastIndex = -1;
     }
 
     /// <summary>
@@ -48,15 +52,14 @@ namespace VSS.TRex.SiteModels
         return existingOne;
       }
 
-      ISiteModelMachineDesign Result = new SiteModelMachineDesign(LastIndex + 1, name);
-      Add(Result);
-      LastIndex += 1;
+      ISiteModelMachineDesign result = new SiteModelMachineDesign(GetLastId() + 1, name);
+      Add(result);
 
-      return Result;
+      return result;
     }
 
     /// <summary>
-    /// Serialise the list of machine using the given writer
+    /// Serialise the list of machine designs using the given writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -74,14 +77,14 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Deserialises the list of machines using the given reader
+    /// Deserialises the list of machine designs using the given reader
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
       if (version != 1)
-        throw new Exception($"Invalid version number ({version}) reading machines list, expected version (1)");
+        throw new Exception($"Invalid version number ({version}) reading machine designs list, expected version (1)");
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -95,7 +98,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Saves the content of the machines list into the persistent store
+    /// Saves the content of the machine designs list into the persistent store
     /// Note: It uses a storage proxy delegate to support the TAG file ingest pipeline that creates transactional storage
     /// proxies to manage graceful rollback of changes if needed
     /// </summary>
@@ -105,8 +108,8 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Loads the content of the machines list from the tpersistent store. If there is no item in the persistent store containing
-    /// machines for this sitemodel them return an empty list.
+    /// Loads the content of the machine designs list from the persistent store. If there is no item in the persistent store containing
+    /// machine designs for this sitemodel them return an empty list.
     /// </summary>
     public void LoadFromPersistentStore()
     {
@@ -118,12 +121,6 @@ namespace VSS.TRex.SiteModels
       {
         this.FromStream(MS);
       }
-
-      base.ForEach(delegate (ISiteModelMachineDesign dn)
-      {
-        LastIndex = dn.Id > LastIndex ? dn.Id : LastIndex;
-      });
-
     }
   }
 }

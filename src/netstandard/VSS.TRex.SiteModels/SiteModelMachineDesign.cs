@@ -44,7 +44,7 @@ namespace VSS.TRex.SiteModels
       if (version != 1)
         throw new Exception($"Invalid version number ({version}) reading machine design names, expected version (1)");
 
-      Id = reader.ReadInt16();
+      Id = reader.ReadInt32();
       Name = reader.ReadString();
     }
   }

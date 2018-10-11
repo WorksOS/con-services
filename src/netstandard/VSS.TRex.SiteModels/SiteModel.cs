@@ -227,8 +227,7 @@ namespace VSS.TRex.SiteModels
           {
             siteModelMachineDesigns = new SiteModelMachineDesignList
             {
-              DataModelID = ID,
-              LastIndex = -1
+              DataModelID = ID
             };
             if (!IsTransient)
               siteModelMachineDesigns.LoadFromPersistentStore();

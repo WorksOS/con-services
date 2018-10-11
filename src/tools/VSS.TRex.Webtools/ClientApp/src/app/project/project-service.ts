@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -117,6 +117,10 @@ export class ProjectService {
 
   public deleteDesign(projectUid: string, designId: string): Observable<any> {
     return this.executeDeleteRequest<any>('deleteDesign', `designs/${projectUid}/${designId}`);
+  }
+
+  public getMachineDesigns(projectUid: string): Observable<MachineDesign[]> {
+    return this.executeRequest<MachineDesign[]>('getMachineDesigns', `sitemodels/${projectUid}/machinedesigns`);
   }
 
   public getMachines(projectUid: string): Observable<Machine[]> {

@@ -81,6 +81,11 @@ export class Design {
   public extents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
 }
 
+export class MachineDesign {
+  public id: number;
+  public name: string = "";
+}
+
 export class SurveyedSurface{
   id: string = "";
   designDescriptor: DesignDescriptor = new DesignDescriptor();
