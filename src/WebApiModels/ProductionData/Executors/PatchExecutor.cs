@@ -26,8 +26,10 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       var request = item as PatchRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException<PatchRequest>();
 
       // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
@@ -63,22 +65,17 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
         {
-          result = patch != null
+          return patch != null
             ? ConvertPatchResult(patch.ToArray())
             : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
         }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to get requested patch with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
-        }
+
+        throw CreateServiceException<PatchExecutor>((int)raptorResult);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
 
     protected sealed override void ProcessErrorCodes()

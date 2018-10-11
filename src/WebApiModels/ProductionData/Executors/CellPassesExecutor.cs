@@ -1,11 +1,11 @@
-﻿using SVOICFiltersDecls;
-using SVOICFilterSettings;
-using SVOICGridCell;
-using SVOICProfileCell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using SVOICFiltersDecls;
+using SVOICFilterSettings;
+using SVOICGridCell;
+using SVOICProfileCell;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -15,48 +15,40 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   public class CellPassesExecutor : RequestExecutorContainer
   {
-        protected override ContractExecutionResult ProcessEx<T>(T item)
-        {
-          ContractExecutionResult result;
-          CellPassesRequest request = item as CellPassesRequest;
-          if (request == null)
-            throw new ServiceException(HttpStatusCode.InternalServerError,  
-              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing CellPassesRequest"));
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      var request = item as CellPassesRequest;
 
-          TICProfileCell profile;
-          bool isGridCoord = request.probePositionGrid != null;
-          bool isLatLgCoord = request.probePositionLL != null;
-          double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
-          double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
+      if (request == null)
+        ThrowRequestTypeCastException<CellPassesRequest>();
 
-          TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId, null, null,
-            new List<long>());
-          int code = raptorClient.RequestCellProfile
-          (request.ProjectId ?? -1,
-            RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
-            probeX, probeY,
-            isGridCoord,
-            RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-            request.gridDataType,
-            raptorFilter,
-            out profile);
+      TICProfileCell profile;
+      bool isGridCoord = request.probePositionGrid != null;
+      bool isLatLgCoord = request.probePositionLL != null;
+      double probeX = isGridCoord ? request.probePositionGrid.x : (isLatLgCoord ? request.probePositionLL.Lon : 0);
+      double probeY = isGridCoord ? request.probePositionGrid.y : (isLatLgCoord ? request.probePositionLL.Lat : 0);
 
-          if (code == 1)//TICServerRequestResult.icsrrNoError
-          {
-            result = ConvertResult(profile);
-          }
-          else
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,  new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to get cell profile details"));
-          }
+      TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterId, request.filter, request.ProjectId, null, null,
+        new List<long>());
+      int code = raptorClient.RequestCellProfile
+      (request.ProjectId ?? -1,
+        RaptorConverters.convertCellAddress(request.cellAddress ?? new CellAddress()),
+        probeX, probeY,
+        isGridCoord,
+        RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
+        request.gridDataType,
+        raptorFilter,
+        out profile);
 
-          return result;
-        }
+      if (code == 1)//TICServerRequestResult.icsrrNoError
+        return ConvertResult(profile);
+
+      throw CreateServiceException<CellPassesExecutor>();
+    }
 
     private CellPassesResult ConvertResult(TICProfileCell profile)
     {

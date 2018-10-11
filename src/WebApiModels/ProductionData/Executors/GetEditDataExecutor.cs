@@ -7,7 +7,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   public class GetEditDataExecutor : RequestExecutorContainer
   {
@@ -21,33 +21,36 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-        try
-        {
-          TDesignName[] designNames;
-          TDesignLayer[] layers;
+      try
+      {
+        var request = item as GetEditDataRequest;
 
-          GetEditDataRequest request = item as GetEditDataRequest;
-          if (request.assetId == null) 
-          {
-            designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1, -1);
-            layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1, -1);
+        if (request == null)
+          ThrowRequestTypeCastException<GetEditDataRequest>();
+
+        TDesignName[] designNames;
+        TDesignLayer[] layers;
+
+        if (request.assetId == null) 
+        {
+          designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1, -1);
+          layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1, -1);
             
-          }
-          else
-          {
-            designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1,
-                request.assetId <= 0 ? -1 : (long)request.assetId);
-            layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1,
-                request.assetId <= 0 ? -1 : (long)request.assetId);
-          }
-          result = EditDataResult.CreateEditDataResult(ConvertDataEdits(designNames, layers));
+        }
+        else
+        {
+          designNames = raptorClient.GetOverriddenDesigns(request.ProjectId ?? -1,
+              request.assetId <= 0 ? -1 : (long)request.assetId);
+          layers = raptorClient.GetOverriddenLayers(request.ProjectId ?? -1,
+              request.assetId <= 0 ? -1 : (long)request.assetId);
+        }
+
+        return EditDataResult.CreateEditDataResult(ConvertDataEdits(designNames, layers));
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
     }
 
     private List<ProductionDataEdit> ConvertDataEdits(TDesignName[] designNames, TDesignLayer[] layers)

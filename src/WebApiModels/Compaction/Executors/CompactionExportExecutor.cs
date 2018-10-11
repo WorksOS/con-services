@@ -32,7 +32,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       try
       {
         var request = item as ExportReport;
@@ -58,8 +57,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         {
           try
           {
-            result = CompactionExportResult.Create(
-              BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true));
+            return CompactionExportResult.Create(BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true));
           }
           catch (Exception ex)
           {
@@ -68,18 +66,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
                 "Failed to retrieve received export data: " + ex.Message));
           }
         }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset(dataexport.ReturnCode),
-              $"Failed to get requested export data with error: {ContractExecutionStates.FirstNameWithOffset(dataexport.ReturnCode)}"));
-        }      
+
+        throw CreateServiceException<CompactionExportExecutor>(dataexport.ReturnCode);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
     }
 
     private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)

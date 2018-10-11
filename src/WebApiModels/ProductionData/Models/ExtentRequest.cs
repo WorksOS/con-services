@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
@@ -10,8 +11,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
   /// </summary>
   public class ExtentRequest : ProjectID, IValidatable
     {
-
-
       /// <summary>
       /// The set of surveyed surface IDs to be excluded from the calculation of the project extents
       /// </summary>
@@ -19,14 +18,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       public long[] excludedSurveyedSurfaceIds { get; set; }
 
 
-      public static ExtentRequest CreateExtentRequest(long ProjectId,
-          long[] ExcludedSurveyedSurfaceIds)
+      public ExtentRequest(long projectId, Guid? projectUid, long[] ExcludedSurveyedSurfaceIds)
       {
-        return new ExtentRequest
-        {
-          ProjectId = ProjectId,
-          excludedSurveyedSurfaceIds = ExcludedSurveyedSurfaceIds
-        };
+        ProjectId = projectId;
+        ProjectUid = projectUid;
+        excludedSurveyedSurfaceIds = ExcludedSurveyedSurfaceIds;
       }
 
       public override void Validate()

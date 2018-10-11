@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -16,9 +17,9 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
@@ -50,17 +51,36 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IGeofenceProxy geofenceProxy;
 
     /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    private readonly IConfigurationStore ConfigStore;
+
+    /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+
+    /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
     /// <param name="logger">LoggerFactory</param>
     /// <param name="raptorClient">Raptor client</param>
-    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient)
+    /// <param name="configStore">Configuration Store</param>
+    /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
+    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
       this.geofenceProxy = geofenceProxy;
       this.logger = logger;
       this.log = logger.CreateLogger<CCATileController>();
       this.raptorClient = raptorClient;
+      ConfigStore = configStore;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
     /// <summary>
     /// Supplies tiles of rendered CCA data overlays.
@@ -97,7 +117,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
+      var request = CreateAndValidateRequest(projectId, null, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
       return GetCCADataTile(request);
     }
@@ -138,7 +158,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation("Get: " + Request.QueryString);
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
+      var request = CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
       return GetCCADataTile(request);
     }
@@ -154,8 +174,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     private FileResult GetCCADataTile(TileRequest request)
     {
-      var tileResult = RequestExecutorContainerFactory.Build<TilesExecutor>(this.logger, this.raptorClient).Process(request) as TileResult
-        ?? TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
+      var tileResult = RequestExecutorContainerFactory
+                         .Build<TilesExecutor>(this.logger, this.raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders:CustomHeaders)
+                         .Process(request) as TileResult;
+
+      if (tileResult?.TileData == null)
+        tileResult = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
@@ -163,6 +187,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     }
     private TileRequest CreateAndValidateRequest(
       long projectId,
+      Guid? projectUid,
       long assetId,
       string machineName,
       bool isJohnDoe,
@@ -215,6 +240,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       var request = new TileRequest
       (
         projectId,
+        projectUid,
         null,
         DisplayMode.CCA,
         null,

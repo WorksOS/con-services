@@ -2,8 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Extensions;
+using VSS.Productivity3D.Models.Extensions;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling

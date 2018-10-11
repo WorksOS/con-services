@@ -28,6 +28,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionTagFileRequest;
+
+      if (request == null)
+        ThrowRequestTypeCastException<CompactionTagFileRequest>();
+
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         "3dPm Unknown exception.");
 

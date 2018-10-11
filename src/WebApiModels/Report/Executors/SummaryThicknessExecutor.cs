@@ -45,12 +45,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      SummaryParametersBase request = item as SummaryParametersBase;
+      var request = item as SummaryParametersBase;
 
       if (request == null)
         ThrowRequestTypeCastException<SummaryParametersBase>();
 
-      TASNodeThicknessSummaryResult result = new TASNodeThicknessSummaryResult();
+      new TASNodeThicknessSummaryResult();
 
       bool success = raptorClient.GetSummaryThickness(request.ProjectId ?? -1,
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
@@ -60,15 +60,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         RaptorConverters.ConvertFilter(request.AdditionalSpatialFilterId,
           request.AdditionalSpatialFilter, request.ProjectId, null, null),
         RaptorConverters.ConvertLift(request.LiftBuildSettings, TFilterLayerMethod.flmAutomatic),
-        out result);
-      if (success)
-      {
-        return ConvertResult(result);
-      }
+        out var result);
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to get requested thickness summary data"));
+      if (success)
+        return ConvertResult(result);
+
+      throw CreateServiceException<SummaryThicknessExecutor>();
     }
   }
 }

@@ -14,9 +14,9 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
   {
     protected override TASNodeErrorStatus SendRequestToPDSClient(object item)
     {
+      var code = TASNodeErrorStatus.asneUnknown;
 
-      TASNodeErrorStatus code = TASNodeErrorStatus.asneUnknown;
-      TCoordinateSystemSettings tempCoordSystemSettings = new TCoordinateSystemSettings();
+      var tempCoordSystemSettings = new TCoordinateSystemSettings();
 
       if (item is IIsProjectIDApplicable)
       {

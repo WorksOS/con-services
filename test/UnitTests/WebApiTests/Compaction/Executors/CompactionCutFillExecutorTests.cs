@@ -1,4 +1,5 @@
 ﻿using System;
+using ASNodeDecls;
 using ASNodeRPC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
           It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
           out details))
-        .Returns(false);
+        .Returns(TASNodeErrorStatus.asneUnknown);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, null, configStore.Object);
@@ -80,7 +81,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Setup(x => x.GetCutFillDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
           It.IsAny<TCutFillSettings>(), It.IsAny<TICFilterSettings>(), It.IsAny<TICLiftBuildSettings>(),
           out details))
-        .Returns(true);
+        .Returns(TASNodeErrorStatus.asneOK);
 
       var executor = RequestExecutorContainerFactory
         .Build<CompactionCutFillExecutor>(logger, raptorClient.Object, null, configStore.Object);

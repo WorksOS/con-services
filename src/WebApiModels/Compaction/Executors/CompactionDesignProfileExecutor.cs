@@ -1,20 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using Microsoft.Extensions.Logging;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Utilities;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -66,10 +62,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       try
       {
-        CompactionProfileDesignRequest request = item as CompactionProfileDesignRequest;
+        var request = item as CompactionProfileDesignRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<CompactionProfileDesignRequest>();
@@ -77,20 +72,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var profile = PerformProductionDataProfilePost(request);
 
         if (profile != null)
-        {
-          result = profile;
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Failed to get requested profile calculations."));
-        }
+          return profile;
+
+        throw CreateServiceException<CompactionDesignProfileExecutor>();
       }
       finally
       {
         this.ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
 
     private CompactionProfileResult<CompactionProfileVertex> ConvertProfileResult(MemoryStream ms)

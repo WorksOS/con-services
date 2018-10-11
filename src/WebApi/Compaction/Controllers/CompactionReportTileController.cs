@@ -14,10 +14,9 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.MapHandling;
@@ -221,6 +220,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         overlayTypes.Remove(TileOverlayType.AllOverlays);
       }
       var project = await ((RaptorPrincipal) User).GetProject(projectUid);
+      project.ProjectUid = projectUid.ToString();
+
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var projectSettingsColors = await GetProjectSettingsColors(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -242,6 +243,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var geofences = new List<GeofenceData>();
 
       var request = requestFactory.Create<TileGenerationRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)

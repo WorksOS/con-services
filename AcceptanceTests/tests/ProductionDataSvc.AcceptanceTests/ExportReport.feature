@@ -25,5 +25,5 @@ Scenario Outline: ExportReport - Bad Request
 	When I request Export Report supplying "<RequestName>" from the request repository expecting BadRequest
 	Then the result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequestName | ErrorCode | ErrorMessage                        |
-	| NoDateRange | -4        | Failed to get requested export data |
+	| RequestName | ErrorCode | ErrorMessage                                                                                          |
+	| NoDateRange | -4        | Failed to get/update data requested by ExportReportExecutor with error: Invalid date range for export |

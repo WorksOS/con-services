@@ -122,23 +122,19 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
       try
       {
-        TASNodeErrorStatus code = SendRequestToPDSClient(item);
+        var code = SendRequestToPDSClient(item);
             
         if (code == TASNodeErrorStatus.asneOK)
-            result = ConvertResult(coordSystemSettings);
-        else
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                                      string.Format("Failed to get requested coordinate system with error: {0}.", ContractExecutionStates.FirstNameWithOffset((int)code))));  
+            return ConvertResult(coordSystemSettings);
+
+        throw CreateServiceException<CoordinateSystemExecutor>((int)code);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
   }
 }

@@ -10,28 +10,23 @@ using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
   public class ConfigExecutor : RequestExecutorContainer
+  {
+    protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-        protected override ContractExecutionResult ProcessEx<T>(T item)
-        {
-            ContractExecutionResult result;
-            string config = string.Empty;
-
-            try
-            {
-                raptorClient.RequestConfig(out config);
-                log.LogTrace("Received config {0}", config);
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(config);
-                result = ConfigResult.Create(config);
-            }
-            catch (Exception e)
-            {
-                log.LogError("Exception loading config: {0} at {1}",e.Message,e.StackTrace);
-                throw new ServiceException(HttpStatusCode.InternalServerError,
-                        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, e.Message));
-            }
-
-          return result;
-        }
+      try
+      {
+        raptorClient.RequestConfig(out var config);
+        log.LogTrace("Received config {0}", config);
+        var doc = new XmlDocument();
+        doc.LoadXml(config);
+        return ConfigResult.Create(config);
+      }
+      catch (Exception e)
+      {
+        log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+                new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, e.Message));
+      }
     }
+  }
 }

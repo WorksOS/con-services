@@ -1,24 +1,20 @@
-﻿using BoundingExtents;
-using System.Net;
+﻿using System.Net;
+using BoundingExtents;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
-  
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
+
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
   /// <summary>
   /// Exexcutes GetProjectsExtents
   /// </summary>
   public class ProjectExtentsSubmitter : RequestExecutorContainer
   {
-    /// <summary>
-    /// Project extents returnd by Raptor
-    /// </summary>
-    private T3DBoundingWorldExtent extents;
-    
     /// <summary>
     /// Calls raptor to get project extents
     /// </summary>
@@ -27,29 +23,42 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
     /// <returns>ContractExecutionResult</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       try
       {
         // get request parameters
-        ExtentRequest request = item as ExtentRequest;
+        var request = item as ExtentRequest;
 
-        bool success = raptorClient.GetDataModelExtents(request.ProjectId ?? -1,
-              RaptorConverters.convertSurveyedSurfaceExlusionList(request.excludedSurveyedSurfaceIds),
-              out extents);
+        if (request == null)
+          ThrowRequestTypeCastException<ExtentRequest>();
 
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
+
+        bool success;
+        BoundingBox3DGrid bbExtents = null;
+
+        if (useTrexGateway)
+        {
+          bbExtents = trexCompactionDataProxy.SendProjectExtentsRequest(request.ProjectUid.ToString(), customHeaders).Result;
+          success = bbExtents != null;
+        }
+        else
+        {
+          success = raptorClient.GetDataModelExtents(request.ProjectId ?? -1,
+            RaptorConverters.convertSurveyedSurfaceExlusionList(request.excludedSurveyedSurfaceIds),
+            out var extents);
+
+          bbExtents = RaptorConverters.ConvertExtents(extents);
+        }
 
         if (success)
-          result = ProjectExtentsResult.CreateProjectExtentsResult(RaptorConverters.ConvertExtents(extents));
-        else
-          throw new ServiceException(HttpStatusCode.BadRequest,
-                  new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                          "Failed to get project extents"));
+          return ProjectExtentsResult.CreateProjectExtentsResult(bbExtents);
+
+        throw CreateServiceException<ProjectExtentsSubmitter>();
       }
       finally
       {
         ContractExecutionStates.ClearDynamic(); // clear memory
       }
-      return result;
     }
   }
 }

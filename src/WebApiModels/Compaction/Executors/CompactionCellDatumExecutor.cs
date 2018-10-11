@@ -9,7 +9,6 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -17,6 +16,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
   {
     private double _northing;
     private double _easting;
+
+    /// <summary>
+    /// Default constructor for RequestExecutorContainer.Build
+    /// </summary>
+    public CompactionCellDatumExecutor()
+    {
+      ProcessErrorCodes();
+    }
 
     protected override bool GetCellDatumData(CellDatumRequest request, out TCellProductionData data)
     {
@@ -27,7 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
 
       // Gett grid coordinates...
-      TCoordPointList pointList = GetGridCoordinates(request.ProjectId ?? -1, request.llPoint);
+      var pointList = GetGridCoordinates(request.ProjectId ?? -1, request.llPoint);
 
 
       _northing = pointList.Points.Coords[0].Y;
@@ -49,9 +56,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private TCoordPointList GetGridCoordinates(long projectId, WGSPoint3D latLon)
     {
-      TWGS84FenceContainer latLongs = new TWGS84FenceContainer { FencePoints = new TWGS84Point[] { RaptorConverters.convertWGSPoint(latLon) } };
+      var latLongs = new TWGS84FenceContainer { FencePoints = new TWGS84Point[] { RaptorConverters.convertWGSPoint(latLon) } };
 
-      TCoordReturnCode code = raptorClient.GetGridCoordinates
+      var code = raptorClient.GetGridCoordinates
       (
         projectId,
         latLongs,
@@ -60,12 +67,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       );
 
       if (code != TCoordReturnCode.nercNoError || pointList.Points.Coords == null || pointList.Points.Coords.Length == 0)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "On Cell Datum request. Failed to process coordinate conversion request."));
-      }
+        throw CreateServiceException<CompactionCellDatumExecutor>((int)code);
 
       return pointList;
+    }
+
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddCoordinateResultErrorMessages(ContractExecutionStates);
     }
   }
 }

@@ -17,7 +17,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
-using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

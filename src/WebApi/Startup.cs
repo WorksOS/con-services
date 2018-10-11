@@ -135,7 +135,8 @@ namespace VSS.Productivity3D.WebApi
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_CUTFILL") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_SPEED") != "true" ||
           Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TEMPERATURE") != "true" ||
-          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VOLUMES") != "true")
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_VOLUMES") != "true" ||
+          Environment.GetEnvironmentVariable("ENABLE_TREX_GATEWAY_TILES") != "true")
         ConfigureRaptor(serviceProvider);
     }
 

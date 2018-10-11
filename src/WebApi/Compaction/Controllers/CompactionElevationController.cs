@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         var filter = await GetCompactionFilter(projectUid, filterUid);
         var projectId = await GetLegacyProjectId(projectUid);
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId, filter, projectSettings);
+        var result = elevProxy.GetElevationRange(projectId, projectUid, filter, projectSettings, CustomHeaders);
         if (result == null)
         {
           //Ideally want to return an error code and message only here

@@ -7,10 +7,10 @@ using SVOICVolumeCalculationsDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -32,90 +32,91 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
-      TileRequest request = item as TileRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<TileRequest>();
-
       try
       {
-        RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
-          out bool coordsAreGrid);
+        var request = item as TileRequest;
 
-        var baseFilter = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
-        var topFilter = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
-        var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
+        if (request == null)
+          ThrowRequestTypeCastException<TileRequest>();
 
-        var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
-        {
-          RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
-        }
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
 
-        if ((baseFilter == null || topFilter == null) && designDescriptor.IsNull() ||
-             baseFilter == null && topFilter == null)
-        {
-          throw new ServiceException(
-            HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Invalid surface configuration."));
-        }
+        if (useTrexGateway)
+          return trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
 
-        var raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
-          request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
-            TASNodeCancellationDescriptorType.cdtWMSTile),
-          RaptorConverters.convertDisplayMode(request.Mode),
-          RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
-          bottomLeftPoint, topRightPoint,
-          coordsAreGrid,
-          request.Width,
-          request.Height,
-          baseFilter,
-          topFilter,
-          RaptorConverters.convertOptions(null, request.LiftBuildSettings, request.ComputeVolNoChangeTolerance,
-            request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
-          designDescriptor,
-          volType,
-          request.RepresentationalDisplayColor,
-          out MemoryStream tile);
-
-        log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");
-
-        if (raptorResult == TASNodeErrorStatus.asneOK ||
-            raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange)
-        {
-          if (tile != null)
-          {
-            result = ConvertResult(tile, raptorResult);
-          }
-          else
-          {
-            result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              "Null tile returned");
-          }
-        }
-        else
-        {
-          log.LogTrace(
-            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}.");
-
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
-            ContractExecutionStatesEnum.InternalProcessingError,
-            $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
-        }
+        return ProcessWithRaptor(request);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-      return result;
+    }
+
+    private ContractExecutionResult ProcessWithRaptor(TileRequest request)
+    {
+      RaptorConverters.convertGridOrLLBoundingBox(request.BoundBoxGrid, request.BoundBoxLatLon, out var bottomLeftPoint, out var topRightPoint,
+        out bool coordsAreGrid);
+
+      var baseFilter = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
+      var topFilter = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
+      var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);
+
+      var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolumesType);
+      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+      {
+        RaptorConverters.AdjustFilterToFilter(ref baseFilter, topFilter);
+      }
+
+      if ((baseFilter == null || topFilter == null) && designDescriptor.IsNull() ||
+           baseFilter == null && topFilter == null)
+      {
+        throw new ServiceException(
+          HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Invalid surface configuration."));
+      }
+
+      var raptorResult = raptorClient.GetRenderedMapTileWithRepresentColor(
+        request.ProjectId ?? -1,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
+          TASNodeCancellationDescriptorType.cdtWMSTile),
+        RaptorConverters.convertDisplayMode(request.Mode),
+        RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
+        bottomLeftPoint, topRightPoint,
+        coordsAreGrid,
+        request.Width,
+        request.Height,
+        baseFilter,
+        topFilter,
+        RaptorConverters.convertOptions(null, request.LiftBuildSettings, request.ComputeVolNoChangeTolerance,
+          request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
+        designDescriptor,
+        volType,
+        request.RepresentationalDisplayColor,
+        out MemoryStream tile);
+
+      log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile == null}");
+
+      if (raptorResult == TASNodeErrorStatus.asneOK ||
+          raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange)
+      {
+        if (tile != null)
+          return ConvertResult(tile, raptorResult);
+        else
+          return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null tile returned");
+      }
+
+      log.LogTrace(
+        $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}.");
+
+      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+        ContractExecutionStatesEnum.InternalProcessingError,
+        $"Failed to get requested tile with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}."));
     }
 
     private TileResult ConvertResult(MemoryStream tile, TASNodeErrorStatus raptorResult)
     {
       log.LogDebug("Raptor result for Tile: " + raptorResult);
-      return TileResult.CreateTileResult(tile.ToArray(), raptorResult);
+      return new TileResult(tile.ToArray(), raptorResult != TASNodeErrorStatus.asneOK);
     }
 
     protected sealed override void ProcessErrorCodes()

@@ -15,30 +15,34 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
   /// </summary>
   public class TileGenerationRequest
   {
-    public DesignDescriptor designDescriptor { get; private set; }
-    public FilterResult filter { get; private set; }
-    public FilterResult baseFilter { get; private set; }
-    public FilterResult topFilter { get; private set; }
-    public VolumeCalcType? volCalcType { get; private set; }
-    public IEnumerable<GeofenceData> geofences { get; private set; }
-    public IEnumerable<GeofenceData> boundaries { get; private set; }
-    public IEnumerable<DesignDescriptor> alignmentDescriptors { get; private set; }
-    public IEnumerable<FileData> dxfFiles { get; private set; }
-    public TileOverlayType[] overlays { get; private set; }
-    public int width { get; private set; }
-    public int height { get; private set; }
-    public MapType? mapType { get; private set; }
-    public DisplayMode? mode { get; private set; }
-    public string language { get; private set; }
-    public ProjectData project { get; private set; }
-    public CompactionProjectSettings projectSettings { get; private set; }
+    private const int MIN_PIXELS = 64;
+    private const int MAX_PIXELS = 4096;
+    private const int MAX_ALK_PIXELS = 2048;
+
+    public DesignDescriptor DesignDescriptor { get; private set; }
+    public FilterResult Filter { get; private set; }
+    public FilterResult BaseFilter { get; private set; }
+    public FilterResult TopFilter { get; private set; }
+    public VolumeCalcType? VolCalcType { get; private set; }
+    public IEnumerable<GeofenceData> Geofences { get; private set; }
+    public IEnumerable<GeofenceData> Boundaries { get; private set; }
+    public IEnumerable<DesignDescriptor> AlignmentDescriptors { get; private set; }
+    public IEnumerable<FileData> DxfFiles { get; private set; }
+    public TileOverlayType[] Overlays { get; private set; }
+    public int Width { get; private set; }
+    public int Height { get; private set; }
+    public MapType? MapType { get; private set; }
+    public DisplayMode? Mode { get; private set; }
+    public string Language { get; private set; }
+    public ProjectData Project { get; private set; }
+    public CompactionProjectSettings ProjectSettings { get; private set; }
     public CompactionProjectSettingsColors ProjectSettingsColors { get; private set; }
 
 
     /// <summary>
-    /// Create instance of TileGenerationRequest
+    /// Constructor with parameters.
     /// </summary>
-    public static TileGenerationRequest CreateTileGenerationRequest(
+    public TileGenerationRequest(
       DesignDescriptor designDescriptor,
       FilterResult filter,
       FilterResult baseFilter,
@@ -59,27 +63,24 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       CompactionProjectSettingsColors projectSettingsColors
       )
     {
-      return new TileGenerationRequest
-      {
-        designDescriptor = designDescriptor,
-        filter = filter,
-        baseFilter = baseFilter,
-        topFilter = topFilter,
-        volCalcType = volCalcType ?? VolumeCalcType.None,
-        geofences = geofences,
-        boundaries = boundaries,
-        alignmentDescriptors = alignmentDescriptors,
-        dxfFiles = dxfFiles,
-        overlays = overlays,
-        width = width,
-        height = height,
-        mapType = mapType,
-        mode = mode,
-        language = language ?? "en-US",
-        project = project,
-        projectSettings = projectSettings,
-        ProjectSettingsColors = projectSettingsColors
-      };
+      DesignDescriptor = designDescriptor;
+      Filter = filter;
+      BaseFilter = baseFilter;
+      TopFilter = topFilter;
+      VolCalcType = volCalcType ?? VolumeCalcType.None;
+      Geofences = geofences;
+      Boundaries = boundaries;
+      AlignmentDescriptors = alignmentDescriptors;
+      DxfFiles = dxfFiles;
+      Overlays = overlays;
+      Width = width;
+      Height = height;
+      MapType = mapType;
+      Mode = mode;
+      Language = language ?? "en-US";
+      Project = project;
+      ProjectSettings = projectSettings;
+      ProjectSettingsColors = projectSettingsColors;
     }
 
     /// <summary>
@@ -87,64 +88,62 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// </summary>
     public void Validate()
     {
-      if (overlays == null || overlays.Length == 0)
+      if (Overlays == null || Overlays.Length == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "At least one type of map tile overlay must be specified"));
       }
 
-      bool hasBaseMap = overlays.Contains(TileOverlayType.BaseMap);
+      bool hasBaseMap = Overlays.Contains(TileOverlayType.BaseMap);
       int maxPixels = hasBaseMap ? MAX_ALK_PIXELS : MAX_PIXELS;
-      if (width < MIN_PIXELS || width > maxPixels || height < MIN_PIXELS || height > maxPixels)
+      if (Width < MIN_PIXELS || Width > maxPixels || Height < MIN_PIXELS || Height > maxPixels)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"Tile size must be between {MIN_PIXELS} and {MAX_ALK_PIXELS} with a base map or {MIN_PIXELS} and {MAX_PIXELS} otherwise"));
       }
 
-      if (overlays.Contains(TileOverlayType.BaseMap) && !mapType.HasValue)
+      if (Overlays.Contains(TileOverlayType.BaseMap) && !MapType.HasValue)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing map type parameter for base map overlay"));
       }
 
-      if (overlays.Contains(TileOverlayType.ProductionData))
+      if (Overlays.Contains(TileOverlayType.ProductionData))
       {
-        if (!mode.HasValue)
+        if (!Mode.HasValue)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Missing display mode parameter for production data overlay"));
         }
 
-
-
-        if (mode.Value == DisplayMode.CutFill)
+        if (Mode.Value == DisplayMode.CutFill)
         {
-          if (volCalcType == VolumeCalcType.None && designDescriptor == null)
+          if (VolCalcType == VolumeCalcType.None && DesignDescriptor == null)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing design for cut-fill production data overlay"));
           }
-          if ((volCalcType == VolumeCalcType.DesignToGround || volCalcType == VolumeCalcType.GroundToDesign) &&
-              designDescriptor == null)
+          if ((VolCalcType == VolumeCalcType.DesignToGround || VolCalcType == VolumeCalcType.GroundToDesign) &&
+              DesignDescriptor == null)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing design for summary volumes production data overlay"));
           }
-          if ((volCalcType == VolumeCalcType.GroundToGround || volCalcType == VolumeCalcType.GroundToDesign) &&
-              baseFilter == null)
+          if ((VolCalcType == VolumeCalcType.GroundToGround || VolCalcType == VolumeCalcType.GroundToDesign) &&
+              BaseFilter == null)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing base filter for summary volumes production data overlay"));
           }
-          if ((volCalcType == VolumeCalcType.GroundToGround || volCalcType == VolumeCalcType.DesignToGround) &&
-              topFilter == null)
+          if ((VolCalcType == VolumeCalcType.GroundToGround || VolCalcType == VolumeCalcType.DesignToGround) &&
+              TopFilter == null)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -153,9 +152,5 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         }
       }
     }
-
-    private const int MIN_PIXELS = 64;
-    private const int MAX_PIXELS = 4096;
-    private const int MAX_ALK_PIXELS = 2048;
   }
 }

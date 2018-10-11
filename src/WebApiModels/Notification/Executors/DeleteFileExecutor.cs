@@ -46,8 +46,12 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
     {
       try
       {
-        ProjectFileDescriptor request = item as ProjectFileDescriptor;
-        ImportedFileType fileType = request.FileType;   //FileUtils.GetFileType(request.File.fileName);
+        var request = item as ProjectFileDescriptor;
+
+        if (request == null)
+          ThrowRequestTypeCastException<ProjectFileDescriptor>();
+
+        var fileType = request.FileType;   //FileUtils.GetFileType(request.File.fileName);
         log.LogDebug($"FileType is: {fileType}");
 
         if (fileType == ImportedFileType.DesignSurface ||

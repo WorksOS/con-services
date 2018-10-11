@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApiModels.MapHandling
     public TileGenerationRequest CreateTileGenerationRequest(TileOverlayType[] overlays, int width, int height,
       MapType? mapType, DisplayMode? mode, string language)
     {
-      return TileGenerationRequest.CreateTileGenerationRequest(DesignDescriptor, Filter, baseFilter, topFilter, volCalcType,
+      return new TileGenerationRequest(DesignDescriptor, Filter, baseFilter, topFilter, volCalcType,
         geofences, boundaries, alignmentDescriptors, dxfFiles, overlays, width, height, mapType, mode, language, project, ProjectSettings, ProjectSettingsColors);
 
     }

@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
     /// 
     protected sealed override void ProcessErrorCodes()
     {
-      RaptorResult.AddErrorMessages(ContractExecutionStates);
+      RaptorResult.AddCoordinateResultErrorMessages(ContractExecutionStates);
     }
 
     /// <summary>
@@ -42,47 +42,39 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
     /// 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
-
-      if ((object)item != null)
+      if (item != null)
       {
         try
         {
-          CoordinateConversionRequest request = item as CoordinateConversionRequest;
+          var request = item as CoordinateConversionRequest;
 
-          TWGS84FenceContainer latLongs = new TWGS84FenceContainer { FencePoints = request.conversionCoordinates.Select(cc => TWGS84Point.Point(cc.x, cc.y)).ToArray() };
+          if (request == null)
+            ThrowRequestTypeCastException<CoordinateConversionRequest>();
 
-          TCoordPointList pointList;
+          var latLongs = new TWGS84FenceContainer { FencePoints = request.conversionCoordinates.Select(cc => TWGS84Point.Point(cc.x, cc.y)).ToArray() };
 
-          TCoordReturnCode code = raptorClient.GetGridCoordinates
+          var code = raptorClient.GetGridCoordinates
             (
               request.ProjectId ?? -1, 
               latLongs, 
               request.conversionType == TwoDCoordinateConversionType.LatLonToNorthEast ? TCoordConversionType.ctLLHtoNEE : TCoordConversionType.ctNEEtoLLH, 
-              out pointList
+              out var pointList
             );
 
           if (code == TCoordReturnCode.nercNoError)
-            result = ExecutionResult(pointList.Points.Coords);
-          else
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                                       string.Format("Failed to process coordinate conversion request with error: {0}.", ContractExecutionStates.FirstNameWithOffset((int)code))));
-          }
+            return ExecutionResult(pointList.Points.Coords);
+
+          throw CreateServiceException<CoordinateConversionExecutor>((int)code);
         }
         finally
         {
           ContractExecutionStates.ClearDynamic();
         }
       }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "No  coordinate conversion request sent."));
-      }
 
-      return result;
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          "No  coordinate conversion request sent."));
     }
 
     /// <summary>

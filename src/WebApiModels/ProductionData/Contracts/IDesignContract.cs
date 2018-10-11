@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
+namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
 {
   /// <summary>
   /// Data contract representing designs...

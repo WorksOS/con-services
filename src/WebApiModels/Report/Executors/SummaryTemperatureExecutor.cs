@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        TemperatureRequest request = item as TemperatureRequest;
+        var request = item as TemperatureRequest;
 
         if (request == null)
           ThrowRequestTypeCastException<TemperatureRequest>();
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           return trexCompactionDataProxy.SendTemperatureSummaryRequest(temperatureSummaryRequest, customHeaders).Result;
         }
 
-        TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
+        var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
           request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
         var raptorResult = raptorClient.GetTemperatureSummary(request.ProjectId ?? -1,
@@ -67,8 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(temperatureSummary);
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,//ContractExecutionStatesEnum.FailedToGetResults,
-          $"Failed to get requested Temperature summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<SummaryTemperatureExecutor>((int)raptorResult);
       }
       finally
       {

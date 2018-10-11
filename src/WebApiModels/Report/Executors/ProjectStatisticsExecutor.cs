@@ -48,13 +48,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         out var statistics);
 
       if (success)
-      {
         return ConvertProjectStatistics(statistics);
-      }
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Unable get data from Raptor."));
+      throw CreateServiceException<ProjectStatisticsExecutor>();
     }
   }
 }

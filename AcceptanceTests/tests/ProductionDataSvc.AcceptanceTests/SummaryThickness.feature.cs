@@ -181,11 +181,11 @@ this.SummaryThickness_BadRequest("NegativeThicknessTarget", "-1", "Targte thickn
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NonExistentBaseSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NonExistentBaseSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested thickness summary data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get/update data requested by SummaryThicknessExecutor")]
         public virtual void SummaryThickness_BadRequest_NonExistentBaseSurface()
         {
 #line 16
-this.SummaryThickness_BadRequest("NonExistentBaseSurface", "-4", "Failed to get requested thickness summary data", ((string[])(null)));
+this.SummaryThickness_BadRequest("NonExistentBaseSurface", "-4", "Failed to get/update data requested by SummaryThicknessExecutor", ((string[])(null)));
 #line hidden
         }
     }

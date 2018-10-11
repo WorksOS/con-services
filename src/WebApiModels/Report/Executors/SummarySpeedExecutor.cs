@@ -69,12 +69,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           out var result);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
           return ConvertResult(result);
-        }
 
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult((int)raptorResult,
-          $"Failed to get requested speed summary data with error: {ContractExecutionStates.FirstNameWithOffset((int)raptorResult)}"));
+        throw CreateServiceException<SummarySpeedExecutor>((int)raptorResult);
       }
       finally
       {

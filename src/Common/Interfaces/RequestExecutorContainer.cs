@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
@@ -9,16 +10,21 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
-  ///   from controller logic for testability and possible executor versioning.
+  ///   from controller logic for testability and possible executor versioning.%
   /// </summary>
   public abstract class RequestExecutorContainer
   {
+    private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
+    private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
+    private const int ERROR_STATUS_OK = 0;
+
     /// <summary>
     /// Raptor client used in ProcessEx
     /// </summary>
@@ -171,11 +177,21 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected void ThrowRequestTypeCastException<T>(string errorMessage = null)
     {
       if (errorMessage == null)
-        errorMessage = $"{nameof(T)} cast failed.";
+        errorMessage = $"{typeof(T).Name} cast failed.";
 
       throw new ServiceException(
         HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
+    }
+
+    protected ServiceException CreateServiceException<T>(int errorStatus = ERROR_STATUS_OK)
+    {
+      var errorMessage = string.Format(ERROR_MESSAGE, typeof(T).Name);
+
+      if (errorStatus > ERROR_STATUS_OK)
+        errorMessage = string.Format(ERROR_MESSAGE_EX, errorMessage, ContractExecutionStates.FirstNameWithOffset(errorStatus));
+
+      return new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
     }
 
     /// <summary>

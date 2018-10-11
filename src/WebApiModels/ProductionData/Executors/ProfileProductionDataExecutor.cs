@@ -78,26 +78,24 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result;
       try
       {
-        var profileResult = PerformProductionDataProfilePost(item as ProfileProductionDataRequest);
+        var request = item as ProfileProductionDataRequest;
+
+        if (request == null)
+          ThrowRequestTypeCastException<ProfileProductionDataRequest>();
+
+        var profileResult = PerformProductionDataProfilePost(request);
 
         if (profileResult != null)
-        {
-          result = profileResult;
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Failed to get requested profile calculations."));
-        }
+          return profileResult;
+
+        throw CreateServiceException<ProfileProductionDataExecutor>();
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
-
-      return result;
     }
 
     private static ProfileResult ConvertProfileResult(MemoryStream ms, Guid callID)
@@ -135,7 +133,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         profile.cells = new List<ProfileCell>();
         VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
-        foreach (Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
+        foreach (var currCell in pdsiProfile.cells)
         {
           var gapExists = ProfilesHelper.CellGapExists(prevCell, currCell, out double prevStationIntercept);
 
