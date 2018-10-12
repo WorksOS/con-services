@@ -86,8 +86,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddJaeger(SERVICE_TITLE);
 
       services.AddOpenTracing();*/
-
-
+ 
       ConfigureApplicationServices(services);
     }
 

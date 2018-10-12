@@ -84,6 +84,29 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IProjectListProxy projectsListProxy;
 
     /// <summary>
+    /// Gets the users email address from the context.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Incorrect email address value.</exception>
+    private string GetUserEmailAddress()
+    {
+      if (User is RaptorPrincipal principal)
+      {
+        return principal.UserEmail;
+      }
+
+      throw new ArgumentException("Incorrect user email address in request context principal.");
+    }
+
+    /// <summary>
+    /// Gets the userEmailAddress from the current context
+    /// </summary>
+    /// <value>
+    /// The userEmailAddress.
+    /// </value>
+    protected string userEmailAddress => GetUserEmailAddress();
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
@@ -117,7 +140,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [ProjectVerifier]
     [Route("api/v2/notification/addfile")]
     [HttpGet]
-    public async Task<Models.Notification.Models.AddFileResult> GetAddFile(
+    public async Task<AddFileResult> GetAddFile(
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
@@ -164,7 +187,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         coordSystem,
         dxfUnitsType,
         fileId,
-        fileType);
+        fileType,
+        fileUid,
+        userEmailAddress
+        );
 
       request.Validate();
       /*var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, RaptorClient, null, configStore, fileRepo, tileGenerator);
@@ -175,8 +201,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       await ClearFilesCaches(projectUid, customHeaders);
       cache.InvalidateReponseCacheForProject(projectUid);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
-      return new Models.Notification.Models.AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully,
-        "Add file notification successful");
+      return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful");
     }
 
     /// <summary>
@@ -215,7 +240,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         }
       }
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.LegacyProjectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, legacyFileId);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
+        projectDescr.LegacyProjectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, fileUid, userEmailAddress, legacyFileId);
       request.Validate();
       var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
