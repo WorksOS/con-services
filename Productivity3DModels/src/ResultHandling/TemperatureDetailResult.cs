@@ -2,6 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 
 
 namespace VSS.Productivity3D.Models.ResultHandling
@@ -9,7 +10,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
   /// <summary>
   /// Result class for temperature detail report
   /// </summary>
-  public class TemperatureDetailResult : ContractExecutionResult
+  public class TemperatureDetailResult : TemperatureBaseResult
   {
 
     /// <summary>
@@ -35,9 +36,11 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
+    /// <param name="targetData"></param>
     /// <param name="percents"></param>
-    public TemperatureDetailResult(double[] percents)
+    public TemperatureDetailResult(TemperatureTargetData targetData, double[] percents)
     {
+      TargetData = targetData;
       Percents = percents;
     }
 
