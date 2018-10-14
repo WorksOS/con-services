@@ -163,7 +163,8 @@ namespace VSS.TRex.SiteModels
           | (!message.DesignsModified ? SiteModelOriginConstructionFlags.PreserveDesigns : 0)
           | (!message.SurveyedSurfacesModified ? SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces : 0)
           | (!message.MachinesModified ? SiteModelOriginConstructionFlags.PreserveMachines : 0)
-          | (!message.MachineTargetValuesModified? SiteModelOriginConstructionFlags.PreserveMachineTargetValues : 0);
+          | (!message.MachineTargetValuesModified? SiteModelOriginConstructionFlags.PreserveMachineTargetValues : 0)
+          | (!message.MachineDesignsModified ? SiteModelOriginConstructionFlags.PreserveMachineDesigns : 0);
 
         Log.LogInformation($"Processing attribute change notification for sitemodel {SiteModelID}. Preserved elements are {originFlags}");
 

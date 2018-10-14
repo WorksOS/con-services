@@ -54,7 +54,6 @@ namespace VSS.TRex.Events
         default: return null;
       }
 
-      // DesignNameStateEvents = new ProductionEvents<string>(this, MachineID, SiteModel.ID, ProductionEventType.DesignChange);
     }
   }
 }

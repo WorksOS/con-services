@@ -22,6 +22,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <summary>
     /// Notify all interested nodes in the immutable grid a site model has changed attributes
     /// </summary>
+
     /// <param name="targetGrids"></param>
     /// <param name="siteModelID"></param>
     /// <param name="existenceMapChanged"></param>
@@ -31,6 +32,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <param name="machinesChanged"></param>
     /// <param name="machineTargetValuesChanged"></param>
     /// <param name="surveyedSurfacesChanged"></param>
+    /// <param name="machineDesignsModified"></param>
     public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
       Guid siteModelID,
       bool existenceMapChanged = false,
@@ -39,7 +41,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       bool surveyedSurfacesChanged = false,
       bool csibChanged = false,
       bool machinesChanged = false,
-      bool machineTargetValuesChanged = false)
+      bool machineTargetValuesChanged = false,
+      bool machineDesignsModified = false)
     {
       try
       {
@@ -53,7 +56,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
           DesignsModified = designsChanged,
           SurveyedSurfacesModified = surveyedSurfacesChanged,
           MachinesModified = machinesChanged,
-          MachineTargetValuesModified = machineTargetValuesChanged
+          MachineTargetValuesModified = machineTargetValuesChanged,
+          MachineDesignsModified = machineDesignsModified
         };
 
         if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)

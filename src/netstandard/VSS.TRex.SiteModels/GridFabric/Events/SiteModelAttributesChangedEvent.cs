@@ -17,6 +17,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     public bool CsibModified { get; set; }
     public bool MachinesModified { get; set; }
     public bool MachineTargetValuesModified { get; set; }
+    public bool MachineDesignsModified { get; set; }
 
     /// <summary>
     /// A serialised bit mask subgrid tree representing the set of subgrids that have been changed in a

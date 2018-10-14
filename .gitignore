@@ -90,6 +90,7 @@ obj/
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
+*.classname1
 
 # JustCode is a .NET coding add-in
 .JustCode

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -59,6 +59,7 @@ export class ProjectComponent {
 
   public newDesignGuid: string = "";
   public designs: Design[] = [];
+  public machineDesigns: MachineDesign[] = [];
 
   public machines: Machine[] = [];
   public machine: Machine = new Machine();
@@ -126,6 +127,7 @@ constructor(
     this.getSurveyedSurfaces();
     this.getDesigns();
     this.getMachines();
+    this.getMachineDesigns();
 
     // Sleep for half a second to allow the project extents result to come back, then zoom all
     setTimeout(() => this.zoomAll(), 250);
@@ -369,11 +371,20 @@ constructor(
         designs.forEach(design => result.push(design));
         this.designs = result;
       });  
-  }
+    }
 
   public deleteDesign(design: Design): void {
     this.projectService.deleteDesign(this.projectUid, design.id).subscribe(x =>
       this.designs.splice(this.designs.indexOf(design), 1));
+  }
+
+  public getMachineDesigns(): void {
+    var result: MachineDesign[] = [];
+    this.projectService.getMachineDesigns(this.projectUid).subscribe(
+      machineDesigns => {
+        machineDesigns.forEach(machineDesign => result.push(machineDesign));
+        this.machineDesigns = result;
+      });
   }
 
   public getMachines(): void {
