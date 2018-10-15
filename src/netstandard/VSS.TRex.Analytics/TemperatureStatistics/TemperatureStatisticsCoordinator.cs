@@ -29,8 +29,10 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 			//LiftBuildSettings := LiftBuildSettings;
 			CellSize = SiteModel.Grid.CellSize,
 			OverrideTemperatureWarningLevels = argument.OverrideTemperatureWarningLevels,
-			OverridingTemperatureWarningLevels = argument.OverridingTemperatureWarningLevels
-		};
+			OverridingTemperatureWarningLevels = argument.OverridingTemperatureWarningLevels,
+		  DetailsDataValues = argument.TemperatureDetailValues,
+		  Counts = argument.TemperatureDetailValues != null ? new long[argument.TemperatureDetailValues.Length] : null
+    };
 
 		/// <summary>
 		/// Constructs the computor from the supplied argument and aggregator for the Temperature statistics analytics request
@@ -69,6 +71,9 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 
 			response.LastTempRangeMin = ((TemperatureStatisticsAggregator) aggregator).LastTempRangeMin;
 			response.LastTempRangeMax = ((TemperatureStatisticsAggregator)aggregator).LastTempRangeMax;
-		}
+
+		  response.Counts = tempAggregator.Counts;
+
+    }
 	}
 }

@@ -44,6 +44,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
         WithinTargetPercent = ValueAtTargetPercent,
         AboveTargetPercent = ValueOverTargetPercent,
         TotalAreaCoveredSqMeters = SummaryProcessedArea,
+        Counts = Counts,
 
         ReturnCode = MissingTargetValue ? SummaryCellsScanned == 0 ? MissingTargetDataResultType.NoResult : MissingTargetDataResultType.PartialResult : MissingTargetDataResultType.NoProblems,
 
