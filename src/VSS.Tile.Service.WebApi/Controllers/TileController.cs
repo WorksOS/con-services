@@ -1,10 +1,11 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -20,8 +21,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public TileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy)
-      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy)
+    public TileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, 
+      IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore)
+      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy, cache, configStore)
     {
     }
 

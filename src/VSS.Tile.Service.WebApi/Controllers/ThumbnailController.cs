@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
+using VSS.Tile.Service.Common.ResultHandling;
 using VSS.Tile.Service.Common.Services;
 
 namespace VSS.Tile.Service.WebApi.Controllers
@@ -34,9 +38,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ThumbnailController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy,
-      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy)
-      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy)
+    public ThumbnailController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, 
+      IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore)
+      : base(raptorProxy, prefProxy, fileListProxy, tileGenerator, geofenceProxy, cache, configStore)
     {
     }
 
@@ -160,7 +164,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailPng)}: {Request.QueryString}");
 
-      var geofence = await geofenceProxy.GetGeofenceForCustomer((User as TilePrincipal).CustomerUid, geofenceUid.ToString(), CustomHeaders);
+      var geofence = await geofenceProxy.GetGeofenceForCustomer(GetCustomerUid, geofenceUid.ToString(), CustomHeaders);
       if (geofence == null)
       {
         return new FileStreamResult(new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), "image/png");
@@ -186,6 +190,34 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       var result = await GetGeofenceThumbnailPng(geofenceUid);
       return GetStreamContents(result);
+    }
+
+    /// <summary>
+    /// Gets a list of geofence thumbnail images as Base64 encoded strings.
+    /// </summary>
+    [Route("api/v1/geofencethumbnails/base64")]
+    [HttpGet]
+    public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsBase64([FromQuery] Guid[] geofenceUids)
+    {
+      Log.LogDebug($"{nameof(GetGeofenceThumbnailsBase64)}: {Request.QueryString}");
+
+      object lockObject = new object();
+
+      var thumbnailList = new List<ThumbnailResult>();
+      var geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+      var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0 ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID)) : geofences;
+      var thumbnailTasks = selectedGeofences.Select(async geofence =>
+      {
+        var result = await GetGeofenceThumbnailPng(geofence.GeofenceUID);
+        lock (lockObject)
+        {
+          thumbnailList.Add(new ThumbnailResult{Uid = geofence.GeofenceUID, Data = GetStreamContents(result) });
+        }
+      });
+
+      await Task.WhenAll(thumbnailTasks);
+
+      return new MultipleThumbnailsResult { Thumbnails = thumbnailList };
     }
 
 

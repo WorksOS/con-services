@@ -116,7 +116,7 @@ namespace WebApiTests.Utilities
     /// <param name="uri">URI of the service.</param>
     /// <param name="expectedHttpCode">Expected response HttpStatusCode.</param>
     /// <returns>Request response.</returns>
-    private TResponse DoRequest(string uri, HttpStatusCode expectedHttpCode)
+    public TResponse DoRequest(string uri, HttpStatusCode expectedHttpCode)
     {
       if (uri != "")
       {

@@ -32,6 +32,9 @@
     <None Update="TestData\GeofenceThumbnailResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\MultiGeofenceThumbnailResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\ProjectThumbnailResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using WebApiTests.Models;
 using WebApiTests.Utilities;
+using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace WebApiTests.StepDefinitions
@@ -13,6 +14,7 @@ namespace WebApiTests.StepDefinitions
     private Getter<byte[]> tileRequester;
     private byte[] currentResponse;
     private string operation;
+    private Getter<MultipleThumbnailsResult> multiTileRequester;
 
     [Given(@"The geofence thumbnail URI is ""(.*)"" for operation ""(.*)""")]
     public void GivenTheGeofenceThumbnailURIIs(string uri, string operation)
@@ -41,6 +43,7 @@ namespace WebApiTests.StepDefinitions
           tileRequester.DoValidRequest(HttpStatusCode.OK);
           currentResponse = tileRequester.CurrentResponse;
           break;
+        default: Assert.True(false, TEST_FAIL_MESSAGE); break;
       }
     }
 
@@ -49,6 +52,25 @@ namespace WebApiTests.StepDefinitions
     {
       byte[] expectedResponse = tileRequester.ResponseRepo[responseName];
       CompareExpectedAndActualTiles(responseName, tolerance, expectedResponse, currentResponse);
+    }
+
+    [When(@"I request multiple Report Tiles")]
+    public void WhenIRequestMultipleReportTiles()
+    {
+      multiTileRequester = new Getter<MultipleThumbnailsResult>(uri, responseRepositoryFileName);
+      switch (operation)
+      {
+        case "multiple":
+          multiTileRequester.DoRequest(uri, HttpStatusCode.OK);
+          break;
+        default: Assert.True(false, TEST_FAIL_MESSAGE); break;
+      }
+    }
+
+    [Then(@"The result should match ""(.*)"" from the response repository")]
+    public void ThenTheResultShouldMatchFromTheResponseRepository(string responseName)
+    {
+      Assert.Equal(multiTileRequester.ResponseRepo[responseName], multiTileRequester.CurrentResponse);
     }
   }
 }

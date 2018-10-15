@@ -6,10 +6,12 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -33,6 +35,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
     private ILogger<T> logger;
     private IServiceExceptionHandler serviceExceptionHandler;
 
+    private readonly IMemoryCache tileCache;
+    private readonly TimeSpan tileCacheExpiration;
+
+
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
@@ -48,18 +54,19 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// </summary>
     private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
 
-
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy)
+    protected BaseController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileListProxy fileListProxy, IMapTileGenerator tileGenerator, 
+      IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore)
     {
       this.raptorProxy = raptorProxy;
       this.prefProxy = prefProxy;
       this.fileListProxy = fileListProxy;
       this.tileGenerator = tileGenerator;
       this.geofenceProxy = geofenceProxy;
+      tileCache = cache;
+      tileCacheExpiration = GetCacheExpiration(configurationStore);
     }
 
     /// <summary>
@@ -167,7 +174,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
       ////var geofences = overlayTypes.Contains(TileOverlayType.Geofences)
-      ////  ? await geofenceProxy.GetGeofences((User as TilePrincipal).CustomerUid, CustomHeaders)
+      ////  ? await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders)
       ////  : new List<GeofenceData>();
       var geofences = new List<GeofenceData>();
 
@@ -198,30 +205,50 @@ namespace VSS.Tile.Service.WebApi.Controllers
     protected async Task<FileResult> GetGeneratedTile(GeofenceData geofence,
       TileOverlayType[] overlays, int width, int height, string bbox, MapType? mapType, 
       string language, bool adjustBoundingBox)
-    {
-      var overlayTypes = overlays.ToList();
+    {   
+      var byteResult = await tileCache.GetOrCreateAsync<byte[]>(geofence.GeofenceUID, async entry =>
+      {
+        entry.SlidingExpiration = tileCacheExpiration;
 
-      language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
+        var overlayTypes = overlays.ToList();
 
-      var geofences = new List<GeofenceData>{geofence};
+        language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
 
-      var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
+        var geofences = new List<GeofenceData> { geofence };
 
-      var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, geofences,
-        null, null, null, null, null, null, overlayTypes, width, height, mapType, null, language, null, mapParameters, CustomHeaders);
+        var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
 
-      request.Validate();
+        var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, geofences,
+          null, null, null, null, null, null, overlayTypes, width, height, mapType, null, language, null, mapParameters, CustomHeaders);
 
-      var byteResult = await WithServiceExceptionTryExecuteAsync(async () =>
-        await tileGenerator.GetMapData(request));
+        request.Validate();
+
+        return await WithServiceExceptionTryExecuteAsync(async () =>
+          await tileGenerator.GetMapData(request));
+      });
 
       return new FileStreamResult(new MemoryStream(byteResult), "image/png");
     }
 
     /// <summary>
-      /// Get user preferences
-      /// </summary>
-      private async Task<UserPreferenceData> GetShortCachedUserPreferences()
+    /// Gets the lifespan of a cached tile
+    /// </summary>
+    private TimeSpan GetCacheExpiration(IConfigurationStore configurationStore)
+    {
+      string cacheLife = configurationStore.GetValueString("TILE_CACHE_LIFE") ?? "00:15:00";
+      TimeSpan result;
+      if (!TimeSpan.TryParse(cacheLife, out result))
+      {
+        result = new TimeSpan(0, 15, 0);
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Get user preferences
+    /// </summary>
+    private async Task<UserPreferenceData> GetShortCachedUserPreferences()
     {
       var userPreferences = await prefProxy.GetShortCachedUserPreferences(((TilePrincipal)User).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
       if (userPreferences == null)
@@ -263,6 +290,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       throw new ArgumentException("Incorrect UserId in request context principal.");
     }
+
+    /// <summary>
+    /// Gets the customer uid from the context
+    /// </summary>
+    protected string GetCustomerUid => (User as TilePrincipal).CustomerUid;
 
   }
 

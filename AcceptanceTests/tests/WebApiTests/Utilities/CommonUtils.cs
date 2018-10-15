@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using XnaFan.ImageComparison.Netcore;
+using Xunit;
 
 namespace WebApiTests.Utilities
 {
@@ -57,6 +59,47 @@ namespace WebApiTests.Utilities
       {
         Console.WriteLine(e);
       }
+    }
+
+    /// <summary>
+    /// Test whether two lists are equivalent.
+    /// </summary>
+    public static bool ListsAreEqual<T>(List<T> listA, List<T> listB)
+    {
+      if (listA == null && listB == null)
+        return true;
+      if (listA == null || listB == null)
+        return false;
+      if (listA.Count != listB.Count)
+        return false;
+
+      for (int i = 0; i < listA.Count; ++i)
+      {
+        if (!listB.Exists(item => item.Equals(listA[i])))
+          return false;
+      }
+
+      return true;
+    }
+
+    public static bool TilesMatch(string resultName, string difference, byte[] expectedTileData, byte[] actualTileData)
+    {
+      double imageDifference = 0;
+      if (!string.IsNullOrEmpty(difference))
+      {
+        imageDifference = Convert.ToDouble(difference) / 100;
+      }
+      //These 2 lines are for debugging so we can paste into an online image converter
+      //var expectedTileDataString = JsonConvert.SerializeObject(expectedTileData);
+      //var actualTileDataString = JsonConvert.SerializeObject(actualTileData);
+
+      var expFileName = "Expected_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
+      var actFileName = "Actual_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
+      var diff = CommonUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      Console.WriteLine("Actual Difference % = " + diff * 100);
+      Console.WriteLine("Actual filename = " + actFileName);
+      Console.WriteLine(actualTileData);
+      return Math.Abs(diff) < imageDifference;
     }
   }
 }
