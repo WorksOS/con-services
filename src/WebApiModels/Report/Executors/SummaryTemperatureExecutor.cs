@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Net;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 using ASNodeDecls;
-using SVOICFilterSettings;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -87,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
                 new TemperatureTargetData()
                 {
                   MinTemperatureMachineTarget = summary.MinimumTemperature,
-                  MaxTemperatureMachineTarget = summary.MinimumTemperature,
+                  MaxTemperatureMachineTarget = summary.MaximumTemperature,
                   TargetVaries = !summary.IsTargetTemperatureConstant
                 }, 
                 summary.ReturnCode,
