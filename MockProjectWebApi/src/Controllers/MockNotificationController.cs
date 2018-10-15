@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -13,7 +15,7 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Route("api/v2/notification/addfile")]
     [HttpGet]
-    public BaseDataResult DummyAddFileGet(
+    public ContractExecutionResult DummyAddFileGet(
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
@@ -23,7 +25,14 @@ namespace MockProjectWebApi.Controllers
     {
       var hasDxfTiles = fileType == ImportedFileType.Linework || fileType == ImportedFileType.Alignment ||
                         fileType == ImportedFileType.DesignSurface;
-      var res = new AddFileResult { MinZoomLevel = hasDxfTiles ? 15 : 0, MaxZoomLevel = hasDxfTiles ? 19 : 0 };
+      var res = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage)
+      {
+        MinZoomLevel = hasDxfTiles ? 15 : 0,
+        MaxZoomLevel = hasDxfTiles ? 19 : 0,
+        FileDescriptor = JsonConvert.DeserializeObject<FileDescriptor>(fileDescriptor),
+        FileUid = fileUid,
+        UserEmailAddress = "dummy@xyz.com"
+      };
       var message =
         $"DummyAddFileGet: res {res}. projectUid {projectUid} fileType {fileType} fileUid {fileUid} fileDescriptor {fileDescriptor} fileId {fileId} dXfUnitsType {dXfUnitsType}";
       Console.WriteLine(message);
