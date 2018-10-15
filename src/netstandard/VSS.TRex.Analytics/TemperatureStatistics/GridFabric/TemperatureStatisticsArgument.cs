@@ -17,5 +17,11 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     /// User overriding temperature warning level values.
     /// </summary>
     public TemperatureWarningLevelsRecord OverridingTemperatureWarningLevels;
+
+    /// <summary>
+    /// Temperature details values.
+    /// </summary>
+    public int[] TemperatureDetailValues { get; set; }
+
   }
 }

@@ -150,7 +150,10 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 	            }
 	            else // We have data but no target data to do a summary...
 	              MissingTargetValue = true; // Flag to issue a warning to user...
-	          }
+
+	            IncrementCountOfTransition(temperatureValue.MeasuredTemperature); // Temperature detail calculated here
+
+            }
 	        });
 	      }
 	    }

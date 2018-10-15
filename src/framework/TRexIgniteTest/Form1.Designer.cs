@@ -71,6 +71,7 @@
       this.label5 = new System.Windows.Forms.Label();
       this.tabTileRequest = new System.Windows.Forms.TabControl();
       this.tabPageRender = new System.Windows.Forms.TabPage();
+      this.label12 = new System.Windows.Forms.Label();
       this.txtGatewayBase = new System.Windows.Forms.TextBox();
       this.btnZoomAll = new System.Windows.Forms.Button();
       this.tabPageTest = new System.Windows.Forms.TabPage();
@@ -107,7 +108,7 @@
       this.label11 = new System.Windows.Forms.Label();
       this.txtJSON = new System.Windows.Forms.TextBox();
       this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-      this.label12 = new System.Windows.Forms.Label();
+      this.btnTempDetail = new System.Windows.Forms.Button();
       this.panel1.SuspendLayout();
       this.panel2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -560,6 +561,15 @@
       this.tabPageRender.Text = "Render";
       this.tabPageRender.UseVisualStyleBackColor = true;
       // 
+      // label12
+      // 
+      this.label12.AutoSize = true;
+      this.label12.Location = new System.Drawing.Point(39, 231);
+      this.label12.Name = "label12";
+      this.label12.Size = new System.Drawing.Size(77, 13);
+      this.label12.TabIndex = 40;
+      this.label12.Text = "Gateway URL:";
+      // 
       // txtGatewayBase
       // 
       this.txtGatewayBase.Location = new System.Drawing.Point(122, 228);
@@ -580,6 +590,7 @@
       // 
       // tabPageTest
       // 
+      this.tabPageTest.Controls.Add(this.btnTempDetail);
       this.tabPageTest.Controls.Add(this.CMVChangeButton);
       this.tabPageTest.Controls.Add(this.button8);
       this.tabPageTest.Controls.Add(this.PassCountDetailsButton);
@@ -944,14 +955,15 @@
       this.openFileDialog1.InitialDirectory = "@\"c:\\\"";
       this.openFileDialog1.RestoreDirectory = true;
       // 
-      // label12
+      // btnTempDetail
       // 
-      this.label12.AutoSize = true;
-      this.label12.Location = new System.Drawing.Point(39, 231);
-      this.label12.Name = "label12";
-      this.label12.Size = new System.Drawing.Size(77, 13);
-      this.label12.TabIndex = 40;
-      this.label12.Text = "Gateway URL:";
+      this.btnTempDetail.Location = new System.Drawing.Point(166, 175);
+      this.btnTempDetail.Name = "btnTempDetail";
+      this.btnTempDetail.Size = new System.Drawing.Size(134, 23);
+      this.btnTempDetail.TabIndex = 55;
+      this.btnTempDetail.Text = "Temperature Detail";
+      this.btnTempDetail.UseVisualStyleBackColor = true;
+      this.btnTempDetail.Click += new System.EventHandler(this.btnTempDetail_Click);
       // 
       // Form1
       // 
@@ -1066,6 +1078,7 @@
     private System.Windows.Forms.Button btnTemplate;
     private System.Windows.Forms.Button CMVChangeButton;
     private System.Windows.Forms.Label label12;
+    private System.Windows.Forms.Button btnTempDetail;
   }
 }
 
