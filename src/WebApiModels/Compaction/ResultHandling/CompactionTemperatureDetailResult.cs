@@ -49,9 +49,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       {
         TemperatureTarget = new TemperatureTargetData
         {
-          MinTemperatureMachineTarget = result.MinimumTemperature / 10,
-          MaxTemperatureMachineTarget = result.MaximumTemperature / 10,
-          TargetVaries = !result.IsTargetTemperatureConstant
+          MinTemperatureMachineTarget = result.TargetData.MinTemperatureMachineTarget / 10,
+          MaxTemperatureMachineTarget = result.TargetData.MaxTemperatureMachineTarget / 10,
+          TargetVaries = result.TargetData.TargetVaries
         };
       }
     }

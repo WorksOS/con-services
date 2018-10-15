@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using ASNodeDecls;
 using SVOICFilterSettings;
 using VLPDDecls;
@@ -83,9 +84,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     private TemperatureSummaryResult ConvertResult(TTemperature summary)
     {
       return new TemperatureSummaryResult(
-                summary.MinimumTemperature,
-                summary.MaximumTemperature,
-                summary.IsTargetTemperatureConstant,
+                new TemperatureTargetData()
+                {
+                  MinTemperatureMachineTarget = summary.MinimumTemperature,
+                  MaxTemperatureMachineTarget = summary.MinimumTemperature,
+                  TargetVaries = !summary.IsTargetTemperatureConstant
+                }, 
                 summary.ReturnCode,
                 summary.TotalAreaCoveredSqMeters,
                 summary.AboveTemperaturePercent,
