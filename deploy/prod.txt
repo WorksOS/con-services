@@ -1,4 +1,5 @@
 PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project?includeLandfill=true
+GEOFENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0
 IMPORTED_FILE_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles
 PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
 CUSTOMERSERVICE_API_URL: https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me

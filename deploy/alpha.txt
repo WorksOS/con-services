@@ -1,4 +1,5 @@
 PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project?includeLandfill=true
+GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
 IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles
 PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
 CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
