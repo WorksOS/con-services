@@ -66,7 +66,7 @@ services:
      - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
      - KAFKA_TOPIC_NAME_SUFFIX=-3dpm
     ports:
-      - "4001:80"
+      - "80:80"
 networks:
   default:
     external:
