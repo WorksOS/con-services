@@ -22,6 +22,7 @@
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
     <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.16" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.34.1" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.13" />
     <!-- We use Confluent.Kafka 0.11.3 but this is required for Moq to work. Should be ok since only unit tests with mocking -->
     <PackageReference Include="Confluent.Kafka" Version="0.11.4" />

@@ -6,12 +6,15 @@ MYSQL_USERNAME: Merino
 MYSQL_ROOT_PASSWORD: R58Kper%5
 MYSQL_USERNAME_BUILD: "vssBuildUsr"
 MYSQL_PASSWORD_BUILD: "V$$8u1ld45er"
+MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Dev
+MYSQL_CAP_TABLE_PREFIX: Project
 KAFKA_URI: 10.97.97.32
 KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: Project-Consumer
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IGeofenceEvent,VSS.Interfaces.Events.MasterData.ISubscriptionEvent
 KAFKA_TOPIC_NAME_SUFFIX: -Dev
 KAFKA_OFFSET: latest
+KAFKA_CAP_GROUP_NAME: Project-CAP
 CUSTOM_INIT_SCRIPT: zookeeper_check.sh
 ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/associateprojectsubscription
 DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/dissociateprojectsubscription

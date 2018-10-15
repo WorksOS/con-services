@@ -1,9 +1,8 @@
-﻿using System;
+﻿extern alias MySqlDataAlias;
+using System;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
-using VSS.MasterData.Repositories.DBModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using MySqlDataAlias::MySql.Data.MySqlClient;
 
 namespace TestUtility
 {
@@ -27,7 +26,7 @@ namespace TestUtility
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
-        MySqlCommand mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
+        var mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
         using (var mySqlDataReader = mySqlCommand.ExecuteReader())
         {
           while (mySqlDataReader.Read())
@@ -55,8 +54,8 @@ namespace TestUtility
       using (var mySqlConnection = new MySqlConnection(connectionString))
       {
         mySqlConnection.Open();
-        MySqlCommand mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
-        MySqlDataReader mySqlDataReader = mySqlCommand.ExecuteReader();
+        var mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
+        var mySqlDataReader = mySqlCommand.ExecuteReader();
 
         while (mySqlDataReader.Read())
         {

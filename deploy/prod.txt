@@ -6,12 +6,15 @@ MYSQL_USERNAME: vssProjectMDMUsr
 MYSQL_ROOT_PASSWORD: mRty94hER
 MYSQL_USERNAME_BUILD: "vssBuildUsr"
 MYSQL_PASSWORD_BUILD: "V$$8u1ld45er"
+MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Dev
+MYSQL_CAP_TABLE_PREFIX: Project
 KAFKA_URI: 10.211.16.11
 KAFKA_PORT: "9092"
 KAFKA_GROUP_NAME: ProjectMasterData-Consumer-13-Prod-1043-V1
 KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IGeofenceEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1
 KAFKA_TOPIC_NAME_SUFFIX: 
 KAFKA_OFFSET: earliest
+KAFKA_CAP_GROUP_NAME: Project-CAP
 ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
 DISSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/dissociateprojectsubscription
 GEOFENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0

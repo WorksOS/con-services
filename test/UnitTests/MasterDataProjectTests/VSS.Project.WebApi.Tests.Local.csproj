@@ -19,13 +19,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.2" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
+    <!-- We use Confluent.Kafka 0.11.3 but this is required for Moq to work. Should be ok since only unit tests with mocking -->
+    <PackageReference Include="Confluent.Kafka" Version="0.11.4" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">

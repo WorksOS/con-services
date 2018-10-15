@@ -17,12 +17,15 @@ node ('jenkinsslave-pod') {
 	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
     def container = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+	def containerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
     def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
     def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+
 	
     def vars = []
     def acceptance_testing_yaml
 	def runtimeImage
+	def dbRuntimeImage
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
@@ -77,9 +80,12 @@ node ('jenkinsslave-pod') {
 
 	}
 	
-	stage('Prepairing runtime image') {
+	stage('Preparing runtime image') {
 		runtimeImage = docker.build(container, "-f Dockerfile .")
 		runtimeImage.push()
+		
+		dbRuntimeImage = docker.build(containerDb, "-f ./build/Dockerfile.db .")
+		dbRuntimeImage.push()
 	}
 	
     stage('Build Acceptance tests') {	
@@ -97,6 +103,7 @@ node ('jenkinsslave-pod') {
 				}
 			acceptance_testing_yaml = readFile("pod.yaml")
 			acceptance_testing_yaml = acceptance_testing_yaml.replace('!container!', "${container}")
+			acceptance_testing_yaml = acceptance_testing_yaml.replace('!db-container!', "${containerDb}")
 		}
 			def label = "testingpod-${UUID.randomUUID().toString()}"
 		podTemplate(label: label, namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
