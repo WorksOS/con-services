@@ -53,8 +53,20 @@ services:
      - TILE_RENDER_MAX_ZOOM_RANGE=14
      - TILE_RENDER_WAIT_INTERVAL=2000
      - RAPTORUSERNAME=svcRaptor
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_PORT=3306
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=abc123
+     - MYSQL_USERNAME_BUILD=root
+     - MYSQL_PASSWORD_BUILD=abc123
+     - MYSQL_CAP_DATABASE_NAME=VSS-Productivity3D-CAP,
+     - MYSQL_CAP_TABLE_PREFIX=3dpm,
+     - KAFKA_URI=kafka
+     - KAFKA_PORT=9092
+     - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
+     - KAFKA_TOPIC_NAME_SUFFIX=-3dpm
     ports:
-      - "4001:80"
+      - "8080:80"
 networks:
   default:
     external:

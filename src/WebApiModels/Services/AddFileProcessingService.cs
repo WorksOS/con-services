@@ -1,11 +1,14 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNetCore.CAP;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
@@ -30,10 +33,12 @@ namespace VSS.Productivity3D.WebApi.Models.Services
     private CancellationToken token;
     private bool stopRequested = false;
     private SemaphoreSlim stopSemaphore = new SemaphoreSlim(1);
+    private readonly ICapPublisher capPublisher;
+    private readonly string kafkaTopicName;
 
     public AddFileProcessingService(ILogger<AddFileProcessingService> logger, ILoggerFactory logFactory,
       IConfigurationStore configService, IFileRepository repositoryService, IASNodeClient raptorService,
-      ITileGenerator tileService)
+      ITileGenerator tileService, ICapPublisher capPub)
     {
       log = logger;
       configServiceStore = configService;
@@ -41,13 +46,15 @@ namespace VSS.Productivity3D.WebApi.Models.Services
       loggingFactory = logFactory;
       raptorServiceClient = raptorService;
       tileServiceGenerator = tileService;
+      capPublisher = capPub;
+      kafkaTopicName = $"VSS.Productivity3D.Service.AddFileProcessedEvent{configServiceStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}".Trim();
     }
 
-    private async Task<Notification.Models.AddFileResult> ProcessItem(ProjectFileDescriptor file)
+    private async Task<AddFileResult> ProcessItem(ProjectFileDescriptor file)
     {
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(loggingFactory, raptorServiceClient, null,
         configServiceStore, fileRepo, tileServiceGenerator);
-      var result = (await executor.ProcessAsync(file) as Notification.Models.AddFileResult);
+      var result = await executor.ProcessAsync(file) as AddFileResult;
       log.LogInformation($"Processed file {file.File.fileName} with result {JsonConvert.SerializeObject(result)}");
       var eventAttributes = new Dictionary<string, object>
       {
@@ -55,8 +62,17 @@ namespace VSS.Productivity3D.WebApi.Models.Services
         {"status", result.Code.ToString() },
         {"result", result.Message }
       };
-
       NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request_files", eventAttributes);
+      try
+      {
+        log.LogInformation($"Publishing result to CAP with kafka topic {kafkaTopicName}");
+        capPublisher.Publish(kafkaTopicName, result);
+      }
+      catch (Exception e)
+      {
+        log.LogError($"Failed to publish to CAP: {e.Message}");
+        throw;
+      }
       return result;
     }
 

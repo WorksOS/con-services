@@ -55,6 +55,18 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
     public long? LegacyFileId { get; private set; }
 
     /// <summary>
+    /// A unique file identifier from next gen
+    /// </summary>
+    [JsonProperty(PropertyName = "fileUid", Required = Required.Always)]
+    public Guid FileUid { get; private set; }
+
+    /// <summary>
+    /// Email for user who created/updated file
+    /// </summary>
+    [JsonProperty(PropertyName = "userEmailAddress", Required = Required.Always)]
+    public string UserEmailAddress { get; private set; }
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private ProjectFileDescriptor()
@@ -71,7 +83,9 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
       string coordSystemFileName,
       DxfUnitsType dxfUnitsType,
       long fileId,
-      ImportedFileType fileType = ImportedFileType.DesignSurface,
+      ImportedFileType fileType,
+      Guid fileUid,
+      string userEmailAddress,
       long? legacyFileId = null
     )
     {
@@ -84,6 +98,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
         DXFUnitsType = dxfUnitsType,
         FileId = fileId,
         FileType = fileType,
+        FileUid = fileUid,
+        UserEmailAddress = userEmailAddress,
         LegacyFileId = legacyFileId
       };
     }
@@ -101,6 +117,18 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "File Id is required"));
+      }
+      if (FileUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "File Uid is required"));
+      }
+      if (string.IsNullOrEmpty(UserEmailAddress))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "User email address is required"));
       }
     }
   }

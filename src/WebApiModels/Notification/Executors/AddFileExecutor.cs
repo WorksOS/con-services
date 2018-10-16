@@ -18,7 +18,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using AddFileResult = VSS.Productivity3D.WebApi.Models.Notification.Models.AddFileResult;
 
 namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 {
@@ -104,7 +103,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
                 ContractExecutionStates.FirstNameWithOffset((int)result2));
 
               return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful - no tiles can be generated")
-                { MinZoomLevel = 0, MaxZoomLevel = 0 };
+              {
+                MinZoomLevel = 0,
+                MaxZoomLevel = 0,
+                FileUid = request.FileUid,
+                FileDescriptor = request.File,
+                UserEmailAddress = request.UserEmailAddress
+              };
 
               /*throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
@@ -126,7 +131,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
                 "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
                 ContractExecutionStates.FirstNameWithOffset((int)result2)));
               return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create horizontal adjustment - no tiles can be generated")
-                { MinZoomLevel = 0, MaxZoomLevel = 0 };
+              {
+                MinZoomLevel = 0,
+                MaxZoomLevel = 0,
+                FileUid = request.FileUid,
+                FileDescriptor = request.File,
+                UserEmailAddress = request.UserEmailAddress
+              };
 
               /* throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
                ContractExecutionStatesEnum.FailedToGetResults,
@@ -151,7 +162,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
                 log.LogWarning("Failed to get requested " + FileUtils.DXF_FILE_EXTENSION);
 
                 return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create DXF - no tiles can be generated")
-                  { MinZoomLevel = 0, MaxZoomLevel = 0 };
+                {
+                  MinZoomLevel = 0,
+                  MaxZoomLevel = 0,
+                  FileUid = request.FileUid,
+                  FileDescriptor = request.File,
+                  UserEmailAddress = request.UserEmailAddress
+                };
               }
             }
             //Calculate the zoom range
@@ -183,7 +200,13 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
         }
 
         return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification successful")
-        { MinZoomLevel = zoomResult.minZoom, MaxZoomLevel = zoomResult.maxZoom };
+        {
+          MinZoomLevel = zoomResult.minZoom,
+          MaxZoomLevel = zoomResult.maxZoom,
+          FileUid = request.FileUid,
+          FileDescriptor = request.File,
+          UserEmailAddress = request.UserEmailAddress
+        };
       }
       finally
       {

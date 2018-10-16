@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DotNetCore.CAP;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -76,9 +77,25 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
-
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
+
+      var serviceProvider = services.BuildServiceProvider();
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      services.AddCap(x =>
+      {
+        x.UseMySql(y =>
+        {
+          y.ConnectionString = configStore.GetConnectionString("VSPDB", "MYSQL_CAP_DATABASE_NAME");
+          y.TableNamePrefix = configStore.GetValueString("MYSQL_CAP_TABLE_PREFIX");
+        });
+        x.UseKafka(z =>
+        {
+          z.Servers = $"{configStore.GetValueString("KAFKA_URI")}:{configStore.GetValueString("KAFKA_PORT")}";
+          z.MainConfig.TryAdd("group.id", configStore.GetValueString("KAFKA_CAP_GROUP_NAME"));
+        });
+        x.UseDashboard(); //View dashboard at http://localhost:5000/cap
+      });
 
       serviceCollection = services;
     }
