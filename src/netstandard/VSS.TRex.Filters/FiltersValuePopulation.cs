@@ -47,7 +47,7 @@ namespace VSS.TRex.Filters
 
       // Design Name...
       if (PopulationControl.WantsEventDesignNameValues)
-        filteredPass.EventValues.EventDesignNameID = values.DesignNameIDStateEvents.GetValueAtDate(_Time, out int _);
+        filteredPass.EventValues.EventDesignNameID = values.MachineDesignNameIDStateEvents.GetValueAtDate(_Time, out int _);
 
       // Vibration State...
       if (PopulationControl.WantsEventVibrationStateValues)

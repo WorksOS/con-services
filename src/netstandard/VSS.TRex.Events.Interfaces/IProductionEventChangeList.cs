@@ -43,6 +43,8 @@ namespace VSS.TRex.Events.Interfaces
 
     void GetStateAtIndex(int index, out DateTime dateTime, out V state);
 
+    void SetStateAtIndex(int index, V state);
+
     void PutValueAtDate(DateTime dateTime, V state);
   }
 }

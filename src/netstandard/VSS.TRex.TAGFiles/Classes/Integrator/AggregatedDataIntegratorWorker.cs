@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -180,7 +181,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         Task.TargetSiteModel.Include(processedTask.TargetSiteModel);
 
                         // Integrate the machine events
-                        eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false);
+                        eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, processedTask.TargetSiteModel, Task.TargetSiteModel);
 
                         //Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
 
@@ -258,7 +259,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
                     // Perform machine event integration outside of the SiteModel write access interlock as the
                     // individual event lists have independent exclusive locks event integration uses.
-                    eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true);
+                    eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.TargetSiteModel, SiteModelFromDM);
 
                     // Integrate the machine events into the main site model. This requires the
                     // sitemodel interlock as aspects of the sitemodel state (machine) are being changed.
@@ -270,10 +271,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                             int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.TargetMachine.LastKnownPositionTimeStamp);
                             if (Comparison < 1)
                             {
-                                // TODO: Convert design name list and id event list structure from Raptor
-                                // Something like this: MachineFromDM.LastKnownDesignName = SiteModelFromDM.DesignNames[SiteModelMachineTargetValues.DesignNameStateEvents.LastStateValue()];
-
-                                 MachineFromDM.LastKnownDesignName = ""; // Todo: remove when above todo done
+                                MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
 
                                 if (SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0)
                                 {
@@ -346,7 +344,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         Task.SetAggregateModifiedSubgrids(ref WorkingModelUpdateMap);
 
                         // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-                        SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
+                        SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable); 
 
                         // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
                         // All operations within the transaction to integrate the changes into the live model have completed successfully.
@@ -412,7 +410,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                         // Notify the immutable grid listeners that attributes of this sitemodel have changed.
                         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
                         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, SiteModelFromDM.ID, 
-                          existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true);
+                          existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true, machineDesignsModified: true);
                     }
 
                     // Update the metadata for the site model

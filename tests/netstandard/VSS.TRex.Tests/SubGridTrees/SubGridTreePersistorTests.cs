@@ -2,11 +2,12 @@
 using System.Text;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-    public class SubGridTreePersistorTests
+    public class SubGridTreePersistorTests : IClassFixture<DILoggingFixture>
     {
         [Fact()]
         public void Test_SubGridTreePersistor_Write_Empty()

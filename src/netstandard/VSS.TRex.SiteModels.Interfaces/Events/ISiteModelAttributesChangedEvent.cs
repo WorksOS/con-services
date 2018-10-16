@@ -16,6 +16,7 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
     bool MachinesModified { get; }
 
     bool MachineTargetValuesModified { get;}
+    bool MachineDesignsModified { get; }
 
     byte[] ExistenceMapChangeMask { get; }
   }

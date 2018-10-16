@@ -101,5 +101,27 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<CutFillExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(cutFillRequest) as CompactionCutFillDetailedResult);
     }
+
+
+    /// <summary>
+    /// Get Temperature details from production data for the specified project and date range.
+    /// </summary>
+    /// <param name="temperatureDetailsRequest"></param>
+    /// <returns></returns>
+    [Route("api/v1/temperature/details")]
+    [HttpPost]
+    public TemperatureDetailResult PostTemperatureDetails([FromBody] TemperatureDetailRequest temperatureDetailRequest)
+    {
+      Log.LogInformation($"{nameof(PostTemperatureDetails)}: {Request.QueryString}");
+      
+      temperatureDetailRequest.Validate();
+
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<DetailedTemperatureExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(temperatureDetailRequest) as TemperatureDetailResult);
+    }
+
+
   }
 }

@@ -71,9 +71,12 @@ namespace VSS.TRex.Gateway.Common.Executors
     private TemperatureSummaryResult ConvertResult(TemperatureStatisticsResult summary)
     {
       return new TemperatureSummaryResult(
-        summary.MinimumTemperature,
-        summary.MaximumTemperature,
-        summary.IsTargetTemperatureConstant,
+        new TemperatureTargetData()
+        {
+          MinTemperatureMachineTarget = summary.MinimumTemperature,
+          MaxTemperatureMachineTarget = summary.MaximumTemperature,
+          TargetVaries = !summary.IsTargetTemperatureConstant
+        }, 
         (short) summary.ReturnCode,
         summary.TotalAreaCoveredSqMeters,
         summary.AboveTargetPercent,

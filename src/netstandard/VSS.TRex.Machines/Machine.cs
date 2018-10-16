@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
@@ -142,7 +143,7 @@ namespace VSS.TRex.Machines
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
-            writer.Write((int)1); //Version number
+            writer.Write(UtilitiesConsts.ReaderWriterVersion); 
 
             writer.Write(ID.ToByteArray());
             writer.Write(InternalSiteModelMachineIndex);
@@ -167,7 +168,7 @@ namespace VSS.TRex.Machines
         public void Read(BinaryReader reader)
         {
             int version = reader.ReadInt32();
-            if (version != 1)
+            if (version != UtilitiesConsts.ReaderWriterVersion)
                 throw new Exception($"Invalid version number ({version}) reading machine, expected version (1)");
 
             ID = reader.ReadGuid();

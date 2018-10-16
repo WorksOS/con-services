@@ -13,6 +13,7 @@
         CoordinateSystemCSIB,
         SurveyedSurfaces,
         Designs,
-        Machines
+        Machines,
+        MachineDesignNames
     }
 }

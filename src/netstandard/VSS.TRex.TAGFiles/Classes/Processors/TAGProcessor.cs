@@ -174,54 +174,33 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             }
         }
 
-        protected override void SetDesign(string Value)
+      protected override void SetDesign(string Value)
+      {
+        // If the design being loaded changed, then update the extents of the design
+        // in the designs list in the sitemodel
+
+        if (Design != "" && Design != Value)
+          UpdateCurrentDesignExtent();
+
+        base.SetDesign(Value);
+
+        if (DataTime != DateTime.MinValue)
         {
-            // If the design being loaded changed, then update the extents of the design
-            // in the designs list in the sitemodel
+          Value = Value.Trim();
+          var siteModelMachineDesign = SiteModel.SiteModelMachineDesigns.Locate(Value);
+          if (siteModelMachineDesign == null)
+          {
+            siteModelMachineDesign = SiteModel.SiteModelMachineDesigns.CreateNew(Value);
+          }
 
-            if (Design != "" && Design != Value)
-                UpdateCurrentDesignExtent();
-
-            base.SetDesign(Value);
-
-            if (DataTime != DateTime.MinValue)
-            {
-        // TODO: Add the design, a bit like this in Raptor:
-        /*
-function TICProductionEventChanges.AddDesignChangeEvent(const ADate: TICPassTime;
-                                                  DesignName: TICDesignName): TICEventDesignNameValueChange;
-var
-Index : integer;
-DesignNameID : TICDesignNameID;
-NewDesignName : TEventDesignName;
-begin
-if strip_blanks(DesignName) = '' then
-DesignName := kNoDesignName;
-
-with TICSiteModel(FSiteModel) do
-if SiteModelDesignNames.Find_WideString(DesignName, Index) then
-DesignNameID := SiteModelDesignNames[Index].ID
-else
-begin
-  NewDesignName := SiteModelDesignNames.AddDesignName(DesignName);
-  DesignNameID := NewDesignName.ID;
-end;
-end;               */
-
-        //   MachineTargetValueChangesAggregator.DesignNameStateEvents.PutValueAtDate(DataTime, DesignNameID);
-      }
-      else
-            {
-                //{$IFDEF DENSE_TAG_FILE_LOGGING}
-                //Log.LogDebug("DataTime = 0 in SetDesign");
-                //{$ENDIF}
-            }
-
-            // Get the current design extent for the newly selected design
-            SelectCurrentDesignExtent();
+          MachineTargetValueChangesAggregator.MachineDesignNameIDStateEvents.PutValueAtDate(DataTime, siteModelMachineDesign.Id);
         }
 
-        protected void SelectCurrentDesignExtent()
+        // Get the current design extent for the newly selected design
+        SelectCurrentDesignExtent();
+      }
+
+      protected void SelectCurrentDesignExtent()
         {
             //TODO: FICSiteModel.SiteModelDesigns.AcquireLock;
             try

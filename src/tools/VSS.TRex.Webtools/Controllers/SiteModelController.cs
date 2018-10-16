@@ -32,8 +32,7 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpGet("{siteModelID}/machinedesigns")]
     public JsonResult GetMachineDesigns(string siteModelID)
     {
-   // return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.MachineDesignNames);
-      return null;
+      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.SiteModelMachineDesigns);
     }
 
     /// <summary>

@@ -1666,5 +1666,57 @@ namespace TRexIgniteTest
       // allows user to add extra params to request
       tileParamsTemplate = txtJSON.Text;
     }
+
+    private void btnTempDetail_Click(object sender, EventArgs e)
+    {
+
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ID(), false);
+//      var temperatureBands = new[] { 0, 1000, 2000, 3000, 4000 };
+      var temperatureBands = new[] { 0, 120, 140, 160, 4000 }; // more realistic values
+
+      if (siteModel == null)
+      {
+        MessageBox.Show($@"Site model {ID()} is unavailable");
+        return;
+      }
+
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+      try
+      {
+        PriorProcessingMessage();
+
+        TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
+        TemperatureStatisticsResult result = operation.Execute(
+          new TemperatureStatisticsArgument()
+          {
+            ProjectID = siteModel.ID,
+            Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
+            TemperatureDetailValues = temperatureBands
+          }
+        );
+
+        textBoxTest.Text = String.Empty;
+
+        if (result != null)
+        {
+          AppendTextBoxWithNewLine($"Temperature Details Results (in {sw.Elapsed}) :");
+          AppendTextBoxWithNewLine("================================================");
+          if (result.Percents != null)
+          {
+            for (int i = 0; i < temperatureBands.Length; i++)
+              AppendTextBoxWithNewLine($"{temperatureBands[i]} - {result.Percents[i]:##0.#0}%");
+          }
+          else textBoxTest.AppendText("Missing result percents");
+        }
+        else
+          textBoxTest.AppendText("No result");
+      }
+      finally
+      {
+        sw.Stop();
+      }
+
+    }
   }
 }

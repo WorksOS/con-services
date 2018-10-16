@@ -83,14 +83,6 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Records the IDs of the designs selected on a machine at the time production measurements were being made
-    /// </summary>
-    public IProductionEvents<int> DesignNameIDStateEvents
-    {
-      get => (IProductionEvents<int>) GetEventList(ProductionEventType.DesignChange);
-    }
-
-    /// <summary>
     /// Records the state of the automatic machine control on the machine at the time measurements were being made.
     /// </summary>
     public IProductionEvents<MachineAutomaticsMode> MachineAutomaticsStateEvents
@@ -133,10 +125,10 @@ namespace VSS.TRex.Events
     /// <summary>
     /// Records the selected design on the machine at the time the measurements were made
     /// </summary>
-    //public IProductionEvents<string> DesignNameStateEvents
-    //{
-    //  get => (IProductionEvents<string>)GetEventList(ProductionEventType.DesignChange);
-    //}
+    public IProductionEvents<int> MachineDesignNameIDStateEvents
+    {
+      get => (IProductionEvents<int>)GetEventList(ProductionEventType.DesignChange);
+    }
 
     /// <summary>
     /// ICFlags control flags change events
