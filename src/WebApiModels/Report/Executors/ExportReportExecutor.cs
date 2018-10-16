@@ -40,26 +40,26 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       if (request == null)
         ThrowRequestTypeCastException<ExportReport>();
 
-      var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter,
+      var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter,
         request.ProjectId);
 
       bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtProdDataExport),
-        request.userPrefs, (int)request.exportType, request.callerId, raptorFilter,
-        RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-        request.timeStampRequired, request.cellSizeRequired, request.rawData, request.restrictSize, true,
-        request.tolerance, request.includeSurveydSurface,
-        request.precheckonly, request.filename, request.machineList, (int)request.coordType, (int)request.outputType,
-        request.dateFromUTC, request.dateToUTC,
-        request.translations, request.projectExtents, out TDataExport dataexport);
+        request.UserPrefs, (int)request.ExportType, request.CallerId, raptorFilter,
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
+        request.TimeStampRequired, request.CellSizeRequired, request.RawData, request.RestrictSize, true,
+        request.Tolerance, request.IncludeSurveydSurface,
+        request.Precheckonly, request.Filename, request.MachineList, (int)request.CoordType, (int)request.OutputType,
+        request.DateFromUTC, request.DateToUTC,
+        request.Translations, request.ProjectExtents, out TDataExport dataexport);
 
       if (success)
       {
         try
         {
           return ExportResult.Create(
-            File.ReadAllBytes(BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true)),
+            File.ReadAllBytes(BuildFilePath(request.ProjectId ?? -1, request.CallerId, request.Filename, true)),
             dataexport.ReturnCode);
         }
         catch (Exception ex)

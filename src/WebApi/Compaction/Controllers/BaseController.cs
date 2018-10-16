@@ -372,7 +372,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               returnEarliest = true;
             }
 
-            var raptorFilter = new FilterResult(filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
+            var raptorFilter = new FilterResult(filterUid, filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, returnEarliest, designDescriptor);
 
             Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 

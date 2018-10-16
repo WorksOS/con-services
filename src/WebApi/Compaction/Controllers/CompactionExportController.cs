@@ -16,9 +16,9 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
@@ -36,17 +36,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
     private readonly IPreferenceProxy prefProxy;
     private readonly IProductionDataRequestFactory requestFactory;
+    
+    /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
     /// <summary>
+    /// 
     /// Default constructor.
     /// </summary>
     public CompactionExportController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
+      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy, ITRexCompactionDataProxy trexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     #region Schedule Exports
@@ -272,7 +279,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -280,6 +287,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       tolerance = tolerance ?? surfaceExportTollerance;
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -303,14 +311,57 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
+          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+            trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(exportRequest) as CompactionExportResult);
+/*
+      bool.TryParse(ConfigStore.GetValueString("ENABLE_TREX_GATEWAY_SURFACE"), out var useTrexGateway);
 
+      if (useTrexGateway && exportRequest.ExportType == ExportTypes.SurfaceExport)
+        return result;
+
+        Stream fileStream;
+      if (useTrexGateway && exportRequest.ExportType == ExportTypes.SurfaceExport)
+      {
+        //fileStream = new MemoryStream((result as TINSurfaceExportResult).TINData);
+        //Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
+        //return new FileStreamResult(fileStream, "application/ttm");
+
+        //fileStream = new MemoryStream((result as TINSurfaceExportResult).TINData);
+
+        //var compressedFileStream = new MemoryStream();
+        //var  zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Create, false);
+        //var zipEntry = zipArchive.CreateEntry("TIN Surface");
+        //var zipEntryStream = zipEntry.Open();
+        //fileStream.CopyTo(zipEntryStream);
+
+        //return new FileStreamResult(zipEntryStream, "application/zip");
+
+        //var ttmFileStream = new FileStream(BuildTINFilePath(exportRequest.filename, ".ttm"), FileMode.Create);
+
+        //(result as TINSurfaceExportResult)?.TINData.CopyTo(ttmFileStream);
+
+        var fullFileName = BuildTINFilePath(exportRequest.Filename, ".zip");
+        
+        if (FileSystem.Exists(fullFileName))
+          FileSystem.Delete(fullFileName);
+
+        using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
+        {
+          var entry = zipFile.CreateEntry(BuildTINFilePath(exportRequest.Filename, ".ttm"));
+          using (var stream = entry.Open())
+            (result as TINSurfaceExportResult)?.TINData?.CopyTo(stream);
+        }
+
+        fileStream = new FileStream(fullFileName, FileMode.Open);
+      }
+      else
+*/
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
+      
       Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
       return new FileStreamResult(fileStream, "application/zip");
     }
-
     #endregion
 
     /// <summary>

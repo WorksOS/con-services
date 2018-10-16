@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
         LiftThicknessType.Compacted, new MDPRangePercentage(35.0, 75.0),
         false, 0.0f, 0, 0, null, null, null, liftThicknessTarget, null);
 
-      var filter = FilterResult.CreateFilter(null, null, null, null, null, 1, new List<long>(), true, false, null,
+      var filter = FilterResult.CreateFilter(null, null, null, null, null, null, 1, new List<long>(), true, false, null,
           new List<WGSPoint>(),
           new List<Point>(),
           false,

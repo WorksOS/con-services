@@ -103,8 +103,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         fileName = StripInvalidCharacters(fileName);
       }
 
-      return ExportReport.CreateExportReportRequest(
+      return new ExportReport(
         ProjectId,
+        ProjectUid,
         liftSettings,
         Filter,
         -1,
@@ -114,7 +115,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         coordType,
         startUtc ?? DateTime.MinValue,
         endUtc ?? DateTime.MinValue,
-        true,
         tolerance,
         false,
         restrictSize,

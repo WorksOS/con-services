@@ -22,118 +22,142 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// An identifier from the caller. 
     /// </summary>
     [JsonProperty(PropertyName = "callId", Required = Required.Default)]
-    public Guid? callId { get; protected set; }
+    public Guid? CallId { get; protected set; }
 
     [JsonProperty(PropertyName = "exportType", Required = Required.Default)]
-    public ExportTypes exportType { get; protected set; }
+    public ExportTypes ExportType { get; protected set; }
 
     /// <summary>
     /// Sets the custom caller identifier.
     /// </summary>
     [JsonProperty(PropertyName = "callerId", Required = Required.Default)]
-    public string callerId { get; protected set; }
+    public string CallerId { get; protected set; }
 
     /// <summary>
     /// The filter instance to use in the request
     /// Value may be null.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult filter { get; protected set; }
+    public FilterResult Filter { get; protected set; }
 
     /// <summary>
     /// The filter ID to used in the request.
     /// May be null.
     /// </summary>
     [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
-    public long filterID { get; protected set; }
+    public long FilterID { get; protected set; }
 
     /// <summary>
     /// A collection of parameters and configuration information relating to analysis and determination of material layers.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; protected set; }
+    public LiftBuildSettings LiftBuildSettings { get; protected set; }
 
     [JsonProperty(PropertyName = "timeStampRequired", Required = Required.Default)]
-    public bool timeStampRequired { get; protected set; }
+    public bool TimeStampRequired { get; protected set; }
 
     [JsonProperty(PropertyName = "cellSizeRequired", Required = Required.Default)]
-    public bool cellSizeRequired { get; protected set; }
+    public bool CellSizeRequired { get; protected set; }
 
     [JsonProperty(PropertyName = "rawData", Required = Required.Default)]
-    public bool rawData { get; protected set; }
+    public bool RawData { get; protected set; }
 
     [JsonProperty(PropertyName = "restrictSize", Required = Required.Default)]
-    public bool restrictSize { get; protected set; }
+    public bool RestrictSize { get; protected set; }
 
     [JsonProperty(PropertyName = "tolerance", Required = Required.Default)]
-    public double tolerance { get; protected set; }
+    public double Tolerance { get; protected set; }
 
     [JsonProperty(PropertyName = "includeSurveydSurface", Required = Required.Default)]
-    public bool includeSurveydSurface { get; protected set; }
+    public bool IncludeSurveydSurface { get; protected set; }
 
     [JsonProperty(PropertyName = "precheckonly", Required = Required.Default)]
-    public bool precheckonly { get; protected set; }
+    public bool Precheckonly { get; protected set; }
 
     [JsonProperty(PropertyName = "filename", Required = Required.Default)]
-    public string filename { get; protected set; }
+    public string Filename { get; protected set; }
 
     [JsonProperty(PropertyName = "machineList", Required = Required.Default)]
-    public TMachine[] machineList { get; protected set; }
+    public TMachine[] MachineList { get; protected set; }
 
     [JsonProperty(PropertyName = "coordType", Required = Required.Default)]
-    public CoordType coordType { get; protected set; }
+    public CoordType CoordType { get; protected set; }
 
     [JsonProperty(PropertyName = "outputType", Required = Required.Default)]
-    public OutputTypes outputType { get; protected set; }
+    public OutputTypes OutputType { get; protected set; }
 
     [JsonProperty(PropertyName = "dateFromUTC", Required = Required.Default)]
-    public DateTime dateFromUTC { get; protected set; }
+    public DateTime DateFromUTC { get; protected set; }
 
     [JsonProperty(PropertyName = "dateToUTC", Required = Required.Default)]
-    public DateTime dateToUTC { get; protected set; }
+    public DateTime DateToUTC { get; protected set; }
 
     [JsonProperty(PropertyName = "projectExtents", Required = Required.Default)]
-    public T3DBoundingWorldExtent projectExtents { get; protected set; }
+    public T3DBoundingWorldExtent ProjectExtents { get; protected set; }
 
-    public TTranslation[] translations { get; private set; }
+    public TTranslation[] Translations { get; private set; }
 
-    public TASNodeUserPreferences userPrefs { get; private set; }
+    public TASNodeUserPreferences UserPrefs { get; private set; }
 
+    /// <summary>
+    /// Default protected constructor.
+    /// </summary>
     protected ExportReport()
     { }
 
     /// <summary>
-    /// Static constructor.
-    /// </summary>
-    public static ExportReport CreateExportReportRequest(long projectId, LiftBuildSettings liftBuildSettings, FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordType coordtype,
-        DateTime DateFromUTC, DateTime DateToUTC, bool ZipFile, double Tolerance, bool TimeStampRequired, bool RestrictSize, bool RawData, T3DBoundingWorldExtent PrjExtents, bool PrecheckOnly, OutputTypes OutpuType,
-        TMachine[] MachineList, bool IncludeSrvSurface, string FileName, ExportTypes ExportType, TASNodeUserPreferences UserPrefs)
+    /// Overload constructor with parameters.
+    /// </summary>>
+    /// <param name="projectId"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="liftBuildSettings"></param>
+    /// <param name="filter"></param>
+    /// <param name="filterID"></param>
+    /// <param name="callid"></param>
+    /// <param name="cellSizeRq"></param>
+    /// <param name="callerID"></param>
+    /// <param name="coordtype"></param>
+    /// <param name="dateFromUTC"></param>
+    /// <param name="dateToUTC"></param>
+    /// <param name="tolerance"></param>
+    /// <param name="timeStampRequired"></param>
+    /// <param name="restrictSize"></param>
+    /// <param name="rawData"></param>
+    /// <param name="prjExtents"></param>
+    /// <param name="precheckOnly"></param>
+    /// <param name="outpuType"></param>
+    /// <param name="machineList"></param>
+    /// <param name="includeSrvSurface"></param>
+    /// <param name="fileName"></param>
+    /// <param name="exportType"></param>
+    /// <param name="userPrefs"></param>
+    public ExportReport(long projectId, Guid? projectUid, LiftBuildSettings liftBuildSettings, FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordType coordtype,
+        DateTime dateFromUTC, DateTime dateToUTC, double tolerance, bool timeStampRequired, bool restrictSize, bool rawData, T3DBoundingWorldExtent prjExtents, bool precheckOnly, OutputTypes outpuType,
+        TMachine[] machineList, bool includeSrvSurface, string fileName, ExportTypes exportType, TASNodeUserPreferences userPrefs)
     {
-      return new ExportReport
-      {
-        ProjectId = projectId,
-        liftBuildSettings = liftBuildSettings,
-        filter = filter,
-        filterID = filterID,
-        callId = callid,
-        cellSizeRequired = cellSizeRq,
-        callerId = callerID,
-        coordType = coordtype,
-        dateFromUTC = DateFromUTC,
-        dateToUTC = DateToUTC,
-        exportType = ExportType,
-        filename = FileName,
-        includeSurveydSurface = IncludeSrvSurface,
-        machineList = MachineList,
-        outputType = OutpuType,
-        precheckonly = PrecheckOnly,
-        projectExtents = PrjExtents,
-        rawData = RawData,
-        restrictSize = RestrictSize,
-        timeStampRequired = TimeStampRequired,
-        tolerance = Tolerance,
-        userPrefs = UserPrefs
-      };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
+      LiftBuildSettings = liftBuildSettings;
+      Filter = filter;
+      FilterID = filterID;
+      CallId = callid;
+      CellSizeRequired = cellSizeRq;
+      CallerId = callerID;
+      CoordType = coordtype;
+      DateFromUTC = dateFromUTC;
+      DateToUTC = dateToUTC;
+      ExportType = exportType;
+      Filename = fileName;
+      IncludeSurveydSurface = includeSrvSurface;
+      MachineList = machineList;
+      OutputType = outpuType;
+      Precheckonly = precheckOnly;
+      ProjectExtents = prjExtents;
+      RawData = rawData;
+      RestrictSize = restrictSize;
+      TimeStampRequired = timeStampRequired;
+      Tolerance = tolerance;
+      UserPrefs = userPrefs;
     }
 
     /// <summary>
@@ -143,48 +167,48 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     {
       base.Validate();
 
-      if (coordType != CoordType.Northeast && coordType != CoordType.LatLon)
+      if (CoordType != CoordType.Northeast && CoordType != CoordType.LatLon)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid coordinates type for export report"));
       }
 
-      if (outputType < OutputTypes.PassCountLastPass || outputType > OutputTypes.VedaAllPasses)
+      if (OutputType < OutputTypes.PassCountLastPass || OutputType > OutputTypes.VedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for export report"));
       }
 
-      if (exportType == ExportTypes.PassCountExport && outputType != OutputTypes.PassCountLastPass &&
-          outputType != OutputTypes.PassCountAllPasses)
+      if (ExportType == ExportTypes.PassCountExport && OutputType != OutputTypes.PassCountLastPass &&
+          OutputType != OutputTypes.PassCountAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for machine passes export report"));
       }
 
-      if (exportType == ExportTypes.VedaExport && outputType != OutputTypes.VedaFinalPass &&
-          outputType != OutputTypes.VedaAllPasses)
+      if (ExportType == ExportTypes.VedaExport && OutputType != OutputTypes.VedaFinalPass &&
+          OutputType != OutputTypes.VedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for machine passes export report for VETA"));
       }
 
-      if (machineList == null)
+      if (MachineList == null)
       {
-        machineList = new TMachine[2];
+        MachineList = new TMachine[2];
 
-        machineList[0] = new TMachine
+        MachineList[0] = new TMachine
         {
           AssetID = 1,
           MachineName = "Asset 1 Name",
           SerialNo = "Asset 1 SN"
         };
 
-        machineList[1] = new TMachine
+        MachineList[1] = new TMachine
         {
           AssetID = 3517551388324974,
           MachineName = "Asset 3517551388324974 Name",
@@ -192,23 +216,23 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         };
       }
 
-      translations = new TTranslation[6];
-      translations[0].ID = 0;
-      translations[0].Translation = "Problem occured processing export.";
-      translations[1].ID = 1;
-      translations[1].Translation = "No data found";
-      translations[2].ID = 2;
-      translations[2].Translation = "Timed out";
-      translations[3].ID = 3;
-      translations[3].Translation = "Unexpected error";
-      translations[4].ID = 4;
-      translations[4].Translation = "Request Canceled";
-      translations[5].ID = 5;
-      translations[5].Translation = "Maxmium records reached";
+      Translations = new TTranslation[6];
+      Translations[0].ID = 0;
+      Translations[0].Translation = "Problem occured processing export.";
+      Translations[1].ID = 1;
+      Translations[1].Translation = "No data found";
+      Translations[2].ID = 2;
+      Translations[2].Translation = "Timed out";
+      Translations[3].ID = 3;
+      Translations[3].Translation = "Unexpected error";
+      Translations[4].ID = 4;
+      Translations[4].Translation = "Request Canceled";
+      Translations[5].ID = 5;
+      Translations[5].Translation = "Maxmium records reached";
 
-      if (userPrefs.Equals(Preferences.EmptyUserPreferences()))
+      if (UserPrefs.Equals(Preferences.EmptyUserPreferences()))
       {
-        userPrefs = ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
+        UserPrefs = ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
           "NZ",
           Preferences.DefaultDateSeparator,
           Preferences.DefaultTimeSeparator,
@@ -223,7 +247,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
           Preferences.DefaultAssetLabelTypeId);
       }
 
-      if (string.IsNullOrEmpty(filename))
+      if (string.IsNullOrEmpty(Filename))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
