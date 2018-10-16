@@ -9,6 +9,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.FileAccess.WebAPI.Models</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
+    <PackageTags>vss-productivity3d-fileaccess-service</PackageTags>
   </PropertyGroup>
   
   <ItemGroup>

@@ -49,6 +49,7 @@
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
     <DockerTargetOS>Linux</DockerTargetOS>
     <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
+    <PackageTags>vss-productivity3d-fileaccess-service</PackageTags>
   </PropertyGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
