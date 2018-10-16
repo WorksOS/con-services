@@ -81,7 +81,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       {
         SubGridUtilities.SubGridDimensionalIterator((x, y) =>
         {
-          float elev = ((GenericLeafSubGrid<float>)subGrid).Items[x, y];
+          float elev = ((GenericLeafSubGrid_Float)subGrid).Items[x, y];
           if (elev != Common.Consts.NullHeight)
             ComputedGridExtent.Include((int)(subGrid.OriginX + x), (int)(subGrid.OriginY + y), elev);
         });

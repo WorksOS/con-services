@@ -1,15 +1,18 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.SiteModels.Interfaces;
+using TINSurfaceExportResult = VSS.TRex.Gateway.Common.ResultHandling.TINSurfaceExportResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -51,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var response = tinRequest.Execute(new TINSurfaceRequestArgument
           {
             Tolerance = request.Tolerance ?? 0.0,
-            ProjectID = request.ProjectUid.Value,
+            ProjectID = request.ProjectUid ?? Guid.Empty,
             Filters = new FilterSet(ConvertFilter(request.Filter, siteModel))
           }
         );

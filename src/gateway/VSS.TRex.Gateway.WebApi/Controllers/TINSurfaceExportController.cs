@@ -1,20 +1,27 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using FileSystem = System.IO.File;
+
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   public class TTMAndMetaDatActioNResult // : IActionResult
   {
-    public int a, b, c, d;
+    public long a, b, c, d;
 
     public FileStreamResult theFile;
   }
@@ -46,17 +53,24 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="tolerance"></param>
+    /// <param name="fileName"></param>
     /// <param name="filterUid"></param>
     /// <returns></returns>
     [HttpGet]
     [Route("api/v1/export/surface/ttm")]
-    public TINSurfaceExportResult GetTINSurface([FromQuery] Guid projectUid,
+    public CompactionExportResult GetTINSurface(
+      [FromQuery] Guid projectUid,
       [FromQuery] double? tolerance,
+      [FromQuery] string fileName,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogDebug("GetTINSurface: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetTINSurface)}: {Request.QueryString}");
 
       Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
+
+      if (fileName == null)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No file name provided"));
 
       TINSurfaceExportRequest request = new TINSurfaceExportRequest
       {
@@ -71,7 +85,22 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
 
-      return tinResult;
+      const string TTM_EXTENSION = ".ttm";
+      const string ZIP_EXTENSION = ".zip";
+
+      var fullFileName = BuildTINFilePath(fileName, ZIP_EXTENSION);
+
+      if (FileSystem.Exists(fullFileName))
+        FileSystem.Delete(fullFileName);
+
+      using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
+      {
+        var entry = zipFile.CreateEntry(fileName + TTM_EXTENSION);
+        using (var stream = entry.Open())
+          new MemoryStream(tinResult?.TINData).CopyTo(stream);
+      }
+
+      return CompactionExportResult.Create(fullFileName);
     }
 
     /// <summary>
@@ -87,7 +116,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       [FromQuery] double? tolerance,
       [FromQuery] Guid? filterUid)
     {
-      Log.LogDebug("GetTINSurface: " + Request.QueryString);
+      Log.LogInformation($"{nameof(GetTINSurface2)}: {Request.QueryString}");
 
       Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
 
@@ -105,21 +134,25 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
 
       if (Request.Headers["Accept"].Equals("application/ttm"))
-        return new FileStreamResult(new MemoryStream(tinResult.TINData), "application/ttm");
+        return new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm");
 
       if (Request.Headers["Accept"].Equals("application/ttm-and-metadata"))
         return Ok(new TTMAndMetaDatActioNResult
         {
-          a = tinResult.TINData.Length,
+          a = tinResult?.TINData.Length ?? 0,
 
-          theFile = new FileStreamResult(new MemoryStream(tinResult.TINData), "application/ttm")
+          theFile = new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm")
         });
 
-      return new FileStreamResult(new MemoryStream(tinResult.TINData), "application/ttm")
+      return new FileStreamResult(new MemoryStream(tinResult?.TINData), "application/ttm")
       {
         FileDownloadName = "DecimatedTIN.ttm"
       };
     }
 
+    private string BuildTINFilePath(string filename, string extension)
+    {
+      return Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(filename) + extension);
+    }
   }
 }
