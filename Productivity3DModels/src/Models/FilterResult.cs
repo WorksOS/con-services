@@ -28,6 +28,12 @@ namespace VSS.Productivity3D.Models.Models
     public long? Id { get; set; }
 
     /// <summary>
+    /// A project unique identifier.
+    /// </summary>
+    [JsonProperty(PropertyName = "UID", Required = Required.Default)]
+    public Guid? Uid { get; set; }
+
+    /// <summary>
     /// The name for a filter if stored in the Filters service. Not required or used in the proper functioning of a filter.
     /// </summary>
     [JsonProperty(PropertyName = "name", Required = Required.Default)]
@@ -375,6 +381,7 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public static FilterResult CreateFilter(
       long? id,
+      Guid? uid,
       string name,
       string description,
       DateTime? startUtc,
@@ -417,6 +424,7 @@ namespace VSS.Productivity3D.Models.Models
       return new FilterResult
       {
         Id = id,
+        Uid = uid,
         Name = name,
         Description = description,
         StartUtc = startUtc,
@@ -481,6 +489,7 @@ namespace VSS.Productivity3D.Models.Models
     /// <param name="designFile"></param>
     public FilterResult
     (
+      Guid? uid,
       Filter filter,
       List<WGSPoint3D> polygonLL,
       DesignDescriptor alignmentFile,
@@ -489,6 +498,7 @@ namespace VSS.Productivity3D.Models.Models
       bool? returnEarliest,
       DesignDescriptor designFile)
     {
+      Uid = uid;
       StartUtc = filter.StartUtc;
       EndUtc = filter.EndUtc;
       OnMachineDesignId = filter.OnMachineDesignId;
@@ -727,6 +737,7 @@ namespace VSS.Productivity3D.Models.Models
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
       return Id.Equals(other.Id) &&
+             Uid.Equals(other.Uid) &&
              string.Equals(Name, other.Name) &&
              string.Equals(Description, other.Description) &&
              StartUtc.Equals(other.StartUtc) &&
@@ -783,6 +794,7 @@ namespace VSS.Productivity3D.Models.Models
       unchecked
       {
         var hashCode = GetNullableHashCode(Id);
+        hashCode = GetNullableHashCode(Uid);
         hashCode = GetHashCode(hashCode, GetNullableHashCode(Name));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(Description));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(StartUtc));

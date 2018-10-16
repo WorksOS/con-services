@@ -118,5 +118,20 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <returns></returns>
     Task<BoundingBox3DGrid> SendProjectExtentsRequest(string siteModelID,
       IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get a TIN surface data from the TRex database.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="filterUid"></param>
+    /// <param name="tolerance"></param>
+    /// <param name="fileName"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<ContractExecutionResult> SendSurfaceExportRequest(string projectUid, 
+      string filterUid, 
+      double? tolerance,
+      string fileName,
+      IDictionary<string, string> customHeaders = null);
   }
 }

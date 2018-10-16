@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -202,9 +201,30 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the get project extents request for site model ID: {siteModelID}");
 
-      return await SendRequestGet(customHeaders, $"/sitemodels/{siteModelID}/extents");
+      return await SendRequestGet<BoundingBox3DGrid>(customHeaders, $"/sitemodels/{siteModelID}/extents");
     }
-    
+
+    /// <summary>
+    /// Sends a request to get a TIN surface data from the TRex database.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="filterUid"></param>
+    /// <param name="tolerance"></param>
+    /// <param name="fileName"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> SendSurfaceExportRequest(
+      string projectUid, 
+      string filterUid,
+      double? tolerance,
+      string fileName,
+      IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(SendSurfaceExportRequest)}: Sending the get project extents request for site model ID: {projectUid}, filter ID: {filterUid} with tolerance: {tolerance}");
+
+      return await SendRequestGet<CompactionExportResult>(customHeaders, $"/export/surface/ttm", $"?projectUid={projectUid}&tolerance={tolerance}&fileName={fileName}&filterUid={filterUid}");
+    }
+
     /// <summary>
     /// Executes a POST request against the TRex Gateway service.
     /// </summary>
@@ -226,10 +246,11 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
+    /// <param name="queryParameters"></param>
     /// <returns></returns>
-    private async Task<BoundingBox3DGrid> SendRequestGet(IDictionary<string, string> customHeaders, string route)
+    private async Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, string queryParameters = null)
     {
-      var response = await SendRequest<BoundingBox3DGrid>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route, "GET", string.Empty);
+      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route, "GET", queryParameters);
 
       log.LogDebug($"{nameof(SendRequestGet)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
