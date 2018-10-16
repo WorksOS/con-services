@@ -65,7 +65,19 @@ $localhostEnvironmentVariables = @(
   @{key = "TCCPWD"; value = "vldev_key"},
   @{key = "TCCUSERNAME"; value = "vldev"},
   @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"},
+  @{key = "MYSQL_SERVER_NAME_VSPDB"; value = "db"},
+  @{key = "MYSQL_PORT"; value = "3306"},
+  @{key = "MYSQL_USERNAME"; value = "root"},
+  @{key = "MYSQL_ROOT_PASSWORD"; value = "abc123"},
+  @{key = "MYSQL_CAP_DATABASE_NAME"; value = "VSS-Productivity3D-CAP-Dev"},
+  @{key = "MYSQL_CAP_TABLE_PREFIX"; value = "3dpm"},
+  @{key = "MYSQL_USERNAME_BUILD"; value = "root"},
+  @{key = "MYSQL_PASSWORD_BUILD"; value = "abc123"},
+  @{key = "KAFKA_URI"; value = "kafka"},
+  @{key = "KAFKA_PORT"; value = "9092"},
+  @{key = "KAFKA_CAP_GROUP_NAME"; value = "3dpm-CAP"},
+  @{key = "KAFKA_TOPIC_NAME_SUFFIX"; value = "-3dpm"})
 
 # Used when running 3DP service locally but connecting to /dev deployed collaborating services
 # NOTE: Some of these services point to Alpha collaborators because the Dev versions do not exist or function incorrectly.
