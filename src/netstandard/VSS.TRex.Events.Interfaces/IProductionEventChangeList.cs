@@ -4,32 +4,32 @@ using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Events.Interfaces
 {
-    public interface IProductionEvents
-    {
-        int Count();
+  public interface IProductionEvents
+  {
+    int Count();
 
-        void Sort();
+    void Sort();
 
-        void Collate(IProductionEventLists container);
+    void Collate(IProductionEventLists container);
 
-        void SaveToStore(IStorageProxy storageProxy);
+    void SaveToStore(IStorageProxy storageProxy);
 
-        ProductionEventType EventListType { get; }
+    ProductionEventType EventListType { get; }
 
-        void CopyEventsFrom(IProductionEvents eventsList);
+    void CopyEventsFrom(IProductionEvents eventsList);
 
-        bool EventsChanged { get; set; }
+    bool EventsChanged { get; set; }
 
-        void LoadFromStore(IStorageProxy storageProxy);
+    void LoadFromStore(IStorageProxy storageProxy);
 
-      /// <summary>
-      /// Returns a generic object reference to the internal list of events in this list
-      /// The purpose of this is to facilitate CopyEventsFrom
-      /// </summary>
-      /// <returns></returns>
-      object RawEventsObjects();
+    /// <summary>
+    /// Returns a generic object reference to the internal list of events in this list
+    /// The purpose of this is to facilitate CopyEventsFrom
+    /// </summary>
+    /// <returns></returns>
+    object RawEventsObjects();
 
-      List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
+    List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
   }
 
   public interface IProductionEvents<V> : IProductionEvents

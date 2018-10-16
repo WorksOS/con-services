@@ -143,6 +143,7 @@ namespace VSS.TRex.SiteModels
       // 5. Surveyed Surfaces
       // 6. Machines
       // 7. Machines target values
+      // 8. Machines design names
 
       ISiteModel siteModel;
 

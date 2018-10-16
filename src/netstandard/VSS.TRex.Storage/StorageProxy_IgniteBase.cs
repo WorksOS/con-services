@@ -103,18 +103,20 @@ namespace VSS.TRex.Storage
             return immutableStream;
         }
 
-        /// <summary>
-        /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
-        /// </summary>
-        /// <param name="mutableStream"></param>
-        /// <param name="immutableCache"></param>
-        /// <param name="cacheKey"></param>
-        /// <param name="streamType"></param>
-        /// <returns></returns>
-        protected MemoryStream PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
+      /// <summary>
+      /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
+      /// </summary>
+      /// <param name="mutableStream"></param>
+      /// <param name="immutableCache"></param>
+      /// <param name="cacheKey"></param>
+      /// <param name="streamType"></param>
+      /// <param name="immutableStream"></param>
+      /// <returns></returns>
+      protected MemoryStream PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
                                                                        IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
                                                                        INonSpatialAffinityKey cacheKey,
-                                                                       FileSystemStreamType streamType)
+                                                                       FileSystemStreamType streamType,
+                                                                       MemoryStream immutableStream = null)
         {
             if (mutableStream == null || immutableCache == null)
             {
@@ -122,7 +124,9 @@ namespace VSS.TRex.Storage
             }
 
             // Convert from the mutable to the immutable form and store it into the immutable cache
-            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && immutableStream != null)
+            if ( ( streamType == FileSystemStreamType.Events 
+                    || MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) )
+                 && immutableStream != null)
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
@@ -183,31 +187,32 @@ namespace VSS.TRex.Storage
         /// <param name="cacheKey"></param>
         /// <param name="streamType"></param>
         /// <returns></returns>
-        protected MemoryStream PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
-                                                                    IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
-                                                                    ISubGridSpatialAffinityKey cacheKey,
-                                                                    FileSystemStreamType streamType)
+        protected MemoryStream PerformSpatialImmutabilityConversion(MemoryStream MutableStream,
+                                                                    IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> ImmutableCache,
+                                                                    ISubGridSpatialAffinityKey CacheKey,
+                                                                    FileSystemStreamType StreamType,
+                                                                    MemoryStream ImmutableStream = null)
         {
-            if (mutableStream == null || immutableCache == null)
+            if (MutableStream == null || ImmutableCache == null)
             {
                 return null;
             }
 
             // Convert from the mutable to the immutable form and store it into the immutable cache
-            if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out MemoryStream immutableStream) && immutableStream != null)
+            if (MutabilityConverter.ConvertToImmutable(StreamType, MutableStream, out MemoryStream immutableStream) && immutableStream != null)
             {
                 using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
                 {
-                    // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
+          // Log.LogInformation($"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}");
 
-                    // Place the converted immutable item into the immutable cache
-                    immutableCache.Put(cacheKey, compressedStream.ToArray());
+          // Place the converted immutable item into the immutable cache
+                  ImmutableCache.Put(CacheKey, compressedStream.ToArray());
                 }
             }
             else
             {
                // There was no immutable version of the requested information. Allow this to bubble up the stack...
-               Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
+               Log.LogError($"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={StreamType}");
 
                immutableStream = null;
             }

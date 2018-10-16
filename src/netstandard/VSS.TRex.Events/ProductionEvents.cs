@@ -426,43 +426,64 @@ namespace VSS.TRex.Events
 
         public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
-        /// <summary>
-        /// Serialises the events and stores the serialised represented in the persistent store
-        /// </summary>
-        /// <param name="storageProxy"></param>
-        public void SaveToStore(IStorageProxy storageProxy)
+      /// <summary>
+      /// Serialises the events and stores the serialised represented in the persistent store
+      /// </summary>
+      /// <param name="storageProxy"></param>
+      public void SaveToStore(IStorageProxy storageProxy)
+      {
+        // Do a trial serialisation using pure binary writer custom serialisation for comparison with the 
+        // .Net serialisation approach
+        var mutablestream = new MemoryStream();
+        var writer = new BinaryWriter(mutablestream);
+        writer.Write(MajorVersion);
+        writer.Write(MinorVersion);
+        writer.Write(Events.Count);
+
+        foreach (var e in Events)
         {
-            // Do a trial serialisation using pure binary writer custom serialisation for comparison with the 
-            // .Net serialisation approach
-            using (MemoryStream MS = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(MS))
-                {
-                    writer.Write(MajorVersion);
-                    writer.Write(MinorVersion);
-                    writer.Write(Events.Count);
-
-                    foreach (var e in Events)
-                    {
-                        writer.Write(e.Date.ToBinary());
-                        writer.Write(e.Flags);
-                        SerialiseStateOut(writer, e.State);
-                    }
-
-                    storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter", FileSystemStreamType.Events, MS);
-                }
-            }
-
-            EventsChanged = false;
+          writer.Write(e.Date.ToBinary());
+          writer.Write(e.Flags);
+          SerialiseStateOut(writer, e.State);
         }
 
-        /// <summary>
-        /// Loads the event list by requesting its serialised representation from the persistent store and 
-        /// deserialising it into the event list
-        /// </summary>
-        /// <param name="storageProxy"></param>
-        /// <returns></returns>
-        public void LoadFromStore(IStorageProxy storageProxy)
+        // remove successive, duplicate events. Events have been sorted by date (def says these are 'time ordered')
+        var immutableStream = new MemoryStream();
+        var immutableWriter = new BinaryWriter(immutableStream);
+        immutableWriter.Write(MajorVersion);
+        immutableWriter.Write(MinorVersion);
+
+        var filteredEvents = new List<Event>();
+        V lastState = Events[0].State;
+        for (int i = 0; i < Events.Count; i++)
+        {
+          if (i == 0 || (i > 0 && !Events[i].State.Equals(lastState)))
+          {
+            filteredEvents.Add(Events[i]);
+          }
+          lastState = Events[i].State;
+        }
+
+        immutableWriter.Write(filteredEvents.Count);
+        for (int i = 0; i < filteredEvents.Count; i++)
+        {
+          immutableWriter.Write(filteredEvents[i].Date.ToBinary());
+          immutableWriter.Write(filteredEvents[i].Flags);
+          SerialiseStateOut(immutableWriter, filteredEvents[i].State);
+        }
+
+        storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter", FileSystemStreamType.Events, mutablestream, immutableStream);
+        EventsChanged = false;
+      }
+
+
+      /// <summary>
+    /// Loads the event list by requesting its serialised representation from the persistent store and 
+    /// deserialising it into the event list
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public void LoadFromStore(IStorageProxy storageProxy)
         {
             storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
                 FileSystemStreamType.Events, out MemoryStream MS);

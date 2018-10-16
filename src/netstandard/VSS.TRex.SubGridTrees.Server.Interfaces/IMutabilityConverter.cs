@@ -37,14 +37,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <returns></returns>
     bool ConvertSubgridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream);
 
-    /// <summary>
-    /// Convert an event list to it's immutable form. 
-    /// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
-    /// </summary>
-    /// <param name="mutableStream"></param>
-    /// <param name="immutableStream"></param>
-    /// <returns></returns>
-    bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream);
+    ///// <summary>
+    ///// Convert an event list to it's immutable form. 
+    ///// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
+    ///// </summary>
+    ///// <param name="mutableStream"></param>
+    ///// <param name="immutableStream"></param>
+    ///// <returns></returns>
+    //bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream);
   }
 
 }

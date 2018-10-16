@@ -42,7 +42,7 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
+    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream MutableStream, MemoryStream ImmutableStream)
     {
       throw new NotImplementedException();
     }

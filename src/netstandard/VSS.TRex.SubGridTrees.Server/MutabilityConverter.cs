@@ -68,7 +68,8 @@ namespace VSS.TRex.SubGridTrees.Server
                     }
                 case FileSystemStreamType.Events:
                     {
-                        return ConvertEventListToImmutable(mutableStream, out immutableStream);
+                      Log.LogError($"Exception in conversion of event mutable data to immutable schema. Should not come via this path.");
+                      return false;
                     }
                 default:
                     {
@@ -165,18 +166,18 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        /// <summary>
-        /// Convert an event list to it's immutable form. 
-        /// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
-        /// </summary>
-        /// <param name="mutableStream"></param>
-        /// <param name="immutableStream"></param>
-        /// <returns></returns>
-        public bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
-        {
-            immutableStream = mutableStream;
+    ///// <summary>
+    ///// Convert an event list to it's immutable form. 
+    ///// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
+    ///// </summary>
+    ///// <param name="mutableStream"></param>
+    ///// <param name="immutableStream"></param>
+    ///// <returns></returns>
+    //public bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    //{
+    //  immutableStream = mutableStream;
 
-            return true;
-        }
-    }
+    //  return true;
+    //}
+  }
 }

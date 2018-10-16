@@ -278,58 +278,64 @@ namespace VSS.TRex.SiteModels
           LastModifiedDate = DateTime.MinValue;
         }
 
-        /// <summary>
-        /// Constructs a sitemodel from an 'origin' sitemodel that provides select information to seed the new site model
-        /// </summary>
-        /// <param name="originModel"></param>
-        /// <param name="originFlags"></param>
-        public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this()
-        {
-          if (originModel.IsTransient)
-            throw new TRexException("Cannot use a transient sitemodel as an origin for constructing a new site model");
+      /// <summary>
+      /// Constructs a sitemodel from an 'origin' sitemodel that provides select information to seed the new site model
+      /// </summary>
+      /// <param name="originModel"></param>
+      /// <param name="originFlags"></param>
+      public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this()
+      {
+        if (originModel.IsTransient)
+          throw new TRexException("Cannot use a transient sitemodel as an origin for constructing a new site model");
 
-          ID = originModel.ID;
+        ID = originModel.ID;
 
-          // FCreationDate:= Now;
-          // FName:= Format('SiteModel-%d', [AID]);
-          // FDescription:= '';
+        // FCreationDate:= Now;
+        // FName:= Format('SiteModel-%d', [AID]);
+        // FDescription:= '';
 
-          IsTransient = false;
+        IsTransient = false;
 
-          LastModifiedDate = originModel.LastModifiedDate;
+        LastModifiedDate = originModel.LastModifiedDate;
 
-         // SiteModelDesignNames = LastModifiedDate.SiteModelDesignNames;
+        // SiteModelDesignNames = LastModifiedDate.SiteModelDesignNames;
 
-          grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0 
-            ? originModel.Grid : new ServerSubGridTree(originModel.ID);
+        grid = (originFlags & SiteModelOriginConstructionFlags.PreserveGrid) != 0
+          ? originModel.Grid
+          : new ServerSubGridTree(originModel.ID);
 
-          existenceMap = originModel.ExistenceMapLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveExistenceMap) != 0
-            ? originModel.ExistenceMap : null;
+        existenceMap = originModel.ExistenceMapLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveExistenceMap) != 0
+          ? originModel.ExistenceMap
+          : null;
 
-          designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0 
-            ? originModel.Designs : null;
+        designs = originModel.DesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveDesigns) != 0
+          ? originModel.Designs
+          : null;
 
-          surveyedSurfaces = originModel.SurveyedSurfacesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces) != 0
-            ? originModel.SurveyedSurfaces : null;
+        surveyedSurfaces = originModel.SurveyedSurfacesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces) != 0
+          ? originModel.SurveyedSurfaces
+          : null;
 
-          machines = originModel.MachinesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachines) != 0
-            ? originModel.Machines: null;
+        machines = originModel.MachinesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachines) != 0
+          ? originModel.Machines
+          : null;
 
-          siteModelMachineDesigns = originModel.SiteModelMachineDesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineDesigns) != 0
-            ? originModel.SiteModelMachineDesigns : null;
+        siteModelMachineDesigns = originModel.SiteModelMachineDesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineDesigns) != 0
+          ? originModel.SiteModelMachineDesigns
+          : null;
 
-      // Machine target values are an extension vector from machines. If the machine have not changed
-      machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
-            ? originModel.MachinesTargetValues
-            : null;
+        // Machine target values are an extension vector from machines. If the machine have not changed
+        machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
+          ? originModel.MachinesTargetValues
+          : null;
 
-          // FProofingRuns:= TICSiteProofingRuns.Create;
+        // FProofingRuns:= TICSiteProofingRuns.Create;
 
-          // Reload the bits that need to be reloaded
-          LoadFromPersistentStore();
-        }
+        // Reload the bits that need to be reloaded
+        LoadFromPersistentStore();
+      }
 
-        public SiteModel(Guid id, bool isTransient = true) : this()
+      public SiteModel(Guid id, bool isTransient = true) : this()
         {
             ID = id;
 
