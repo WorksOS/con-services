@@ -9,6 +9,7 @@ namespace VSS.ConfigurationStore
         bool? GetValueBool(string v);
         int GetValueInt(string v);
         TimeSpan? GetValueTimeSpan(string v);
+        string GetConnectionString(string connectionType, string databaseNameKey);
         string GetConnectionString(string connectionType);
         IConfigurationSection GetSection(string key);
         IConfigurationSection GetLoggingConfig();

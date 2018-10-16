@@ -31,6 +31,11 @@ namespace VSS.AWS.TransferProxy.UnitTests
       throw new NotImplementedException();
     }
 
+    public string GetConnectionString(string connectionType, string databaseNameKey)
+    {
+      throw new NotImplementedException();
+    }
+
     public IConfigurationSection GetSection(string key)
     {
       throw new NotImplementedException();

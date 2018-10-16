@@ -65,6 +65,11 @@ namespace VSS.ConfigurationStore
 
     public string GetConnectionString(string connectionType)
     {
+      return GetConnectionString(connectionType, "MYSQL_DATABASE_NAME");
+    }
+
+    public string GetConnectionString(string connectionType, string databaseNameKey)
+    {
       string serverName = null;
 
       switch (connectionType)
@@ -78,7 +83,7 @@ namespace VSS.ConfigurationStore
       }
 
       var serverPort = GetValueString("MYSQL_PORT");
-      var serverDatabaseName = GetValueString("MYSQL_DATABASE_NAME");
+      var serverDatabaseName = GetValueString(databaseNameKey);
       var serverUserName = GetValueString("MYSQL_USERNAME");
       var serverPassword = GetValueString("MYSQL_ROOT_PASSWORD");
 

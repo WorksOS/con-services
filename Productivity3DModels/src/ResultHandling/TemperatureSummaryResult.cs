@@ -1,31 +1,15 @@
 ﻿using System;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary temperature request
   /// </summary>
-  public class TemperatureSummaryResult : ContractExecutionResult
+  public class TemperatureSummaryResult : TemperatureBaseResult
   {
-    /// <summary>
-    /// If the temperature value is constant, this is the minimum constant value of all temperature targets in the processed data.
-    /// </summary>
-    [JsonProperty(PropertyName = "minimumTemperature")]
-    public double MinimumTemperature { get; private set; }
-
-    /// <summary>
-    /// If the temperature value is constant, this is the maximum constant value of all temperature targets in the processed data.
-    /// </summary>
-    [JsonProperty(PropertyName = "maximumTemperature")]
-    public double MaximumTemperature { get; private set; }
-
-    /// <summary>
-    /// Are the temperature target values applying to all processed cells constant?
-    /// </summary>
-    [JsonProperty(PropertyName = "isTargetTemperatureConstant")]
-    public bool IsTargetTemperatureConstant { get; private set; }
 
     /// <summary>
     /// The percentage of the cells that are below the temperature range
@@ -68,18 +52,14 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="minimumTemperature"></param>
-    /// <param name="maximumTemperature"></param>
-    /// <param name="isTargetTemperatureConstant"></param>
+    /// <param name="targetData"></param>
     /// <param name="returnCode"></param>
     /// <param name="totalAreaCoveredSqMeters"></param>
     /// <param name="aboveTemperaturePercent"></param>
     /// <param name="withinTemperaturePercent"></param>
     /// <param name="belowTemperaturePercent"></param>
     public TemperatureSummaryResult(
-      double minimumTemperature,
-      double maximumTemperature,
-      bool isTargetTemperatureConstant,
+      TemperatureTargetData targetData,
       short returnCode,
       double totalAreaCoveredSqMeters,
       double aboveTemperaturePercent,
@@ -87,9 +67,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
       double belowTemperaturePercent
       )
     {
-      MinimumTemperature = minimumTemperature;
-      MaximumTemperature = maximumTemperature;
-      IsTargetTemperatureConstant = isTargetTemperatureConstant;
+      TargetData = targetData;  
       ReturnCode = returnCode;
       TotalAreaCoveredSqMeters = totalAreaCoveredSqMeters;
       AboveTemperaturePercent = aboveTemperaturePercent;
