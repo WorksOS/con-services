@@ -9,6 +9,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.Productivity3D.Scheduler.Common</RootNamespace>
+    <PackageTags>vss-productivity3d-scheduler-service</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
