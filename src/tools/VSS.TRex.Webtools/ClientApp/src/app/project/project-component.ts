@@ -454,11 +454,11 @@ constructor(
   }
 
   public switchToMutable(): void {
-    this.projectService.switchToMutable();
+    this.projectService.switchToMutable().subscribe();
   }
 
   public switchToImmutable(): void {
-    this.projectService.switchToImmutable();
+    this.projectService.switchToImmutable().subscribe();
   }
 }
 
