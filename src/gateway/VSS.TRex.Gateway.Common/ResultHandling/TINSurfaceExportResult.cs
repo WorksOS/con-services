@@ -1,5 +1,4 @@
-﻿using System.IO;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.TRex.Gateway.Common.ResultHandling
 {
