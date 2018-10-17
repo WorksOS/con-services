@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.IO;
+using System.Net;
+using System.Threading;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +22,12 @@ namespace VSS.Tile.Service.WebApi
     {
       var kestrelConfig = new ConfigurationBuilder()
         .AddJsonFile("kestrelsettings.json", true, false).Build();
+
+      ThreadPool.SetMaxThreads(1024, 2048);
+      ThreadPool.SetMinThreads(1024, 2048);
+
+      //Check how many requests we can execute
+      ServicePointManager.DefaultConnectionLimit = 128;
 
       return WebHost.CreateDefaultBuilder(args)
         .ConfigureLogging(builder =>
