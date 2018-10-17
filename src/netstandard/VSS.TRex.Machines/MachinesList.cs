@@ -102,15 +102,15 @@ namespace VSS.TRex.Machines
         /// <returns></returns>
         public IMachine Locate(Guid id, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && id == x.ID);
 
-        /// <summary>
-        /// Locate finds a machine given the ID of a machine in the list.
-        /// It returns NIL if there is no matching machine
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public IMachine Locate(Guid id) => MachineIDMap[id];
+      /// <summary>
+      /// Locate finds a machine given the ID of a machine in the list.
+      /// It returns NIL if there is no matching machine
+      /// </summary>
+      /// <param name="id"></param>
+      /// <returns></returns>
+      public IMachine Locate(Guid id) => MachineIDMap.TryGetValue(id, out IMachine result) ? result : null;
 
-        // LocateByMachineHardwareID locates the (first) machine in the machines
+      // LocateByMachineHardwareID locates the (first) machine in the machines
         // list that has a matching machine hardware ID to the <AID> parameter.
         public IMachine LocateByMachineHardwareID(string hardwareID) => Find(x => x.MachineHardwareID.Equals(hardwareID));
 
@@ -160,14 +160,24 @@ namespace VSS.TRex.Machines
       /// </summary>
       public void SaveToPersistentStore(IStorageProxy StorageProxy)
       {
-        StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, this.ToStream());
+        StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, this.ToStream(), this);
       }
 
-      /// <summary>
-      /// Loads the content of the machines list from the tpersistent store. If there is no item in the persistent store containing
-      /// machines for this sitemodel them return an empty list.
-      /// </summary>
-      public void LoadFromPersistentStore()
+      public MemoryStream GetMutableStream(FileSystemStreamType streamType)
+      {
+        return null; // todo jcm
+      }
+
+      public MemoryStream GetImmutableStream(FileSystemStreamType streamType)
+      {
+        return null; // todo jcm
+      }
+
+    /// <summary>
+    /// Loads the content of the machines list from the tpersistent store. If there is no item in the persistent store containing
+    /// machines for this sitemodel them return an empty list.
+    /// </summary>
+    public void LoadFromPersistentStore()
       {
         DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, out MemoryStream MS);
         if (MS == null)

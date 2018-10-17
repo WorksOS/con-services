@@ -79,7 +79,7 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream());
+        StorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream(), this);
         StorageProxy.Commit();
 
         // Notify the  grid listeners that attributes of this sitemodel have changed.
@@ -91,6 +91,16 @@ namespace VSS.TRex.SurveyedSurfaces
       {
         throw new TRexException($"Exception writing updated surveyed surfaces cache element to Ignite", e);
       }
+    }
+
+    public MemoryStream GetMutableStream(FileSystemStreamType streamType)
+    {
+      return null; // todo jcm
+    }
+
+    public MemoryStream GetImmutableStream(FileSystemStreamType streamType)
+    {
+      return null; // todo jcm
     }
 
     /// <summary>

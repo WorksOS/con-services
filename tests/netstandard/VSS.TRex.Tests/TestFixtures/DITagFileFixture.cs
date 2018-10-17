@@ -8,6 +8,8 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
@@ -40,9 +42,9 @@ namespace VSS.TRex.Tests.TestFixtures
           .AddLogging()
           .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
           .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
-
           .Add(x => x.AddSingleton<ISurveyedSurfaces>(moqSurveyedSurfaces.Object))
           .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
+          .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
           .Build();
 
         ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuid);

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Events.Interfaces
 {
@@ -11,6 +13,9 @@ namespace VSS.TRex.Events.Interfaces
     void Sort();
 
     void Collate(IProductionEventLists container);
+
+    MemoryStream GetMutableStream(FileSystemStreamType streamType);
+    MemoryStream GetImmutableStream(FileSystemStreamType streamType);
 
     void SaveToStore(IStorageProxy storageProxy);
 

@@ -37,10 +37,10 @@ namespace VSS.TRex.Storage
     private void EstablishCaches()
     {
       spatialCache = new StorageProxyCache<ISubGridSpatialAffinityKey, byte[]>(
-        ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
+        ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
       nonSpatialCache =
         new StorageProxyCache<INonSpatialAffinityKey, byte[]>(
-          ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
+          ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
     }
 
     /// <summary>
@@ -227,7 +227,7 @@ namespace VSS.TRex.Storage
     /// <param name="Mutablestream"></param>
     /// <param name="ImmutableStream"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Mutablestream, MemoryStream ImmutableStream)
+    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Mutablestream, Object source)
     {
       try
       {
@@ -244,7 +244,7 @@ namespace VSS.TRex.Storage
           // Convert the stream to the immutable form and write it to the immutable storage proxy
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            PerformNonSpatialImmutabilityConversion(Mutablestream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType, ImmutableStream);
+            PerformNonSpatialImmutabilityConversion(Mutablestream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType, source);
           }
         }
         catch (Exception e)

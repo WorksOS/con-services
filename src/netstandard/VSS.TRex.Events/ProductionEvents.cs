@@ -426,20 +426,13 @@ namespace VSS.TRex.Events
 
         public string EventChangeListPersistantFileName() => $"{MachineID}-Events-{EventListType}-Summary.evt";
 
-      /// <summary>
-      /// Serialises the events and stores the serialised represented in the persistent store
-      /// </summary>
-      /// <param name="storageProxy"></param>
-      public void SaveToStore(IStorageProxy storageProxy)
+      public MemoryStream GetMutableStream(FileSystemStreamType streamType)
       {
-        // Do a trial serialisation using pure binary writer custom serialisation for comparison with the 
-        // .Net serialisation approach
         var mutablestream = new MemoryStream();
         var writer = new BinaryWriter(mutablestream);
         writer.Write(MajorVersion);
         writer.Write(MinorVersion);
         writer.Write(Events.Count);
-
         foreach (var e in Events)
         {
           writer.Write(e.Date.ToBinary());
@@ -447,77 +440,100 @@ namespace VSS.TRex.Events
           SerialiseStateOut(writer, e.State);
         }
 
-        // remove successive, duplicate events. Events have been sorted by date (def says these are 'time ordered')
-        var immutableStream = new MemoryStream();
-        var immutableWriter = new BinaryWriter(immutableStream);
-        immutableWriter.Write(MajorVersion);
-        immutableWriter.Write(MinorVersion);
+        return mutablestream;
+      }
 
-        var filteredEvents = new List<Event>();
-        V lastState = Events[0].State;
-        for (int i = 0; i < Events.Count; i++)
+    /// <summary>
+    /// remove successive, duplicate events. Events have been sorted by date (def says these are 'time ordered')
+    /// </summary>
+    /// <returns></returns>
+    public MemoryStream GetImmutableStream(FileSystemStreamType streamType)
+    {
+      var immutableStream = new MemoryStream();
+      var immutableWriter = new BinaryWriter(immutableStream);
+      immutableWriter.Write(MajorVersion);
+      immutableWriter.Write(MinorVersion);
+
+      V lastState = Events[0].State;
+      var filteredEventCount = 0;
+      var countPosition = immutableWriter.BaseStream.Position;
+      immutableWriter.Write(filteredEventCount);
+      for (int i = 0; i < Events.Count; i++)
+      {
+        if (i == 0 || (i > 0 && !Events[i].State.Equals(lastState)))
         {
-          if (i == 0 || (i > 0 && !Events[i].State.Equals(lastState)))
-          {
-            filteredEvents.Add(Events[i]);
-          }
-          lastState = Events[i].State;
+          immutableWriter.Write(Events[i].Date.ToBinary());
+          immutableWriter.Write(Events[i].Flags);
+          SerialiseStateOut(immutableWriter, Events[i].State);
+          filteredEventCount++;
         }
+        lastState = Events[i].State;
+      }
 
-        immutableWriter.Write(filteredEvents.Count);
-        for (int i = 0; i < filteredEvents.Count; i++)
-        {
-          immutableWriter.Write(filteredEvents[i].Date.ToBinary());
-          immutableWriter.Write(filteredEvents[i].Flags);
-          SerialiseStateOut(immutableWriter, filteredEvents[i].State);
-        }
+      var eosPosition = immutableWriter.BaseStream.Position;
+      immutableWriter.BaseStream.Position = countPosition;
+      immutableWriter.Write(filteredEventCount);
+      immutableWriter.BaseStream.Position = eosPosition;
 
-        storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter", FileSystemStreamType.Events, mutablestream, immutableStream);
+      return immutableStream;
+      }
+
+    /// <summary>
+    /// Serialises the events and stores the serialised represented in the persistent store
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    public void SaveToStore(IStorageProxy storageProxy)
+      {
+        // Do a trial serialisation using pure binary writer custom serialisation for comparison with the 
+        // .Net serialisation approach
+        var mutablestream = GetMutableStream(FileSystemStreamType.Events);
+
+        storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter", FileSystemStreamType.Events, mutablestream, this);
         EventsChanged = false;
       }
 
 
       /// <summary>
-    /// Loads the event list by requesting its serialised representation from the persistent store and 
-    /// deserialising it into the event list
-    /// </summary>
-    /// <param name="storageProxy"></param>
-    /// <returns></returns>
-    public void LoadFromStore(IStorageProxy storageProxy)
+      /// Loads the event list by requesting its serialised representation from the persistent store and 
+      /// deserialising it into the event list
+      /// </summary>
+      /// <param name="storageProxy"></param>
+      /// <returns></returns>
+      public void LoadFromStore(IStorageProxy storageProxy)
+      {
+        storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
+          FileSystemStreamType.Events, out MemoryStream MS);
+
+        if (MS != null)
         {
-            storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
-                FileSystemStreamType.Events, out MemoryStream MS);
+          // Practice the binary event reading...
+          MS.Position = 0;
+          using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
+          {
+            int majorVer = reader.ReadInt32();
+            int minorVer = reader.ReadInt32();
 
-            if (MS != null)
+            if (majorVer != 1 && minorVer != 0)
+              throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
+
+            int count = reader.ReadInt32();
+            Events.Clear();
+            Events.Capacity = count;
+
+            for (int i = 0; i < count; i++)
             {
-                // Practice the binary event reading...
-                MS.Position = 0;
-                using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
-                {
-                    int majorVer = reader.ReadInt32();
-                    int minorVer = reader.ReadInt32();
-
-                    if (majorVer != 1 && minorVer != 0)
-                        throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
-
-                    int count = reader.ReadInt32();
-                    Events.Clear();
-                    Events.Capacity = count;
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        Events.Add(new Event
-                        {
-                            Date = DateTime.FromBinary(reader.ReadInt64()),
-                            Flags = reader.ReadByte(),
-                            State = SerialiseStateIn(reader)
-                        });
-                    }
-                }
+              Events.Add(new Event
+              {
+                Date = DateTime.FromBinary(reader.ReadInt64()),
+                Flags = reader.ReadByte(),
+                State = SerialiseStateIn(reader)
+              });
             }
+          }
         }
+      }
 
-    /// <summary>
+      /// <summary>
     /// Returns a generic object reference to the internal list of events in this list
     /// The purpose of this is to facilitate CopyEventsFrom
     /// </summary>

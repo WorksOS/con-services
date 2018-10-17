@@ -17,7 +17,7 @@ namespace VSS.TRex.Storage.Interfaces
                                               string StreamName,
                                               FileSystemStreamType StreamType,
                                               MemoryStream MutableStream,
-                                              MemoryStream ImmutableStream = null);
+                                              object source);
 
     FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid DataModelID,
                                               string StreamName,

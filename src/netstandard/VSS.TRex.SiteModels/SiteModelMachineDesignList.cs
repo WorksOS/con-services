@@ -94,7 +94,17 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy StorageProxy)
     {
-      StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, this.ToStream());
+      StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, this.ToStream(), this);
+    }
+
+    public MemoryStream GetMutableStream(FileSystemStreamType streamType)
+    {
+      return null; // todo jcm
+    }
+
+    public MemoryStream GetImmutableStream(FileSystemStreamType streamType)
+    {
+      return null; // todo jcm
     }
 
     /// <summary>

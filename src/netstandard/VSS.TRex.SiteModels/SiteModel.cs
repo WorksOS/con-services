@@ -472,7 +472,7 @@ namespace VSS.TRex.SiteModels
 
             lock (this)
             {
-              if (StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream()) != FileSystemErrorStatus.OK)
+              if (StorageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) != FileSystemErrorStatus.OK)
               {
                 Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
                 Result = false;
@@ -513,7 +513,38 @@ namespace VSS.TRex.SiteModels
             return Result;
         }
 
-        public FileSystemErrorStatus LoadFromPersistentStore()
+
+      public MemoryStream GetMutableStream(FileSystemStreamType streamType)
+      {
+        if (streamType == FileSystemStreamType.ProductionDataXML)
+        {
+        }
+        else
+        {
+          if (streamType == FileSystemStreamType.SubgridExistenceMap)
+          {
+          }
+        }
+
+        return null; // todo jcm
+      }
+
+      public MemoryStream GetImmutableStream(FileSystemStreamType streamType)
+    {
+      if (streamType == FileSystemStreamType.ProductionDataXML)
+      {
+      }
+      else
+      {
+        if (streamType == FileSystemStreamType.SubgridExistenceMap)
+        {
+        }
+      }
+
+      return null; // todo jcm
+    }
+
+    public FileSystemErrorStatus LoadFromPersistentStore()
         {
             Guid SavedID = ID;
             FileSystemErrorStatus Result = DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
@@ -583,7 +614,7 @@ namespace VSS.TRex.SiteModels
               if (existenceMap == null)
                 return FileSystemErrorStatus.OK;
 
-              StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream());
+              StorageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName, FileSystemStreamType.SubgridExistenceMap, existenceMap.ToStream(), this);
             }
             catch (Exception e)
             {
@@ -594,11 +625,11 @@ namespace VSS.TRex.SiteModels
             return FileSystemErrorStatus.OK;
         }
 
-        /// <summary>
-        /// Retrieves the content of the existence map from storage
-        /// </summary>
-        /// <returns></returns>
-        protected FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
+    /// <summary>
+    /// Retrieves the content of the existence map from storage
+    /// </summary>
+    /// <returns></returns>
+    protected FileSystemErrorStatus LoadProductionDataExistenceMapFromStorage()
         {
             try
             {

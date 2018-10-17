@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
@@ -9,7 +10,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// Converts the structure of the global latext cells structure into an immutable form
     /// </summary>
     /// <returns></returns>
-    ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper LatestPasses);
+    ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper latestPasses);
 
     /// <summary>
     /// Primary method for performing mutability conversion to immutable. It accepts a stream and an indication of the type of stream
@@ -17,9 +18,10 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// </summary>
     /// <param name="streamType"></param>
     /// <param name="mutableStream"></param>
+    /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, out MemoryStream immutableStream);
+    bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, Object source, out MemoryStream immutableStream);
 
     /// <summary>
     /// Converts a subgrid directory into its immutable form
@@ -37,14 +39,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <returns></returns>
     bool ConvertSubgridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream);
 
-    ///// <summary>
-    ///// Convert an event list to it's immutable form. 
-    ///// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
-    ///// </summary>
-    ///// <param name="mutableStream"></param>
-    ///// <param name="immutableStream"></param>
-    ///// <returns></returns>
-    //bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream);
+    /// <summary>
+    /// Convert an event list to it's immutable form. 
+    /// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="immutableStream"></param>
+    /// <returns></returns>
+    bool ConvertEventListToImmutable(FileSystemStreamType streamType, Object source, out MemoryStream immutableStream);
   }
 
 }

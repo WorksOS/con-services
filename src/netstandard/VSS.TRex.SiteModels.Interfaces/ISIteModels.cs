@@ -7,6 +7,11 @@ namespace VSS.TRex.SiteModels.Interfaces
   /// <summary>
   /// Interface for the SiteModels class in TRex
   /// </summary>
+  // public interface ISiteModels
+  public interface ISiteModelsImmutable : ISiteModels
+  {
+  }
+
   public interface ISiteModels
   {
     ISiteModel GetSiteModel(Guid ID);

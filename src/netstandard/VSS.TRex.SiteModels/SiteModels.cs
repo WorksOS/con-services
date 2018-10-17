@@ -15,7 +15,7 @@ namespace VSS.TRex.SiteModels
   /// SiteModels contains a map of site model/data model identifiers (long) and SiteModel instances. 
   /// It may receive messages from the Ignite layer regarding invalidation of cache items...
   /// </summary>
-  public class SiteModels : ISiteModels
+  public class SiteModels : ISiteModels, ISiteModelsImmutable
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger("SiteModels");
 
