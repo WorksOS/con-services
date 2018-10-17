@@ -314,49 +314,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(exportRequest) as CompactionExportResult);
-/*
-      bool.TryParse(ConfigStore.GetValueString("ENABLE_TREX_GATEWAY_SURFACE"), out var useTrexGateway);
 
-      if (useTrexGateway && exportRequest.ExportType == ExportTypes.SurfaceExport)
-        return result;
-
-        Stream fileStream;
-      if (useTrexGateway && exportRequest.ExportType == ExportTypes.SurfaceExport)
-      {
-        //fileStream = new MemoryStream((result as TINSurfaceExportResult).TINData);
-        //Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
-        //return new FileStreamResult(fileStream, "application/ttm");
-
-        //fileStream = new MemoryStream((result as TINSurfaceExportResult).TINData);
-
-        //var compressedFileStream = new MemoryStream();
-        //var  zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Create, false);
-        //var zipEntry = zipArchive.CreateEntry("TIN Surface");
-        //var zipEntryStream = zipEntry.Open();
-        //fileStream.CopyTo(zipEntryStream);
-
-        //return new FileStreamResult(zipEntryStream, "application/zip");
-
-        //var ttmFileStream = new FileStream(BuildTINFilePath(exportRequest.filename, ".ttm"), FileMode.Create);
-
-        //(result as TINSurfaceExportResult)?.TINData.CopyTo(ttmFileStream);
-
-        var fullFileName = BuildTINFilePath(exportRequest.Filename, ".zip");
-        
-        if (FileSystem.Exists(fullFileName))
-          FileSystem.Delete(fullFileName);
-
-        using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
-        {
-          var entry = zipFile.CreateEntry(BuildTINFilePath(exportRequest.Filename, ".ttm"));
-          using (var stream = entry.Open())
-            (result as TINSurfaceExportResult)?.TINData?.CopyTo(stream);
-        }
-
-        fileStream = new FileStream(fullFileName, FileMode.Open);
-      }
-      else
-*/
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
       
       Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");

@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
@@ -42,7 +43,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SURFACE"), out var useTrexGateway);
 
         if (useTrexGateway && request?.ExportType == ExportTypes.SurfaceExport)
-          return trexCompactionDataProxy.SendSurfaceExportRequest(request.ProjectUid.ToString(), request.Filter?.Uid.ToString(), request.Tolerance, request.Filename, customHeaders).Result;
+        {
+          var cmvChangeDetailsRequest = new CompactionExportRequest(request.ProjectUid, request.Filter, request.Tolerance, request.Filename);
+
+          return trexCompactionDataProxy.SendSurfaceExportRequest(cmvChangeDetailsRequest, customHeaders).Result;
+        }
 
         return ProcessWithRaptor(request);
       }
