@@ -207,22 +207,17 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Sends a request to get a TIN surface data from the TRex database.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filterUid"></param>
-    /// <param name="tolerance"></param>
-    /// <param name="fileName"></param>
+    /// <param name="compactionExportRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public async Task<ContractExecutionResult> SendSurfaceExportRequest(
-      string projectUid, 
-      string filterUid,
-      double? tolerance,
-      string fileName,
+    public async Task<ContractExecutionResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
       IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendSurfaceExportRequest)}: Sending the get project extents request for site model ID: {projectUid}, filter ID: {filterUid} with tolerance: {tolerance}");
+      var request = JsonConvert.SerializeObject(compactionExportRequest);
 
-      return await SendRequestGet<CompactionExportResult>(customHeaders, $"/export/surface/ttm", $"?projectUid={projectUid}&tolerance={tolerance}&fileName={fileName}&filterUid={filterUid}");
+      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<CompactionExportResult>(request, customHeaders, "/export/surface/ttm");
     }
 
     /// <summary>

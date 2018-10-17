@@ -29,27 +29,27 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [Range(MIN_CMV, MAX_CMV)]
     [JsonProperty(PropertyName = "cmvTarget", Required = Required.Default)]
-    public short CmvTarget { get; protected set; }
+    public short CmvTarget { get; private set; }
 
     /// <summary>
     /// Override the target CMV recorded from the machine with the value of cmvTarget
     /// </summary>
     [JsonProperty(PropertyName = "overrideTargetCMV", Required = Required.Default)]
-    public bool OverrideTargetCMV { get; protected set; }
+    public bool OverrideTargetCMV { get; private set; }
 
     /// <summary>
     /// The minimum percentage the measured CMV may be compared to the cmvTarget from the machine, or the cmvTarget override if overrideTargetCMV is true
     /// </summary>
     [Range(MIN_PERCENT_CMV, MAX_PERCENT_CMV)]
     [JsonProperty(PropertyName = "minCMVPercent", Required = Required.Default)]
-    public double MinCMVPercent { get; protected set; }
+    public double MinCMVPercent { get; private set; }
 
     /// <summary>
     /// The maximum percentage the measured CMV may be compared to the cmvTarget from the machine, or the cmvTarget override if overrideTargetCMV is true
     /// </summary>
     [Range(MIN_PERCENT_CMV, MAX_PERCENT_CMV)]
     [JsonProperty(PropertyName = "maxCMVPercent", Required = Required.Default)]
-    public double MaxCMVPercent { get; protected set; }
+    public double MaxCMVPercent { get; private set; }
 
     /// <summary>
     /// Default private constructor.

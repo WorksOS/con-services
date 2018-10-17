@@ -122,16 +122,10 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <summary>
     /// Sends a request to get a TIN surface data from the TRex database.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="filterUid"></param>
-    /// <param name="tolerance"></param>
-    /// <param name="fileName"></param>
+    /// <param name="compactionExportRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendSurfaceExportRequest(string projectUid, 
-      string filterUid, 
-      double? tolerance,
-      string fileName,
+    Task<ContractExecutionResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
       IDictionary<string, string> customHeaders = null);
   }
 }

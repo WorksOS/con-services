@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Shall contain only ASCII characters.
     /// </remarks>
     [JsonProperty(Required = Required.Always)]
-    [ValidFilename(maxlength: 256)]
+    [ValidFilename(256)]
     public string FileName { get; set; }
 
     /// <summary>
@@ -32,7 +32,6 @@ namespace VSS.Productivity3D.Models.Models
     /// Defines Org ID (either from TCC or Connect) to support project-based subs
     /// </summary>
     public string OrgId { get; set; }
-
 
     /// <summary>
     /// Validates all properties
