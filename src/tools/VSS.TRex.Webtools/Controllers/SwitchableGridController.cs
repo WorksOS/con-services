@@ -14,7 +14,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Switches to mutable grid
     /// </summary>
     /// <returns></returns>
-    [HttpGet("mutable")]
+    [HttpPut("mutable")]
     public JsonResult SwitchToMutable()
     {
       SwitchableGridContext.switchableMutability = StorageMutability.Mutable;
@@ -25,7 +25,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// Switches to mutable grid
     /// </summary>
     /// <returns></returns>
-    [HttpGet("immutable")]
+    [HttpPut("immutable")]
     public JsonResult SwitchToImmutable()
     {
       SwitchableGridContext.switchableMutability = StorageMutability.Immutable;

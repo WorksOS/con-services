@@ -34,6 +34,12 @@ export class ProjectService {
     return this.http.get<T>(url);
   }
 
+  private executePutRequest<T>(label: string, url: string): Observable<T> {
+    url = `${this.baseUrl}api/${url}`;
+    console.log(`${label}: url=${url}`);
+    return this.http.put<T>(url, null);
+  }
+
   private executePostRequest<T>(label: string, url: string, body: any): Observable<T> {
     url = `${this.baseUrl}api/${url}`;
     console.log(`${label}: url=${url}`);
@@ -145,10 +151,10 @@ export class ProjectService {
   }
 
   public switchToMutable(): Observable<string> {
-    return this.executeRequest<string>('switchToMutable', 'switchablegrid/mutable');
+    return this.executePutRequest<string>('switchToMutable', 'switchablegrid/mutable');
   }
 
   public switchToImmutable(): Observable<string> {
-    return this.executeRequest<string>('switchToImmutable', 'switchablegrid/immutable');
+    return this.executePutRequest<string>('switchToImmutable', 'switchablegrid/immutable');
   }
 }
