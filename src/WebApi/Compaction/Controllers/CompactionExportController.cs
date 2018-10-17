@@ -170,6 +170,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -230,6 +231,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
