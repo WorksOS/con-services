@@ -14,6 +14,8 @@ import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint} from '../pr
 export class ProjectComponent {
   private zoomFactor: number = 0.2;
 
+  public currentGridName: string;
+
   public projectUid: string;
   public mode: number = 0;
   public pixelsX: number = 850;
@@ -119,6 +121,8 @@ constructor(
     });
 
     this.getAllProjectMetadata();
+
+    this.switchToMutable();
   }
 
   public selectProject(): void {
@@ -455,10 +459,12 @@ constructor(
 
   public switchToMutable(): void {
     this.projectService.switchToMutable().subscribe();
+    this.currentGridName = "Mutable";
   }
 
   public switchToImmutable(): void {
     this.projectService.switchToImmutable().subscribe();
+    this.currentGridName = "Immutable";
   }
 }
 
