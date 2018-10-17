@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using XnaFan.ImageComparison.Netcore;
@@ -31,7 +32,7 @@ namespace WebApiTests.Utilities
       var diff = expectedImage.PercentageDifference(actualImage, threshold);
       if (diff > 0.0)
       {
-        var diffImage = expectedImage.GetDifferenceImage(actualImage);
+        var diffImage = expectedImage.GetDifferenceImage(actualImage, false, true);
         var diffFileName = actFileName.Substring(0, len) + "Differences.png";
         SaveImageFile(diffFileName, diffImage);        
       }
@@ -90,8 +91,8 @@ namespace WebApiTests.Utilities
         imageDifference = Convert.ToDouble(difference) / 100;
       }
       //These 2 lines are for debugging so we can paste into an online image converter
-      //var expectedTileDataString = JsonConvert.SerializeObject(expectedTileData);
-      //var actualTileDataString = JsonConvert.SerializeObject(actualTileData);
+      var expectedTileDataString = JsonConvert.SerializeObject(expectedTileData);
+      var actualTileDataString = JsonConvert.SerializeObject(actualTileData);
 
       var expFileName = "Expected_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
       var actFileName = "Actual_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
