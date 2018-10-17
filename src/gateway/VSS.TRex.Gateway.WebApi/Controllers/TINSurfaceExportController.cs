@@ -47,55 +47,37 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       this.tINSurfaceExportRequestor = tINSurfaceExportRequestor;
     }
 
-
     /// <summary>
     /// Web service end point controller for TIN surface export
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="tolerance"></param>
-    /// <param name="fileName"></param>
-    /// <param name="filterUid"></param>
+    /// <param name="compactionExportRequest"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpPost]
     [Route("api/v1/export/surface/ttm")]
-    public CompactionExportResult GetTINSurface(
-      [FromQuery] Guid projectUid,
-      [FromQuery] double? tolerance,
-      [FromQuery] string fileName,
-      [FromQuery] Guid? filterUid)
+    public CompactionExportResult PostTINSurface([FromBody] CompactionExportRequest compactionExportRequest)
     {
-      Log.LogInformation($"{nameof(GetTINSurface)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostTINSurface)}: {Request.QueryString}");
 
       Log.LogDebug($"Accept header is {Request.Headers["Accept"]}");
 
-      if (fileName == null)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No file name provided"));
+      compactionExportRequest.Validate();
 
-      TINSurfaceExportRequest request = new TINSurfaceExportRequest
-      {
-        ProjectUid = projectUid,
-        Tolerance = tolerance,
-        Filter = FilterResult.CreateFilter(null) // Todo: Get the actual filter from the filterUid
-      };
-
-      request.Validate();
-
-      var container = RequestExecutorContainer.Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler);
-
-      var tinResult = WithServiceExceptionTryExecute(() => container.Process(request)) as TINSurfaceExportResult;
+      var tinResult = WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(compactionExportRequest) as TINSurfaceExportResult);
 
       const string TTM_EXTENSION = ".ttm";
       const string ZIP_EXTENSION = ".zip";
 
-      var fullFileName = BuildTINFilePath(fileName, ZIP_EXTENSION);
+      var fullFileName = BuildTINFilePath(compactionExportRequest.FileName, ZIP_EXTENSION);
 
       if (FileSystem.Exists(fullFileName))
         FileSystem.Delete(fullFileName);
 
       using (var zipFile = ZipFile.Open(fullFileName, ZipArchiveMode.Create))
       {
-        var entry = zipFile.CreateEntry(fileName + TTM_EXTENSION);
+        var entry = zipFile.CreateEntry(compactionExportRequest.FileName + TTM_EXTENSION);
         using (var stream = entry.Open())
           new MemoryStream(tinResult?.TINData).CopyTo(stream);
       }

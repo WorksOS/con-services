@@ -1,16 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Exports.Surfaces.GridFabric;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.Requests;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.SiteModels.Interfaces;
 using TINSurfaceExportResult = VSS.TRex.Gateway.Common.ResultHandling.TINSurfaceExportResult;
 
@@ -43,21 +40,22 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as TINSurfaceExportRequest;
+      var request = item as CompactionExportRequest;
 
       if (request == null)
-        ThrowRequestTypeCastException<TINSurfaceExportRequest>();
+        ThrowRequestTypeCastException<CompactionExportRequest>();
 
-      var siteModel = GetSiteModel(request.ProjectUid);
+      var siteModel = GetSiteModel(request?.ProjectUid);
+
+      var filter = ConvertFilter(request?.Filter, siteModel);
 
       var tinRequest = new TINSurfaceRequest();
       var response = tinRequest.Execute(new TINSurfaceRequestArgument
-          {
-            Tolerance = request.Tolerance ?? 0.0,
-            ProjectID = request.ProjectUid ?? Guid.Empty,
-            Filters = new FilterSet(ConvertFilter(request.Filter, siteModel))
-          }
-        );
+      {
+          ProjectID = siteModel.ID,
+          Filters = new FilterSet(filter),
+          Tolerance = request?.Tolerance ?? 0.0
+      });
 
       return TINSurfaceExportResult.CreateTINResult(response.data);
     }

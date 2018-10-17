@@ -106,7 +106,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get Temperature details from production data for the specified project and date range.
     /// </summary>
-    /// <param name="temperatureDetailsRequest"></param>
+    /// <param name="temperatureDetailRequest"></param>
     /// <returns></returns>
     [Route("api/v1/temperature/details")]
     [HttpPost]
@@ -121,7 +121,5 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<DetailedTemperatureExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(temperatureDetailRequest) as TemperatureDetailResult);
     }
-
-
   }
 }

@@ -36,16 +36,16 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<CMVChangeDetailsRequest>();
 
-      var siteModel = GetSiteModel(request.ProjectUid);
+      var siteModel = GetSiteModel(request?.ProjectUid);
 
-      var filter = ConvertFilter(request.Filter, siteModel);
+      var filter = ConvertFilter(request?.Filter, siteModel);
 
       CMVChangeStatisticsOperation operation = new CMVChangeStatisticsOperation();
       CMVChangeStatisticsResult cmvChangeDetailsResult = operation.Execute(new CMVChangeStatisticsArgument()
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        CMVChangeDetailsDatalValues = request.CMVChangeDetailsValues
+        CMVChangeDetailsDatalValues = request?.CMVChangeDetailsValues
       });
 
       if (cmvChangeDetailsResult != null)
