@@ -145,6 +145,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
       {
         overlayTypes = new List<TileOverlayType>((TileOverlayType[])Enum.GetValues(typeof(TileOverlayType)));
         overlayTypes.Remove(TileOverlayType.AllOverlays);
+        //TODO: AllOverlays means for 3D so remove 2D overlay. Rename overlay type better to reflect this. Also may need a '2D all overlays' in future.
+        overlayTypes.Remove(TileOverlayType.LoadDumpData);
       }
 
       var project = await ((TilePrincipal)User).GetProject(projectUid);

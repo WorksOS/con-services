@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using XnaFan.ImageComparison.Netcore;
@@ -31,7 +32,7 @@ namespace WebApiTests.Utilities
       var diff = expectedImage.PercentageDifference(actualImage, threshold);
       if (diff > 0.0)
       {
-        var diffImage = expectedImage.GetDifferenceImage(actualImage);
+        var diffImage = expectedImage.GetDifferenceImage(actualImage, false, true);
         var diffFileName = actFileName.Substring(0, len) + "Differences.png";
         SaveImageFile(diffFileName, diffImage);        
       }
