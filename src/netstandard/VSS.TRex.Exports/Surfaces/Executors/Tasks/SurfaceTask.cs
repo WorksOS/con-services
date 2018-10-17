@@ -6,6 +6,7 @@ using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
@@ -20,7 +21,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     /// <summary>
     /// The collection of subgrids being collected for a patch response
     /// </summary>
-    public List<GenericLeafSubGrid<float>> SurfaceSubgrids = new List<GenericLeafSubGrid<float>>();
+    public List<GenericLeafSubGrid_Float> SurfaceSubgrids = new List<GenericLeafSubGrid_Float>();
 
     public SurfaceTask()
     { }
@@ -56,7 +57,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
         return false;
       }
 
-      // Convert the ClientHeightLeafSubgrid into a GenericLeafSubGrid<float>...
+      // Convert the ClientHeightLeafSubgrid into a GenericLeafSubGrid_Float...
 
       foreach (var subGrid in subGridResponses)
       {
@@ -65,7 +66,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 
         ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
 
-        GenericLeafSubGrid<float> leaf = new GenericLeafSubGrid<float>
+        GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
         {
           OriginX = originSubGrid.OriginX,
           OriginY = originSubGrid.OriginY,

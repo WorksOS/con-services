@@ -17,6 +17,8 @@ using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -48,6 +50,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
 
       services.AddOpenTracing(builder =>
       {
