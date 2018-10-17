@@ -91,8 +91,8 @@ namespace WebApiTests.Utilities
         imageDifference = Convert.ToDouble(difference) / 100;
       }
       //These 2 lines are for debugging so we can paste into an online image converter
-      var expectedTileDataString = JsonConvert.SerializeObject(expectedTileData);
-      var actualTileDataString = JsonConvert.SerializeObject(actualTileData);
+      //var expectedTileDataString = JsonConvert.SerializeObject(expectedTileData);
+      //var actualTileDataString = JsonConvert.SerializeObject(actualTileData);
 
       var expFileName = "Expected_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
       var actFileName = "Actual_" + /*ScenarioContext.Current.ScenarioInfo.Title +*/ resultName + ".png";
