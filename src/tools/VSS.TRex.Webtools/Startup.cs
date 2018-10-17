@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -19,6 +20,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -57,7 +59,7 @@ namespace VSS.TRex.Webtools
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
 
-      services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage()));
+      services.AddTransient<ISiteModels>(factory => SwitchableGridContext.SwitchableSiteModelsContext());
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
       services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
       services.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces());
