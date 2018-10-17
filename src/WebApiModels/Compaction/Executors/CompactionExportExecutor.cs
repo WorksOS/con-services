@@ -8,7 +8,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -38,41 +39,55 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (request == null)
           ThrowRequestTypeCastException<ExportReport>();
-        
-        var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
 
-        bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.callId ?? Guid.NewGuid(), 0,
-            TASNodeCancellationDescriptorType.cdtProdDataExport),
-          request.userPrefs, (int) request.exportType, request.callerId, raptorFilter,
-          RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-          request.timeStampRequired, request.cellSizeRequired, request.rawData, request.restrictSize, true,
-          request.tolerance, request.includeSurveydSurface,
-          request.precheckonly, request.filename, request.machineList, (int) request.coordType,
-          (int) request.outputType,
-          request.dateFromUTC, request.dateToUTC,
-          request.translations, request.projectExtents, out TDataExport dataexport);
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SURFACE"), out var useTrexGateway);
 
-        if (success)
+        if (useTrexGateway && request?.ExportType == ExportTypes.SurfaceExport)
         {
-          try
-          {
-            return CompactionExportResult.Create(BuildFilePath(request.ProjectId ?? -1, request.callerId, request.filename, true));
-          }
-          catch (Exception ex)
-          {
-            throw new ServiceException(HttpStatusCode.NoContent,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Failed to retrieve received export data: " + ex.Message));
-          }
+          var cmvChangeDetailsRequest = new CompactionExportRequest(request.ProjectUid, request.Filter, request.Tolerance, request.Filename);
+
+          return trexCompactionDataProxy.SendSurfaceExportRequest(cmvChangeDetailsRequest, customHeaders).Result;
         }
 
-        throw CreateServiceException<CompactionExportExecutor>(dataexport.ReturnCode);
+        return ProcessWithRaptor(request);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
+    }
+
+    private ContractExecutionResult ProcessWithRaptor(ExportReport request)
+    {
+      var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+
+      bool success = raptorClient.GetProductionDataExport(request.ProjectId ?? -1,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
+          TASNodeCancellationDescriptorType.cdtProdDataExport),
+        request.UserPrefs, (int)request.ExportType, request.CallerId, raptorFilter,
+        RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
+        request.TimeStampRequired, request.CellSizeRequired, request.RawData, request.RestrictSize, true,
+        request.Tolerance, request.IncludeSurveydSurface,
+        request.Precheckonly, request.Filename, request.MachineList, (int)request.CoordType,
+        (int)request.OutputType,
+        request.DateFromUTC, request.DateToUTC,
+        request.Translations, request.ProjectExtents, out TDataExport dataexport);
+
+      if (success)
+      {
+        try
+        {
+          return CompactionExportResult.Create(BuildFilePath(request.ProjectId ?? -1, request.CallerId, request.Filename, true));
+        }
+        catch (Exception ex)
+        {
+          throw new ServiceException(HttpStatusCode.NoContent,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Failed to retrieve received export data: " + ex.Message));
+        }
+      }
+
+      throw CreateServiceException<CompactionExportExecutor>(dataexport.ReturnCode);
     }
 
     private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)

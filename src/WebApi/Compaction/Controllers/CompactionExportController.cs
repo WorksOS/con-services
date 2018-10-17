@@ -16,9 +16,9 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
@@ -36,17 +36,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
     private readonly IPreferenceProxy prefProxy;
     private readonly IProductionDataRequestFactory requestFactory;
+    
+    /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
     /// <summary>
+    /// 
     /// Default constructor.
     /// </summary>
     public CompactionExportController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager,
-      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
+      IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy, ITRexCompactionDataProxy trexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.prefProxy = prefProxy;
       this.requestFactory = requestFactory;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     #region Schedule Exports
@@ -163,6 +170,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -223,6 +231,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -272,7 +281,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       Log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var userPreferences = await GetUserPreferences();
@@ -280,6 +289,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       tolerance = tolerance ?? surfaceExportTollerance;
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -303,14 +313,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var result = WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
+          .Build<CompactionExportExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore,
+            trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .Process(exportRequest) as CompactionExportResult);
 
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
+      
       Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
       return new FileStreamResult(fileStream, "application/zip");
     }
-
     #endregion
 
     /// <summary>

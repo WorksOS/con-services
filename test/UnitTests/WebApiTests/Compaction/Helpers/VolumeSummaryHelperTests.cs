@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       public static void ClassInit(TestContext context)
       {
         filter = FilterResult.CreateFilter(
-          0, "name", "desc", DateTime.Now, DateTime.Now, 1, null, false, false, ElevationType.Highest,
+          0, null, "name", "desc", DateTime.Now, DateTime.Now, 1, null, false, false, ElevationType.Highest,
           new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, "designName",
           FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(),
           true, GPSAccuracy.Coarse, false, false, false, false, null, null, null, null, null, null);

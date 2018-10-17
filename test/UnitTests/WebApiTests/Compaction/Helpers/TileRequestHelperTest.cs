@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       {
         if (filterResult == null)
         {
-          filterResult = new FilterResult(new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
+          filterResult = new FilterResult(null, new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
         }
 
         requestHelper.Initialize(null, null, null, settingsManager, null, 0, compactionProjectSettings, compactionProjectSettingsColors, null, filterResult, designDescriptor);
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       [DataRow(FilterLayerMethod.AutoMapReset)]
       public void Should_set_FilterlayoutMethod(FilterLayerMethod filterLayerMethod)
       {
-        InitRequestHelper(new FilterResult(new Filter(), polygonLonLat, null, filterLayerMethod, null, false, designDescriptor));
+        InitRequestHelper(new FilterResult(null, new Filter(), polygonLonLat, null, filterLayerMethod, null, false, designDescriptor));
 
         var tileRequestResult = requestHelper.CreateTileRequest(DisplayMode.CutFill, 0, 0, null, null);
 
@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       [DataRow(DisplayMode.PassCount)]
       public void Should_use_default_DesignDescriptor_and_Filter_When_not_DisplayModeCutFill(DisplayMode displayMode)
       {
-        var filterResult = new FilterResult(new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
+        var filterResult = new FilterResult(null, new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
         InitRequestHelper(filterResult);
 
         var tileRequestResult = requestHelper.CreateTileRequest(displayMode, 0, 0, null, null);
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         InitRequestHelper();
         requestHelper.SetVolumeCalcType(volumeCalcType);
 
-        var baseFilter = new FilterResult(new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
+        var baseFilter = new FilterResult(null, new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
         requestHelper.SetBaseFilter(baseFilter);
 
         var tileRequestResult = requestHelper.CreateTileRequest(DisplayMode.CutFill, 0, 0, null, null);
@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         InitRequestHelper();
         requestHelper.SetVolumeCalcType(volumeCalcType);
 
-        var topFilter = new FilterResult(new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
+        var topFilter = new FilterResult(null, new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
         requestHelper.SetTopFilter(topFilter);
 
         var tileRequestResult = requestHelper.CreateTileRequest(DisplayMode.CutFill, 0, 0, null, null);
@@ -141,8 +141,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         InitRequestHelper();
         requestHelper.SetVolumeCalcType(VolumeCalcType.GroundToGround);
 
-        var topFilter = new FilterResult(new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
-        var baseFilter = new FilterResult(new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
+        var topFilter = new FilterResult(null, new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
+        var baseFilter = new FilterResult(null, new Filter(), polygonLonLat, null, FilterLayerMethod.None, null, false, designDescriptor);
 
         requestHelper.SetTopFilter(topFilter);
         requestHelper.SetBaseFilter(baseFilter);
