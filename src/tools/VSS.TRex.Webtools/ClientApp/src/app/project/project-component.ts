@@ -452,5 +452,13 @@ constructor(
   public updateMachineEvents(): void {
     this.updateDisplayedMachineEvents();
   }
+
+  public switchToMutable(): void {
+    this.projectService.switchToMutable();
+  }
+
+  public switchToImmutable(): void {
+    this.projectService.switchToImmutable();
+  }
 }
 

@@ -144,4 +144,11 @@ export class ProjectService {
     return this.executeRequest<string[]>('getMachineEvents', `events/text/${projectUid}/${machineUid}/${eventType}?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&maxEventsToReturn=${maxEventsToReturn}`);
   }
 
+  public switchToMutable(): void {
+    this.executeRequest<any>('switchToMutable', 'switchablegrid/mutable');
+  }
+
+  public switchToImmutable(): void {
+    this.executeRequest<any>('switchToMutable', 'switchablegrid/immutable');
+  }
 }
