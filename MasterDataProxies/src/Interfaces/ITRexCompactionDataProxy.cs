@@ -84,6 +84,15 @@ namespace VSS.MasterData.Proxies.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
+    /// Sends a request to get Material Temperature Details statistics from the TRex database.
+    /// </summary>
+    /// <param name="temperatureDetailsRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<ContractExecutionResult> SendTemperatureDetailsRequest(TemperatureDetailRequest temperatureDetailsRequest,
+    IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
     /// Sends a request to get Machine Speed Summary statistics from the TRex database.
     /// </summary>
     /// <param name="speedSummaryRequest"></param>

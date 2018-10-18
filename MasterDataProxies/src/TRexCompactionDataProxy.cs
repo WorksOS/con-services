@@ -146,6 +146,15 @@ namespace VSS.MasterData.Proxies
       return await SendRequestPost<TemperatureSummaryResult>(request, customHeaders, "/temperature/summary");
     }
 
+    public async Task<ContractExecutionResult> SendTemperatureDetailsRequest(TemperatureDetailRequest temperatureDetailsRequest, IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(temperatureDetailsRequest);
+
+      log.LogDebug($"{nameof(SendTemperatureDetailsRequest)}: Sending the request: {request}");
+
+      return await SendRequestPost<TemperatureDetailResult>(request, customHeaders, "/temperature/details");
+    }
+
     /// <summary>
     /// Sends a request to get Machine Speed Summary statistics from the TRex database.
     /// </summary>
