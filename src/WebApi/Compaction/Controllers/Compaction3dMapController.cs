@@ -74,6 +74,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Optional Filter UID</param>
     /// <param name="designUid">The Design File UID if showing the Design (ignored otherwise)</param>
+    /// <param name="cutfillDesignUid">Cut fill design UID for the Texture, ignored for other modes</param>
     /// <param name="type">Map Display Type - Heightmap / Texture / Design</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc (Ignored in Height Map type)</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
@@ -88,6 +89,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? designUid,
+      [FromQuery] Guid? cutfillDesignUid,
       [FromQuery] MapDisplayType type,
       [FromQuery] DisplayMode mode,
       [FromQuery] ushort width,
@@ -99,6 +101,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       CompactionProjectSettingsColors projectSettingsColors;
       DesignDescriptor design = null;
+      DesignDescriptor cutFillDesign = null;
       if (type == MapDisplayType.DesignMap)
       {
         projectSettingsColors = GetGreyScaleHeightColors();
@@ -110,9 +113,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectSettingsColors = GetGreyScaleHeightColors();
         mode = DisplayMode.Height; // The height map must be of type height....
       }
+      else if(type == MapDisplayType.Texture)
+      {
+        // Only used in texture mode
+        cutFillDesign = cutfillDesignUid.HasValue
+          ? await GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid)
+          : null;
+
+        projectSettingsColors = await GetProjectSettingsColors(projectUid);
+      }
       else
       {
-        projectSettingsColors = await GetProjectSettingsColors(projectUid);
+        throw new NotImplementedException();
       }
 
       var filter = await GetCompactionFilter(projectUid, filterUid);
@@ -127,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           width,
           height,
           boundingBoxHelper.GetBoundingBox(bbox),
-          design,
+          design ?? cutFillDesign, // If we have a design, it means we are asking for the design height map - otherwise we may have a cut fill design to determine the texture
           null,
           null,
           null,
@@ -145,7 +157,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="filterUid">Optional Filter UID</param>
     /// <param name="type">Map Display Type - Heightmap / Texture / Design</param>
-    /// /// <param name="designUid">The Design File UID if showing the Design (ignored otherwise)</param>
+    /// <param name="designUid">The Design File UID if showing the Design (ignored otherwise)</param>
+    /// <param name="cutfillDesignUid">Cut fill design UID for the Texture, ignored for other modes</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc (Ignored in Height Map type)</param>
     /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
     /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
@@ -159,13 +172,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? designUid,
+      [FromQuery] Guid? cutfillDesignUid,
       [FromQuery] MapDisplayType type,
       [FromQuery] DisplayMode mode,
       [FromQuery] ushort width,
       [FromQuery] ushort height,
       [FromQuery] string bbox)
     {
-      var result = await GetMapTileData(projectUid, filterUid, designUid, type, mode, width, height, bbox);
+      var result = await GetMapTileData(projectUid, filterUid, designUid, cutfillDesignUid, type, mode, width, height, bbox);
       return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
 
