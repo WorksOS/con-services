@@ -66,7 +66,7 @@ namespace VSS.TRex.Gateway.Tests
         new WGSPoint3D(2, 2),
         new WGSPoint3D(3, 3)
       };
-      var filter = new FilterResult(new Filter(), polygonLonLat, null, null, null, true, null);
+      var filter = new FilterResult(null, new Filter(), polygonLonLat, null, null, null, true, null);
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filter);
       Assert.NotNull(combinedFilter.AttributeFilter);
       Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);
@@ -89,7 +89,7 @@ namespace VSS.TRex.Gateway.Tests
     [Fact]
     public void MapFilterResultNoPolygonToCombinedFilter()
     {
-      var filter = new FilterResult(new Filter(), null, null, null, null, true, null);
+      var filter = new FilterResult(null, new Filter(), null, null, null, null, true, null);
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filter);
       Assert.NotNull(combinedFilter.AttributeFilter);
       Assert.Equal(filter.ReturnEarliest, combinedFilter.AttributeFilter.ReturnEarliestFilteredCellPass);

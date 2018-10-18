@@ -57,7 +57,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       {
         result = action.Invoke();
         Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
-
       }
       catch (ServiceException)
       {

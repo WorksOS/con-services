@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
 	<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <IsPackable>false</IsPackable>
     <RootNamespace>TAGFiles.Tests</RootNamespace>
@@ -17,8 +17,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Apache.Ignite" Version="2.6.0" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.1" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.48.0" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.34.1" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.49.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />

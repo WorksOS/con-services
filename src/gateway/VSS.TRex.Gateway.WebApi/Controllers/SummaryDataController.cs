@@ -106,8 +106,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     [Route("api/v1/temperature/summary")]
     [HttpPost]
-    public TemperatureSummaryResult PostTemperatureSummary([FromBody] TemperatureSummaryRequest temperatureSummaryRequest,
-      [FromQuery] Guid? filterUid)
+    public TemperatureSummaryResult PostTemperatureSummary([FromBody] TemperatureSummaryRequest temperatureSummaryRequest)
     {
       Log.LogInformation($"{nameof(PostTemperatureSummary)}: {Request.QueryString}");
 
