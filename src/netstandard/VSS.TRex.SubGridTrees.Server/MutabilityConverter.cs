@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
@@ -61,15 +60,16 @@ namespace VSS.TRex.SubGridTrees.Server
       {
         case FileSystemStreamType.SubGridDirectory:
         {
-          return ConvertSubgridDirectoryToImmutable(mutableStream, out immutableStream);
+          return ConvertSubgridDirectoryToImmutable(source, out immutableStream);
         }
         case FileSystemStreamType.SubGridSegment:
         {
-          return ConvertSubgridSegmentToImmutable(mutableStream, out immutableStream);
+          return ConvertSubgridSegmentToImmutable(source, out immutableStream);
         }
         case FileSystemStreamType.Events:
         {
-          return ConvertEventListToImmutable(streamType, source, out immutableStream);
+          immutableStream = ((IProductionEvents) source).GetImmutableStream();
+          return true;
         }
         default:
         {
@@ -81,28 +81,17 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Converts a subgrid directory into its immutable form
+    /// Converts a subgrid directory into its immutable form i.e. compressingLatestPasses
     /// </summary>
-    /// <param name="mutableStream"></param>
+    /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    public bool ConvertSubgridDirectoryToImmutable(Object source, out MemoryStream immutableStream)
     {
       try
       {
-        // create a leaf to contain the mutable directory (and ensure the global latest cells is the mutable variety)
-        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels)
-        {
-          Directory =
-          {
-            GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false)
-          }
-        };
-
-        // Load the mutable stream of information
-        mutableStream.Position = 0;
-        leaf.LoadDirectoryFromStream(mutableStream);
-
+        // create a copy and compress the LatestPasses(and ensure the global latest cells is the mutable variety)
+        IServerLeafSubGrid leaf = (IServerLeafSubGrid) source;
         leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells);
 
         immutableStream = new MemoryStream();
@@ -120,25 +109,17 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Converts a subgrid segment into its immutable form
+    /// Converts a subgrid segment into its immutable form i.e. compressingLatestPasses
     /// </summary>
-    /// <param name="mutableStream"></param>
+    /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    public bool ConvertSubgridSegmentToImmutable(Object source, out MemoryStream immutableStream)
     {
       try
       {
         // Read in the subgrid segment from the mutable stream
-        SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
-        (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false),
-          SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(true, false));
-
-        mutableStream.Position = 0;
-        using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
-        {
-          segment.Read(reader, true, true);
-        }
+        ISubGridCellPassesDataSegment segment = (ISubGridCellPassesDataSegment) source;
 
         // Convert to the immutable form
         segment.LatestPasses = ConvertLatestPassesToImmutable(segment.LatestPasses);
@@ -166,18 +147,5 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
-    /// <summary>
-    /// Convert an event list to it's immutable form. 
-    /// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="immutableStream"></param>
-    /// <returns></returns>
-    public bool ConvertEventListToImmutable(FileSystemStreamType streamType, object source, out MemoryStream immutableStream)
-    {
-      immutableStream = ((IProductionEvents) source).GetImmutableStream(streamType);
-
-      return true;
-    }
   }
 }

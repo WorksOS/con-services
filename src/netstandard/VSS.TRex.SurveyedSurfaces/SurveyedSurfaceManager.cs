@@ -92,17 +92,7 @@ namespace VSS.TRex.SurveyedSurfaces
         throw new TRexException($"Exception writing updated surveyed surfaces cache element to Ignite", e);
       }
     }
-
-    public MemoryStream GetMutableStream(FileSystemStreamType streamType)
-    {
-      return null; // todo jcm
-    }
-
-    public MemoryStream GetImmutableStream(FileSystemStreamType streamType)
-    {
-      return null; // todo jcm
-    }
-
+    
     /// <summary>
     /// Add a new surveyed surface to a sitemodel
     /// </summary>

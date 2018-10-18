@@ -46,35 +46,35 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports reading a stream of spatial data from the persistent store via the grid cache
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="StreamName"></param>
-    /// <param name="SubgridX"></param>
-    /// <param name="SubgridY"></param>
-    /// <param name="SegmentIdentifier"></param>
-    /// <param name="StreamType"></param>
-    /// <param name="Stream"></param>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
+    /// <param name="subgridX"></param>
+    /// <param name="subgridY"></param>
+    /// <param name="segmentIdentifier"></param>
+    /// <param name="streamType"></param>
+    /// <param name="stream"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid DataModelID,
-      string StreamName,
-      uint SubgridX, uint SubgridY,
-      string SegmentIdentifier,
-      FileSystemStreamType StreamType,
-      out MemoryStream Stream)
+    public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
+      string streamName,
+      uint subgridX, uint subgridY,
+      string segmentIdentifier,
+      FileSystemStreamType streamType,
+      out MemoryStream stream)
     {
-      Stream = null;
+      stream = null;
 
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subgridX, subgridY, segmentIdentifier);
 
-        //Log.LogInformation($"Getting key:{StreamName}");
+        //Log.LogInformation($"Getting key:{streamName}");
 
         try
         {
           using (MemoryStream MS = new MemoryStream(spatialCache.Get(cacheKey)))
           {
-            Stream = MemoryStreamCompression.Decompress(MS);
-            Stream.Position = 0;
+            stream = MemoryStreamCompression.Decompress(MS);
+            stream.Position = 0;
           }
         }
         catch (KeyNotFoundException)
@@ -88,7 +88,7 @@ namespace VSS.TRex.Storage
       {
         Log.LogInformation($"Exception occurred: {e}");
 
-        Stream = null;
+        stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
       }
     }
@@ -96,18 +96,18 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports reading a named stream from the persistent store via the grid cache
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="StreamName"></param>
-    /// <param name="StreamType"></param>
-    /// <param name="Stream"></param>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
+    /// <param name="streamType"></param>
+    /// <param name="stream"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus ReadStreamFromPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
+    public FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
     {
-      Stream = null;
+      stream = null;
 
       try
       {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
         //Log.LogInformation($"Getting key:{cacheKey}");
 
@@ -115,8 +115,8 @@ namespace VSS.TRex.Storage
         {
           using (MemoryStream MS = new MemoryStream(nonSpatialCache.Get(cacheKey)))
           {
-            Stream = MemoryStreamCompression.Decompress(MS);
-            Stream.Position = 0;
+            stream = MemoryStreamCompression.Decompress(MS);
+            stream.Position = 0;
           }
         }
         catch (KeyNotFoundException)
@@ -130,7 +130,7 @@ namespace VSS.TRex.Storage
       {
         Log.LogInformation($"Exception occurred: {e}");
 
-        Stream = null;
+        stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
       }
     }
@@ -138,14 +138,14 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports removing a named stream from the persistent store via the grid cache
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="StreamName"></param>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid DataModelID, string StreamName)
+    public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID, string streamName)
     {
       try
       {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
         Log.LogInformation($"Removing key:{cacheKey}");
 
@@ -159,7 +159,7 @@ namespace VSS.TRex.Storage
           Log.LogError($"Exception occurredL {E}");
         }
 
-        ImmutableProxy?.RemoveStreamFromPersistentStore(DataModelID, StreamName);
+        ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelID, streamName);
 
         return FileSystemErrorStatus.OK;
       }
@@ -172,27 +172,29 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports writing a spatial data stream to the persistent store via the grid cache.
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="StreamName"></param>
-    /// <param name="SubgridX"></param>
-    /// <param name="SubgridY"></param>
-    /// <param name="SegmentIdentifier"></param>
-    /// <param name="StreamType"></param>
-    /// <param name="Stream"></param>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
+    /// <param name="subgridX"></param>
+    /// <param name="subgridY"></param>
+    /// <param name="segmentIdentifier"></param>
+    /// <param name="streamType"></param>
+    /// <param name="mutableStream"></param>
+    /// <param name="source"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName,
-      uint SubgridX, uint SubgridY,
-      string SegmentIdentifier,
-      FileSystemStreamType StreamType,
-      MemoryStream Stream)
+    public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID, string streamName,
+      uint subgridX, uint subgridY,
+      string segmentIdentifier,
+      FileSystemStreamType streamType,
+      MemoryStream mutableStream,
+      Object source)
     {
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subgridX, subgridY, segmentIdentifier);
 
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Stream))
+        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
-          // Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{Stream.Length} -> {compressedStream.Length}");
+          // Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}");
           spatialCache.Put(cacheKey, compressedStream.ToArray());
         }
 
@@ -201,7 +203,7 @@ namespace VSS.TRex.Storage
         {
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            PerformSpatialImmutabilityConversion(Stream, ImmutableProxy.SpatialCache, cacheKey, StreamType);
+            PerformSpatialImmutabilityConversion(mutableStream, ImmutableProxy.SpatialCache, cacheKey, streamType, source);
           }
         }
         catch (Exception e)
@@ -221,19 +223,19 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports writing a named data stream to the persistent store via the grid cache.
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="StreamName"></param>
-    /// <param name="StreamType"></param>
-    /// <param name="Mutablestream"></param>
-    /// <param name="ImmutableStream"></param>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
+    /// <param name="streamType"></param>
+    /// <param name="mutablestream"></param>
+    /// <param name="source"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Mutablestream, Object source)
+    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, MemoryStream mutablestream, Object source)
     {
       try
       {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
+        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
 
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(Mutablestream))
+        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutablestream))
         {
           // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{mutablestream.Length} -> {compressedStream.Length}");
           nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
@@ -244,7 +246,7 @@ namespace VSS.TRex.Storage
           // Convert the stream to the immutable form and write it to the immutable storage proxy
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            PerformNonSpatialImmutabilityConversion(Mutablestream, ImmutableProxy.NonSpatialCache, cacheKey, StreamType, source);
+            PerformNonSpatialImmutabilityConversion(mutablestream, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source);
           }
         }
         catch (Exception e)

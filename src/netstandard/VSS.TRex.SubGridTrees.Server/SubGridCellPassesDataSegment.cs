@@ -258,7 +258,8 @@ namespace VSS.TRex.SubGridTrees.Server
                     Owner.OriginX, Owner.OriginY,
                     FileName,
                     FileSystemStreamType.SubGridSegment,
-                    MStream);
+                    MStream,
+                    this);
 
                 Result = FSError == FileSystemErrorStatus.OK;
             }

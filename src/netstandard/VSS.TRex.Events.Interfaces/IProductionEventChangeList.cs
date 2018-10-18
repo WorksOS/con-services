@@ -14,8 +14,8 @@ namespace VSS.TRex.Events.Interfaces
 
     void Collate(IProductionEventLists container);
 
-    MemoryStream GetMutableStream(FileSystemStreamType streamType);
-    MemoryStream GetImmutableStream(FileSystemStreamType streamType);
+    MemoryStream GetMutableStream();
+    MemoryStream GetImmutableStream();
 
     void SaveToStore(IStorageProxy storageProxy);
 

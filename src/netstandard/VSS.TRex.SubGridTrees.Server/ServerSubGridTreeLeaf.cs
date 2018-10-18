@@ -680,7 +680,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             Result = storage.WriteSpatialStreamToPersistentStore
              (Owner.ID, FileName, OriginX, OriginY, string.Empty,
-              FileSystemStreamType.SubGridDirectory, MStream) == FileSystemErrorStatus.OK;
+              FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
             {

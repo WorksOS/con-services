@@ -1,21 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using VSS.ConfigurationStore;
-using VSS.TRex.DI;
 using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SubGridTrees.Server;
-using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -52,27 +42,27 @@ namespace VSS.TRex.Tests.Events
       events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
       Assert.True(2 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
       
-      var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream(FileSystemStreamType.Events);
+      var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
 
-      var targ = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targ = DeserializeEvents(mutableStream, targ);
-      Assert.Equal(2, targ.Count());
+      var targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
+      targetEventList = DeserializeEvents(mutableStream, targetEventList);
+      Assert.Equal(2, targetEventList.Count());
 
       DateTime dateTime;
       int state;
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      var evt = targ.Events[0];
+      var evt = targetEventList.Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
 
-      var immutableStream = events.MachineDesignNameIDStateEvents.GetImmutableStream(FileSystemStreamType.Events);
-      targ = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targ = DeserializeEvents(immutableStream, targ);
-      Assert.Equal(2, targ.Count());
+      var immutableStream = events.MachineDesignNameIDStateEvents.GetImmutableStream();
+      targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
+      targetEventList = DeserializeEvents(immutableStream, targetEventList);
+      Assert.Equal(2, targetEventList.Count());
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      evt = targ.Events[0];
+      evt = targetEventList.Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
     }
@@ -89,27 +79,27 @@ namespace VSS.TRex.Tests.Events
       events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 3);
       Assert.True(5 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
 
-      var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream(FileSystemStreamType.Events);
+      var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
 
-      var targ = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targ = DeserializeEvents(mutableStream, targ);
-      Assert.Equal(5, targ.Count());
+      var targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
+      targetEventList = DeserializeEvents(mutableStream, targetEventList);
+      Assert.Equal(5, targetEventList.Count());
 
       DateTime dateTime;
       int state;
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      var evt = targ.Events[0];
+      var evt = targetEventList.Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
 
-      var immutableStream = events.MachineDesignNameIDStateEvents.GetImmutableStream(FileSystemStreamType.Events);
-      targ = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targ = DeserializeEvents(immutableStream, targ);
-      Assert.Equal(4, targ.Count());
+      var immutableStream = events.MachineDesignNameIDStateEvents.GetImmutableStream();
+      targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
+      targetEventList = DeserializeEvents(immutableStream, targetEventList);
+      Assert.Equal(4, targetEventList.Count());
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      evt = targ.Events[0];
+      evt = targetEventList.Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
     }

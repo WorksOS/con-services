@@ -79,7 +79,7 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream(), this);
+        StorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream(), designs);
         StorageProxy.Commit();
 
         // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
@@ -91,16 +91,6 @@ namespace VSS.TRex.Designs
       {
         throw new TRexException($"Exception writing updated designs cache element to Ignite", e);
       }
-    }
-
-    public MemoryStream GetMutableStream(FileSystemStreamType streamType)
-    {
-      return null; // todo jcm
-    }
-
-    public MemoryStream GetImmutableStream(FileSystemStreamType streamType)
-    {
-      return null; // todo jcm
     }
 
     /// <summary>

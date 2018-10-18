@@ -36,7 +36,7 @@ namespace VSS.TRex.CoordinateSystems.Executors
         using (MemoryStream csibStream = new MemoryStream(Encoding.ASCII.GetBytes(CSIB)))
         {
           FileSystemErrorStatus status = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
-            FileSystemStreamType.CoordinateSystemCSIB, csibStream, this);
+            FileSystemStreamType.CoordinateSystemCSIB, csibStream, csibStream);
 
           if (status != FileSystemErrorStatus.OK)
             return false;
@@ -53,16 +53,6 @@ namespace VSS.TRex.CoordinateSystems.Executors
       }
 
       return true;
-    }
-
-    public MemoryStream GetMutableStream()
-    {
-      return null; // todo jcm
-    }
-
-    public MemoryStream GetImmutableStream()
-    {
-      return null; // todo jcm
     }
   }
 }
