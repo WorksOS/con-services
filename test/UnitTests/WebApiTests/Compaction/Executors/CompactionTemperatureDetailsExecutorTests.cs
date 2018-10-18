@@ -7,6 +7,8 @@ using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
@@ -27,6 +29,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var raptorClient = new Mock<IASNodeClient>();
       var logger = new Mock<ILoggerFactory>();
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       raptorClient
         .Setup(x => x.GetTemperatureDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
@@ -35,7 +39,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(TASNodeErrorStatus.asneNoResultReturned);
 
       var executor = RequestExecutorContainerFactory
-        .Build<DetailedTemperatureExecutor>(logger.Object, raptorClient.Object);
+        .Build<DetailedTemperatureExecutor>(logger.Object, raptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
 
@@ -48,6 +52,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var raptorClient = new Mock<IASNodeClient>();
       var logger = new Mock<ILoggerFactory>();
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
 
       raptorClient
         .Setup(x => x.GetTemperatureDetails(request.ProjectId.Value, It.IsAny<TASNodeRequestDescriptor>(),
@@ -56,7 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
         .Returns(TASNodeErrorStatus.asneOK);
 
       var executor = RequestExecutorContainerFactory
-        .Build<DetailedTemperatureExecutor>(logger.Object, raptorClient.Object);
+        .Build<DetailedTemperatureExecutor>(logger.Object, raptorClient.Object, configStore: mockConfigStore.Object, trexCompactionDataProxy: trexCompactionDataProxy.Object);
       var result = executor.Process(request) as CompactionTemperatureDetailResult;
       Assert.IsNotNull(result, "Result should not be null");
       Assert.AreEqual(details.Percents, result.Percents, "Wrong percents");
