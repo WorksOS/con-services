@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(ProjectSettings);
       var temperatureSettings = SettingsManager.CompactionTemperatureDetailsSettings(ProjectSettings);
-      return new TemperatureDetailsRequest(ProjectId, temperatureSettings, Filter, liftSettings);
+      return new TemperatureDetailsRequest(ProjectId, ProjectUid, temperatureSettings, Filter, liftSettings);
     }
   }
 }

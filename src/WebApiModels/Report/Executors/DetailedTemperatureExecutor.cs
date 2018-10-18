@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using ASNodeDecls;
 using SVOICOptionsDecls;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
+namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
-  public class CompactionTemperatureDetailsExecutor : RequestExecutorContainer
+  public class DetailedTemperatureExecutor : RequestExecutorContainer
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -21,6 +21,22 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (request == null)
         ThrowRequestTypeCastException<TemperatureDetailsRequest>();
+
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TEMPERATURE"), out var useTrexGateway);
+
+      var temperatureTargets = request.Targets.Select(t => (int) t).ToArray(); // already converted to 10ths 
+
+      if (useTrexGateway)
+      {
+        var temperatureDetailsRequest = new TemperatureDetailRequest(
+          request.ProjectUid,
+          request.Filter,
+          temperatureTargets);
+
+        var temperatureDetailsResult = trexCompactionDataProxy.SendTemperatureDetailsRequest(temperatureDetailsRequest, customHeaders).Result as TemperatureDetailResult;
+
+        return new CompactionTemperatureDetailResult(temperatureDetailsResult);
+      }
 
       var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
       var liftBuildSettings =
@@ -30,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtTemperatureDetailed),
         new TTemperatureDetailSettings
         {
-          TemperatureList = request.Targets.Select(t => (int)t).ToArray(),//already converted to 10ths 
+          TemperatureList = temperatureTargets,
         },
         filter,
         liftBuildSettings,
@@ -39,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       if (raptorResult == TASNodeErrorStatus.asneOK)
         return new CompactionTemperatureDetailResult(temperatureDetails.Percents);
 
-      throw CreateServiceException<CompactionTemperatureDetailsExecutor>((int)raptorResult);
+      throw CreateServiceException<DetailedTemperatureExecutor>((int)raptorResult);
     }
   }
 }

@@ -283,6 +283,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var detailsRequest = RequestFactory.Create<TemperatureRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(projectId)
           .Headers(this.CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -299,7 +300,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result1 = WithServiceExceptionTryExecute(() =>
           RequestExecutorContainerFactory
-            .Build<CompactionTemperatureDetailsExecutor>(LoggerFactory, RaptorClient)
+            .Build<DetailedTemperatureExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(detailsRequest) as CompactionTemperatureDetailResult);
 
         //When TRex done for temperature details, assume it will set target in details call
@@ -309,7 +310,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             .Build<SummaryTemperatureExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore,
               trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .Process(summaryRequest) as TemperatureSummaryResult;
-          result1.SetTargets(result2);
+          result1.SetTargets(result2?.TargetData);
         }
 
         return result1;

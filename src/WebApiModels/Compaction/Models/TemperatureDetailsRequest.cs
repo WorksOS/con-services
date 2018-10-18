@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.Models.Models;
+﻿using System;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
@@ -23,9 +24,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    public TemperatureDetailsRequest(long projectId, double[] targets, FilterResult filter, LiftBuildSettings liftBuildSettings)
+    public TemperatureDetailsRequest(long projectId, Guid? projectUid, double[] targets, FilterResult filter, LiftBuildSettings liftBuildSettings)
     {
       ProjectId = projectId;
+      ProjectUid = projectUid;
       Targets = targets;
       Filter = filter;
       LiftBuildSettings = liftBuildSettings;

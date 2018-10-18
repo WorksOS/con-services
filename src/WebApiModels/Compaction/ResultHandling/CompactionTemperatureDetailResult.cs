@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -13,6 +14,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   /// </summary>
   public class CompactionTemperatureDetailResult : ContractExecutionResult
   {
+    private const int TEMPERATURE_VALUE_RATIO = 10;
+
     /// <summary>
     /// An array of percentages relating to the temperature targets.
     /// </summary>
@@ -39,19 +42,31 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       if (HasData(result1))
       {
         Percents = result1;
-        SetTargets(result2);
+        SetTargets(result2?.TargetData);
       }
     }
 
-    public void SetTargets(TemperatureSummaryResult result)
+    /// <summary>
+    /// Overload constructor with parameters.
+    /// </summary>
+    public CompactionTemperatureDetailResult(TemperatureDetailResult result)
     {
       if (result != null && result.HasData())
       {
+        Percents = result.Percents;
+        SetTargets(result.TargetData);
+      }
+    }
+
+    public void SetTargets(TemperatureTargetData resultTargetData)
+    {
+      if (resultTargetData != null)
+      {
         TemperatureTarget = new TemperatureTargetData
         {
-          MinTemperatureMachineTarget = result.TargetData.MinTemperatureMachineTarget / 10,
-          MaxTemperatureMachineTarget = result.TargetData.MaxTemperatureMachineTarget / 10,
-          TargetVaries = result.TargetData.TargetVaries
+          MinTemperatureMachineTarget = resultTargetData.MinTemperatureMachineTarget / TEMPERATURE_VALUE_RATIO,
+          MaxTemperatureMachineTarget = resultTargetData.MaxTemperatureMachineTarget / TEMPERATURE_VALUE_RATIO,
+          TargetVaries = resultTargetData.TargetVaries
         };
       }
     }
