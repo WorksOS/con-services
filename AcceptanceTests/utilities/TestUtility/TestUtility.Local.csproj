@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="0.11.4" />
+    <PackageReference Include="Confluent.Kafka" Version="1.0.0-beta" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0" />
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.Local.csproj" />
+    <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.MonoRepo.csproj" />
   </ItemGroup>
 
 </Project>
