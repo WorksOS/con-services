@@ -21,8 +21,8 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         public bool Dirty { get; set; }
 
-        private DateTime _StartTime = DateTime.MinValue;
-        private DateTime _EndTime = DateTime.MaxValue;
+        public DateTime StartTime = DateTime.MinValue;
+        public DateTime EndTime = DateTime.MaxValue;
 
         public ISubGrid Owner { get; set; }
 
@@ -155,8 +155,8 @@ namespace VSS.TRex.SubGridTrees.Server
         {
             SubGridStreamHeader Header = new SubGridStreamHeader(reader);
 
-            _StartTime = Header.StartTime;
-            _EndTime = Header.EndTime;
+            StartTime = Header.StartTime;
+            EndTime = Header.EndTime;
 
             // Read the version etc from the stream
             if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubgridLeafFileMoniker))
@@ -203,8 +203,8 @@ namespace VSS.TRex.SubGridTrees.Server
                 MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
                 Identifier = SubGridStreamHeader.kICServerSubgridLeafFileMoniker,
                 Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridSegmentFile,
-                StartTime = SegmentInfo?.StartTime ?? _StartTime,
-                EndTime = SegmentInfo?.EndTime ?? _EndTime,
+                StartTime = SegmentInfo?.StartTime ?? StartTime,
+                EndTime = SegmentInfo?.EndTime ?? EndTime,
                 LastUpdateTimeUTC = DateTime.Now - Time.GPS.GetLocalGMTOffset()
             };
 

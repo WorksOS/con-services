@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
@@ -21,7 +20,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, Object source, out MemoryStream immutableStream);
+    bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, object source, out MemoryStream immutableStream);
 
     /// <summary>
     /// Converts a subgrid directory into its immutable form
@@ -29,7 +28,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <param name="mutableStream"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    bool ConvertSubgridDirectoryToImmutable(Object source, out MemoryStream immutableStream);
+    bool ConvertSubgridDirectoryToImmutable(object source, out MemoryStream immutableStream);
 
     /// <summary>
     /// Converts a subgrid segment into its immutable form
@@ -37,7 +36,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <param name="mutableStream"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    bool ConvertSubgridSegmentToImmutable(Object source, out MemoryStream immutableStream);
+    bool ConvertSubgridSegmentToImmutable(object source, out MemoryStream immutableStream);
   
   }
 

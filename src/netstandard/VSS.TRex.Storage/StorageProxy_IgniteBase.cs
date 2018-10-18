@@ -3,6 +3,7 @@ using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using VSS.TRex.DI;
+using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -92,7 +93,8 @@ namespace VSS.TRex.Storage
       {
         MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS);
         {
-          immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, /* todo */ null);
+          throw new TRexException("Direct cache based NonSpatial immutability conversion requires redydration of mutable stream, currently not used...");
+          immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
 
           if (mutableStream != immutableStream)
           {
@@ -117,7 +119,7 @@ namespace VSS.TRex.Storage
       IStorageProxyCache<INonSpatialAffinityKey, byte[]> immutableCache,
       INonSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType,
-      Object source)
+      object source)
     {
       if (mutableStream == null || immutableCache == null)
       {
@@ -163,8 +165,7 @@ namespace VSS.TRex.Storage
     protected MemoryStream PerformSpatialImmutabilityConversion(IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> mutableCache,
       IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
-      FileSystemStreamType streamType,
-      Object source)
+      FileSystemStreamType streamType)
     {
       if (mutableCache == null || immutableCache == null)
       {
@@ -174,7 +175,8 @@ namespace VSS.TRex.Storage
       MemoryStream immutableStream;
       using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)), mutableStream = MemoryStreamCompression.Decompress(MS))
       {
-        immutableStream = PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, source);
+        throw new TRexException("Direct cache based Spatial immutability conversion requires redydration of mutable stream, currently not used...");
+        immutableStream = PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
       }
 
       return immutableStream;
@@ -193,7 +195,7 @@ namespace VSS.TRex.Storage
       IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
       FileSystemStreamType streamType,
-      Object source)
+      object source)
     {
       if (mutableStream == null || immutableCache == null)
       {

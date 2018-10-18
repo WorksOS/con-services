@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
@@ -21,14 +22,14 @@ namespace VSS.TRex.SubGridTrees.Server
     /// Converts the structure of the global latext cells structure into an immutable form
     /// </summary>
     /// <returns></returns>
-    public ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper LatestPasses)
+    public ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper latestPasses)
     {
-      if (LatestPasses.IsImmutable())
+      if (latestPasses.IsImmutable())
       {
-        return LatestPasses; // It is already immutable
+        return latestPasses; // It is already immutable
       }
 
-      SubGridCellLatestPassDataWrapper_NonStatic oldItem = LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
+      SubGridCellLatestPassDataWrapper_NonStatic oldItem = latestPasses as SubGridCellLatestPassDataWrapper_NonStatic;
 
       if (oldItem == null)
       {
@@ -36,12 +37,12 @@ namespace VSS.TRex.SubGridTrees.Server
         return null;
       }
 
-      LatestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
-      LatestPasses.Assign(oldItem);
+      latestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
+      latestPasses.Assign(oldItem);
 
-      (LatestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed)?.PerformEncodingForInternalCache(oldItem.PassData);
+      (latestPasses as SubGridCellLatestPassDataWrapper_StaticCompressed)?.PerformEncodingForInternalCache(oldItem.PassData);
 
-      return LatestPasses;
+      return latestPasses;
     }
 
     /// <summary>
@@ -50,9 +51,10 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     /// <param name="streamType"></param>
     /// <param name="mutableStream"></param>
+    /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, Object source, out MemoryStream immutableStream)
+    public bool ConvertToImmutable(FileSystemStreamType streamType, MemoryStream mutableStream, object source, out MemoryStream immutableStream)
     {
       immutableStream = null;
 
@@ -86,13 +88,23 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridDirectoryToImmutable(Object source, out MemoryStream immutableStream)
+    public bool ConvertSubgridDirectoryToImmutable(object source, out MemoryStream immutableStream)
     {
       try
       {
-        // create a copy and compress the LatestPasses(and ensure the global latest cells is the mutable variety)
-        IServerLeafSubGrid leaf = (IServerLeafSubGrid) source;
-        leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells);
+        var originSource = (IServerLeafSubGrid) source;
+
+        // create a copy and compress the latestPasses(and ensure the global latest cells is the mutable variety)
+        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels)
+        {
+          LeafStartTime = originSource.LeafStartTime,
+          LeafEndTime = originSource.LeafEndTime,
+          Directory =
+          {
+            SegmentDirectory = originSource.Directory.SegmentDirectory,
+            GlobalLatestCells = ConvertLatestPassesToImmutable(originSource.Directory.GlobalLatestCells)
+          }
+        };
 
         immutableStream = new MemoryStream();
         leaf.SaveDirectoryToStream(immutableStream);
@@ -114,20 +126,22 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
     /// <returns></returns>
-    public bool ConvertSubgridSegmentToImmutable(Object source, out MemoryStream immutableStream)
+    public bool ConvertSubgridSegmentToImmutable(object source, out MemoryStream immutableStream)
     {
       try
       {
-        // Read in the subgrid segment from the mutable stream
-        ISubGridCellPassesDataSegment segment = (ISubGridCellPassesDataSegment) source;
+        var originSource = (ISubGridCellPassesDataSegment) source;
 
-        // Convert to the immutable form
-        segment.LatestPasses = ConvertLatestPassesToImmutable(segment.LatestPasses);
+        // create a copy and compress the latestPasses(and ensure the global latest cells is the mutable variety)
+        SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
+        (ConvertLatestPassesToImmutable(originSource.LatestPasses),
+          SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(false, true))
+        {
+          StartTime = originSource.SegmentInfo.StartTime,
+          EndTime = originSource.SegmentInfo.EndTime
+        };
 
-        ISubGridCellSegmentPassesDataWrapper mutablePassesData = segment.PassesData;
-
-        segment.PassesData = SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(false, true);
-        segment.PassesData.SetState(mutablePassesData.GetState());
+        segment.PassesData.SetState(originSource.PassesData.GetState());
 
         // Write out the segment to the immutable stream
         immutableStream = new MemoryStream();

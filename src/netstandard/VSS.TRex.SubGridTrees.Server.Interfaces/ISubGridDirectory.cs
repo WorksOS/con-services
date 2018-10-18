@@ -7,7 +7,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
   {
     bool ExistsInPersistentStore { get; }
 
-    List<ISubGridCellPassesDataSegmentInfo> SegmentDirectory { get; }
+    List<ISubGridCellPassesDataSegmentInfo> SegmentDirectory { get; set; }
 
     ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set;  }
 

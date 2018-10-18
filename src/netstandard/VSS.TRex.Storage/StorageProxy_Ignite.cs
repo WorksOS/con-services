@@ -186,7 +186,7 @@ namespace VSS.TRex.Storage
       string segmentIdentifier,
       FileSystemStreamType streamType,
       MemoryStream mutableStream,
-      Object source)
+      object source)
     {
       try
       {
@@ -229,7 +229,7 @@ namespace VSS.TRex.Storage
     /// <param name="mutablestream"></param>
     /// <param name="source"></param>
     /// <returns></returns>
-    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, MemoryStream mutablestream, Object source)
+    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, MemoryStream mutablestream, object source)
     {
       try
       {
