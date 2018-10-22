@@ -27,6 +27,8 @@ namespace VSS.TRex.Events.Interfaces
 
     void LoadFromStore(IStorageProxy storageProxy);
 
+    void ReadEvents(BinaryReader reader);
+
     /// <summary>
     /// Returns a generic object reference to the internal list of events in this list
     /// The purpose of this is to facilitate CopyEventsFrom

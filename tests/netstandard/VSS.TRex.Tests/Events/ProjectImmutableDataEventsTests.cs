@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Storage;
@@ -43,30 +45,28 @@ namespace VSS.TRex.Tests.Events
       Assert.True(2 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
       
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
-
-      var targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targetEventList = DeserializeEvents(mutableStream, targetEventList);
+      var targetEventList = Deserialize(mutableStream);
       Assert.Equal(2, targetEventList.Count());
 
       DateTime dateTime;
       int state;
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      var evt = targetEventList.Events[0];
+      Assert.Equal(2, targetEventList.Count());
+      var evt = ((ProductionEvents<int>)targetEventList).Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
 
       var immutableStream = events.MachineDesignNameIDStateEvents.GetImmutableStream();
-      targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targetEventList = DeserializeEvents(immutableStream, targetEventList);
+      targetEventList = Deserialize(immutableStream);
       Assert.Equal(2, targetEventList.Count());
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      evt = targetEventList.Events[0];
+      evt = ((ProductionEvents<int>)targetEventList).Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
     }
-
+    
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_Duplicates()
     {
@@ -80,26 +80,23 @@ namespace VSS.TRex.Tests.Events
       Assert.True(5 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
 
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
-
-      var targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targetEventList = DeserializeEvents(mutableStream, targetEventList);
+      var targetEventList = Deserialize(mutableStream);
       Assert.Equal(5, targetEventList.Count());
 
       DateTime dateTime;
       int state;
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      var evt = targetEventList.Events[0];
+      var evt = ((ProductionEvents<int>)targetEventList).Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
 
       var immutableStream = events.MachineDesignNameIDStateEvents.GetImmutableStream();
-      targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targetEventList = DeserializeEvents(immutableStream, targetEventList);
+      targetEventList = Deserialize(immutableStream);
       Assert.Equal(4, targetEventList.Count());
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      evt = targetEventList.Events[0];
+      events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
     }
@@ -129,37 +126,31 @@ namespace VSS.TRex.Tests.Events
       resultantEvents.LoadFromStore(storageProxy);
       Assert.Equal(5, resultantEvents.Count());
     }
-
-    private ProductionEvents<int> DeserializeEvents(MemoryStream stream, ProductionEvents<int> targetEventList)
+    
+    private IProductionEvents Deserialize(MemoryStream stream)
     {
-      if (stream != null)
+      IProductionEvents events = null;
+      using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
       {
-        // Practice the binary event reading...
-        stream.Position = 0;
-        using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
+        if (stream.Length < 16)
         {
-          int majorVer = reader.ReadInt32();
-          int minorVer = reader.ReadInt32();
-
-          if (majorVer != 1 && minorVer != 0)
-            throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
-
-          int count = reader.ReadInt32();
-
-          for (int i = 0; i < count; i++)
-          {
-            targetEventList.Events.Add(new ProductionEvents<int>.Event
-            {
-              Date = DateTime.FromBinary(reader.ReadInt64()),
-              Flags = reader.ReadByte(),
-              State = targetEventList.SerialiseStateIn(reader)
-            });
-          }
+          return events;
         }
+        stream.Position = 8;
+
+        var eventType = reader.ReadInt32();
+        if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
+        {
+          return events;
+        }
+
+        events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
+
+        stream.Position = 0;
+        events.ReadEvents(reader);
       }
 
-      return targetEventList;
+      return events;
     }
-
   }
 }

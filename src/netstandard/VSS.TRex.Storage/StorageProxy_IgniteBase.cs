@@ -10,6 +10,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Storage.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
@@ -93,7 +94,6 @@ namespace VSS.TRex.Storage
       {
         MemoryStream mutableStream = MemoryStreamCompression.Decompress(MS);
         {
-          throw new TRexException("Direct cache based NonSpatial immutability conversion requires redydration of mutable stream, currently not used...");
           immutableStream = PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
 
           if (mutableStream != immutableStream)
@@ -121,14 +121,13 @@ namespace VSS.TRex.Storage
       FileSystemStreamType streamType,
       object source)
     {
-      if (mutableStream == null || immutableCache == null)
+      if ((mutableStream == null && source == null)  || immutableCache == null)
       {
         return null;
       }
 
       // Convert from the mutable to the immutable form and store it into the immutable cache
-      MemoryStream immutableStream = null;
-      if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out immutableStream) && immutableStream != null)
+      if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out MemoryStream immutableStream) && immutableStream != null)
       {
         using (MemoryStream compressedStream = MemoryStreamCompression.Compress(immutableStream))
         {
@@ -175,7 +174,6 @@ namespace VSS.TRex.Storage
       MemoryStream immutableStream;
       using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey)), mutableStream = MemoryStreamCompression.Decompress(MS))
       {
-        throw new TRexException("Direct cache based Spatial immutability conversion requires redydration of mutable stream, currently not used...");
         immutableStream = PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
       }
 

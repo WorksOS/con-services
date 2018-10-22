@@ -42,6 +42,147 @@ namespace VSS.TRex.Storage
         new StorageProxyCache<INonSpatialAffinityKey, byte[]>(
           ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
     }
+    
+    /// <summary>
+    /// Supports writing a named data stream to the persistent store via the grid cache.
+    /// </summary>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
+    /// <param name="streamType"></param>
+    /// <param name="mutablestream"></param>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID,
+      string streamName,
+      FileSystemStreamType streamType,
+      MemoryStream mutablestream,
+      object source)
+    {
+      try
+      {
+        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
+
+        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutablestream))
+        {
+          // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{mutablestream.Length} -> {compressedStream.Length}");
+          nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
+        }
+
+        try
+        {
+          // Create the immutable stream from the source data
+          if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
+          {
+            PerformNonSpatialImmutabilityConversion(null, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source);
+          }
+        }
+        catch (Exception e)
+        {
+          Log.LogError($"Exception performing mutability conversion: {e}");
+          return FileSystemErrorStatus.MutableToImmutableConversionError;
+        }
+
+        return FileSystemErrorStatus.OK;
+      }
+      catch
+      {
+        return FileSystemErrorStatus.UnknownErrorWritingToFS;
+      }
+    }
+    
+    /// <summary>
+    /// Supports writing a spatial data stream to the persistent store via the grid cache.
+    /// </summary>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
+    /// <param name="subgridX"></param>
+    /// <param name="subgridY"></param>
+    /// <param name="segmentIdentifier"></param>
+    /// <param name="streamType"></param>
+    /// <param name="mutableStream"></param>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
+      string streamName,
+      uint subgridX, uint subgridY,
+      string segmentIdentifier,
+      FileSystemStreamType streamType,
+      MemoryStream mutableStream,
+      object source)
+    {
+      try
+      {
+        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subgridX, subgridY, segmentIdentifier);
+
+        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
+        {
+          // Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}");
+          spatialCache.Put(cacheKey, compressedStream.ToArray());
+        }
+
+        // Convert the stream to the immutable form and write it to the immutable storage proxy
+        try
+        {
+          if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
+          {
+            PerformSpatialImmutabilityConversion(mutableStream, ImmutableProxy.SpatialCache, cacheKey, streamType, source);
+          }
+        }
+        catch (Exception e)
+        {
+          Log.LogError($"Exception performing mutability conversion: {e}");
+          return FileSystemErrorStatus.MutableToImmutableConversionError;
+        }
+
+        return FileSystemErrorStatus.OK;
+      }
+      catch
+      {
+        return FileSystemErrorStatus.UnknownErrorWritingToFS;
+      }
+    }
+
+    /// <summary>
+    /// Supports reading a named stream from the persistent store via the grid cache
+    /// </summary>
+    /// <param name="dataModelID"></param>
+    /// <param name="streamName"></param>
+    /// <param name="streamType"></param>
+    /// <param name="stream"></param>
+    /// <returns></returns>
+    public FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
+    {
+      stream = null;
+
+      try
+      {
+        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
+
+        //Log.LogInformation($"Getting key:{cacheKey}");
+
+        try
+        {
+          using (MemoryStream MS = new MemoryStream(nonSpatialCache.Get(cacheKey)))
+          {
+            stream = MemoryStreamCompression.Decompress(MS);
+            stream.Position = 0;
+          }
+        }
+        catch (KeyNotFoundException)
+        {
+          return FileSystemErrorStatus.GranuleDoesNotExist;
+        }
+
+        return FileSystemErrorStatus.OK;
+      }
+      catch (Exception e)
+      {
+        Log.LogInformation($"Exception occurred: {e}");
+
+        stream = null;
+        return FileSystemErrorStatus.UnknownErrorReadingFromFS;
+      }
+    }
 
     /// <summary>
     /// Supports reading a stream of spatial data from the persistent store via the grid cache
@@ -94,48 +235,6 @@ namespace VSS.TRex.Storage
     }
 
     /// <summary>
-    /// Supports reading a named stream from the persistent store via the grid cache
-    /// </summary>
-    /// <param name="dataModelID"></param>
-    /// <param name="streamName"></param>
-    /// <param name="streamType"></param>
-    /// <param name="stream"></param>
-    /// <returns></returns>
-    public FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
-    {
-      stream = null;
-
-      try
-      {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
-
-        //Log.LogInformation($"Getting key:{cacheKey}");
-
-        try
-        {
-          using (MemoryStream MS = new MemoryStream(nonSpatialCache.Get(cacheKey)))
-          {
-            stream = MemoryStreamCompression.Decompress(MS);
-            stream.Position = 0;
-          }
-        }
-        catch (KeyNotFoundException)
-        {
-          return FileSystemErrorStatus.GranuleDoesNotExist;
-        }
-
-        return FileSystemErrorStatus.OK;
-      }
-      catch (Exception e)
-      {
-        Log.LogInformation($"Exception occurred: {e}");
-
-        stream = null;
-        return FileSystemErrorStatus.UnknownErrorReadingFromFS;
-      }
-    }
-
-    /// <summary>
     /// Supports removing a named stream from the persistent store via the grid cache
     /// </summary>
     /// <param name="dataModelID"></param>
@@ -160,100 +259,6 @@ namespace VSS.TRex.Storage
         }
 
         ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelID, streamName);
-
-        return FileSystemErrorStatus.OK;
-      }
-      catch
-      {
-        return FileSystemErrorStatus.UnknownErrorWritingToFS;
-      }
-    }
-
-    /// <summary>
-    /// Supports writing a spatial data stream to the persistent store via the grid cache.
-    /// </summary>
-    /// <param name="dataModelID"></param>
-    /// <param name="streamName"></param>
-    /// <param name="subgridX"></param>
-    /// <param name="subgridY"></param>
-    /// <param name="segmentIdentifier"></param>
-    /// <param name="streamType"></param>
-    /// <param name="mutableStream"></param>
-    /// <param name="source"></param>
-    /// <returns></returns>
-    public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID, string streamName,
-      uint subgridX, uint subgridY,
-      string segmentIdentifier,
-      FileSystemStreamType streamType,
-      MemoryStream mutableStream,
-      object source)
-    {
-      try
-      {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(dataModelID, subgridX, subgridY, segmentIdentifier);
-
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutableStream))
-        {
-          // Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}");
-          spatialCache.Put(cacheKey, compressedStream.ToArray());
-        }
-
-        // Convert the stream to the immutable form and write it to the immutable storage proxy
-        try
-        {
-          if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
-          {
-            PerformSpatialImmutabilityConversion(mutableStream, ImmutableProxy.SpatialCache, cacheKey, streamType, source);
-          }
-        }
-        catch (Exception e)
-        {
-          Log.LogError($"Exception performing mutability conversion: {e}");
-          return FileSystemErrorStatus.MutableToImmutableConversionError;
-        }
-
-        return FileSystemErrorStatus.OK;
-      }
-      catch
-      {
-        return FileSystemErrorStatus.UnknownErrorWritingToFS;
-      }
-    }
-
-    /// <summary>
-    /// Supports writing a named data stream to the persistent store via the grid cache.
-    /// </summary>
-    /// <param name="dataModelID"></param>
-    /// <param name="streamName"></param>
-    /// <param name="streamType"></param>
-    /// <param name="mutablestream"></param>
-    /// <param name="source"></param>
-    /// <returns></returns>
-    public FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, MemoryStream mutablestream, object source)
-    {
-      try
-      {
-        INonSpatialAffinityKey cacheKey = ComputeNamedStreamCacheKey(dataModelID, streamName);
-
-        using (MemoryStream compressedStream = MemoryStreamCompression.Compress(mutablestream))
-        {
-          // Log.LogInformation($"Putting key:{cacheKey} in {nonSpatialCache.Name}, size:{mutablestream.Length} -> {compressedStream.Length}");
-          nonSpatialCache.Put(cacheKey, compressedStream.ToArray());
-        }
-
-        try
-        {
-          // Convert the stream to the immutable form and write it to the immutable storage proxy
-          if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
-          {
-            PerformNonSpatialImmutabilityConversion(mutablestream, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source);
-          }
-        }
-        catch (Exception e)
-        {
-          Log.LogError($"Exception performing mutability conversion: {e}");
-          return FileSystemErrorStatus.MutableToImmutableConversionError;
-        }
 
         return FileSystemErrorStatus.OK;
       }

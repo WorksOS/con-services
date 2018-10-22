@@ -21,17 +21,8 @@ namespace VSS.TRex.Storage
     {
     }
 
-    FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, uint subgridX, uint subgridY, string segmentIdentifier, FileSystemStreamType streamType, out MemoryStream stream)
-    {
-      throw new NotImplementedException();
-    }
-
-    FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
-    {
-      throw new NotImplementedException();
-    }
-
-    FileSystemErrorStatus IStorageProxy.RemoveStreamFromPersistentStore(Guid dataModelID, string streamName)
+    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType,
+      MemoryStream mutablestream, object source)
     {
       throw new NotImplementedException();
     }
@@ -42,8 +33,18 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, 
-      MemoryStream mutablestream, object source)
+
+    FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
+    {
+      throw new NotImplementedException();
+    }
+
+    FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, uint subgridX, uint subgridY, string segmentIdentifier, FileSystemStreamType streamType, out MemoryStream stream)
+    {
+      throw new NotImplementedException();
+    }
+
+    FileSystemErrorStatus IStorageProxy.RemoveStreamFromPersistentStore(Guid dataModelID, string streamName)
     {
       throw new NotImplementedException();
     }

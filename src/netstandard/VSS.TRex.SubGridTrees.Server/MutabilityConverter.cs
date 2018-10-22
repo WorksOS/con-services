@@ -2,7 +2,10 @@
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.DI;
+using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Exceptions;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
@@ -46,8 +49,10 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Primary method for performing mutability conversion to immutable. It accepts a stream and an indication of the type of stream
-    /// then delegates to conversion responsibility based on the stream type.
+    /// Primary method for performing mutability conversion to immutable. It accepts either
+    /// a) a sourceObject, from which the immutable stream can be built directly, or
+    /// b) a stream, which must be de-serialized into a sourceobject, from which the immutable stream can be built
+    /// i.e. either mutableStream, or source are null
     /// </summary>
     /// <param name="streamType"></param>
     /// <param name="mutableStream"></param>
@@ -58,20 +63,30 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       immutableStream = null;
 
+      if ((mutableStream == null && source == null) || (mutableStream != null && source != null))
+      {
+        throw new TRexException("Unable to determine a single valid source for immutability conversion.");
+      }
+
       switch (streamType)
       {
         case FileSystemStreamType.SubGridDirectory:
         {
-          return ConvertSubgridDirectoryToImmutable(source, out immutableStream);
+            return source == null 
+              ? ConvertSubgridDirectoryToImmutable(mutableStream, out immutableStream)
+              : ConvertSubgridDirectoryToImmutable(source, out immutableStream);
         }
         case FileSystemStreamType.SubGridSegment:
         {
-          return ConvertSubgridSegmentToImmutable(source, out immutableStream);
+          return source == null
+            ? ConvertSubgridSegmentToImmutable(mutableStream, out immutableStream)
+            : ConvertSubgridSegmentToImmutable(source, out immutableStream);
         }
         case FileSystemStreamType.Events:
         {
-          immutableStream = ((IProductionEvents) source).GetImmutableStream();
-          return true;
+          return source == null
+            ? ConvertEventListToImmutable(mutableStream, out immutableStream)
+            : ConvertEventListToImmutable(source, out immutableStream);
         }
         default:
         {
@@ -83,7 +98,7 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Converts a subgrid directory into its immutable form i.e. compressingLatestPasses
+    /// Converts a subgrid directory into its immutable form, using the source object
     /// </summary>
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
@@ -121,7 +136,46 @@ namespace VSS.TRex.SubGridTrees.Server
     }
 
     /// <summary>
-    /// Converts a subgrid segment into its immutable form i.e. compressingLatestPasses
+    /// Converts a subgrid directory into its immutable form, using a cached stream
+    /// </summary>
+    /// <param name="mutableStream"></param>
+    /// <param name="immutableStream"></param>
+    /// <returns></returns>
+    public bool ConvertSubgridDirectoryToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    {
+      try
+      {
+        // create a leaf to contain the mutable directory (and ensure the global latest cells is the mutable variety)
+        IServerLeafSubGrid leaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels)
+        {
+          Directory =
+          {
+            GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false)
+          }
+        };
+
+        // Load the mutable stream of information
+        mutableStream.Position = 0;
+        leaf.LoadDirectoryFromStream(mutableStream);
+
+        leaf.Directory.GlobalLatestCells = ConvertLatestPassesToImmutable(leaf.Directory.GlobalLatestCells);
+
+        immutableStream = new MemoryStream();
+        leaf.SaveDirectoryToStream(immutableStream);
+
+        return true;
+      }
+      catch (Exception e)
+      {
+        immutableStream = null;
+
+        Log.LogError($"Exception in conversion of subgrid directory mutable data to immutable schema: {e}");
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Converts a subgrid segment into its immutable form, using the source object
     /// </summary>
     /// <param name="source"></param>
     /// <param name="immutableStream"></param>
@@ -161,5 +215,114 @@ namespace VSS.TRex.SubGridTrees.Server
       }
     }
 
+    /// <summary>
+    /// Converts a subgrid segment into its immutable form, using a cached stream
+    /// </summary>
+    /// <param name="mutableStream"></param>
+    /// <param name="immutableStream"></param>
+    /// <returns></returns>
+    public bool ConvertSubgridSegmentToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    {
+      try
+      {
+        // Read in the subgrid segment from the mutable stream
+        SubGridCellPassesDataSegment segment = new SubGridCellPassesDataSegment
+        (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(true, false),
+          SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(true, false));
+
+        mutableStream.Position = 0;
+        using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
+        {
+          segment.Read(reader, true, true);
+        }
+
+        // Convert to the immutable form
+        segment.LatestPasses = ConvertLatestPassesToImmutable(segment.LatestPasses);
+
+        ISubGridCellSegmentPassesDataWrapper mutablePassesData = segment.PassesData;
+
+        segment.PassesData = SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(false, true);
+        segment.PassesData.SetState(mutablePassesData.GetState());
+
+        // Write out the segment to the immutable stream
+        immutableStream = new MemoryStream();
+        using (var writer = new BinaryWriter(immutableStream, Encoding.UTF8, true))
+        {
+          segment.Write(writer);
+        }
+
+        return true;
+      }
+      catch (Exception e)
+      {
+        immutableStream = null;
+
+        Log.LogError($"Exception in conversion of subgrid segment mutable data to immutable schema: {e}");
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Convert an event list to it's immutable form. 
+    /// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="immutableStream"></param>
+    /// <returns></returns>
+    public bool ConvertEventListToImmutable(object source, out MemoryStream immutableStream)
+    {
+      immutableStream = ((IProductionEvents)source).GetImmutableStream();
+
+      return true;
+    }
+
+    /// <summary>
+    /// Convert an event list to it's immutable form. 
+    /// Currently this is a no-op - the original stream is returned as there is not yet an immutable description for events
+    /// </summary>
+    /// <param name="mutableStream"></param>
+    /// <param name="immutableStream"></param>
+    /// <returns></returns>
+    public bool ConvertEventListToImmutable(MemoryStream mutableStream, out MemoryStream immutableStream)
+    {
+      immutableStream = null;
+      try
+      {
+        IProductionEvents events;
+        using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
+        {
+          if (mutableStream.Length < 16)
+          {
+            Log.LogError($"ProductionEvent mutable stream length is too short. Expected greater than: {14} retrieved {mutableStream.Length}");
+            return false;
+          }
+          mutableStream.Position = 8;
+
+          var eventType = reader.ReadInt32();
+          if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
+          {
+            Log.LogError($"ProductionEvent eventType is not recognized. Invalid stream.");
+            return false;
+          }
+
+          events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
+
+          mutableStream.Position = 0;
+          events.ReadEvents(reader);
+
+          mutableStream.Position = 8;
+          immutableStream = events.GetImmutableStream();
+        }
+
+        return true;
+      }
+      catch (Exception e)
+      {
+        immutableStream = null;
+
+        Log.LogError($"Exception in conversion of event mutable data to immutable schema: {e}");
+        return false;
+      }
+    }
   }
 }

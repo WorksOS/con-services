@@ -7,7 +7,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
-using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Exceptions;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -17,7 +17,6 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -54,6 +53,14 @@ namespace VSS.TRex.Tests
     }
 
     [Fact]
+    public void Test_MutabilityConverterTests_NoValidSource()
+    {
+      var mutabilityConverter = new MutabilityConverter();
+      MemoryStream immutableStream;
+      Assert.Throws<TRexException>(() => mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, null, null, out immutableStream));     
+    }
+
+    [Fact]
     public void Test_MutabilityConverterTests_ConvertSubgridDirectoryTest()
     {
       // Create a subgrid directory with a single segment and some cells. Create a stream from it then use the
@@ -72,19 +79,18 @@ namespace VSS.TRex.Tests
       // Take a copy of the mutable cells for later reference
       SubGridCellLatestPassDataWrapper_NonStatic mutableCells = (mutableLeaf.Directory.GlobalLatestCells as SubGridCellLatestPassDataWrapper_NonStatic);
 
-      MemoryStream outStream = new MemoryStream();
-      mutableLeaf.SaveDirectoryToStream(outStream);
-
-      MemoryStream inStream = null;
+      MemoryStream mutableStream = new MemoryStream();
+      mutableLeaf.SaveDirectoryToStream(mutableStream);
 
       var mutabilityConverter = new MutabilityConverter();
-      mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, outStream, mutableLeaf, out inStream);
+      /* todo test using the mutableStream */
+      mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridDirectory, null, mutableLeaf, out MemoryStream immutableStream);
 
       IServerLeafSubGrid immutableLeaf = new ServerSubGridTreeLeaf(null, null, SubGridTreeConsts.SubGridTreeLevels);
       immutableLeaf.Directory.GlobalLatestCells = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true);
 
-      inStream.Position = 0;
-      immutableLeaf.LoadDirectoryFromStream(inStream);
+      immutableStream.Position = 0;
+      immutableLeaf.LoadDirectoryFromStream(immutableStream);
 
       SubGridCellLatestPassDataWrapper_StaticCompressed immutableCells = (immutableLeaf.Directory.GlobalLatestCells as SubGridCellLatestPassDataWrapper_StaticCompressed);
 
@@ -131,29 +137,30 @@ namespace VSS.TRex.Tests
         }
       });
 
+      mutableSegment.SegmentInfo = new SubGridCellPassesDataSegmentInfo(DateTime.MinValue, DateTime.MaxValue, null);
+
       // Take a copy of the mutable cells and cell passes for later reference
       SubGridCellLatestPassDataWrapper_NonStatic mutableLatest = (mutableSegment.LatestPasses as SubGridCellLatestPassDataWrapper_NonStatic);
       CellPass[,][] mutablePasses = mutableSegment.PassesData.GetState();
 
-      MemoryStream outStream = new MemoryStream();
-      using (var writer = new BinaryWriter(outStream, Encoding.UTF8, true))
+      MemoryStream mutableStream = new MemoryStream();
+      using (var writer = new BinaryWriter(mutableStream, Encoding.UTF8, true))
       {
         mutableSegment.Write(writer);
       }
 
-      MemoryStream inStream = null;
-
-      // Convert the mutable data into the immutable form and reload it into an immutable segment
+      // Convert the mutable data, using the sourceSegment, into the immutable form and reload it into an immutable segment
+      /* todo test using the mutableStream */
       var mutabilityConverter = new MutabilityConverter();
-      mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, outStream, mutableSegment, out inStream);
+      mutabilityConverter.ConvertToImmutable(FileSystemStreamType.SubGridSegment, null, mutableSegment, out MemoryStream immutableStream);
 
       SubGridCellPassesDataSegment immutableSegment = new SubGridCellPassesDataSegment
       (SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(false, true),
         SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(false, true));
 
-      inStream.Position = 0;
+      immutableStream.Position = 0;
 
-      using (var reader = new BinaryReader(inStream, Encoding.UTF32, true))
+      using (var reader = new BinaryReader(immutableStream, Encoding.UTF32, true))
       {
         immutableSegment.Read(reader, true, true);
       }
@@ -252,48 +259,44 @@ namespace VSS.TRex.Tests
       Assert.True(5 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
 
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
-      var targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targetEventList = DeserializeEvents(mutableStream, targetEventList);
+      var targetEventList = Deserialize(mutableStream);
       Assert.Equal(5, targetEventList.Count());
 
       var mutabilityConverter = new MutabilityConverter();
-      MemoryStream immutableStream;
-      mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, mutableStream, events.MachineDesignNameIDStateEvents, out immutableStream);
+      mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, null, events.MachineDesignNameIDStateEvents, out MemoryStream immutableStream);
 
-      targetEventList = new ProductionEvents<int>(-1, Guid.Empty, ProductionEventType.DesignChange, (w, s) => w.Write(s), r => r.ReadInt32());
-      targetEventList = DeserializeEvents(immutableStream, targetEventList);
+      targetEventList = Deserialize(immutableStream);
+      Assert.Equal(4, targetEventList.Count());
+
+      mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, mutableStream, null, out immutableStream);
+      targetEventList = Deserialize(immutableStream);
       Assert.Equal(4, targetEventList.Count());
     }
 
-    private ProductionEvents<int> DeserializeEvents(MemoryStream stream, ProductionEvents<int> targetEventList)
+    private IProductionEvents Deserialize(MemoryStream stream)
     {
-      if (stream != null)
+      IProductionEvents events = null;
+      using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
       {
-        // Practice the binary event reading...
-        stream.Position = 0;
-        using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
+        if (stream.Length < 16)
         {
-          int majorVer = reader.ReadInt32();
-          int minorVer = reader.ReadInt32();
-
-          if (majorVer != 1 && minorVer != 0)
-            throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
-
-          int count = reader.ReadInt32();
-
-          for (int i = 0; i < count; i++)
-          {
-            targetEventList.Events.Add(new ProductionEvents<int>.Event
-            {
-              Date = DateTime.FromBinary(reader.ReadInt64()),
-              Flags = reader.ReadByte(),
-              State = targetEventList.SerialiseStateIn(reader)
-            });
-          }
+          return events;
         }
+        stream.Position = 8;
+
+        var eventType = reader.ReadInt32();
+        if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
+        {
+          return events;
+        }
+
+        events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
+
+        stream.Position = 0;
+        events.ReadEvents(reader);
       }
 
-      return targetEventList;
+      return events;
     }
   }
 }

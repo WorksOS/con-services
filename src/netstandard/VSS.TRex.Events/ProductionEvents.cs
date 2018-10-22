@@ -23,6 +23,7 @@ namespace VSS.TRex.Events
 
     private const int MajorVersion = 1;
     private const int MinorVersion = 0;
+    private const int MinStreamLength = 16;
 
     public bool EventsChanged { get; set; }
 
@@ -432,6 +433,7 @@ namespace VSS.TRex.Events
       var writer = new BinaryWriter(mutablestream);
       writer.Write(MajorVersion);
       writer.Write(MinorVersion);
+      writer.Write((int)EventListType);
       writer.Write(Events.Count);
       foreach (var e in Events)
       {
@@ -453,6 +455,7 @@ namespace VSS.TRex.Events
       var immutableWriter = new BinaryWriter(immutableStream);
       immutableWriter.Write(MajorVersion);
       immutableWriter.Write(MinorVersion);
+      immutableWriter.Write((int)EventListType);
 
       V lastState = Events[0].State;
       var filteredEventCount = 0;
@@ -509,26 +512,42 @@ namespace VSS.TRex.Events
         MS.Position = 0;
         using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
         {
-          int majorVer = reader.ReadInt32();
-          int minorVer = reader.ReadInt32();
-
-          if (majorVer != 1 && minorVer != 0)
-            throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
-
-          int count = reader.ReadInt32();
-          Events.Clear();
-          Events.Capacity = count;
-
-          for (int i = 0; i < count; i++)
-          {
-            Events.Add(new Event
-            {
-              Date = DateTime.FromBinary(reader.ReadInt64()),
-              Flags = reader.ReadByte(),
-              State = SerialiseStateIn(reader)
-            });
-          }
+          ReadEvents(reader);
         }
+      }
+    }
+
+
+    public void ReadEvents(BinaryReader reader)
+    {
+      if (reader.BaseStream.Length < MinStreamLength)
+      {
+        throw new ArgumentException($"ProductionEvent mutable stream length is too short. Expected greater than: {14} retrieved {reader.BaseStream.Length}.");
+      }
+
+      int majorVer = reader.ReadInt32();
+      int minorVer = reader.ReadInt32();
+      if (majorVer != 1 && minorVer != 0)
+        throw new ArgumentException($"Unknown major/minor version numbers: {majorVer}/{minorVer}");
+
+      var eventType = reader.ReadInt32();
+      if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
+      {
+        throw new ArgumentException("ProductionEvent eventType is not recognized. Invalid stream.");
+      }
+
+      int count = reader.ReadInt32();
+      Events.Clear();
+      Events.Capacity = count;
+
+      for (int i = 0; i < count; i++)
+      {
+        Events.Add(new Event
+        {
+          Date = DateTime.FromBinary(reader.ReadInt64()),
+          Flags = reader.ReadByte(),
+          State = SerialiseStateIn(reader)
+        });
       }
     }
 
