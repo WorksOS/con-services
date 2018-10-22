@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
@@ -176,13 +177,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="tileRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public async Task<ContractExecutionResult> SendProductionDataTileRequest(TileRequest tileRequest, IDictionary<string, string> customHeaders = null)
+    public async Task<ActionResult> SendProductionDataTileRequest(TileRequest tileRequest, IDictionary<string, string> customHeaders = null)
     {
       var request = JsonConvert.SerializeObject(tileRequest);
 
       log.LogDebug($"{nameof(SendSpeedSummaryRequest)}: Sending the request: {request}");
 
-      return await SendRequestPost<TileResult>(request, customHeaders, "/tile");
+      return await SendRequestPostEx<FileResult>(request, customHeaders, "/tile");
     }
 
     /// <summary>
@@ -237,6 +238,22 @@ namespace VSS.MasterData.Proxies
     /// <param name="route"></param>
     /// <returns></returns>
     private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
+    {
+      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, "POST", string.Empty);
+
+      log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
+
+      return response;
+    }
+
+    /// <summary>
+    /// Executes a POST request against the TRex Gateway service.
+    /// </summary>
+    /// <param name="payload"></param>
+    /// <param name="customHeaders"></param>
+    /// <param name="route"></param>
+    /// <returns></returns>
+    private async Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ActionResult
     {
       var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, "POST", string.Empty);
 

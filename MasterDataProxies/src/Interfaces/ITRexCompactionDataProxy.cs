@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -107,7 +108,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="tileRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendProductionDataTileRequest(TileRequest tileRequest,
+    Task<ActionResult> SendProductionDataTileRequest(TileRequest tileRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
