@@ -109,5 +109,18 @@ namespace VSS.TRex.Caching
         return -1;
       }
     }
+
+    /// <summary>
+    /// Retrieves the cached item from the specified index in the MRU list
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public T Get(int index)
+    {
+      lock (this)
+      {
+        return Items[index].Item;
+      }
+    }
   }
 }

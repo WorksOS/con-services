@@ -101,5 +101,10 @@ namespace VSS.TRex.Caching
       // Decrement the number of elements in the cache
       System.Threading.Interlocked.Decrement(ref currentNumElements);
     }
+
+    public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY)
+    {
+      return context.Get(originX, originY);
+    }
   }
 }

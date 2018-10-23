@@ -8,7 +8,7 @@ namespace VSS.TRex.Caching
   /// Represents a context within the overall memory cache where all the elements within the context
   /// are related, such as being members of spatial data results returned from filters with the same fingerprint
   /// </summary>
-  public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
+  public class TRexSpatialMemoryCacheContext<T> : ITRexSpatialMemoryCacheContext
   {
     private ITRexSpatialMemoryCache OwnerMemoryCache;
 
@@ -59,18 +59,31 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Remove(ITRexMemoryCacheItem element)
     {
+      uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+
       lock (this)
       {
         OwnerMemoryCache.ItemAddedToContext(element.IndicativeSizeInBytes());
-
-        uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-        uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         // Locate the index for the element in the context token tree and remove it from storage,
         // nulling out the entry in the context token tree
         ContextTokens[x, y] = MRUList.Remove(ContextTokens[x, y]);
 
         tokenCount--;
+      }
+    }
+
+    public ITRexMemoryCacheItem Get(uint originX, uint originY)
+    {
+      uint x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+
+      lock (this)
+      {
+        int index = ContextTokens[x, y];
+
+        return index != -1 ? MRUList.Get(index) : null;
       }
     }
   }
