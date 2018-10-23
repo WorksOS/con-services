@@ -1345,7 +1345,8 @@ namespace VSS.TRex.Filters
         sb.Append($"ET:{ElevationType}");
 
       // Exclusion of surveyed surfaces from query
-      sb.Append("SS:1");
+      if (ExcludeSurveyedSurfaces())
+        sb.Append("ESS:1");
 
       // GCS Guidance mode
       if (HasGCSGuidanceModeFilter)
