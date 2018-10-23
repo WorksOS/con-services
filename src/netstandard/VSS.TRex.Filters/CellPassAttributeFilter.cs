@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Apache.Ignite.Core.Binary;
-using Microsoft.VisualStudio.TestPlatform.CoreUtilities.Extensions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;

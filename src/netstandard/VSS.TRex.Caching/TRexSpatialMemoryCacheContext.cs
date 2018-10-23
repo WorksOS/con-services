@@ -14,8 +14,6 @@ namespace VSS.TRex.Caching
 
     public IGenericSubGridTree_Int ContextTokens { get; private set; }
 
-   // public IMRURingBuffer<ITRexMemoryCacheItem> MRUList { get; private set; }
-
     public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
 
     private int tokenCount = 0;

@@ -15,7 +15,6 @@ namespace VSS.TRex.Caching
     /// The MRU list that threads through all the elements in the overall cache
     /// </summary>
     public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
-    //private MRURingBuffer<ITRexMemoryCacheItem> MRUList = null;
 
     private Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts = null;
 
@@ -27,15 +26,27 @@ namespace VSS.TRex.Caching
     private long currentSizeInBytes;
     public long CurrentSizeInBytes { get => currentSizeInBytes; }
 
-    public TRexSpatialMemoryCache(int maxNumElements, double fragmentationMultiplier, double mruDeadBandFraction)
+    public int MruNonUpdateableSlotCount { get; private set; }
+
+    /// <summary>
+    /// Creates a new spatial data cache containing at most maxNumElements items. Elements are stored in
+    /// an MRU list and are moved to the top of the MRU list of their distance from the top of the list at the time they
+    /// are touched is outside the MRU dead band (expressed as a fraction of the overall maximum number of elements in the cache.
+    /// </summary>
+    /// <param name="maxNumElements"></param>
+    /// <param name="mruDeadBandFraction"></param>
+    public TRexSpatialMemoryCache(int maxNumElements, double mruDeadBandFraction)
     {
       if (maxNumElements < 1 || maxNumElements > MAX_NUM_ELEMENTS)
         throw new ArgumentException($"maxNumElements ({maxNumElements}) not in range 1..{MAX_NUM_ELEMENTS}");
 
-      MaxNumElements = maxNumElements;
+      if (mruDeadBandFraction < 0.0 || mruDeadBandFraction > 1.0)
+        throw new ArgumentException($"mruDeadBandFraction ({mruDeadBandFraction}) not in range 0.0..1.0");
 
-      //MRUList = new MRURingBuffer<ITRexMemoryCacheItem>(this, maxNumElements, fragmentationMultiplier, mruDeadBandFraction);
-      MRUList = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(maxNumElements);
+      MaxNumElements = maxNumElements;
+      MruNonUpdateableSlotCount = (int)Math.Truncate(maxNumElements * mruDeadBandFraction);
+
+      MRUList = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(maxNumElements, MruNonUpdateableSlotCount);
       Contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
     }
 
@@ -53,8 +64,8 @@ namespace VSS.TRex.Caching
           return context; // It exists, return it
 
         // Create the establish the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList); //  new GenericSubGridTree_Long(SubGridTreeConsts.SubGridTreeLevels, 1);
-        Contexts.Add(contextFingerPrint, newContext); //new GenericSubGridTree_Long(SubGridTreeConsts.SubGridTreeLevels, 1));
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList); 
+        Contexts.Add(contextFingerPrint, newContext);
 
         return newContext;
       }
@@ -102,6 +113,13 @@ namespace VSS.TRex.Caching
       System.Threading.Interlocked.Decrement(ref currentNumElements);
     }
 
+    /// <summary>
+    /// Attempts to read an element from a cache context given the spatial location of the element
+    /// </summary>
+    /// <param name="context">The request, filter and other data specific context for spatial data</param>
+    /// <param name="originX">The origin (bottom left) cell of the spatial data subgrid</param>
+    /// <param name="originY">The origin (bottom left) cell of the spatial data subgrid</param>
+    /// <returns></returns>
     public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY)
     {
       return context.Get(originX, originY);

@@ -9,22 +9,32 @@ namespace VSS.TRex.Caching
   {
     private TRexCacheItem<T>[] Items;
 
-    private int LRUHead;
+    private int MRUHead;
     private int FreeListHead;
 
     private long CurrentToken = -1;
     private long NextToken => System.Threading.Interlocked.Increment(ref CurrentToken);
 
     private int tokenCount = 0;
+
+    private int MaxMRUEpochTokenAge;
+
     public int TokenCount { get => tokenCount; }
 
-    public TRexSpatialMemoryCacheStorage(int maxNumElements)
+    /// <summary>
+    /// Constructs a storage ring to contain a fixed maximum number of elements in the cache. The ring defines two internal
+    /// doubly linked lists, one to define the MRU list of elements in the ring, and the other to define the list of slots
+    /// in the ring that are unoccupied, or free.
+    /// </summary>
+    /// <param name="maxNumElements"></param>
+    /// <param name="maxMRUEpochTokenAge"></param>
+    public TRexSpatialMemoryCacheStorage(int maxNumElements, int maxMRUEpochTokenAge)
     {
       // Allocate all the wrapper for the cached items into a single array
       Items = new TRexCacheItem<T>[maxNumElements];
 
-      // Initialise the LRU head to -1 (ie: no items in the list)
-      LRUHead = -1;
+      // Initialise the MRU head to -1 (ie: no items in the list)
+      MRUHead = -1;
 
       // Initialise all items to be within the free list
       FreeListHead = 0;
@@ -34,6 +44,8 @@ namespace VSS.TRex.Caching
 
       for (int i = 0; i < maxNumElements; i++)
         Items[i].Prev = i - 1;
+
+      MaxMRUEpochTokenAge = maxMRUEpochTokenAge;
     }
 
     /// <summary>
@@ -42,9 +54,9 @@ namespace VSS.TRex.Caching
     /// </summary>
     private void EvictOneLRUItemNoLock()
     {
-      int oldLRUHead = LRUHead;
-      LRUHead = Items[LRUHead].Next;
-      Items[LRUHead].Prev = -1;
+      int oldLRUHead = MRUHead;
+      MRUHead = Items[MRUHead].Next;
+      Items[MRUHead].Prev = -1;
 
       Items[FreeListHead].Prev = oldLRUHead;
       Items[oldLRUHead].Next = FreeListHead;
@@ -74,10 +86,10 @@ namespace VSS.TRex.Caching
         index = FreeListHead;
 
         FreeListHead = Items[index].Next;
-        Items[index].Set(element, token, -1, LRUHead);
+        Items[index].Set(element, token, -1, MRUHead);
 
-        Items[LRUHead].Prev = index;
-        LRUHead = index;
+        Items[MRUHead].Prev = index;
+        MRUHead = index;
 
         tokenCount++;
       }
@@ -111,6 +123,33 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
+    /// Moves the element at the index location in the element storage so that it is now the most recently
+    /// used element in the cache. This is done by modifying the Prev and Next references in the doubly linked list.
+    /// Note: The location of the item in the list is not moved as a result of this, so all external indexes relating
+    /// to it continue to be valid.
+    /// </summary>
+    /// <param name="index"></param>
+    private void TouchItemNoLock(int index)
+    {
+      // Save the indexes of the previous and next items
+      int prev = Items[index].Prev;
+      int next = Items[index].Next;
+
+      // Rewire previous and next references in the neighbors to cut this item out of the linked list
+      if (prev != -1)
+        Items[prev].Next = next;
+      if (next != -1)
+        Items[next].Prev = prev;
+
+      // Add the current item to the MRUHead
+      Items[index].Prev = -1;
+      Items[index].Next = MRUHead;
+
+      // Update MRUHead to point to item at the head of the list
+      MRUHead = index;
+    }
+
+    /// <summary>
     /// Retrieves the cached item from the specified index in the MRU list
     /// </summary>
     /// <param name="index"></param>
@@ -119,6 +158,9 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
+        if (CurrentToken - Items[index].MRUEpochToken < MaxMRUEpochTokenAge)
+          TouchItemNoLock(index);
+
         return Items[index].Item;
       }
     }
