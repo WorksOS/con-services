@@ -120,5 +120,12 @@ namespace VSS.TRex.Filters.Interfaces
       ref FilteredSinglePassInfo filteredPassInfo,
       object /* IProfileCell*/ profileCell,
       bool performAttributeSubFilter);
+
+    /// <summary>
+    /// Creates a fingerprint of the attribute filter based on the content of the filter that
+    /// has a differentiated bearing on the use of cached general subgrid results
+    /// </summary>
+    /// <returns></returns>
+    string SpatialCacheFingerprint();
   }
 }

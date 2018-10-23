@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Utilities;
-using VSS.TRex.GridFabric.ExtensionMethods;
 
 namespace VSS.TRex.Filters
 {
@@ -207,5 +205,5 @@ namespace VSS.TRex.Filters
             // no spatial restriction in the filter
             return Extents;
         }
-    }
+  }
 }
