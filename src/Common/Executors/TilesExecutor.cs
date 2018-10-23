@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using ASNodeDecls;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
@@ -40,7 +41,15 @@ namespace VSS.Productivity3D.Common.Executors
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
 
         if (useTrexGateway)
-          return trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
+        {
+          var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result as FileStreamResult;
+
+          using (var ms = new MemoryStream())
+          {
+            fileResult?.FileStream.CopyTo(ms);
+            return new TileResult(ms.ToArray());
+          }
+        }
 
         return ProcessWithRaptor(request);
       }
