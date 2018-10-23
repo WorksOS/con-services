@@ -27,7 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.49.0" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.50.0" />
   </ItemGroup>
 
   <ItemGroup>
