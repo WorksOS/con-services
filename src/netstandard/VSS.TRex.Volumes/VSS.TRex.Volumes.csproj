@@ -4,6 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj" />

@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.4.0" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
   </ItemGroup>
 
   <ItemGroup>
