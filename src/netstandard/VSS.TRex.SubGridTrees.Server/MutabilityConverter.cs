@@ -63,7 +63,7 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       immutableStream = null;
 
-      if ((mutableStream == null && source == null) || (mutableStream != null && source != null))
+      if ((mutableStream == null && source == null))
       {
         throw new TRexException("Unable to determine a single valid source for immutability conversion.");
       }

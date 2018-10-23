@@ -6,6 +6,7 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
@@ -24,22 +25,29 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       lock (Lock)
       {
-        var moqStorageProxy = new Mock<IStorageProxy>();
-
-        var moqStorageProxyFactory = new Mock<IStorageProxyFactory>();
-        moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(moqStorageProxy.Object);
-        moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(moqStorageProxy.Object);
-        moqStorageProxyFactory.Setup(mk => mk.MutableGridStorage()).Returns(moqStorageProxy.Object);
-        moqStorageProxyFactory.Setup(mk => mk.ImmutableGridStorage()).Returns(moqStorageProxy.Object);
-
-        var moqSurveyedSurfaces = new Mock<ISurveyedSurfaces>();
-
-        var moqSiteModels = new Mock<ISiteModels>();
-        moqSiteModels.Setup(mk => mk.StorageProxy).Returns(moqStorageProxy.Object);
-
         DIBuilder
           .New()
           .AddLogging()
+          .Build();
+
+        var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+        storageProxy.SetImmutableStorageProxy(new StorageProxy_Ignite_Transactional(StorageMutability.Immutable));
+
+        var moqStorageProxyFactory = new Mock<IStorageProxyFactory>();
+        moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(storageProxy);
+        moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(storageProxy);
+        moqStorageProxyFactory.Setup(mk => mk.MutableGridStorage()).Returns(storageProxy);
+        moqStorageProxyFactory.Setup(mk => mk.ImmutableGridStorage()).Returns(storageProxy);
+
+       
+        var moqSurveyedSurfaces = new Mock<ISurveyedSurfaces>();
+
+        var moqSiteModels = new Mock<ISiteModels>();
+        moqSiteModels.Setup(mk => mk.StorageProxy).Returns(storageProxy);
+
+        DIBuilder
+          .Continue()
+          .Add(x => x.AddSingleton<IStorageProxy>(storageProxy))
           .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
           .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
           .Add(x => x.AddSingleton<ISurveyedSurfaces>(moqSurveyedSurfaces.Object))
@@ -56,7 +64,7 @@ namespace VSS.TRex.Tests.TestFixtures
         moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuid)).Returns(mockedSiteModel);
 
         // Mock the new sitemodel creation API to return just a new sitemodel
-        moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(mockedSiteModel);
+        moqSiteModels.Setup(mk => mk.GetSiteModel(storageProxy, NewSiteModelGuid, true)).Returns(mockedSiteModel);
 
         DIBuilder
           .Continue()
@@ -67,5 +75,4 @@ namespace VSS.TRex.Tests.TestFixtures
 
     public void Dispose() { } // Nothing needing doing 
   }
-
 }

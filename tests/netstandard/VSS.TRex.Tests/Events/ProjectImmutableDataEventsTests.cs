@@ -4,9 +4,11 @@ using System.Text;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -16,6 +18,18 @@ namespace VSS.TRex.Tests.Events
 {
   public class ProjectImmutableDataEventsTests : IClassFixture<DITagFileFixture>
   {
+    [Fact]
+    public void Test_ProjectImmutableSiteModelTest()
+    {
+      var sourceSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var result = sourceSiteModel.SaveToPersistentStore(DIContext.Obtain<IStorageProxy>());  
+      Assert.True(result, "unable to save SiteModel to Persistant store");
+
+      var targetSiteModel = new SiteModel(sourceSiteModel.ID, false);
+      var fileStatus = targetSiteModel.LoadFromPersistentStore();
+      Assert.True(FileSystemErrorStatus.OK == fileStatus, "unable to load SiteModel from Persistant store");
+    }
+
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_AllTypesNoDuplicates()
     {

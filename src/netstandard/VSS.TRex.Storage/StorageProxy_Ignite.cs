@@ -73,7 +73,11 @@ namespace VSS.TRex.Storage
           // Create the immutable stream from the source data
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            PerformNonSpatialImmutabilityConversion(null, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source);
+            if (PerformNonSpatialImmutabilityConversion(mutablestream, ImmutableProxy.NonSpatialCache, cacheKey, streamType, source) == null)
+            {
+              Log.LogError($"Unable to project an immutable stream");
+              return FileSystemErrorStatus.MutableToImmutableConversionError;
+            }
           }
         }
         catch (Exception e)
