@@ -8,7 +8,7 @@ namespace VSS.TRex.Caching
   /// Represents a context within the overall memory cache where all the elements within the context
   /// are related, such as being members of spatial data results returned from filters with the same fingerprint
   /// </summary>
-  public class TRexSpatialMemoryCacheContext<T> : ITRexSpatialMemoryCacheContext
+  public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
     private ITRexSpatialMemoryCache OwnerMemoryCache;
 
