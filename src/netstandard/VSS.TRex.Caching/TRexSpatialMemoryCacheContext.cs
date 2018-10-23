@@ -1,4 +1,4 @@
-﻿using System;
+﻿using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -10,17 +10,23 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
-    public IGenericSubGridTree_Long ContextTokens { get; private set; }
+    private ITRexSpatialMemoryCache OwnerMemoryCache;
 
-    public IMRURingBuffer<ITRexMemoryCacheItem> MRUList { get; private set; }
+    public IGenericSubGridTree_Int ContextTokens { get; private set; }
 
-    public int TokenCount { get; private set; }
+   // public IMRURingBuffer<ITRexMemoryCacheItem> MRUList { get; private set; }
 
-    public TRexSpatialMemoryCacheContext(IMRURingBuffer<ITRexMemoryCacheItem> mruList)
+    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
+
+    private int tokenCount = 0;
+    public int TokenCount { get => tokenCount; }
+
+    public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
+                                         ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList)
     {
-      TokenCount = 0;
-      ContextTokens = new GenericSubGridTree_Long(SubGridTreeConsts.SubGridTreeLevels, 1);
+      ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels, 1);
       MRUList = mruList;
+      OwnerMemoryCache = ownerMemoryCache;
     }
 
     /// <summary>
@@ -31,22 +37,18 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Add(ITRexMemoryCacheItem element)
     {
-      // Determine if adding the item will violate the max num elements constraint
-      // ...
+      lock (this)
+      {
+        OwnerMemoryCache.ItemRemovedFromContext(element.IndicativeSizeInBytes());
 
-      // If so, then remove the LRU item from the cache to make room for it
-      // ...
+        uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      // Determine if adding the item will violate the maximum size constraint
-      // ...
+        // Add the element to storage and obtain its index in that storage, inserting it into the context
+        ContextTokens[x, y] = MRUList.Add(element);
 
-      // Add the element to the ring buffer, obtaining it's token
-      // ...
-
-      // Insert the token obtained from the ring buffer into the context
-      // ...
-
-      throw new NotImplementedException();
+        tokenCount++;
+      }
     }
 
     /// <summary>
@@ -55,18 +57,21 @@ namespace VSS.TRex.Caching
     /// confines of the context.
     /// </summary>
     /// <param name="element"></param>
-    public void Remove(ISubGrid element)
+    public void Remove(ITRexMemoryCacheItem element)
     {
-      // Locate the ring buffer token for this element from the context
-      //...
+      lock (this)
+      {
+        OwnerMemoryCache.ItemAddedToContext(element.IndicativeSizeInBytes());
 
-      // Instruct the ring buffer to release the element at the token
-      //...
+        uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      // Remove the token from the context
-      //...
+        // Locate the index for the element in the context token tree and remove it from storage,
+        // nulling out the entry in the context token tree
+        ContextTokens[x, y] = MRUList.Remove(ContextTokens[x, y]);
 
-      throw new NotImplementedException();
+        tokenCount--;
+      }
     }
   }
 }

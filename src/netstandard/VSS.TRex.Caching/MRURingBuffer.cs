@@ -43,13 +43,6 @@ namespace VSS.TRex.Caching
     private int MruNonUpdateableSlotCount = 0;
 
     /// <summary>
-    /// The array containing the internal tokens for the elements in the ring buffer
-    /// </summary>
-    private int[] ElementTokens = null;
-
-    private int ElementTokensFreeListHead = 0;
-
-    /// <summary>
     /// The array containing all the slots within the ring buffer
     /// </summary>
     private T[] ElementSlots = null;
@@ -95,14 +88,6 @@ namespace VSS.TRex.Caching
 
       // Construct the array of slots to hold the elements in the ring buffer taking into account the fragmentation multiplier
       ElementSlots = new T[TotalSlots];
-
-      // Construct the array of internal tokens, and build the initial empty free list (the last item in the free list will point to -1)
-      ElementTokens = new int[MaxNumElements];
-
-      ElementTokensFreeListHead = 0;
-      for (int i = 0; i < MaxNumElements - 1; i++)
-        ElementTokens[i] = i + 1;
-      ElementTokens[MaxNumElements - 1] = -1;
     }
 
     /// <summary>
@@ -112,14 +97,6 @@ namespace VSS.TRex.Caching
     /// <returns>A token representing the location within the ring buffer containing this element</returns>
     public long Put(T element)
     {
-      // Get the next free item from the element indices free list:
-      if (ElementTokensFreeListHead == -1)
-      {
-        // There are no free items - the maximum number of elements has been reached
-      }
-
-      ElementTokensFreeListHead = ElementTokens[ElementTokensFreeListHead];
-
       // Determine the next location token
       long token = NextToken();
 

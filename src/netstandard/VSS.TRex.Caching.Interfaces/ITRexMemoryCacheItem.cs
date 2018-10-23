@@ -20,5 +20,9 @@
     /// </summary>
     /// <returns></returns>
     int IndicativeSizeInBytes();
+
+    uint OriginX { get; }
+    uint OriginY { get; }
+    int Level { get; }
   }
 }

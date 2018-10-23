@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {
@@ -9,12 +9,14 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache
   {
-    private const int MAX_NUM_ELEMENTS = 1000000000;
+    private const int MAX_NUM_ELEMENTS = 100000000;
 
     /// <summary>
     /// The MRU list that threads through all the elements in the overall cache
     /// </summary>
-    private MRURingBuffer<ITRexMemoryCacheItem> MRUList = null;
+    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
+    //private MRURingBuffer<ITRexMemoryCacheItem> MRUList = null;
+
     private Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts = null;
 
     public int MaxNumElements { get; set; }
@@ -32,7 +34,8 @@ namespace VSS.TRex.Caching
 
       MaxNumElements = maxNumElements;
 
-      MRUList = new MRURingBuffer<ITRexMemoryCacheItem>(this, maxNumElements, fragmentationMultiplier, mruDeadBandFraction);
+      //MRUList = new MRURingBuffer<ITRexMemoryCacheItem>(this, maxNumElements, fragmentationMultiplier, mruDeadBandFraction);
+      MRUList = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(maxNumElements);
       Contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
     }
 
@@ -50,7 +53,7 @@ namespace VSS.TRex.Caching
           return context; // It exists, return it
 
         // Create the establish the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(MRUList); //  new GenericSubGridTree_Long(SubGridTreeConsts.SubGridTreeLevels, 1);
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList); //  new GenericSubGridTree_Long(SubGridTreeConsts.SubGridTreeLevels, 1);
         Contexts.Add(contextFingerPrint, newContext); //new GenericSubGridTree_Long(SubGridTreeConsts.SubGridTreeLevels, 1));
 
         return newContext;
@@ -66,18 +69,7 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-      lock (context) // determine if this is necessary
-      {
-        context.Add(element);
-
-        // Increment the number of elements in the cache
-        System.Threading.Interlocked.Increment(ref currentNumElements);
-
-        // Increment the memory usage in the cache
-        System.Threading.Interlocked.Add(ref currentSizeInBytes, element.IndicativeSizeInBytes());
-
-        throw new NotImplementedException();
-      }
+        context.Add(element);        
     }
 
     /// <summary>
@@ -87,15 +79,27 @@ namespace VSS.TRex.Caching
     /// </summary>
     /// <param name="context"></param>
     /// <param name="element"></param>
-    public void Remove(ITRexSpatialMemoryCacheContext context, ISubGrid element)
+    public void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-      lock (context) // determine if this is necessary
-      {
-        // Decrement the number of elements in the cache
-        System.Threading.Interlocked.Decrement(ref currentNumElements);
+        context.Remove(element);
+    }
 
-        throw new NotImplementedException();
-      }
+    public void ItemAddedToContext(int sizeInBytes)
+    {
+      // Increment the number of elements in the cache
+      System.Threading.Interlocked.Increment(ref currentNumElements);
+
+      // Increment the memory usage in the cache
+      System.Threading.Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
+    }
+
+    public void ItemRemovedFromContext(int sizeInBytes)
+    {
+      // Decrement the memory usage in the cache
+      System.Threading.Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
+
+      // Decrement the number of elements in the cache
+      System.Threading.Interlocked.Decrement(ref currentNumElements);
     }
   }
 }

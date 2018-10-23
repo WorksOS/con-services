@@ -5,5 +5,8 @@
     int MaxNumElements { get; }
 
     int CurrentNumElements { get; }
+
+    void ItemAddedToContext(int sizeInBytes);
+    void ItemRemovedFromContext(int sizeInBytes);
   }
 }
