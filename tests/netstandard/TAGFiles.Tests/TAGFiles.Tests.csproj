@@ -19,8 +19,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Apache.Ignite" Version="2.6.0" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.33.1" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.48.0" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.34.2" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.50.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
       <PrivateAssets>all</PrivateAssets>
