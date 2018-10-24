@@ -10,7 +10,7 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
-    private ITRexSpatialMemoryCache OwnerMemoryCache;
+    public ITRexSpatialMemoryCache OwnerMemoryCache { get; private set; }
 
     public IGenericSubGridTree_Int ContextTokens { get; private set; }
 
@@ -22,7 +22,7 @@ namespace VSS.TRex.Caching
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
                                          ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList)
     {
-      ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels, 1);
+      ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
       OwnerMemoryCache = ownerMemoryCache;
     }
@@ -43,7 +43,9 @@ namespace VSS.TRex.Caching
         uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         // Add the element to storage and obtain its index in that storage, inserting it into the context
-        ContextTokens[x, y] = MRUList.Add(element);
+        // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
+        // of 0 used as the null value in integer based subgrid trees
+        ContextTokens[x, y] = MRUList.Add(element) + 1;
 
         tokenCount++;
       }
@@ -62,11 +64,13 @@ namespace VSS.TRex.Caching
 
       lock (this)
       {
-        OwnerMemoryCache.ItemAddedToContext(element.IndicativeSizeInBytes());
+        OwnerMemoryCache.ItemRemovedFromContext(element.IndicativeSizeInBytes());
 
         // Locate the index for the element in the context token tree and remove it from storage,
-        // nulling out the entry in the context token tree
-        ContextTokens[x, y] = MRUList.Remove(ContextTokens[x, y]);
+        // nulling out the entry in the context token tree.
+        // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Remove
+        MRUList.Remove(ContextTokens[x, y] - 1);
+        ContextTokens[x, y] = 0;
 
         tokenCount--;
       }
@@ -81,7 +85,8 @@ namespace VSS.TRex.Caching
       {
         int index = ContextTokens[x, y];
 
-        return index != -1 ? MRUList.Get(index) : null;
+        // Note: Adjust for the 1-based index obtained from ContextTokens
+        return index == 0 ? null : MRUList.Get(index - 1);
       }
     }
   }

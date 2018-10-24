@@ -5,9 +5,10 @@ namespace VSS.TRex.Caching
 {
   public interface ITRexSpatialMemoryCacheContext
   {
+    ITRexSpatialMemoryCache OwnerMemoryCache { get; }
+
     IGenericSubGridTree_Int ContextTokens { get; }
 
-    //IMRURingBuffer<ITRexMemoryCacheItem> MRUList { get; }
     ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
 
     int TokenCount { get; }

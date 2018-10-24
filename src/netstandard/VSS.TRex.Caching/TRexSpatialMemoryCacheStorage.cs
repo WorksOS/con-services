@@ -88,7 +88,8 @@ namespace VSS.TRex.Caching
         FreeListHead = Items[index].Next;
         Items[index].Set(element, token, -1, MRUHead);
 
-        Items[MRUHead].Prev = index;
+        if (MRUHead != -1)
+          Items[MRUHead].Prev = index;
         MRUHead = index;
 
         tokenCount++;
@@ -102,7 +103,7 @@ namespace VSS.TRex.Caching
     /// Removes an item from storage given its index
     /// </summary>
     /// <param name="index"></param>
-    public int Remove(int index)
+    public void Remove(int index)
     {
       lock (this)
       {
@@ -118,7 +119,6 @@ namespace VSS.TRex.Caching
         FreeListHead = index;
 
         tokenCount--;
-        return -1;
       }
     }
 
@@ -132,8 +132,7 @@ namespace VSS.TRex.Caching
     private void TouchItemNoLock(int index)
     {
       // Save the indexes of the previous and next items
-      int prev = Items[index].Prev;
-      int next = Items[index].Next;
+      Items[index].GetPrevAndNext(out int prev, out int next);
 
       // Rewire previous and next references in the neighbors to cut this item out of the linked list
       if (prev != -1)
