@@ -20,6 +20,7 @@ namespace VSS.TRex.SubGridTrees.Server
   public class MutabilityConverter : IMutabilityConverter
   {
     private static ILogger Log = Logging.Logger.CreateLogger(nameof(MutabilityConverter));
+    private const int MinEventStreamLength = 16;
 
     /// <summary>
     /// Converts the structure of the global latext cells structure into an immutable form
@@ -291,9 +292,9 @@ namespace VSS.TRex.SubGridTrees.Server
         IProductionEvents events;
         using (var reader = new BinaryReader(mutableStream, Encoding.UTF8, true))
         {
-          if (mutableStream.Length < 16)
+          if (mutableStream.Length < MinEventStreamLength)
           {
-            Log.LogError($"ProductionEvent mutable stream length is too short. Expected greater than: {14} retrieved {mutableStream.Length}");
+            Log.LogError($"ProductionEvent mutable stream length is too short. Expected greater than: {MinEventStreamLength} retrieved {mutableStream.Length}");
             return false;
           }
           mutableStream.Position = 8;

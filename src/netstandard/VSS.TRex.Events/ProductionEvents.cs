@@ -522,7 +522,7 @@ namespace VSS.TRex.Events
     {
       if (reader.BaseStream.Length < MinStreamLength)
       {
-        throw new ArgumentException($"ProductionEvent mutable stream length is too short. Expected greater than: {14} retrieved {reader.BaseStream.Length}.");
+        throw new ArgumentException($"ProductionEvent mutable stream length is too short. Expected greater than: {MinStreamLength} retrieved {reader.BaseStream.Length}.");
       }
 
       int majorVer = reader.ReadInt32();

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Events.Interfaces
 {
