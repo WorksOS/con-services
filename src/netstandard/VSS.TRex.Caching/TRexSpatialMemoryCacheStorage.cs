@@ -21,6 +21,8 @@ namespace VSS.TRex.Caching
 
     public int TokenCount { get => tokenCount; }
 
+    public bool HasFreeSpace() => FreeListHead != -1;
+
     /// <summary>
     /// Constructs a storage ring to contain a fixed maximum number of elements in the cache. The ring defines two internal
     /// doubly linked lists, one to define the MRU list of elements in the ring, and the other to define the list of slots
