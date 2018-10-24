@@ -16,7 +16,9 @@ namespace VSS.TRex.Caching
     /// </summary>
     public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
 
-    private Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts = null;
+    private Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts;
+
+    public int ContextCount() => Contexts.Count;
 
     public int MaxNumElements { get; set; }
 

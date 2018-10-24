@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching;
+﻿using System;
+using VSS.TRex.Caching;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 
@@ -113,6 +114,79 @@ namespace VSS.TRex.Tests.Caching
       storage.Remove(index);
 
       Assert.True(storage.TokenCount == 0, $"Element count incorrect (= {storage.TokenCount})");
+    }
+
+    [Theory]
+    [InlineData(100, 1)]
+    [InlineData(100, 10)]
+    [InlineData(100, 100)]
+    [InlineData(100, 1000)]
+    [InlineData(10000, 10000)]
+    [InlineData(10000, 100000)]
+    [InlineData(100000, 100000)]
+    [InlineData(100000, 1000000)]
+    [InlineData(1000000, 10000000)]
+    [InlineData(1000000, 100000000)]
+    public void Test_TRexSpatialMemoryCacheStorageTests_TimeCheckCreatingElements(int numElements, int overflowBy)
+    {
+      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(numElements, numElements / 2);
+
+      var startTime = DateTime.Now;
+
+      // Fill all available slots
+      for (int i = 0; i < numElements; i++)
+        storage.Add(new TRexSpatialMemoryCacheContextTests_Element
+        {
+          SizeInBytes = 1000,
+          OriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          OriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
+        });
+
+      var midTime = DateTime.Now;
+
+      for (int i = 0; i < overflowBy; i++)
+        storage.Add(new TRexSpatialMemoryCacheContextTests_Element
+        {
+          SizeInBytes = 1000,
+          OriginX = (uint)(2000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
+          OriginY = (uint)(3000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
+        });
+
+      Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
+    }
+
+    [Theory]
+    [InlineData(100, 1)]
+    [InlineData(100, 10)]
+    [InlineData(100, 100)]
+    [InlineData(100, 1000)]
+    [InlineData(10000, 10000)]
+    [InlineData(10000, 100000)]
+    [InlineData(100000, 100000)]
+    [InlineData(100000, 1000000)]
+    [InlineData(1000000, 10000000)]
+    [InlineData(1000000, 100000000)]
+    public void Test_TRexSpatialMemoryCacheStorageTests_TimeCheckReusingElements(int numElements, int overflowBy)
+    {
+      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(numElements, numElements / 2);
+
+      var startTime = DateTime.Now;
+
+      var item = new TRexSpatialMemoryCacheContextTests_Element
+      {
+        SizeInBytes = 1000, OriginX = 2000, OriginY = 3000
+      };
+
+      // Fill all available slots
+      for (int i = 0; i < numElements; i++)
+        storage.Add(item);
+
+      var midTime = DateTime.Now;
+
+      for (int i = 0; i < overflowBy; i++)
+        storage.Add(item);
+
+      Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
     }
   }
 }

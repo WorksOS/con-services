@@ -8,5 +8,7 @@
 
     void ItemAddedToContext(int sizeInBytes);
     void ItemRemovedFromContext(int sizeInBytes);
+
+    int ContextCount();
   }
 }
