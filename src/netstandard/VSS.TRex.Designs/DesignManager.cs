@@ -79,7 +79,7 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream());
+        StorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream(), designs);
         StorageProxy.Commit();
 
         // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed

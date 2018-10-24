@@ -31,13 +31,12 @@ namespace VSS.TRex.Storage
         private void EstablishCaches()
         {
             spatialCache = new StorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>(
-                ignite.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
+                ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(Mutability)));
             nonSpatialCache =
                 new StorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>(
-                    ignite.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
+                    ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(Mutability)));
         }
-
-       
+      
         /// <summary>
         /// Commits all unsaved changes in the spatial and non-spatial stores
         /// </summary>

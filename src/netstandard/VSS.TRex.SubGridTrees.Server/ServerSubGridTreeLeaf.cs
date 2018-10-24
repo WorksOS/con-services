@@ -33,24 +33,14 @@ namespace VSS.TRex.SubGridTrees.Server
         public bool HaveSubgridDirectoryDetails { get { return haveSubgridDirectoryDetails; } }
 
         /// <summary>
-        /// The date time of the first observed cell pass within this subgrid
-        /// </summary>
-        private DateTime leafStartTime;
-
-        /// <summary>
         /// The date time of the last observed cell pass within this subgrid
         /// </summary>
-        private DateTime leafEndTime;
-
-        /// <summary>
-        /// The date time of the last observed cell pass within this subgrid
-        /// </summary>
-        public DateTime LeafEndTime { get { return leafEndTime; } }
+        public DateTime LeafEndTime { get; set; }
 
         /// <summary>
         /// The date time of the first observed cell pass within this subgrid
         /// </summary>
-        public DateTime LeafStartTime { get { return leafStartTime; } }
+        public DateTime LeafStartTime { get; set; }
 
         /// <summary>
         /// A directory containing metadata regarding the segments present within this subgrid
@@ -67,8 +57,8 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         private void InitialiseStartEndTime()
         {
-            leafStartTime = DateTime.MaxValue;
-            leafEndTime = DateTime.MinValue;
+            LeafStartTime = DateTime.MaxValue;
+            LeafEndTime = DateTime.MinValue;
         }
 
         /// <summary>
@@ -95,11 +85,11 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <param name="time"></param>
         public void UpdateStartEndTimeRange(DateTime time)
         {
-            if (time < leafStartTime)
-                leafStartTime = time;
+            if (time < LeafStartTime)
+                LeafStartTime = time;
 
-            if (time > leafEndTime)
-                leafEndTime = time;
+            if (time > LeafEndTime)
+                LeafEndTime = time;
         }
 
         /// <summary>
@@ -651,8 +641,8 @@ namespace VSS.TRex.SubGridTrees.Server
                 MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
                 Identifier = SubGridStreamHeader.kICServerSubgridDirectoryFileMoniker,
                 Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridDirectoryFile,
-                StartTime = leafStartTime,
-                EndTime = leafEndTime,
+                StartTime = LeafStartTime,
+                EndTime = LeafEndTime,
                 LastUpdateTimeUTC = DateTime.Now - Time.GPS.GetLocalGMTOffset()
             };
 
@@ -680,7 +670,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             Result = storage.WriteSpatialStreamToPersistentStore
              (Owner.ID, FileName, OriginX, OriginY, string.Empty,
-              FileSystemStreamType.SubGridDirectory, MStream) == FileSystemErrorStatus.OK;
+              FileSystemStreamType.SubGridDirectory, MStream, this) == FileSystemErrorStatus.OK;
 
             if (!Result)
             {
@@ -722,8 +712,8 @@ namespace VSS.TRex.SubGridTrees.Server
             }
 
             //  FLastUpdateTimeUTC := Header.LastUpdateTimeUTC;
-            leafStartTime = Header.StartTime;
-            leafEndTime = Header.EndTime;
+            LeafStartTime = Header.StartTime;
+            LeafEndTime = Header.EndTime;
 
             // Global latest cell passes are always read in from the subgrid directory, even if the 'latest
             // cells' storage class is not contained in the leaf storage classes. This is currently done due

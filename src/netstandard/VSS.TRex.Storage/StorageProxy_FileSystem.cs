@@ -21,28 +21,30 @@ namespace VSS.TRex.Storage
     {
     }
 
-    FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid DataModelID, string StreamName, uint SubgridX, uint SubgridY, string segmentIdentifier, FileSystemStreamType StreamType, out MemoryStream Stream)
+    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType,
+      MemoryStream mutablestream, object source)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
+    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid dataModelID, string streamName, uint subgridX, uint subgridY, string segmentIdentifier,
+      FileSystemStreamType streamType, MemoryStream mutableStream, object source)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.RemoveStreamFromPersistentStore(Guid DataModelID, string StreamName)
+
+    FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid DataModelID, string StreamName, uint SubgridX, uint SubgridY, string SegmentIdentifier,
-      FileSystemStreamType StreamType, MemoryStream Stream)
+    FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, uint subgridX, uint subgridY, string segmentIdentifier, FileSystemStreamType streamType, out MemoryStream stream)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid DataModelID, string StreamName, FileSystemStreamType StreamType, MemoryStream Stream)
+    FileSystemErrorStatus IStorageProxy.RemoveStreamFromPersistentStore(Guid dataModelID, string streamName)
     {
       throw new NotImplementedException();
     }
