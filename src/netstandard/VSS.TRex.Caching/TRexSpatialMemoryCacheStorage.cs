@@ -54,14 +54,27 @@ namespace VSS.TRex.Caching
     /// </summary>
     private void EvictOneLRUItemNoLock()
     {
-      int oldLRUHead = MRUHead;
+      if (MRUHead == -1)
+        return;
+
+      int LRUHead = Items[MRUHead].Prev;
+      Items[MRUHead].Prev = Items[LRUHead].Prev;
+
       MRUHead = Items[MRUHead].Next;
-      Items[MRUHead].Prev = -1;
+      Items[LRUHead].Prev = -1;
 
-      Items[FreeListHead].Prev = oldLRUHead;
-      Items[oldLRUHead].Next = FreeListHead;
+      if (FreeListHead != -1)
+      {
+        Items[FreeListHead].Prev = LRUHead;
+        Items[LRUHead].Next = FreeListHead;
+      }
+      else
+      {
+        Items[LRUHead].Next = -1;
+      }
 
-      FreeListHead = oldLRUHead;
+      FreeListHead = LRUHead;
+      tokenCount--;
     }
 
     /// <summary>
@@ -86,10 +99,16 @@ namespace VSS.TRex.Caching
         index = FreeListHead;
 
         FreeListHead = Items[index].Next;
-        Items[index].Set(element, token, -1, MRUHead);
 
-        if (MRUHead != -1)
+        // Set the parameters for the new item, setting it's prev pointer to point to the oldest member of the MRUList
+        if (MRUHead == -1)
+          Items[index].Set(element, token, index, MRUHead);
+        else
+        {
+          Items[index].Set(element, token, Items[MRUHead].Prev, MRUHead);
           Items[MRUHead].Prev = index;
+        }
+
         MRUHead = index;
 
         tokenCount++;
