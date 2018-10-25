@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.Models.Models
             count = 3;
             break;
           case DisplayMode.TemperatureDetail:
-            count = 5;
+            count = 7;
             break;
 
         }
