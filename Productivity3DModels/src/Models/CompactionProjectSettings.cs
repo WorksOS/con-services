@@ -298,7 +298,7 @@ namespace VSS.Productivity3D.Models.Models
           useDefaultCMVTargets = true,
           customCMVTargets = new List<int> { 0, 40, 80, 120, 150 },
           useDefaultTemperatureTargets = true,
-          customTemperatureTargets = new List<double> { 0, 100, 200, 300, 400 }
+          customTemperatureTargets = new List<double> { 0, 50, 100, 150, 200, 250, 300 }
         };
     #endregion
 
@@ -636,7 +636,7 @@ namespace VSS.Productivity3D.Models.Models
     {
       if (useDefaultTemperatureTargets.HasValue && !useDefaultTemperatureTargets.Value)
       {
-        const int TEMPERATURE_TARGETS_TOTAL = 5;
+        const int TEMPERATURE_TARGETS_TOTAL = 7;
         if (customTemperatureTargets == null || customTemperatureTargets.Count != TEMPERATURE_TARGETS_TOTAL)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
