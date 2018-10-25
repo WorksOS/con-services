@@ -309,10 +309,12 @@ namespace VSS.Productivity3D.Common.Proxies
         case DisplayMode.TemperatureDetail:
           palettes = new List<ColorPalette> {
             new ColorPalette(0x01579B, 0 ),
-            new ColorPalette(0x8FC8E8, 1000 ),
-            new ColorPalette(0x649E38, 2000 ),
-            new ColorPalette(0xEE7A7E, 3000 ),
-            new ColorPalette(0xD50000, 4000 ) };
+            new ColorPalette(0x039BE5, 500 ),
+            new ColorPalette(0xB3E5FC, 1000 ),
+            new ColorPalette(0x8BC34A, 1500 ),
+            new ColorPalette(0xFFCDD2, 2000 ),
+            new ColorPalette(0xE57373, 2500 ),
+            new ColorPalette(0xD50000, 3000 ) };
           break;
       }
 

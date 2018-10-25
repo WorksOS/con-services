@@ -303,20 +303,28 @@
           "value": 0.0
         },
         {
-          "color": 9423080,
+          "color": 236517,
+          "value": 50.0
+        },
+        {
+          "color": 11789820,
           "value": 100.0
         },
         {
-          "color": 6594104,
+          "color": 9159498,
+          "value": 150.0
+        },
+        {
+          "color": 16764370,
           "value": 200.0
         },
         {
-          "color": 15628926,
-          "value": 300.0
+          "color": 15037299,
+          "value": 250.0
         },
         {
           "color": 13959168,
-          "value": 400.0
+          "value": 300.0
         }
       ],
       "aboveLastColor": null,

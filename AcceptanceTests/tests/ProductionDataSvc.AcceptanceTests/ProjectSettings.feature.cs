@@ -240,7 +240,7 @@ this.ScenarioSetup(scenarioInfo);
   useDefaultCMVTargets: false, 
   customCMVTargets: [0,20,50,100,130],
   useDefaultTemperatureTargets: false, 
-  customTemperatureTargets: [0,75,150,250,375]
+  customTemperatureTargets: [0,40,80,120,160,200,240]
 }", ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 80
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
@@ -286,11 +286,11 @@ this.ScenarioSetup(scenarioInfo);
                     "0x039BE5, 0x01579B],\r\n  useDefaultTemperatureSummaryColors: true,\r\n  temperature" +
                     "OnTargetColor: 0x8BC34A,\r\n  temperatureOverTargetColor: 0xD50000,\r\n  temperature" +
                     "UnderTargetColor: 0x1579B,\r\n  useDefaultTemperatureDetailsColors: true,\r\n  tempe" +
-                    "ratureDetailsColors: [0x01579B, 0x6BACD5, 0x99CB65, 0xF6A3A8, 0xD50000],\r\n  useD" +
-                    "efaultSpeedSummaryColors: true,\r\n  speedOnTargetColor: 0x8BC34A,\r\n  speedOverTar" +
-                    "getColor: 0xD50000,\r\n  speedUnderTargetColor: 0x1579B,\r\n  useDefaultMDPSummaryCo" +
-                    "lors: true,\r\n  mdpOnTargetColor: 0x8BC34A,\r\n  mdpOverTargetColor: 0xD50000,\r\n  m" +
-                    "dpUnderTargetColor: 0x1579B\r\n}", ((TechTalk.SpecFlow.Table)(null)), "And ");
+                    "ratureDetailsColors: [0x01579B, 0x039BE5, 0xB3E5FC, 0x99CB65, 0xF6A3A8, 0x00F064" +
+                    ", 0xD50000],\r\n  useDefaultSpeedSummaryColors: true,\r\n  speedOnTargetColor: 0x8BC" +
+                    "34A,\r\n  speedOverTargetColor: 0xD50000,\r\n  speedUnderTargetColor: 0x1579B,\r\n  us" +
+                    "eDefaultMDPSummaryColors: true,\r\n  mdpOnTargetColor: 0x8BC34A,\r\n  mdpOverTargetC" +
+                    "olor: 0xD50000,\r\n  mdpUnderTargetColor: 0x1579B\r\n}", ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 134
  testRunner.When("I request settings validation", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden

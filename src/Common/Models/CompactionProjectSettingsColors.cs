@@ -536,12 +536,13 @@ namespace VSS.Productivity3D.Common.Models
 
     private static List<uint> TemperatureDetailsPalette => new List<uint>()
     {
-      // Decimal values: 87963, 9423080, 6594104, 15628926, 13959168
-      0x01579B, // 87963 (0)
-      0x8FC8E8, // 9423080 (100)
-      0x649E38, // 6594104 (200)
-      0xEE7A7E, // 15628926 (300)
-      0xD50000  // 13959168 (400)
+      0x01579B, //(0)
+      0x039BE5, //(50)
+      0xB3E5FC, //(100)
+      0x8BC34A, //(150)
+      0xFFCDD2, //(200)
+      0xE57373, //(250)
+      0xD50000  //(300)
     };
 
     #endregion
@@ -555,7 +556,7 @@ namespace VSS.Productivity3D.Common.Models
     private const int NUMBER_OF_CMV_PERCENT_COLORS = 8;
     private const int NUMBER_OF_PASS_COUNT_DETAILS_COLORS = 9;
     private const int NUMBER_OF_CUT_FILL_COLORS = 7;
-    private const int NUMBER_OF_TEMPERATURE_DETAILS_COLORS = 5;
+    private const int NUMBER_OF_TEMPERATURE_DETAILS_COLORS = 7;
 
   }
 }

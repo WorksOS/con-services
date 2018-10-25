@@ -74,7 +74,7 @@ Scenario:  Project Settings Validate Full Custom Settings Targets
     useDefaultCMVTargets: false, 
     customCMVTargets: [0,20,50,100,130],
     useDefaultTemperatureTargets: false, 
-    customTemperatureTargets: [0,75,150,250,375]
+    customTemperatureTargets: [0,40,80,120,160,200,240]
   }
   """
 	When I request settings validation
@@ -120,7 +120,7 @@ Scenario:  Project Settings Validate Full Custom Settings Colors
     temperatureOverTargetColor: 0xD50000,
     temperatureUnderTargetColor: 0x1579B,
     useDefaultTemperatureDetailsColors: true,
-    temperatureDetailsColors: [0x01579B, 0x6BACD5, 0x99CB65, 0xF6A3A8, 0xD50000],
+    temperatureDetailsColors: [0x01579B, 0x039BE5, 0xB3E5FC, 0x99CB65, 0xF6A3A8, 0x00F064, 0xD50000],
     useDefaultSpeedSummaryColors: true,
     speedOnTargetColor: 0x8BC34A,
     speedOverTargetColor: 0xD50000,
