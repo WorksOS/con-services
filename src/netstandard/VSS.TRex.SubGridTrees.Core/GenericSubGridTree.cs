@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;

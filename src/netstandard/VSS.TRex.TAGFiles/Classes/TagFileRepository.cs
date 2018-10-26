@@ -72,7 +72,7 @@ namespace VSS.TRex.TAGFiles.Classes
         /* This feature is not required in TRex. Plus not sure if under netcore the serializer is working probably so commented out for now
           leaving code here in case we change our minds in future
 
-        IConfiguration config = DIContext.Obtain<IConfiguration>();
+        IConfigurationStore config = DIContext.Obtain<IConfigurationStore>();
         if (config.GetValue<bool>("ENABLE_TAGFILE_ARCHIVING_METADATA", false))
         {
           fType = "metafile";

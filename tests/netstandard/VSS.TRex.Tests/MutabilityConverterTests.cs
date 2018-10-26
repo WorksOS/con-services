@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -17,12 +18,13 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests
 {
-  public class MutabilityConverterTests 
+  public class MutabilityConverterTests : IClassFixture<DILoggingFixture>
   {
     /// <summary>
     /// A handy test cell pass for the unit tests below to use
@@ -57,7 +59,7 @@ namespace VSS.TRex.Tests
     {
       var mutabilityConverter = new MutabilityConverter();
       MemoryStream immutableStream;
-      Assert.Throws<TRexException>(() => mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, null, null, out immutableStream));     
+      Assert.Throws<TRexException>(() => mutabilityConverter.ConvertToImmutable(FileSystemStreamType.Events, null, null, out immutableStream));
     }
 
     [Fact]
@@ -235,6 +237,7 @@ namespace VSS.TRex.Tests
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build();
 
       var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
@@ -282,6 +285,7 @@ namespace VSS.TRex.Tests
         {
           return events;
         }
+
         stream.Position = 8;
 
         var eventType = reader.ReadInt32();
@@ -290,7 +294,7 @@ namespace VSS.TRex.Tests
           return events;
         }
 
-        events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);
+        events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType) eventType);
 
         stream.Position = 0;
         events.ReadEvents(reader);

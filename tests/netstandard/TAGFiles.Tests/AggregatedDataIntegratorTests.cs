@@ -2,7 +2,7 @@
 using System;
 using VSS.TRex.Events;
 using VSS.TRex.SiteModels;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Server;
 using Xunit;
 using VSS.TRex.SubGridTrees.Factories;

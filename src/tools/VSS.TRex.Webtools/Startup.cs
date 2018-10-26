@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -7,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -20,7 +20,6 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -31,14 +30,33 @@ namespace VSS.TRex.Webtools
   public class Startup
   {
 
-    public const string LOGGER_REPO_NAME = "Webtools";
+    public const string LoggerRepoName = "Webtools";
 
-    public Startup(IConfiguration configuration)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Startup"/> class.
+    /// </summary>
+    /// <param name="env">The env.</param>
+    public Startup(IHostingEnvironment env)
     {
-      Configuration = configuration;
+      var builder = new ConfigurationBuilder()
+        .SetBasePath(env.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
+
+      builder.AddEnvironmentVariables();
+      Configuration = builder.Build();
     }
 
-    public IConfiguration Configuration { get; }
+    /// <summary>
+    /// Gets the configuration.
+    /// </summary>
+    /// <value>
+    /// The configuration.
+    /// </value>
+    private IConfigurationRoot Configuration { get; }
+
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -53,6 +71,7 @@ namespace VSS.TRex.Webtools
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);
 
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
       services.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory());
 

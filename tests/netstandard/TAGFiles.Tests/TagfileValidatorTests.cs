@@ -236,6 +236,7 @@ namespace TAGFiles.Tests
         DIBuilder
           .New()
           .AddLogging()
+          .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
           .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
           .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
 

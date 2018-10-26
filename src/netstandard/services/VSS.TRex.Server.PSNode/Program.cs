@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.ConfigurationStore;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -61,6 +62,7 @@ namespace VSS.TRex.Server.PSNode
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Build()
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))

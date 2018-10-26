@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Cache.Query.Continuous;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
