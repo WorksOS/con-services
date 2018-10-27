@@ -109,7 +109,7 @@ namespace VSS.TRex.Caching
     public void ItemRemovedFromContext(int sizeInBytes)
     {
       // Decrement the memory usage in the cache
-      System.Threading.Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
+      System.Threading.Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
 
       // Decrement the number of elements in the cache
       System.Threading.Interlocked.Decrement(ref currentNumElements);

@@ -37,17 +37,17 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
-        OwnerMemoryCache.ItemRemovedFromContext(element.IndicativeSizeInBytes());
-
         uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
         uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         // Add the element to storage and obtain its index in that storage, inserting it into the context
         // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
         // of 0 used as the null value in integer based subgrid trees
-        ContextTokens[x, y] = MRUList.Add(element) + 1;
+        ContextTokens[x, y] = MRUList.Add(element, this) + 1;
 
         tokenCount++;
+
+        OwnerMemoryCache.ItemAddedToContext(element.IndicativeSizeInBytes());
       }
     }
 
@@ -88,6 +88,21 @@ namespace VSS.TRex.Caching
         // Note: Adjust for the 1-based index obtained from ContextTokens
         return index == 0 ? null : MRUList.Get(index - 1);
       }
+    }
+
+    /// <summary>
+    /// Removes the index for an item from the context token subgrid tree only. This is intended to be used by the MRUlist to communicate
+    /// elements that are being removed from the MRUList in response to adding new items to the cache.
+    /// </summary>
+    /// <param name="item"></param>
+    public void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item)
+    {
+      uint x = item.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = item.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+
+      ContextTokens[x, y] = 0;
+      OwnerMemoryCache.ItemRemovedFromContext(item.IndicativeSizeInBytes());
+      tokenCount--;
     }
   }
 }

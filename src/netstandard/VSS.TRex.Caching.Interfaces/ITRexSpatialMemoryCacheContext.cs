@@ -18,5 +18,7 @@ namespace VSS.TRex.Caching
     void Remove(ITRexMemoryCacheItem element);
 
     ITRexMemoryCacheItem Get(uint originX, uint originY);
+
+    void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
   }
 }

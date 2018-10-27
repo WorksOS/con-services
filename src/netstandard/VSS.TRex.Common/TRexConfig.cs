@@ -34,7 +34,7 @@ namespace VSS.TRex.Common
         public static int VLPD_SubGridMaxSegmentCellPassesLimit = 250;
 
         /// <summary>
-        /// The number of paritions configured for caches that store spatial subgrid data
+        /// The number of partitions configured for caches that store spatial subgrid data
         /// </summary>
         public static uint NumPartitionsPerDataCache = 1024;
 

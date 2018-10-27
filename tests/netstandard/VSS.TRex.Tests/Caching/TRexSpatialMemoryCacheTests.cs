@@ -109,11 +109,11 @@ namespace VSS.TRex.Tests.Caching
       // Make the number ofg contexts requested, and a separate item to be placed in each one
       var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
 
-      var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
+      var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = _size,
-        OriginX = (uint)(_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-        OriginY = (uint)(_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+        OriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        OriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
       }).ToArray();
 
       for (int i = 0; i < numContexts; i++)
@@ -133,6 +133,87 @@ namespace VSS.TRex.Tests.Caching
         Assert.Equal(items[i].OriginY, gotItem.OriginY);
         Assert.Equal(items[i].IndicativeSizeInBytes(), gotItem.IndicativeSizeInBytes());
       }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(10)]
+    [InlineData(1000)]
+    [InlineData(100000)]
+    public void Test_TRexSpatialMemoryCacheTests_AddAndRemoveItem_ManyContexts(int numContexts)
+    {
+      const uint _originX = 123;
+      const uint _originY = 456;
+      const int _size = 1000;
+
+      // Create the cache with enough elements to hold one per context without eviction
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 0.5);
+
+      // Make the number ofg contexts requested, and a separate item to be placed in each one
+      var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
+
+      var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
+      {
+        SizeInBytes = _size,
+        OriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        OriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+      }).ToArray();
+
+      for (int i = 0; i < numContexts; i++)
+      {
+        contexts[i].Add(items[i]);
+
+        Assert.True(contexts[i].TokenCount == 1, "Context token count not one after adding single item");
+      }
+
+      for (int i = 0; i < numContexts; i++)
+      {
+        contexts[i].Remove(items[i]);
+
+        Assert.True(contexts[i].TokenCount == 0, "Token count not zero after removing only token in context");
+      }
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_EvictedItemsRemoval()
+    {
+      const uint _originX = 123;
+      const uint _originY = 456;
+      const int _size = 1000;
+
+      // Create the cache with enough elements to hold one per context without eviction
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 0.5);
+
+      // Make the number ofg contexts requested, and a separate item to be placed in each one
+      var context = cache.LocateOrCreateContext($"fingerprint");
+
+      var item1 = new TRexSpatialMemoryCacheContextTests_Element
+      {
+        SizeInBytes = _size,
+        OriginX = (uint) (_originX),
+        OriginY = (uint) (_originY)
+      };
+
+      var item2 = new TRexSpatialMemoryCacheContextTests_Element
+      {
+        SizeInBytes = _size,
+        OriginX = (uint) (_originX + SubGridTreeConsts.SubGridTreeDimension),
+        OriginY = (uint) (_originY + SubGridTreeConsts.SubGridTreeDimension)
+      };
+
+      context.Add(item1);
+      context.Add(item2);
+
+      Assert.True(context.TokenCount == 1, "Token count not one after addition of second element forcing eviction of first");
+      Assert.True(context.Get(item1.OriginX, item1.OriginY) == null, "Able to request item1 after it should have been evicted for item2");
+      Assert.True(context.Get(item2.OriginX, item2.OriginY) != null, "Unable to request item2 after it should have replaced item1");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_ItemReplacement()
+    {
+      Assert.True(false);
     }
   }
 }

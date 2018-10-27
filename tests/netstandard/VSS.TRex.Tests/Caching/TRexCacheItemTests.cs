@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexCacheItem_Creation_Default()
     {
-      TRexCacheItem<object> item = new TRexCacheItem<object>();
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
 
       Assert.True(item.Item == null);
       Assert.True(item.Next == 0);
@@ -20,8 +20,8 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexCacheItem_Creation_Specific()
     {
-      object theObject = new Object();
-      TRexCacheItem<object> item = new TRexCacheItem<object>(theObject, 100, 1, 2);
+      var theObject = new TRexSpatialMemoryCacheContextTests_Element();
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>(theObject, null, 100, 1, 2);
 
       Assert.True(ReferenceEquals(item.Item, theObject));
       Assert.True(item.Prev == 1);
@@ -32,10 +32,10 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexCacheItem_Set()
     {
-      object theObject = new Object();
-      TRexCacheItem<object> item = new TRexCacheItem<object>();
+      var theObject = new TRexSpatialMemoryCacheContextTests_Element();
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
 
-      item.Set(theObject, 100, 1, 2);
+      item.Set(theObject, null, 100, 1, 2);
       
       Assert.True(ReferenceEquals(item.Item, theObject));
       Assert.True(item.Prev == 1);
@@ -47,9 +47,9 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexCacheItem_GetPrevAndNext()
     {
       object theObject = new Object();
-      TRexCacheItem<object> item = new TRexCacheItem<object>();
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
       
-      item.Set(null, 100, 1, 2);
+      item.Set(null, null, 100, 1, 2);
       item.GetPrevAndNext(out int prev, out int next);
 
       Assert.True(prev == 1);

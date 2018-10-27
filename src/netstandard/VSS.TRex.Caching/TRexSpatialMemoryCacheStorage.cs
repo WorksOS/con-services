@@ -5,7 +5,7 @@ namespace VSS.TRex.Caching
   /// <summary>
   /// Defines the storage metaphor to containing all elements committed to the cache
   /// </summary>
-  public class TRexSpatialMemoryCacheStorage<T> : ITRexSpatialMemoryCacheStorage<T>
+  public class TRexSpatialMemoryCacheStorage<T> : ITRexSpatialMemoryCacheStorage<T> where T : ITRexMemoryCacheItem
   {
     private TRexCacheItem<T>[] Items;
 
@@ -76,6 +76,12 @@ namespace VSS.TRex.Caching
       }
 
       FreeListHead = LRUHead;
+
+
+      // Set the index in the context to the element just evicted to zero
+      Items[FreeListHead].RemoveFromContext();
+
+      // Adjust the token count in the MRU list
       tokenCount--;
     }
 
@@ -84,7 +90,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     /// <param name="element"></param>
     /// <returns>The index of the newly added item</returns>
-    public int Add(T element)
+    public int Add(T element, ITRexSpatialMemoryCacheContext context)
     {
       int index;
       long token = NextToken;
@@ -104,10 +110,10 @@ namespace VSS.TRex.Caching
 
         // Set the parameters for the new item, setting it's prev pointer to point to the oldest member of the MRUList
         if (MRUHead == -1)
-          Items[index].Set(element, token, index, MRUHead);
+          Items[index].Set(element, context, token, index, MRUHead);
         else
         {
-          Items[index].Set(element, token, Items[MRUHead].Prev, MRUHead);
+          Items[index].Set(element, context, token, Items[MRUHead].Prev, MRUHead);
           Items[MRUHead].Prev = index;
         }
 
@@ -136,7 +142,7 @@ namespace VSS.TRex.Caching
         if (next != -1)
           Items[next].Prev = prev;
 
-        Items[index].Set(default(T), -1, -1, FreeListHead);
+        Items[index].Set(default(T), null, -1, -1, FreeListHead);
         FreeListHead = index;
 
         tokenCount--;
