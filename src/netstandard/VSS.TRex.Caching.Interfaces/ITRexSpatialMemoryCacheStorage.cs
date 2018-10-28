@@ -2,7 +2,7 @@
 {
   public interface ITRexSpatialMemoryCacheStorage<T>
   {
-    int Add(T element);
+    int Add(T element, ITRexSpatialMemoryCacheContext context);
     void Remove(int index);
     T Get(int index);
     int TokenCount { get; }

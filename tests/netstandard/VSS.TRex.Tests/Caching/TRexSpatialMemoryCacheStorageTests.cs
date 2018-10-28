@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000,
           OriginX = (uint)(2000),
           OriginY = (uint)(3000)
-        });
+        }, null);
 
       Assert.True(storage.HasFreeSpace(), "Storage has no free space when filled with only one element");
 
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000,
           OriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
           OriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
-        });
+        }, null);
 
       Assert.False(storage.HasFreeSpace(), "Storage has free space when filled");
       Assert.True(storage.TokenCount == numElements, $"Element count incorrect (= {storage.TokenCount})");
@@ -62,7 +62,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000,
           OriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
           OriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
-        });
+        }, null);
 
       Assert.False(storage.HasFreeSpace(), "Storage has free space when filled");
 
@@ -72,7 +72,7 @@ namespace VSS.TRex.Tests.Caching
         SizeInBytes = 1000,
         OriginX = (uint)(2000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
         OriginY = (uint)(3000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
-      });
+      }, null);
 
       Assert.True(storage.TokenCount == numElements, $"Element count incorrect (= {storage.TokenCount})");
     }
@@ -88,7 +88,7 @@ namespace VSS.TRex.Tests.Caching
         OriginY = (uint) (3000)
       };
 
-      var index = storage.Add(item);
+      var index = storage.Add(item, null);
 
       Assert.True(storage.TokenCount == 1, $"Element count incorrect (= {storage.TokenCount})");
 
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Caching
         SizeInBytes = 1000,
         OriginX = (uint)(2000),
         OriginY = (uint)(3000)
-      });
+      }, null);
 
       Assert.True(storage.TokenCount == 1, $"Element count incorrect (= {storage.TokenCount})");
 
@@ -140,7 +140,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000,
           OriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
           OriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
-        });
+        }, null);
 
       var midTime = DateTime.Now;
 
@@ -150,7 +150,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000,
           OriginX = (uint)(2000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
           OriginY = (uint)(3000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
-        });
+        }, null);
 
       Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
     }
@@ -179,12 +179,12 @@ namespace VSS.TRex.Tests.Caching
 
       // Fill all available slots
       for (int i = 0; i < numElements; i++)
-        storage.Add(item);
+        storage.Add(item, null);
 
       var midTime = DateTime.Now;
 
       for (int i = 0; i < overflowBy; i++)
-        storage.Add(item);
+        storage.Add(item, null);
 
       Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
     }
