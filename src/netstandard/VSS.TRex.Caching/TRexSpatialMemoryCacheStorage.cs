@@ -77,7 +77,6 @@ namespace VSS.TRex.Caching
 
       FreeListHead = LRUHead;
 
-
       // Set the index in the context to the element just evicted to zero
       Items[FreeListHead].RemoveFromContext();
 

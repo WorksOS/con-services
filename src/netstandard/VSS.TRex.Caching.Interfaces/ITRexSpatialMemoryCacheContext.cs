@@ -13,7 +13,7 @@ namespace VSS.TRex.Caching
 
     int TokenCount { get; }
 
-    void Add(ITRexMemoryCacheItem element);
+    bool Add(ITRexMemoryCacheItem element);
 
     void Remove(ITRexMemoryCacheItem element);
 

@@ -66,5 +66,18 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(context.ContextTokens[element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] == 0, "Removed element did not reset ContextTokens index to 0");
     }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_FailOverwriteOfExistingElement()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, OriginX = 2000, OriginY = 3000 };
+
+      Assert.True(context.Add(element), "Result is false on addition of first element");
+      Assert.False(context.Add(element), "Result is true on second addition of same element");
+    }
   }
 }

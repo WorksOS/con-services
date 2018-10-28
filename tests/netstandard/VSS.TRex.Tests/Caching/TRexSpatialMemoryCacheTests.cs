@@ -213,7 +213,25 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_ItemReplacement()
     {
-      Assert.True(false);
+      const uint _originX = 123;
+      const uint _originY = 456;
+      const int _size = 1000;
+
+      // Create the cache with enough elements to hold one per context without eviction
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 0.5);
+
+      // Make the number ofg contexts requested, and a separate item to be placed in each one
+      var context = cache.LocateOrCreateContext($"fingerprint");
+
+      var item1 = new TRexSpatialMemoryCacheContextTests_Element
+      {
+        SizeInBytes = _size,
+        OriginX = (uint)(_originX),
+        OriginY = (uint)(_originY)
+      };
+
+      Assert.True(cache.Add(context, item1), "Failed to add element for the first time");
+      Assert.False(cache.Add(context, item1), "Succeeded overwriting element - bad!");
     }
   }
 }

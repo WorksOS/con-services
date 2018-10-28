@@ -33,7 +33,7 @@ namespace VSS.TRex.Caching
     /// confines of the context.
     /// </summary>
     /// <param name="element"></param>
-    public void Add(ITRexMemoryCacheItem element)
+    public bool Add(ITRexMemoryCacheItem element)
     {
       lock (this)
       {
@@ -43,11 +43,19 @@ namespace VSS.TRex.Caching
         // Add the element to storage and obtain its index in that storage, inserting it into the context
         // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
         // of 0 used as the null value in integer based subgrid trees
+        if (ContextTokens[x, y] != 0)
+        {
+          // This cache element in the context already contains an item.
+          // Do not overwrite the present element with the one provided
+          return false;
+        }
+
         ContextTokens[x, y] = MRUList.Add(element, this) + 1;
 
         tokenCount++;
 
         OwnerMemoryCache.ItemAddedToContext(element.IndicativeSizeInBytes());
+        return true;
       }
     }
 

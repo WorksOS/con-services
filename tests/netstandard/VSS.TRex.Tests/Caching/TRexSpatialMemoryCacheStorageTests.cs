@@ -116,7 +116,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(storage.TokenCount == 0, $"Element count incorrect (= {storage.TokenCount})");
     }
 
-    [Theory]
+    [Theory(Skip="Performance test")]
     [InlineData(100, 1)]
     [InlineData(100, 10)]
     [InlineData(100, 100)]
@@ -148,14 +148,14 @@ namespace VSS.TRex.Tests.Caching
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
           SizeInBytes = 1000,
-          OriginX = (uint)(2000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
-          OriginY = (uint)(3000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
+          OriginX = (uint)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
+          OriginY = (uint)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
         }, null);
 
       Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
     }
 
-    [Theory]
+    [Theory(Skip = "Performance test")]
     [InlineData(100, 1)]
     [InlineData(100, 10)]
     [InlineData(100, 100)]

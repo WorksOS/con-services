@@ -80,9 +80,9 @@ namespace VSS.TRex.Caching
     /// </summary>
     /// <param name="context"></param>
     /// <param name="element"></param>
-    public void Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
+    public bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-        context.Add(element);        
+        return context.Add(element);        
     }
 
     /// <summary>

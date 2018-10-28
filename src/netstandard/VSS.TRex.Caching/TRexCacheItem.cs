@@ -62,7 +62,7 @@
     /// </summary>
     public void RemoveFromContext()
     {
-      Context.RemoveFromContextTokensOnly(Item);
+      Context?.RemoveFromContextTokensOnly(Item);
     }
   }
 }
