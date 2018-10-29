@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(100, 1000000, 1.01));
     }
 
-    [Fact(Skip="Test hangs unexpectedly")]
+    [Fact]
     public void Test_TRexSpatialMemoryCacheTests_Creation_InvalidNumberOfElements()
     {
       Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(-1, 1000000, 0.50));
