@@ -50,17 +50,7 @@ namespace VSS.TRex.GridFabric.Affinity
     private ICacheAffinity Affinity { get; set; }
     private IClusterNode LocalNode { get; set; }
 
-    protected int _numPartitionsPerDataCache = (int) Consts.kNumPartitionsPerDataCacheDefault;
-
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResultInt = config.GetValueInt("NUMPARTITIONS_PERDATACACHE");
-      if (configResultInt > -1)
-      {
-        _numPartitionsPerDataCache = configResultInt;
-      }
-    }
+    protected int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.kNumPartitionsPerDataCacheDefault);
 
     /// <summary>
     /// Constructor accepting a cache reference to obtain the partition map information for
@@ -72,7 +62,6 @@ namespace VSS.TRex.GridFabric.Affinity
 
       Affinity = Cache.Ignite.GetAffinity(Cache.Name);
       LocalNode = Cache.Ignite.GetCluster().GetLocalNode();
-      ReadEnvironmentVariables();
     }
 
     /// <summary>
@@ -81,7 +70,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <returns></returns>
     private bool[] GetPrimaryPartitions()
     {
-      bool[] result = new bool[_numPartitionsPerDataCache];
+      bool[] result = new bool[NumPartitionsPerDataCache];
 
       foreach (int partition in Affinity.GetPrimaryPartitions(LocalNode))
         result[partition] = true;

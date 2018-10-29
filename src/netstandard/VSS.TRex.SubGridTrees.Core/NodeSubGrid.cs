@@ -33,17 +33,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// The limit under which node subgrids are represented by sparse lists rather than a complete subgrid array of child subgrid references
     /// </summary>
     /// <returns></returns>
-    private int _subGridTreeNodeCellSparcityLimit = Consts.kSubGridTreeNodeCellSparcityLimitDefault;
-
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResult = config.GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT");
-      if (configResult > -1)
-      {
-        _subGridTreeNodeCellSparcityLimit = configResult;
-      }
-    }
+    private readonly int _subGridTreeNodeCellSparcityLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("SUBGRIDTREENODE_CELLSPARCITYLIMIT", Consts.kSubGridTreeNodeCellSparcityLimitDefault);
 
     /// <summary>
     /// Default no-arg constructor
@@ -52,7 +42,6 @@ namespace VSS.TRex.SubGridTrees.Core
     {
       _sparseCellCount = 0;
       _cells = null;
-      ReadEnvironmentVariables();
     }
 
     /// <summary>
@@ -67,7 +56,6 @@ namespace VSS.TRex.SubGridTrees.Core
     {
       _sparseCellCount = 0;
       _cells = null;
-      ReadEnvironmentVariables();
     }
 
     /// <summary>

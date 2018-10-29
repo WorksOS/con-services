@@ -23,22 +23,11 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public ISubGridCellPassesDataSegments PassesData { get; set; } = new SubGridCellPassesDataSegments();
 
-    private int _subGrid_SegmentPassCountLimit = Consts.kVlpdSubGridSegmentPassCountLimitDefault;
-
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResult = config.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT");
-      if (configResult > -1)
-      {
-        _subGrid_SegmentPassCountLimit = configResult;
-      }
-    }
+    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.kVlpdSubGridSegmentPassCountLimitDefault);
 
     public SubGridCellPassesDataWrapper()
     {
       Clear();
-      ReadEnvironmentVariables();
     }
 
     public void Initialise()
@@ -124,12 +113,12 @@ namespace VSS.TRex.SubGridTrees.Server
       CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
 #endif
 
-      if (TotalPassCount < _subGrid_SegmentPassCountLimit)
+      if (TotalPassCount < _subGridSegmentPassCountLimit)
       {
         return false; // There is no need to cleave this segment
       }
 
-      int NumRequiredClovenSegments = ((int) TotalPassCount - 1) / _subGrid_SegmentPassCountLimit + 1;
+      int NumRequiredClovenSegments = ((int) TotalPassCount - 1) / _subGridSegmentPassCountLimit + 1;
 
       // Determine the actual time range of the passes within the segment
       CleavingSegment.PassesData.CalculateTimeRange(out DateTime CoveredTimeRangeStart,

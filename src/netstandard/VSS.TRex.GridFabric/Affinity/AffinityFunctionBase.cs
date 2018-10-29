@@ -19,28 +19,13 @@ namespace VSS.TRex.GridFabric.Affinity
     protected static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     // Set NumPartitions to the default number of partitions
-    protected int NumPartitions = (int) Consts.kNumPartitionsPerDataCacheDefault;
+    protected int NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.kNumPartitionsPerDataCacheDefault);
 
     /// <summary>
     /// Return the number of partitions to use for affinity. 
     /// </summary>
     public int Partitions => NumPartitions;
-
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResultInt = config.GetValueInt("NUMPARTITIONS_PERDATACACHE");
-      if (configResultInt > -1)
-      {
-        NumPartitions = configResultInt;
-      }
-    }
-
-    public AffinityFunctionBase()
-    {
-      ReadEnvironmentVariables();
-    }
-
+    
     /// <summary>
     /// Determine how the nodes in the grid are to be assigned into the partitions configured in the cache
     /// </summary>

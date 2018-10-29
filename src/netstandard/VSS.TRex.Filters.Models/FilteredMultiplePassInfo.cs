@@ -22,15 +22,7 @@ namespace VSS.TRex.Filters.Models
     /// </summary>
     public FilteredPassData[] FilteredPassData;
 
-    private int VLPDPSNode_CellPassAggregationListSizeIncrement()
-    {
-      int configResult = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT");
-      if (configResult > -1)
-      {
-        return configResult;
-      }
-      return Consts.kVlpdpsNodeCellPassAggregationListSizeIncrementDefault;
-    }
+    private int CellPassAggregationListSizeIncrement() => DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", Consts.kVlpdpsNodeCellPassAggregationListSizeIncrementDefault);
 
     /// <summary>
     /// Adds a pass to the set of passes beign constructed as a result of the filtering operation.
@@ -62,13 +54,13 @@ namespace VSS.TRex.Filters.Models
       // Increase the length of the passes array
       if (FilteredPassData == null)
       {
-        FilteredPassData = new FilteredPassData[VLPDPSNode_CellPassAggregationListSizeIncrement()];
+        FilteredPassData = new FilteredPassData[CellPassAggregationListSizeIncrement()];
       }
       else
       {
         if (PassCount == FilteredPassData.Length)
         {
-          Array.Resize(ref FilteredPassData, PassCount + VLPDPSNode_CellPassAggregationListSizeIncrement());
+          Array.Resize(ref FilteredPassData, PassCount + CellPassAggregationListSizeIncrement());
         }
       }
 
@@ -98,13 +90,13 @@ namespace VSS.TRex.Filters.Models
 
       if (FilteredPassData == null)
       {
-        FilteredPassData = new FilteredPassData[VLPDPSNode_CellPassAggregationListSizeIncrement()];
+        FilteredPassData = new FilteredPassData[CellPassAggregationListSizeIncrement()];
       }
       else // Increase the length of the passes array
       {
         if (PassCount == FilteredPassData.Length)
         {
-          Array.Resize(ref FilteredPassData, PassCount + VLPDPSNode_CellPassAggregationListSizeIncrement());
+          Array.Resize(ref FilteredPassData, PassCount + CellPassAggregationListSizeIncrement());
         }
       }
 

@@ -43,31 +43,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     private IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-    private bool _adviseOtherServicesOfDataModelChanges = Consts.kAdviseOtherServicesOfDataModelChangesDefault;
+    private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.kAdviseOtherServicesOfDataModelChangesDefault);
 
-    private int _maxMappedTagFilesToProcessPerAggregationEpoch = Consts.kMaxMappedTagFilesToProcessPerAggregationEpochDefault;
-    
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResultBool = config.GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES");
-      if (configResultBool != null)
-      {
-        _adviseOtherServicesOfDataModelChanges = configResultBool.Value;
-      }
-      var configResultInt = config.GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH");
-      if (configResultInt > -1)
-      {
-        _maxMappedTagFilesToProcessPerAggregationEpoch = configResultInt;
-      }
-    }
+    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.kMaxMappedTagFilesToProcessPerAggregationEpochDefault);
 
     /// <summary>
     /// Worker constructor that obtains the necessary storage proxies
     /// </summary>
     public AggregatedDataIntegratorWorker()
     {
-      ReadEnvironmentVariables();
     }
 
     /// <summary>

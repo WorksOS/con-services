@@ -56,24 +56,13 @@ namespace VSS.TRex.Rendering
     // function GetWorkingPalette: TICDisplayPaletteBase;
     // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
 
-    private bool _debugDrawDiagonalCrossOnRenderedTilesDefault = Consts.kDebugDrawDiagonalCrossOnRenderedTilesDefault;
-
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResultBool = config.GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES");
-      if (configResultBool != null)
-      {
-        _debugDrawDiagonalCrossOnRenderedTilesDefault = configResultBool.Value;
-      }
-    }
+    private readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Consts.kDebugDrawDiagonalCrossOnRenderedTilesDefault);
 
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
     public PlanViewTileRenderer()
     {
-      ReadEnvironmentVariables();
     }
 
     private void PerformAnyRequiredDebugLevelDisplay()

@@ -18,37 +18,12 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridSegmentCleaver>();
 
-    private int _subGridSegmentPassCountLimit = Consts.kVlpdSubGridSegmentPassCountLimitDefault;
+    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.kVlpdSubGridSegmentPassCountLimitDefault);
 
-    private int _subGridMaxSegmentCellPassesLimit = Consts.kVlpdSubGridMaxSegmentCellPassesLimitDefault;
+    private readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.kVlpdSubGridMaxSegmentCellPassesLimitDefault);
 
-    private bool _segmentCleavingOperationsToLog = Consts.kSegmentCleavingOperationsToLogDefault;
-
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResult = config.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT");
-      if (configResult > -1)
-      {
-        _subGridSegmentPassCountLimit = configResult;
-      }
-      configResult = config.GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT");
-      if (configResult > -1)
-      {
-        _subGridMaxSegmentCellPassesLimit = configResult;
-      }
-      var configResultBool = config.GetValueBool("SEGMENTCLEAVINGOOPERATIONSTOLOG");
-      if (configResultBool != null)
-      {
-        _segmentCleavingOperationsToLog = configResultBool.Value;
-      }
-    }
-
-    public SubGridSegmentCleaver()
-    {
-      ReadEnvironmentVariables();
-    }
-
+    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.kSegmentCleavingOperationsToLogDefault);
+    
     // PersistedClovenSegments contains a list of all the segments that exists in the
     // persistent data store that have been cloven since the last time this leaf
     // was persisted to the data store. This is essentially a list of obsolete

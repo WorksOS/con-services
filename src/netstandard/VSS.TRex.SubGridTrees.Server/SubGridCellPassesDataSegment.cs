@@ -37,45 +37,20 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public ISubGridCellLatestPassDataWrapper LatestPasses { get; set; }
 
-    private int _subGridSegmentPassCountLimit = Consts.kVlpdSubGridSegmentPassCountLimitDefault;
+    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.kVlpdSubGridSegmentPassCountLimitDefault);
 
-    private int _subGridMaxSegmentCellPassesLimit = Consts.kVlpdSubGridMaxSegmentCellPassesLimitDefault;
+    private readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.kVlpdSubGridMaxSegmentCellPassesLimitDefault);
 
-    private bool _segmentCleavingOperationsToLog = Consts.kSegmentCleavingOperationsToLogDefault;
+    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.kSegmentCleavingOperationsToLogDefault);
 
-    private bool _itemsPersistedViaDataPersistorToLog = Consts.kItemsPersistedViaDataPersistorToLogDefault;
+    private readonly bool _itemsPersistedViaDataPersistorToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", Consts.kItemsPersistedViaDataPersistorToLogDefault);
 
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResult = config.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT");
-      if (configResult > -1)
-      {
-        _subGridSegmentPassCountLimit = configResult;
-      }
-      configResult = config.GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT");
-      if (configResult > -1)
-      {
-        _subGridMaxSegmentCellPassesLimit = configResult;
-      }
-      var configResultBool = config.GetValueBool("SEGMENTCLEAVINGOOPERATIONSTOLOG");
-      if (configResultBool != null)
-      {
-        _segmentCleavingOperationsToLog = configResultBool.Value;
-      }
-      configResultBool = config.GetValueBool("ITEMSPERSISTEDVIADATAPERSISTORTOLOG");
-      if (configResultBool != null)
-      {
-        _itemsPersistedViaDataPersistorToLog = configResultBool.Value;
-      }
-    }
 
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
     public SubGridCellPassesDataSegment()
     {
-      ReadEnvironmentVariables();
     }
 
     public SubGridCellPassesDataSegment(ISubGridCellLatestPassDataWrapper latestPasses, ISubGridCellSegmentPassesDataWrapper passesData)
@@ -85,7 +60,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
       PassesData = passesData;
       HasAllPasses = PassesData != null;
-      ReadEnvironmentVariables();
     }
 
     /// <summary>

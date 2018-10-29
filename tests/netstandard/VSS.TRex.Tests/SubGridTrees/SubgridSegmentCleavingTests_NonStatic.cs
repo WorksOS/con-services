@@ -216,7 +216,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     private void SetupDITfa(int vlpdSubGridSegmentPassCountLimit = Consts.kVlpdSubGridSegmentPassCountLimitDefault)
     {
       var moqConfiguration = new Mock<IConfigurationStore>();
-      moqConfiguration.Setup(x => x.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT")).Returns(vlpdSubGridSegmentPassCountLimit);
+      moqConfiguration.Setup(x => x.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", It.IsAny<int>())).Returns(vlpdSubGridSegmentPassCountLimit);
 
       DIBuilder
         .New()

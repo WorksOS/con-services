@@ -27,31 +27,19 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public bool RecordSubgridFileReadingToLog { get; set; } = false;
 
-    private bool _segmentCleavingOperationsToLog = Consts.kSegmentCleavingOperationsToLogDefault;
-
-    private void ReadEnvironmentVariables()
-    {
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var configResultBool = config.GetValueBool("SEGMENTCLEAVINGOOPERATIONSTOLOG");
-      if (configResultBool != null)
-      {
-        _segmentCleavingOperationsToLog = configResultBool.Value;
-      }
-    }
-
+    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.kSegmentCleavingOperationsToLogDefault);
+    
     public ServerSubGridTree(Guid siteModelID) :
       base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
         new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
     {
       ID = siteModelID; // Ensure the ID of the subgrid tree matches the datamodel ID
-      ReadEnvironmentVariables();
     }
 
     public ServerSubGridTree(byte numLevels,
       double cellSize,
       ISubGridFactory subGridFactory) : base(numLevels, cellSize, subGridFactory)
     {
-      ReadEnvironmentVariables();
     }
 
     /// <summary>

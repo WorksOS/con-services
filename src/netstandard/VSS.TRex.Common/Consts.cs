@@ -104,7 +104,7 @@ namespace VSS.TRex.Common
     /// <summary>
     /// The number of paritions configured for caches that store spatial subgrid data
     /// </summary>
-    public const uint kNumPartitionsPerDataCacheDefault = 1024;                  // overide with: NUMPARTITIONS_PERDATACACHE
+    public const uint kNumPartitionsPerDataCacheDefault = 1024;                   // overide with: NUMPARTITIONS_PERDATACACHE
 
   }
 }
