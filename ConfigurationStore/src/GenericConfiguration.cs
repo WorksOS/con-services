@@ -115,6 +115,12 @@ namespace VSS.ConfigurationStore
       return _configuration[key];
     }
 
+    public string GetValueString(string key, string defaultValue)
+    {
+      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<string>(key, defaultValue)}");
+      return _configuration.GetValue<string>(key, defaultValue);
+    }
+
     public int GetValueInt(string key)
     {
       // zero is valid. Returns int.MinValue on error
@@ -126,6 +132,12 @@ namespace VSS.ConfigurationStore
       _log.LogTrace($"Served configuration value {key}:{valueInt}");
 
       return valueInt;
+    }
+
+    public int GetValueInt(string key, int defaultValue)
+    {
+      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<int>(key, defaultValue)}");
+      return _configuration.GetValue<int>(key, defaultValue);
     }
 
     public bool? GetValueBool(string key)
@@ -141,6 +153,13 @@ namespace VSS.ConfigurationStore
       return theBoolToReturn;
     }
 
+
+    public bool GetValueBool(string key, bool defaultValue)
+    {
+      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<bool>(key, defaultValue)}");
+      return _configuration.GetValue<bool>(key, defaultValue);
+    }
+
     public TimeSpan? GetValueTimeSpan(string key)
     {
       TimeSpan? theTimeSpanToReturn = null;
@@ -152,6 +171,12 @@ namespace VSS.ConfigurationStore
       _log.LogTrace($"Served configuration value {key}:{theTimeSpanToReturn}");
 
       return theTimeSpanToReturn;
+    }
+
+    public TimeSpan GetValueTimeSpan(string key, TimeSpan defaultValue)
+    {
+      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<TimeSpan>(key, defaultValue)}");
+      return _configuration.GetValue<TimeSpan>(key, defaultValue);
     }
 
     public IConfigurationSection GetSection(string key)

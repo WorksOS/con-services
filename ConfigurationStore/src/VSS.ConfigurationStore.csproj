@@ -6,7 +6,7 @@
     <Company>VSS</Company>
     <Product>VSS.ConfigurationStore.netcore</Product>
     <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
-    <VersionPrefix>2.1.3</VersionPrefix>
+    <VersionPrefix>2.1.4</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.ConfigurationStore</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

@@ -11,9 +11,19 @@ namespace VSS.AWS.TransferProxy.UnitTests
       return v;
     }
 
+    public string GetValueString(string v, string defaultValue)
+    {
+      return defaultValue;
+    }
+
     public bool? GetValueBool(string v)
     {
       throw new NotImplementedException();
+    }
+
+    public bool GetValueBool(string v, bool defaultValue)
+    {
+      return defaultValue;
     }
 
     public int GetValueInt(string v)
@@ -21,9 +31,19 @@ namespace VSS.AWS.TransferProxy.UnitTests
       throw new NotImplementedException();
     }
 
+    public int GetValueInt(string v, int defaultValue)
+    {
+      return defaultValue;
+    }
+
     public TimeSpan? GetValueTimeSpan(string v)
     {
       return new TimeSpan();
+    }
+
+    public TimeSpan GetValueTimeSpan(string v, TimeSpan defaultValue)
+    {
+      return defaultValue;
     }
 
     public string GetConnectionString(string connectionType)
