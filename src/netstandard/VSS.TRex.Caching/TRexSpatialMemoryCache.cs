@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
@@ -9,7 +10,7 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache
   {
-    private const int MAX_NUM_ELEMENTS = 100000000;
+    private const int MAX_NUM_ELEMENTS = 1000000000;
 
     /// <summary>
     /// The MRU list that threads through all the elements in the overall cache
@@ -30,6 +31,8 @@ namespace VSS.TRex.Caching
 
     public int MruNonUpdateableSlotCount { get; private set; }
 
+    public long MaxSizeInBytes { get; private set; }
+
     /// <summary>
     /// Creates a new spatial data cache containing at most maxNumElements items. Elements are stored in
     /// an MRU list and are moved to the top of the MRU list of their distance from the top of the list at the time they
@@ -37,15 +40,20 @@ namespace VSS.TRex.Caching
     /// </summary>
     /// <param name="maxNumElements"></param>
     /// <param name="mruDeadBandFraction"></param>
-    public TRexSpatialMemoryCache(int maxNumElements, double mruDeadBandFraction)
+    public TRexSpatialMemoryCache(int maxNumElements, long maxSizeInBytes, double mruDeadBandFraction)
     {
       if (maxNumElements < 1 || maxNumElements > MAX_NUM_ELEMENTS)
         throw new ArgumentException($"maxNumElements ({maxNumElements}) not in range 1..{MAX_NUM_ELEMENTS}");
+
+      // Set cache size range between 1kb and 100Gb
+      if (maxSizeInBytes < 1000 || maxSizeInBytes > 100000000000)
+        throw new ArgumentException($"maxSizeInBytes ({maxSizeInBytes}) not in range 1000..100000000000 (1e3..1e11)");
 
       if (mruDeadBandFraction < 0.0 || mruDeadBandFraction > 1.0)
         throw new ArgumentException($"mruDeadBandFraction ({mruDeadBandFraction}) not in range 0.0..1.0");
 
       MaxNumElements = maxNumElements;
+      MaxSizeInBytes = maxSizeInBytes;
       MruNonUpdateableSlotCount = (int)Math.Truncate(maxNumElements * mruDeadBandFraction);
 
       MRUList = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(maxNumElements, MruNonUpdateableSlotCount);
@@ -82,7 +90,16 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-        return context.Add(element);        
+      bool result = context.Add(element);
+
+      // Perform some house keeping to keep the cache size in bounds
+      ItemAddedToContext(element.IndicativeSizeInBytes());
+      while (CurrentSizeInBytes > MaxSizeInBytes)
+      {
+        MRUList.EvictOneLRUItemWithLock();
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -95,6 +112,9 @@ namespace VSS.TRex.Caching
     public void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
         context.Remove(element);
+
+        // Perform some house keeping to keep the cache size in bounds
+        ItemRemovedFromContext(element.IndicativeSizeInBytes());
     }
 
     public void ItemAddedToContext(int sizeInBytes)
@@ -109,7 +129,12 @@ namespace VSS.TRex.Caching
     public void ItemRemovedFromContext(int sizeInBytes)
     {
       // Decrement the memory usage in the cache
-      System.Threading.Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
+      var number = System.Threading.Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
+
+      if (number < 0)
+      {
+        Debug.Assert(false, "CurrentSizeInBytes < 0! Consider using Cache.Add(context, item).");
+      }
 
       // Decrement the number of elements in the cache
       System.Threading.Interlocked.Decrement(ref currentNumElements);

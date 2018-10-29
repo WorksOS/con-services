@@ -4,6 +4,8 @@
   {
     int MaxNumElements { get; }
 
+    long MaxSizeInBytes { get; }
+
     int CurrentNumElements { get; }
 
     void ItemAddedToContext(int sizeInBytes);

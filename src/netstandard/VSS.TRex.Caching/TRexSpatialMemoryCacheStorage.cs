@@ -84,6 +84,14 @@ namespace VSS.TRex.Caching
       tokenCount--;
     }
 
+    public void EvictOneLRUItemWithLock()
+    {
+      lock (this)
+      {
+        EvictOneLRUItemNoLock();
+      }
+    }
+
     /// <summary>
     /// Adds an item into the cache storage.
     /// </summary>

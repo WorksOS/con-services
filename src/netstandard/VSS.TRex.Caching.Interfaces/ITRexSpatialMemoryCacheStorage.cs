@@ -7,5 +7,6 @@
     T Get(int index);
     int TokenCount { get; }
     bool HasFreeSpace();
+    void EvictOneLRUItemWithLock();
   }
 }

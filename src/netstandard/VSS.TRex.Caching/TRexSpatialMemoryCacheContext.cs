@@ -53,8 +53,6 @@ namespace VSS.TRex.Caching
         ContextTokens[x, y] = MRUList.Add(element, this) + 1;
 
         tokenCount++;
-
-        OwnerMemoryCache.ItemAddedToContext(element.IndicativeSizeInBytes());
         return true;
       }
     }
@@ -72,7 +70,6 @@ namespace VSS.TRex.Caching
 
       lock (this)
       {
-        OwnerMemoryCache.ItemRemovedFromContext(element.IndicativeSizeInBytes());
 
         // Locate the index for the element in the context token tree and remove it from storage,
         // nulling out the entry in the context token tree.

@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheContext_Creation_WithOwnerAndMRU()
     {
       ITRexSpatialMemoryCacheContext context = 
-        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 0.5), 
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5), 
                                           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       Assert.True(context.ContextTokens != null, "No index subgrid tree created");
@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheContext_AddOneElement()
     {
       ITRexSpatialMemoryCacheContext context =
-        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 0.5),
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, OriginX = 2000, OriginY = 3000 };
@@ -50,7 +50,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheContext_RemoveOneElement()
     {
       ITRexSpatialMemoryCacheContext context =
-        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 0.5),
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, OriginX = 2000, OriginY = 3000};
@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheContext_FailOverwriteOfExistingElement()
     {
       ITRexSpatialMemoryCacheContext context =
-        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 0.5),
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, OriginX = 2000, OriginY = 3000 };

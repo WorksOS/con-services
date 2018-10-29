@@ -1,22 +1,55 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using VSS.TRex.Caching;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace VSS.TRex.Tests.Caching
 {
   public class TRexSpatialMemoryCacheTests
   {
+    private readonly ITestOutputHelper output;
+
+    public TRexSpatialMemoryCacheTests(ITestOutputHelper output)
+    {
+      this.output = output;
+    }
+
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_Creation()
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
 
       Assert.True(cache.MRUList != null, "MRUlist is null");
       Assert.Equal(0, cache.CurrentNumElements);
       Assert.Equal(0, cache.CurrentSizeInBytes);
       Assert.Equal(50, cache.MruNonUpdateableSlotCount);
       Assert.Equal(100, cache.MaxNumElements);
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_Creation_InvalidCacheSize()
+    {
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(100, 0, 0.5));
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(100, 999, 0.5));
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(100, 100000000001, 0.5));
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_Creation_InvalidMRUBand()
+    {
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(100, 1000000, -1.0));
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(100, 1000000, -0.0001));
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(100, 1000000, 1.01));
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_Creation_InvalidNumberOfElements()
+    {
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(-1, 1000000, 0.50));
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(0, 1000000, 0.50));
+      Assert.Throws<ArgumentException>(() => new TRexSpatialMemoryCache(1000000001, 1000000, 0.50));
     }
 
     [Theory]
@@ -27,7 +60,7 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_ContextCreation(int numberOfContexts)
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
 
       for (int i = 0; i < numberOfContexts; i++)
       {
@@ -50,7 +83,7 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_ContextRetrieval(int numberOfContexts)
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
 
       var contexts = Enumerable.Range(0, numberOfContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
 
@@ -69,7 +102,7 @@ namespace VSS.TRex.Tests.Caching
       const uint _originY = 456;
       const int _size = 1000;
 
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
 
       var context = cache.LocateOrCreateContext($"fingerprint");
 
@@ -104,7 +137,7 @@ namespace VSS.TRex.Tests.Caching
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
       var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
@@ -148,7 +181,7 @@ namespace VSS.TRex.Tests.Caching
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
       var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
@@ -183,7 +216,7 @@ namespace VSS.TRex.Tests.Caching
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
       var context = cache.LocateOrCreateContext($"fingerprint");
@@ -218,7 +251,7 @@ namespace VSS.TRex.Tests.Caching
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 0.5);
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
       var context = cache.LocateOrCreateContext($"fingerprint");
@@ -232,6 +265,76 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(cache.Add(context, item1), "Failed to add element for the first time");
       Assert.False(cache.Add(context, item1), "Succeeded overwriting element - bad!");
+    }
+
+    [Theory]
+    [InlineData(11, 1000, 100)]
+    [InlineData(21, 2000, 100)]
+    [InlineData(100, 10000, 200)]
+    [InlineData(1001, 1000000, 1000)]
+    [InlineData(100000, 100000000, 10000)]
+    public void Test_TRexSpatialMemoryCacheTests_SizeTrackingOnAddition(int capacity, int maxNumBytes, int elementSize)
+    {
+      const uint _originX = 123;
+      const uint _originY = 456;
+
+      // Create the cache with enough elements to hold one per context without eviction
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(capacity, maxNumBytes, 0.5);
+
+      // Make the number ofg contexts requested, and a separate item to be placed in each one
+      var context = cache.LocateOrCreateContext("fingerprint");
+
+      int numElementsToAdd = (maxNumBytes / elementSize) + 10;
+
+      var items = Enumerable.Range(0, numElementsToAdd).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
+      {
+        SizeInBytes = elementSize,
+        OriginX = (uint)(_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        OriginY = (uint)(_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+      }).ToArray();
+
+      for (int i = 0; i < numElementsToAdd; i++)
+      {
+        var expectedSize = (i + 1) * elementSize > maxNumBytes ? maxNumBytes : (i + 1) * elementSize; 
+        cache.Add(context, items[i]);
+        Assert.True(cache.CurrentSizeInBytes == expectedSize, $"Cache size is not correct, current = {cache.CurrentSizeInBytes}, elementSize = {elementSize}, expected = {expectedSize}, capacity = {capacity}, i = {i}, numElementsToAdd = {numElementsToAdd}");
+      }
+    }
+
+    [Theory]
+    [InlineData(1000, 100)]
+    [InlineData(2000, 100)]
+    [InlineData(10000, 200)]
+    [InlineData(1000000, 1000)]
+    [InlineData(100000000, 10000)]
+    public void Test_TRexSpatialMemoryCacheTests_SizeConstraint(int maxNumBytes, int elementSize)
+    {
+      const uint _originX = 123;
+      const uint _originY = 456;
+
+      int numElementsToAdd = (maxNumBytes / elementSize) + 10;
+
+      // Create the cache with enough elements to hold one per context without eviction
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numElementsToAdd, maxNumBytes, 0.5);
+
+      // Make the number ofg contexts requested, and a separate item to be placed in each one
+      var context = cache.LocateOrCreateContext("fingerprint");
+
+      var items = Enumerable.Range(0, numElementsToAdd).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
+      {
+        SizeInBytes = elementSize,
+        OriginX = (uint)(_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        OriginY = (uint)(_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+      }).ToArray();
+
+      for (int i = 0; i < numElementsToAdd; i++)
+      {
+        cache.Add(context, items[i]);
+        Assert.True(cache.CurrentSizeInBytes > 0, "Cache with elements has 0 size!");
+        Assert.True(cache.CurrentSizeInBytes <= maxNumBytes, $"Current cache size of {cache.CurrentSizeInBytes} bytes is greater than limit of {maxNumBytes} bytes");
+      }
+
+      output.WriteLine($"Final cache size is {cache.CurrentSizeInBytes} compared to maximum of {maxNumBytes}");
     }
   }
 }
