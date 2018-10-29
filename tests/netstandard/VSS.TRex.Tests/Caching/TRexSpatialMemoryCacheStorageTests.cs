@@ -188,5 +188,50 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
     }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheStorageTests_MaxEpochTokenAgeOnGet()
+    {
+      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(1000, 500);
+
+      // Fill half slots 
+      for (int i = 0; i < 500; i++)
+      { 
+        storage.Add(new TRexSpatialMemoryCacheContextTests_Element()
+        {
+          OriginX = (uint)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          OriginY = 1000,
+          SizeInBytes = 1000
+        }, null);
+      }
+
+      var currentMRUHead = storage.MRUHead;
+      // Get each item in the same order and verify they are not touched and moved to the MRUHead
+      for (int i = 0; i < 500; i++)
+      {
+        var item = storage.Get(i);
+
+        Assert.True(storage.MRUHead == currentMRUHead, $"MRUHead changed unexpectedly: storage.MRUHead = {storage.MRUHead}, currentMRUHead = {currentMRUHead}");
+      }
+
+      // Fill remaining slots 
+      for (int i = 500; i < 1000; i++)
+      {
+        storage.Add(new TRexSpatialMemoryCacheContextTests_Element()
+        {
+          OriginX = (uint)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
+          OriginY = 1000,
+          SizeInBytes = 1000
+        }, null);
+      }
+
+      // Get each item in the same order and verify they are touched and moved to the MRUHead
+      for (int i = 0; i < 1000; i++)
+      {
+        var item = storage.Get(i);
+
+        Assert.True(storage.MRUHead == i, $"Referenced item not promoted to MRU head at index {i}, MRUHead = {storage.MRUHead}");
+      }
+    }
   }
 }

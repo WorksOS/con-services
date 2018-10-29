@@ -13,14 +13,14 @@ namespace VSS.TRex.Caching
     /// <param name="projectUID">The Guid identifying the project within the fingerprint</param>
     /// <param name="gridDataType">The type of data being requested in the query</param>
     /// <param name="filters">The set of filters that govern the query</param>
-    /// <param name="includedSurveyedSurfaces">The list of surveyed surfaces included in the query, expressed as a an array of Guids</param>
+    /// <param name="includedSurveyedSurfaces">The list of surveyed surfaces included in the query, expressed as a an array of GUIDs</param>
     /// <returns></returns>
     public static string ConstructFingerprint(Guid projectUID, GridDataType gridDataType, IFilterSet filters, Guid[] includedSurveyedSurfaces)
     {
       string fingerprint = $"{projectUID}-{gridDataType}";
 
-      if ((filters?.Filters.Length ?? 0) > 0)
-        foreach (var filter in filters?.Filters)
+      if (filters?.Filters != null && filters.Filters.Length > 0)
+        foreach (var filter in filters.Filters)
           fingerprint = fingerprint + filter.AttributeFilter.SpatialCacheFingerprint();
 
       if (includedSurveyedSurfaces.Length > 0)

@@ -16,7 +16,7 @@ namespace VSS.TRex.Caching
 
     public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
 
-    private int tokenCount = 0;
+    private int tokenCount;
     public int TokenCount { get => tokenCount; }
 
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
@@ -72,7 +72,7 @@ namespace VSS.TRex.Caching
       {
 
         // Locate the index for the element in the context token tree and remove it from storage,
-        // nulling out the entry in the context token tree.
+        // null out the entry in the context token tree.
         // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Remove
         MRUList.Remove(ContextTokens[x, y] - 1);
         ContextTokens[x, y] = 0;
@@ -96,7 +96,7 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Removes the index for an item from the context token subgrid tree only. This is intended to be used by the MRUlist to communicate
+    /// Removes the index for an item from the context token subgrid tree only. This is intended to be used by the MRU list to communicate
     /// elements that are being removed from the MRUList in response to adding new items to the cache.
     /// </summary>
     /// <param name="item"></param>

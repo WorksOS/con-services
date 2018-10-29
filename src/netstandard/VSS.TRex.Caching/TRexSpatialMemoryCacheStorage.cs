@@ -9,13 +9,13 @@ namespace VSS.TRex.Caching
   {
     private TRexCacheItem<T>[] Items;
 
-    private int MRUHead;
+    public int MRUHead { get; private set; }
     private int FreeListHead;
 
     private long CurrentToken = -1;
-    private long NextToken => System.Threading.Interlocked.Increment(ref CurrentToken);
+    private long NextToken() => System.Threading.Interlocked.Increment(ref CurrentToken);
 
-    private int tokenCount = 0;
+    private int tokenCount;
 
     private int MaxMRUEpochTokenAge;
 
@@ -96,11 +96,12 @@ namespace VSS.TRex.Caching
     /// Adds an item into the cache storage.
     /// </summary>
     /// <param name="element"></param>
+    /// <param name="context"></param>
     /// <returns>The index of the newly added item</returns>
     public int Add(T element, ITRexSpatialMemoryCacheContext context)
     {
       int index;
-      long token = NextToken;
+      long token = NextToken();
 
       lock (this)
       {
@@ -191,8 +192,13 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
-        if (CurrentToken - Items[index].MRUEpochToken < MaxMRUEpochTokenAge)
+        if (CurrentToken - Items[index].MRUEpochToken > MaxMRUEpochTokenAge)
+        {
           TouchItemNoLock(index);
+
+          // Advance the current token so all elements 'age' by one
+          NextToken();
+        }
 
         return Items[index].Item;
       }
