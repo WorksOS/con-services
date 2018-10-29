@@ -132,7 +132,7 @@ namespace TRexIgniteTest
     public async Task<byte[]> GetTile(string siteUrl, string json)
     {
 
-      string route = "api/v1/tile/filestream";
+      string route = "api/v1/tile";
       var client = GetClient(siteUrl, route);
       if (client == null)
       {

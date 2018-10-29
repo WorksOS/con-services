@@ -6,56 +6,58 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage.Interfaces
 {
-    public interface IStorageProxy
-    {
-        IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; }
-        IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
+  public interface IStorageProxy
+  {
+    IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache { get; }
+    IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
 
-        StorageMutability Mutability { get; set; }
+    StorageMutability Mutability { get; set; }
 
-        FileSystemErrorStatus WriteStreamToPersistentStore(Guid DataModelID,
-                                              string StreamName,
-                                              FileSystemStreamType StreamType,
-                                              MemoryStream Stream);
+    FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID,
+      string streamName,
+      FileSystemStreamType streamType,
+      MemoryStream mutablestream,
+      object source);
 
-        FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid DataModelID,
-                                              string StreamName,
-                                              uint SubgridX, uint SubgridY,
-                                              string SegmentIdentifier,
-                                              FileSystemStreamType StreamType,
-                                              MemoryStream Stream);
+    FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
+      string streamName,
+      uint subgridX, uint subgridY,
+      string segmentIdentifier,
+      FileSystemStreamType streamType,
+      MemoryStream mutableStream,
+      object source);
 
-        FileSystemErrorStatus ReadStreamFromPersistentStore(Guid DataModelID,
-                                                  string StreamName,
-                                                  FileSystemStreamType StreamType,
-                                                  out MemoryStream Stream);
+    FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelID,
+      string streamName,
+      FileSystemStreamType streamType,
+      out MemoryStream stream);
 
-        FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid DataModelID,
-                                                  string StreamName,
-                                                  uint SubgridX, uint SubgridY,
-                                                  string SegmentIdentifier,
-                                                  FileSystemStreamType StreamType,
-                                                  out MemoryStream Stream);
+    FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
+      string streamName,
+      uint subgridX, uint subgridY,
+      string segmentIdentifier,
+      FileSystemStreamType streamType,
+      out MemoryStream stream);
 
-        FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid DataModelID,
-                                                              string StreamName);
+    FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID,
+      string streamName);
 
-        void SetImmutableStorageProxy(IStorageProxy immutableProxy);
+    void SetImmutableStorageProxy(IStorageProxy immutableProxy);
 
-        IStorageProxy ImmutableProxy { get; }
+    IStorageProxy ImmutableProxy { get; }
 
 
-        bool Commit();
+    bool Commit();
 
-        bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+    bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
 
-        void Clear();
+    void Clear();
 
-        /*
-            function CopyDataModel(const DataModelID : Int64; const DestinationFileName: String): TICFSErrorStatus;
-            function SwapDataModel(const DataModelID : Int64; const SourceFileName: String): TICFSErrorStatus;
-            function ChangeDataModelState(const DataModelID : Int64; const Operation: Integer): TICFSErrorStatus;
-            function ReportDataModelState(const DataModelID : Int64; var Status : TICFSClosingStatus): TICFSErrorStatus;
-        */
-    }
+    /*
+        function CopyDataModel(const dataModelID : Int64; const DestinationFileName: String): TICFSErrorStatus;
+        function SwapDataModel(const dataModelID : Int64; const SourceFileName: String): TICFSErrorStatus;
+        function ChangeDataModelState(const dataModelID : Int64; const Operation: Integer): TICFSErrorStatus;
+        function ReportDataModelState(const dataModelID : Int64; var Status : TICFSClosingStatus): TICFSErrorStatus;
+    */
+  }
 }

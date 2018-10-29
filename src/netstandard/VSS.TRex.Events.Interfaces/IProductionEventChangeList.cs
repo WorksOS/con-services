@@ -1,35 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Events.Interfaces
 {
-    public interface IProductionEvents
-    {
-        int Count();
+  public interface IProductionEvents
+  {
+    int Count();
 
-        void Sort();
+    void Sort();
 
-        void Collate(IProductionEventLists container);
+    void Collate(IProductionEventLists container);
 
-        void SaveToStore(IStorageProxy storageProxy);
+    MemoryStream GetMutableStream();
+    MemoryStream GetImmutableStream();
 
-        ProductionEventType EventListType { get; }
+    void SaveToStore(IStorageProxy storageProxy);
 
-        void CopyEventsFrom(IProductionEvents eventsList);
+    ProductionEventType EventListType { get; }
 
-        bool EventsChanged { get; set; }
+    void CopyEventsFrom(IProductionEvents eventsList);
 
-        void LoadFromStore(IStorageProxy storageProxy);
+    bool EventsChanged { get; set; }
 
-      /// <summary>
-      /// Returns a generic object reference to the internal list of events in this list
-      /// The purpose of this is to facilitate CopyEventsFrom
-      /// </summary>
-      /// <returns></returns>
-      object RawEventsObjects();
+    void LoadFromStore(IStorageProxy storageProxy);
 
-      List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
+    void ReadEvents(BinaryReader reader);
+
+    /// <summary>
+    /// Returns a generic object reference to the internal list of events in this list
+    /// The purpose of this is to facilitate CopyEventsFrom
+    /// </summary>
+    /// <returns></returns>
+    object RawEventsObjects();
+
+    List<string> ToStrings(DateTime startDate, DateTime endDate, int maxEventsToReturn);
   }
 
   public interface IProductionEvents<V> : IProductionEvents

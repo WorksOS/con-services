@@ -92,11 +92,11 @@ namespace VSS.TRex.SiteModels
     /// Note: It uses a storage proxy delegate to support the TAG file ingest pipeline that creates transactional storage
     /// proxies to manage graceful rollback of changes if needed
     /// </summary>
-    public void SaveToPersistentStore(IStorageProxy StorageProxy)
+    public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      StorageProxy.WriteStreamToPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, this.ToStream());
+      storageProxy.WriteStreamToPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, this.ToStream(), this);
     }
-
+    
     /// <summary>
     /// Loads the content of the machine designs list from the persistent store. If there is no item in the persistent store containing
     /// machine designs for this sitemodel them return an empty list.
