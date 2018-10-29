@@ -106,5 +106,25 @@ namespace VSS.TRex.Common
     /// </summary>
     public const uint kNumPartitionsPerDataCacheDefault = 1024;                   // overide with: NUMPARTITIONS_PERDATACACHE
 
+    /// <summary>
+    /// The minimum tag file size required to contain even basic configuration
+    /// </summary>
+    public const int kMinTagFileLengthDefault = 100;                              // overide with:  MIN_TAGFILE_LENGTH
+
+    /// <summary>
+    /// The minimum tag file size required to contain even basic configuration
+    /// </summary>
+    public const bool kEnableTagFileServiceDefault = true;                       // overide with:  ENABLE_TFA_SERVICE
+
+    /// <summary>
+    /// Archive tag file (this has normally already been done prior to submission to TRex 
+    /// </summary>
+    public const bool kEnableTagFileArchivingDefault = false;                   // overide with: ENABLE_TAGFILE_ARCHIVING
+
+    /// <summary>
+    /// Archive metadata with tag file
+    /// </summary>
+    public const bool kEnableTagFileArchivingMetaDataDefault = false;            // overide with: ENABLE_TAGFILE_ARCHIVING_METADATA
+
   }
 }

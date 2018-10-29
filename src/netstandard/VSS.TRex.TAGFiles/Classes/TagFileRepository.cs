@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Validator;
 
@@ -139,10 +140,9 @@ namespace VSS.TRex.TAGFiles.Classes
       }
 
       // load xml data ArchiveTagfileMetaDataPath and put into tagDetail
-      // if using location oly for metadata then you would have to extract it fromn the path
+      // if using location only for metadata then you would have to extract it from the path
 
-      var config = DIContext.Obtain<IConfigurationStore>();
-      var enableArchivingMetadata = config.GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA") ?? false;
+      var enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.kEnableTagFileArchivingMetaDataDefault);
       if (enableArchivingMetadata && File.Exists(ArchiveTagfileMetaDataPath))
       {
         FileStream ReadFileStream = new FileStream(ArchiveTagfileMetaDataPath, FileMode.Open, FileAccess.Read, FileShare.Read);

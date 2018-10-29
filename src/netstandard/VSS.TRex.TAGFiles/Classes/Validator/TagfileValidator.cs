@@ -11,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Machines;
@@ -26,10 +27,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
   public static class TagfileValidator
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-    /// <summary>
-    /// The name of the default data region (an undifferentiated data region in the grid)
-    /// </summary>
-    private const int DefaultMinTagfileLength = 100;
 
     /// <summary>
     /// Calls the TFA service via the nuget Proxy,
@@ -142,8 +139,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       // get our settings
       var config = DIContext.Obtain<IConfigurationStore>();
-      var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH", DefaultMinTagfileLength);
-      var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE", true);
+      var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
+      var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE", Consts.kEnableTagFileServiceDefault);
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
       {
         return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
