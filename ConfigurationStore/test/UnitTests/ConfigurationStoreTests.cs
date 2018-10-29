@@ -70,10 +70,26 @@ namespace VSS.ConfigurationStore.UnitTests
     }
 
     [TestMethod]
+    public void CanGetDefaultString()
+    {
+      string defaultValue = "gotThisInstead";
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      Assert.AreEqual(defaultValue, configuration.GetValueString("UNKNOWN_KEY", defaultValue));
+    }
+
+    [TestMethod]
     public void CanGetInt()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       Assert.AreEqual(1,configuration.GetValueInt("KAFKA_STACKSIZE"));
+    }
+
+    [TestMethod]
+    public void CanGetDefaultInt()
+    {
+      int defaultValue = 9988;
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      Assert.AreEqual(defaultValue, configuration.GetValueInt("UNKNOWN_KEY", defaultValue));
     }
 
     [TestMethod]
@@ -98,6 +114,14 @@ namespace VSS.ConfigurationStore.UnitTests
       Assert.IsTrue(value.HasValue);
       Assert.IsFalse(value.Value);
     }
+    [TestMethod]
+    public void CanGetDefaultBool()
+    {
+      bool defaultValue = false;
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var value = configuration.GetValueBool("UNKNOWN_KEY", defaultValue);
+      Assert.AreEqual(defaultValue, value);
+    }
 
     [TestMethod]
     public void CanGetTimeSpan()
@@ -108,6 +132,14 @@ namespace VSS.ConfigurationStore.UnitTests
       Assert.AreEqual(TimeSpan.FromDays(7), value.Value);
     }
 
+    [TestMethod]
+    public void CanGetDefaultTimeSpan()
+    {
+      TimeSpan defaultValue = new TimeSpan(5,4,3,2);
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var value = configuration.GetValueTimeSpan("UNKNOWN_KEY", defaultValue);
+      Assert.AreEqual(defaultValue, value);
+    }
 
     [TestMethod]
     public void CanGetLoggingConfig()
