@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -42,11 +43,31 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     private IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
+    private bool _adviseOtherServicesOfDataModelChanges = Consts.kAdviseOtherServicesOfDataModelChangesDefault;
+
+    private int _maxMappedTagFilesToProcessPerAggregationEpoch = Consts.kMaxMappedTagFilesToProcessPerAggregationEpochDefault;
+    
+    private void ReadEnvironmentVariables()
+    {
+      var config = DIContext.Obtain<IConfigurationStore>();
+      var configResultBool = config.GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES");
+      if (configResultBool != null)
+      {
+        _adviseOtherServicesOfDataModelChanges = configResultBool.Value;
+      }
+      var configResultInt = config.GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH");
+      if (configResultInt > -1)
+      {
+        _maxMappedTagFilesToProcessPerAggregationEpoch = configResultInt;
+      }
+    }
+
     /// <summary>
     /// Worker constructor that obtains the necessary storage proxies
     /// </summary>
     public AggregatedDataIntegratorWorker()
     {
+      ReadEnvironmentVariables();
     }
 
     /// <summary>
@@ -96,7 +117,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       ProcessedTasks.Clear();
 
       // Set capacity to maximum expected size to prevent List resizing while assembling tasks
-      ProcessedTasks.Capacity = TRexConfig.MaxMappedTAGFilesToProcessPerAggregationEpoch;
+      ProcessedTasks.Capacity = _maxMappedTagFilesToProcessPerAggregationEpoch;
 
       try
       {
@@ -155,7 +176,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           {
             for (int I = 0; I < TasksToProcess.Count; I++)
             {
-              if (ProcessedTasks.Count < TRexConfig.MaxMappedTAGFilesToProcessPerAggregationEpoch)
+              if (ProcessedTasks.Count < _maxMappedTagFilesToProcessPerAggregationEpoch)
               {
                 if (TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
                   ProcessedTasks.Add(task);
@@ -401,7 +422,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             WorkingModelUpdateMap = null;
           }
 
-          if (TRexConfig.AdviseOtherServicesOfDataModelChanges)
+          if (_adviseOtherServicesOfDataModelChanges)
           {
             // Notify the site model in all contents in the grid that it's attributes have changed
             Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");

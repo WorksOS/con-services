@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.ConfigurationStore;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -32,7 +33,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// The limit under which node subgrids are represented by sparse lists rather than a complete subgrid array of child subgrid references
     /// </summary>
     /// <returns></returns>
-    private int _subGridTreeNodeCellSparcityLimit = 20;
+    private int _subGridTreeNodeCellSparcityLimit = Consts.kSubGridTreeNodeCellSparcityLimitDefault;
 
     private void ReadEnvironmentVariables()
     {

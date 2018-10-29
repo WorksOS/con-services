@@ -2,7 +2,9 @@
 using System;
 using System.Drawing;
 using System.Reflection;
+using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
@@ -54,11 +56,24 @@ namespace VSS.TRex.Rendering
     // function GetWorkingPalette: TICDisplayPaletteBase;
     // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
 
+    private bool _debugDrawDiagonalCrossOnRenderedTilesDefault = Consts.kDebugDrawDiagonalCrossOnRenderedTilesDefault;
+
+    private void ReadEnvironmentVariables()
+    {
+      var config = DIContext.Obtain<IConfigurationStore>();
+      var configResultBool = config.GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES");
+      if (configResultBool != null)
+      {
+        _debugDrawDiagonalCrossOnRenderedTilesDefault = configResultBool.Value;
+      }
+    }
+
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
     public PlanViewTileRenderer()
     {
+      ReadEnvironmentVariables();
     }
 
     private void PerformAnyRequiredDebugLevelDisplay()
@@ -173,7 +188,7 @@ namespace VSS.TRex.Rendering
         {
           PerformAnyRequiredDebugLevelDisplay();
 
-          if (TRexConfig.Debug_DrawDiagonalCrossOnRenderedTiles)
+          if (_debugDrawDiagonalCrossOnRenderedTilesDefault)
           {
             // Draw diagonal cross and top left corner indicators
             Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.OriginY, Displayer.MapView.LimitX, Displayer.MapView.LimitY, Color.Red);
