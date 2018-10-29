@@ -3,7 +3,7 @@
 namespace VSS.TRex.Caching
 {
   /// <summary>
-  /// Stores a buffer of elements in a ring and provides semantics to add elements to the end of the buffer and to remove elements at any point in the buffer
+  /// Stores a buffer of elements in a ring and provides semantics to add elements to the 'head' of the buffer and to remove elements at any point in the buffer
   /// Elements stored in the ring buffer are defined by the generic type T
   /// </summary>
   public class MRURingBuffer<T> : IMRURingBuffer<T> where T : ITRexMemoryCacheItem

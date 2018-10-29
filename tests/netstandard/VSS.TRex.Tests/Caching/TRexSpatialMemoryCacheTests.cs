@@ -201,6 +201,8 @@ namespace VSS.TRex.Tests.Caching
         Assert.True(contexts[i].TokenCount == 1, "Context token count not one after adding single item");
       }
 
+      Assert.True(contexts.Length == numContexts, $"Number of contexts not {numContexts} as expected, it is: {contexts.Length}");
+
       for (int i = 0; i < numContexts; i++)
       {
         contexts[i].Remove(items[i]);
