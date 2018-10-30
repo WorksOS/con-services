@@ -2,5 +2,5 @@ TCCBaseURL: https://www.myconnectedsite.com
 TCCUserName: vlproduction
 TCCOrganization: vlproduction
 TCCPassword: vlproduction_key5
-TagFileEndpoint: http://10.211.10.253:8080/api/v2/tagfiles
+TagFileEndpoint: http://MerinoPerformance-929517642.us-west-2.elb.amazonaws.com/api/v2/tagfiles
 ShortOrgName: DIMENSIONS2018
