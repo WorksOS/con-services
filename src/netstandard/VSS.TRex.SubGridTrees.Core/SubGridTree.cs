@@ -57,7 +57,7 @@ This structure is tended to provide the following capabilities:
 
 This sub grid tree is not aware of the structured or storage mechanism used for
 the bottom leaf nodes (ie: the nodes containing the actual cell data). Thus, the
-acess mechanisms chiefly revolve around sub-grids, rather than actual cells
+access mechanisms chiefly revolve around sub-grids, rather than actual cells
 themselves, apart from cell X/Y location references used to locate subgrids.
 */
 

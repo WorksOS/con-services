@@ -39,6 +39,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Caching.Interfaces\VSS.TRex.Caching.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Caching\VSS.TRex.Caching.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Compression\VSS.TRex.Compression.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj" />

@@ -9,7 +9,7 @@ namespace VSS.TRex.Utilities
     {
         /// <summary>
         /// Rotates a point in cartesian coordinates about an origin point by a specified rotation in radians in an anti clockwise direction
-        /// (ie: a positive rotation rotates the point in a mathematical sense in an anit-clockwise direction)
+        /// (ie: a positive rotation rotates the point in a mathematical sense in an anti-clockwise direction)
         /// </summary>
         /// <param name="rotation"></param>
         /// <param name="fromX"></param>
