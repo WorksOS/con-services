@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.ConfigurationStore;
 using VSS.TRex.DI;
-using VSS.TRex.Interfaces;
-using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
@@ -26,6 +25,7 @@ namespace VSS.TRex.Tests.TestFixtures
         DIBuilder
           .New()
           .AddLogging()
+          .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
           .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
           .Complete();
       }

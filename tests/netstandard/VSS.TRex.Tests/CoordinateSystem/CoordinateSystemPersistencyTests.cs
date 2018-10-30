@@ -3,18 +3,20 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.ConfigurationStore;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.CoordinateSystem
 {
-  public class CoordinateSystemsTestsDIFixture : IDisposable
+  public class CoordinateSystemsTestsDIFixture : IClassFixture<DILoggingFixture>
   {
     private static object Lock = new object();
 
@@ -24,6 +26,12 @@ namespace VSS.TRex.Tests.CoordinateSystem
     {
       lock (Lock)
       {
+        DIBuilder
+          .New()
+          .AddLogging()
+          .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+          .Build();
+
         MemoryStream csibStream = new MemoryStream(Encoding.ASCII.GetBytes("MyCSIB"));
 
         var moqStorageProxy = new Mock<IStorageProxy>();
@@ -44,8 +52,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
         moqSiteModels.Setup(mk => mk.GetSiteModel(moqStorageProxy.Object, NewSiteModelGuid, true)).Returns(mockedSiteModel);
 
         DIBuilder
-          .New()
-          .AddLogging()
+          .Continue()
           .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
           .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
           .Complete();

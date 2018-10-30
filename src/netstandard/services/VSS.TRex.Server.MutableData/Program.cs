@@ -13,7 +13,6 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.TAGFiles.Classes;
 using System.Threading.Tasks;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -22,11 +21,9 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Logging;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.ConfigurationStore;
 using VSS.TRex.TAGFiles.Classes.Queues;
@@ -35,24 +32,21 @@ namespace VSS.TRex.Server.MutableData
 {
   public class Program
   {
-    public static IConfiguration Configuration { get; set; }
-
     private static void DependencyInjection()
     {
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>())
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
-        .Add(x => x.AddSingleton(Configuration))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
@@ -63,7 +57,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
         // Register the sender for the sie model attribute change notifications
-        .Add(x => x.AddSingleton< ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
+        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
 
         .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager()))
 
@@ -71,7 +65,7 @@ namespace VSS.TRex.Server.MutableData
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    private static void EnsureAssemblyDependenciesAreLoaded()
+      private static void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -106,27 +100,35 @@ namespace VSS.TRex.Server.MutableData
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static async Task<int> Main(string[] args)
+    /// <summary>
+    /// Display environment variables
+    ///   DependencyInjection() includes only IConfigurationStore (not IConfiguration)
+    ///   Therefore the order here reflects IConfigurationStore so that matching
+    ///     values will be used.
+    /// </summary>
+    private static void DisplayEnvironmentVariablesToConsole()
     {
-      EnsureAssemblyDependenciesAreLoaded();
-
-      // Load settings for Mutabledata
-      Configuration = new ConfigurationBuilder()
-          //   .SetBasePath(Directory.GetCurrentDirectory()) dont set for default running path
-          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-          .AddEnvironmentVariables() // this should override appsettings.json with environment variables but does not seem to work!
-          .Build();
-
-      DependencyInjection();
-
-      if (Configuration.GetSection("EnableTFAService").Value == null)
-        Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g EnableTFAService");
+      IConfigurationRoot configuration = new ConfigurationBuilder()
+        .AddEnvironmentVariables()
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .Build();
 
       Console.WriteLine("**** Configuration Settings ****");
-      foreach (var env in Configuration.GetChildren())
+      foreach (var env in configuration.GetChildren())
       {
         Console.WriteLine($"{env.Key}:{env.Value}");
       }
+    }
+
+
+    static async Task<int> Main(string[] args)
+    {
+      EnsureAssemblyDependenciesAreLoaded();
+      DependencyInjection();
+
+      DisplayEnvironmentVariablesToConsole();
+      if (string.IsNullOrEmpty(DIContext.Obtain<IConfigurationStore>().GetValueString("ENABLE_TFA_SERVICE")))
+        Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g ENABLE_TFA_SERVICE");
 
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>

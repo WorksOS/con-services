@@ -1,13 +1,13 @@
 ﻿using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
-using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class GenericSubGridTreeTests
-    {
+        public class GenericSubGridTreeTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_GenericSubGridTree_Creation()
         {
@@ -54,29 +54,37 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Null(tree3.NullCellValue);
         }
 
-        [Fact]
-        public void Test_GenericSubGridTree_ForEach()
+    [Fact]
+    public void Test_GenericSubGridTree_ForEach()
+    {
+      var tree = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      int count;
+
+      // Count 'true' cells (should be none yet)
+      count = 0;
+      tree.ForEach(x =>
+      {
+        count = x ? count++ : count;
+        return true;
+      });
+      Assert.Equal(0, count);
+
+      // Add some true cells to the tree and count them
+      for (uint x = 0; x < 10; x++)
+      {
+        for (uint y = 0; y < 10; y++)
         {
-            var tree = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
-            int count;
-
-            // Count 'true' cells (should be none yet)
-            count = 0;
-            tree.ForEach(x => { count = x ? count++ : count; return true; });
-            Assert.Equal(0, count);
-
-            // Add some true cells to the tree and count them
-            for (uint x = 0; x < 10; x++)
-            {
-                for (uint y = 0; y < 10; y++)
-                {
-                    tree[x * 10, y * 10] = true;
-                }
-            }
-
-            count = 0;
-            tree.ForEach(x => { count = x ? count + 1 : count; return true; });
-            Assert.Equal(100, count);
+          tree[x * 10, y * 10] = true;
         }
+      }
+
+      count = 0;
+      tree.ForEach(x =>
+      {
+        count = x ? count + 1 : count;
+        return true;
+      });
+      Assert.Equal(100, count);
     }
+  }
 }

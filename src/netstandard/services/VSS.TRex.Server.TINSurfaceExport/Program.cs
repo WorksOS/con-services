@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -56,6 +57,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
     {
       DIBuilder.New()
       .AddLogging()
+      .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
       .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
       .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
       .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))

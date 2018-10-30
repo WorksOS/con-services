@@ -1478,7 +1478,7 @@ namespace VSS.TRex.Filters
 
     /// <summary>
     /// FilterMultiplePasses selects a set of passes from the list of passes
-    /// in <PassValues> where <PassValues> contains the entire
+    /// in <passValues> where <passValues> contains the entire
     /// list of passes for a cell in the database.
     /// </summary>
     /// <param name="passValues"></param>

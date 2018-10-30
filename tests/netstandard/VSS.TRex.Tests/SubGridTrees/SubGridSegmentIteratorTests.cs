@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;

@@ -5,6 +5,7 @@ using System.Threading;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using System.Threading.Tasks;
+using VSS.ConfigurationStore;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events;
@@ -26,6 +27,7 @@ namespace VSS.TRex.Server.DesignElevation
       DIBuilder
         .New()
         .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Build()

@@ -1,15 +1,17 @@
 ﻿using System;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using Xunit;
 using VSS.TRex.SubGridTrees.Factories;
+using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridTreeTests
-    {
+        public class SubGridTreeTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_SubGridTree_Creation()
         {

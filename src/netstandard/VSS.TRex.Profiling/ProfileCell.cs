@@ -79,7 +79,7 @@ namespace VSS.TRex.Profiling
     public ushort CellMinSpeed { get; set; }
 
     /// <summary>
-    // Passes contains the entire list of passes that all the layers in the layer collection refer to
+    /// Passes contains the entire list of passes that all the layers in the layer collection refer to
     /// </summary>
     public FilteredMultiplePassInfo Passes;
 

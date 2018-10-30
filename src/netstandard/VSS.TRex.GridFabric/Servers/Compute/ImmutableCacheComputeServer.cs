@@ -38,9 +38,9 @@ namespace VSS.TRex.Servers.Compute
     /// </summary>
     public ImmutableCacheComputeServer()
     {
-      Console.WriteLine("PersistentCacheLocation:" + TRexConfig.PersistentCacheStoreLocation);
+      Console.WriteLine("PersistentCacheLocation:" + TRexServerConfig.PersistentCacheStoreLocation);
       Console.WriteLine($"Log is: {Log}");
-      Log.LogDebug($"PersistentCacheStoreLocation: {TRexConfig.PersistentCacheStoreLocation}");
+      Log.LogDebug($"PersistentCacheStoreLocation: {TRexServerConfig.PersistentCacheStoreLocation}");
       if (immutableTRexGrid == null)
       {
         StartTRexGridCacheNode();
@@ -72,9 +72,9 @@ namespace VSS.TRex.Servers.Compute
         WalMode = WalMode.Fsync,
         PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
-        StoragePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable", "Persistence"),
-        WalArchivePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable", "WalArchive"),
-        WalPath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable", "WalStore"),
+        StoragePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable", "Persistence"),
+        WalArchivePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable", "WalArchive"),
+        WalPath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable", "WalStore"),
 
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
@@ -93,7 +93,7 @@ namespace VSS.TRex.Servers.Compute
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
-      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Immutable");
+      cfg.WorkDirectory = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable");
 
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 
@@ -128,7 +128,7 @@ namespace VSS.TRex.Servers.Compute
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
       //TODO this should not be here but will do for the moment
-      TRexConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+      TRexServerConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
 
       cfg.SpringConfigUrl = @".\immutablePersistence.xml";
 
