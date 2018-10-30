@@ -80,6 +80,8 @@ namespace VSS.Productivity3D.WebApi
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
 
+      //Disable CAP for now #76666
+      /*
       var serviceProvider = services.BuildServiceProvider();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       services.AddCap(x =>
@@ -96,7 +98,7 @@ namespace VSS.Productivity3D.WebApi
         });
         x.UseDashboard(); //View dashboard at http://localhost:5000/cap
       });
-
+      */
       serviceCollection = services;
     }
   }

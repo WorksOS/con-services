@@ -33,12 +33,12 @@ namespace VSS.Productivity3D.WebApi.Models.Services
     private CancellationToken token;
     private bool stopRequested = false;
     private SemaphoreSlim stopSemaphore = new SemaphoreSlim(1);
-    private readonly ICapPublisher capPublisher;
+    //private readonly ICapPublisher capPublisher;//Disable CAP for now #76666
     private readonly string kafkaTopicName;
 
     public AddFileProcessingService(ILogger<AddFileProcessingService> logger, ILoggerFactory logFactory,
       IConfigurationStore configService, IFileRepository repositoryService, IASNodeClient raptorService,
-      ITileGenerator tileService, ICapPublisher capPub)
+      ITileGenerator tileService/*, ICapPublisher capPub*/)//Disable CAP for now #76666
     {
       log = logger;
       configServiceStore = configService;
@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApi.Models.Services
       loggingFactory = logFactory;
       raptorServiceClient = raptorService;
       tileServiceGenerator = tileService;
-      capPublisher = capPub;
+      //capPublisher = capPub;//Disable CAP for now #76666
       kafkaTopicName = $"VSS.Productivity3D.Service.AddFileProcessedEvent{configServiceStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}".Trim();
     }
 
@@ -63,6 +63,8 @@ namespace VSS.Productivity3D.WebApi.Models.Services
         {"result", result.Message }
       };
       NewRelic.Api.Agent.NewRelic.RecordCustomEvent("3DPM_Request_files", eventAttributes);
+      //Disable CAP for now #76666
+      /*
       try
       {
         log.LogInformation($"Publishing result to CAP with kafka topic {kafkaTopicName}");
@@ -73,6 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.Services
         log.LogError($"Failed to publish to CAP: {e.Message}");
         throw;
       }
+      */
       return result;
     }
 
