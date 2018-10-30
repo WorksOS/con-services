@@ -11,5 +11,7 @@ namespace VSS.MasterData.Proxies.Interfaces
       IDictionary<string, string> customHeaders = null);
     Task<ContractExecutionResult> SendTagFileNonDirect(model.CompactionTagFileRequest compactionTagFileRequest,
       IDictionary<string, string> customHeaders = null);
+    Task<ContractExecutionResult> SendTagFileNonDirectToConnectedSite(model.CompactionTagFileRequest compactionTagFileRequest,
+      IDictionary<string, string> customHeaders = null);
   }
 }
