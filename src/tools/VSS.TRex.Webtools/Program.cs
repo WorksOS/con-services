@@ -22,14 +22,14 @@ namespace VSS.TRex.Webtools
       return WebHost.CreateDefaultBuilder(args)
         .ConfigureLogging(builder =>
         {
-          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
+          Log4NetProvider.RepoName = Startup.LoggerRepoName;
           builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
           builder.SetMinimumLevel(LogLevel.Trace);
         })
         .ConfigureAppConfiguration((hostingContext, config) =>
         {
           var env = hostingContext.HostingEnvironment;
-          env.ConfigureLog4Net(repoName: Startup.LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
+          env.ConfigureLog4Net(repoName: Startup.LoggerRepoName, configFileRelativePath: "log4net.xml");
 
         })
         .UseStartup<Startup>()

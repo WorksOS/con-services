@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
@@ -15,156 +18,159 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
-    public class ServerSubGridTree : SubGridTree, IServerSubGridTree
+  public class ServerSubGridTree : SubGridTree, IServerSubGridTree 
+  {
+    private static ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTree>();
+
+    /// <summary>
+    /// Controls emission of subgrid reading activities into the log.
+    /// </summary>
+    public bool RecordSubgridFileReadingToLog { get; set; } = false;
+
+    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.kSegmentCleavingOperationsToLogDefault);
+    
+    public ServerSubGridTree(Guid siteModelID) :
+      base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
+        new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
     {
-        private static ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTree>();
+      ID = siteModelID; // Ensure the ID of the subgrid tree matches the datamodel ID
+    }
 
-        /// <summary>
-        /// Controls emission of subgrid reading activities into the log.
-        /// </summary>
-        public bool RecordSubgridFileReadingToLog { get; set; } = false;
+    public ServerSubGridTree(byte numLevels,
+      double cellSize,
+      ISubGridFactory subGridFactory) : base(numLevels, cellSize, subGridFactory)
+    {
+    }
 
-        public ServerSubGridTree(Guid siteModelID) :
-            base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
-                new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>())
+    /// <summary>
+    /// Computes a unique file name for a segment within a particular subgrid
+    /// </summary>
+    /// <param name="CellAddress"></param>
+    /// <param name="SegmentInfo"></param>
+    /// <returns></returns>
+    public static string GetLeafSubGridSegmentFullFileName(SubGridCellAddress CellAddress,
+      ISubGridCellPassesDataSegmentInfo SegmentInfo)
+    {
+      // Work out the cell address of the origin cell in the appropriate leaf
+      // subgrid. We use this cell position to derive the name of the file
+      // containing the leaf subgrid data
+      return SegmentInfo.FileName((uint) (CellAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
+        (uint) (CellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+    }
+
+    public bool LoadLeafSubGridSegment(IStorageProxy storageProxy,
+      SubGridCellAddress cellAddress,
+      bool loadLatestData,
+      bool loadAllPasses,
+      IServerLeafSubGrid SubGrid,
+      ISubGridCellPassesDataSegment Segment)
+    {
+      bool needToLoadLatestData = loadLatestData && !Segment.HasLatestData;
+      bool needToLoadAllPasses = loadAllPasses && !Segment.HasAllPasses;
+
+      if (!needToLoadLatestData && !needToLoadAllPasses)
+        return true; // Nothing more to do here
+
+      // Lock the segment briefly while its contents is being loaded
+      lock (Segment)
+      {
+        if (loadLatestData == !Segment.HasLatestData && needToLoadAllPasses == !Segment.HasAllPasses)
+          return true; // The load operation was performed on another thread. Leave quietly
+
+        // Ensure the appropriate storage is allocated
+        if (needToLoadLatestData)
+          Segment.AllocateLatestPassGrid();
+
+        if (needToLoadAllPasses)
+          Segment.AllocateFullPassStacks();
+
+        if (!Segment.SegmentInfo.ExistsInPersistentStore)
+          return true; // Nothing more to do here
+
+        // Locate the segment file and load the data from it
+        string FullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, Segment.SegmentInfo);
+
+        // Load the cells into it from its file
+        bool FileLoaded = SubGrid.LoadSegmentFromStorage(storageProxy, FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses);
+
+        if (!FileLoaded)
         {
-            ID = siteModelID; // Ensure the ID of the subgrid tree matches the datamodel ID
+          // Oops, something bad happened. Remove the segment from the list. Return failure to the caller.
+          if (loadAllPasses)
+            Segment.DeAllocateFullPassStacks();
+
+          if (loadLatestData)
+            Segment.DeAllocateLatestPassGrid();
+
+          return false;
         }
+      }
 
-        public ServerSubGridTree(byte numLevels,
-                                 double cellSize,
-                                 ISubGridFactory subGridFactory) : base(numLevels, cellSize, subGridFactory)
-        { }
+      return true;
+    }
 
-        /// <summary>
-        /// Computes a unique file name for a segment within a particular subgrid
-        /// </summary>
-        /// <param name="CellAddress"></param>
-        /// <param name="SegmentInfo"></param>
-        /// <returns></returns>
-        public static string GetLeafSubGridSegmentFullFileName(SubGridCellAddress CellAddress,
-                                                               ISubGridCellPassesDataSegmentInfo SegmentInfo)
+    public bool LoadLeafSubGrid(IStorageProxy storageProxy,
+      SubGridCellAddress CellAddress,
+      bool loadAllPasses, bool loadLatestPasses,
+      IServerLeafSubGrid SubGrid)
+    {
+      string FullFileName = string.Empty;
+      bool Result = false;
+
+      try
+      {
+        // Loading contents into a dirty subgrid (which should happen only on the mutable nodes), or
+        // when there is already content in the segment directory are strictly forbidden and break immutability
+        // rules for subgrids
+        Debug.Assert(!SubGrid.Dirty, "Leaf subgrid directory loads may not be performed while the subgrid is dirty. The information should be taken from the cache instead.");
+        Debug.Assert(SubGrid.Directory?.SegmentDirectory?.Count == 0, "Loading a leaf subgrid directory when there are already segments present within it.");
+
+        // Load the cells into it from its file
+        // Briefly lock this subgrid just for the period required to read its contents
+        lock (SubGrid)
         {
-            // Work out the cell address of the origin cell in the appropriate leaf
-            // subgrid. We use this cell position to derive the name of the file
-            // containing the leaf subgrid data
-            return SegmentInfo.FileName((uint)(CellAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask), 
-                                        (uint)(CellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+          // Check this thread is the winner of the lock to be able to load the contents
+          if (SubGrid.Directory?.SegmentDirectory?.Count != 0)
+            return true; // The load has occurred on another thread, leave quietly...
+
+          // Ensure the appropriate storage is allocated
+          if (loadAllPasses)
+            SubGrid.AllocateLeafFullPassStacks();
+
+          if (loadLatestPasses)
+            SubGrid.AllocateLeafLatestPassGrid();
+
+          FullFileName = GetLeafSubGridFullFileName(CellAddress);
+
+          // Briefly lock this subgrid just for the period required to read its contents
+          Result = SubGrid.LoadDirectoryFromFile(storageProxy, FullFileName);
         }
+      }
+      finally
+      {
+        if (Result && RecordSubgridFileReadingToLog)
+          Log.LogDebug($"Subgrid file {FullFileName} read from persistent store containing {SubGrid.Directory.SegmentDirectory.Count} segments (Moniker: {SubGrid.Moniker()}");
+      }
 
-        public bool LoadLeafSubGridSegment(IStorageProxy storageProxy,
-                                           SubGridCellAddress cellAddress,
-                                           bool loadLatestData,
-                                           bool loadAllPasses,
-                                           IServerLeafSubGrid SubGrid,
-                                           ISubGridCellPassesDataSegment Segment)
-        {
-            bool needToLoadLatestData = loadLatestData && !Segment.HasLatestData;
-            bool needToLoadAllPasses = loadAllPasses && !Segment.HasAllPasses;
+      return Result;
+    }
 
-            if (!needToLoadLatestData && !needToLoadAllPasses)              
-                return true; // Nothing more to do here
+    public static string GetLeafSubGridFullFileName(SubGridCellAddress CellAddress)
+    {
+      // Work out the cell address of the origin cell in the appropriate leaf
+      // subgrid. We use this cell position to derive the name of the file
+      // containing the leaf subgrid data
+      return ServerSubGridTreeLeaf.FileNameFromOriginPosition(new SubGridCellAddress((uint) (CellAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint) (CellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask)));
+    }
 
-            // Lock the segment briefly while its contents is being loaded
-            lock (Segment)
-            {
-                if (loadLatestData == !Segment.HasLatestData && needToLoadAllPasses == !Segment.HasAllPasses)                  
-                    return true; // The load operation was performed on another thread. Leave quietly
-
-                // Ensure the appropriate storage is allocated
-                if (needToLoadLatestData)
-                    Segment.AllocateLatestPassGrid();
-             
-                if (needToLoadAllPasses)
-                    Segment.AllocateFullPassStacks();
-             
-                if (!Segment.SegmentInfo.ExistsInPersistentStore)                  
-                  return true; // Nothing more to do here
-             
-                // Locate the segment file and load the data from it
-                string FullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, Segment.SegmentInfo);
-             
-                // Load the cells into it from its file
-                bool FileLoaded = SubGrid.LoadSegmentFromStorage(storageProxy, FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses);
-             
-                if (!FileLoaded)
-                {
-                    // Oops, something bad happened. Remove the segment from the list. Return failure to the caller.
-                    if (loadAllPasses)
-                      Segment.DeAllocateFullPassStacks();
-                
-                    if (loadLatestData)
-                      Segment.DeAllocateLatestPassGrid();
-                
-                    return false;
-                }
-            }
-
-          return true;
-        }
-
-        public bool LoadLeafSubGrid(IStorageProxy storageProxy,
-                                    SubGridCellAddress CellAddress,
-                                    bool loadAllPasses, bool loadLatestPasses,
-                                    IServerLeafSubGrid SubGrid)
-        {
-            string FullFileName = string.Empty;
-            bool Result = false;
-
-            try
-            {
-                // Loading contents into a dirty subgrid (which should happen only on the mutable nodes), or
-                // when there is already content in the segment directory are strictly forbidden and break immutability
-                // rules for subgrids
-                Debug.Assert(!SubGrid.Dirty, "Leaf subgrid directory loads may not be performed while the subgrid is dirty. The information should be taken from the cache instead.");
-                Debug.Assert(SubGrid.Directory?.SegmentDirectory?.Count == 0, "Loading a leaf subgrid directory when there are already segments present within it.");
-
-                // Load the cells into it from its file
-                // Briefly lock this subgrid just for the period required to read its contents
-                lock (SubGrid)
-                {
-                    // Check this thread is the winner of the lock to be able to load the contents
-                    if (SubGrid.Directory?.SegmentDirectory?.Count != 0)                       
-                        return true; // The load has occurred on another thread, leave quietly...
-
-                    // Ensure the appropriate storage is allocated
-                    if (loadAllPasses)
-                        SubGrid.AllocateLeafFullPassStacks();
-                 
-                    if (loadLatestPasses)
-                        SubGrid.AllocateLeafLatestPassGrid();
-                 
-                    FullFileName = GetLeafSubGridFullFileName(CellAddress);
-                 
-                    // Briefly lock this subgrid just for the period required to read its contents
-                    Result = SubGrid.LoadDirectoryFromFile(storageProxy, FullFileName);
-                }
-            }
-            finally
-            {
-              if (Result && RecordSubgridFileReadingToLog)
-                  Log.LogDebug($"Subgrid file {FullFileName} read from persistent store containing {SubGrid.Directory.SegmentDirectory.Count} segments (Moniker: {SubGrid.Moniker()}");
-            }
-
-            return Result;
-        }
-
-        public static string GetLeafSubGridFullFileName(SubGridCellAddress CellAddress)
-        {
-            // Work out the cell address of the origin cell in the appropriate leaf
-            // subgrid. We use this cell position to derive the name of the file
-            // containing the leaf subgrid data
-            return ServerSubGridTreeLeaf.FileNameFromOriginPosition(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask)));
-        }
-
-      /// <summary>
-      /// Orchestrates all the activities relating to saving the state of a created or modified subgrid, including
-      /// cleaving, saving updated elements, creating new elements and arranging for the retirement of
-      /// elements that have been replaced in the persistent store as a result of this activity.
-      /// </summary>
-      /// <param name="subGrid"></param>
-      /// <param name="storageProxy"></param>
-      /// <returns></returns>
+    /// <summary>
+    /// Orchestrates all the activities relating to saving the state of a created or modified subgrid, including
+    /// cleaving, saving updated elements, creating new elements and arranging for the retirement of
+    /// elements that have been replaced in the persistent store as a result of this activity.
+    /// </summary>
+    /// <param name="subGrid"></param>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
     public bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, IStorageProxy storageProxy, List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams)
     {
       try
@@ -173,7 +179,7 @@ namespace VSS.TRex.SubGridTrees.Server
         // to disk. This reduces the number of segment cleaving actions that would otherwise
         // be performed in the context of the aggregated integrator.
 
-        if (TRexConfig.RecordSegmentCleavingOperationsToLog)
+        if (_segmentCleavingOperationsToLog)
           Log.LogDebug($"About to perform segment cleaving on {subGrid.Moniker()}");
 
         var cleaver = new SubGridSegmentCleaver();
@@ -186,7 +192,7 @@ namespace VSS.TRex.SubGridTrees.Server
         // (which is the only writer of this information in the Raptor system).
         subGrid.ComputeLatestPassInformation(true, storageProxy);
 
-        if (TRexConfig.RecordSegmentCleavingOperationsToLog)
+        if (_segmentCleavingOperationsToLog)
           Log.LogInformation($"SaveLeafSubGrid: {subGrid.Moniker()} ({subGrid.Cells.PassesData.Count} segments)");
 
         var ModifiedOriginaSegments = new List<ISubGridCellPassesDataSegment>(100);
@@ -201,8 +207,9 @@ namespace VSS.TRex.SubGridTrees.Server
         // issue the persistence of the modified subgrid is allowed, but noted in
         // the log for posterity.
         if (subGrid.Cells.PassesData.Count == 0)
-          Log.LogInformation($"Note: Saving a subgrid, {subGrid.Moniker()}, (Segments = {subGrid.Cells.PassesData.Count }, Dirty = {subGrid.Dirty}) with no cached subgrid segments to the persistent store in SaveLeafSubGrid (possible reprocessing of TAG file with no cell pass changes). " +
-                             $"SubGrid.Directory.PersistedClovenSegments.Count={cleaver.PersistedClovenSegments?.Count}, ModifiedOriginalFiles.Count={ModifiedOriginaSegments.Count}, NewSegmentsFromCleaving.Count={NewSegmentsFromCleaving.Count}");
+          Log.LogInformation(
+            $"Note: Saving a subgrid, {subGrid.Moniker()}, (Segments = {subGrid.Cells.PassesData.Count}, Dirty = {subGrid.Dirty}) with no cached subgrid segments to the persistent store in SaveLeafSubGrid (possible reprocessing of TAG file with no cell pass changes). " +
+            $"SubGrid.Directory.PersistedClovenSegments.Count={cleaver.PersistedClovenSegments?.Count}, ModifiedOriginalFiles.Count={ModifiedOriginaSegments.Count}, NewSegmentsFromCleaving.Count={NewSegmentsFromCleaving.Count}");
 
         SubGridSegmentIterator Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
         {
@@ -267,7 +274,7 @@ namespace VSS.TRex.SubGridTrees.Server
           //*** recovery phase                                                 ***
           //**********************************************************************
 
-          if (TRexConfig.RecordSegmentCleavingOperationsToLog)
+          if (_segmentCleavingOperationsToLog)
             Log.LogInformation($"Subgrid has {NewSegmentsFromCleaving.Count} new segments from cleaving");
 
           foreach (var segment in NewSegmentsFromCleaving)
@@ -279,7 +286,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
             if (FSError == FileSystemErrorStatus.OK)
             {
-              if (TRexConfig.RecordSegmentCleavingOperationsToLog)
+              if (_segmentCleavingOperationsToLog)
                 Log.LogInformation($"Saved new cloven grid segment file: {GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo)}");
             }
             else
@@ -331,7 +338,7 @@ namespace VSS.TRex.SubGridTrees.Server
           // Include an additional invalidated spatial stream for the subgrid directory stream
           invalidatedSpatialStreams.Add(subGrid.AffinityKey());
         }
-       
+
         if (subGrid.SaveDirectoryToFile(storageProxy, GetLeafSubGridFullFileName(OriginAddress)))
         {
           Log.LogDebug($"Saved grid directory file: {GetLeafSubGridFullFileName(OriginAddress)}");

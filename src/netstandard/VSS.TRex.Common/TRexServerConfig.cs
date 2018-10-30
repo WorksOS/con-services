@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -68,5 +69,11 @@ namespace VSS.TRex.Common
         /// Defines whether non spatial data should be compressed in it's immutable form
         /// </summary>
         public bool CompressImmutableNonSpatialData { get; set; } = true;
-    }
+
+      /// <summary>
+      /// The file system location in which to store Ignite persistent data
+      /// </summary>
+      public static string PersistentCacheStoreLocation = Path.Combine("/persist", "TRexIgniteData");
+      //public static string PersistentCacheStoreLocation = "C:/temp/TRexIgniteData"; //Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+  }
 }

@@ -38,7 +38,7 @@ namespace VSS.TRex.Servers.Compute
     /// </summary>
     public MutableCacheComputeServer()
     {
-      Log.LogDebug($"PersistentCacheStoreLocation is: {TRexConfig.PersistentCacheStoreLocation}");
+      Log.LogDebug($"PersistentCacheStoreLocation is: {TRexServerConfig.PersistentCacheStoreLocation}");
       if (mutableTRexGrid == null)
       {
         StartTRexGridCacheNode();
@@ -66,9 +66,9 @@ namespace VSS.TRex.Servers.Compute
         WalMode = WalMode.Fsync,
         PageSize = DataRegions.DEFAULT_MUTABLE_DATA_REGION_PAGE_SIZE,
 
-        StoragePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable", "Persistence"),
-        WalArchivePath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable", "WalArchive"),
-        WalPath = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable", "WalStore"),
+        StoragePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable", "Persistence"),
+        WalArchivePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable", "WalArchive"),
+        WalPath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable", "WalStore"),
 
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
@@ -120,7 +120,7 @@ namespace VSS.TRex.Servers.Compute
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
-      cfg.WorkDirectory = Path.Combine(TRexConfig.PersistentCacheStoreLocation, "Mutable");
+      cfg.WorkDirectory = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable");
     }
 
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
@@ -141,7 +141,7 @@ namespace VSS.TRex.Servers.Compute
 
 
       //TODO this should not be here but will do for the moment
-      TRexConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+      TRexServerConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
 
       // Enforce using only the LocalHost interface
       cfg.DiscoverySpi = new TcpDiscoverySpi()

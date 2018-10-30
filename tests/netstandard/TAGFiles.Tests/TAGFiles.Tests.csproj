@@ -52,6 +52,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\TAGFiles\TestTAGFile-TAG-Header-Read.tag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

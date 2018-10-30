@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.ConfigurationStore;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -25,10 +27,13 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       lock (Lock)
       {
+
         DIBuilder
           .New()
           .AddLogging()
+          .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
           .Build();
+
 
         var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
         storageProxy.SetImmutableStorageProxy(new StorageProxy_Ignite_Transactional(StorageMutability.Immutable));
