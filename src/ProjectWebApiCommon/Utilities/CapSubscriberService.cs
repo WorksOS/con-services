@@ -39,9 +39,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       log = logger.CreateLogger<SubscriberService>();
     }
 
-    [CapSubscribe("VSS.Productivity3D.Service.AddFileProcessedEvent-Dev")]
-    [CapSubscribe("VSS.Productivity3D.Service.AddFileProcessedEvent-Alpha")]
-    [CapSubscribe("VSS.Productivity3D.Service.AddFileProcessedEvent-3dpm")]
+    //Disable CAP for now #76666
+    //[CapSubscribe("VSS.Productivity3D.Service.AddFileProcessedEvent-Dev")]
+    //[CapSubscribe("VSS.Productivity3D.Service.AddFileProcessedEvent-Alpha")]
+    //[CapSubscribe("VSS.Productivity3D.Service.AddFileProcessedEvent-3dpm")]
     public async Task AddFileProcessed(AddFileResult result)
     {
       log.LogInformation($"Received AddFileProcessedEvent from CAP for fileUid {result.FileUid}");

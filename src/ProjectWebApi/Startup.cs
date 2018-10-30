@@ -119,6 +119,8 @@ namespace VSS.MasterData.Project.WebAPI
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       //Note: The injection of CAP subscriber service needed before 'services.AddCap()'
       services.AddTransient<ISubscriberService, SubscriberService>();
+      //Disable CAP for now #76666
+      /*
       services.AddCap(x =>
       {
         x.UseMySql(y =>
@@ -134,6 +136,7 @@ namespace VSS.MasterData.Project.WebAPI
         });
         x.UseDashboard(); //View dashboard at http://localhost:5000/cap
       });
+      */
 
       serviceCollection = services;
     }
