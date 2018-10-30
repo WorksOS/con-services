@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -64,7 +65,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
       try
       {
-        // if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
+        // if <config>.Debug_PerformDPServiceRequestHighRateLogging then
         //   SIGLogMessage.PublishNoODS(Self, Format('In %s.Execute for DataModel:%d  OTGCellBottomLeftX:%d  OTGCellBottomLeftY:%d', [Self.ClassName, Args.DataModelID, Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY]), slmcDebug);
         // InterlockedIncrement64(DesignProfilerRequestStats.NumSurfacePatchesComputed);
 
@@ -98,13 +99,15 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
           double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
 
+          ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Args.SiteModelID);
+
           // Work down through the list of surfaces in the time ordering provided by the caller
-          for (int i = 0; i < Args.IncludedSurveyedSurfaces.Count; i++)
+          for (int i = 0; i < Args.IncludedSurveyedSurfaces.Length; i++)
           {
             if (Args.ProcessingMap.IsEmpty())
               break;
 
-            ISurveyedSurface ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
+            ISurveyedSurface ThisSurveyedSurface = siteModel.SurveyedSurfaces.Locate(Args.IncludedSurveyedSurfaces[i]);
 
             // Lock & load the design
             Design = DesignFiles.Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor(), Args.SiteModelID, Args.CellSize, out _);
@@ -142,7 +145,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                   {
                     switch (Args.SurveyedSurfacePatchType)
                     {
-                      // Check for compositie elevation processing
+                      // Check for composite elevation processing
                       case SurveyedSurfacePatchType.CompositeElevations:
                       {
                         // Set the first elevation if not already set
@@ -215,7 +218,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         }
         finally
         {
-          //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
+          //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
           //Log.LogInformation($"Out {nameof(CalculateSurfaceElevationPatch)}.Execute");
         }
       }
@@ -251,7 +254,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         }
         finally
         {
-          //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
+          //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
           // Log.LogInformation($"#Out# {nameof(CalculateSurfaceElevationPatch)}.Execute #Result# {CalcResult}");
         }
       }

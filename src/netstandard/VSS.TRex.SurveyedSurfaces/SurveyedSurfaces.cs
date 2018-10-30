@@ -123,7 +123,21 @@ namespace VSS.TRex.SurveyedSurfaces
             return match != null && Remove(match);
         }
 
-        public ISurveyedSurface Locate(Guid AID) => Find(x => x.ID == AID);
+        /// <summary>
+        /// Locates a surveyed surface in the list with the given GUID
+        /// </summary>
+        /// <param name="AID"></param>
+        /// <returns></returns>
+        public ISurveyedSurface Locate(Guid AID)
+        {
+          // Note: This happens a lot and the for loop is faster than foreach or Find(x => x.ID)
+          // If numbers of surveyed surfaces become large a Dictionary<Guid, SS> would be good...
+          for(int i = 0; i < Count; i++)
+            if (this[i].ID == AID)
+              return this[i];
+     
+          return null;
+        }
 
         public void Assign(ISurveyedSurfaces source)
         {

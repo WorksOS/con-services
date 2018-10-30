@@ -31,7 +31,7 @@ namespace VSS.TRex.SubGridTrees.Client
         public GridDataType GridDataType { get { return _gridDataType; } } 
 
         /// <summary>
-        /// Cellsize is a copy of the cell size from the parent subgrid. It is replicated here
+        /// CellSize is a copy of the cell size from the parent subgrid. It is replicated here
         /// to remove SubGridTree binding in other processing contexts
         /// </summary>
         public double CellSize { get; set; }
@@ -78,14 +78,14 @@ namespace VSS.TRex.SubGridTrees.Client
           false, // CompositeHeights = $0000000E;
           true,  // MDP = $0000000F;
           true,  // MDPPercent = $00000010;
-          false, //  CellProfile = $00000011;
-          false, //   CellPasses = $00000012;
-          false, //   MachineSpeed = $00000013;
-          false, //  CCVPercentChange = $00000014;
-          false, //  MachineSpeedTarget = $00000015;
+          false, // CellProfile = $00000011;
+          false, // CellPasses = $00000012;
+          false, // MachineSpeed = $00000013;
+          false, // CCVPercentChange = $00000014;
+          false, // MachineSpeedTarget = $00000015;
           false, // CCVPercentChangeIgnoredTopNullValue = $0000016
           true,  // CCA = $0000017
-          true   // CCAPerccent = = $0000018
+          true   // CCAPercent = $0000018
         };
 
         /// <summary>
@@ -140,11 +140,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         /// <param name="filteredValue"></param>
         /// <returns></returns>
-        public virtual bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue)
-        {
-            Debug.Assert(false, "{0}AssignableFilteredValueIsNull may not be called directly. Not valid to check null against entire cell pass", MethodBase.GetCurrentMethod().DeclaringType.Name);
-            return false;
-        }
+        public abstract bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
 
         /// <summary>
         /// The set of population control flags this client wants enabled in the course of servicing requests
@@ -169,7 +165,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
         /// <summary>
         /// Calculate the world coordinate extents for this client leaf sub grid.
-        /// This uses the local cell size and index orifin offset information to perform the 
+        /// This uses the local cell size and index origin offset information to perform the 
         /// calculation locally without the need for a reference sub grid tree.
         /// </summary>
         /// <returns></returns>
@@ -225,58 +221,6 @@ namespace VSS.TRex.SubGridTrees.Client
             throw new NotImplementedException("TICSubGridTreeLeafSubGridBase.DumpToLog not implemented in " + GetType().Name);
         }
 
-/*
-        /// <summary>
-        /// Write the contents of leaf sub grid using the supplied formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Write(BinaryFormatter formatter, Stream stream)
-        {
-            formatter.Serialize(stream, OriginX);
-            formatter.Serialize(stream, OriginY);
-            formatter.Serialize(stream, Level);
-            formatter.Serialize(stream, GridDataType);
-            formatter.Serialize(stream, CellSize);
-            formatter.Serialize(stream, IndexOriginOffset);
-
-            // Construct the map representing those cells that contain values that
-            // should be serialised
-            // Unsure if this is needed (current gen used it to control which values were written into the stream)
-            ProdDataMap.ForEach(CellHasValue);
-
-            // Write the map to the stream for deserialisation
-            formatter.Serialize(stream, ProdDataMap);
-            formatter.Serialize(stream, FilterMap);
-        }
-
-        /// <summary>
-        /// Fill the contents of the leaf sub grid reading the binary representation using the provided formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Read(BinaryFormatter formatter, Stream stream)
-        {
-            OriginX = (uint)formatter.Deserialize(stream);
-            OriginY = (uint)formatter.Deserialize(stream);
-            Level = (byte)formatter.Deserialize(stream);
-
-            if ((GridDataType)formatter.Deserialize(stream) != GridDataType)
-            {
-                Debug.Assert(false, "GridDataType in stream does not match GridDataType of local subgrid instance");
-            }
-
-            CellSize = (double)formatter.Deserialize(stream);
-            IndexOriginOffset = (uint)formatter.Deserialize(stream);
-
-            ProdDataMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-            FilterMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-        }
-*/
-
-        // procedure WriteToStream(const Stream: TStream); override;
-        // procedure ReadFromStream(const Stream: TStream); override;
-
         /// <summary>
         /// Write the contents of the Items array using the supplied writer
         /// </summary>
@@ -324,8 +268,14 @@ namespace VSS.TRex.SubGridTrees.Client
         throw new NotImplementedException("IndicativeSizeInBytes not implemented");
       }
 
+      /// <summary>
+      /// Facades the OriginX property of this subgrid for use in the spatial caching implementation
+      /// </summary>
       public uint CacheOriginX { get => OriginX; }
 
+      /// <summary>
+      /// Facades the OriginY property of this subgrid for use in the spatial caching implementation
+      /// </summary>
       public uint CacheOriginY { get => OriginY; }
     }
 }

@@ -24,6 +24,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {
@@ -288,20 +289,20 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             {
         // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
-              if (localArg.GridDataType == GridDataType.DesignHeight)
-              {
-                bool designResult = ReferenceDesign.GetDesignHeights(localArg.SiteModelID, address, siteModel.Grid.CellSize,
-                  out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
-
-                clientGrid = DesignElevations;
-                if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-                   return ServerRequestResult.NoError;
-
-                Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");
-                return ServerRequestResult.FailedToComputeDesignElevationPatch;
-              }
-
-              clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
+                if (localArg.GridDataType == GridDataType.DesignHeight)
+                {
+                  bool designResult = ReferenceDesign.GetDesignHeights(localArg.SiteModelID, address, siteModel.Grid.CellSize,
+                    out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
+           
+                  clientGrid = DesignElevations;
+                  if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+                     return ServerRequestResult.NoError;
+           
+                  Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");
+                  return ServerRequestResult.FailedToComputeDesignElevationPatch;
+                }
+           
+                clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
 
                 clientGrid.CellSize = siteModel.Grid.CellSize;
                 clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
@@ -435,38 +436,56 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// </summary>
         private TSubGridRequestsResponse PerformSubgridRequests()
         {
-            clientGrids = new IClientLeafSubGrid[addressBucketSize][];
-
-            Guid[] IncludedSurveyedSurfaces;
-        
-            if (!localArg.IncludeSurveyedSurfaceInformation)
-              IncludedSurveyedSurfaces = new Guid[0];
-            else // TODO: Break SurveyedSurfaceExclusionList out as a separate parameter of the request, not per filter
-              IncludedSurveyedSurfaces = siteModel.SurveyedSurfaces.Select(x => x.ID).Where(x => !localArg.Filters.Filters[0].AttributeFilter.SurveyedSurfaceExclusionList.Contains(x)).ToArray();
-        
-            SubGridCacheContext = SubGridCache.LocateOrCreateContext(SpatialCacheFingerprint.ConstructFingerprint
-              (siteModel.ID, localArg.GridDataType, localArg.Filters, IncludedSurveyedSurfaces));
+            clientGrids = new IClientLeafSubGrid[addressBucketSize][];      
 
             // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
             // noted with the 'set' bits in the bitmask, processing only those that matter for this server
 
             Log.LogInformation("Scanning subgrids in request");
 
+            ISurveyedSurfaces SurveyedSurfaceList = siteModel.SurveyedSurfaces;
+
             // Construct the set of requester objects to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
-                (x => new SubGridRequestor(siteModel,
-                                           siteModels.StorageProxy,
-                                           x,
-                                           false, // Override cell restriction
-                                           BoundingIntegerExtent2D.Inverted(),
-                                           SubGridTreeConsts.SubGridTreeLevels,
-                                           int.MaxValue, // MaxCellPasses
-                                           AreaControlSet,
-                                           new FilteredValuePopulationControl(),
-                                           ProdDataMask,
-                                           SubGridCache,
-                                           SubGridCacheContext)
-                 ).ToArray();
+            (x => {
+              // Construct the appropriate list of surveyed surfaces
+              // Obtain local reference to surveyed surface list. If it is replaced while processing the
+              // list then the local reference will still be valid allowing lock free read access to the list.
+              ISurveyedSurfaces FilteredSurveyedSurfaces = null;
+
+              if (localArg.IncludeSurveyedSurfaceInformation && SurveyedSurfaceList?.Count > 0)
+              {
+                FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+
+                // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
+                SurveyedSurfaceList.FilterSurveyedSurfaceDetails(x.AttributeFilter.HasTimeFilter,
+                  x.AttributeFilter.StartTime, x.AttributeFilter.EndTime,
+                  x.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
+                  x.AttributeFilter.SurveyedSurfaceExclusionList);
+
+                // Ensure that the filtered surveyed surfaces are in a known ordered state
+                FilteredSurveyedSurfaces.SortChronologically(x.AttributeFilter.ReturnEarliestFilteredCellPass);
+              }
+
+              // Get a caching context for the subgrids returned by this requester
+              SubGridCacheContext = SubGridCache.LocateOrCreateContext(SpatialCacheFingerprint.ConstructFingerprint
+                (siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfaces.Select(s => s.ID).ToArray()));
+
+              return new SubGridRequestor(siteModel,
+                siteModels.StorageProxy,
+                x,
+                false, // Override cell restriction
+                BoundingIntegerExtent2D.Inverted(),
+                SubGridTreeConsts.SubGridTreeLevels,
+                int.MaxValue, // MaxCellPasses
+                AreaControlSet,
+                new FilteredValuePopulationControl(),
+                ProdDataMask,
+                SubGridCache,
+                SubGridCacheContext,
+                FilteredSurveyedSurfaces,
+                FilteredSurveyedSurfaces.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0]);
+            }).ToArray();
 
             addresses = new ISubGridCellAddress[addressBucketSize];
 

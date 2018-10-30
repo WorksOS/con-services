@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -11,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientCompositeHeightsLeafSubgrid : GenericClientLeafSubGrid<SubGridCellCompositeHeightsRecord>
   {
     /// <summary>
-    /// Initilise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientCompositeHeightsLeafSubgrid()
     {
@@ -27,7 +29,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientCompositeHeightsLeafSubgrid() : base()
+    public ClientCompositeHeightsLeafSubgrid()
     {
       Initialise();
     }
@@ -71,18 +73,10 @@ namespace VSS.TRex.SubGridTrees.Client
     public void SetHeightsToNull() => ForEach((i, j) => Cells[i, j] = SubGridCellCompositeHeightsRecord.NullValue);
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// Provides a copy of the null value defined for cells in the client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override SubGridCellCompositeHeightsRecord NullCell() => SubGridCellCompositeHeightsRecord.NullValue;
-
-    /// <summary>
-    /// Clears all cells in the composite height grid to null heights and dates
-    /// </summary>
-    public override void Clear()
-    {
-      base.Clear();
-    }
 
     /// <summary>
     /// Determines if the leaf content of this subgrid is equal to 'other'
@@ -136,5 +130,13 @@ namespace VSS.TRex.SubGridTrees.Client
 
       ForEach((x, y) => Cells[x, y].Read(reader));
     }
+
+    /// <summary>
+    /// Determine if a filtered cell pass height is valid (not null)
+    /// </summary>
+    /// <param name="filteredValue"></param>
+    /// <returns></returns>
+    public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) =>
+      filteredValue.FilteredPass.Height == CellPassConsts.NullHeight;
   }
 }

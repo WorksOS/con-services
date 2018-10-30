@@ -647,8 +647,8 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <summary>
-    /// Computes a bitmask used to seive out only the cells that will be used in the query context.
-    /// The seived cells are the only cells processed and returned. All other cells will be null values,
+    /// Computes a bitmask used to sieve out only the cells that will be used in the query context.
+    /// The sieved cells are the only cells processed and returned. All other cells will be null values,
     /// even if data is present for them that matches filtering and other conditions
     /// </summary>
     /// <param name="SubGrid"></param>
@@ -843,7 +843,7 @@ namespace VSS.TRex.SubGrids
       // Take into account the effect of having to have a grid probe position at
       // the 'first point' defined in AreaControlSet
       // Calculate the intra-interval offset that needs to be applied to align the
-      // skip-stepping to that modifed gridding
+      // skip-stepping to that modified grid search
       IntraGridOffsetX = AreaControlSet.UserOriginX - (Math.Floor(AreaControlSet.UserOriginX / StepX) * StepX);
       IntraGridOffsetY = AreaControlSet.UserOriginY - (Math.Floor(AreaControlSet.UserOriginY / StepY) * StepY);
 
@@ -887,7 +887,7 @@ namespace VSS.TRex.SubGrids
           _GridDataType == GridDataType.MachineSpeedTarget ||
           _GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue);
 
-      // Support for lazy construction of any required profilinf infrastructure
+      // Support for lazy construction of any required profiling infrastructure
       if (ClientGrid.WantsLiftProcessingResults() && Profiler == null)
       {
         // Some display types require lift processing to be able to select the
@@ -908,7 +908,7 @@ namespace VSS.TRex.SubGrids
 
       try
       {
-          // Ensure passtype filter is set correctly
+          // Ensure pass type filter is set correctly
           if (Filter.AttributeFilter.HasPassTypeFilter)
             if ((Filter.AttributeFilter.PassTypeSet & (PassTypeSet.Front | PassTypeSet.Rear)) == PassTypeSet.Front)
                 Filter.AttributeFilter.PassTypeSet |= PassTypeSet.Rear; // these two types go together as half passes
@@ -989,10 +989,10 @@ namespace VSS.TRex.SubGrids
               CellPassIterator.MaxNumberOfPassesToReturn = MaxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
             }
 
-            // TODO Add when cell left build settingssupported
+            // TODO Add when cell left build settings supported
             // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
 
-            // Determine if a seive filter is required for the subgrid where the seive matches
+            // Determine if a sieve filter is required for the subgrid where the sieve matches
             // the X and Y pixel world size (used for WMS tile computation)
             SeiveFilterInUse = AreaControlSet.UseIntegerAlgorithm ? ComputeSeiveBitmask(_SubGrid) : ComputeSeiveBitmaskFloat(_SubGrid);
 

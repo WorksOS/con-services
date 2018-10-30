@@ -56,6 +56,8 @@ namespace VSS.TRex.SubGrids
         private SubGridTreeBitmapSubGridBits ProcessingMap;
 
         private ISurveyedSurfaces FilteredSurveyedSurfaces;
+        private Guid[] FilteredSurveyedSurfacesAsArray;
+
         private bool ReturnEarliestFilteredCellPass;
 
         private ITRexSpatialMemoryCache SubGridCache;
@@ -78,7 +80,9 @@ namespace VSS.TRex.SubGrids
                                 IFilteredValuePopulationControl populationControl,
                                 ISubGridTreeBitMask PDExistenceMap,
                                 ITRexSpatialMemoryCache subGridCache,
-                                ITRexSpatialMemoryCacheContext subGridCacheContext)
+                                ITRexSpatialMemoryCacheContext subGridCacheContext,                                
+                                ISurveyedSurfaces filteredSurveyedSurfaces,
+                                Guid[] filteredSurveyedSurfacesAsArray)
         {
             SiteModel = sitemodel;
             Filter = filter;
@@ -102,47 +106,32 @@ namespace VSS.TRex.SubGrids
 
             ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
 
-            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
-
             AreaControlSet = areaControlSet;
 
             ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            // Construct the appropriate list of surveyed surfaces
-            // Obtain local reference to surveyed surface list. If it is replaced while processing the
-            // list then the local reference will still be valid allowing lock free read access to the list.
-            ISurveyedSurfaces SurveyedSurfaceList = SiteModel.SurveyedSurfaces;
-            FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-
-            if (SurveyedSurfaceList?.Count > 0)
-            {
-                // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-                SurveyedSurfaceList.FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
-                                                                 Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime,
-                                                                 Filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
-                                                                 Filter.AttributeFilter.SurveyedSurfaceExclusionList);
-
-                // Ensure that the filtered surveyed surfaces are in a known ordered state
-                FilteredSurveyedSurfaces.SortChronologically(ReturnEarliestFilteredCellPass);
-            }
-
             // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
             // the common elements for this set of subgrids being requested. We always want to request all surface elevations to 
             // promote cacheability.
-            SurfaceElevationPatchArg = new SurfaceElevationPatchArgument()
+            SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
             {
                 SiteModelID = SiteModel.ID,
                 CellSize = SiteModel.Grid.CellSize,
-                IncludedSurveyedSurfaces = FilteredSurveyedSurfaces,
+                IncludedSurveyedSurfaces = filteredSurveyedSurfacesAsArray,
                 SurveyedSurfacePatchType = ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
                 ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
             };
 
-          SubGridCache = subGridCache;
-          SubGridCacheContext = subGridCacheContext;
-
-          if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
-            ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignID);
+            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.CacheFingerprint());
+        
+            SubGridCache = subGridCache;
+            SubGridCacheContext = subGridCacheContext;
+        
+            FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
+            FilteredSurveyedSurfacesAsArray = filteredSurveyedSurfacesAsArray;
+        
+            if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
+              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignID);
         }
 
         /// <summary>
@@ -178,7 +167,7 @@ namespace VSS.TRex.SubGrids
 
                   ClonedFilter.AttributeFilter.InitialiseElevationRangeFilter(DesignElevations);
                 }
-      }
+            }
 
             /*
     if CellFilter.HasDesignFilter then
@@ -211,8 +200,6 @@ namespace VSS.TRex.SubGrids
             // TICClientSubGridTreeLeaf_CellProfile ClientGridAsCellProfile = null
             // bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime;
             // bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile;
-            IClientLeafSubGrid ClientGrid2;
-            bool AddedSubgridToSubgridCache;
 
             ClientHeightLeafSubGrid DesignElevations = null;
             ServerRequestResult Result = ServerRequestResult.UnknownError;
@@ -265,7 +252,8 @@ namespace VSS.TRex.SubGrids
                     if (AreaControlSet.PixelXWorldSize == 0 && AreaControlSet.PixelYWorldSize == 0)
                     {
                         // Add the newly computed client subgrid to the cache
-                        AddedSubgridToSubgridCache = SubGridCache.Add(SubGridCacheContext, ClientGrid);
+                        bool AddedSubgridToSubgridCache = SubGridCache.Add(SubGridCacheContext, ClientGrid);
+                        IClientLeafSubGrid ClientGrid2;
 
                         try
                         {
@@ -312,7 +300,7 @@ namespace VSS.TRex.SubGrids
         /// </summary>
         private ServerRequestResult PerformHeightAnnotation()
         {
-            if (FilteredSurveyedSurfaces.Count == 0)
+            if ((FilteredSurveyedSurfacesAsArray?.Length ?? 0) == 0)
                 return ServerRequestResult.NoError;
 
             ClientHeightAndTimeLeafSubGrid ClientGridAsHeightAndTime = null;

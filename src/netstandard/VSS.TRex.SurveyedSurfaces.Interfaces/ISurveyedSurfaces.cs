@@ -90,5 +90,10 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
       ISurveyedSurfaces ComparisonList,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       ISubGridTreeBitMask OverallExistenceMap);
+
+    /// <summary>
+    /// Locates a surveyed surface in the list with the given GUID
+    /// </summary>
+    ISurveyedSurface Locate(Guid AID);
   }
 }

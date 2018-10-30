@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using VSS.TRex.Caching;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
@@ -29,7 +30,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
         public double CellSize { get; set; }
 
         /// <summary>
-        /// Detemines which surface information shoudl be extracted: Earliest, Latest or Composite
+        /// Determines which surface information should be extracted: Earliest, Latest or Composite
         /// </summary>
         public SurveyedSurfacePatchType SurveyedSurfacePatchType { get; set; }
 
@@ -42,7 +43,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
         /// The list of surveyed surfaces to be included in the calculation
         /// [Note: This is fairly inefficient, the receiver of the request should be able to access surveyed surfaces locally...]
         /// </summary>
-        public ISurveyedSurfaces IncludedSurveyedSurfaces { get; set; }
+        public Guid[] IncludedSurveyedSurfaces { get; set; }
 
         /// <summary>
         /// Default no-arg constructor
@@ -76,10 +77,11 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
             CellSize = cellSize;
             SurveyedSurfacePatchType = surveyedSurfacePatchType;
             ProcessingMap = processingMap;
-            IncludedSurveyedSurfaces = includedSurveyedSurfaces;
 
             // Prepare the list of surveyed surfaces for use by all invocations using this argument
-            IncludedSurveyedSurfaces.SortChronologically(surveyedSurfacePatchType == SurveyedSurfacePatchType.EarliestSingleElevation);
+            includedSurveyedSurfaces.SortChronologically(surveyedSurfacePatchType == SurveyedSurfacePatchType.EarliestSingleElevation);
+
+            IncludedSurveyedSurfaces = includedSurveyedSurfaces.Select(x => x.ID).ToArray();
         }
 
         /// <summary>
@@ -92,12 +94,15 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
         }
 
         /// <summary>
-        /// Computes a cachekey for use in a simple dictionary mapping String => SurveyedSurface elevation result request
+        /// Computes a Fingerprint for use in caching surveyed surface height + time responses
+        /// Note: This fingerprint used the SurveyedSurfaceHeightAndTime grid data type in the cache fingerprint,
+        /// even though the core engine returns HeightAndTime results. This allows HeightAndTime and
+        /// SurveyedSurfaceHeightAndTime results to cohabit in the same cache
         /// </summary>
         /// <returns></returns>
-        public string CacheKey()
+        public string CacheFingerprint()
         {
-            return $"{SiteModelID}:{OTGCellBottomLeftX}:{OTGCellBottomLeftY}:{CellSize}:{SurveyedSurfacePatchType}:{IncludedSurveyedSurfaces.Select(x => x.ID.ToString()).Aggregate((s1, s2) => s1 + s2)}";
+          return SpatialCacheFingerprint.ConstructFingerprint(SiteModelID, GridDataType.SurveyedSurfaceHeightAndTime, null, IncludedSurveyedSurfaces);
         }
     }
 }
