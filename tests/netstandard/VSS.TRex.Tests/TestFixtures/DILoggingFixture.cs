@@ -17,7 +17,6 @@ namespace VSS.TRex.Tests.TestFixtures
           .New()
           .AddLogging()
           .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-          .Build()
           .Complete();
       }
     }

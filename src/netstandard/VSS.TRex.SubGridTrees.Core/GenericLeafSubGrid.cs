@@ -8,9 +8,9 @@ namespace VSS.TRex.SubGridTrees
     /// GenericLeafSubGrid in T implements a leaf subgrid where all the cells in the leaf are generic type T.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GenericLeafSubGrid<T> : SubGrid, ILeafSubGrid
+    public class GenericLeafSubGrid<T> : SubGrid, IGenericLeafSubGrid<T>, ILeafSubGrid
     {
-        public T[,] Items = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+        public T[,] Items { get; set; } = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
         /// Default no-arg constructor
@@ -28,7 +28,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Main constructor. Creates the lcoal generic Items[,] array and delegates to base(...)
+        /// Main constructor. Creates the local generic Items[,] array and delegates to base(...)
         /// </summary>
         /// <param name="owner"></param>
         /// <param name="parent"></param>

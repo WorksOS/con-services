@@ -1,0 +1,16 @@
+﻿namespace VSS.TRex.Caching
+{
+  public interface ITRexSpatialMemoryCache
+  {
+    int MaxNumElements { get; }
+
+    long MaxSizeInBytes { get; }
+
+    int CurrentNumElements { get; }
+
+    void ItemAddedToContext(int sizeInBytes);
+    void ItemRemovedFromContext(int sizeInBytes);
+
+    int ContextCount();
+  }
+}

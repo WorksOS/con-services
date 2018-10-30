@@ -13,7 +13,8 @@ namespace VSS.TRex.SubGridTrees
   /// The tree automates tree node and leaf subgrid management behind a uniform tree wide Cells[,] facade.
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  public class GenericSubGridTree<T, S> : SubGridTree where S : GenericLeafSubGrid<T>, ILeafSubGrid, new()
+  /// <typeparam name="S"></typeparam>
+  public class GenericSubGridTree<T, S> : SubGridTree, IGenericSubGridTree<T, S> where S : IGenericLeafSubGrid<T>, ILeafSubGrid, new()
   {
     /// <summary>
     /// Default indexer property to access the cells as a default property of the generic subgrid

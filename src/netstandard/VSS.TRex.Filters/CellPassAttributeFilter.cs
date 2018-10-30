@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -1300,6 +1301,98 @@ namespace VSS.TRex.Filters
         filteredPassInfo.PassCount = passValueCount;
       }
       return Result;
+    }
+
+    public string SpatialCacheFingerprint()
+    {
+      var sb = new StringBuilder();
+
+      // TIme
+      if (HasTimeFilter)
+        sb.Append($"TF:{StartTime.Ticks}-{EndTime.Ticks}");
+
+      // Designs
+      if (HasDesignFilter)
+        sb.Append($"DF:{DesignNameID}");
+
+      // Machines
+      if (HasMachineFilter)
+      {
+        sb.Append("MF:");
+        foreach (var id in MachineIDs)
+          sb.Append($"-{id}");
+      }
+
+      // Machine direction filter
+      if (HasMachineDirectionFilter)
+        sb.Append($"MD:{MachineDirection}");
+
+      // Pass Type filter
+      if (HasPassTypeFilter)
+        sb.Append($"PT:{PassTypeSet}");
+
+      // Vibe state filter
+      if (HasVibeStateFilter)
+        sb.Append($"VS:{VibeState}");
+
+      // Min elev mapping
+      if (HasMinElevMappingFilter)
+        sb.Append($"VS:{(MinElevationMapping ? 1 : 0)}");
+
+      // Elevation type
+      if (HasElevationTypeFilter)
+        sb.Append($"ET:{ElevationType}");
+
+      // Exclusion of surveyed surfaces from query
+      if (ExcludeSurveyedSurfaces())
+        sb.Append("ESS:1");
+
+      // GCS Guidance mode
+      if (HasGCSGuidanceModeFilter)
+        sb.Append($"GM:{GCSGuidanceMode}");
+
+      // GPS Accuracy
+      if (HasGPSAccuracyFilter)
+        sb.Append($"GA:{GCSGuidanceMode}-{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
+
+      // GPS Tolerance
+      if (HasGPSToleranceFilter)
+        sb.Append($"GT:{(GPSToleranceIsGreaterThan?1:0)}-{GPSTolerance}");
+
+      // Positioning Tech
+      if (HasPositioningTechFilter)
+        sb.Append($"PT:{PositioningTech}");
+
+      // Elevation Range
+      if (HasElevationRangeFilter)
+      {
+        if (ElevationRangeDesignID != Guid.Empty)
+          sb.Append($"ER-{ElevationRangeDesignID}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+        else
+          sb.Append($"ER-{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+      }
+
+      // Layer state filter
+      if (HasLayerStateFilter)
+        sb.Append($"LS:{LayerState}");
+
+      // Compaction machines only
+      if (HasLayerStateFilter)
+        sb.Append("CMO:1");
+
+      // Layer ID filter
+      if (HasLayerIDFilter)
+        sb.Append($"LF:{LayerID}");
+
+      // TemperatureRangeFilter
+      if (HasTemperatureRangeFilter)
+        sb.Append($"LF:{MaterialTemperatureMin}-{MaterialTemperatureMax}-{(FilterTemperatureByLastPass?1:0)}");
+
+      // PassCountRangeFilter
+      if (HasPassCountRangeFilter)
+        sb.Append($"PC:{PasscountRangeMin}-{PasscountRangeMax}");
+
+      return sb.ToString();
     }
 
 
