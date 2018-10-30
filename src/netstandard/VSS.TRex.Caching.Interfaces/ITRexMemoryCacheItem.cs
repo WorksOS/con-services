@@ -13,7 +13,7 @@
     /// <returns></returns>
     int IndicativeSizeInBytes();
 
-    uint OriginX { get; }
-    uint OriginY { get; }
+    uint CacheOriginX { get; }
+    uint CacheOriginY { get; }
   }
 }

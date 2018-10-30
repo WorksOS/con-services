@@ -37,8 +37,8 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
-        uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-        uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        uint x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        uint y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         // Add the element to storage and obtain its index in that storage, inserting it into the context
         // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
@@ -65,8 +65,8 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Remove(ITRexMemoryCacheItem element)
     {
-      uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       lock (this)
       {
@@ -102,8 +102,8 @@ namespace VSS.TRex.Caching
     /// <param name="item"></param>
     public void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item)
     {
-      uint x = item.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = item.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint x = item.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = item.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       ContextTokens[x, y] = 0;
       OwnerMemoryCache.ItemRemovedFromContext(item.IndicativeSizeInBytes());

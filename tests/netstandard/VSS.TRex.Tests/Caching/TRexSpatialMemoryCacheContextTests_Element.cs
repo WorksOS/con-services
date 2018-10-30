@@ -8,7 +8,7 @@ namespace VSS.TRex.Tests.Caching
 
     public int IndicativeSizeInBytes() => SizeInBytes;
 
-    public uint OriginX { get; set; }
-    public uint OriginY { get; set; }
+    public uint CacheOriginX { get; set; }
+    public uint CacheOriginY { get; set; }
   }
 }

@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using VSS.TRex.Caching;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -22,6 +25,16 @@ namespace VSS.TRex.SubGrids
     public class SubGridRequestor
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
+        /// <summary>
+        /// Local reference to the client subgrid factory
+        /// </summary>
+        [NonSerialized]
+        private IClientLeafSubgridFactory clientLeafSubGridFactory;
+
+        private IClientLeafSubgridFactory ClientLeafSubGridFactory
+           => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+
         private SubGridRetriever retriever;
         private ISiteModel SiteModel;
         private ICombinedFilter Filter;
@@ -32,7 +45,7 @@ namespace VSS.TRex.SubGrids
         private int MaxNumberOfPassesToReturn;
         private bool ProdDataRequested;
         private bool SurveyedSurfaceDataRequested;
-        private  IClientLeafSubGrid ClientGrid;
+        private IClientLeafSubGrid ClientGrid;
         private SurfaceElevationPatchArgument SurfaceElevationPatchArg;
         private uint CellX;
         private uint CellY;
@@ -40,14 +53,19 @@ namespace VSS.TRex.SubGrids
         public AreaControlSet AreaControlSet;
 
         // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
-        private SubGridTreeBitmapSubGridBits ProcessingMap; // = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        private SubGridTreeBitmapSubGridBits ProcessingMap;
 
-      private ISurveyedSurfaces FilteredSurveyedSurfaces;
+        private ISurveyedSurfaces FilteredSurveyedSurfaces;
         private bool ReturnEarliestFilteredCellPass;
 
+        private ITRexSpatialMemoryCache SubGridCache;
+        private ITRexSpatialMemoryCacheContext SubGridCacheContext;
+
+        private IDesign ElevationRangeDesign;
+
         /// <summary>
-        /// Constructor that accepts the common parameters around a set of subgrids the requestor will be asked to process
-        /// and initialises the requestor state ready to start processing individual subgrid requests.
+        /// Constructor that accepts the common parameters around a set of subgrids the requester will be asked to process
+        /// and initializes the requester state ready to start processing individual subgrid requests.
         /// </summary>
         public SubGridRequestor(ISiteModel sitemodel,
                                 IStorageProxy storageProxy,
@@ -58,8 +76,10 @@ namespace VSS.TRex.SubGrids
                                 int maxNumberOfPassesToReturn,
                                 AreaControlSet areaControlSet,
                                 IFilteredValuePopulationControl populationControl,
-                                ISubGridTreeBitMask PDExistenceMap)
-    {
+                                ISubGridTreeBitMask PDExistenceMap,
+                                ITRexSpatialMemoryCache subGridCache,
+                                ITRexSpatialMemoryCacheContext subGridCacheContext)
+        {
             SiteModel = sitemodel;
             Filter = filter;
             TreeLevel = treeLevel;
@@ -117,51 +137,50 @@ namespace VSS.TRex.SubGrids
                 SurveyedSurfacePatchType = ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
                 ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
             };
+
+          SubGridCache = subGridCache;
+          SubGridCacheContext = subGridCacheContext;
+
+          if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
+            ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignID);
         }
 
-        // InitialiseFilterContext performs any required filter initialisation and configuration
-        // that is external to the filter prior to engaging in cell by cell processing of
-        // this subgrid
-        private bool InitialiseFilterContext(ICombinedFilter Filter)
+        /// <summary>
+        /// InitialiseFilterContext performs any required filter initialization and configuration
+        /// that is external to the filter prior to engaging in cell by cell processing of
+        /// this subgrid
+        /// </summary>
+        /// <returns></returns>
+        private bool InitialiseFilterContext()
         {
             if (Filter == null)
                 return true;
 
-            /* TODO: Filter.AttributeFilter.HasElevationRangeFilter Not yet supported
-            ErrorCode: TDesignProfilerRequestResult;
-
             if (Filter.AttributeFilter.HasElevationRangeFilter)
             {
-                ClonedFilter = TICGridDataPassFilter.Create(null);
-                ClonedFilter.Assign(PassFilter);
-
-                PassFilter = ClonedFilter;
-                PassFilter.ClearElevationRangeFilterInitialisation;
+                var ClonedFilter = new CombinedFilter(Filter.SpatialFilter);                
+                ClonedFilter.AttributeFilter.Assign(Filter.AttributeFilter);
+                ClonedFilter.AttributeFilter.ClearElevationRangeFilterInitialisation();
 
                 // If the elevation range filter uses a design then the design elevations
                 // for the subgrid need to be calculated and supplied to the filter
 
-                if (!Filter.AttributeFilter.ElevationRangeDesign.IsNull)
+                if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
                 {
-                    // Query the DesignProfiler service to get the patch of elevations calculated
-                    ErrorCode = PSNodeImplInstance.DesignProfilerService.RequestDesignElevationPatch
-                                 (Construct_CalculateDesignElevationPatch_Args(SiteModel.Grid.DataModelID,
-                                                                               SubgridX, SubgridY,
-                                                                               SiteModel.Grid.CellSize,
-                                                                               PassFilter.ElevationRangeDesign,
-                                                                               TSubGridTreeLeafBitmapSubGridBits.FullMask),
-                                 DesignElevations);
+                  // Query the design get the patch of elevations calculated
+                  if (!ElevationRangeDesign.GetDesignHeights(SiteModel.ID, 
+                        ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
+                        out IClientHeightLeafSubGrid DesignElevations, 
+                        out DesignProfilerRequestResult ProfilerRequestResult))
 
-                    if (ErrorCode != dppiOK || DesignElevations == null)
-                        return false;
+                  if (ProfilerRequestResult != DesignProfilerRequestResult.OK || DesignElevations == null)
+                    return false;
+
+                  ClonedFilter.AttributeFilter.InitialiseElevationRangeFilter(DesignElevations);
                 }
-
-                PassFilter.InitialiseElevationRangeFilter(DesignElevations);
-            }
-            */
+      }
 
             /*
-
     if CellFilter.HasDesignFilter then
       begin
 //        SIGLogMessage.PublishNoODS(Nil, Format('#D# InitialiseFilterContext RequestDesignElevationPatch for Design %s',[CellFilter.DesignFilter.FileName]), slmcDebug);
@@ -192,67 +211,43 @@ namespace VSS.TRex.SubGrids
             // TICClientSubGridTreeLeaf_CellProfile ClientGridAsCellProfile = null
             // bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime;
             // bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile;
-            // ISubGrid CachedSubgrid = null;
-            // ISubGrid ClientGrid2;
-            // bool AddedSubgridToSubgridCache;
-            // ILeafSubGrid TempClientGrid;
-            // CombinedFilter ClonedFilter = null;
-            // bool SubgridAlreadyPresentInCache = false;
+            IClientLeafSubGrid ClientGrid2;
+            bool AddedSubgridToSubgridCache;
 
             ClientHeightLeafSubGrid DesignElevations = null;
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
             // Log.LogInformation("Entering RequestSubGridInternal");
-
-            /* TODO - subgrid general result cache not supported yet
+           
             // Determine if there is a suitable pre-calculated result present
             // in the general subgrid result cache. If there is, then apply the
             // filter mask to the cached data and copy it to the client grid
-            if (SubgridCache != null)
-                CachedSubgrid = SubgridCache.Lookup(ClientGrid.OriginAsCellAddress);
-            else
-                CachedSubgrid = null;
+            IClientLeafSubGrid CachedSubgrid = (IClientLeafSubGrid)SubGridCacheContext?.Get(ClientGrid.CacheOriginX, ClientGrid.CacheOriginY);
 
             // If there was a cached subgrid located, assign
             // it's contents according the client grid mask into the client grid and return it
             if (CachedSubgrid != null)
             {
-                try
+              // Compute the matching filter mask that the full processing would have computed
+              if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
+                CellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,
+                ClientGrid.ProdDataMap, ClientGrid.FilterMap))
+              {
+                // If we have DesignElevations at this point, then a Lift filter is in operation and
+                // we need to use it to constrain the returned client grid to the extents of the design elevations
+                if (DesignElevations != null)
                 {
-                    // Compute the matching filter mask that the full processing would have computed
-                    if ConstructSubgridCellFilterMask(ClientGrid, SiteModel, CellFilter,
-                                                      CellOverrideMask, AHasOverrideSpatialCellRestriction, AOverrideSpatialCellRestriction,
-                                                      ClientGrid.ProdDataMap, ClientGrid.FilterMap)
-                    {
-                        // If we have DesignElevations at this point, then a Lift filter is in operation and
-                        // we need to use it to constrain the returned client grid to the extents of the design elevations
-                        if (DesignElevations != null)
-                        {
-                            TempClientGrid = ClientGrid;
-                            TempClientGrid.FilterMap.IterateOverSetBits(procedure(const X, Y: Integer) begin TempClientGrid.FilterMap.SetBitValue(X, Y, DesignElevations.CellHasValue(X, Y)); end);
-                        }
-
-                        // Use that mask to copy the relevant cells from the cache to the client subgrid
-                        ClientGrid.AssignFromCachedPreProcessedClientSubgrid(CachedSubgrid, ClientGrid.FilterMap);
-
-                        Result = ServerRequestResult.NoError;
-                    }
-                    else
-                        Result = ServerRequestResult.FailedToComputeDesignFilterPatch;
+                  IClientLeafSubGrid TempClientGrid = ClientGrid;
+                  TempClientGrid.FilterMap.ForEachSetBit((X, Y) => TempClientGrid.FilterMap.SetBitValue(X, Y, DesignElevations.CellHasValue((byte)X, (byte)Y)));
                 }
-                finally
-                {
-                    // The lookup of the cached subgrid performs a reference of the subgrid.
-                    // The reference needs to be offset by a DeReference to indicate this
-                    // interest in the subgrid is no longer required.
-                    CachedSubgrid.DeReference;
-                }
-            }
-            */
 
-            if (false)
-            {
-                // TODO placeholder for cache implementation above
+                // Use that mask to copy the relevant cells from the cache to the client subgrid
+                ClientGrid.AssignFromCachedPreProcessedClientSubgrid(CachedSubgrid, ClientGrid.FilterMap);
+
+                Result = ServerRequestResult.NoError;
+              }
+              else
+                Result = ServerRequestResult.FailedToComputeDesignFilterPatch;
             }
             else
             {
@@ -263,36 +258,32 @@ namespace VSS.TRex.SubGrids
                                                    CellOverrideMask,
                                                    DesignElevations);
 
-                /* TODO: General subgrid result caching not yet supported
-                // If a subgrid was retrieved and this is a supported data type in the cache
-                // then add it to the cache
-                if (Result = ServerRequestResult.NoError && (SubgridCache != null))
+                // If a subgrid was retrieved and this is a supported data type in the cache then add it to the cache
+                if (Result == ServerRequestResult.NoError && SubGridCacheContext != null)
                 {
                     // Don't add subgrids computed using a non-trivial WMS seive to the general subgrid cache
-                    if (AAreaControlSet.PixelXWorldSize == 0 && AAreaControlSet.PixelYWorldSize == 0)
+                    if (AreaControlSet.PixelXWorldSize == 0 && AreaControlSet.PixelYWorldSize == 0)
                     {
                         // Add the newly computed client subgrid to the cache
-                        AddedSubgridToSubgridCache = SubgridCache.Add(ClientGrid, SubgridAlreadyPresentInCache);
+                        AddedSubgridToSubgridCache = SubGridCache.Add(SubGridCacheContext, ClientGrid);
 
                         try
                         {
-                            if (!AddedSubgridToSubgridCache && !SubgridAlreadyPresentInCache)
+                            if (!AddedSubgridToSubgridCache)
                             {
                                 Log.LogWarning($"Failed to add subgrid {ClientGrid.Moniker()}, data model {SiteModel.ID} to subgrid result cache");
                             }
 
                             // Create a clone of the client grid that has the filter mask applied to
                             // returned the requested set of cell values back to the caller
-                            ClientGrid2 = PSNodeImplInstance.RequestProcessor.RequestClientGrid(ClientGrid.GridDataType,
-                                                                                                ClientGrid.CellSize,
-                                                                                                ClientGrid.IndexOriginOffset);
+                            ClientGrid2 = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(ClientGrid.GridDataType, SurveyedSurfaceDataRequested));
 
                             // If we have DesignElevations at this point, then a Lift filter is in operation and
                             // we need to use it to constrain the returned client grid to the extents of the design elevations
                             if (DesignElevations != null)
                             {
-                                TempClientGrid = ClientGrid;
-                                TempClientGrid.FilterMap.IterateOverSetBits((x, y) => { TempClientGrid.FilterMap.SetBitValue(X, Y, DesignElevations.CellHasValue(X, Y)); });
+                              IClientLeafSubGrid TempClientGrid = ClientGrid;
+                              TempClientGrid.FilterMap.ForEachSetBit((X, Y) => TempClientGrid.FilterMap.SetBitValue(X, Y, DesignElevations.CellHasValue((byte)X, (byte)Y)));
                             }
 
                             ClientGrid2.Assign(ClientGrid);
@@ -300,17 +291,14 @@ namespace VSS.TRex.SubGrids
                         }
                         finally
                         {
-                            // Remove interest in the cached client grid if it was previously added to the cache
-                            if (AddedSubgridToSubgridCache)
-                                ClientGrid.DeReference;
-                            else // If not added to the cache, release it back to the pool
-                                PSNodeImplInstance.RequestProcessor.RepatriateClientGrid(ClientGrid);
+                           // If not added to the cache, release it back to the pool
+                           if (!AddedSubgridToSubgridCache)
+                             ClientLeafSubGridFactory.ReturnClientSubGrid(ref ClientGrid);
                         }
 
                         ClientGrid = ClientGrid2;
                     }
                 }
-                */
             }
 
             //if VLPDSvcLocations.Debug_ExtremeLogSwitchB then
@@ -518,8 +506,7 @@ namespace VSS.TRex.SubGrids
         /// <param name="surveyedSurfaceDataRequested"></param>
         /// <param name="clientGrid"></param>
         /// <returns></returns>
-        public ServerRequestResult RequestSubGridInternal(// SubgridCache : TDataModelContextSubgridResultCache;
-                                                          SubGridCellAddress subGridAddress,
+        public ServerRequestResult RequestSubGridInternal(SubGridCellAddress subGridAddress,
                                                           // LiftBuildSettings: TICLiftBuildSettings;
                                                           bool prodDataRequested,
                                                           bool surveyedSurfaceDataRequested,
@@ -533,9 +520,6 @@ namespace VSS.TRex.SubGrids
             if (!(ProdDataRequested || SurveyedSurfaceDataRequested))
                 return ServerRequestResult.MissingInputParameters;
 
-            if (!InitialiseFilterContext(Filter))
-                return ServerRequestResult.FilterInitialisationFailure;
-
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
             // For now, it is safe to assume all subgrids containing on-the-ground cells have kSubGridTreeLevels levels
@@ -548,6 +532,10 @@ namespace VSS.TRex.SubGrids
             ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
                                                  (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
             ClientGrid.SetAbsoluteLevel(TreeLevel);
+            ClientGrid.CellSize = SiteModel.Grid.CellSize;
+
+            if (!InitialiseFilterContext())
+              return ServerRequestResult.FilterInitialisationFailure;
 
             if (ProdDataRequested)
             {
@@ -559,15 +547,13 @@ namespace VSS.TRex.SubGrids
 
             if (SurveyedSurfaceDataRequested)
             {
-                ClientLeafSubGrid ClientGridAsLeafSubgrid = ClientGrid as ClientLeafSubGrid;
-
                 // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis
                 if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
                                                                       CellOverrideMask,
                                                                       HasOverrideSpatialCellRestriction,
                                                                       OverrideSpatialCellRestriction,
-                                                                      ref ClientGridAsLeafSubgrid.ProdDataMap,
-                                                                      ref ClientGridAsLeafSubgrid.FilterMap))
+                                                                      ClientGrid.ProdDataMap,
+                                                                      ClientGrid.FilterMap))
                     Result = PerformHeightAnnotation();
                 else
                     Result = ServerRequestResult.FailedToComputeDesignFilterPatch;

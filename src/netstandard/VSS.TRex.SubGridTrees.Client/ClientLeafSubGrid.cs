@@ -91,16 +91,16 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <summary>
         /// Existence map of where we know Prod Data exists 
         /// </summary>
-        public SubGridTreeBitmapSubGridBits ProdDataMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits ProdDataMap { get; set; }= new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Existence map of cells matching current filter settings
         /// </summary>
-        public SubGridTreeBitmapSubGridBits FilterMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        public SubGridTreeBitmapSubGridBits FilterMap { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
         /// <summary>
         /// Constructor the the base client subgrid. This decorates the standard (owner, parent, level)
-        /// constructor from the base with the cellsize and indexoriginoffset parameters from the subgridtree
+        /// constructor from the base with the cell size and index origin offset parameters from the subgrid tree
         /// this leaf is derived from.
         /// </summary>
         /// <param name="owner"></param>
@@ -135,14 +135,14 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         /// <summary>
-        /// Determine if the value propsed for assignation to a cell in this client leaf subgrid is null with respect
+        /// Determine if the value proposed for assignation to a cell in this client leaf subgrid is null with respect
         /// to the nullability criteria of that client leaf subgrid
         /// </summary>
         /// <param name="filteredValue"></param>
         /// <returns></returns>
         public virtual bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue)
         {
-            Debug.Assert(false, "{0}AssignableFilteredValueIsNull may not be called directly. Not valid to check nullness against entire cell pass", MethodBase.GetCurrentMethod().DeclaringType.Name);
+            Debug.Assert(false, "{0}AssignableFilteredValueIsNull may not be called directly. Not valid to check null against entire cell pass", MethodBase.GetCurrentMethod().DeclaringType.Name);
             return false;
         }
 
@@ -155,7 +155,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
         /// <summary>
         /// Calculate the world origin coordinate location for this client leaf sub grid.
-        /// This uses the local cell size and index orifin offset information to perform the 
+        /// This uses the local cell size and index origin offset information to perform the 
         /// calculation locally without the need for a reference sub grid tree.
         /// </summary>
         /// <param name="WorldOriginX"></param>
@@ -201,7 +201,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// Note: The cell values are explicitly NOT copied in this operation
         /// </summary>
         /// <param name="source"></param>
-        public void Assign(ClientLeafSubGrid source)
+        public void Assign(IClientLeafSubGrid source)
         {
             Level = source.Level;
             OriginX = source.OriginX;
@@ -314,5 +314,18 @@ namespace VSS.TRex.SubGridTrees.Client
             ProdDataMap.Read(reader, buffer);
             FilterMap.Read(reader, buffer);
         }
+
+      /// <summary>
+      /// Computes an indicate memory usage in bytes for the content stored in this client grid
+      /// </summary>
+      /// <returns></returns>
+      public virtual int IndicativeSizeInBytes()
+      {
+        throw new NotImplementedException("IndicativeSizeInBytes not implemented");
+      }
+
+      public uint CacheOriginX { get => OriginX; }
+
+      public uint CacheOriginY { get => OriginY; }
     }
 }

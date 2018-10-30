@@ -121,8 +121,8 @@ namespace VSS.TRex.Filters
                                         SubGridTreeBitmapSubGridBits CellOverrideMask,
                                         bool AHasOverrideSpatialCellRestriction,
                                         BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
-                                        ref SubGridTreeBitmapSubGridBits PDMask,
-                                        ref SubGridTreeBitmapSubGridBits FilterMask)
+                                        SubGridTreeBitmapSubGridBits PDMask,
+                                        SubGridTreeBitmapSubGridBits FilterMask)
         {
             // TODO: No design alignment mask support... RequestResult: TDesignProfilerRequestResult;
             // SubGridTreeBitmapSubGridBits AlignMask;

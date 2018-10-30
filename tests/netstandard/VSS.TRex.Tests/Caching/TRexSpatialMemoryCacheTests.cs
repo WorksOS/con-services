@@ -109,8 +109,8 @@ namespace VSS.TRex.Tests.Caching
       cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element()
       {
         SizeInBytes = _size,
-        OriginX = _originX,
-        OriginY = _originY, 
+        CacheOriginX = _originX,
+        CacheOriginY = _originY, 
       });
 
       Assert.True(context.TokenCount == 1, "Context token count not one after adding single item");
@@ -119,8 +119,8 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(gotItem != null, "Failed to retrieve added entry");
 
-      Assert.Equal(_originX, gotItem.OriginX);
-      Assert.Equal(_originY, gotItem.OriginY);
+      Assert.Equal(_originX, gotItem.CacheOriginX);
+      Assert.Equal(_originY, gotItem.CacheOriginY);
       Assert.Equal(_size, gotItem.IndicativeSizeInBytes());
     }
 
@@ -145,8 +145,8 @@ namespace VSS.TRex.Tests.Caching
       var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = _size,
-        OriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-        OriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+        CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
       }).ToArray();
 
       for (int i = 0; i < numContexts; i++)
@@ -158,12 +158,12 @@ namespace VSS.TRex.Tests.Caching
 
       for (int i = 0; i < numContexts; i++)
       {
-        var gotItem = contexts[i].Get(items[i].OriginX, items[i].OriginY);
+        var gotItem = contexts[i].Get(items[i].CacheOriginX, items[i].CacheOriginY);
 
         Assert.True(gotItem != null, "Failed to retrieve added entry");
         Assert.True(ReferenceEquals(items[i], gotItem), $"Got item not same as elements in items array at index {i}");
-        Assert.Equal(items[i].OriginX, gotItem.OriginX);
-        Assert.Equal(items[i].OriginY, gotItem.OriginY);
+        Assert.Equal(items[i].CacheOriginX, gotItem.CacheOriginX);
+        Assert.Equal(items[i].CacheOriginY, gotItem.CacheOriginY);
         Assert.Equal(items[i].IndicativeSizeInBytes(), gotItem.IndicativeSizeInBytes());
       }
     }
@@ -189,8 +189,8 @@ namespace VSS.TRex.Tests.Caching
       var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
       {
         SizeInBytes = _size,
-        OriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-        OriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+        CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
       }).ToArray();
 
       for (int i = 0; i < numContexts; i++)
@@ -226,23 +226,23 @@ namespace VSS.TRex.Tests.Caching
       var item1 = new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = _size,
-        OriginX = (uint) (_originX),
-        OriginY = (uint) (_originY)
+        CacheOriginX = (uint) (_originX),
+        CacheOriginY = (uint) (_originY)
       };
 
       var item2 = new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = _size,
-        OriginX = (uint) (_originX + SubGridTreeConsts.SubGridTreeDimension),
-        OriginY = (uint) (_originY + SubGridTreeConsts.SubGridTreeDimension)
+        CacheOriginX = (uint) (_originX + SubGridTreeConsts.SubGridTreeDimension),
+        CacheOriginY = (uint) (_originY + SubGridTreeConsts.SubGridTreeDimension)
       };
 
       cache.Add(context, item1);
       cache.Add(context, item2);
 
       Assert.True(context.TokenCount == 1, "Token count not one after addition of second element forcing eviction of first");
-      Assert.True(context.Get(item1.OriginX, item1.OriginY) == null, "Able to request item1 after it should have been evicted for item2");
-      Assert.True(context.Get(item2.OriginX, item2.OriginY) != null, "Unable to request item2 after it should have replaced item1");
+      Assert.True(context.Get(item1.CacheOriginX, item1.CacheOriginY) == null, "Able to request item1 after it should have been evicted for item2");
+      Assert.True(context.Get(item2.CacheOriginX, item2.CacheOriginY) != null, "Unable to request item2 after it should have replaced item1");
     }
 
     [Fact]
@@ -261,8 +261,8 @@ namespace VSS.TRex.Tests.Caching
       var item1 = new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = _size,
-        OriginX = (uint) (_originX),
-        OriginY = (uint) (_originY)
+        CacheOriginX = (uint) (_originX),
+        CacheOriginY = (uint) (_originY)
       };
 
       Assert.True(cache.Add(context, item1), "Failed to add element for the first time");
@@ -291,8 +291,8 @@ namespace VSS.TRex.Tests.Caching
       var items = Enumerable.Range(0, numElementsToAdd).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
       {
         SizeInBytes = elementSize,
-        OriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-        OriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+        CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
       }).ToArray();
 
       for (int i = 0; i < numElementsToAdd; i++)
@@ -326,8 +326,8 @@ namespace VSS.TRex.Tests.Caching
       var items = Enumerable.Range(0, numElementsToAdd).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
       {
         SizeInBytes = elementSize,
-        OriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
-        OriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
+        CacheOriginX = (uint) (_originX + x * SubGridTreeConsts.SubGridTreeDimension),
+        CacheOriginY = (uint) (_originY + x * SubGridTreeConsts.SubGridTreeDimension)
       }).ToArray();
 
       for (int i = 0; i < numElementsToAdd; i++)

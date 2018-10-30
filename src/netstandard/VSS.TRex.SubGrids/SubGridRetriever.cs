@@ -969,7 +969,7 @@ namespace VSS.TRex.SubGrids
           // Determine the bitmask detailing which cells match the cell selection filter
           if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,
             cellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,
-            ref ClientGridAsLeaf.ProdDataMap, ref ClientGridAsLeaf.FilterMap))
+            ClientGridAsLeaf.ProdDataMap, ClientGridAsLeaf.FilterMap))
           {
             return ServerRequestResult.FailedToComputeDesignFilterPatch;
           }

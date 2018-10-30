@@ -12,5 +12,9 @@
     void ItemRemovedFromContext(int sizeInBytes);
 
     int ContextCount();
+
+    bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element);
+
+    ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint);
   }
 }

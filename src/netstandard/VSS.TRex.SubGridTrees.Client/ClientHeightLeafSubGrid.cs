@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// Initilise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientHeightLeafSubGrid()
     {

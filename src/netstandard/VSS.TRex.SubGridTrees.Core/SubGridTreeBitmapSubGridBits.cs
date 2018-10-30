@@ -10,22 +10,22 @@ namespace VSS.TRex.SubGridTrees
 {
     /// <summary>
     /// Represents a subgrid in terms of one bit per cell in the subgrid. Many bit-wise operations are supported
-    /// allowing efficient manipulation of bitmasks representing subgrids and trees.
+    /// allowing efficient manipulation of bit masks representing subgrids and trees.
     /// </summary>
-    public struct SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
+    public class SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
     {
         /// <summary>
-        /// The code used in serialised bit masks to indicate all bits are unset (0), and so are not explicitly written
+        /// The code used in serialized bit masks to indicate all bits are unset (0), and so are not explicitly written
         /// </summary>
         private const byte Serialisation_NoBitsSet = 0;
 
         /// <summary>
-        /// The code used in serialised bit masks to indicate all bits are set (1), and so are not explicitly written
+        /// The code used in serialized bit masks to indicate all bits are set (1), and so are not explicitly written
         /// </summary>
         private const byte Serialisation_AllBitsSet = 1;
 
         /// <summary>
-        /// The code used in serialised bit masks to indicate the number of set bits is in the range 
+        /// The code used in serialized bit masks to indicate the number of set bits is in the range 
         /// 1..SubGridTreeConsts.CellsPerSubgrid and so are explicitly written
         /// </summary>
         private const byte Serialisation_ArbitraryBitsSet = 2;
@@ -79,7 +79,7 @@ namespace VSS.TRex.SubGridTrees
 
             if (options == SubGridBitsCreationOptions.Unfilled)
             {
-                // Note: The default .Net behaviuour of clearing the memory for the bit mask achieves the same result as Clear...
+                // Note: The default .Net behaviour of clearing the memory for the bit mask achieves the same result as Clear...
                 // Clear();
                 return;
             }
@@ -92,7 +92,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public void Clear()
         {
-            // Perform a fast block copy of the bytes in the precalculate empty Bits 
+            // Perform a fast block copy of the bytes in the pre-calculated empty Bits 
             // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
             // Note: The copy is in terms of bytes, not elements. 
             // This is about as fast as a managed copy of array items can be.
@@ -105,7 +105,7 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public void Fill()
         {
-            // Perform a fast block copy of the bytes in the precalculate empty Bits 
+            // Perform a fast block copy of the bytes in the pre-calculated empty Bits 
             // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
             // Note: The copy is in terms of bytes, not elements. 
             // This is about as fast as a managed copy of array items can be.
@@ -182,8 +182,8 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Compute the AND of two bit masks and assign the result to this bitmask. This is more performant than the & operator
-        /// in that no intermedeiate bitmask instance is created and then assinged to the target bitmask
+        /// Compute the AND of two bit masks and assign the result to this bitmask. This is faster than the & operator
+        /// in that no intermediate bitmask instance is created and then assigned to the target bitmask
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -222,8 +222,8 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Compute the OR of two bit masks and assign the result to this bitmask. This is more performant than the | operator
-        /// in that no intermedeiate bitmask instance is created and then assinged to the target bitmask
+        /// Compute the OR of two bit masks and assign the result to this bitmask. This is faster than the | operator
+        /// in that no intermediate bitmask instance is created and then assigned to the target bitmask
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -365,7 +365,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// Adds all the rows containing bits together as if they were numnbers. This provides fast determination of empty, full or partial bitsets
+        /// Adds all the rows containing bits together as if they were numbers. This provides fast determination of empty, full or partial bitsets
         /// </summary>
         /// <returns></returns>
         public long SumBitRows()
@@ -379,7 +379,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /*
-          // Not implemented in Next Gen. Any similar requriement can extract the bits and set them externally
+          // Not implemented in Next Gen. Any similar requirement can extract the bits and set them externally
                 class function TSubGridTreeLeafBitmapSubGridBits.FromVariant(const Vrnt: Variant): TSubGridTreeLeafBitmapSubGridBits;
                 var
                   Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
@@ -396,7 +396,7 @@ namespace VSS.TRex.SubGridTrees
                 */
 
         /*
-       // Not implemented in Next Gen. Any similar requriement can extract the bits and set them externally
+       // Not implemented in Next Gen. Any similar requirement can extract the bits and set them externally
        function TSubGridTreeLeafBitmapSubGridBits.ToVariant: Variant;
        var
          Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
