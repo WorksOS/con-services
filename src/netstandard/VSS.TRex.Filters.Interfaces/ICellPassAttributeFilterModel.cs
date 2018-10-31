@@ -94,7 +94,7 @@ namespace VSS.TRex.Filters.Interfaces
     Guid ElevationRangeDesignID { get; set; }
 
     /// <summary>
-    /// Elevation parameters have been initialised in preparation for elevation range filtering, either
+    /// Elevation parameters have been initialized in preparation for elevation range filtering, either
     /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
     /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
     /// </summary>
