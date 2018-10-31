@@ -2,12 +2,13 @@
 using System.Linq;
 using VSS.TRex.Caching;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexSpatialMemoryCacheTests
+  public class TRexSpatialMemoryCacheTests : IClassFixture<DILoggingAndStorgeProxyFixture>
   {
     private readonly ITestOutputHelper output;
 

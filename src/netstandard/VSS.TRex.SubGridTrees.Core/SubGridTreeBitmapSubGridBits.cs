@@ -137,21 +137,35 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public bool BitSet(uint CellX, uint CellY) => (Bits[CellY] & (SubGridBitMapHighBitMask >> (int)CellX)) != 0;
 
-        /// <summary>
-        /// Defines an overloaded bitwise equality operator for the Bits from a and b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static bool operator ==(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b) => a.Equals(b);
+      /// <summary>
+      /// Defines an overloaded bitwise equality operator for the Bits from a and b
+      /// </summary>
+      /// <param name="a"></param>
+      /// <param name="b"></param>
+      /// <returns></returns>
+      public static bool operator ==(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+      {
+        if (ReferenceEquals(a, b)) return true;
+        if (ReferenceEquals(a, null)) return false;
+        if (ReferenceEquals(null, b)) return false;
 
-        /// <summary>
-        /// Defines an overloaded bitwise inequality operator for the Bits from a and b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static bool operator !=(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b) => !a.Equals(b);
+        return a.Equals(b);
+      }
+
+      /// <summary>
+      /// Defines an overloaded bitwise inequality operator for the Bits from a and b
+      /// </summary>
+      /// <param name="a"></param>
+      /// <param name="b"></param>
+      /// <returns></returns>
+      public static bool operator !=(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+      {
+        if (ReferenceEquals(a, b)) return false;
+        if (ReferenceEquals(a, null)) return true;
+        if (ReferenceEquals(null, b)) return true;
+    
+        return !a.Equals(b);
+      }
 
         /// <summary>
         /// Defines an overloaded bitwise AND/& operator that ANDs together the Bits from a and b and returns a 

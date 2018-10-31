@@ -41,7 +41,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         public SurfaceElevationPatchRequest(string cacheFingerprint)
         {
           _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
-          _context = _cache.LocateOrCreateContext(cacheFingerprint);
+          _context = _cache?.LocateOrCreateContext(cacheFingerprint);
         }
      
         private SurfaceElevationPatchRequest()
@@ -51,7 +51,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         public override IClientLeafSubGrid Execute(SurfaceElevationPatchArgument arg)
         {
             // Check the item is available in the cache
-            if (_context.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is ClientHeightAndTimeLeafSubGrid cachedResult)
+            if (_context?.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is ClientHeightAndTimeLeafSubGrid cachedResult)
             {
                 // It was present in the cache, return it
                 return cachedResult;
@@ -95,7 +95,8 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
             // Fow now, only cache non-composite elevation subgrids
             if (arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations)
-              _cache.Add(_context, clientResult);
+              if (_context != null)
+                _cache?.Add(_context, clientResult);
 
             return clientResult;
 
