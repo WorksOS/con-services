@@ -1,31 +1,29 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.TRex.CoordinateSystems;
-using VSS.TRex.CoordinateSystems.Interfaces;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.Events;
+using VSS.TRex.Events.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Compute;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
-using System.Threading.Tasks;
-using VSS.TRex.Designs;
-using VSS.TRex.Designs.Interfaces;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.GridFabric.Events;
-using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SurveyedSurfaces;
-using VSS.ConfigurationStore;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Queues;
 
 namespace VSS.TRex.Server.MutableData
@@ -46,7 +44,6 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>())
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
@@ -79,7 +76,7 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(VSS.TRex.CoordinateSystems.LLH),
+        typeof(VSS.TRex.CoordinateSystems.Models.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),

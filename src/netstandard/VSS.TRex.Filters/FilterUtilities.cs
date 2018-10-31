@@ -1,8 +1,12 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Filters
 {
@@ -24,12 +28,10 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public static RequestErrorStatus PrepareFilterForUse(ICombinedFilter Filter, Guid DataModelID)
     {
-      // XYZ[] NEECoords = null;
       XYZ[] LLHCoords; //: TCSConversionCoordinates;
       // Fence DesignBoundary = null;
       RequestErrorStatus Result = RequestErrorStatus.OK;
 
-      //CoordConversionResult: TCoordServiceErrorStatus;
       //RequestResult: TDesignProfilerRequestResult;
 
       try
@@ -43,6 +45,8 @@ namespace VSS.TRex.Filters
         {
           if (!Filter.SpatialFilter.CoordsAreGrid)
           {
+            ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+
             // If the filter has a spatial or positional context, then convert the LLH values in the
             // spatial context into the NEE values consistent with the data model.
             if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
@@ -52,44 +56,44 @@ namespace VSS.TRex.Filters
               // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
               for (int FencePointIdx = 0; FencePointIdx < Filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
               {
-                LLHCoords[FencePointIdx] = new XYZ(Filter.SpatialFilter.Fence[FencePointIdx].X * (Math.PI / 180), Filter.SpatialFilter.Fence[FencePointIdx].Y * (Math.PI / 180));
+                LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].Y));
               }
 
-              /* TODO - not yet supported
-              CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(-1, DataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
-              if (CoordConversionResult != csOK)
+              (var errorCode, XYZ[] NEECoords) = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
+
+              if (errorCode != RequestErrorStatus.OK)
               {
-                  return RequestErrorStatus.FailedToConvertClientWGSCoords;
+                Log.LogInformation("Summary volume failure, could not convert coordinates from WGS to grid coordinates");
+
+                return RequestErrorStatus.FailedToConvertClientWGSCoords;
               }
 
-              for (int FencePointIdx = 0; FencePointIdx < Filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
+              for (int fencePointIdx = 0; fencePointIdx < Filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
               {
-                  Filter.SpatialFilter.Fence[FencePointIdx].X = NEECoords[FencePointIdx].X;
-                  Filter.SpatialFilter.Fence[FencePointIdx].Y = NEECoords[FencePointIdx].Y;
+                Filter.SpatialFilter.Fence[fencePointIdx].X = NEECoords[fencePointIdx].X;
+                Filter.SpatialFilter.Fence[fencePointIdx].Y = NEECoords[fencePointIdx].Y;
               }
 
               // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
               Filter.SpatialFilter.Fence.UpdateExtents();
-              */
-
-              throw new NotImplementedException();
             }
 
             if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
             {
               // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
-              LLHCoords = new[] {new XYZ(Filter.SpatialFilter.PositionX * (Math.PI / 180), Filter.SpatialFilter.PositionY * (Math.PI / 180))};
+              LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionY)) };
 
-              /* TODO - not yet supported
-              CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(-1, aDataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
-              if (CoordConversionResult != csOK)
+              (var errorCode, XYZ[] NEECoords) = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
+
+              if (errorCode != RequestErrorStatus.OK)
               {
-                  return RequestErrorStatus.FailedToConvertClientWGSCoords;
-              }
+                Log.LogInformation("Filter mutation failure, could not convert coordinates from WGS to grid coordinates");
 
+                return RequestErrorStatus.FailedToConvertClientWGSCoords;
+              }
+              
               Filter.SpatialFilter.PositionX = NEECoords[0].X;
               Filter.SpatialFilter.PositionY = NEECoords[0].Y;
-              */
 
               throw new NotImplementedException();
             }
@@ -182,7 +186,7 @@ namespace VSS.TRex.Filters
 
       if (Filter1 != null && !Filter1.AttributeFilter.AnyFilterSelections)
         Result = PrepareFilterForUse(Filter1, DataModelID);
- 
+
       if (Result == RequestErrorStatus.OK && Filter2 != null && !Filter2.AttributeFilter.AnyFilterSelections)
         Result = PrepareFilterForUse(Filter2, DataModelID);
 

@@ -428,7 +428,7 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void SetRotation(double rotation)
         {
-            Rotation = rotation * Math.PI / 180;
+            Rotation = MathUtilities.DegreesToRadians(rotation);
 
             SinOfRotation = Math.Sin(rotation);
             CosOfRotation = Math.Cos(rotation);
