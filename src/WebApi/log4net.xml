@@ -17,13 +17,13 @@
         <connectionString value="Scheme=http;Server=es.k8s.vspengg.com;Index=log;Port=80;rolling=true"/>
         <lossy value="false" />
         <evaluator type="log4net.Core.LevelEvaluator">
-            <threshold value="INFO" />
+            <threshold value="DEBUG" />
         </evaluator>
         <bufferSize value="2048" />
   </appender>
 
   <root>
-    <level value="INFO" />
+    <level value="DEBUG" />
     <appender-ref ref="RollingFile" />
     <appender-ref ref="Console" />
     <!--<appender-ref ref="ElasticSearchAppender" />-->
