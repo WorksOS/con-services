@@ -105,17 +105,19 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         [NonSerialized]
         private IDesign ReferenceDesign;
 
+        [NonSerialized] private IDesignManager designManager;
+
         /// <summary>
         /// DI injected context for designs service
         /// </summary>
-        [NonSerialized]
-        private IDesignManager designManager = DIContext.Obtain<IDesignManager>();
+        private IDesignManager DesignManager => designManager ?? (designManager = DIContext.Obtain<IDesignManager>());
+
+        [NonSerialized] private ITRexSpatialMemoryCache subGridCache;
 
         /// <summary>
         /// The DI injected TRex spatial memory cache for general subgrid results
         /// </summary>
-        [NonSerialized]
-        private ITRexSpatialMemoryCache SubGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>();
+        private ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
 
         [NonSerialized]
         private ITRexSpatialMemoryCacheContext SubGridCacheContext;
