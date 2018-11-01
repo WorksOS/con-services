@@ -260,12 +260,14 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
       /// <summary>
-      /// Computes an indicate memory usage in bytes for the content stored in this client grid
+      /// Return an indicative size for memory consumption of this class to be used in cache tracking
       /// </summary>
       /// <returns></returns>
+
       public virtual int IndicativeSizeInBytes()
       {
-        throw new NotImplementedException("IndicativeSizeInBytes not implemented");
+        return FilterMap?.IndicativeSizeInBytes() ?? 0 + 
+               ProdDataMap?.IndicativeSizeInBytes() ?? 0;
       }
 
       /// <summary>

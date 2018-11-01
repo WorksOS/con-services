@@ -251,6 +251,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Sets all elevations in the height client leaf sub grid to zero (not null)
     /// </summary>
-    public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0); 
+    public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0);
+
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public override int IndicativeSizeInBytes()
+    {
+      throw new System.NotImplementedException();
+    }
   }
 }

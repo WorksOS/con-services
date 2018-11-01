@@ -469,5 +469,14 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.Fill();
             Assert.Equal(bits.SumBitRows(), SubGridTreeBitmapSubGridBits.SumBitRowsFullCount);
         }
+
+      [Fact]
+      public void Test_SubGridTreeBitmapSubGridBitsTests_IndicativeSizeInBytes()
+      {
+        SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+
+        Assert.True(bits.Bits.Length == 32, "Bits does not contain 32 by 32 bit uints");
+        Assert.True(bits.IndicativeSizeInBytes() == 4 * bits.Bits.Length, "Bits does not contain 32 by 32 bit uints");
+      }
     }
 }

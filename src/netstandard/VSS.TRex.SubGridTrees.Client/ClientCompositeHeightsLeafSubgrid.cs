@@ -138,5 +138,14 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) =>
       filteredValue.FilteredPass.Height == CellPassConsts.NullHeight;
+
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public override int IndicativeSizeInBytes()
+    {
+      throw new System.NotImplementedException();
+    }
   }
 }

@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// Initilise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientMachineSpeedLeafSubGrid()
     {
@@ -210,6 +210,17 @@ namespace VSS.TRex.SubGridTrees.Client
       Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
 
       //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
+    }
+
+    public static int LayoutSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(ClientMachineSpeedLeafSubGrid));
+
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public override int IndicativeSizeInBytes()
+    {
+      return base.IndicativeSizeInBytes() + LayoutSize + FirstPassMap?.IndicativeSizeInBytes() ?? 0;
     }
   }
 }

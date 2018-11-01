@@ -28,7 +28,7 @@ namespace VSS.TRex.SubGridTrees
         public ISubGrid Parent { get; set; }
 
         /// <summary>
-        /// ‘Level’ in the subgridtree in which this subgrid resides. Level 1 is the root node in the tree, level 0 is invalid
+        /// ‘Level’ in the subgrid tree in which this subgrid resides. Level 1 is the root node in the tree, level 0 is invalid
         /// </summary>
         public byte Level { get; set; } // Invalid
 
@@ -45,7 +45,7 @@ namespace VSS.TRex.SubGridTrees
         public uint OriginY { get; set; } // int.MinValue;
 
         /// <summary>
-        /// Private backign store for the Dirty property. Descendent classes can override the GetDirty/SetDirty virtual methods
+        /// Private backing store for the Dirty property. Descendent classes can override the GetDirty/SetDirty virtual methods
         /// to additional semantics to setting the dirty flag if required
         /// </summary>
         protected bool dirty;
@@ -146,7 +146,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Determines the local in-subgrid X/Y location of a cell given its absolute cell index.
         /// This is a subgrid relative operation only, and depends only on the Owner to derive the difference
-        /// between the numer of levels in the overall tree, and the level in the tree at which this subgrid resides 
+        /// between the number of levels in the overall tree, and the level in the tree at which this subgrid resides 
         /// to compute the subgrid relative X and y cell indices as it is a leaf subgrid.
         /// WARNING: This call assumes the cell index does lie within this subgrid
         /// and (currently) no range checking is performed to ensure this}
@@ -193,7 +193,7 @@ namespace VSS.TRex.SubGridTrees
         public bool IsLeafSubGrid() => Level == Owner.NumLevels;
 
         /// <summary>
-        /// Returns a moniker string comprised of the X and Y origin ordinates in the sub greid cell address space
+        /// Returns a moniker string comprised of the X and Y origin ordinates in the sub grid cell address space
         /// separated by a colon, eg: in the form 1234:5678
         /// </summary>
         public string Moniker() => $"{OriginX}:{OriginY}";
@@ -291,7 +291,7 @@ namespace VSS.TRex.SubGridTrees
         /// CellHasValue queries the leaf sub grid to determine if the cell at the
         /// given X/Y location within it has a value. CellX and CellY are in the
         /// 0..SubGridTreeDimension-1 coordinate space of the subgrid.
-        /// WARNING: This is a comparitively expensive operation and so should not be used with abandon!
+        /// WARNING: This is a comparatively expensive operation and so should not be used with abandon!
         /// </summary>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>

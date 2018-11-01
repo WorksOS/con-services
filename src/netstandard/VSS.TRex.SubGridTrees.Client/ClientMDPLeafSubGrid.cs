@@ -296,5 +296,14 @@ namespace VSS.TRex.SubGridTrees.Client
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
+
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public override int IndicativeSizeInBytes()
+    {
+      throw new System.NotImplementedException();
+    }
   }
 }

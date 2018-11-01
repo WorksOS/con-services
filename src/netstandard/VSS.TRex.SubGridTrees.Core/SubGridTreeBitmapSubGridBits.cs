@@ -699,5 +699,14 @@ namespace VSS.TRex.SubGridTrees
         {
             return obj != null && Equals((SubGridTreeBitmapSubGridBits)obj);
         }
+
+      /// <summary>
+      /// Return an indicative size for memory consumption of this class to be used in cache tracking
+      /// </summary>
+      /// <returns></returns>
+      public int IndicativeSizeInBytes()
+      {
+        return Bits?.Length * 4 ?? 0; // Array of 32 bit uint values
+      }
     }
 }
