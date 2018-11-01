@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 
@@ -24,6 +27,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      serviceCollection.AddTransient<IMemoryCache, MemoryCache>();
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
 
@@ -48,6 +52,69 @@ namespace VSS.MasterData.Proxies.UnitTests
       var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, configStore, log);
       Assert.IsNotNull(opts);
       Assert.AreEqual(new TimeSpan(0, 15, 0), opts.SlidingExpiration);
+    }
+
+    [TestMethod]
+    public void CacheDoesNotReturnInvalidEntries()
+    {
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, configStore, log);
+      var cache = serviceProvider.GetService<IMemoryCache>();
+
+      var cacheKey = $"test-CacheDoesNotReturnInvalidEntries-{Guid.NewGuid()}";
+      var taskExecutionCounter = 0;
+
+      var mockedCacheFactory = new Func<Task<object>>(() =>
+      {
+        taskExecutionCounter++;
+        throw new Exception("Test Exception");
+      });
+
+
+      for (var cnt = 1; cnt <= 10; cnt++)
+      {
+        try
+        {
+          cache.GetOrAdd(cacheKey, opts, () => mockedCacheFactory.Invoke()).Wait();
+        }
+        catch (Exception)
+        {
+          // The test will throw an exception, which represents what happens when a failed cache item is added (such as a service exception)
+        }
+
+        // Each execution should increase the counter, as we aren't caching the failed result
+        Assert.IsTrue(taskExecutionCounter == cnt);
+      }
+    }
+
+    [TestMethod]
+    public void CacheDoesCacheValidEntries()
+    {
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      var log = logger.CreateLogger<MemoryCacheExtensionsTests>();
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, configStore, log);
+      var cache = serviceProvider.GetService<IMemoryCache>();
+
+      var cacheKey = $"test-CacheDoesCacheValidEntries-{Guid.NewGuid()}";
+      var taskExecutionCounter = 0;
+
+      var mockedCacheFactory = new Func<Task<string>>(() =>
+      {
+        taskExecutionCounter++;
+        return Task.FromResult("Passed");
+      });
+
+      for (var cnt = 1; cnt <= 10; cnt++)
+      {
+        var result = cache.GetOrAdd(cacheKey, opts, () => mockedCacheFactory.Invoke()).Result;
+        
+        // We should get the same result each time, but we should never execute the method more than once
+        Assert.IsTrue(string.Compare(result, "Passed", StringComparison.Ordinal) == 0);
+        Assert.IsTrue(taskExecutionCounter == 1);
+      }
     }
   }
 }

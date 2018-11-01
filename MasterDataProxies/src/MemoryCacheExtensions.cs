@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -43,16 +45,17 @@ namespace VSS.MasterData.Proxies
     static object cacheLock = new object();
     public static T GetOrAdd<T>(this IMemoryCache cache, string cacheKey, MemoryCacheEntryOptions opts, Func<T> factory)
     {
-      if (cache.TryGetValue(cacheKey, out var promise))
-        return ((Lazy<T>)promise).Value;
+      if (cache.TryGetValue(cacheKey, out var promise) && IsPromiseSuitable(promise as Lazy<T>))
+        return ((Lazy<T>) promise).Value;
 
       Lazy<T> promiseToSet;
 
       lock (cacheLock)
       {
-        if (cache.TryGetValue(cacheKey, out var promiseBeforeSet))
-          return ((Lazy<T>)promiseBeforeSet).Value;
-        promiseToSet = new Lazy<T>(factory);
+        if (cache.TryGetValue(cacheKey, out var promiseBeforeSet) && IsPromiseSuitable(promise as Lazy<T>))
+            return ((Lazy<T>) promiseBeforeSet).Value;
+
+        promiseToSet = new Lazy<T>(factory, LazyThreadSafetyMode.PublicationOnly);
         cache.Set(cacheKey, promiseToSet);
       }
 
@@ -65,11 +68,29 @@ namespace VSS.MasterData.Proxies
 
       lock (cacheLock)
       {
-        promiseToSet = new Lazy<T>(factory);
+        promiseToSet = new Lazy<T>(factory, LazyThreadSafetyMode.PublicationOnly);
         cache.Set(cacheKey, promiseToSet);
       }
 
       return promiseToSet.Value;
+    }
+
+    /// <summary>
+    /// Checks a promise to see if it is suitable to be returned.
+    /// We don't want promises that cause exceptions / invalid values to be returned as the issue may have been resolved.
+    /// </summary>
+    private static bool IsPromiseSuitable<T>(Lazy<T> promise)
+    {
+      if (promise == null)
+        return false;
+
+      var task = promise.Value as Task;
+      // If we don't have a task for the promise, then the value created will only be true if the cached item didn't throw an exception
+      if (task == null) 
+        return promise.IsValueCreated;
+
+      // Only return tasks that have ran to completion successfully (unhandled exceptions will cause a status of 'Faulted')
+      return task.Status == TaskStatus.RanToCompletion;
     }
   }
 }
