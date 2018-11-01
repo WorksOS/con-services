@@ -276,7 +276,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignID);
         }
 
-
         /// <summary>
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
         /// </summary>
@@ -289,7 +288,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             try
             {
-        // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+                // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
                 if (localArg.GridDataType == GridDataType.DesignHeight)
                 {
@@ -533,6 +532,17 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         }
 
         /// <summary>
+        /// Performs any initialization of this compute func that might ordinarily be achieved through automatic property
+        /// initialization or constructor initialization that is not invoked when the compute func is created at the
+        /// target server. Ignite performs an under-the-hood instantiation and hydration of state that does not invoke either
+        /// automatics field initialization or constructor invocation.
+        /// </summary>
+        private void InitialiseComputeFunc()
+        {
+          AreaControlSet = AreaControlSet.Null();
+        }
+
+        /// <summary>
         /// Invoke function called in the context of the cluster compute node
         /// </summary>
         /// <param name="arg"></param>
@@ -547,6 +557,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             {
                 try
                 {
+                    InitialiseComputeFunc();
+
                     UnpackArgument(arg);
 
                     long NumSubgridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
