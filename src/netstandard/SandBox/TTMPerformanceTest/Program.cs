@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using VSS.ConfigurationStore;
 using VSS.TRex.Designs;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -87,10 +89,13 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
 
     static void Main(string[] args)
     {
-      DIBuilder.New().AddLogging().Complete();
+      DIBuilder.New()
+        .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Complete();
 
-      //LoadTheGiantDesignALotOfTimes();
-      ScanAllElevationsOverGiantDesign();
+      LoadTheGiantDesignALotOfTimes();
+      //ScanAllElevationsOverGiantDesign();
 
       Console.ReadKey();
     }
