@@ -10,7 +10,7 @@ services:
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_SECRET_KEY=qQAEmtYOcn0PCzSfpqIgmNFpyMclrZllnOnY1Ecx
      - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives
-     - CONNECTED_SITE_GATEWAY_URL=TBD
+     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.k8s.services.myvisionlink.com
      - CUSTOMERSERVICE_API_URL=https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
      - CUSTOMERSERVICE_CACHE_LIFE=00:15:00
      - DEFAULT_CONNECTION_LIMIT=64
