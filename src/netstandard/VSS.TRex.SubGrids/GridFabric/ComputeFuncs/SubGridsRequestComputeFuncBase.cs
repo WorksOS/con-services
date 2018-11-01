@@ -467,9 +467,11 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 FilteredSurveyedSurfaces.SortChronologically(x.AttributeFilter.ReturnEarliestFilteredCellPass);
               }
 
+              Guid[] FilteredSurveyedSurfacesAsArray = FilteredSurveyedSurfaces?.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0];
+
               // Get a caching context for the subgrids returned by this requester
               SubGridCacheContext = SubGridCache.LocateOrCreateContext(SpatialCacheFingerprint.ConstructFingerprint
-                (siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfaces.Select(s => s.ID).ToArray()));
+                (siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfacesAsArray));
 
               return new SubGridRequestor(siteModel,
                 siteModels.StorageProxy,
@@ -484,7 +486,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 SubGridCache,
                 SubGridCacheContext,
                 FilteredSurveyedSurfaces,
-                FilteredSurveyedSurfaces.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0]);
+                FilteredSurveyedSurfacesAsArray);
             }).ToArray();
 
             addresses = new ISubGridCellAddress[addressBucketSize];
