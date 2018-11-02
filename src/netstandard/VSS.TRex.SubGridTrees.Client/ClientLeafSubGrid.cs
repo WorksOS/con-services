@@ -179,18 +179,14 @@ namespace VSS.TRex.SubGridTrees.Client
                                              WOy + SubGridTreeConsts.SubGridTreeDimension * CellSize);
         }
 
-        /// <summary>
-        /// Assign cell information from a previously cached result held in the general subgrid result cache
-        /// using the supplied map to control which cells from the caches subgrid should be copied into this
-        /// client leaf sub grid
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="map"></param>
-        public virtual void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source,
-                                                                      SubGridTreeBitmapSubGridBits map)
-        {
-            Debug.Assert(false, "{0}.AssignFromCachedPreProcessedClientSubgrid does not support assignation", MethodBase.GetCurrentMethod().DeclaringType.Name);
-        }
+      /// <summary>
+      /// Assign cell information from a previously cached result held in the general subgrid result cache
+      /// using the supplied map to control which cells from the caches subgrid should be copied into this
+      /// client leaf sub grid
+      /// </summary>
+      /// <param name="source"></param>
+      /// <param name="map"></param>
+      public abstract void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
         /// <summary>
         /// Assigns the state of one client leaf sub grid to this client leaf subgrid

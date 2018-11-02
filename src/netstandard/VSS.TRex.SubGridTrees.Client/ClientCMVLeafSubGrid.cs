@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -337,6 +338,23 @@ namespace VSS.TRex.SubGridTrees.Client
       return base.IndicativeSizeInBytes() +
              FirstPassMap.IndicativeSizeInBytes() +
              SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataCMVEntryRecord.IndicativeSizeInBytes();
+    }
+
+    /// <summary>
+    /// Assign cell information from a previously cached result held in the general subgrid result cache
+    /// using the supplied map to control which cells from the caches subgrid should be copied into this
+    /// client leaf sub grid
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="map"></param>
+    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
+    {
+      var subGrid = (ClientCMVLeafSubGrid)source;
+
+      if (map.IsFull())
+        Array.Copy(subGrid.Cells, Cells, SubGridTreeConsts.CellsPerSubgrid);
+      else
+        map.ForEachSetBit((x, y) => Cells[x, y] = subGrid.Cells[x, y]);
     }
   }
 }

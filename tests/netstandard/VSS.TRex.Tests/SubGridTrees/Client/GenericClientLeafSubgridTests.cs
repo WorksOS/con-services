@@ -164,5 +164,17 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       Assert.True(clientGrid.IndicativeSizeInBytes() > 0, "Indicative size in bytes is <= 0!");
     }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      clientGrid.AssignFromCachedPreProcessedClientSubgrid(clientGrid, clientGrid.FilterMap);
+
+      // If we get here it's all good!
+      Assert.True(true, "");
+    }
   }
 }

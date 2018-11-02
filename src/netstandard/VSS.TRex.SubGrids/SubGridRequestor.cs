@@ -436,7 +436,7 @@ namespace VSS.TRex.SubGrids
                         ProdTime = DateTime.MinValue.Ticks;
                     }
 
-                    // Determine if the elevation from the surveyed surface data is required based on the nullness of the production data elevation, and
+                    // Determine if the elevation from the surveyed surface data is required based on the production data elevation beign null, and
                     // the relative age of the measured surveyed surface elevation compared with a non-null production data height
                     SurveyedSurfaceElevationWanted = SurveyedSurfaceCellHeight != Consts.NullHeight &&
                                                      (ProdHeight == Consts.NullHeight ||

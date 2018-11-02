@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
@@ -147,6 +149,19 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       return base.IndicativeSizeInBytes() +
              SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellCompositeHeightsRecord.IndicativeSizeInBytes();
+    }
+
+    /// <summary>
+    /// Assign cell information from a previously cached result held in the general subgrid result cache
+    /// using the supplied map to control which cells from the caches subgrid should be copied into this
+    /// client leaf sub grid
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="map"></param>
+    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
+    {
+      // Composite height subgrids don't define a caching behaviour
+      Debug.Assert(false, "Composite height subgrids don't define a caching behaviour");
     }
   }
 }
