@@ -155,5 +155,14 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
           Assert.True(clientGrid.CellHasValue(x, y), "Cell does not have value when it should");
       });
     }
+
+    [Theory]
+    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
+    public void Test_GenericClientLeafSubgrid_Implements_IndicativeSizeInBytes(GridDataType gridDataType)
+    {
+      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
+
+      Assert.True(clientGrid.IndicativeSizeInBytes() > 0, "Indicative size in bytes is <= 0!");
+    }
   }
 }
