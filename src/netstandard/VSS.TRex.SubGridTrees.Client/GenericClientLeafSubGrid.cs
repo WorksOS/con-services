@@ -53,7 +53,7 @@ namespace VSS.TRex.SubGridTrees.Client
         public T[,] Clone2DArray()
         {
           T[,] result = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-          Array.Copy(Cells, 0, result, 0, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension);
+          Array.Copy(Cells, 0, result, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
        
           return result;
         }

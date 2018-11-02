@@ -178,6 +178,6 @@ namespace VSS.TRex.SubGridTrees.Types
              PreviousTargetCMV == other.PreviousTargetCMV;
     }
 
-    public static int IndicateSizeInBytes() => 8; // 4 shorts
+    public static int IndicativeSizeInBytes() => 8; // 4 shorts
   }
 }

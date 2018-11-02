@@ -23,7 +23,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// Initilise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientPassCountLeafSubGrid()
     {
@@ -47,7 +47,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientPassCountLeafSubGrid() : base()
+    public ClientPassCountLeafSubGrid()
     {
       Initialise();
     }
@@ -74,7 +74,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredPassCount != CellPassConsts.NullPassCountValue;
 
     /// <summary>
-    /// Sets all cell Pass Counts to null and clears the first pass and sureyed surface pass maps
+    /// Sets all cell Pass Counts to null and clears the first pass and surveyed surface pass maps
     /// </summary>
     public override void Clear()
     {
@@ -126,7 +126,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override SubGridCellPassDataPassCountEntryRecord NullCell() => SubGridCellPassDataPassCountEntryRecord.NullValue;
@@ -169,7 +169,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override int IndicativeSizeInBytes()
     {
-      throw new System.NotImplementedException();
+      return base.IndicativeSizeInBytes() +
+             FirstPassMap.IndicativeSizeInBytes() +
+             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataPassCountEntryRecord.IndicativeSizeInBytes();
     }
   }
 }

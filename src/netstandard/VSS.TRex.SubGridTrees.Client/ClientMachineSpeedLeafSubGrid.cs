@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientMachineSpeedLeafSubGrid() : base()
+    public ClientMachineSpeedLeafSubGrid()
     {
       Initialise();
     }
@@ -88,13 +88,13 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPassConsts.NullMachineSpeed;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override ushort NullCell() => CellPassConsts.NullMachineSpeed;
 
     /// <summary>
-    /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
+    /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
     /// </summary>
     public override void Clear()
     {
@@ -115,7 +115,7 @@ namespace VSS.TRex.SubGridTrees.Client
         I, J : Integer;
         S : String;
       begin
-        SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , slmcDebug);
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , ...);
 
         for I := 0 to kSubGridTreeDimension - 1 do
           begin
@@ -127,7 +127,7 @@ namespace VSS.TRex.SubGridTrees.Client
               else
                 S := S + '     Null';
 
-            SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+            SIGLogMessage.PublishNoODS(Nil, S, ...);
           end;
       end;
       */

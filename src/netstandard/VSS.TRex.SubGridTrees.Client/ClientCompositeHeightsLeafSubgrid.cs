@@ -145,7 +145,8 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override int IndicativeSizeInBytes()
     {
-      throw new System.NotImplementedException();
+      return base.IndicativeSizeInBytes() +
+             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellCompositeHeightsRecord.IndicativeSizeInBytes();
     }
   }
 }

@@ -8,11 +8,11 @@ namespace VSS.TRex.SubGridTrees.Helpers
     /// </summary>
     public static class SubgridBitsHelper
     {
-        /// <summary>
-        /// The number of elements in the Bits array. Defined as:
-        /// (SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension * 8) / 2 unsigned ints
-        /// </summary>
-        public const int BitsArrayLength = SubGridTreeConsts.SubGridTreeDimension;
+    /// <summary>
+    /// The number of elements in the Bits array. Defined as:
+    /// (SubGridTreeConsts.SubGridTreeCellsPerSubgrid * 8) / 2 unsigned ints
+    /// </summary>
+    public const int BitsArrayLength = SubGridTreeConsts.SubGridTreeDimension;
 
         /// <summary>
         /// The number of bytes occupied by the elements in a Bits array

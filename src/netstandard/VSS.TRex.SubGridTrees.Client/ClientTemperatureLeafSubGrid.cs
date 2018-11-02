@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
-using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -33,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
         /// and using the default cell size and index origin offset
         /// </summary>
-        public ClientTemperatureLeafSubGrid() : base()
+        public ClientTemperatureLeafSubGrid()
         {
           Initialise();
         }
@@ -106,13 +105,13 @@ namespace VSS.TRex.SubGridTrees.Client
         public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredTemperature != CellPassConsts.NullMaterialTemperatureValue;
 
         /// <summary>
-        /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+        /// Provides a copy of the null value defined for cells in this client leaf subgrid
         /// </summary>
         /// <returns></returns>
         public override SubGridCellPassDataTemperatureEntryRecord NullCell() => SubGridCellPassDataTemperatureEntryRecord.NullValue;
 
         /// <summary>
-        /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
+        /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
         /// </summary>
         public override void Clear()
         {
@@ -133,7 +132,7 @@ namespace VSS.TRex.SubGridTrees.Client
               I, J : Integer;
               S : String;
             begin
-              SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , slmcDebug);
+              SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , ...);
 
               for I := 0 to kSubGridTreeDimension - 1 do
                 begin
@@ -145,7 +144,7 @@ namespace VSS.TRex.SubGridTrees.Client
                     else
                       S := S + '     Null';
 
-                  SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+                  SIGLogMessage.PublishNoODS(Nil, S, ...);
                 end;
             end;
             */
@@ -204,7 +203,9 @@ namespace VSS.TRex.SubGridTrees.Client
       /// <returns></returns>
       public override int IndicativeSizeInBytes()
       {
-        throw new System.NotImplementedException();
+        return base.IndicativeSizeInBytes() +
+               FirstPassMap.IndicativeSizeInBytes() +
+               SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataTemperatureEntryRecord.IndicativeSizeInBytes();
       }
     }
 }

@@ -138,7 +138,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override float NullCell() => Consts.NullHeight;
@@ -231,7 +231,10 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override int IndicativeSizeInBytes()
     {
-      throw new System.NotImplementedException();
+      return base.IndicativeSizeInBytes() + 
+             FirstPassMap.IndicativeSizeInBytes() + 
+             SurveyedSurfaceMap.IndicativeSizeInBytes() +
+             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float);
     }
   }
 }

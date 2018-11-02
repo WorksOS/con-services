@@ -28,7 +28,6 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       int actualSize = clientGrid.IndicativeSizeInBytes();
 
       Assert.True(actualSize == expectedSize, $"IndicativeSize() incorrect, = {clientGrid.IndicativeSizeInBytes()}, expected = {expectedSize}");
-    }
-
+    }    
   }
 }
