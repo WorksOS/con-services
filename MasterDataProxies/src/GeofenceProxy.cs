@@ -55,10 +55,10 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<List<GeofenceData>> GetGeofences(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      //Get all types of geofence except Project=1 and Import=8/Export=9
+      //Get all types of geofence except Project=1 and Import=8/Export=9 (and 3dpm boundaries which are type Filter=11)
       List<int> geofenceTypeIds = new List<int>
         { (int)GeofenceType.Generic, (int)GeofenceType.Borrow, (int)GeofenceType.Waste, (int)GeofenceType.AvoidanceZone,
-          (int)GeofenceType.Stockpile, (int)GeofenceType.CutZone, (int)GeofenceType.Filter, (int)GeofenceType.Landfill
+          (int)GeofenceType.Stockpile, (int)GeofenceType.CutZone, (int)GeofenceType.FillZone, (int)GeofenceType.Landfill
         };
       var queryParams = $"?geofenceTypeIds={string.Join("&geofenceTypeIds=", geofenceTypeIds)}";
       var result = await GetContainedMasterDataList<GeofenceDataResult>(customerUid, null, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders, queryParams);
