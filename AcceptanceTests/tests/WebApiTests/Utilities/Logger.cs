@@ -45,7 +45,7 @@ namespace WebApiTests.Utilities
     {
       message = message == null ? string.Empty : Regex.Replace(message, @"\s+|\n|\r", " ");
       string contents = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{logType}] [{contentType}] {message}";
-      using (StreamWriter w = File.AppendText("/app/testresults/accepttest.log")) 
+      using (StreamWriter w = File.AppendText("./accepttest.log")) 
       {
         w.WriteLine(contents);
       }
