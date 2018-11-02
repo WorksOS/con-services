@@ -41,6 +41,14 @@ namespace MockProjectWebApi.Controllers
             GeometryWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))",
             FillColor = 65280, //green
             IsTransparent = false
+          },
+          new GeofenceData
+          {
+            GeofenceName = "Zero area boundary ie a point",
+            GeofenceUID = Guid.Parse("ba35221d-cc46-48ce-970c-8b1509a0c737"),
+            GeometryWKT = "POLYGON((6.94613249999989 24.95555531306,6.94613249999989 24.95555531306,6.94613249999989 24.95555531306,6.94613249999989 24.95555531306,6.94613249999989 24.95555531306))",
+            FillColor = 16711680, //red
+            IsTransparent = false
           }
         };
       }
