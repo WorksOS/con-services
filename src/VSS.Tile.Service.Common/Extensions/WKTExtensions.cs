@@ -11,8 +11,8 @@ namespace VSS.Tile.Service.Common.Extensions
       const double DEGREES_TO_RADIANS = Math.PI / 180;
 
       List<WGSPoint> latlngs = new List<WGSPoint>();
-      //Trim off the "POLYGON((" and "))"
-      geometryWKT = geometryWKT.Substring(9, geometryWKT.Length - 11);
+      //Trim off the "POLYGON((" and "))" - allow for white space
+      geometryWKT = geometryWKT.ToUpper().Trim().Substring("POLYGON".Length).Trim().Trim(new[] { '(', ')' });
       var points = geometryWKT.Split(',');
       foreach (var point in points)
       {
