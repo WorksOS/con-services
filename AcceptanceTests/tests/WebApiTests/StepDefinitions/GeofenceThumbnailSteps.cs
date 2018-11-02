@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using FluentAssertions;
+using System.Net;
 using WebApiTests.Models;
 using WebApiTests.Utilities;
 using Xunit;
@@ -70,7 +71,7 @@ namespace WebApiTests.StepDefinitions
     [Then(@"The result should match ""(.*)"" from the response repository")]
     public void ThenTheResultShouldMatchFromTheResponseRepository(string responseName)
     {
-      Assert.Equal(multiTileRequester.ResponseRepo[responseName], multiTileRequester.CurrentResponse);
+      multiTileRequester.CurrentResponse.Should().Be(multiTileRequester.ResponseRepo[responseName]);
     }
   }
 }

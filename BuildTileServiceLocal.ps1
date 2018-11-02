@@ -1,1 +1,1 @@
-docker build -f ./build/Dockerfile .
+docker build -t tiles:local -f ./build/Dockerfile .

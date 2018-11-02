@@ -13,6 +13,7 @@ namespace VSS.Tile.Service.Common.Services
   public class BoundingBoxService : IBoundingBoxService
   {
     private readonly ILogger log;
+    private const int MAX_ZOOM_LEVEL = 24;
 
     public BoundingBoxService(ILoggerFactory logger)
     {
@@ -129,7 +130,7 @@ namespace VSS.Tile.Service.Common.Services
       var mapWidth = parameters.mapWidth * 1.15;
       var mapHeight = parameters.mapHeight * 1.15;
 
-      while (zoomedWidth < mapWidth && zoomedHeight < mapHeight)
+      while (zoomedWidth < mapWidth && zoomedHeight < mapHeight && zoomLevel < MAX_ZOOM_LEVEL)
       {
         parameters.zoomLevel = zoomLevel;
         parameters.numTiles = numTiles;
