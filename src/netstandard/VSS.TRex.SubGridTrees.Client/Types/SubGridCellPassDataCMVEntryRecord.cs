@@ -177,5 +177,7 @@ namespace VSS.TRex.SubGridTrees.Types
              PreviousMeasuredCMV == other.PreviousMeasuredCMV &&
              PreviousTargetCMV == other.PreviousTargetCMV;
     }
+
+    public static int IndicateSizeInBytes() => 8; // 4 shorts
   }
 }

@@ -266,8 +266,10 @@ namespace VSS.TRex.SubGridTrees.Client
 
       public virtual int IndicativeSizeInBytes()
       {
-        return FilterMap?.IndicativeSizeInBytes() ?? 0 + 
-               ProdDataMap?.IndicativeSizeInBytes() ?? 0;
+        int filterMapSize = FilterMap?.IndicativeSizeInBytes() ?? 0;
+        int prodDataMapSize = ProdDataMap?.IndicativeSizeInBytes() ?? 0;
+
+        return filterMapSize + prodDataMapSize;
       }
 
       /// <summary>

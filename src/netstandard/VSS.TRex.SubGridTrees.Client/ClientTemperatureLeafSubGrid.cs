@@ -166,32 +166,6 @@ namespace VSS.TRex.SubGridTrees.Client
         return result;
       }
 
-/*
-        /// <summary>
-        /// Reads an elevation client leaf sub grid from a stream using a binary formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Read(BinaryFormatter formatter, Stream stream)
-        {
-            base.Read(formatter, stream);
-
-            FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-        }
-
-        /// <summary>
-        /// Writes an elevation client leaf sub grid to a stream using a binary formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Write(BinaryFormatter formatter, Stream stream)
-        {
-            base.Write(formatter, stream);
-
-            formatter.Serialize(stream, FirstPassMap);
-        }
-*/
-
         /// <summary>
         /// Write the contents of the Items array using the supplied writer
         /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 

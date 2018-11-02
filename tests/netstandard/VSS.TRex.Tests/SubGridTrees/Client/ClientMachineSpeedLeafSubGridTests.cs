@@ -24,12 +24,10 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
 
-      Assert.True(ClientMachineSpeedLeafSubGrid.LayoutSize == 0, $"LayoutSize incorrect, = {ClientMachineSpeedLeafSubGrid.LayoutSize}");
+      int expectedSize = 3 * (4 * 32); // 3 bit mask subgrids in this and parent class
+      int actualSize = clientGrid.IndicativeSizeInBytes();
 
-      int expectedSize = 3 * (4 * 32) + ClientMachineSpeedLeafSubGrid.LayoutSize; // 3 bit mask subgrids in this and parent class
-
-      Assert.True(clientGrid.IndicativeSizeInBytes() == expectedSize,
-        $"IndicativeSize() incorrect, = {clientGrid.IndicativeSizeInBytes()}, expect = {expectedSize}");
+      Assert.True(actualSize == expectedSize, $"IndicativeSize() incorrect, = {clientGrid.IndicativeSizeInBytes()}, expected = {expectedSize}");
     }
 
   }
