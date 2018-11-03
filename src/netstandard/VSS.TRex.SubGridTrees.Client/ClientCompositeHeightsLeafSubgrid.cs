@@ -161,7 +161,6 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
     {
       // Composite height subgrids don't define a caching behaviour
-      Debug.Assert(false, "Composite height subgrids don't define a caching behaviour");
     }
   }
 }
