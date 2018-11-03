@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
@@ -76,6 +77,9 @@ namespace VSS.TRex.SiteModels
     /// The grid data for this site model
     /// </summary>
     private IServerSubGridTree grid;
+
+    private object machineLoadLockObject = new object();
+    private object siteModelMachineDesignsLockObject = new object();
 
     /// <summary>
     /// The grid data for this site model
@@ -232,12 +236,19 @@ namespace VSS.TRex.SiteModels
       {
         if (siteModelMachineDesigns == null)
         {
-          siteModelMachineDesigns = new SiteModelMachineDesignList
+          lock (siteModelMachineDesignsLockObject)
           {
-            DataModelID = ID
-          };
-          if (!IsTransient)
-            siteModelMachineDesigns.LoadFromPersistentStore();
+            if (siteModelMachineDesigns != null)
+              return siteModelMachineDesigns;
+
+            siteModelMachineDesigns = new SiteModelMachineDesignList
+            {
+              DataModelID = ID
+            };
+
+            if (!IsTransient)
+              siteModelMachineDesigns.LoadFromPersistentStore();
+          }
         }
 
         return siteModelMachineDesigns;
@@ -261,12 +272,21 @@ namespace VSS.TRex.SiteModels
       {
         if (machines == null)
         {
-          machines = new MachinesList
+          lock (machineLoadLockObject)
           {
-            DataModelID = ID
-          };
-          if (!IsTransient)
-            machines.LoadFromPersistentStore();
+            if (machines != null)
+              return machines;
+
+            machines = new MachinesList
+            {
+              DataModelID = ID
+            };
+
+            if (!IsTransient)
+            {
+              machines.LoadFromPersistentStore();
+            }
+          }
         }
 
         return machines;
