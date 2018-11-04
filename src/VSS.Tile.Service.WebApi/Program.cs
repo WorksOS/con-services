@@ -1,7 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using System.Net;
 using System.Threading;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,30 +23,42 @@ namespace VSS.Tile.Service.WebApi
       var kestrelConfig = new ConfigurationBuilder()
         .AddJsonFile("kestrelsettings.json", true, false).Build();
 
+      Log4NetAspExtensions.ConfigureLog4Net(Startup.LOGGER_REPO_NAME);
+
+      var host = new WebHostBuilder().BuildHostWithReflectionException(hostBuilder =>
+      {
+        return hostBuilder.UseKestrel()
+          .UseLibuv(opts => { opts.ThreadCount = 32; })
+          .UseContentRoot(Directory.GetCurrentDirectory())
+          .UseConfiguration(kestrelConfig)
+          .ConfigureLogging(builder =>
+          {
+            Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
+            builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
+            builder.SetMinimumLevel(LogLevel.Debug);
+            builder.AddConfiguration(kestrelConfig);
+          })
+
+          .UsePrometheus()
+          .UseStartup<Startup>()
+          .Build();
+      });
+
       ThreadPool.SetMaxThreads(1024, 2048);
       ThreadPool.SetMinThreads(1024, 2048);
 
       //Check how many requests we can execute
       ServicePointManager.DefaultConnectionLimit = 128;
 
-      return WebHost.CreateDefaultBuilder(args)
-        .ConfigureLogging(builder =>
-        {
-          Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
-          builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
-          builder.SetMinimumLevel(LogLevel.Trace);
-          builder.AddConfiguration(kestrelConfig);
-        })
-        .ConfigureAppConfiguration((hostingContext, config) =>
-        {
-          var env = hostingContext.HostingEnvironment;
-          env.ConfigureLog4Net(repoName: Startup.LOGGER_REPO_NAME, configFileRelativePath: "log4net.xml");
+      var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+      log.LogInformation("Tile service starting");
+      log.LogInformation("*************CONFIGURATION DETAILS*******************");
+      foreach (DictionaryEntry entry in System.Environment.GetEnvironmentVariables())
+      {
+        log.LogInformation(entry.Key + ":" + entry.Value);
+      }
 
-        })
-        .UsePrometheus()
-        .UseStartup<Startup>()
-        //.UseUrls("http://localhost:5050")//Use this when running service locally outside of Docker since 3dpm uses 5000 (and both services required for ATs)
-        .Build();
+      return host;
     }
   }
 }
