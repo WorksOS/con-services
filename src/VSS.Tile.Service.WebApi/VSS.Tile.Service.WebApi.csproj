@@ -20,8 +20,8 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.*" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
     <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.57.1" />
     <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.34.2" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.12.2" />
