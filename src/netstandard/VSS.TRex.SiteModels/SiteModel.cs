@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
@@ -57,6 +56,7 @@ namespace VSS.TRex.SiteModels
   public class SiteModel : ISiteModel, IBinaryReaderWriter
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
     public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
     public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
 
@@ -196,7 +196,7 @@ namespace VSS.TRex.SiteModels
       get { return siteModelDesigns; }
     }
 
-    private ISurveyedSurfaces surveyedSurfaces = null;
+    private ISurveyedSurfaces surveyedSurfaces;
 
     // This is a list of TTM descriptors which indicate designs
     // that can be used as a snapshot of an actual ground surface at a specific point in time
@@ -210,7 +210,7 @@ namespace VSS.TRex.SiteModels
       get => surveyedSurfaces != null;
     }
 
-    private IDesigns designs = null;
+    private IDesigns designs;
 
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the sitemodel
@@ -226,9 +226,9 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// SiteModelMachineDesigns records all the designs that have been seen in tagfiles for this sitemodel.
+    /// SiteModelMachineDesigns records all the designs that have been seen in tag files for this sitemodel.
     /// </summary>
-    private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; } = null;
+    private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; }
 
     public ISiteModelMachineDesignList SiteModelMachineDesigns
     {
