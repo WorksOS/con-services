@@ -208,22 +208,5 @@ namespace VSS.TRex.SubGridTrees.Client
                FirstPassMap.IndicativeSizeInBytes() +
                SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataTemperatureEntryRecord.IndicativeSizeInBytes();
       }
-
-      /// <summary>
-      /// Assign cell information from a previously cached result held in the general subgrid result cache
-      /// using the supplied map to control which cells from the caches subgrid should be copied into this
-      /// client leaf sub grid
-      /// </summary>
-      /// <param name="source"></param>
-      /// <param name="map"></param>
-      public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
-      {
-        var subGrid = (ClientTemperatureLeafSubGrid)source;
-
-        if (map.IsFull())
-          Array.Copy(subGrid.Cells, Cells, SubGridTreeConsts.CellsPerSubgrid);
-        else
-        map.ForEachSetBit((x, y) => Cells[x, y] = subGrid.Cells[x, y]);
-      }
   }
 }

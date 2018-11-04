@@ -106,6 +106,35 @@ namespace VSS.TRex.SubGridTrees.Client
           // Cells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
         }
 
+        /// <summary>
+        /// Assign cell information from a previously cached result held in the general subgrid result cache
+        /// using the supplied map to control which cells from the caches subgrid should be copied into this
+        /// client leaf sub grid
+        /// </summary>
+        /// <param name="source"></param>
+        public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
+        {
+          Array.Copy(((GenericClientLeafSubGrid<T>)source).Cells, Cells, SubGridTreeConsts.CellsPerSubgrid);
+        }
+
+        /// <summary>
+        /// Assign cell information from a previously cached result held in the general subgrid result cache
+        /// using the supplied map to control which cells from the caches subgrid should be copied into this
+        /// client leaf sub grid
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="map"></param>
+        public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
+        {
+          if (map.IsFull())
+            AssignFromCachedPreProcessedClientSubgrid(source);
+          else
+          {
+            var subGrid = (GenericClientLeafSubGrid<T>)source;
+            map.ForEachSetBit((x, y) => Cells[x, y] = subGrid.Cells[x, y]);
+          }
+        }
+
     /*
             /// <summary>
             /// Write the contents of leaf sub grid using the supplied formatter

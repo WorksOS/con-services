@@ -340,5 +340,47 @@ namespace VSS.TRex.Tests.Caching
 
       output.WriteLine($"Final cache size is {cache.CurrentSizeInBytes} compared to maximum of {maxNumBytes}");
     }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_AddAndRetrieveManyItems_OneContext()
+    {
+      const uint _originX = 0;
+      const uint _originY = 0;
+      const int _size = 10;
+
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100000, 1000000, 0.5);
+
+      var context = cache.LocateOrCreateContext($"fingerprint");
+
+      for (int i = 0; i < 100; i++)
+      {
+        for (int j = 0; j < 100; j++)
+        {
+          Assert.True(cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element()
+          {
+            SizeInBytes = _size,
+            CacheOriginX = (uint) (_originX + i * SubGridTreeConsts.SubGridTreeDimension),
+            CacheOriginY = (uint) (_originY + j * SubGridTreeConsts.SubGridTreeDimension)
+          }), $"Failed to add item to cache at {i}:{j}");
+        }
+      }
+
+      Assert.True(context.TokenCount == 10000, $"Context token count not 10000 after adding 10000 items, it is {context.TokenCount} instead");
+
+      for (int i = 0; i < 100; i++)
+      for (int j = 0; j < 100; j++)
+      {
+        uint x = (uint) (_originX + i * SubGridTreeConsts.SubGridTreeDimension);
+        uint y = (uint)(_originY + j * SubGridTreeConsts.SubGridTreeDimension);
+
+        var gotItem = context.Get(x, y); 
+        Assert.True(gotItem != null, "Failed to retrieve added entry");
+
+        Assert.Equal(x, gotItem.CacheOriginX);
+        Assert.Equal(y, gotItem.CacheOriginY);
+        Assert.Equal(_size, gotItem.IndicativeSizeInBytes());
+
+       }
+    }
   }
 }

@@ -41,6 +41,8 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// <returns></returns>
     bool LeafContentEquals(IClientLeafSubGrid other);
 
+    void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source);
+
     void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
     SubGridTreeBitmapSubGridBits ProdDataMap { get; set; }
