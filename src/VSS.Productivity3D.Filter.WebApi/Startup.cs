@@ -110,8 +110,6 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 
