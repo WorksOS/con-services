@@ -33,8 +33,8 @@
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
     <PackageReference Include="VSS.AWS.TransferProxy" Version="1.4.2" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.2" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.16" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="4.0.3" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.4.0" />
     <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.12.2" />
     <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
     <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.3" />
