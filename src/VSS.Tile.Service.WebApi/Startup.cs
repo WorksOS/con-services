@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -29,7 +30,6 @@ namespace VSS.Tile.Service.WebApi
     /// For Log4Net
     /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
-
 
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940

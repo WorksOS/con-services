@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
@@ -163,19 +164,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
       [FromQuery] Guid geofenceUid)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailPng)}: {Request.QueryString}");
+      var tileResult = await GeofenceThumbnailPng(
+        (await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders)).FirstOrDefault(gfc =>
+          gfc.GeofenceUID == geofenceUid));
 
-      var geofence = await geofenceProxy.GetGeofenceForCustomer(GetCustomerUid, geofenceUid.ToString(), CustomHeaders);
-      if (geofence == null)
-      {
-        return new FileStreamResult(new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), "image/png");
-      }
-
-      var bbox = GetBoundingBoxFromWKT(geofence.GeometryWKT);
-
-      var tileResult = await GetGeneratedTile(geofence, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT, 
-        bbox, MapType.MAP, null, true);
-
-      return tileResult;
+      return tileResult.Item2;
     }
 
     /// <summary>
@@ -201,23 +194,42 @@ namespace VSS.Tile.Service.WebApi.Controllers
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailsBase64)}: {Request.QueryString}");
 
-      object lockObject = new object();
-
-      var thumbnailList = new List<ThumbnailResult>();
       var geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
       var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0 ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID)) : geofences;
-      var thumbnailTasks = selectedGeofences.Select(async geofence =>
+      var thumbnailsTasks = selectedGeofences.Select(GeofenceThumbnailPng);
+
+      var thumbnails = await Task.WhenAll(thumbnailsTasks);
+
+      return new MultipleThumbnailsResult
       {
-        var result = await GetGeofenceThumbnailPng(geofence.GeofenceUID);
-        lock (lockObject)
-        {
-          thumbnailList.Add(new ThumbnailResult{Uid = geofence.GeofenceUID, Data = GetStreamContents(result) });
-        }
-      });
+        Thumbnails = thumbnails.Select(thumb => new ThumbnailResult
+          {Uid = thumb.Item1, Data = GetStreamContents(thumb.Item2)}).ToList()
+      };
+    }
 
-      await Task.WhenAll(thumbnailTasks);
+    /// <summary>
+    /// Multithreaded method to retrieve Geofence PNG
+    /// </summary>
+    /// <param name="geofenceUid"></param>
+    /// <returns></returns>
+    private async Task<(Guid, FileResult)> GeofenceThumbnailPng(GeofenceData geofence)
+    {
+      //This appear to be a non-caching request
+      //We don't need to do it twice as the very first caching request should be enough
+      //var geofence = await geofenceProxy.GetGeofenceForCustomer(GetCustomerUid, geofenceUid.ToString(), CustomHeaders);
 
-      return new MultipleThumbnailsResult { Thumbnails = thumbnailList };
+      if (geofence == null)
+      {
+        return (geofence.GeofenceUID, new FileStreamResult(
+          new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), "image/png"));
+      }
+
+      var bbox = GetBoundingBoxFromWKT(geofence.GeometryWKT);
+
+      var tileResult = await GetGeneratedTile(geofence, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, DEFAULT_THUMBNAIL_WIDTH,
+        DEFAULT_THUMBNAIL_HEIGHT,
+        bbox, MapType.MAP, null, true);
+      return (geofence.GeofenceUID, tileResult);
     }
 
 
