@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling.Interfaces;
@@ -12,12 +11,6 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   public class ClientMachineTargetSpeedLeafSubGrid : GenericClientLeafSubGrid<MachineSpeedExtendedRecord>
 	{
-		/// <summary>
-		/// First pass map records which cells hold cell pass machine speed targets that were derived
-		/// from the first pass a machine made over the corresponding cell
-		/// </summary>
-		public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
 	  /// <summary>
 	  /// Initialise the null cell values for the client subgrid
 	  /// </summary>
@@ -106,8 +99,6 @@ namespace VSS.TRex.SubGridTrees.Client
 	  public override void Clear()
 	  {
 	    base.Clear();
-
-	    FirstPassMap.Clear();
 	  }
 
 	  /// <summary>
@@ -145,8 +136,6 @@ namespace VSS.TRex.SubGridTrees.Client
 	  {
 	    base.Write(writer, buffer);
 
-	    FirstPassMap.Write(writer, buffer);
-
 	    SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
 	  }
 
@@ -161,8 +150,6 @@ namespace VSS.TRex.SubGridTrees.Client
 	  {
 	    base.Read(reader, buffer);
 
-	    FirstPassMap.Read(reader, buffer);
-
 	    SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
 	  }
 
@@ -173,7 +160,6 @@ namespace VSS.TRex.SubGridTrees.Client
 	  public override int IndicativeSizeInBytes()
 	  {
 	    return base.IndicativeSizeInBytes() +
-	           FirstPassMap.IndicativeSizeInBytes() +
 	           SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension * MachineSpeedExtendedRecord.IndicativeSizeInBytes();
 	  }
   }

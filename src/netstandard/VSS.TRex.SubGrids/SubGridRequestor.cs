@@ -202,14 +202,12 @@ namespace VSS.TRex.SubGrids
             // we need to use it to constrain the returned client grid to the extents of the design elevations
             if (DesignElevations != null)
             {
-                IClientLeafSubGrid TempClientGrid = ClientGrid;
-                TempClientGrid.FilterMap.ForEachSetBit((X, Y) => TempClientGrid.FilterMap.SetBitValue(X, Y, DesignElevations.CellHasValue((byte) X, (byte) Y)));
+                ClientGrid.FilterMap.ForEachSetBit((X, Y) => ClientGrid.FilterMap.SetBitValue(X, Y, DesignElevations.CellHasValue((byte) X, (byte) Y)));
             }
         
             if (SurfaceDesignMaskElevations != null)
             {
-                IClientLeafSubGrid TempClientGrid = ClientGrid;
-                TempClientGrid.FilterMap.ForEachSetBit((X, Y) => TempClientGrid.FilterMap.SetBitValue(X, Y, SurfaceDesignMaskElevations.CellHasValue((byte) X, (byte) Y)));
+                ClientGrid.FilterMap.ForEachSetBit((X, Y) => ClientGrid.FilterMap.SetBitValue(X, Y, SurfaceDesignMaskElevations.CellHasValue((byte) X, (byte) Y)));
             }
         }
 
@@ -221,38 +219,39 @@ namespace VSS.TRex.SubGrids
             // bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime;
             // bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile;
 
-            ServerRequestResult Result = ServerRequestResult.UnknownError;
+            ServerRequestResult Result; // = ServerRequestResult.UnknownError;
 
             // Log.LogInformation("Entering RequestSubGridInternal");
            
             // Determine if there is a suitable pre-calculated result present
             // in the general subgrid result cache. If there is, then apply the
             // filter mask to the cached data and copy it to the client grid
-            IClientLeafSubGrid CachedSubgrid = (IClientLeafSubGrid)SubGridCacheContext?.Get(ClientGrid.CacheOriginX, ClientGrid.CacheOriginY);
+            var CachedSubgrid = (IClientLeafSubGrid)SubGridCacheContext?.Get(ClientGrid.CacheOriginX, ClientGrid.CacheOriginY);
 
             // If there was a cached subgrid located, assign
             // it's contents according the client grid mask into the client grid and return it
             if (CachedSubgrid != null)
             {
-              // Compute the matching filter mask that the full processing would have computed
+                Log.LogInformation($"Acquired subgrid {CachedSubgrid.Moniker()} for client subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} from result cache");
+           
+                // Compute the matching filter mask that the full processing would have computed
                 if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
-                  CellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,
-                  ClientGrid.ProdDataMap, ClientGrid.FilterMap))
-                {
-                    ModifyFilterMapBasedOnAdditionalSpatialFiltering();
-             
-                  // Use that mask to copy the relevant cells from the cache to the client subgrid
-                    ClientGrid.AssignFromCachedPreProcessedClientSubgrid(CachedSubgrid, ClientGrid.FilterMap);
-             
-                    Result = ServerRequestResult.NoError;
-                }
-                else
-                    Result = ServerRequestResult.FailedToComputeDesignFilterPatch;
+                    CellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,
+                    ClientGrid.ProdDataMap, ClientGrid.FilterMap))
+                  {
+                      ModifyFilterMapBasedOnAdditionalSpatialFiltering();
+               
+                      // Use that mask to copy the relevant cells from the cache to the client subgrid
+                      ClientGrid.AssignFromCachedPreProcessedClientSubgrid(CachedSubgrid, ClientGrid.FilterMap);
+               
+                      Result = ServerRequestResult.NoError;
+                  }
+                  else
+                      Result = ServerRequestResult.FailedToComputeDesignFilterPatch;
             }
             else
             {
-                Result = retriever.RetrieveSubGrid(// DataStoreInstance.GridDataCache,
-                                                   CellX, CellY,
+                Result = retriever.RetrieveSubGrid(CellX, CellY,
                                                    // LiftBuildSettings,
                                                    ClientGrid,
                                                    CellOverrideMask,
@@ -264,40 +263,23 @@ namespace VSS.TRex.SubGrids
                     // Don't add subgrids computed using a non-trivial WMS sieve to the general subgrid cache
                     if (AreaControlSet.PixelXWorldSize == 0 && AreaControlSet.PixelYWorldSize == 0)
                     {
-                        // Add the newly computed client subgrid to the cache
-                        bool AddedSubgridToSubgridCache = SubGridCache.Add(SubGridCacheContext, ClientGrid);
-                        IClientLeafSubGrid ClientGrid2;
+                        // Log.LogInformation($"Adding subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} to result cache");
 
-                        try
+                        // Add the newly computed client subgrid to the cache by creating a clone of the client and adding it...
+                        IClientLeafSubGrid ClientGrid2 = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(ClientGrid.GridDataType, SurveyedSurfaceDataRequested));
+                        ClientGrid2.Assign(ClientGrid);
+                        ClientGrid2.AssignFromCachedPreProcessedClientSubgrid(ClientGrid);
+
+                        if (!SubGridCache.Add(SubGridCacheContext, ClientGrid2))
                         {
-                            if (!AddedSubgridToSubgridCache)
-                            {
-                                Log.LogWarning($"Failed to add subgrid {ClientGrid.Moniker()}, data model {SiteModel.ID} to subgrid result cache");
-                            }
-
-                            ModifyFilterMapBasedOnAdditionalSpatialFiltering();
-
-                            // Create a clone of the client grid that has the filter mask applied to
-                            // returned the requested set of cell values back to the caller
-                            ClientGrid2 = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(ClientGrid.GridDataType, SurveyedSurfaceDataRequested));
-                            ClientGrid2.Assign(ClientGrid);
-                            ClientGrid2.AssignFromCachedPreProcessedClientSubgrid(ClientGrid, ClientGrid.FilterMap);
+                            Log.LogWarning($"Failed to add subgrid {ClientGrid2.Moniker()}, data model {SiteModel.ID} to subgrid result cache, returning subgrid to factory as not added to cache");
+                            ClientLeafSubGridFactory.ReturnClientSubGrid(ref ClientGrid2);
                         }
-                        finally
-                        {
-                           // If not added to the cache, release it back to the pool
-                           if (!AddedSubgridToSubgridCache)
-                             ClientLeafSubGridFactory.ReturnClientSubGrid(ref ClientGrid);
-                        }
-
-                        ClientGrid = ClientGrid2;
                     }
                 }
-                else
-                {
-                  if (Result == ServerRequestResult.NoError)
+
+                if (Result == ServerRequestResult.NoError)
                     ModifyFilterMapBasedOnAdditionalSpatialFiltering();
-                }
             }
 
             //if <config>.Debug_ExtremeLogSwitchB then
@@ -357,7 +339,7 @@ namespace VSS.TRex.SubGrids
             if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
             {
                 ClientGridAsCellProfile = TICClientSubGridTreeLeaf_CellProfile(ClientGrid);
-                ProcessingMap.Assign(ClientGridAsCellProfile .FilterMap);
+                ProcessingMap.Assign(ClientGridAsCellProfile.FilterMap);
 
                 // If we're interested in a particular cell, but we don't have any
                 // surveyed surfaces later (or earlier) than the cell production data
@@ -516,7 +498,6 @@ namespace VSS.TRex.SubGrids
         {
             ProdDataRequested = prodDataRequested;
             SurveyedSurfaceDataRequested = surveyedSurfaceDataRequested;
-            ClientGrid = clientGrid;
 
             if (!(ProdDataRequested || SurveyedSurfaceDataRequested))
                 return ServerRequestResult.MissingInputParameters;
@@ -530,6 +511,7 @@ namespace VSS.TRex.SubGrids
             // if <config>.Debug_ExtremeLogSwitchB then
             //    Log.LogDebug("About to call RetrieveSubGrid()");
 
+            ClientGrid = clientGrid;
             ClientGrid.SetAbsoluteOriginPosition((uint)(subGridAddress.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
                                                  (uint)(subGridAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
             ClientGrid.SetAbsoluteLevel(TreeLevel);

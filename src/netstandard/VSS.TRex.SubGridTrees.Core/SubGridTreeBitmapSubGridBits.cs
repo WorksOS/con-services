@@ -88,6 +88,16 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
+        /// Initialise the internal state of a new structure based on an other bitmask.
+        /// </summary>
+        public SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits source)
+        {
+          Bits = new uint[SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
+
+          Assign(source);
+        }
+
+        /// <summary>
         /// Set all the bits in subgrid bits structure to 0.
         /// </summary>
         public void Clear()

@@ -18,10 +18,10 @@ namespace VSS.TRex.Filters
                                                                     ICombinedFilter Filter,
                                                                     bool AHasOverrideSpatialCellRestriction,
                                                                     BoundingIntegerExtent2D AOverrideSpatialCellRestriction,
-                                                                    ref SubGridTreeBitmapSubGridBits PDMask,
-                                                                    ref SubGridTreeBitmapSubGridBits FilterMask)
+                                                                    SubGridTreeBitmapSubGridBits PDMask,
+                                                                    SubGridTreeBitmapSubGridBits FilterMask)
         {
-            if ((Filter == null) || !Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+            if (Filter == null || !Filter.SpatialFilter.HasSpatialOrPostionalFilters)
             {
                 PDMask.Fill();
                 FilterMask.Fill();
@@ -38,7 +38,7 @@ namespace VSS.TRex.Filters
 
             ICellSpatialFilter SpatialFilter = Filter.SpatialFilter;
 
-            // Attempt to satisfy the calculation below on the basis of the subgrid wholly resising in the overide and filter spatial restrictions
+            // Attempt to satisfy the calculation below on the basis of the subgrid wholly resizing in the override and filter spatial restrictions
             if (SpatialFilter.Fence.IncludesExtent(new BoundingWorldExtent3D(OX, OY,
                                                                              OX + cellSize * SubGridTreeConsts.SubGridTreeDimension,
                                                                              OY + cellSize * SubGridTreeConsts.SubGridTreeDimension)))
@@ -97,7 +97,7 @@ namespace VSS.TRex.Filters
                         CY += cellSize; // Move to next row
                     }
 
-                    CX += cellSize; // Move to bext column
+                    CX += cellSize; // Move to next column
                 }
             }
 
@@ -132,7 +132,7 @@ namespace VSS.TRex.Filters
 
             ConstructSubgridSpatialAndPositionalMask(SubGridAsLeaf, SiteModel, Filter,
                                                      AHasOverrideSpatialCellRestriction, AOverrideSpatialCellRestriction,
-                                                     ref PDMask, ref FilterMask);
+                                                     PDMask, FilterMask);
 
             // Apply any override mask supplied by the caller. If all bits are required in the override,
             // then a filled mask should be supplied...
@@ -158,7 +158,7 @@ namespace VSS.TRex.Filters
                 }
                 else
                 {
-                    RequestResult = dppiOK; // boundy fence lookup work has been done in ASNode
+                    RequestResult = dppiOK; // boundary fence lookup work has been done in ASNode
                 }
                 DesignBoundary = Filter.SpatialFilter.AlignmentFence;
             }
@@ -167,7 +167,7 @@ namespace VSS.TRex.Filters
             {
                 AlignMask = FilterMask;
 
-                // Go over setbits and determine if they are in Design fence boundary
+                // Go over set bits and determine if they are in Design fence boundary
                 //with SubGridAsLeaf, SiteModel.Grid do
                 AlignMask.ForEachSetBit((X, Y) =>
                 {
@@ -175,11 +175,11 @@ namespace VSS.TRex.Filters
                     SiteModel.Grid.GetCellCenterPosition((uint)(SubGridAsLeaf.OriginX + X), (uint)(SubGridAsLeaf.OriginY + Y), out CX, out CY);
                     if (!DesignBoundary.IncludesPoint(CX, CY))
                     {
-                        AlignMask.ClearBit(X, Y); // remove interest as its not in design boundry
+                        AlignMask.ClearBit(X, Y); // remove interest as its not in design boundary
                     }
                 });
 
-                FilterMask = AlignMask; // update filtermask after design boundary filter applied
+                FilterMask.Assign(AlignMask); // update filter mask after design boundary filter applied
                 PDMask.AndWith(FilterMask);
             }
             else

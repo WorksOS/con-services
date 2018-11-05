@@ -2,7 +2,6 @@
 using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -18,7 +17,7 @@ namespace VSS.TRex.SubGridTrees.Client
     private Func<IClientLeafSubGrid>[] typeMap;
 
     /// <summary>
-    /// Stores of cached client grids to reduce the object instantation and garbage collection overhead
+    /// Stores of cached client grids to reduce the object instantiation and garbage collection overhead
     /// </summary>
 //        private ConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new ConcurrentBag<IClientLeafSubGrid>()).ToArray();
     private SimpleConcurrentBag<IClientLeafSubGrid>[] ClientLeaves = Enumerable.Range(0, Enum.GetNames(typeof(GridDataType)).Length).Select(x => new SimpleConcurrentBag<IClientLeafSubGrid>()).ToArray();
@@ -45,7 +44,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Construct a concrete instance of a subgrid implementing the IClientLeafSubGrid interface based
     /// on the role it should play according to the grid data type requested. All aspects of leaf ownership
-    /// by a subgrid tree, parentage, level, cellsize, indexoriginoffset are delegated responsibilities
+    /// by a subgrid tree, parentage, level, cell size, index origin offset are delegated responsibilities
     /// of the caller or a derived factory class
     /// </summary>
     /// <param name="gridDataType"></param>
@@ -56,17 +55,6 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         if (typeMap[(int) gridDataType] != null)
           result = typeMap[(int) gridDataType]();
-
-        /*        
-        result = (IClientLeafSubGrid) Activator.CreateInstance(
-          typeMap[(int) gridDataType], // IClientLeafSubGrid type
-          null, // Subgrid tree owner
-          null, // Subgrid parent
-          SubGridTreeConsts.SubGridTreeLevels, // Level, default to standard tree levels
-          SubGridTreeConsts.DefaultCellSize, // Cell Size
-          SubGridTreeConsts.DefaultIndexOriginOffset // IndexOfiginOffset, default to tree default value
-        );
-        */
       }
 
       result?.Clear();

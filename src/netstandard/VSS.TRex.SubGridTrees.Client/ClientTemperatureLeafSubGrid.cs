@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -16,12 +15,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public class ClientTemperatureLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataTemperatureEntryRecord>
     {
-        /// <summary>
-        /// First pass map records which cells hold cell pass machine speeds that were derived
-        /// from the first pass a machine made over the corresponding cell
-        /// </summary>
-        public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
         private void Initialise()
         {
           EventPopulationFlags |= PopulationControlFlags.WantsTempWarningLevelMinValues | PopulationControlFlags.WantsTempWarningLevelMaxValues;
@@ -117,8 +110,6 @@ namespace VSS.TRex.SubGridTrees.Client
         public override void Clear()
         {
 					base.Clear();
-       
-					FirstPassMap.Clear();
         }
 
         /// <summary>
@@ -177,8 +168,6 @@ namespace VSS.TRex.SubGridTrees.Client
         {
             base.Write(writer, buffer);
 
-            FirstPassMap.Write(writer, buffer);
-
             SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
         }
 
@@ -193,8 +182,6 @@ namespace VSS.TRex.SubGridTrees.Client
         {
             base.Read(reader, buffer);
 
-            FirstPassMap.Read(reader, buffer);
-
             SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
         }
 
@@ -205,7 +192,6 @@ namespace VSS.TRex.SubGridTrees.Client
       public override int IndicativeSizeInBytes()
       {
         return base.IndicativeSizeInBytes() +
-               FirstPassMap.IndicativeSizeInBytes() +
                SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataTemperatureEntryRecord.IndicativeSizeInBytes();
       }
   }

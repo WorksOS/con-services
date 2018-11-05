@@ -88,7 +88,7 @@ namespace VSS.TRex.Profiling
     private ISurveyedSurfaces FilteredSurveyedSurfaces;
 
     /// <summary>
-    /// The argument to be used when requesting composite elevation subgrids to support profiel analysis
+    /// The argument to be used when requesting composite elevation subgrids to support profile analysis
     /// </summary>
     public SurfaceElevationPatchArgument SurfaceElevationPatchArg;
 
@@ -545,7 +545,7 @@ namespace VSS.TRex.Profiling
           }
 
           if (LiftFilterMask.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
-            ProfileCells, ref FilterMask, I, CellFilter))
+            ProfileCells, FilterMask, I, CellFilter))
             continue;
 
           if (FilteredSurveyedSurfaces != null)
@@ -553,7 +553,7 @@ namespace VSS.TRex.Profiling
             // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
             SurfaceElevationPatchArg.OTGCellBottomLeftX = _SubGridAsLeaf.OriginX;
             SurfaceElevationPatchArg.OTGCellBottomLeftY = _SubGridAsLeaf.OriginY;
-            SurfaceElevationPatchArg.ProcessingMap = FilterMask;
+            SurfaceElevationPatchArg.ProcessingMap.Assign(FilterMask);
 
             CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
             CompositeHeightsGrid = CompositeHeightsGridIntf as ClientCompositeHeightsLeafSubgrid;

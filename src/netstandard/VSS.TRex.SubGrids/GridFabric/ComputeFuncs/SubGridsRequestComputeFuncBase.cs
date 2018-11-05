@@ -390,8 +390,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
             if (listCount == 0)
                 return;
 
-            //Log.InfoFormat("Sending {0} subgrids to caller for processing", count);
-
+            //Log.LogInformation("Sending {0} subgrids to caller for processing", count);
+            Log.LogInformation($"Requestors contains {Requestors.Length} items");
+          
             for (int i = 0; i < listCount; i++)
             {
                 // Execute a client grid request for each requester and create an array of the results

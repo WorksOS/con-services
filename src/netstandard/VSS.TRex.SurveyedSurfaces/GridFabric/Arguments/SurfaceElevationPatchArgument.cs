@@ -76,7 +76,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
             OTGCellBottomLeftY = oTGCellBottomLeftY;
             CellSize = cellSize;
             SurveyedSurfacePatchType = surveyedSurfacePatchType;
-            ProcessingMap = processingMap;
+            ProcessingMap = new SubGridTreeBitmapSubGridBits(processingMap);
 
             // Prepare the list of surveyed surfaces for use by all invocations using this argument
             includedSurveyedSurfaces.SortChronologically(surveyedSurfacePatchType == SurveyedSurfacePatchType.EarliestSingleElevation);

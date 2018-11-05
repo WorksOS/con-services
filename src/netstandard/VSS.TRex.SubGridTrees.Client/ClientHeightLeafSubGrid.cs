@@ -18,12 +18,6 @@ namespace VSS.TRex.SubGridTrees.Client
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// First pass map records which cells hold cell pass heights that were derived
-    /// from the first pass a machine made over the corresponding cell
-    /// </summary>
-    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-    /// <summary>
     /// Surveyed surface map records which cells hold cell pass heights that were derived
     /// from a surveyed surface
     /// </summary>
@@ -150,7 +144,6 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Clear();
 
-      FirstPassMap.Clear();
       SurveyedSurfaceMap.Clear();
     }
 
@@ -195,7 +188,6 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
-      FirstPassMap.Write(writer, buffer);
       SurveyedSurfaceMap.Write(writer, buffer);
 
       Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
@@ -213,7 +205,6 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      FirstPassMap.Read(reader, buffer);
       SurveyedSurfaceMap.Read(reader, buffer);
 
       reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
@@ -232,7 +223,6 @@ namespace VSS.TRex.SubGridTrees.Client
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() + 
-             FirstPassMap.IndicativeSizeInBytes() + 
              SurveyedSurfaceMap.IndicativeSizeInBytes() +
              SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float);
     }
