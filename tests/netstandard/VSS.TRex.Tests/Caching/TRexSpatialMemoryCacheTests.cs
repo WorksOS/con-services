@@ -382,5 +382,31 @@ namespace VSS.TRex.Tests.Caching
 
        }
     }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_ElementTimeBasedExpiry()
+    {
+      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
+
+      // Create a context with an expiry time of one second
+      var context = cache.LocateOrCreateContext($"fingerprint", new TimeSpan(0, 0, 0, 0, 500));
+
+      // Add an item, verify it is there, wait for a seconds then attempt to get the
+      // item. Verify the result is null and that the item is no longer present in the cache
+
+      cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element
+      {
+        CacheOriginX = 1000,
+        CacheOriginY = 1000,
+        SizeInBytes = 1000
+      });
+
+      Assert.True(context.TokenCount == 1, "Failed to add new item to context");
+
+      System.Threading.Thread.Sleep(1000); // Allow the item to expire
+
+      Assert.Null(context.Get(1000, 1000));
+      Assert.True(context.TokenCount == 0, "Element not retired on Get() after expiry date");
+    }
   }
 }

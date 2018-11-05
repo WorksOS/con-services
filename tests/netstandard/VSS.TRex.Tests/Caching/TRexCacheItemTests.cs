@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexCacheItem_Creation_Specific()
     {
       var theObject = new TRexSpatialMemoryCacheContextTests_Element();
-      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>(theObject, null, 100, 1, 2);
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>(theObject, null, 100, DateTime.MaxValue, 1, 2);
 
       Assert.True(ReferenceEquals(item.Item, theObject));
       Assert.True(item.Prev == 1);
@@ -35,7 +35,7 @@ namespace VSS.TRex.Tests.Caching
       var theObject = new TRexSpatialMemoryCacheContextTests_Element();
       TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
 
-      item.Set(theObject, null, 100, 1, 2);
+      item.Set(theObject, null, 100, DateTime.MaxValue, 1, 2);
       
       Assert.True(ReferenceEquals(item.Item, theObject));
       Assert.True(item.Prev == 1);
@@ -49,7 +49,7 @@ namespace VSS.TRex.Tests.Caching
       object theObject = new Object();
       TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
       
-      item.Set(null, null, 100, 1, 2);
+      item.Set(null, null, 100, DateTime.MaxValue, 1, 2);
       item.GetPrevAndNext(out int prev, out int next);
 
       Assert.True(prev == 1);

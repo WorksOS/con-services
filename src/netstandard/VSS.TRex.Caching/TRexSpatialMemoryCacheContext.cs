@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -19,11 +20,25 @@ namespace VSS.TRex.Caching
     private int tokenCount;
     public int TokenCount { get => tokenCount; }
 
+    public TimeSpan CacheDurationTime { get; private set; }
+
+    /// <summary>
+    /// The default cache expiry time period for new contexts
+    /// </summary>
+    public static readonly TimeSpan NullCacheTimeSpan = TimeSpan.FromDays(1000);
+
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
-                                         ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList)
+      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan)
+    {
+    }
+
+    public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
+      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList,
+      TimeSpan cacheDurationTime)
     {
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
+      CacheDurationTime = cacheDurationTime;
       OwnerMemoryCache = ownerMemoryCache;
     }
 
@@ -91,7 +106,19 @@ namespace VSS.TRex.Caching
         int index = ContextTokens[x, y];
 
         // Note: Adjust for the 1-based index obtained from ContextTokens
-        return index == 0 ? null : MRUList.Get(index - 1);
+        if (index == 0)
+          return null;
+
+        var cacheItem = MRUList.Get(index - 1, out bool expired);
+
+        if (expired)
+        {
+          RemoveFromContextTokensOnly(cacheItem);
+          MRUList.Remove(index);
+          return null;
+        }
+
+        return cacheItem;
       }
     }
 

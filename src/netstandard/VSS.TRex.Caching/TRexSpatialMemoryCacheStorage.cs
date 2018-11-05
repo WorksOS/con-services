@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {
@@ -118,10 +119,10 @@ namespace VSS.TRex.Caching
 
         // Set the parameters for the new item, setting it's prev pointer to point to the oldest member of the MRUList
         if (MRUHead == -1)
-          Items[index].Set(element, context, token, index, MRUHead);
+          Items[index].Set(element, context, token, DateTime.Now + context.CacheDurationTime, index, MRUHead);
         else
         {
-          Items[index].Set(element, context, token, Items[MRUHead].Prev, MRUHead);
+          Items[index].Set(element, context, token, DateTime.Now + context.CacheDurationTime, Items[MRUHead].Prev, MRUHead);
           Items[MRUHead].Prev = index;
         }
 
@@ -138,10 +139,8 @@ namespace VSS.TRex.Caching
     /// Removes an item from storage given its index
     /// </summary>
     /// <param name="index"></param>
-    public void Remove(int index)
+    public void RemoveNoLock(int index)
     {
-      lock (this)
-      {
         Items[index].GetPrevAndNext(out int prev, out int next);
 
         if (prev != -1)
@@ -150,10 +149,21 @@ namespace VSS.TRex.Caching
         if (next != -1)
           Items[next].Prev = prev;
 
-        Items[index].Set(default(T), null, -1, -1, FreeListHead);
+        Items[index].Set(default(T), null, -1, DateTime.MaxValue, -1, FreeListHead);
         FreeListHead = index;
 
         tokenCount--;
+    }
+
+    /// <summary>
+    /// Removes an item from storage given its index
+    /// </summary>
+    /// <param name="index"></param>
+    public void Remove(int index)
+    {
+      lock (this)
+      {
+        RemoveNoLock(index);
       }
     }
 
@@ -192,6 +202,8 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
+        var cacheItem = Items[index];
+
         if (CurrentToken - Items[index].MRUEpochToken > MaxMRUEpochTokenAge)
         {
           TouchItemNoLock(index);
@@ -200,7 +212,33 @@ namespace VSS.TRex.Caching
           NextToken();
         }
 
-        return Items[index].Item;
+        return cacheItem.Item;
+      }
+    }
+
+    /// <summary>
+    /// Retrieves the cached item from the specified index in the MRU list.
+    /// If the item is expired the boolean expired out parameter will be set to true
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="expired"></param>
+    /// <returns></returns>
+    public T Get(int index, out bool expired)
+    {
+      lock (this)
+      {
+        var cacheItem = Items[index];
+        expired = cacheItem.Expired;
+
+        if (CurrentToken - Items[index].MRUEpochToken > MaxMRUEpochTokenAge)
+        {
+          TouchItemNoLock(index);
+
+          // Advance the current token so all elements 'age' by one
+          NextToken();
+        }
+
+        return cacheItem.Item;
       }
     }
   }

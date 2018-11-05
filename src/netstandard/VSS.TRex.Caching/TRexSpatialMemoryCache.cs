@@ -66,7 +66,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     /// <param name="contextFingerPrint"></param>
     /// <returns></returns>
-    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint)
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint, TimeSpan cacheDuration)
     {
       lock (Contexts)
       {
@@ -74,11 +74,22 @@ namespace VSS.TRex.Caching
           return context; // It exists, return it
 
         // Create the establish the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList); 
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration); 
         Contexts.Add(contextFingerPrint, newContext);
 
         return newContext;
       }
+    }
+
+    /// <summary>
+    /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
+    /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
+    /// </summary>
+    /// <param name="contextFingerPrint"></param>
+    /// <returns></returns>
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint)
+    {
+      return LocateOrCreateContext(contextFingerPrint, TRexSpatialMemoryCacheContext.NullCacheTimeSpan);
     }
 
     /// <summary>

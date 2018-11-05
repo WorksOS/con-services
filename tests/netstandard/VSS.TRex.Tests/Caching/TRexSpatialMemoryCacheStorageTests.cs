@@ -1,23 +1,25 @@
 ﻿using System;
 using VSS.TRex.Caching;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexSpatialMemoryCacheStorageTests
+  public class TRexSpatialMemoryCacheStorageTests : IClassFixture<DILoggingAndStorgeProxyFixture>
   {
     [Fact]
     public void Test_TRexSpatialMemoryCacheStorageTests_AddOneElement()
     {
-      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
+        var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
+        var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
-          SizeInBytes = 1000,
+          SizeInBytes = 0,
           CacheOriginX = (uint)(2000),
           CacheOriginY = (uint)(3000)
-        }, null);
+        }, dummyCache);
 
       Assert.True(storage.HasFreeSpace(), "Storage has no free space when filled with only one element");
 
@@ -30,15 +32,16 @@ namespace VSS.TRex.Tests.Caching
       const int numElements = 100;
 
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(numElements, numElements / 2);
+      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
       // Fill all available slots
       for (int i = 0; i < numElements; i++)
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
-          SizeInBytes = 1000,
+          SizeInBytes = 0,
           CacheOriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
-        }, null);
+        }, dummyCache);
 
       Assert.False(storage.HasFreeSpace(), "Storage has free space when filled");
       Assert.True(storage.TokenCount == numElements, $"Element count incorrect (= {storage.TokenCount})");
@@ -54,25 +57,26 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheStorageTests_FillWithElementsThenOverflowBy(int numElements, int overflowBy)
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(numElements, numElements / 2);
+      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
       // Fill all available slots
       for (int i = 0; i < numElements; i++)
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
-          SizeInBytes = 1000,
+          SizeInBytes = 0,
           CacheOriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
-        }, null);
+        }, dummyCache);
 
       Assert.False(storage.HasFreeSpace(), "Storage has free space when filled");
 
       for (int i = 0; i < overflowBy; i++)
       storage.Add(new TRexSpatialMemoryCacheContextTests_Element
       {
-        SizeInBytes = 1000,
+        SizeInBytes = 0,
         CacheOriginX = (uint)(2000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
         CacheOriginY = (uint)(3000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
-      }, null);
+      }, dummyCache);
 
       Assert.True(storage.TokenCount == numElements, $"Element count incorrect (= {storage.TokenCount})");
     }
@@ -81,14 +85,16 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheStorageTests_GetElement()
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
+      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
+
       var item = new TRexSpatialMemoryCacheContextTests_Element
       {
-        SizeInBytes = 1000,
+        SizeInBytes = 0,
         CacheOriginX = (uint) (2000),
         CacheOriginY = (uint) (3000)
       };
 
-      var index = storage.Add(item, null);
+      var index = storage.Add(item, dummyCache);
 
       Assert.True(storage.TokenCount == 1, $"Element count incorrect (= {storage.TokenCount})");
 
@@ -101,13 +107,14 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheStorageTests_RemoveOneElement()
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
+      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
       var index = storage.Add(new TRexSpatialMemoryCacheContextTests_Element
       {
-        SizeInBytes = 1000,
+        SizeInBytes = 0,
         CacheOriginX = (uint)(2000),
         CacheOriginY = (uint)(3000)
-      }, null);
+      }, dummyCache);
 
       Assert.True(storage.TokenCount == 1, $"Element count incorrect (= {storage.TokenCount})");
 
@@ -130,6 +137,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheStorageTests_TimeCheckCreatingElements(int numElements, int overflowBy)
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(numElements, numElements / 2);
+      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
       var startTime = DateTime.Now;
 
@@ -140,7 +148,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000,
           CacheOriginX = (uint)(2000 + i * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = (uint)(3000 + i * SubGridTreeConsts.SubGridTreeDimension)
-        }, null);
+        }, dummyCache);
 
       var midTime = DateTime.Now;
 
@@ -150,7 +158,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000,
           CacheOriginX = (uint)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = (uint)(1000 + (numElements + i) * SubGridTreeConsts.SubGridTreeDimension)
-        }, null);
+        }, dummyCache);
 
       Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
     }
@@ -169,6 +177,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheStorageTests_TimeCheckReusingElements(int numElements, int overflowBy)
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(numElements, numElements / 2);
+      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
       var startTime = DateTime.Now;
 
@@ -184,7 +193,7 @@ namespace VSS.TRex.Tests.Caching
       var midTime = DateTime.Now;
 
       for (int i = 0; i < overflowBy; i++)
-        storage.Add(item, null);
+        storage.Add(item, dummyCache);
 
       Assert.False(true, $"Time for adding {numElements} elements is {midTime - startTime} and adding {overflowBy} overflows is {DateTime.Now - midTime}");
     }
@@ -193,6 +202,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexSpatialMemoryCacheStorageTests_MaxEpochTokenAgeOnGet()
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(1000, 500);
+      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
       // Fill half slots 
       for (int i = 0; i < 500; i++)
@@ -202,7 +212,7 @@ namespace VSS.TRex.Tests.Caching
           CacheOriginX = (uint)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = 1000,
           SizeInBytes = 1000
-        }, null);
+        }, dummyCache);
       }
 
       var currentMRUHead = storage.MRUHead;
@@ -222,7 +232,7 @@ namespace VSS.TRex.Tests.Caching
           CacheOriginX = (uint)(1000 + i * SubGridTreeConsts.SubGridTreeDimension),
           CacheOriginY = 1000,
           SizeInBytes = 1000
-        }, null);
+        }, dummyCache);
       }
 
       // Get each item in the same order and verify they are touched and moved to the MRUHead

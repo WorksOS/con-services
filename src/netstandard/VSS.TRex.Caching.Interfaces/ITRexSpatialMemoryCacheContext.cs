@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Caching
@@ -20,5 +21,7 @@ namespace VSS.TRex.Caching
     ITRexMemoryCacheItem Get(uint originX, uint originY);
 
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
+
+    TimeSpan CacheDurationTime { get; }
   }
 }

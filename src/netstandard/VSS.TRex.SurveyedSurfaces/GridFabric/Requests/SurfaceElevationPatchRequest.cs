@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Cluster;
+﻿using System;
+using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Reflection;

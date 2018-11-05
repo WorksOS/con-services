@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeed) as ClientMachineSpeedLeafSubGrid;
 
-      int expectedSize = 3 * (4 * 32); // 3 bit mask subgrids in this and parent class
+      int expectedSize = 2 * (4 * 32); // 2 bit mask subgrids in this and parent class
       int actualSize = clientGrid.IndicativeSizeInBytes();
 
       Assert.True(actualSize == expectedSize, $"IndicativeSize() incorrect, = {clientGrid.IndicativeSizeInBytes()}, expected = {expectedSize}");

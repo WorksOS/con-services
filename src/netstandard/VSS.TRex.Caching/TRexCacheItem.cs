@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.Caching
+﻿using System;
+
+namespace VSS.TRex.Caching
 {
   /// <summary>
   /// Provides a wrapper around items stored in the cache to facilitate LRU/MRU management
@@ -17,6 +19,16 @@
     public long MRUEpochToken; // No get/set semantics on purpose as this is a struct
 
     /// <summary>
+    /// The time at which the cached item is no longer valid and will not be returned on a Get() call
+    /// </summary>
+    public DateTime ExpiryTime { get; internal set; }
+
+    /// <summary>
+    /// Determines if the cached item has hit it's expiry time
+    /// </summary>
+    public bool Expired => ExpiryTime < DateTime.Now;
+
+    /// <summary>
     /// The context to which this cached item belongs
     /// </summary>
     public ITRexSpatialMemoryCacheContext Context { get; set; }
@@ -32,20 +44,22 @@
     /// </summary>
     public int Next; // No get/set semantics on purpose as this is a struct
 
-    public TRexCacheItem(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, int prev, int next)
+    public TRexCacheItem(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, DateTime expiryTime, int prev, int next)
     {
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
+      ExpiryTime = expiryTime;
       Prev = prev;
       Next = next;
     }
 
-    public void Set(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, int prev, int next)
+    public void Set(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, DateTime expiryTime, int prev, int next)
     {
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
+      ExpiryTime = expiryTime;
       Prev = prev;
       Next = next;
     }
