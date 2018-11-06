@@ -1,11 +1,12 @@
 ﻿using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexSpatialMemoryCacheContextTests
+  public class TRexSpatialMemoryCacheContextTests : IClassFixture<DILoggingAndStorgeProxyFixture>
   {
     [Fact]
     public void Test_TRexSpatialMemoryCacheContext_Creation_Default()

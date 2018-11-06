@@ -449,7 +449,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(context.TokenCount == 1, "Token count incorrect after addition");
 
       cache.Remove(context, item);
-      Assert.True(context.TokenCount == 1, "Token count incorrect after removal");
+      Assert.True(context.TokenCount == 0, "Token count incorrect after removal");
     }
   }
 }
