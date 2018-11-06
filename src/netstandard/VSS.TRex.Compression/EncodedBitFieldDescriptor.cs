@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Exceptions;
 
 namespace VSS.TRex.Compression
 {
     public struct EncodedBitFieldDescriptor
     {
+        private const byte VersionNumber = 1;
+
         public int NativeNullValue;
         public int EncodedNullValue;
         public int MinValue, MaxValue;
@@ -32,10 +35,11 @@ namespace VSS.TRex.Compression
 
         public void Write(BinaryWriter writer)
         {
-            writer.Write((long)NativeNullValue);
-            writer.Write((long)EncodedNullValue);
-            writer.Write((long)MinValue);
-            writer.Write((long)MaxValue);
+            writer.Write(VersionNumber);
+            writer.Write(NativeNullValue);
+            writer.Write(EncodedNullValue);
+            writer.Write(MinValue);
+            writer.Write(MaxValue);
 
             writer.Write(Nullable);
             writer.Write(AllValuesAreNull);
@@ -46,10 +50,15 @@ namespace VSS.TRex.Compression
 
         public void Read(BinaryReader reader)
         {
-            NativeNullValue = (int)reader.ReadInt64();
-            EncodedNullValue = (int)reader.ReadInt64();
-            MinValue = (int)reader.ReadInt64();
-            MaxValue = (int)reader.ReadInt64();
+            byte versionNumber = reader.ReadByte();
+
+            if (versionNumber != VersionNumber)
+              throw new TRexException("Invalid version number reading encoded bit field descriptor");
+
+            NativeNullValue = reader.ReadInt32();
+            EncodedNullValue = reader.ReadInt32();
+            MinValue = reader.ReadInt32();
+            MaxValue = reader.ReadInt32();
 
             Nullable = reader.ReadBoolean();
             AllValuesAreNull = reader.ReadBoolean();
@@ -60,7 +69,7 @@ namespace VSS.TRex.Compression
 
         public void CalculateRequiredBitFieldSize()
         {
-            AllValuesAreNull = Nullable && ((MinValue == NativeNullValue) || (MaxValue == NativeNullValue));
+            AllValuesAreNull = Nullable && (MinValue == NativeNullValue || MaxValue == NativeNullValue);
 
             if (AllValuesAreNull || MinValue == MaxValue) // no storage required, 0 bits to encode this attribute
             {
