@@ -295,7 +295,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <returns></returns>
         public CellPass ExtractCellPass(uint X, uint Y, int passNumber)
         {
-            // X & Y indicate the cell lcoation in the subgrid, and passNumber represents the index of the pass in the cell that is required
+            // X & Y indicate the cell location in the subgrid, and passNumber represents the index of the pass in the cell that is required
 
             // First determine the starting cell pass index for that location in the segment
             SubGridCellPassCountRecord Index = GetPassCountAndFirstCellPassIndex(X, Y);
