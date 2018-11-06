@@ -26,18 +26,11 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       if (enableConnectedSiteGateway)
       {
         result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        DEFAULT_ERROR_MESSAGE);
-        try
-        {
-          log.LogDebug("Sending tag file to connected site gateway");
-          request.Validate();
-          result = await CallConnectedSiteEndpoint(request).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-          //Something went wrong but we don't really care log and continue
-          log.LogDebug($"PostTagFile(NonDirect TRex): Failed to send TAG file to connected site gateway exception occured {ex.ToString()} ");
-        }
+          DEFAULT_ERROR_MESSAGE);
+
+        log.LogDebug("Sending tag file to connected site gateway");
+        request.Validate();
+        result = await CallConnectedSiteEndpoint(request).ConfigureAwait(false);
 
         if (result.Code == 0)
         {
