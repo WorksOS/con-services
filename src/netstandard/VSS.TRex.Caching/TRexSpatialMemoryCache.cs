@@ -15,23 +15,24 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// The MRU list that threads through all the elements in the overall cache
     /// </summary>
-    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
+    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
 
-    private Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts;
+    private readonly Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts;
 
+    // ReSharper disable once InconsistentlySynchronizedField
     public int ContextCount() => Contexts.Count;
 
-    public int MaxNumElements { get; set; }
+    public int MaxNumElements { get; }
 
     private int currentNumElements;
-    public int CurrentNumElements { get => currentNumElements; }
+    public int CurrentNumElements => currentNumElements;
 
     private long currentSizeInBytes;
-    public long CurrentSizeInBytes { get => currentSizeInBytes; }
+    public long CurrentSizeInBytes => currentSizeInBytes;
 
-    public int MruNonUpdateableSlotCount { get; private set; }
+    public int MruNonUpdateableSlotCount { get; }
 
-    public long MaxSizeInBytes { get; private set; }
+    public long MaxSizeInBytes { get; }
 
     /// <summary>
     /// Creates a new spatial data cache containing at most maxNumElements items. Elements are stored in
@@ -39,6 +40,7 @@ namespace VSS.TRex.Caching
     /// are touched is outside the MRU dead band (expressed as a fraction of the overall maximum number of elements in the cache.
     /// </summary>
     /// <param name="maxNumElements"></param>
+    /// <param name="maxSizeInBytes"></param>
     /// <param name="mruDeadBandFraction"></param>
     public TRexSpatialMemoryCache(int maxNumElements, long maxSizeInBytes, double mruDeadBandFraction)
     {
@@ -65,8 +67,9 @@ namespace VSS.TRex.Caching
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
     /// <param name="contextFingerPrint"></param>
+    /// <param name="cacheDuration"></param>
     /// <returns></returns>
-    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint)
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint, TimeSpan cacheDuration)
     {
       lock (Contexts)
       {
@@ -74,11 +77,22 @@ namespace VSS.TRex.Caching
           return context; // It exists, return it
 
         // Create the establish the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList); 
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration); 
         Contexts.Add(contextFingerPrint, newContext);
 
         return newContext;
       }
+    }
+
+    /// <summary>
+    /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
+    /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
+    /// </summary>
+    /// <param name="contextFingerPrint"></param>
+    /// <returns></returns>
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint)
+    {
+      return LocateOrCreateContext(contextFingerPrint, TRexSpatialMemoryCacheContext.NullCacheTimeSpan);
     }
 
     /// <summary>

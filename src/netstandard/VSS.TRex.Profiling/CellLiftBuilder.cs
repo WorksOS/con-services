@@ -940,7 +940,7 @@ namespace VSS.TRex.Profiling
       Cell = (ProfileCell)cell;
       Cell.ClearLayers();
 
-      // Initilise the full and half pass counters for the client to inspect after the call
+      // Initialise the full and half pass counters for the client to inspect after the call
       FilteredPassCountOfTopMostLayer = 0;
       FilteredHalfCellPassCountOfTopMostLayer = 0;
 
@@ -975,16 +975,16 @@ namespace VSS.TRex.Profiling
       }
       else
       {
-        // PopulateFilteredValues is used on a cell by cell basis to detemine the required values
+        // PopulateFilteredValues is used on a cell by cell basis to determine the required values
       }
 
       // This is the main loop in the layer analysis processing. It moves through each
-      // cell pass in a formards in time direction and determines
+      // cell pass in a forwards in time direction and determines
       // if each cell pass should be included in the layer being constructed from the
       // cell passes
       // Optionally a client grid and a filter context may be provided which indicates that
       // a single filtered value is the required result (ie: the lift building is used to
-      // determine the superced status of cell pass layers to aid in the filtered value
+      // determine the superseded status of cell pass layers to aid in the filtered value
       // selection).
 
       // if (Debug_ExtremeLogSwitchE)
@@ -997,13 +997,13 @@ namespace VSS.TRex.Profiling
             aspects that do not require any of the events to be looked up (time, machine ID etc).
             Only then look up event.
         2.	When assembling passes in ICProfile that pass the above test, assemble all passes
-            into a single list and then apply an optimised LookerUpper across all passes to
+            into a single list and then apply an optimized LookerUpper across all passes to
             compute the events, then run the filter checking the machine event relevant
             filter settings across those cell passes.
         3.	If there is a restriction in the number of cell passes to be returned, construct
             blocks of the cell passes assembled in #2 above and run the looker upper and
             filter over those until the maximum number of cell passes is achieved.
-        4.	Perform layer analysis etc on the result of optimisations 1 to 3 above.
+        4.	Perform layer analysis etc on the result of optimizations 1 to 3 above.
         */
 
         // Build the list of cell passes to be processed into layers

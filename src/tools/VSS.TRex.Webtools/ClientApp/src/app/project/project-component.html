@@ -23,7 +23,9 @@
   </select> Timed call took {{timerTotalTime}}ms
 </p>
 <button (click)="getTile()">Render</button>
-<button (click)="getTile10x()">Render 10x</button>
+<button (click)="getTileXTimes(10)">Render 10x</button>
+<button (click)="getTileXTimes(100)">100x</button>
+<button (click)="getTileXTimes(1000)">1000x</button>
 <button (click)="zoomAll()">Zoom All</button>
 <button (click)="zoomIn()">Zoom In</button>
 <button (click)="zoomOut()">Zoom Out</button>

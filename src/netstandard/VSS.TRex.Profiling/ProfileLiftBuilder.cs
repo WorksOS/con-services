@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -87,7 +88,7 @@ namespace VSS.TRex.Profiling
     private ISurveyedSurfaces FilteredSurveyedSurfaces;
 
     /// <summary>
-    /// The argument to be used when requesting composite elevation subgrids to support profiel analysis
+    /// The argument to be used when requesting composite elevation subgrids to support profile analysis
     /// </summary>
     public SurfaceElevationPatchArgument SurfaceElevationPatchArg;
 
@@ -137,18 +138,18 @@ namespace VSS.TRex.Profiling
           FilteredSurveyedSurfaces = null;
       }
 
-      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
-
       // Instantiate a single instance of the argument object for the surface elevation patch requests to obtain composite
       // elevation subgrids and populate it with the common elements for this set of subgrids being requested.
-      SurfaceElevationPatchArg = new SurfaceElevationPatchArgument()
+      SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
       {
         SiteModelID = SiteModel?.ID ?? Guid.Empty,
         CellSize = SiteModel?.Grid.CellSize ?? 0,
-        IncludedSurveyedSurfaces = FilteredSurveyedSurfaces,
+        IncludedSurveyedSurfaces = FilteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0],
         SurveyedSurfacePatchType = SurveyedSurfacePatchType.CompositeElevations,
         ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
       };
+
+      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.CacheFingerprint());
     }
 
     /// <summary>
@@ -492,7 +493,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Builds a fully analysed vector of profield cells from the list of cell passed to it
+    /// Builds a fully analyzed vector of profiled cells from the list of cell passed to it
     /// </summary>
     /// <param name="ProfileCells"></param>
     /// <param name="cellPassIterator"></param>
@@ -515,7 +516,7 @@ namespace VSS.TRex.Profiling
         ProfileCell = (ProfileCell) ProfileCells[I];
 
         // get subgrid setup iterator and set cell address
-        // get sugbrid origin for cell address
+        // get subgrid origin for cell address
         SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
           ProfileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
@@ -525,7 +526,7 @@ namespace VSS.TRex.Profiling
           CurrentSubgridOrigin = ThisSubgridOrigin;
           SubGrid = null;
 
-          // Does the subgridtree contain this node in it's existence map?
+          // Does the subgrid tree contain this node in it's existence map?
           if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
             SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY,
               SiteModel.Grid.NumLevels);
@@ -544,7 +545,7 @@ namespace VSS.TRex.Profiling
           }
 
           if (LiftFilterMask.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
-            ProfileCells, ref FilterMask, I, CellFilter))
+            ProfileCells, FilterMask, I, CellFilter))
             continue;
 
           if (FilteredSurveyedSurfaces != null)
@@ -552,7 +553,7 @@ namespace VSS.TRex.Profiling
             // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
             SurfaceElevationPatchArg.OTGCellBottomLeftX = _SubGridAsLeaf.OriginX;
             SurfaceElevationPatchArg.OTGCellBottomLeftY = _SubGridAsLeaf.OriginY;
-            SurfaceElevationPatchArg.ProcessingMap = FilterMask;
+            SurfaceElevationPatchArg.ProcessingMap.Assign(FilterMask);
 
             CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
             CompositeHeightsGrid = CompositeHeightsGridIntf as ClientCompositeHeightsLeafSubgrid;

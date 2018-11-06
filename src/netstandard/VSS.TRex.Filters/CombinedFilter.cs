@@ -29,6 +29,17 @@ namespace VSS.TRex.Filters
       SpatialFilter = new CellSpatialFilter();
     }
 
+    /// <summary>
+    /// Creates a new combined filter based on a supplied spatial filter and a newly created
+    /// attribute filter
+    /// </summary>
+    /// <param name="spatialFilter"></param>
+    public CombinedFilter(ICellSpatialFilter spatialFilter)
+    {
+      AttributeFilter = new CellPassAttributeFilter();
+      SpatialFilter = spatialFilter;
+    }
+
     public CombinedFilter(IBinaryRawReader reader)
     {
       FromBinary(reader);

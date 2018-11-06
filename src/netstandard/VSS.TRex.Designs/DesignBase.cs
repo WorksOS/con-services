@@ -47,7 +47,7 @@ namespace VSS.TRex.Designs
         // filtering operations to be applied prior to this filtering step.
         public abstract bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
                                   SubGridTreeBitmapSubGridBits Mask,
-                                  ref SubGridTreeBitmapSubGridBits Patch,
+                                  SubGridTreeBitmapSubGridBits Patch,
                                   double OriginX, double OriginY,
                                   double CellSize,
                                   DesignDescriptor DesignDescriptor);

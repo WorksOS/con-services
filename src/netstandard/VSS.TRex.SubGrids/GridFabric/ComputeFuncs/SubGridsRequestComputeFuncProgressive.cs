@@ -12,7 +12,7 @@ using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
-namespace VSS.TRex.GridFabric.ComputeFuncs
+namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The base closure/function that implements subgrid request processing on compute nodes
@@ -99,7 +99,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                     writer.Write(results[i].Length);
                     foreach (IClientLeafSubGrid result in results[i])
                     {
-                        result.Write(writer, buffer);
+                        writer.Write(result != null); 
+                        result?.Write(writer, buffer);
                     }
                 }
             }
@@ -116,9 +117,9 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 MS.Read(bytes, 0, bytes.Length);
                 rmtMsg.Send(bytes, localArg.MessageTopic);
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError("Exception sending message", E);
+                Log.LogError("Exception sending message", e);
                 throw;
             }
         }
@@ -137,7 +138,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// </summary>
         protected override void DoDispose()
         {
-            // Diospose the memory stream nicely
+            // Dispose the memory stream nicely
             MS?.Dispose();
         }
     }

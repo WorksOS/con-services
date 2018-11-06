@@ -269,10 +269,10 @@ namespace VSS.TRex.Profiling
 
           CurrentSubgridOrigin = ThisSubgridOrigin;
 
-          if (!ProfileFilterMask.ConstructSubgridCellFilterMask(CurrentSubgridOrigin, VtHzIntercepts, i, ref FilterMask, CellFilter, SiteModel.Grid))
+          if (!ProfileFilterMask.ConstructSubgridCellFilterMask(CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, SiteModel.Grid))
             continue;
 
-          if (ReturnDesignElevation) // cutfill profile request then get elevation at same spot along design
+          if (ReturnDesignElevation) // cut fill profile request then get elevation at same spot along design
           {
             DesignElevations = null;
             DesignResult = DesignProfilerRequestResult.UnknownError;

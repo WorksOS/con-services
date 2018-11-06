@@ -178,7 +178,7 @@ namespace VSS.TRex.Pipelines
     }
 
     /// <summary>
-    /// Builds the pipeline configured per the supplied state ready to exesute the request
+    /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
     /// <returns></returns>
     public bool Build()

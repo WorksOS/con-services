@@ -2,7 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -84,6 +86,10 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+
+        // Create the cache to store the general subgrid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
+        // TODO: The three parameters need to be added to the TRex environment configuration
+        .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(new TRexSpatialMemoryCache(1000000, 1000000000, 0.33)))
 
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))

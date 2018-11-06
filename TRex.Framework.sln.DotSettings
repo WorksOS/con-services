@@ -7,5 +7,6 @@
 	
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=sitemodel/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=sitemodels/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=sparcity/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=subgrid/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=subgrids/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

@@ -78,7 +78,13 @@ namespace VSS.TRex.SubGridTrees.Types
     public short TargetMDP { get; set; }
 
     /// <summary>
-    /// Constractor with arguments.
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public static int IndicativeSizeInBytes() => 2 * sizeof(short);
+
+    /// <summary>
+    /// Constructor with arguments.
     /// </summary>
     /// <param name="measuredMDP"></param>
     /// <param name="targetMDP"></param>
@@ -90,7 +96,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Initialises the measured and target MDP properties with null values.
+    /// Initializes the measured and target MDP properties with null values.
     /// </summary>
     public void Clear()
     {
@@ -99,7 +105,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -109,7 +115,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serialises comtent of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
@@ -119,12 +125,12 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Defines a publically accessible null value for this cell value type
+    /// Defines a publicly accessible null value for this cell value type
     /// </summary>
     public static SubGridCellPassDataMDPEntryRecord NullValue = Null();
 
     /// <summary>
-    /// Implements the business logic to create the null value for this cell valuye type
+    /// Implements the business logic to create the null value for this cell value type
     /// </summary>
     /// <returns></returns>
     private static SubGridCellPassDataMDPEntryRecord Null()

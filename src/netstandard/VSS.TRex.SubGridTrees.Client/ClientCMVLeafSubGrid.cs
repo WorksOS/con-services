@@ -25,13 +25,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public bool IgnoresNullValueForLastCMV { get; set; }
 
     /// <summary>
-    /// First pass map records which cells hold cell pass CMVs that were derived
-    /// from the first pass a machine made over the corresponding cell
-    /// </summary>
-    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-    /// <summary>
-    /// Initilise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientCMVLeafSubGrid()
     {
@@ -80,7 +74,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="wantsPreviousCCVValue"></param>
     /// <param name="ignoresNullValueForLastCMV"></param>
-    public ClientCMVLeafSubGrid(bool wantsPreviousCCVValue = false, bool ignoresNullValueForLastCMV = true) : base()
+    public ClientCMVLeafSubGrid(bool wantsPreviousCCVValue = false, bool ignoresNullValueForLastCMV = true)
     {
       WantsPreviousCCVValue = wantsPreviousCCVValue;
       IgnoresNullValueForLastCMV = ignoresNullValueForLastCMV;
@@ -186,7 +180,7 @@ namespace VSS.TRex.SubGridTrees.Client
             else
               Cells[cellX, cellY].IsTooThick = true;
           }
-        };
+        }
       }
     }
 
@@ -230,19 +224,17 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => _gridDataType == GridDataType.CCVPercentChange || Cells[cellX, cellY].MeasuredCMV != CellPassConsts.NullCCV;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override SubGridCellPassDataCMVEntryRecord NullCell() => SubGridCellPassDataCMVEntryRecord.NullValue;
 
     /// <summary>
-    /// Sets all cell CMVs to null and clears the first pass and sureyed surface pass maps
+    /// Sets all cell CMVs to null and clears the first pass and surveyed surface pass maps
     /// </summary>
     public override void Clear()
     {
       base.Clear();
-
-      FirstPassMap.Clear();
     }
 
     public void RestoreInitialSettings()
@@ -263,7 +255,7 @@ namespace VSS.TRex.SubGridTrees.Client
           I, J : Integer;
           S : String;
         begin
-          SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , slmcDebug);
+          SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , ...);
 
           for I := 0 to kSubGridTreeDimension - 1 do
             begin
@@ -275,37 +267,11 @@ namespace VSS.TRex.SubGridTrees.Client
                 else
                   S := S + '     Null';
 
-              SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+              SIGLogMessage.PublishNoODS(Nil, S, ...);
             end;
         end;
         */
     }
-
-/*
-    /// <summary>
-    /// Reads an elevation client leaf sub grid from a stream using a binary formatter
-    /// </summary>
-    /// <param name="formatter"></param>
-    /// <param name="stream"></param>
-    public override void Read(BinaryFormatter formatter, Stream stream)
-    {
-        base.Read(formatter, stream);
-
-        FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-    }
-
-    /// <summary>
-    /// Writes an elevation client leaf sub grid to a stream using a binary formatter
-    /// </summary>
-    /// <param name="formatter"></param>
-    /// <param name="stream"></param>
-    public override void Write(BinaryFormatter formatter, Stream stream)
-    {
-        base.Write(formatter, stream);
-
-        formatter.Serialize(stream, FirstPassMap);
-    }
-*/
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
@@ -317,8 +283,6 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Write(BinaryWriter writer, byte [] buffer)
     {
       base.Write(writer, buffer);
-
-      FirstPassMap.Write(writer, buffer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
@@ -333,8 +297,6 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Read(BinaryReader reader, byte [] buffer)
     {
       base.Read(reader, buffer);
-
-      FirstPassMap.Read(reader, buffer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
@@ -352,6 +314,16 @@ namespace VSS.TRex.SubGridTrees.Client
       ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
 
       return result;
+    }
+
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public override int IndicativeSizeInBytes()
+    {
+      return base.IndicativeSizeInBytes() +
+             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataCMVEntryRecord.IndicativeSizeInBytes();
     }
   }
 }

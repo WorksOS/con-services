@@ -7,7 +7,7 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheStorage<T> : ITRexSpatialMemoryCacheStorage<T> where T : ITRexMemoryCacheItem
   {
-    private TRexCacheItem<T>[] Items;
+    private readonly TRexCacheItem<T>[] Items;
 
     public int MRUHead { get; private set; }
     private int FreeListHead;
@@ -15,11 +15,10 @@ namespace VSS.TRex.Caching
     private long CurrentToken = -1;
     private long NextToken() => System.Threading.Interlocked.Increment(ref CurrentToken);
 
+    private readonly int MaxMRUEpochTokenAge;
+
     private int tokenCount;
-
-    private int MaxMRUEpochTokenAge;
-
-    public int TokenCount { get => tokenCount; }
+    public int TokenCount => tokenCount;
 
     public bool HasFreeSpace() => FreeListHead != -1;
 
@@ -138,10 +137,8 @@ namespace VSS.TRex.Caching
     /// Removes an item from storage given its index
     /// </summary>
     /// <param name="index"></param>
-    public void Remove(int index)
+    private void RemoveNoLock(int index)
     {
-      lock (this)
-      {
         Items[index].GetPrevAndNext(out int prev, out int next);
 
         if (prev != -1)
@@ -154,6 +151,17 @@ namespace VSS.TRex.Caching
         FreeListHead = index;
 
         tokenCount--;
+    }
+
+    /// <summary>
+    /// Removes an item from storage given its index
+    /// </summary>
+    /// <param name="index"></param>
+    public void Remove(int index)
+    {
+      lock (this)
+      {
+        RemoveNoLock(index);
       }
     }
 
@@ -192,6 +200,15 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
+        var cacheItem = Items[index];
+
+        if (cacheItem.Expired)
+        {
+          RemoveNoLock(index);
+          cacheItem.RemoveFromContext();
+          return default(T);
+        }
+
         if (CurrentToken - Items[index].MRUEpochToken > MaxMRUEpochTokenAge)
         {
           TouchItemNoLock(index);
@@ -200,7 +217,7 @@ namespace VSS.TRex.Caching
           NextToken();
         }
 
-        return Items[index].Item;
+        return cacheItem.Item;
       }
     }
   }

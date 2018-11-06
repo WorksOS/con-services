@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.Caching
+﻿using System;
+
+namespace VSS.TRex.Caching.Interfaces
 {
   public interface ITRexSpatialMemoryCache
   {
@@ -12,5 +14,10 @@
     void ItemRemovedFromContext(int sizeInBytes);
 
     int ContextCount();
+
+    bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element);
+
+    ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint);
+    ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint, TimeSpan cacheDuration);
   }
 }

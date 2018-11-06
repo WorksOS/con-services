@@ -11,7 +11,7 @@ using Xunit;
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   /// <summary>
-  /// Includes tests not covered in GenericClientLeafSibgriTests
+  /// Includes tests not covered in GenericClientLeafSubgridTests
   /// </summary>
   public class HeightClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {

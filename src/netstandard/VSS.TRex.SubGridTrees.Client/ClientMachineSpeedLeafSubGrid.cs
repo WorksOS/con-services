@@ -15,13 +15,7 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientMachineSpeedLeafSubGrid : GenericClientLeafSubGrid<ushort>
   {
     /// <summary>
-    /// First pass map records which cells hold cell pass machine speeds that were derived
-    /// from the first pass a machine made over the corresponding cell
-    /// </summary>
-    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-    /// <summary>
-    /// Initilise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientMachineSpeedLeafSubGrid()
     {
@@ -37,7 +31,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientMachineSpeedLeafSubGrid() : base()
+    public ClientMachineSpeedLeafSubGrid()
     {
       Initialise();
     }
@@ -88,19 +82,17 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != CellPassConsts.NullMachineSpeed;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override ushort NullCell() => CellPassConsts.NullMachineSpeed;
 
     /// <summary>
-    /// Sets all cell heights to null and clears the first pass and sureyed surface pass maps
+    /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
     /// </summary>
     public override void Clear()
     {
       base.Clear();
-
-      FirstPassMap.Clear();
     }
 
     /// <summary>
@@ -115,7 +107,7 @@ namespace VSS.TRex.SubGridTrees.Client
         I, J : Integer;
         S : String;
       begin
-        SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , slmcDebug);
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , ...);
 
         for I := 0 to kSubGridTreeDimension - 1 do
           begin
@@ -127,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Client
               else
                 S := S + '     Null';
 
-            SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
+            SIGLogMessage.PublishNoODS(Nil, S, ...);
           end;
       end;
       */
@@ -148,32 +140,6 @@ namespace VSS.TRex.SubGridTrees.Client
       return result;
     }
 
-/*
-        /// <summary>
-        /// Reads an elevation client leaf sub grid from a stream using a binary formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Read(BinaryFormatter formatter, Stream stream)
-        {
-            base.Read(formatter, stream);
-
-            FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
-        }
-
-        /// <summary>
-        /// Writes an elevation client leaf sub grid to a stream using a binary formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public override void Write(BinaryFormatter formatter, Stream stream)
-        {
-            base.Write(formatter, stream);
-
-            formatter.Serialize(stream, FirstPassMap);
-        }
-*/
-
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
     /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
@@ -184,8 +150,6 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Write(BinaryWriter writer, byte[] buffer)
     {
       base.Write(writer, buffer);
-
-      FirstPassMap.Write(writer, buffer);
 
       Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
       writer.Write(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
@@ -204,12 +168,19 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      FirstPassMap.Read(reader, buffer);
-
       reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
       Buffer.BlockCopy(buffer, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(ushort));
 
       //SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y] = reader.ReadUInt16());
+    }
+
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public override int IndicativeSizeInBytes()
+    {
+      return base.IndicativeSizeInBytes();
     }
   }
 }
