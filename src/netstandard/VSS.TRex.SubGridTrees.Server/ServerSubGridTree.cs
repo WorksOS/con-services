@@ -123,12 +123,16 @@ namespace VSS.TRex.SubGridTrees.Server
         // when there is already content in the segment directory are strictly forbidden and break immutability
         // rules for subgrids
         Debug.Assert(!SubGrid.Dirty, "Leaf subgrid directory loads may not be performed while the subgrid is dirty. The information should be taken from the cache instead.");
-        Debug.Assert(SubGrid.Directory?.SegmentDirectory?.Count == 0, "Loading a leaf subgrid directory when there are already segments present within it.");
 
         // Load the cells into it from its file
         // Briefly lock this subgrid just for the period required to read its contents
         lock (SubGrid)
         {
+          // If more than thread wants this subgrid then they may concurrently attempt to load it.
+          // Make a check to see if this has happened and another thread has already loaded this subgrid directory.
+          // If so, just return success. Previously the commented out assert was enforced causing exceptions
+          // Debug.Assert(SubGrid.Directory?.SegmentDirectory?.Count == 0, "Loading a leaf subgrid directory when there are already segments present within it.");
+
           // Check this thread is the winner of the lock to be able to load the contents
           if (SubGrid.Directory?.SegmentDirectory?.Count != 0)
             return true; // The load has occurred on another thread, leave quietly...

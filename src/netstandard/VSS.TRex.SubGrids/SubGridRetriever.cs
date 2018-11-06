@@ -303,8 +303,8 @@ namespace VSS.TRex.SubGrids
 
         for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
         {
-          // If there is an overriding seive bitmask (from WMS rendering) then
-          // check if this cell is contained in the seive, otherwise ignore it.
+          // If there is an overriding sieve bitmask (from WMS rendering) then
+          // check if this cell is contained in the sieve, otherwise ignore it.
           if (SeiveFilterInUse && !SeiveBitmask.BitSet(StripeIndex, J))
             continue;
 
@@ -313,7 +313,7 @@ namespace VSS.TRex.SubGrids
               continue;
 
 
-          if (_GridDataType == GridDataType.CellProfile) // all requests using this data type should filter temperature range using lastpass only
+          if (_GridDataType == GridDataType.CellProfile) // all requests using this data type should filter temperature range using last pass only
             Filter.AttributeFilter.FilterTemperatureByLastPass = true;
 
           // For pass attributes that are maintained on a historical last pass basis
@@ -404,8 +404,8 @@ namespace VSS.TRex.SubGrids
             if (Profiler != null) // we don't need this anymore as the logic is implemented in lift builder
             {
               // While we have been given a profiler, we may not need to use it to
-              // analyse layers in the cell pass stack. The layer analysis in this
-              // operation is intended to locate cell passes belonging to superceded
+              // analyze layers in the cell pass stack. The layer analysis in this
+              // operation is intended to locate cell passes belonging to superseded
               // layers, in which case they are not considered for providing the
               // requested value. However, if there is no filter is in effect, then the
               // global latest information for the subgrid may be consulted first
@@ -515,7 +515,7 @@ namespace VSS.TRex.SubGrids
                   // the provision of the client grid and the assignment context to the
                   // lift analysis engine
 
-                  // if we have a temperature filter to be filtered by lastpass
+                  // if we have a temperature filter to be filtered by last pass
                   if (Filter.AttributeFilter.HasTemperatureRangeFilter && Filter.AttributeFilter.FilterTemperatureByLastPass)
                     {
                       HaveFilteredPass = ( CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
@@ -965,7 +965,7 @@ namespace VSS.TRex.SubGrids
 
           if (PruneSubGridRetrievalHere())
             return ServerRequestResult.NoError;
-
+          //todo: This map calculation seems odd if we are caching subgrids...
           // Determine the bitmask detailing which cells match the cell selection filter
           if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,
             cellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,

@@ -105,20 +105,24 @@ namespace VSS.TRex.Caching
       {
         int index = ContextTokens[x, y];
 
-        // Note: Adjust for the 1-based index obtained from ContextTokens
         if (index == 0)
           return null;
 
+        return MRUList.Get(index - 1);
+
+/*        // Note: Adjust for the 1-based index obtained from ContextTokens
         var cacheItem = MRUList.Get(index - 1, out bool expired);
 
         if (expired)
         {
           RemoveFromContextTokensOnly(cacheItem);
-          MRUList.Remove(index);
+
+          // Note: Adjust for the 1-based index obtained from ContextTokens
+          MRUList.Remove(index - 1);
           return null;
         }
 
-        return cacheItem;
+        return cacheItem;*/
       }
     }
 

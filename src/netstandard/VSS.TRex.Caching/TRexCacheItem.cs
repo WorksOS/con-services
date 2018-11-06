@@ -44,22 +44,22 @@ namespace VSS.TRex.Caching
     /// </summary>
     public int Next; // No get/set semantics on purpose as this is a struct
 
-    public TRexCacheItem(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, DateTime expiryTime, int prev, int next)
+    public TRexCacheItem(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, int prev, int next)
     {
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
-      ExpiryTime = expiryTime;
+      ExpiryTime = DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
     }
 
-    public void Set(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, DateTime expiryTime, int prev, int next)
+    public void Set(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, int prev, int next)
     {
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
-      ExpiryTime = expiryTime;
+      ExpiryTime = context == null ? DateTime.MinValue : DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
     }

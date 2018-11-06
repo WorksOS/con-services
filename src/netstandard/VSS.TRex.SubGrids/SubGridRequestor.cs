@@ -263,7 +263,7 @@ namespace VSS.TRex.SubGrids
                     // Don't add subgrids computed using a non-trivial WMS sieve to the general subgrid cache
                     if (AreaControlSet.PixelXWorldSize == 0 && AreaControlSet.PixelYWorldSize == 0)
                     {
-                        // Log.LogInformation($"Adding subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} to result cache");
+                        Log.LogInformation($"Adding subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} to result cache");
 
                         // Add the newly computed client subgrid to the cache by creating a clone of the client and adding it...
                         IClientLeafSubGrid ClientGrid2 = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(ClientGrid.GridDataType, SurveyedSurfaceDataRequested));

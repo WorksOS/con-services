@@ -119,10 +119,10 @@ namespace VSS.TRex.Caching
 
         // Set the parameters for the new item, setting it's prev pointer to point to the oldest member of the MRUList
         if (MRUHead == -1)
-          Items[index].Set(element, context, token, DateTime.Now + context.CacheDurationTime, index, MRUHead);
+          Items[index].Set(element, context, token, index, MRUHead);
         else
         {
-          Items[index].Set(element, context, token, DateTime.Now + context.CacheDurationTime, Items[MRUHead].Prev, MRUHead);
+          Items[index].Set(element, context, token, Items[MRUHead].Prev, MRUHead);
           Items[MRUHead].Prev = index;
         }
 
@@ -149,7 +149,7 @@ namespace VSS.TRex.Caching
         if (next != -1)
           Items[next].Prev = prev;
 
-        Items[index].Set(default(T), null, -1, DateTime.MaxValue, -1, FreeListHead);
+        Items[index].Set(default(T), null, -1, -1, FreeListHead);
         FreeListHead = index;
 
         tokenCount--;
@@ -203,6 +203,13 @@ namespace VSS.TRex.Caching
       lock (this)
       {
         var cacheItem = Items[index];
+
+        if (cacheItem.Expired)
+        {
+          RemoveNoLock(index);
+          cacheItem.RemoveFromContext();
+          return default(T);
+        }
 
         if (CurrentToken - Items[index].MRUEpochToken > MaxMRUEpochTokenAge)
         {
