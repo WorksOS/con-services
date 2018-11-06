@@ -21,12 +21,11 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGrids;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
-namespace VSS.TRex.GridFabric.ComputeFuncs
+namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The closure/function that implements subgrid request processing on compute nodes
@@ -35,7 +34,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        private const int addressBucketSize = 20;
+        private const int AddressBucketSize = 20;
 
         // ReSharper disable once StaticMemberInGenericType
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
@@ -391,7 +390,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 return;
 
             //Log.LogInformation("Sending {0} subgrids to caller for processing", count);
-            Log.LogInformation($"Requestors contains {Requestors.Length} items");
+            //Log.LogInformation($"Requestors contains {Requestors.Length} items");
           
             for (int i = 0; i < listCount; i++)
             {
@@ -425,7 +424,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         {
             addresses[listCount++] = address;
 
-            if (listCount == addressBucketSize)
+            if (listCount == AddressBucketSize)
             {
                 // Process the subgrids...
                 PerformSubgridRequestList();
@@ -438,7 +437,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// </summary>
         private TSubGridRequestsResponse PerformSubgridRequests()
         {
-            clientGrids = new IClientLeafSubGrid[addressBucketSize][];      
+            clientGrids = new IClientLeafSubGrid[AddressBucketSize][];      
 
             // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
             // noted with the 'set' bits in the bitmask, processing only those that matter for this server
@@ -491,7 +490,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
                 FilteredSurveyedSurfacesAsArray);
             }).ToArray();
 
-            addresses = new ISubGridCellAddress[addressBucketSize];
+            addresses = new ISubGridCellAddress[AddressBucketSize];
 
             // Obtain the primary partition map to allow this request to determine the elements it needs to process
             bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;

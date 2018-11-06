@@ -12,12 +12,13 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SubGrids.GridFabric.Requests;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Pipelines
 {
     /// <summary>
-    /// Derived from TSVOICSubGridPipelineBase = class(TObject)
+    /// Derived from SVO SubGridPipelineBase
     /// </summary>
     public class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
