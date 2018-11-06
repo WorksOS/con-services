@@ -17,12 +17,14 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       if (request == null)
         ThrowRequestTypeCastException<CompactionTagFileRequest>();
 
-      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "3dPm Unknown exception.");
+      var result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully,
+        "Connected Site Disabled");
       //Send the tagfile to the connected site gateway if enabled first, no project/subscription validation is required.
       bool.TryParse(configStore.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY"), out var enableConnectedSiteGateway);
       if (enableConnectedSiteGateway)
       {
+        result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+        "3dPm Unknown exception.");
         try
         {
           log.LogDebug("Sending tag file to connected site gateway");
