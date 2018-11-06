@@ -6,6 +6,11 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
@@ -23,9 +28,6 @@
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.Compression\VSS.TRex.Compression.csproj">
-      <Private>true</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems.Interfaces\VSS.TRex.CoordinateSystems.Interfaces.csproj">
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj">

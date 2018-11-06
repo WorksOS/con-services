@@ -4,8 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Trex.HTTPClients.Clients;
+using VSS.Trex.HTTPClients.RequestHandlers;
 using VSS.TRex.CoordinateSystems;
-using VSS.TRex.CoordinateSystems.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -13,6 +16,7 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.HTTPClients.RequestHandlers;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Abstractions;
@@ -73,7 +77,6 @@ namespace VSS.TRex.Server.TileRendering
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
 
-        .Add(x => x.AddSingleton<ICoordinateConversion>(new CoordinateConversion()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
@@ -87,6 +90,15 @@ namespace VSS.TRex.Server.TileRendering
 
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+
+        // Setup dependencies for communciation with the Trimble Coordinate Service.
+        .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
+        .Add(x => x.AddTransient<TPaaSAuthenticatedRequestHandler>())
+        .Add(x => x.AddTransient<TPaaSApplicationCredentialsRequestHandler>())
+        .AddHttpClient<TPaaSClient>(client => client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token"))
+          .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
+        .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
+          .AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>()
 
         .Complete();
     }
@@ -105,7 +117,7 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.Storage.StorageProxy),
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
-        typeof(VSS.TRex.CoordinateSystems.LLH),
+        typeof(VSS.TRex.CoordinateSystems.Models.LLH),
         typeof(VSS.TRex.ExistenceMaps.ExistenceMaps),
         typeof(VSS.TRex.Filters.CellPassAttributeFilter),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),

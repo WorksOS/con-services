@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;

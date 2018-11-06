@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -15,9 +15,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
-    <ProjectReference Include="..\VSS.TRex.CoordinateSystems.Interfaces\VSS.TRex.CoordinateSystems.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\VSS.Trex.HTTPClients\VSS.Trex.HTTPClients.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
     <ProjectReference Include="..\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
   </ItemGroup>

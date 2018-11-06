@@ -21,6 +21,7 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -93,10 +94,12 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
-      var tfaRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
-      (tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
+      var tfaRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(
+        tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
         radioType, processor.RadioSerial, tagDetail.tccOrgId,
-        processor.LLHLat * (180 / Math.PI), processor.LLHLon * (180 / Math.PI), processor.DataTime);
+        MathUtilities.RadiansToDegrees(processor.LLHLat),
+        MathUtilities.RadiansToDegrees(processor.LLHLon),
+        processor.DataTime);
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 

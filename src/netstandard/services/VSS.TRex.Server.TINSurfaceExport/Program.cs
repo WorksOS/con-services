@@ -97,7 +97,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(VSS.TRex.CoordinateSystems.LLH),
+        typeof(VSS.TRex.CoordinateSystems.Models.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),

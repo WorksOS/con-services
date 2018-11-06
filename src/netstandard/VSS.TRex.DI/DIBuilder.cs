@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Log4Net.Extensions;
@@ -36,6 +37,26 @@ namespace VSS.TRex.DI
     {
       addDI(ServiceCollection);
       return this;
+    }
+
+    public DefaultHttpClientBuilder AddHttpClient<TClient>(Action<HttpClient> configureClient) where TClient : class
+    {
+      if (ServiceCollection == null)
+      {
+        throw new ArgumentNullException(nameof (ServiceCollection));
+      }
+      if (configureClient == null)
+      {
+        throw new ArgumentNullException(nameof (configureClient));
+      }
+
+      ServiceCollection.AddHttpClient();
+
+      DefaultHttpClientBuilder builder = new DefaultHttpClientBuilder(ServiceCollection, typeof (TClient).Name, Instance);
+      builder.ConfigureHttpClient(configureClient);
+      builder.AddTypedClient<TClient>();
+
+      return builder;
     }
 
     /// <summary>

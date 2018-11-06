@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
@@ -16,8 +17,7 @@ namespace VSS.TRex.Profiling.Executors
     private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicatonService>();
 
     public ComputeProfileExecutor_ApplicatonService()
-    {
-    }
+    { }
 
     /// <summary>
     /// Executes the profiler
@@ -25,6 +25,7 @@ namespace VSS.TRex.Profiling.Executors
     public ProfileRequestResponse Execute(ProfileRequestArgument_ApplicationService arg)
     {
       Log.LogInformation("Start execution");
+
       try
       {
         ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute()
@@ -40,13 +41,14 @@ namespace VSS.TRex.Profiling.Executors
 
         // Perform coordinate conversion on the argument before broadcasting it:
         if (arg.PositionsAreGrid)
-          arg2.NEECoords = CoordinateSystems.Convert.NullWGSLLToXY(new[] {arg.StartPoint, arg.EndPoint});
+        {
+          arg2.NEECoords = ConvertCoordinates.NullWGSLLToXY(new[] { arg.StartPoint, arg.EndPoint });
+        }
         else
         {
-          ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+          ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
-          arg2.NEECoords =
-            CoordinateSystems.Convert.WGS84ToCalibration(SiteModel.CSIB(), new[] {arg.StartPoint, arg.EndPoint});
+          arg2.NEECoords = ConvertCoordinates.WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
         }
 
         ProfileRequest_ClusterCompute request = new ProfileRequest_ClusterCompute();

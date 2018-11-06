@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using Draw = System.Drawing;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -17,6 +17,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
+using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Executors
 {
@@ -314,11 +315,9 @@ namespace VSS.TRex.Rendering.Executors
     /// <summary>
     /// Executor that implements requesting and rendering subgrid information to create the rendered tile
     /// </summary>
-    /// <returns></returns>
     public IBitmap Execute()
     {
       // WorkingColourPalette  : TICDisplayPaletteBase;
-      // CoordConversionResult : TCoordServiceErrorStatus;
 
       Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
 
@@ -415,29 +414,35 @@ namespace VSS.TRex.Rendering.Executors
       */
 
       // Determine the grid (NEE) coordinates of the bottom/left, top/right WGS-84 positions
-      // given the coordinate system assigned to the project. If there is no coordinate system
-      // then this is where we exit
+      // given the projet's coordinate system. If there is no coordinate system then exit.
+
+      ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
       LLHCoords = new[]
       {
-        new XYZ(BLPoint.X, BLPoint.Y), // BL
-        new XYZ(TRPoint.X, TRPoint.Y), // TR
-        new XYZ(BLPoint.X, TRPoint.Y), // TL
-        new XYZ(TRPoint.X, BLPoint.Y) // BR
+        new XYZ(BLPoint.X, BLPoint.Y),
+        new XYZ(TRPoint.X, TRPoint.Y),
+        new XYZ(BLPoint.X, TRPoint.Y),
+        new XYZ(TRPoint.X, BLPoint.Y)
       };
 
       if (CoordsAreGrid)
+      {
         NEECoords = LLHCoords;
+      }
       else
       {
-        /* TODO: RequestCoordinateConversion
-        CoordConversionResult = ASNodeImplInstance.CoordService.RequestCoordinateConversion(RequestDescriptor, DataModelID, cctLLHtoNEE, LLHCoords, EmptyStr, NEECoords);
-        if (CoordConversionResult != csOK)
+        var conversionResult = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
+
+        if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
-            ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
-            return;
+          Log.LogInformation("Summary volume failure, could not convert bounding area from WGS to grid coordinates");
+          ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
+
+          return null;
         }
-        */
+
+        NEECoords = conversionResult.NEECoordinates;
       }
 
       WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
@@ -475,7 +480,6 @@ namespace VSS.TRex.Rendering.Executors
       PlanViewTileRenderer Renderer = new PlanViewTileRenderer();
       try
       {
-        ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
         if (SiteModel == null)
           return null;
 
