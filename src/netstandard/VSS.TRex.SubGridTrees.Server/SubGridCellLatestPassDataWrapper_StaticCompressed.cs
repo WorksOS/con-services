@@ -86,12 +86,12 @@ namespace VSS.TRex.SubGridTrees.Server
             public void CalculateTotalOffsetBits(out int NumBitsPerCellPass)
             {
                 Time.OffsetBits = 0;
-                Height.OffsetBits = (byte)(Time.OffsetBits + Time.RequiredBits);
-                CCV.OffsetBits = (byte)(Height.OffsetBits + Height.RequiredBits);
-                RMV.OffsetBits = (byte)(CCV.OffsetBits + CCV.RequiredBits);
-                MDP.OffsetBits = (byte)(RMV.OffsetBits + RMV.RequiredBits);
-                MaterialTemperature.OffsetBits = (byte)(MDP.OffsetBits + MDP.RequiredBits);
-                CCA.OffsetBits = (byte)(MaterialTemperature.OffsetBits + MaterialTemperature.RequiredBits);
+                Height.OffsetBits = (ushort)(Time.OffsetBits + Time.RequiredBits);
+                CCV.OffsetBits = (ushort)(Height.OffsetBits + Height.RequiredBits);
+                RMV.OffsetBits = (ushort)(CCV.OffsetBits + CCV.RequiredBits);
+                MDP.OffsetBits = (ushort)(RMV.OffsetBits + RMV.RequiredBits);
+                MaterialTemperature.OffsetBits = (ushort)(MDP.OffsetBits + MDP.RequiredBits);
+                CCA.OffsetBits = (ushort)(MaterialTemperature.OffsetBits + MaterialTemperature.RequiredBits);
 
                 // Calculate the total number of bits required and pass back
                 NumBitsPerCellPass = CCA.OffsetBits + CCA.RequiredBits;
@@ -170,9 +170,9 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Create the bit field arrays to contain the segment call pass index & count plus passes.
             // Copy the call passes themselves into BF
-            BitFieldArrayRecordsDescriptor[] recordDescriptors = new BitFieldArrayRecordsDescriptor[]
+            BitFieldArrayRecordsDescriptor[] recordDescriptors = 
             {
-                new BitFieldArrayRecordsDescriptor()
+                new BitFieldArrayRecordsDescriptor
                 {
                     NumRecords = SubGridTreeConsts.SubGridTreeCellsPerSubgrid,
                     BitsPerRecord = NumBitsPerCellPass
