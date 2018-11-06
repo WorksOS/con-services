@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.Caching
       {
         var context = cache.LocateOrCreateContext($"fingerprint:{i}");
 
-        Assert.True(cache.ContextCount() == i + 1, $"Context count not {i + 1} as expect, it is {cache.ContextCount()} instead");
+        Assert.True(cache.ContextCount == i + 1, $"Context count not {i + 1} as expect, it is {cache.ContextCount} instead");
         Assert.True(context != null, "Failed to create new context");
         Assert.True(context.ContextTokens != null, "Context does not have tokens storage");
         Assert.True(context.MRUList != null, "Context does not have MRU list reference");

@@ -20,7 +20,7 @@ namespace VSS.TRex.Caching
     private readonly Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts;
 
     // ReSharper disable once InconsistentlySynchronizedField
-    public int ContextCount() => Contexts.Count;
+    public int ContextCount => Contexts.Count;
 
     public int MaxNumElements { get; }
 
