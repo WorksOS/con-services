@@ -1,8 +1,7 @@
 ﻿using System;
-using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.TRex.Caching
+namespace VSS.TRex.Caching.Interfaces
 {
   public interface ITRexSpatialMemoryCacheContext
   {

@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Caching
+﻿namespace VSS.TRex.Caching.Interfaces
 {
   /// <summary>
   /// Defines the responsibilities of any element wishing to be referenced by the TRex MRU memory cache. TRex caching is implemented via a

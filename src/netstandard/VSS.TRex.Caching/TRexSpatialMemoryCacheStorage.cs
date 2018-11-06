@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.Caching.Interfaces;
+﻿using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {
@@ -8,7 +7,7 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheStorage<T> : ITRexSpatialMemoryCacheStorage<T> where T : ITRexMemoryCacheItem
   {
-    private TRexCacheItem<T>[] Items;
+    private readonly TRexCacheItem<T>[] Items;
 
     public int MRUHead { get; private set; }
     private int FreeListHead;
@@ -16,11 +15,10 @@ namespace VSS.TRex.Caching
     private long CurrentToken = -1;
     private long NextToken() => System.Threading.Interlocked.Increment(ref CurrentToken);
 
+    private readonly int MaxMRUEpochTokenAge;
+
     private int tokenCount;
-
-    private int MaxMRUEpochTokenAge;
-
-    public int TokenCount { get => tokenCount; }
+    public int TokenCount => tokenCount;
 
     public bool HasFreeSpace() => FreeListHead != -1;
 
@@ -139,7 +137,7 @@ namespace VSS.TRex.Caching
     /// Removes an item from storage given its index
     /// </summary>
     /// <param name="index"></param>
-    public void RemoveNoLock(int index)
+    private void RemoveNoLock(int index)
     {
         Items[index].GetPrevAndNext(out int prev, out int next);
 
@@ -210,32 +208,6 @@ namespace VSS.TRex.Caching
           cacheItem.RemoveFromContext();
           return default(T);
         }
-
-        if (CurrentToken - Items[index].MRUEpochToken > MaxMRUEpochTokenAge)
-        {
-          TouchItemNoLock(index);
-
-          // Advance the current token so all elements 'age' by one
-          NextToken();
-        }
-
-        return cacheItem.Item;
-      }
-    }
-
-    /// <summary>
-    /// Retrieves the cached item from the specified index in the MRU list.
-    /// If the item is expired the boolean expired out parameter will be set to true
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="expired"></param>
-    /// <returns></returns>
-    public T Get(int index, out bool expired)
-    {
-      lock (this)
-      {
-        var cacheItem = Items[index];
-        expired = cacheItem.Expired;
 
         if (CurrentToken - Items[index].MRUEpochToken > MaxMRUEpochTokenAge)
         {

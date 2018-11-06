@@ -11,16 +11,16 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
-    public ITRexSpatialMemoryCache OwnerMemoryCache { get; private set; }
+    public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
-    public IGenericSubGridTree_Int ContextTokens { get; private set; }
+    public IGenericSubGridTree_Int ContextTokens { get; }
 
-    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
+    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
 
     private int tokenCount;
-    public int TokenCount { get => tokenCount; }
+    public int TokenCount => tokenCount;
 
-    public TimeSpan CacheDurationTime { get; private set; }
+    public TimeSpan CacheDurationTime { get; }
 
     /// <summary>
     /// The default cache expiry time period for new contexts
@@ -109,20 +109,6 @@ namespace VSS.TRex.Caching
           return null;
 
         return MRUList.Get(index - 1);
-
-/*        // Note: Adjust for the 1-based index obtained from ContextTokens
-        var cacheItem = MRUList.Get(index - 1, out bool expired);
-
-        if (expired)
-        {
-          RemoveFromContextTokensOnly(cacheItem);
-
-          // Note: Adjust for the 1-based index obtained from ContextTokens
-          MRUList.Remove(index - 1);
-          return null;
-        }
-
-        return cacheItem;*/
       }
     }
 

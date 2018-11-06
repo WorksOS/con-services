@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {

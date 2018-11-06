@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Caching;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -11,14 +12,14 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheStorageTests_AddOneElement()
     {
-        var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
+        ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
         var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
 
         storage.Add(new TRexSpatialMemoryCacheContextTests_Element
         {
           SizeInBytes = 0,
-          CacheOriginX = (uint)(2000),
-          CacheOriginY = (uint)(3000)
+          CacheOriginX = 2000,
+          CacheOriginY = 3000
         }, dummyCache);
 
       Assert.True(storage.HasFreeSpace(), "Storage has no free space when filled with only one element");
@@ -90,8 +91,8 @@ namespace VSS.TRex.Tests.Caching
       var item = new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = 0,
-        CacheOriginX = (uint) (2000),
-        CacheOriginY = (uint) (3000)
+        CacheOriginX = 2000,
+        CacheOriginY = 3000
       };
 
       var index = storage.Add(item, dummyCache);
@@ -100,7 +101,7 @@ namespace VSS.TRex.Tests.Caching
 
       var getItem = storage.Get(index);
 
-      Assert.True(ReferenceEquals(item, getItem), $"Item retrieved from storage not same as item placed in storage");
+      Assert.True(ReferenceEquals(item, getItem), "Item retrieved from storage not same as item placed in storage");
     }
 
     [Fact]
@@ -112,8 +113,8 @@ namespace VSS.TRex.Tests.Caching
       var index = storage.Add(new TRexSpatialMemoryCacheContextTests_Element
       {
         SizeInBytes = 0,
-        CacheOriginX = (uint)(2000),
-        CacheOriginY = (uint)(3000)
+        CacheOriginX = 2000,
+        CacheOriginY = 3000
       }, dummyCache);
 
       Assert.True(storage.TokenCount == 1, $"Element count incorrect (= {storage.TokenCount})");
@@ -221,7 +222,7 @@ namespace VSS.TRex.Tests.Caching
       {
         var item = storage.Get(i);
 
-        Assert.True(storage.MRUHead == currentMRUHead, $"MRUHead changed unexpectedly: storage.MRUHead = {storage.MRUHead}, currentMRUHead = {currentMRUHead}");
+        Assert.True(storage.MRUHead == currentMRUHead, $"MRUHead changed unexpectedly after getting item {item}: storage.MRUHead = {storage.MRUHead}, currentMRUHead = {currentMRUHead}");
       }
 
       // Fill remaining slots 
@@ -240,7 +241,7 @@ namespace VSS.TRex.Tests.Caching
       {
         var item = storage.Get(i);
 
-        Assert.True(storage.MRUHead == i, $"Referenced item not promoted to MRU head at index {i}, MRUHead = {storage.MRUHead}");
+        Assert.True(storage.MRUHead == i, $"Referenced item not promoted to MRU head after getting item {item} at index {i}, MRUHead = {storage.MRUHead}");
       }
     }
   }

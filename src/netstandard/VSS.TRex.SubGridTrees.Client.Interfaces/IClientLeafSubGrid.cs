@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Caching;
+﻿using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Interfaces;

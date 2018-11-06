@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Diagnostics;
 using VSS.TRex.Caching;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;

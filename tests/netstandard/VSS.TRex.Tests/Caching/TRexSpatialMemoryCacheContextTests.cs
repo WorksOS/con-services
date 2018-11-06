@@ -1,5 +1,5 @@
-﻿using System;
-using VSS.TRex.Caching;
+﻿using VSS.TRex.Caching;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using Xunit;
 

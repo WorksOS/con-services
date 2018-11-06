@@ -1,5 +1,5 @@
-﻿using System;
-using VSS.TRex.Caching;
+﻿using VSS.TRex.Caching;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -50,7 +50,6 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexCacheItem_GetPrevAndNext()
     {
-      object theObject = new Object();
       TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
       
       item.Set(null, null, 100, 1, 2);
