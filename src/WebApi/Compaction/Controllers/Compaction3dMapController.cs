@@ -359,6 +359,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var maxEasting = tins.Select(t => t.Header.MaximumEasting).Max();
       var minNorthing = tins.Select(t => t.Header.MinimumNorthing).Min();
       var maxNorthing = tins.Select(t => t.Header.MaximumNorthing).Max();
+      var centerEasting = (maxEasting + minEasting) / 2.0;
+      var centerNorthing = (maxNorthing + minNorthing) / 2.0;
       
       var points = new TWGS84FenceContainer
       {
@@ -366,6 +368,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         {
           TWGS84Point.Point(minEasting, minNorthing),
           TWGS84Point.Point(maxEasting, maxNorthing),
+          TWGS84Point.Point(centerEasting, centerNorthing),
         }
       };
       
@@ -383,6 +386,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var minLng = coordPointList.Points.Coords[0].X * radToDegrees;
       var maxLat = coordPointList.Points.Coords[1].Y * radToDegrees;
       var maxLng = coordPointList.Points.Coords[1].X * radToDegrees;
+      var centerLat = coordPointList.Points.Coords[2].Y * radToDegrees;
+      var centerLng = coordPointList.Points.Coords[2].X * radToDegrees;
       var bbox = $"{minLat},{minLng},{maxLat},{maxLng}"; 
 
       var outputStream = new MemoryStream();
@@ -400,7 +405,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var modelZipEntry = zipArchive.CreateEntry("model.obj");
         using (var stream = modelZipEntry.Open())
         {
-          var modelFileStream = ConvertMultipleToObj(tins, minEasting, minNorthing);
+          var modelFileStream = ConvertMultipleToObj(tins, centerEasting, centerNorthing);
           modelFileStream.FileStream.CopyTo(stream);
         }
 
@@ -419,6 +424,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             {
               Lat = maxLat,
               Lng = maxLng
+            },
+            Center = new
+            {
+              Lat = centerLat,
+              Lng = centerLng
             },
             HasDesign = design != null
           };
@@ -475,8 +485,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="eastingModifier"></param>
     /// <param name="northingModifier"></param>
     /// <returns></returns>
-    private FileStreamResult ConvertMultipleToObj(IList<TrimbleTINModel> tins, double eastingModifier,
-      double northingModifier)
+    private FileStreamResult ConvertMultipleToObj(IList<TrimbleTINModel> tins, double eastingOffset, double northingOffset)
     {
       // FileStreamResult will dispose of this once the response has been completed
       // See here: https://github.com/aspnet/Mvc/blob/25eb50120eceb62fd24ab5404210428fcdf0c400/src/Microsoft.AspNetCore.Mvc.Core/FileStreamResult.cs#L82
@@ -507,8 +516,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
           foreach (var vertex in tin.Vertices.Items)
           {
-            writer.WriteLine($"v {(float) (vertex.X - eastingModifier)} " +
-                             $"{(float) (vertex.Y - northingModifier)} " +
+            writer.WriteLine($"v {(float) (vertex.X - eastingOffset)} " +
+                             $"{(float) (vertex.Y - northingOffset)} " +
                              $"{(float) (vertex.Z - zModifier)}");
           }
 
