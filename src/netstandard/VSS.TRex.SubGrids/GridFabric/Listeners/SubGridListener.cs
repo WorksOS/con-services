@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <summary>
     /// SubGridListener implements a listening post for subgrid results being sent by processing nodes back
     /// to the local context for further processing when using a progressive style of subgrid requesting. 
-    /// Subgrids are sent in groups as serialised streams held in memory streams to minimise serialization/deserialisation overhead
+    /// Subgrids are sent in groups as serialized streams held in memory streams to minimize serialization/deserialization overhead
     /// </summary>
     public class SubGridListener : IMessageListener<byte[]>
     {
@@ -41,7 +41,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
         public ITask Task;
 
         /// <summary>
-        /// The memory stream to be used for deserialising message packets when they arrive
+        /// The memory stream to be used for deserializing message packets when they arrive
         /// </summary>
         [NonSerialized]
         [ThreadStatic]
@@ -84,14 +84,23 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
                         for (int j = 0; j < subgridCount; j++)
                         {
                             clientGrids[i][j] = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
-                            clientGrids[i][j].Read(reader, buffer);
+
+                            // Check if the returned subgrid is null
+                            if (reader.ReadBoolean()) 
+                            {
+                              clientGrids[i][j].Read(reader, buffer);
+                            }
+                            else
+                            {
+                              Log.LogWarning($"Subgrid at position [{i},{j}] in subgrid response array is null");
+                            }
                         }
 
                         int thisResponseCount = ++responseCounter;
 
                         // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
 
-                        // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
+                        // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialized into the task
                         // (no assumption of thread safety within the task itself)
                         try
                         {

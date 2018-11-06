@@ -232,7 +232,7 @@ namespace VSS.TRex.SubGrids
             // it's contents according the client grid mask into the client grid and return it
             if (CachedSubgrid != null)
             {
-                Log.LogInformation($"Acquired subgrid {CachedSubgrid.Moniker()} for client subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} from result cache");
+                // Log.LogInformation($"Acquired subgrid {CachedSubgrid.Moniker()} for client subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} from result cache");
            
                 // Compute the matching filter mask that the full processing would have computed
                 if (SubGridFilterMasks.ConstructSubgridCellFilterMask(ClientGrid, SiteModel, Filter,
@@ -263,17 +263,17 @@ namespace VSS.TRex.SubGrids
                     // Don't add subgrids computed using a non-trivial WMS sieve to the general subgrid cache
                     if (AreaControlSet.PixelXWorldSize == 0 && AreaControlSet.PixelYWorldSize == 0)
                     {
-                        Log.LogInformation($"Adding subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} to result cache");
+                        //Log.LogInformation($"Adding subgrid {ClientGrid.Moniker()} in data model {SiteModel.ID} to result cache");
 
                         // Add the newly computed client subgrid to the cache by creating a clone of the client and adding it...
-                        IClientLeafSubGrid ClientGrid2 = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(ClientGrid.GridDataType, SurveyedSurfaceDataRequested));
-                        ClientGrid2.Assign(ClientGrid);
-                        ClientGrid2.AssignFromCachedPreProcessedClientSubgrid(ClientGrid);
+                        IClientLeafSubGrid clientGrid2 = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(ClientGrid.GridDataType, SurveyedSurfaceDataRequested));
+                        clientGrid2.Assign(ClientGrid);
+                        clientGrid2.AssignFromCachedPreProcessedClientSubgrid(ClientGrid);
 
-                        if (!SubGridCache.Add(SubGridCacheContext, ClientGrid2))
+                        if (!SubGridCache.Add(SubGridCacheContext, clientGrid2))
                         {
-                            Log.LogWarning($"Failed to add subgrid {ClientGrid2.Moniker()}, data model {SiteModel.ID} to subgrid result cache, returning subgrid to factory as not added to cache");
-                            ClientLeafSubGridFactory.ReturnClientSubGrid(ref ClientGrid2);
+                            Log.LogWarning($"Failed to add subgrid {clientGrid2.Moniker()}, data model {SiteModel.ID} to subgrid result cache, returning subgrid to factory as not added to cache");
+                            ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientGrid2);
                         }
                     }
                 }
