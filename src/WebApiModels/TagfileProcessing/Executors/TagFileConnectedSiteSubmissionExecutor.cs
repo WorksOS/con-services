@@ -10,6 +10,8 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {
   public class TagFileConnectedSiteSubmissionExecutor : RequestExecutorContainer
   {
+    public const string DISABLED_MESSAGE = "Connected Site Disabled";
+    public const string DEFAULT_ERROR_MESSAGE = "Unknown exception.";
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionTagFileRequest;
@@ -18,13 +20,13 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         ThrowRequestTypeCastException<CompactionTagFileRequest>();
 
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully,
-        "Connected Site Disabled");
+        DISABLED_MESSAGE);
       //Send the tagfile to the connected site gateway if enabled first, no project/subscription validation is required.
       bool.TryParse(configStore.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY"), out var enableConnectedSiteGateway);
       if (enableConnectedSiteGateway)
       {
         result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "3dPm Unknown exception.");
+        DEFAULT_ERROR_MESSAGE);
         try
         {
           log.LogDebug("Sending tag file to connected site gateway");

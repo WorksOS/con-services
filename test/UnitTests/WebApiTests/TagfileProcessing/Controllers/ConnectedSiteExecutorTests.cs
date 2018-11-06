@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +10,6 @@ using Moq;
 using ShineOn.Rtl;
 using TAGProcServiceDecls;
 using VLPDDecls;
-using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -19,9 +17,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
@@ -34,6 +30,19 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     private static IServiceProvider _serviceProvider;
     private static ILoggerFactory _logger;
     private static Dictionary<string, string> _customHeaders;
+
+    private static CompactionTagFileRequestExtended request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
+    (
+      new CompactionTagFileRequest()
+      {
+        ProjectId = 554,
+        ProjectUid = Guid.NewGuid(),
+        FileName = "Machine Name--whatever --161230235959",
+        Data = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 },
+        OrgId = string.Empty
+      },
+      new WGS84Fence(null)
+    );
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -57,23 +66,6 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     [TestMethod]
     public async Task NonDirectTagFileSubmitter_ConnectedSite_Switch()
     {
-      var projectUid = Guid.NewGuid();
-      var resolvedLegacyProjectId = 544;
-      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
-      var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
-      (
-        new CompactionTagFileRequest()
-        {
-          ProjectId = resolvedLegacyProjectId,
-          ProjectUid = projectUid,
-          FileName = "Machine Name--whatever --161230235959",
-          Data = tagFileContent,
-          OrgId = string.Empty
-        },
-        CreateAFence()
-      );
-
-      // create the mock PDSClient with successful result
       var mockTagProcessor = new Mock<ITagProcessor>();
       var mockRaptorClient = new Mock<IASNodeClient>();
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient()
@@ -97,7 +89,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
 
       result.Should().NotBeNull();
-      result.Message.Should().Be("Connected Site Disabled");
+      result.Message.Should().Be(TagFileConnectedSiteSubmissionExecutor.DISABLED_MESSAGE);
       mockTRexTagFileProxy.Verify(s => s.SendTagFileNonDirectToConnectedSite(
         It.IsAny<CompactionTagFileRequestExtended>(), It.IsAny<IDictionary<string, string>>()), Times.Never());
     }
@@ -106,23 +98,6 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     [TestMethod]
     public async Task NonDirectTagFileSubmitter_ConnectedSite_Fail()
     {
-      var projectUid = Guid.NewGuid();
-      var resolvedLegacyProjectId = 544;
-      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
-      var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
-      (
-        new CompactionTagFileRequest()
-        {
-          ProjectId = resolvedLegacyProjectId,
-          ProjectUid = projectUid,
-          FileName = "Machine Name--whatever --161230235959",
-          Data = tagFileContent,
-          OrgId = string.Empty
-        },
-        CreateAFence()
-      );
-
-      // create the mock PDSClient with successful result
       var mockTagProcessor = new Mock<ITagProcessor>();
       var mockRaptorClient = new Mock<IASNodeClient>();
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient()
@@ -137,7 +112,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY")).Returns("true");
       var connectedSiteResult =
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "3dPm Unknown exception.");
+        TagFileConnectedSiteSubmissionExecutor.DEFAULT_ERROR_MESSAGE);
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
 
       mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IDictionary<string, string>>()))
@@ -150,7 +125,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var result = await submitter.ProcessAsync(request).ConfigureAwait(false);
 
       result.Should().NotBeNull();
-      result.Message.Should().Be("3dPm Unknown exception.");
+      result.Message.Should().Be(TagFileConnectedSiteSubmissionExecutor.DEFAULT_ERROR_MESSAGE);
 
       mockTRexTagFileProxy.Verify(s => s.SendTagFileNonDirectToConnectedSite(
         request, new Dictionary<string, string>()), Times.Once());
@@ -160,23 +135,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     [TestMethod]
     public async Task NonDirectTagFileSubmitter_ConnectedSite_Successful()
     {
-      var projectUid = Guid.NewGuid();
-      var resolvedLegacyProjectId = 544;
-      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
-      var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
-      (
-        new CompactionTagFileRequest()
-        {
-          ProjectId = resolvedLegacyProjectId,
-          ProjectUid = projectUid,
-          FileName = "Machine Name--whatever --161230235959",
-          Data = tagFileContent,
-          OrgId = string.Empty
-        },
-        CreateAFence()
-      );
 
-      // create the mock PDSClient with successful result
       var mockTagProcessor = new Mock<ITagProcessor>();
       var mockRaptorClient = new Mock<IASNodeClient>();
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient()
@@ -186,7 +145,6 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
             It.IsAny<long>(), It.IsAny<TWGS84FenceContainer>(), It.IsAny<string>()))
         .Returns(TTAGProcServerProcessResult.tpsprOK);
 
-      // create the Trex mocks with successful result
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_CONNECTED_SITE_GATEWAY")).Returns("true");
       var trexGatewayResult =
@@ -205,19 +163,6 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       result.Message.Should().Be(ContractExecutionResult.DefaultMessage);
       mockTRexTagFileProxy.Verify(s => s.SendTagFileNonDirectToConnectedSite(
         request, It.IsAny<IDictionary<string, string>>()), Times.Once());
-    }
-
-    private WGS84Fence CreateAFence()
-    {
-      var points = new List<WGSPoint3D>
-      {
-        new WGSPoint3D(0.631986074660308, -2.00757760231466),
-        new WGSPoint3D(0.631907507374149, -2.00758733949739),
-        new WGSPoint3D(0.631904485465203, -2.00744352879854),
-        new WGSPoint3D(0.631987283352491, -2.00743753668608)
-      };
-
-      return new WGS84Fence(points.ToArray());
     }
   }
 }
