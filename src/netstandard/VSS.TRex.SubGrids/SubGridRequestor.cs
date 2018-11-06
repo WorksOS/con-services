@@ -35,36 +35,36 @@ namespace VSS.TRex.SubGrids
         private IClientLeafSubgridFactory ClientLeafSubGridFactory
            => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
-        private SubGridRetriever retriever;
-        private ISiteModel SiteModel;
-        private ICombinedFilter Filter;
-        private SurfaceElevationPatchRequest surfaceElevationPatchRequest;
-        private byte TreeLevel;
-        private bool HasOverrideSpatialCellRestriction;
-        private BoundingIntegerExtent2D OverrideSpatialCellRestriction;
+        private readonly SubGridRetriever retriever;
+        private readonly ISiteModel SiteModel;
+        private readonly ICombinedFilter Filter;
+        private readonly SurfaceElevationPatchRequest surfaceElevationPatchRequest;
+        private readonly byte TreeLevel;
+        private readonly bool HasOverrideSpatialCellRestriction;
+        private readonly BoundingIntegerExtent2D OverrideSpatialCellRestriction;
         private int MaxNumberOfPassesToReturn;
         private bool ProdDataRequested;
         private bool SurveyedSurfaceDataRequested;
         private IClientLeafSubGrid ClientGrid;
-        private SurfaceElevationPatchArgument SurfaceElevationPatchArg;
+        private readonly SurfaceElevationPatchArgument SurfaceElevationPatchArg;
         private uint CellX;
         private uint CellY;
-        public SubGridTreeBitmapSubGridBits CellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        public AreaControlSet AreaControlSet;
+        public readonly SubGridTreeBitmapSubGridBits CellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        private readonly AreaControlSet AreaControlSet;
 
         // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
-        private SubGridTreeBitmapSubGridBits ProcessingMap;
+        private readonly SubGridTreeBitmapSubGridBits ProcessingMap;
 
-        private ISurveyedSurfaces FilteredSurveyedSurfaces;
-        private Guid[] FilteredSurveyedSurfacesAsArray;
+        private readonly ISurveyedSurfaces FilteredSurveyedSurfaces;
+        private readonly Guid[] FilteredSurveyedSurfacesAsArray;
 
-        private bool ReturnEarliestFilteredCellPass;
+        private readonly bool ReturnEarliestFilteredCellPass;
 
-        private ITRexSpatialMemoryCache SubGridCache;
-        private ITRexSpatialMemoryCacheContext SubGridCacheContext;
+        private readonly ITRexSpatialMemoryCache SubGridCache;
+        private readonly ITRexSpatialMemoryCacheContext SubGridCacheContext;
 
-        private IDesign ElevationRangeDesign;
-        private IDesign SurfaceDesignMaskDesign;
+        private readonly IDesign ElevationRangeDesign;
+        private readonly IDesign SurfaceDesignMaskDesign;
 
         private IClientHeightLeafSubGrid DesignElevations;
         private IClientHeightLeafSubGrid SurfaceDesignMaskElevations;
@@ -100,7 +100,7 @@ namespace VSS.TRex.SubGrids
                                              filter,
                                              hasOverrideSpatialCellRestriction,
                                              overrideSpatialCellRestriction,
-                                             false, // todo Assigned(SubgridCache), //ClientGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid
+                                             subGridCacheContext != null,
                                              treeLevel,
                                              maxNumberOfPassesToReturn,
                                              areaControlSet,
