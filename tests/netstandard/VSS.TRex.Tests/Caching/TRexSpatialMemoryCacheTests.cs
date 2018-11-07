@@ -2,6 +2,7 @@
 using System.Linq;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -131,12 +132,12 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(2)]
     [InlineData(10)]
     [InlineData(1000)]
-    [InlineData(100000)]
+    [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_AddAndRetrieveItem_ManyContexts(int numContexts)
     {
       const uint _originX = 123;
       const uint _originY = 456;
-      const int _size = 1000;
+      const int _size = 10;
 
       // Create the cache with enough elements to hold one per context without eviction
       ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 1000000, 0.5);
@@ -455,23 +456,58 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_ProductionDataIngestInvalidation()
     {
-      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
-       
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(20000, 1000000, 0.5);
+
       // Create a context with default invalidation sensitivity, add some data to it
       // and validate that a change bitmask causes appropriate invalidation
       var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
-      var item = new TRexSpatialMemoryCacheContextTests_Element
+
+      TRexSpatialMemoryCacheContextTests_Element[,] items = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+      for (int i = 0; i < 100; i++)
       {
-        CacheOriginX = 1000,
-        CacheOriginY = 1000,
-        SizeInBytes = 1000
-      };
+        for (int j = 0; j < 100; j++)
+        {
+          items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+          {
+            CacheOriginX = (uint) (i * SubGridTreeConsts.SubGridTreeDimension),
+            CacheOriginY = (uint) (j * SubGridTreeConsts.SubGridTreeDimension),
+            SizeInBytes = 1
+          };
 
-      cache.Add(context, item);
-      Assert.True(context.TokenCount == 1, "Token count incorrect after addition");
+          cache.Add(context, items[i, j]);
+        }
+      }
 
-      cache.Remove(context, item);
-      Assert.True(context.TokenCount == 0, "Token count incorrect after removal");
+      Assert.True(context.TokenCount == 10000, "Token count incorrect after addition");
+
+      // Create the bitmask
+      ISubGridTreeBitMask mask = new SubGridTreeBitMask(5, 1);
+
+      for (int i = 0; i < 100; i++)
+      {
+        for (int j = 0; j < 100; j++)
+          cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element
+          {
+            CacheOriginX = (uint)(i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
+            CacheOriginY = (uint)(j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
+            SizeInBytes = 1
+          });
+      }
+
+      cache.InvalidateDueToProductionDataIngest(Guid.Empty, mask);
+
+      int count = 10000;
+      // Remove the items
+      for (int i = 0; i < 100; i++)
+      {
+        for (int j = 0; j < 100; j++)
+        {
+          cache.Remove(context, items[i, j]);
+          Assert.True(context.TokenCount == --count, $"Count incorrect at index {i}, {j}, count = {count}, tokenCount = {context.TokenCount}");
+        }
+      }
+
+      Assert.True(context.TokenCount == 0, "Token count incorrect after invalidation");
     }
   }
 }
