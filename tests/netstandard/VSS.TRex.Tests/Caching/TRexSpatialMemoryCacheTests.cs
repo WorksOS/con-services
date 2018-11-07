@@ -481,7 +481,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(context.TokenCount == 10000, "Token count incorrect after addition");
 
       // Create the bitmask
-      ISubGridTreeBitMask mask = new SubGridTreeBitMask(5, 1);
+      ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
 
       for (int i = 0; i < 100; i++)
       {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -12,6 +12,8 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache
   {
+    private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
+
     private const int MAX_NUM_ELEMENTS = 1000000000;
 
     /// <summary>
@@ -215,6 +217,12 @@ namespace VSS.TRex.Caching
         projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
       }
 
+      if (projectContexts.Count == 0)
+        return;
+
+      int numInvalidatedSubgrids = 0;
+      DateTime startTIme = DateTime.Now;
+
       // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
       // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
       // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
@@ -234,8 +242,11 @@ namespace VSS.TRex.Caching
           // 1. Locate the cache entry
           // 2. Mark it as dirty
           mask.ScanAllSetBitsAsSubGridAddresses(origin => context.InvalidateSubgridNoLock(origin.X, origin.Y));
+          numInvalidatedSubgrids++;
         }
       }
+
+      log.LogInformation($"Invalidated {numInvalidatedSubgrids} from {projectContexts.Count} contexts in {DateTime.Now - startTIme}");
     }
   }
 }

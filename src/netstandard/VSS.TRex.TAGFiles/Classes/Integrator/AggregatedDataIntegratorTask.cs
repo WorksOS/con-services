@@ -2,7 +2,6 @@
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Integrator
@@ -29,31 +28,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         public IServerSubGridTree AggregatedCellPasses { get; set; }
         public IProductionEventLists AggregatedMachineEvents { get; set; }
-        public ISubGridTreeBitMask AggregateModifiedSubgrids { get; set; }
-
-        //      Finalizer : TAggregationTaskFinalizer;
 
         public int AggregatedCellPassCount { get; set; } 
 
         public DateTime StartProcessingTime { get; set; } = DateTime.MinValue;
-
-        // OnAdditionToFinalizationQueue destroys the aspects of the integration task
-        // that are no longer required once it has been entered into the finalization queue.
-        // This reduces memory stress while it is waiting for the embargo period to wind down.
-        public void OnAdditionToFinalizationQueue()
-        {
-            AggregatedCellPasses = null;
-            AggregatedMachineEvents = null;
-            TargetMachine = null;
-            TargetSiteModel = null;
-        }
-
-        public void SetAggregateModifiedSubgrids(ref ISubGridTreeBitMask AAggregateModifiedSubgrids)
-        {
-            AggregateModifiedSubgrids = AAggregateModifiedSubgrids;
-
-            // Take ownership of the modified subgrids information
-            AAggregateModifiedSubgrids = null;
-        }
     }
 }
