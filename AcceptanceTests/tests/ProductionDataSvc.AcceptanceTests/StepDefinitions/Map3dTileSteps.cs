@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
-using RaptorSvcAcceptTestsCommon.Utils;
-using TechTalk.SpecFlow;
+using ProductionDataSvc.AcceptanceTests.Utils;
+using Xunit;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  [Binding, Scope(Feature = "Map3dTile")]
-  public class Map3dTileSteps
+  [FeatureFile("Map3dTile.featurer")]
+  public class Map3dTileSteps : Feature
   {
     private string _url;
     private Getter<TileResult> _tileRequester;
@@ -20,7 +17,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the Map3d service URI ""(.*)""")]
     public void GivenTheCompactionServiceURI(string url)
     {
-      this._url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      this._url = RestClient.CompactionSvcBaseUri + url;
     }
 
     [Given(@"the result file ""(.*)""")]
@@ -60,8 +57,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       _tileRequester.QueryString.Add("height", height.ToString());
     }
 
-    [Then(@"the result should be server errror - not implemented")]
-
     [Then(@"the result tile should match the ""(.*)"" from the repository within ""(.*)"" percent")]
     public void ThenTheResultTileShouldMatchTheFromTheRepositoryWithin(string resultName, string difference = "0")
     {
@@ -70,28 +65,28 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var expectedTileData = _tileRequester.ResponseRepo[resultName].TileData;
       var actualTileData = _tileRequester.CurrentResponse.TileData;
 
-      var expFileName = "Expected_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
-      var actFileName = "Actual_" + ScenarioContext.Current.ScenarioInfo.Title + resultName + ".jpg";
+      var expFileName = "Expected_" + resultName + ".jpg";
+      var actFileName = "Actual_" + resultName + ".jpg";
 
-      var diff = Common.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      var diff = ImageUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
 
       Console.WriteLine("Actual Difference % = " + diff * 100);
       Console.WriteLine("Actual filename = " + actFileName);
       Console.WriteLine(_tileRequester.CurrentResponse);
 
-      Assert.IsTrue(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
+      Assert.True(Math.Abs(diff) < imageDifference, "Actual Difference:" + diff * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }
 
     [Then(@"I request something that is not completed the response HTTP code should be ""(.*)""")]
     public void WhileIRequestNotImplemented(int statusCode)
     {
-      _tileRequester.DoInvalidRequest(_url, (HttpStatusCode)statusCode);
+      _tileRequester.SendRequest(_url, statusCode);
     }
 
     [When(@"I request result")]
     public void WhenIRequestResult()
     {
-      _tileRequester.DoValidRequest(_url);
+      _tileRequester.SendRequest(_url);
     }
   }
 }

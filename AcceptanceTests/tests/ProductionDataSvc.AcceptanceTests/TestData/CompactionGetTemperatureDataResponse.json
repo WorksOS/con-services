@@ -1,9 +1,9 @@
 {
   "NoDesignFilter_Summary": {
     "temperatureSummaryData": {
-      "percentEqualsTarget": 0,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 100,
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
       "totalAreaCoveredSqMeters": 953.93120000000022,
       "temperatureTarget": {
         "minTemperatureMachineTarget": 90.0,
@@ -36,13 +36,13 @@
   },
   "DesignIntersects_Summary": {
     "temperatureSummaryData": {
-      "percentEqualsTarget": 0,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 100,
-      "totalAreaCoveredSqMeters": 72.9436,
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 72.943600000000018,
       "temperatureTarget": {
-        "minTemperatureMachineTarget": 90,
-        "maxTemperatureMachineTarget": 143,
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
         "targetVaries": false
       }
     },

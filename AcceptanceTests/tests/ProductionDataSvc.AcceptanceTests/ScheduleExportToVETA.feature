@@ -1,14 +1,14 @@
 ﻿Feature: ScheduleExportToVETA
-I should be able to request scheduling production data export to VETA.
+  I should be able to request scheduling production data export to VETA.
 
-@Ignore
+@ignore
 Scenario Outline: ScheduleExportToVETA - Good Request - Schedule Job
-Given the Export Report To VETA service URI "/api/v2/export/veta" for operation "schedulejob" and the result file "ScheduleExportToVETAResponse.json"
-And projectUid "<ProjectUID>"
-And filterUid "<FilterUID>"
-And fileName "<FileName>"
-When I request a Schedule Export To VETA
-Then the result should match the "<ResultName>" from the repository
-Examples: 
-| RequestName | ProjectUID                           | FilterUID                            | FileName     | ResultName      |
-|             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | Test-success | SuccessSchedule |
+  Given the service route "/api/v2/export/veta" and result repo "ScheduleExportToVETAResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "filterUid" with value "<FilterUID>"
+  And with parameter "fileName" with value "<FileName>"
+  When I send the GET request I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | RequestName     | ProjectUID                           | FilterUID                            | FileName     | ResultName      | HttpCode |
+  | SuccessDownload | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | Test-success | SuccessSchedule | 200      |

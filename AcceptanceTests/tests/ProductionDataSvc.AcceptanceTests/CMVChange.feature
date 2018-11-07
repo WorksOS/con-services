@@ -1,25 +1,24 @@
 ﻿Feature: CMVChange
-	I should be able to request CMV change summary.
-
-Background: 
-	Given the CMV change summary service URI "/api/v1/cmvchange/summary", request repo "CMVChangeRequest.json" and result repo "CMVChangeResponse.json"
+  I should be able to request CMV change summary.
 
 Scenario Outline: CMVChange - Good Request
-	When I request CMV change summary supplying "<RequestName>" from the request repository
-	Then the result should match "<ResultName>" from the result repository
-	Examples:
-	| RequestName                     | ResultName                      |
-	| AllLayersNoFilterAtAll          | AllLayersNoFilterAtAll          |
-	| AllLayersExcludeSupersededLifts | AllLayersExcludeSupersededLifts |
-	| AllLayersIncludeSupersededLifts | AllLayersIncludeSupersededLifts |
-	| TopLayerIncludeSupersededLifts  | TopLayerIncludeSupersededLifts  |
-	| TopLayerNoFilterAtAll           | TopLayerNoFilterAtAll           |
-	| NoneLiftDetection               | NoneLiftDetection               |
-	| NoneLiftDetectionNoFilterAtAll  | NoneLiftDetectionNoFilterAtAll  |
+  Given the service route "/api/v1/cmvchange/summary" request repo "CMVChangeRequest.json" and result repo "CMVChangeResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples:
+  | ParameterName                   | ResultName                      | HttpCode |
+  | AllLayersNoFilterAtAll          | AllLayersNoFilterAtAll          | 200      |
+  | AllLayersExcludeSupersededLifts | AllLayersExcludeSupersededLifts | 200      |
+  | AllLayersIncludeSupersededLifts | AllLayersIncludeSupersededLifts | 200      |
+  | TopLayerIncludeSupersededLifts  | TopLayerIncludeSupersededLifts  | 200      |
+  | TopLayerNoFilterAtAll           | TopLayerNoFilterAtAll           | 200      |
+  | NoneLiftDetection               | NoneLiftDetection               | 200      |
+  | NoneLiftDetectionNoFilterAtAll  | NoneLiftDetectionNoFilterAtAll  | 200      |
 
 Scenario Outline: CMVChange - Bad Request
-	When I request CMV change summary supplying "<RequestName>" from the request repository expecting BadRequest
-	Then the reuslt should contain error code <ErrorCode> and error message "<ErrorMessage>"
-	Examples:
-	| RequestName             | ErrorCode | ErrorMessage                                         |
-	| DecendingBoundaryValues | -1        | CMVChangeSummaryValues should be in ascending order. |
+  Given the service route "/api/v1/cmvchange/summary" request repo "CMVChangeRequest.json" and result repo "CMVChangeResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain message "<ErrorMessage>" and code "<ErrorCode>"
+  Examples:
+  | ParameterName           | HttpCode | ErrorCode | ErrorMessage                                         |
+  | DecendingBoundaryValues | 400      | -1        | CMVChangeSummaryValues should be in ascending order. |

@@ -1,30 +1,31 @@
 ﻿Feature: CcaColorPalette
-	I should be able to request CcaColorPalette
+  I should be able to request CcaColorPalette
 
 Scenario: Get CCA color palette
-	When I request CCA color palette for machine 1 in project 1999999
-	Then the following color is returned
-	"""
-	{
-	  "palettes": [
-		{
-		  "Colour": 12632064,
-		  "Value": 1
-		},
-		{
-		  "Colour": 16711680,
-		  "Value": 2
-		},
-		{
-		  "Colour": 65535,
-		  "Value": 3
-		},
-		{
-		  "Colour": 32768,
-		  "Value": 4
-		}
-	  ],
-	  "Code": 0,
-	  "Message": "success"
-	}
-	"""
+  Given only the service route "/api/v1/ccacolors?projectId=1999999&assetId=1"
+  When I send the GET request I expect response code 200
+  Then the response should be:
+  """
+  {
+    "palettes": [
+    {
+      "colour": 12632064,
+      "value": 1.0
+    },
+    {
+      "colour": 16711680,
+      "value": 2.0
+    },
+    {
+      "colour": 65535,
+      "value": 3.0
+    },
+    {
+      "colour": 32768,
+      "value": 4.0
+    }
+    ],
+    "Code": 0,
+    "Message": "success"
+  }
+  """

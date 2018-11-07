@@ -1,16 +1,14 @@
 ﻿Feature: ExportReportToVETA
-I should be able to request production data export report for import to VETA.
-
-Background: 
-  Given the Export Report To VETA service URI "/api/v2/export/veta" and the result file "ExportReportToVETAResponse.json"
+  I should be able to request production data export report for import to VETA.
 
 Scenario Outline: ExportReportToVETA - Good Request
-  And projectUid "<ProjectUID>"
-  And filterUid "<FilterUID>"
-  And machineNames "<MachineNames>"
-  And fileName is "<FileName>"
-  And coordType is "<CoordType>"
-  When I request an Export Report To VETA
+  Given the service route "/api/v2/export/veta" and result repo "ExportReportToVETAResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "filterUid" with value "<FilterUID>"
+  And with parameter "machineNames" with value "<MachineNames>"
+  And with parameter "fileName" with value "<FileName>"
+  And with parameter "coordType" with value "<CoordType>"
+  When I send a GET request with Accept header "application/zip" I expect response code 200
   Then the report result csv should match the "<ResultName>" from the repository
 Examples: 
   | RequestName            | ProjectUID                           | FilterUID                            | MachineNames                                                                                         | FileName | CoordType | ResultName                    |
@@ -19,11 +17,12 @@ Examples:
   | All Machines LatLon    | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All                                                                                                  | Test     | 1         | AllMachinesLongDatesLatLon    |
 
 Scenario Outline: ExportReportToVETA - Good Request - No Machines
-  And projectUid "<ProjectUID>"
-  And filterUid "<FilterUID>"
-  And fileName is "<FileName>"
-  And coordType is "<CoordType>"
-  When I request an Export Report To VETA
+  Given the service route "/api/v2/export/veta" and result repo "ExportReportToVETAResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "filterUid" with value "<FilterUID>"
+  And with parameter "fileName" with value "<FileName>"
+  And with parameter "coordType" with value "<CoordType>"
+  When I send a GET request with Accept header "application/zip" I expect response code 200
   Then the report result csv should match the "<ResultName>" from the repository
 Examples: 
   | RequestName | ProjectUID                           | FilterUID                            | FileName | CoordType | ResultName                   |
@@ -31,21 +30,23 @@ Examples:
   | LatLon      | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | Test     | 1         | NoMachinesLongDatesLatLon    |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoProjectUID
-  And filterUid "<FilterUID>"
-  And machineNames "<MachineNames>"
-  And fileName is "<FileName>"
-  When I request an Export Report To VETA expecting BadRequest
-  Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+  Given the service route "/api/v2/export/veta" and result repo "ExportReportToVETAResponse.json"
+  And with parameter "filterUid" with value "<FilterUID>"
+  And with parameter "machineNames" with value "<MachineNames>"
+  And with parameter "fileName" with value "<FileName>"
+  When I send the GET request I expect response code 400
+  Then the response should contain message "<ErrorMessage>" and code "<ErrorCode>"
 Examples:
-  | RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage                                 |
-  |             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     | -1        | ProjectId and ProjectUID cannot both be null |
+  | RequestName | FilterUID                            | MachineNames | FileName | ErrorCode | ErrorMessage                                  |
+  |             | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | Test     | -1        | ProjectId and ProjectUID cannot both be null. |
 
 Scenario Outline: ExportReportToVETA - Good Request - NoDateRange
-  And projectUid "<ProjectUID>"
-  And machineNames "<MachineNames>"
-  And fileName is "<FileName>"
-  And coordType is "<CoordType>"
-  When I request an Export Report To VETA
+  Given the service route "/api/v2/export/veta" and result repo "ExportReportToVETAResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "machineNames" with value "<MachineNames>"
+  And with parameter "fileName" with value "<FileName>"
+  And with parameter "coordType" with value "<CoordType>"
+  When I send a GET request with Accept header "application/zip" I expect response code 200
   Then the report result csv should match the "<ResultName>" from the repository
 Examples:
   | RequestName | ProjectUID                           | MachineNames | FileName | CoordType | ResultName           |
@@ -53,31 +54,34 @@ Examples:
   | LatLon      | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | All          | Test     | 1         | NoDateRangeLatLon    |
 
 Scenario Outline: ExportReportToVETA - Bad Request - NoFileName
-  And projectUid "<ProjectUID>"
-  And filterUid "<FilterUID>"
-  And machineNames "<MachineNames>"
-  When I request an Export Report To VETA expecting BadRequest
-  Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+  Given the service route "/api/v2/export/veta" and result repo "ExportReportToVETAResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "filterUid" with value "<FilterUID>"
+  And with parameter "machineNames" with value "<MachineNames>"
+  When I send the GET request I expect response code 400
+  Then the response should contain message "<ErrorMessage>" and code "<ErrorCode>"
 Examples:
   | RequestName | ProjectUID                           | FilterUID                            | MachineNames | ErrorCode | ErrorMessage             |
   |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | d15e65e0-3cb1-476f-8fc6-08507a14a269 | All          | -1        | Missing export file name |
 
 Scenario Outline: ExportReportToVETA - Bad Request with Filter - No Machines
-  And projectUid "<ProjectUID>"
-  And filterUid "<FilterUID>"
-  And fileName is "<FileName>"
-  When I request an Export Report To VETA expecting BadRequest
-  Then the report result should contain error code <ErrorCode> and error message "<ErrorMessage>"
+  Given the service route "/api/v2/export/veta" and result repo "ExportReportToVETAResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "filterUid" with value "<FilterUID>"
+  And with parameter "fileName" with value "<FileName>"
+  When I send the GET request I expect response code 400
+  Then the response should contain message "<ErrorMessage>" and code "<ErrorCode>"
 Examples: 
   | RequestName | ProjectUID                           | FilterUID                            | FileName | ErrorCode | ErrorMessage                                                                                   |
   |             | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1cf81668-1739-42d5-b068-ea025588796a | Test     | -4        | Failed to get/update data requested by CompactionExportExecutor with error: No data for export |
 
 Scenario Outline: ExportReportToVETA - Good Request with Filter - No Machines
-  And projectUid "<ProjectUID>"
-  And filterUid "<FilterUID>"
-  And fileName is "<FileName>"
-  And coordType is "<CoordType>"
-  When I request an Export Report To VETA
+  Given the service route "/api/v2/export/veta" and result repo "ExportReportToVETAResponse.json"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "filterUid" with value "<FilterUID>"
+  And with parameter "fileName" with value "<FileName>"
+  And with parameter "coordType" with value "<CoordType>"
+  When I send a GET request with Accept header "application/zip" I expect response code 200
   Then the report result csv should match the "<ResultName>" from the repository
 Examples: 
   | RequestName | ProjectUID                           | FilterUID                            | FileName | CoordType | ResultName          |

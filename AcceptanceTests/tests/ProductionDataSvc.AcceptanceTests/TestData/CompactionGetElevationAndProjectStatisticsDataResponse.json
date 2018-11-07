@@ -19,7 +19,7 @@
     "Message": "success"
   },
   "NoDesignFilter_ER": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": 2913.2900000000004,
       "maxY": 1250.69,
       "maxZ": 624.1365966796875,
@@ -27,22 +27,22 @@
       "minY": 1125.2300000000003,
       "minZ": 591.953857421875
     },
-    "MinElevation": 591.953857421875,
-    "MaxElevation": 624.1365966796875,
-    "TotalCoverageArea": 0.0,
+    "minElevation": 591.953857421875,
+    "maxElevation": 624.1365966796875,
+    "totalCoverageArea": 0.0,
     "Code": 0,
     "Message": "success"
   },
   "NoData_ER": {
     "boundingExtents": null,
-    "minElevation": 0,
-    "maxElevation": 0,
-    "totalCoverageArea": 0,
+    "minElevation": 0.0,
+    "maxElevation": 0.0,
+    "totalCoverageArea": 0.0,
     "Code": -4,
     "Message": "No elevation range"
   },
   "AutomaticsFilter_ER": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.02477404574897,
       "maxY": 36.207347660105043,
       "maxZ": 1E+308,
@@ -50,15 +50,15 @@
       "minY": 36.2072496172315,
       "minZ": 1E+308
     },
-    "MinElevation": 609.99200439453125,
-    "MaxElevation": 609.99200439453125,
-    "TotalCoverageArea": 0.11560000000000002,
+    "minElevation": 609.99200439453125,
+    "maxElevation": 609.99200439453125,
+    "totalCoverageArea": 0.11560000000000002,
     "Code": 0,
     "Message": "success"
   },
   "GoodRequest_PRS": {
     "startTime": "2012-10-30T00:12:09.109",
-    "endTime": "2012-11-08T01:00:08.756",
+    "endTime": "2015-03-15T18:13:09.265",
     "cellSize": 0.34,
     "indexOriginOffset": 536870912,
     "extents": {
@@ -66,7 +66,7 @@
       "maxY": 1250.69,
       "maxZ": 624.1365966796875,
       "minX": 2306.05,
-      "minY": 1125.2300000000002,
+      "minY": 1125.2300000000003,
       "minZ": 591.953857421875
     },
     "Code": 0,
@@ -81,7 +81,7 @@
     "Message": "success"
   },
   "AlignmentFilter": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.01824137935459,
       "maxY": 36.207739740800292,
       "maxZ": 1E+308,
@@ -89,9 +89,9 @@
       "minY": 36.206563325785233,
       "minZ": 1E+308
     },
-    "MinElevation": 595.8179931640625,
-    "MaxElevation": 622.7540283203125,
-    "TotalCoverageArea": 1453.4388000000004,
+    "minElevation": 595.8179931640625,
+    "maxElevation": 622.7540283203125,
+    "totalCoverageArea": 1453.4388000000004,
     "Code": 0,
     "Message": "success"
   }

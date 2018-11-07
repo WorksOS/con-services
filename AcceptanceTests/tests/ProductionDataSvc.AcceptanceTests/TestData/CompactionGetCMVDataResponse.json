@@ -2,15 +2,15 @@
   "NoDesignFilter_Summary": {
     "cmvSummaryData": {
       "percentEqualsTarget": 0.12620950778291964,
-      "percentGreaterThanTarget": 0,
+      "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 99.873790492217083,
       "totalAreaCoveredSqMeters": 549.56240000000014,
       "cmvTarget": {
         "cmvMachineTarget": 70.0,
         "targetVaries": false
       },
-      "minCMVPercent": 80,
-      "maxCMVPercent": 130
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
     },
     "Code": 0,
     "Message": "success"
@@ -33,13 +33,10 @@
     "Message": "success"
   },
   "NoDesignFilter_Details": {
-    "percents": [
-      0.0,
-      100.0,
-      0.0,
-      0.0,
-      0.0
-    ],
+    "percents": [0.0, 100.0, 0.0, 0.0, 0.0],
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
     "Code": 0,
     "Message": "success"
   },
@@ -135,17 +132,23 @@
   },
   "DesignOutside_Details": {
     "percents": null,
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
     "Code": 0,
     "Message": "success"
   },
   "DesignIntersects_Details": {
     "percents": [
-      0,
-      100,
-      0,
-      0,
-      0
+      0.0,
+      100.0,
+      0.0,
+      0.0,
+      0.0
     ],
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
     "Code": 0,
     "Message": "success"
   },
@@ -171,17 +174,17 @@
     "Message": "success"
   },
   "DesignIntersects_Summary": {
-    "cmvSummaryData": {
-      "percentEqualsTarget": 0,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 100,
+    "CmvSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
       "totalAreaCoveredSqMeters": 62.424000000000007,
       "cmvTarget": {
-        "cmvMachineTarget": 70,
+        "cmvMachineTarget": 70.0,
         "targetVaries": false
       },
-      "minCMVPercent": 80,
-      "maxCMVPercent": 130
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
     },
     "Code": 0,
     "Message": "success"
@@ -256,13 +259,10 @@
     "Message": "success"
   },
   "NoDesignFilter_Details_PS": {
-    "Percents": [
-      0.0,
-      68.321413546487165,
-      1.3041649137568363,
-      30.374421539755996,
-      0.0
-    ],
+    "percents": [0.0, 68.321413546487165, 1.3041649137568363, 30.374421539755996, 0.0],
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
     "Code": 0,
     "Message": "success"
   },
@@ -341,6 +341,9 @@
   },
   "Ext_DesignOutside_Details": {
     "percents": null,
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
     "Code": 0,
     "Message": "success"
   },

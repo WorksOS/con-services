@@ -1,14 +1,12 @@
 ﻿Feature: ElevationStatistics
-	I should be able to request Elevation Statistics for a project.
-
-Background: 
-	Given the ElevationStatistics service URI "/api/v1/statistics/elevation", request repo "ElevationStatsRequest.json" and result repo "ElevationStatsResponse.json"
+  I should be able to request Elevation Statistics for a project.
 
 Scenario Outline: ElevationStatistics - Good Request
-	When I request Elevation Statistics supplying "<ParameterName>" paramters from the repository
-	Then the Elevation Statistics response should match "<ResultName>" result from the repository
-	Examples: 
-	| ParameterName       | ResultName          |
-	| NoFilter            | NoFilter            |
-	| FiveCells           | FiveCells           |
-	| FiveCellsOneMachine | FiveCellsOneMachine |
+  Given the service route "/api/v1/statistics/elevation" request repo "ElevationStatsRequest.json" and result repo "ElevationStatsResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName       | ResultName          | HttpCode |
+  | NoFilter            | NoFilter            | 200      |
+  | FiveCells           | FiveCells           | 200      |
+  | FiveCellsOneMachine | FiveCellsOneMachine | 200      |

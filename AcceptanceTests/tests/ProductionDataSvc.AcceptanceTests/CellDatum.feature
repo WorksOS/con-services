@@ -1,28 +1,27 @@
 ﻿Feature: CellDatum
-I should be able to request Production Data Cell Datum.
-
-Background: 
-	Given the CellDatum service URI "/api/v1/productiondata/cells/datum", request repo "CellDatumRequest.json" and result repo "CellDatumResponse.json"
+  I should be able to request Production Data Cell Datum.
 
 Scenario Outline: CellDatum - Good Request
-	When I request Production Data Cell Datum supplying "<ParameterName>" paramters from the repository
-	Then the Production Data Cell Datum response should match "<ResultName>" result from the repository
-	Examples: 
-	| ParameterName             | ResultName                |
-	| Height                    | Height                    |
-	| PassCount                 | PassCount                 |
-	| Temperature               | Temperature               |
-	| HeightFilterByLayerNumber | HeightFilterByLayerNumber |
-	| HeightDefaultToLatestPass | HeightDefaultToLatestPass |
-	| HeightFilterToBlade       | HeightFilterToBlade       |
-	| HeightFilterToTrack       | HeightFilterToTrack       |
-	| HeightFilterToBladeTrack  | HeightFilterToBladeTrack  |
-	| HeightFilterToWheel       | HeightFilterToWheel       |
-	| HeightFilterToBladeWheel  | HeightFilterToBladeWheel  |
+  Given the service route "/api/v1/productiondata/cells/datum" request repo "CellDatumRequest.json" and result repo "CellDatumResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName             | ResultName                | HttpCode |
+  | Height                    | Height                    | 200      |
+  | PassCount                 | PassCount                 | 200      |
+  | Temperature               | Temperature               | 200      |
+  | HeightFilterByLayerNumber | HeightFilterByLayerNumber | 200      |
+  | HeightDefaultToLatestPass | HeightDefaultToLatestPass | 200      |
+  | HeightFilterToBlade       | HeightFilterToBlade       | 200      |
+  | HeightFilterToTrack       | HeightFilterToTrack       | 200      |
+  | HeightFilterToBladeTrack  | HeightFilterToBladeTrack  | 200      |
+  | HeightFilterToWheel       | HeightFilterToWheel       | 200      |
+  | HeightFilterToBladeWheel  | HeightFilterToBladeWheel  | 200      |
 
 Scenario Outline: CellDatum - Bad Request
-	When I request Cell Datum supplying "<ParameterName>" paramters from the repository expecting http error code <httpCode>
-	Then the response should contain error code <errorCode>
-	Examples: 
-	| ParameterName			| httpCode | errorCode |
-	| NullProjectId			| 400      | -1        |
+  Given the service route "/api/v1/productiondata/cells/datum" request repo "CellDatumRequest.json" and result repo "CellDatumResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain code "<ErrorCode>"
+  Examples: 
+  | ParameterName      | HttpCode | ErrorCode |
+  | NullProjectId      | 400      | -1        |

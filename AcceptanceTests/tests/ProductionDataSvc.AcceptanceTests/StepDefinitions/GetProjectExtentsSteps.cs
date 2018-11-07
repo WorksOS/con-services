@@ -1,90 +1,55 @@
-﻿using System;
-using TechTalk.SpecFlow;
-using System.Net;
-using System.Collections.Generic;
+﻿using System.Linq;
 using Newtonsoft.Json;
-using RestAPICoreTestFramework.Utils.Common;
-using RaptorSvcAcceptTestsCommon.Models;
-using RaptorSvcAcceptTestsCommon.Utils;
+using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-    [Binding, Scope(Feature = "GetProjectExtents")]
-    public class GetProjectExtentsSteps
+  [FeatureFile("GetProjectExtents.feature")]
+  public class GetProjectExtentsSteps : FeaturePostRequestBase<ProjectExtentRequest, ProjectExtentsResult>
+  {
+    [And(@"require surveyed surface larger than production data")]
+    public void RequireSurveyedSurfaceLargerThanProductionData()
     {
-        private Poster<ProjectExtentRequest, ProjectExtentsResult> projExtentRequester;
-
-        [Given(@"the Project Extent service URI ""(.*)""")]
-        public void GivenTheProjectExtentServiceURI(string uri)
-        {
-            uri = RaptorClientConfig.ProdSvcBaseUri + uri;
-            projExtentRequester = new Poster<ProjectExtentRequest, ProjectExtentsResult>(uri);
-        }
-
-        [Given(@"a GetProjectExtents project id (.*)")]
-        public void GivenAGetProjectExtentsProjectId(int pId)
-        {
-            projExtentRequester.CurrentRequest = new ProjectExtentRequest() { projectId = pId };
-        }
-
-        [Given(@"I decide to exclude any surveyed surface")]
-        public void GivenIDecideToExcludeAnySurveyedSurface()
-        {
-          // 111 is always the dummy ID specified when a surveyed surface is created (see BeforeAndAfter)
-          projExtentRequester.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
-        }
-
-        [Given(@"a GetProjectExtents null project id")]
-        public void GivenAGetProjectExtentsNullProjectId()
-        {
-            projExtentRequester.CurrentRequest = new ProjectExtentRequest() { projectId = null };
-        }
-
-        [When(@"I try to get the extents")]
-        public void WhenITryToGetTheExtents()
-        {
-            projExtentRequester.DoValidRequest();
-        }
-
-        [When(@"I try to get the extents expecting badrequest")]
-        public void WhenITryToGetTheExtentsExpectingBadrequest()
-        {
-            projExtentRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
-        }
-
-        [When(@"I post an empty request")]
-        public void WhenIPostAnEmptyRequest()
-        {
-            projExtentRequester.DoInvalidRequest("", HttpStatusCode.BadRequest);
-        }
-
-        [Then(@"the following Bounding Box ThreeD Grid values should be returned")]
-        public void ThenTheFollowingBoundingBoxThreeDGridValuesShouldBeReturned(Table expectedBoundingBox3DGrid)
-        {
-            ProjectExtentsResult expectedResult = new ProjectExtentsResult();
-
-            foreach(var row in expectedBoundingBox3DGrid.Rows)
-            {
-                expectedResult.ProjectExtents = new BoundingBox3DGrid()
-                {
-                    maxX = Convert.ToDouble(row["maxX"]),
-                    minX = Convert.ToDouble(row["minX"]),
-                    maxY = Convert.ToDouble(row["maxY"]),
-                    minY = Convert.ToDouble(row["minY"]),
-                    maxZ = Convert.ToDouble(row["maxZ"]),
-                    minZ = Convert.ToDouble(row["minZ"])
-                };
-            }
-
-            Assert.AreEqual(expectedResult, projExtentRequester.CurrentResponse);
-        }
-
-        [Then(@"I should get error code (.*)")]
-        public void ThenIShouldGetErrorCode(int code)
-        {
-            Assert.AreEqual(code, projExtentRequester.CurrentResponse.Code);
-        }
+      BeforeAndAfter.CreateSurveyedSurfaceLargerThanProductionData();
     }
+    
+    [And(@"I decide to exclude any surveyed surface")]
+    public void GivenIDecideToExcludeAnySurveyedSurface()
+    {
+       PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
+    }
+
+    [Then(@"the following objects should be returned:")]
+    public void ThenTheFollowingObjectsShouldBeReturned(Gherkin.Ast.DataTable dataTable)
+    {
+      var expectedResult = new ProjectExtentsResult();
+
+      foreach (var row in dataTable.Rows.Skip(1))
+      {
+        expectedResult.ProjectExtents = new BoundingBox3DGrid
+        {
+          maxX = double.Parse(row.Cells.ElementAt(0).Value),
+          maxY = double.Parse(row.Cells.ElementAt(1).Value),
+          maxZ = double.Parse(row.Cells.ElementAt(2).Value),
+          minX = double.Parse(row.Cells.ElementAt(3).Value),
+          minY = double.Parse(row.Cells.ElementAt(4).Value),
+          minZ = double.Parse(row.Cells.ElementAt(5).Value)
+        };
+      }
+
+      AssertObjectsAreEqual(expectedResult);
+    //  var actualResult = JsonConvert.DeserializeObject<GetMachinesResult>(PostRequestHandler.CurrentResponse.ToString());
+    ////  expectedResult.ProjectExtents = expectedMachineList.ToArray();
+
+    //  ObjectComparer.RoundAllArrayElementsProperties(actualResult.MachineStatuses, roundingPrecision: 12);
+
+    //  ObjectComparer.AssertAreEqual(
+    //    actualResultObj: actualResult,
+    //    expectedResultJson: JsonConvert.SerializeObject(expectedResult),
+    //    ignoreCase: true);
+    }
+  }
 }

@@ -17,21 +17,25 @@ If (Test-path $artfifactZip) {
 # Restore, build/publish for configuration net471.
 Write-Host "Restoring .NET packages..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet restore ./VSS.Productivity3D.Service.sln --no-cache"
+Invoke-Expression "./AcceptanceTests/.nuget/nuget restore ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet publish ./src/WebApi/VSS.Productivity3D.WebApi.csproj -o ../../Artifacts/WebApi -f net471"
-if ($LastExitCode -ne 0)
-   {   throw "Publish of web api project **** Failed ****"  }
+if ($LastExitCode -ne 0) {
+    throw "Publish of web api project **** Failed ****"
+}
 
 Write-Host "Build Unit Tests project..." -ForegroundColor "darkgray"
 Invoke-Expression "dotnet build ./test/UnitTests/WebApiTests/VSS.Productivity3D.WebApi.Tests.csproj"
-if ($LastExitCode -ne 0)
-   {   throw "Build unit tests project **** Failed ****"  }
+if ($LastExitCode -ne 0) {
+    throw "Build unit tests project **** Failed ****"
+}
 
 Write-Host "Build Acceptance Tests project..." -ForegroundColor "darkgray"
-Invoke-Expression "msbuild ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
-if ($LastExitCode -ne 0)
-   {   throw "Build Acceptance Tests project **** Failed ****"  }
+Invoke-Expression "dotnet build ./AcceptanceTests/VSS.Productivity3D.Service.AcceptanceTests.sln"
+if ($LastExitCode -ne 0) {
+    throw "Build Acceptance Tests project **** Failed ****"
+}
 
 $artifactsWorkingDir = "$artifactsDir\webapi"
 

@@ -1,88 +1,45 @@
 ﻿using System;
-using TechTalk.SpecFlow;
-using System.Net;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
-using RestAPICoreTestFramework.Utils.Common;
-using RaptorSvcAcceptTestsCommon.Models;
-using RaptorSvcAcceptTestsCommon.Utils;
 using ProductionDataSvc.AcceptanceTests.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-    [Binding, Scope(Feature = "GetProjectMachines")]
-    public class GetProjectMachinesSteps
+  [FeatureFile("GetProjectMachines.feature")]
+  public class GetProjectMachinesSteps : FeatureGetRequestBase
+  {
+    [Then(@"the following machines should be returned:")]
+    public void ThenTheFollowingMachinesShouldBeReturned(Gherkin.Ast.DataTable dataTable)
     {
-        private Getter<GetMachinesResult> machineDetailRequester;
+      var expectedResult = new GetMachinesResult();
+      var expectedMachineList = new List<MachineStatus>();
 
-        [Given(@"the Machine service URI ""(.*)""")]
-        public void GivenTheMachineServiceURI(string uri)
+      foreach (var row in dataTable.Rows.Skip(1))
+      {
+        expectedMachineList.Add(new MachineStatus
         {
-            uri = RaptorClientConfig.ProdSvcBaseUri + uri;
-            machineDetailRequester = new Getter<GetMachinesResult>(uri);
-        }
+          lastKnownDesignName = row.Cells.ElementAt(0).Value,
+          lastKnownLayerId = ushort.Parse(row.Cells.ElementAt(1).Value),
+          lastKnownTimeStamp = DateTime.Parse(row.Cells.ElementAt(2).Value),
+          lastKnownLatitude = Math.Round(double.Parse(row.Cells.ElementAt(3).Value), 12),
+          lastKnownLongitude = Math.Round(double.Parse(row.Cells.ElementAt(4).Value), 12),
+          lastKnownX = Math.Round(double.Parse(row.Cells.ElementAt(5).Value), 12),
+          lastKnownY = Math.Round(double.Parse(row.Cells.ElementAt(6).Value), 12),
+          AssetId = long.Parse(row.Cells.ElementAt(7).Value),
+          MachineName = row.Cells.ElementAt(8).Value,
+          IsJohnDoe = bool.Parse(row.Cells.ElementAt(9).Value)
+        });
+      }
 
-        [Given(@"a project id (.*)")]
-        public void GivenAProjectId(int projectId)
-        {
-            machineDetailRequester.Uri = String.Format(machineDetailRequester.Uri, projectId);
-        }
+      var actualResult = JsonConvert.DeserializeObject<GetMachinesResult>(GetResponseHandler.CurrentResponse.ToString());
+      expectedResult.MachineStatuses = expectedMachineList.ToArray();
 
-        [Given(@"a machine id (.*)")]
-        public void GivenAMachineId(Decimal machineId)
-        {
-            //resourceUri = resourceUri + "/" + mId;
-            machineDetailRequester.Uri = machineDetailRequester.Uri + "/" + machineId;
-        }
+      ObjectComparer.RoundAllArrayElementsProperties(actualResult.MachineStatuses, roundingPrecision: 8);
+      ObjectComparer.RoundAllArrayElementsProperties(expectedResult.MachineStatuses, roundingPrecision: 8);
 
-        [When(@"I try to get machine details")]
-        public void WhenITryToGetMachineDetails()
-        {
-            machineDetailRequester.DoValidRequest();
-        }
-
-        [Then(@"the following machines should be returned")]
-        public void ThenTheFollowingMachinesShouldBeReturned(Table machines)
-        {
-            GetMachinesResult expectedResult = new GetMachinesResult();
-
-            // Get expected machine details from feature file
-            List<MachineStatus> expectedMachineList = new List<MachineStatus>();
-            foreach(var machine in machines.Rows)
-            {
-                expectedMachineList.Add(new MachineStatus() 
-                {
-                    lastKnownDesignName = machine["lastKnownDesignName"],
-                    lastKnownLayerId = Convert.ToUInt16(machine["lastKnownLayerId"]),
-                    lastKnownTimeStamp = Convert.ToDateTime(machine["lastKnownTimeStamp"]),
-                    lastKnownLatitude = Convert.ToDouble(machine["lastKnownLatitude"]),
-                    lastKnownLongitude = Convert.ToDouble(machine["lastKnownLongitude"]),
-                    lastKnownX = Convert.ToDouble(machine["lastKnownX"]),
-                    lastKnownY = Convert.ToDouble(machine["lastKnownY"]),
-                    AssetId = Convert.ToInt64(machine["assetID"]),
-                    MachineName = machine["machineName"],
-                    IsJohnDoe = Convert.ToBoolean(machine["isJohnDoe"])
-                });
-            }
-            MachineStatus[] expectedMachineArray = expectedMachineList.ToArray();
-
-            expectedResult.MachineStatuses = expectedMachineArray;
-
-            Assert.AreEqual<GetMachinesResult>(expectedResult, machineDetailRequester.CurrentResponse);
-        }
-
-        [When(@"I try to get machine details expecting badrequest")]
-        public void WhenITryToGetMachineDetailsExpectingBadrequest()
-        {
-            machineDetailRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
-        }
-
-        [Then(@"the response should have code (.*) and message ""(.*)""")]
-        public void ThenTheResponseShouldHaveCodeAndMessage(int code, string message)
-        {
-            Assert.IsTrue(machineDetailRequester.CurrentResponse.Code == code && 
-                machineDetailRequester.CurrentResponse.Message == message);
-        }
+      ObjectComparer.AssertAreEqual(actualResultObj: actualResult, expectedResultObj: expectedResult);
     }
+  }
 }

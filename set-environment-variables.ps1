@@ -178,5 +178,5 @@ foreach ($_ in $tccAndAwsEnvironmentVariables) {
   [Environment]::SetEnvironmentVariable($_.key, $_.value, "Machine")
 }
 
-Write-Host "`nRemember to change your Velociraptor.Config.xml one compatible with the environment you've chosen."
+Write-Host "`nRemember to change your Velociraptor.Config.xml to one compatible with the environment you've chosen."
 Write-Host "Finished`n" -ForegroundColor Green

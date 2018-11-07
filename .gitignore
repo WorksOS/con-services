@@ -304,3 +304,4 @@ outputCobertura.xml
 CoverageReport/
 3DPRaptorWebApi.zip
 *.orig
+AcceptanceTests/logs.txt

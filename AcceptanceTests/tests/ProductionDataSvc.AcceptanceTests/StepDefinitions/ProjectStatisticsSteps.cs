@@ -1,78 +1,60 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
+using Newtonsoft.Json;
+using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
-using RaptorSvcAcceptTestsCommon.Models;
-using RaptorSvcAcceptTestsCommon.Utils;
-using TechTalk.SpecFlow;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-    [Binding, Scope(Feature = "ProjectStatistics")]
-    public class ProjectStatisticsSteps
+  [FeatureFile("ProjectStatistics.feature")]
+  public class ProjectStatisticsSteps : FeaturePostRequestBase<StatisticsParameters, ProjectStatistics>
+  {
+    [And(@"a Project Statistics project id (.*)")]
+    public void GivenAProjectStatisticsProjectId(long pId)
     {
-        private Poster<StatisticsParameters, ProjectStatistics> prjStatsRequester;
-
-        [Given(@"the Project Stats service URI ""(.*)""")]
-        public void GivenTheProjectStatsServiceURI(string uri)
-        {
-            uri = RaptorClientConfig.ReportSvcBaseUri + uri;
-            prjStatsRequester = new Poster<StatisticsParameters, ProjectStatistics>(uri);
-        }
-
-        [Given(@"a Project Statistics project id (.*)")]
-        public void GivenAProjectStatisticsProjectId(long pId)
-        {
-            prjStatsRequester.CurrentRequest = new StatisticsParameters() { projectId = pId, excludedSurveyedSurfaceIds = new long[] {} };
-        }
-
-        [Given(@"I decide to exclude all surveyed surfaces")]
-        public void GivenIDecideToExcludeAllSurveyedSurfaces()
-        {
-            // 111 is always the dummy ID specified when a surveyed surface is created (see BeforeAndAfter)
-            prjStatsRequester.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
-        }
-
-        [When(@"I request the project statistics")]
-        public void WhenIRequestTheProjectStatistics()
-        {
-            prjStatsRequester.DoValidRequest();
-        }
-
-        [When(@"I request the project statistics expecting BadRequest")]
-        public void WhenIRequestTheProjectStatisticsExpectingBadRequest()
-        {
-            prjStatsRequester.DoInvalidRequest();
-        }
-
-        [Then(@"I should get the following project statistics")]
-        public void ThenIShouldGetTheFollowingProjectStatistics(Table projectStats)
-        {
-            ProjectStatistics expectedResult = new ProjectStatistics();
-
-            foreach (var row in projectStats.Rows)
-            {
-                expectedResult.startTime = Convert.ToDateTime(row["startTime"]);
-                expectedResult.endTime = Convert.ToDateTime(row["endTime"]);
-                expectedResult.cellSize = Convert.ToDouble(row["cellSize"]);
-                expectedResult.indexOriginOffset = Convert.ToInt32(row["indexOriginOffset"]);
-                expectedResult.extents = new BoundingBox3DGrid()
-                {
-                    maxX = Convert.ToDouble(row["maxX"]),
-                    maxY = Convert.ToDouble(row["maxY"]),
-                    maxZ = Convert.ToDouble(row["maxZ"]),
-                    minX = Convert.ToDouble(row["minX"]),
-                    minY = Convert.ToDouble(row["minY"]),
-                    minZ = Convert.ToDouble(row["minZ"])
-                };
-            }
-
-            Assert.AreEqual(expectedResult, prjStatsRequester.CurrentResponse);
-        }
-
-        [Then(@"I should get error code (.*)")]
-        public void ThenIShouldGetErrorCode(int expectedCode)
-        {
-            Assert.AreEqual(expectedCode, prjStatsRequester.CurrentResponse.Code);
-        }
+      PostRequestHandler.CurrentRequest = new StatisticsParameters { projectId = pId, excludedSurveyedSurfaceIds = new long[] { } };
     }
+
+    [And(@"require surveyed surface larger than production data")]
+    public void RequireSurveyedSurfaceLargerThanProductionData()
+    {
+      BeforeAndAfter.CreateSurveyedSurfaceLargerThanProductionData();
+    }
+
+    [And(@"I decide to exclude all surveyed surfaces")]
+    public void GivenIDecideToExcludeAllSurveyedSurfaces()
+    {
+      // 111 is always the dummy ID specified when a surveyed surface is created (see BeforeAndAfter)
+      PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
+    }
+
+    [Then(@"I should get the following project statistics:")]
+    public void ThenIShouldGetTheFollowingProjectStatistics(Gherkin.Ast.DataTable dataTable)
+    {
+      var expectedResult = new ProjectStatistics();
+      
+      foreach (var row in dataTable.Rows.Skip(1))
+      {
+        expectedResult.startTime = DateTime.Parse(row.Cells.ElementAt(0).Value);
+        expectedResult.endTime = DateTime.Parse(row.Cells.ElementAt(1).Value);
+        expectedResult.cellSize = double.Parse(row.Cells.ElementAt(2).Value);
+        expectedResult.indexOriginOffset = int.Parse(row.Cells.ElementAt(3).Value);
+        expectedResult.extents = new BoundingBox3DGrid
+        {
+          maxX = double.Parse(row.Cells.ElementAt(4).Value),
+          maxY = double.Parse(row.Cells.ElementAt(5).Value),
+          maxZ = double.Parse(row.Cells.ElementAt(6).Value),
+          minX = double.Parse(row.Cells.ElementAt(7).Value),
+          minY = double.Parse(row.Cells.ElementAt(8).Value),
+          minZ = double.Parse(row.Cells.ElementAt(9).Value)
+        };
+      }
+
+      ObjectComparer.RoundAllDoubleProperties(expectedResult.extents, roundingPrecision: 2);
+      ObjectComparer.RoundAllDoubleProperties(PostRequestHandler.CurrentResponse.extents, roundingPrecision: 2);
+
+      ObjectComparer.AssertAreEqual(actualResultObj: PostRequestHandler.CurrentResponse, expectedResultObj: expectedResult);
+    }
+  }
 }

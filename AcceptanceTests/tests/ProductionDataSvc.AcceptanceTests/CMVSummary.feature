@@ -1,24 +1,23 @@
 ﻿Feature: CMVSummary
-	I should be able to request CMV summary.
-
-Background: 
-	Given the CMV Summary service URI "/api/v1/compaction/cmv/summary", request repo "CMVSummaryRequest.json" and result repo "CMVSummaryResponse.json"
+  I should be able to request CMV summary.
 
 Scenario Outline: CMVSummary - Good Request
-	When I request CMV Summary supplying "<ParameterName>" paramters from the repository
-	Then the CMV Summary response should match "<ResultName>" result from the repository
-	Examples: 
-	| ParameterName                 | ResultName                    |
-	| OverrideTargetAllLayers       | OverrideTargetAllLayers       |
-	| OverrideTargetTopLayerOnly    | OverrideTargetTopLayerOnly    |
-	| NotOverrideTargetAllLayers    | NotOverrideTargetAllLayers    |
-	| NotOverrideTargetTopLayerOnly | NotOverrideTargetTopLayerOnly |
+  Given the service route "/api/v1/compaction/cmv/summary" request repo "CMVSummaryRequest.json" and result repo "CMVSummaryResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName                 | ResultName                    | HttpCode |
+  | OverrideTargetAllLayers       | OverrideTargetAllLayers       | 200      |
+  | OverrideTargetTopLayerOnly    | OverrideTargetTopLayerOnly    | 200      |
+  | NotOverrideTargetAllLayers    | NotOverrideTargetAllLayers    | 200      |
+  | NotOverrideTargetTopLayerOnly | NotOverrideTargetTopLayerOnly | 200      |
 
 Scenario Outline: CMVSummary - Bad Request
-	When I request CMV Summary supplying "<ParameterName>" paramters from the repository expecting http error code <httpCode>
-	Then the response should contain error code <errorCode>
-	Examples: 
-	| ParameterName                     | httpCode | errorCode |
-	| MinCmvPercentTooSmall             | 400      | -1        |
-	| MaxCmvPercentTooLarge             | 400      | -1        |
-	| MinCmvPercentLargerThanMaxPercent | 400      | -1        |
+  Given the service route "/api/v1/compaction/cmv/summary" request repo "CMVSummaryRequest.json" and result repo "CMVSummaryResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain code "<ErrorCode>"
+  Examples: 
+  | ParameterName                     | HttpCode | ErrorCode |
+  | MinCmvPercentTooSmall             | 400      | -1        |
+  | MaxCmvPercentTooLarge             | 400      | -1        |
+  | MinCmvPercentLargerThanMaxPercent | 400      | -1        |

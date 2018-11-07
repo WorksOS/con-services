@@ -1,24 +1,23 @@
 ﻿Feature: CMVDetail
-	I should be able to request CMV Details.
-
-Background: 
-	Given the CMV Details service URI "/api/v1/compaction/cmv/detailed", request repo "CMVDetailRequest.json" and result repo "CMVDetailResponse.json"
+  I should be able to request CMV Details.
 
 Scenario Outline: CMVDetail - Good Request
-	When I request CMV Details supplying "<ParameterName>" paramters from the repository
-	Then the CMV Details response should match "<ResultName>" result from the repository
-	Examples: 
-	| ParameterName              | ResultName                 |
-	| OverrideTargetAllLayer     | OverrideTargetAllLayer     |
-	| OverrideTargetTopLayerOnly | OverrideTargetTopLayerOnly |
-	| NotOverrideTarget          | NotOverrideTarget          |
-	
+  Given the service route "/api/v1/compaction/cmv/detailed" request repo "CMVDetailRequest.json" and result repo "CMVDetailResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName              | ResultName                 | HttpCode |
+  | OverrideTargetAllLayer     | OverrideTargetAllLayer     | 200      |
+  | OverrideTargetTopLayerOnly | OverrideTargetTopLayerOnly | 200      |
+  | NotOverrideTarget          | NotOverrideTarget          | 200      |
+  
 Scenario Outline: CMVDetail - Bad Request
-	When I request CMV Details supplying "<ParameterName>" paramters from the repository expecting http error code <httpCode>
-	Then the response should contain error code <errorCode>
-	Examples: 
-	| ParameterName          | httpCode | errorCode |
-	| MinCmvTooSmall         | 400      | -1        |
-	| MaxCmvTooLarge         | 400      | -1        |
-	| MinCmvLargerThanMaxCmv | 400      | -1        |
-	| CmvTargetOutOfBound    | 400      | -1        |
+  Given the service route "/api/v1/compaction/cmv/detailed" request repo "CMVDetailRequest.json" and result repo "CMVDetailResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain code "<ErrorCode>"
+  Examples: 
+  | ParameterName          | HttpCode | ErrorCode |
+  | MinCmvTooSmall         | 400      | -1        |
+  | MaxCmvTooLarge         | 400      | -1        |
+  | MinCmvLargerThanMaxCmv | 400      | -1        |
+  | CmvTargetOutOfBound    | 400      | -1        |
