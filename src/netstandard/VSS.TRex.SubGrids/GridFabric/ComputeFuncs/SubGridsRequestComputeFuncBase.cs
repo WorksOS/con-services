@@ -477,7 +477,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
               if (_enableGeneralSubgridResultCaching &&
                   ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid[(int) localArg.GridDataType])
               {
-                SubGridCacheContext = SubGridCache.LocateOrCreateContext(SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfacesAsArray));
+                SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfacesAsArray));
               }
 
               return new SubGridRequestor(siteModel,

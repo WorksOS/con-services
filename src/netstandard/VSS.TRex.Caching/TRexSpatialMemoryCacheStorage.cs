@@ -91,6 +91,14 @@ namespace VSS.TRex.Caching
       }
     }
 
+    public void Invalidate(int index)
+    {
+      lock (this)
+      {
+        Items[index].Valid = false;
+      }
+    }
+
     /// <summary>
     /// Adds an item into the cache storage.
     /// </summary>
@@ -193,6 +201,8 @@ namespace VSS.TRex.Caching
 
     /// <summary>
     /// Retrieves the cached item from the specified index in the MRU list
+    /// If the element present in the MRU list is Expired or not Valid it
+    /// is proactively removed and null is returned to the caller.
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
@@ -202,7 +212,7 @@ namespace VSS.TRex.Caching
       {
         var cacheItem = Items[index];
 
-        if (cacheItem.Expired)
+        if (cacheItem.Expired || !cacheItem.Valid)
         {
           RemoveNoLock(index);
           cacheItem.RemoveFromContext();

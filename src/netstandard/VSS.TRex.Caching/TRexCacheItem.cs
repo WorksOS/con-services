@@ -32,7 +32,14 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// The context to which this cached item belongs
     /// </summary>
-    public ITRexSpatialMemoryCacheContext Context { get; set; }
+    private ITRexSpatialMemoryCacheContext Context { get; set; }
+
+    /// <summary>
+    /// Describes whether the state containing in this cache item is still valid
+    /// Items are considered to be valid at the time of creation, and stay that way until explicit invalidation or
+    /// overriding of the references item with null.
+    /// </summary>
+    public bool Valid { get; set; }
 
     /// <summary>
     /// The index of the previous element in the list of elements
@@ -53,6 +60,8 @@ namespace VSS.TRex.Caching
       ExpiryTime = DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
+
+      Valid = item != null;
     }
 
     public void Set(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, int prev, int next)
@@ -63,6 +72,8 @@ namespace VSS.TRex.Caching
       ExpiryTime = context == null ? DateTime.MinValue : DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
+
+      Valid = item != null;
     }
 
     public void GetPrevAndNext(out int prev, out int next)

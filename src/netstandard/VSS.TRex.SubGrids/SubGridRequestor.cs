@@ -126,7 +126,7 @@ namespace VSS.TRex.SubGrids
                 ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
             };
 
-            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.CacheFingerprint());
+            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
         
             SubGridCache = subGridCache;
             SubGridCacheContext = subGridCacheContext;

@@ -13,6 +13,10 @@ namespace VSS.TRex.Caching.Interfaces
 
     int TokenCount { get; }
 
+    TimeSpan CacheDurationTime { get; }
+
+    TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; set; }
+
     bool Add(ITRexMemoryCacheItem element);
 
     void Remove(ITRexMemoryCacheItem element);
@@ -21,6 +25,6 @@ namespace VSS.TRex.Caching.Interfaces
 
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
 
-    TimeSpan CacheDurationTime { get; }
+    void InvalidateSubgridNoLock(uint originX, uint originY);
   }
 }

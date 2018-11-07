@@ -8,5 +8,6 @@
     int TokenCount { get; }
     bool HasFreeSpace();
     void EvictOneLRUItemWithLock();
+    void Invalidate(int index);
   }
 }
