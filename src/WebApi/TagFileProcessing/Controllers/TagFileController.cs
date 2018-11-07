@@ -72,16 +72,15 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       //Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
-      try
-      {
-        RequestExecutorContainerFactory
+      RequestExecutorContainerFactory
         .Build<TagFileConnectedSiteSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
-        .ProcessAsync(request).ConfigureAwait(false);
-      } 
-      catch (Exception ex)
-      {
-        log.LogDebug($"PostTagFile(NonDirect TRex): Failed to send TAG file to connected site gateway exception occured {ex.ToString()} ");
-      }
+        .ProcessAsync(request).ContinueWith((task) =>
+        {
+          if (task.IsFaulted)
+          {
+            log.LogError(task.Exception,"Error Sending to Connected Site", null);
+          }
+        }, TaskContinuationOptions.OnlyOnFaulted);
 #pragma warning restore 4014
 
       ProjectData projectData = null;
