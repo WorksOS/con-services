@@ -168,10 +168,7 @@ node ('jenkinsslave-pod') {
 
 						//Dump log from webapi to buildlog
 						containerLog 'service-container'
-						
-						//Archive test logs
-						archiveArtifacts artifacts: '/app/testresults/*.*', fingerprint: true
-										
+					
 						//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
 						//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
 						//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
@@ -192,10 +189,13 @@ node ('jenkinsslave-pod') {
 	stage ('Publish results') {
 	    if (currentBuild.result=='SUCCESS') { 
 			sh "docker tag ${container} ${finalImage}"
-			sh "docker tag ${containerDb} ${dbFinalImage}"
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker push ${finalImage}"
-			sh "docker push ${dbFinalImage}"
+			if (buildDB)
+			{	
+				sh "docker tag ${containerDb} ${dbFinalImage}"
+				sh "docker push ${dbFinalImage}"
+			}
 			archiveArtifacts artifacts: '${servicePath}/deploy/**/*.*', fingerprint: true
 		}
 	}

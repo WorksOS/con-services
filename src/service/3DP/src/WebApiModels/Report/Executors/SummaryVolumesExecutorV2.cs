@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Net;
 using ASNode.Volumes.RPC;
 using ASNodeDecls;
-using BoundingExtents;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Executors.Utilities;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
@@ -29,28 +24,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     public SummaryVolumesExecutorV2()
     {
       ProcessErrorCodes();
-    }
-
-    private static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
-    {
-      return BoundingBox3DGrid.CreatBoundingBox3DGrid(
-        extents.MinX,
-        extents.MinY,
-        extents.MinZ,
-        extents.MaxX,
-        extents.MaxY,
-        extents.MaxZ);
-    }
-
-    private static SummaryVolumesResult ConvertResult(TASNodeSimpleVolumesResult result)
-    {
-      return SummaryVolumesResult.Create(
-        ConvertExtents(result.BoundingExtents),
-        result.Cut,
-        result.Fill,
-        result.TotalCoverageArea,
-        result.CutArea,
-        result.FillArea);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
@@ -131,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         }
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
-          return ConvertResult(result);
+          return ResultConverter.SimpleVolumesResultToSummaryVolumesResult(result);
 
         throw CreateServiceException<SummaryVolumesExecutorV2>((int)raptorResult);
       }
