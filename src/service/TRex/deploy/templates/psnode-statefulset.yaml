@@ -1,0 +1,86 @@
+# An example of a Kubernetes configuration for Ignite pods deployment.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-psn
+  labels:
+    app: {{ template "trex.deployname" . }}
+    chart: {{ template "trex.chart" . }}
+    component: {{ template "trex.deployname" . }}-psn
+spec:
+  selector:
+    matchLabels:
+      #this must match one of metadata.labels above
+      component: {{ template "trex.deployname" . }}-psn
+  # A number of Ignite pods to be started by Kubernetes initially.
+  replicas: {{ .Values.psnode.replicaCount }}
+  template:
+    metadata:
+      labels:
+        # This label has to be added to the selector's section of 
+        # ignite-service.yaml so that the Kubernetes Ignite lookup service
+        # can easily track all Ignite pods available deployed so far.
+        app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-psn
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      
+      containers:
+        # Custom Ignite pod name.
+      - name: ignite-node
+        # Ignite Docker image. Kubernetes IP finder is supported starting from
+        # Apache Ignite 2.3.0
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.PSNode
+        
+        resources:
+{{ toYaml .Values.psnode.resources | indent 10 }}
+
+        #command: ["dotnet"]
+        #args: ["VSS.TRex.Server.PSNode.dll"]
+        command: ["dotnet"]
+        args: ["VSS.TRex.Server.PSNode.dll"]
+
+        env:
+        - name: IGNITE_HOME
+          value: "/trex/"
+        - name: ENABLE_TFA_SERVICE
+          value: "true"
+        - name: TFA_SERVICE_BASEURL
+          value: "http://tagfileauth.dev.k8s.vspengg.com/"
+        - name: IS_KUBERNETES
+          value: "true"
+        - name: DEPLOYED_ENV
+          value: {{ .Values.environment }}
+
+        ports:
+        # Ports to open.
+        # Might be optional depending on your Kubernetes environment.
+        - containerPort: 47100 # communication SPI port number.
+          name: spicoms
+        - containerPort: 47500 # discovery SPI port number.
+          name: spidisco
+        - containerPort: 48100 # communication SPI port number.
+          name: spicommsmutable
+        - containerPort: 48500
+          name: spidiscomutable
+        - containerPort: 49112 # JMX port number.
+          name: jmx
+        - containerPort: 8080  # REST port number.
+          name: restapi
+        - containerPort: 10800 # SQL port number.
+          name: sql
+
+        volumeMounts:
+        # Mounting the persistant storage - currently this is in temp which will change when we sort config
+        - mountPath: "/persist"
+          name: trex-immutable-storage
+
+  volumeClaimTemplates:
+  - metadata:
+      name: trex-immutable-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.psnode.storageSize }}

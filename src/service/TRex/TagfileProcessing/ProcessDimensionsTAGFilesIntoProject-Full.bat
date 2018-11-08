@@ -1,0 +1,1 @@
+start ..\..\VSS.TRex\src\framework\TRexTAGFileSubmittor\bin\debug\TRexTAGFileSubmittor.exe "{50F1C4A2-FF76-46D9-AC94-E638AA233B8B}" "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Dimensions 2012\Dimensions2012-Model 381"
