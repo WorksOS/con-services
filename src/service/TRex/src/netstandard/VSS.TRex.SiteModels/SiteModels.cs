@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -137,7 +138,7 @@ namespace VSS.TRex.SiteModels
       // accepts an origin sitemodel.
       // These elements are:
       // 1. ExistenceMap
-      // 2. Subgridtree containing cached subgrid data
+      // 2. Subgrid tree containing cached subgrid data
       // 3. Coordinate system
       // 4. Designs
       // 5. Surveyed Surfaces
@@ -156,7 +157,7 @@ namespace VSS.TRex.SiteModels
         if (siteModel == null)
           return;
 
-        // Note: The spatial data grid is highly conserved and never killed in a sitemodel change notifiation.
+        // Note: The spatial data grid is highly conserved and never killed in a sitemodel change notification.
         SiteModelOriginConstructionFlags originFlags = 
           SiteModelOriginConstructionFlags.PreserveGrid 
           | (!message.ExistenceMapModified ? SiteModelOriginConstructionFlags.PreserveExistenceMap : 0)
@@ -181,34 +182,32 @@ namespace VSS.TRex.SiteModels
       // If the notification contains an existence map change mask then all cached subgrid based elements that match the masked subgrids
       // need to be evicted from all cached contexts related to this sitemodel. Note: This operation is not performed under a lock as the 
       // removal operations on the cache are lock free
-      // [todo: validate lock free operations on general result and similar cache stores as implemented]
       if (message.ExistenceMapChangeMask != null)
       {
         // Get the site model reference in case there was not a need to replace per the logic above
         siteModel = siteModel ?? CachedModels[SiteModelID];
 
-        // Create and deserialise the subgrid but mask fron the message
+        // Create and deserialize the subgrid but mask from the message
         ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
         mask.FromBytes(message.ExistenceMapChangeMask);
         
-        // Iterate over all leaf subgrids in the mask. For each get the matching node subgrid in sitgeModel.Grid, 
+        // Iterate over all leaf subgrids in the mask. For each get the matching node subgrid in siteModel.Grid, 
         // and remove all subgrid references from that node subgrid matching by the bits in the bit mask subgrid
         mask.ScanAllSubGrids(leaf => 
         {
           // Obtain the matching node subgrid in Grid
           ISubGrid node = siteModel.Grid.LocateClosestSubGridContaining(leaf.OriginX, leaf.OriginY, leaf.Level);
 
-          if (node != null) // There are subgrids present in Grid that match the subgrids identified by leaf
-          {
-            // Remove the elements identified in leaf from the node subgrid
+          // If there are subgrids present in Grid that match the subgrids identified by leaf
+          // remove the elements identified in leaf from the node subgrid
+          if (node != null)          
             ((ISubGridTreeLeafBitmapSubGrid) leaf).ForEachSetBit((x, y) => node.SetSubGrid(x, y, null));
-
-            // Remove other cache elements dependent on these subgrids
-            // Todo... Remove other cache elements dependent on these subgrids
-          }
 
           return true; // Keep processing leaf subgrids
         });      
+
+        // Advise the spatial memory cache of the change so it can invalidate cached derivatives
+        DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(SiteModelID, mask);
       }   
     }
   }

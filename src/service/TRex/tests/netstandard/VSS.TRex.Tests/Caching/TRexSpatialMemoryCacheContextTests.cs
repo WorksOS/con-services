@@ -19,6 +19,15 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_Creation_Default_Sensitivity()
+    {
+      ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null);
+
+      Assert.True(context.Sensitivity == TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest,
+        "Default cache invalidation sensitivity is not production data ingest.");
+    }
+
+    [Fact]
     public void Test_TRexSpatialMemoryCacheContext_Creation_WithOwnerAndMRU()
     {
       ITRexSpatialMemoryCacheContext context = 

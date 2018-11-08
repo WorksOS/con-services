@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using VSS.TRex.Caching;
+using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -61,13 +63,13 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_ContextCreation(int numberOfContexts)
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
 
       for (int i = 0; i < numberOfContexts; i++)
       {
-        var context = cache.LocateOrCreateContext($"fingerprint:{i}");
+        var context = cache.LocateOrCreateContext(Guid.Empty, $"fingerprint:{i}");
 
-        Assert.True(cache.ContextCount() == i + 1, $"Context count not {i + 1} as expect, it is {cache.ContextCount()} instead");
+        Assert.True(cache.ContextCount == i + 1, $"Context count not {i + 1} as expect, it is {cache.ContextCount} instead");
         Assert.True(context != null, "Failed to create new context");
         Assert.True(context.ContextTokens != null, "Context does not have tokens storage");
         Assert.True(context.MRUList != null, "Context does not have MRU list reference");
@@ -84,13 +86,13 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_ContextRetrieval(int numberOfContexts)
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
 
-      var contexts = Enumerable.Range(0, numberOfContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
+      var contexts = Enumerable.Range(0, numberOfContexts).Select(x => cache.LocateOrCreateContext(Guid.Empty, $"fingerprint:{x}")).ToArray();
 
       for (int i = 0; i < numberOfContexts; i++)
       {
-        var context = cache.LocateOrCreateContext($"fingerprint:{i}");
+        var context = cache.LocateOrCreateContext(Guid.Empty, $"fingerprint:{i}");
 
         Assert.True(ReferenceEquals(contexts[i], context), $"Failed to locate previously created context at index {i}");
       }
@@ -103,9 +105,9 @@ namespace VSS.TRex.Tests.Caching
       const uint _originY = 456;
       const int _size = 1000;
 
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100, 1000000, 0.5);
 
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
       cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element()
       {
@@ -130,18 +132,18 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(2)]
     [InlineData(10)]
     [InlineData(1000)]
-    [InlineData(100000)]
+    [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_AddAndRetrieveItem_ManyContexts(int numContexts)
     {
       const uint _originX = 123;
       const uint _originY = 456;
-      const int _size = 1000;
+      const int _size = 10;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
-      var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
+      var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext(Guid.Empty, $"fingerprint:{x}")).ToArray();
 
       var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element
       {
@@ -152,7 +154,7 @@ namespace VSS.TRex.Tests.Caching
 
       for (int i = 0; i < numContexts; i++)
       {
-        contexts[i].Add(items[i]);
+        cache.Add(contexts[i], items[i]);
 
         Assert.True(contexts[i].TokenCount == 1, "Context token count not one after adding single item");
       }
@@ -174,18 +176,18 @@ namespace VSS.TRex.Tests.Caching
     [InlineData(2)]
     [InlineData(10)]
     [InlineData(1000)]
-    [InlineData(100000)]
+    [InlineData(10000)]
     public void Test_TRexSpatialMemoryCacheTests_AddAndRemoveItem_ManyContexts(int numContexts)
     {
       const uint _originX = 123;
       const uint _originY = 456;
-      const int _size = 1000;
+      const int _size = 10;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numContexts, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
-      var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext($"fingerprint:{x}")).ToArray();
+      var contexts = Enumerable.Range(0, numContexts).Select(x => cache.LocateOrCreateContext(Guid.Empty, $"fingerprint:{x}")).ToArray();
 
       var items = Enumerable.Range(0, numContexts).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
       {
@@ -196,7 +198,7 @@ namespace VSS.TRex.Tests.Caching
 
       for (int i = 0; i < numContexts; i++)
       {
-        contexts[i].Add(items[i]);
+        cache.Add(contexts[i], items[i]);
 
         Assert.True(contexts[i].TokenCount == 1, "Context token count not one after adding single item");
       }
@@ -219,10 +221,10 @@ namespace VSS.TRex.Tests.Caching
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
       var item1 = new TRexSpatialMemoryCacheContextTests_Element
       {
@@ -254,10 +256,10 @@ namespace VSS.TRex.Tests.Caching
       const int _size = 1000;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(1, 1000000, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
       var item1 = new TRexSpatialMemoryCacheContextTests_Element
       {
@@ -282,10 +284,10 @@ namespace VSS.TRex.Tests.Caching
       const uint _originY = 456;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(capacity, maxNumBytes, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(capacity, maxNumBytes, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
       int numElementsToAdd = (maxNumBytes / elementSize) + 10;
 
@@ -319,10 +321,10 @@ namespace VSS.TRex.Tests.Caching
       int numElementsToAdd = (maxNumBytes / elementSize) + 10;
 
       // Create the cache with enough elements to hold one per context without eviction
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numElementsToAdd, maxNumBytes, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(numElementsToAdd, maxNumBytes, 0.5);
 
       // Make the number ofg contexts requested, and a separate item to be placed in each one
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
       var items = Enumerable.Range(0, numElementsToAdd).Select(x => new TRexSpatialMemoryCacheContextTests_Element()
       {
@@ -348,9 +350,9 @@ namespace VSS.TRex.Tests.Caching
       const uint _originY = 0;
       const int _size = 10;
 
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100000, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(100000, 1000000, 0.5);
 
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
       for (int i = 0; i < 100; i++)
       {
@@ -386,10 +388,10 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_ElementTimeBasedExpiry()
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
 
       // Create a context with an expiry time of one second
-      var context = cache.LocateOrCreateContext("fingerprint", new TimeSpan(0, 0, 0, 0, 500));
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint", new TimeSpan(0, 0, 0, 0, 500));
 
       // Add an item, verify it is there, wait for a seconds then attempt to get the
       // item. Verify the result is null and that the item is no longer present in the cache
@@ -412,10 +414,10 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_Get()
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
 
       // Create a context with an expiry time of one second
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
       cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element
       {
         CacheOriginX = 1000,
@@ -434,10 +436,9 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheTests_Remove()
     {
-      TRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(10, 1000000, 0.5);
 
-      // Create a context with an expiry time of one second
-      var context = cache.LocateOrCreateContext("fingerprint");
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
       var item = new TRexSpatialMemoryCacheContextTests_Element
       {
         CacheOriginX = 1000,
@@ -450,6 +451,63 @@ namespace VSS.TRex.Tests.Caching
 
       cache.Remove(context, item);
       Assert.True(context.TokenCount == 0, "Token count incorrect after removal");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_ProductionDataIngestInvalidation()
+    {
+      ITRexSpatialMemoryCache cache = new TRexSpatialMemoryCache(20000, 1000000, 0.5);
+
+      // Create a context with default invalidation sensitivity, add some data to it
+      // and validate that a change bitmask causes appropriate invalidation
+      var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
+
+      TRexSpatialMemoryCacheContextTests_Element[,] items = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+      for (int i = 0; i < 100; i++)
+      {
+        for (int j = 0; j < 100; j++)
+        {
+          items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+          {
+            CacheOriginX = (uint) (i * SubGridTreeConsts.SubGridTreeDimension),
+            CacheOriginY = (uint) (j * SubGridTreeConsts.SubGridTreeDimension),
+            SizeInBytes = 1
+          };
+
+          cache.Add(context, items[i, j]);
+        }
+      }
+
+      Assert.True(context.TokenCount == 10000, "Token count incorrect after addition");
+
+      // Create the bitmask
+      ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
+
+      for (int i = 0; i < 100; i++)
+      {
+        for (int j = 0; j < 100; j++)
+          cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element
+          {
+            CacheOriginX = (uint)(i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
+            CacheOriginY = (uint)(j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
+            SizeInBytes = 1
+          });
+      }
+
+      cache.InvalidateDueToProductionDataIngest(Guid.Empty, mask);
+
+      int count = 10000;
+      // Remove the items
+      for (int i = 0; i < 100; i++)
+      {
+        for (int j = 0; j < 100; j++)
+        {
+          cache.Remove(context, items[i, j]);
+          Assert.True(context.TokenCount == --count, $"Count incorrect at index {i}, {j}, count = {count}, tokenCount = {context.TokenCount}");
+        }
+      }
+
+      Assert.True(context.TokenCount == 0, "Token count incorrect after invalidation");
     }
   }
 }

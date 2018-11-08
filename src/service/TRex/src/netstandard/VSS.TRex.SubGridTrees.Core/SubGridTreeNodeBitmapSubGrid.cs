@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.TRex.SubGridTrees
+namespace VSS.TRex.SubGridTrees.Core
 {
     public class SubGridTreeNodeBitmapSubGrid : NodeSubGrid
     {
-      public SubGridTreeBitmapSubGridBits Bits;
+        //Node level bit aggregation currently not required.
+        //public SubGridTreeBitmapSubGridBits _Bits;
 
         /// <summary>
         /// Writes the contents of the subgrid bit mask to the writer
@@ -15,7 +15,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="buffer"></param>
         public override void Write(BinaryWriter writer, byte [] buffer)
         {
-            Bits.Write(writer, buffer);
+          base.Write(writer, buffer);
+          //Node level bit aggregation currently not required.
+          //Bits.Write(writer, buffer);
         }
 
         /// <summary>
@@ -25,7 +27,9 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="buffer"></param>
         public override void Read(BinaryReader reader, byte [] buffer)
         {
-            Bits.Read(reader, buffer);
+          base.Read(reader, buffer);
+          //Node level bit aggregation currently not required.
+          //Bits.Read(reader, buffer);
         }
 
         /// <summary>
@@ -33,7 +37,8 @@ namespace VSS.TRex.SubGridTrees
         /// </summary>
         public SubGridTreeNodeBitmapSubGrid()
         {
-            Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+          //Node level bit aggregation currently not required.
+          //Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         }
 
         /// <summary>
@@ -44,7 +49,8 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="level"></param>
         public SubGridTreeNodeBitmapSubGrid(ISubGridTree owner, ISubGrid parent, byte level) : base(owner, parent, level)
         {
-            Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+          //Node level bit aggregation currently not required.
+          //Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
         }
     }
 }
