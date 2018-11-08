@@ -1,11 +1,10 @@
 FROM registry.k8s.vspengg.com:80/dotnet:2.0-sdk as builder
+ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
 
-RUN chmod 777 *.sh
-
-RUN ["/bin/sh", "/build/build.sh"]
+RUN dotnet publish ./$SERVICE_PATH/src/WebApi/VSS.Productivity3D.TagFileAuth.WebAPI.csproj -o /build/artifacts/WebApi -f netcoreapp2.0 -c Docker
 
 FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime
 
