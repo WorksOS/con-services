@@ -1,0 +1,125 @@
+version: '2'
+services:
+  masterdataconsumercustomer:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumercustomer
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumerproject:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumerproject
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    depends_on:
+      - kafka
+  masterdataconsumergeofence:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumergeofence
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumersubscription:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumersubscription
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumerasset:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumerasset
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IAssetEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumerdevice:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumerdevice
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IDeviceEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumerfilter:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumerfilter
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IFilterEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    depends_on:
+      - schema
+      - kafka
+  schema:
+    build: ./database
+    env_file:
+     - docker-compose.env
+    depends_on:
+      - db
+  db:
+    image: mysql/mysql-server:5.7.15 
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
+    env_file:
+     - docker-compose.env
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+  kafka:
+    image: wurstmeister/kafka:0.11.0.1
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+     - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IAssetEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IDeviceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IFilterEvent-Project:1:1
+     - KAFKA_ADVERTISED_PORT=9092
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+     - zookeeper
+  accepttest:
+    build: ./AcceptanceTests/deploy
+    env_file:
+     - docker-compose.env
+    volumes:
+      - ./AcceptanceTests/deploy/testresults:/app/testresults
+    depends_on:
+      - masterdataconsumercustomer
+      - masterdataconsumerproject
+      - masterdataconsumergeofence
+      - masterdataconsumersubscription
+      - masterdataconsumerasset
+      - masterdataconsumerdevice
+      - masterdataconsumerfilter
+      - kafka

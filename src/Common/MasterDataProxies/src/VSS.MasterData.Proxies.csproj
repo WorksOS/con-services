@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>VSS.MasterData.Proxies.netcore</PackageId>
+    <Authors>Merino</Authors>
+    <Company>VSS</Company>
+    <Product>VSS.MasterData.Proxies.netcore</Product>
+    <Description>Shared library providing access to MasterData services through WebApis</Description>
+    <VersionPrefix>2.57.1</VersionPrefix>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>VSS.MasterData.Proxies</AssemblyName>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>VSS.MasterData.Proxies</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.18.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Polly" Version="6.0.1" />
+    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.3" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.34.1" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.11.18" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.16.0" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+</Project>

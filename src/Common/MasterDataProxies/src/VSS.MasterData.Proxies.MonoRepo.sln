@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.Local", "VSS.MasterData.Proxies.Local.csproj", "{2E9AF50C-CA85-4F5D-A277-36FE38FBBA2F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj", "{4A70C8C4-214B-44F6-929B-957BC7A103FD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Local", "..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj", "{1C6FC224-0FDD-4209-8983-1CA146E66A0E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Local", "..\..\MasterDataModels\src\VSS.MasterData.Models.Local.csproj", "{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.UnitTests.Local", "..\test\UnitTests\VSS.MasterData.Proxies.UnitTests.Local.csproj", "{5A47DB78-A212-4FBD-930B-3E825792C642}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\..\FlowJSMVC\src\VSS.FlowJSHandler.csproj", "{17BD8EF6-2596-4843-AC15-BA57C590C914}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models.Local", "..\..\Productivity3DModels\src\VSS.Productivity3D.Models.Local.csproj", "{F5BA90B0-D332-4571-9D62-805BE4D7E145}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E9AF50C-CA85-4F5D-A277-36FE38FBBA2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E9AF50C-CA85-4F5D-A277-36FE38FBBA2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E9AF50C-CA85-4F5D-A277-36FE38FBBA2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E9AF50C-CA85-4F5D-A277-36FE38FBBA2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A70C8C4-214B-44F6-929B-957BC7A103FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A70C8C4-214B-44F6-929B-957BC7A103FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A70C8C4-214B-44F6-929B-957BC7A103FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A70C8C4-214B-44F6-929B-957BC7A103FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C6FC224-0FDD-4209-8983-1CA146E66A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C6FC224-0FDD-4209-8983-1CA146E66A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C6FC224-0FDD-4209-8983-1CA146E66A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C6FC224-0FDD-4209-8983-1CA146E66A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A47DB78-A212-4FBD-930B-3E825792C642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A47DB78-A212-4FBD-930B-3E825792C642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A47DB78-A212-4FBD-930B-3E825792C642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A47DB78-A212-4FBD-930B-3E825792C642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17BD8EF6-2596-4843-AC15-BA57C590C914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17BD8EF6-2596-4843-AC15-BA57C590C914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17BD8EF6-2596-4843-AC15-BA57C590C914}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17BD8EF6-2596-4843-AC15-BA57C590C914}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5BA90B0-D332-4571-9D62-805BE4D7E145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5BA90B0-D332-4571-9D62-805BE4D7E145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5BA90B0-D332-4571-9D62-805BE4D7E145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5BA90B0-D332-4571-9D62-805BE4D7E145}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD395AEA-7336-4042-AC9F-2AF857C2B204}
+	EndGlobalSection
+EndGlobal

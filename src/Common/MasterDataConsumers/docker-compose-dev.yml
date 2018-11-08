@@ -1,0 +1,65 @@
+version: '2'
+services:
+  masterdataconsumercustomer:
+    build: ./artifacts/MasterDataConsumer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+    - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumerproject:
+    build: ./artifacts/MasterDataConsumer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+    - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumergeofence:
+    build: ./artifacts/MasterDataConsumer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumersubscription:
+    build: ./artifacts/MasterDataConsumer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumerasset:
+    build: ./artifacts/MasterDataConsumer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IAssetEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumerdevice:
+    build: ./artifacts/MasterDataConsumer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IDeviceEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumerfilter:
+    build: ./artifacts/MasterDataConsumer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IFilterEvent
+    volumes:
+      - ./artifacts/logs:/app/logs

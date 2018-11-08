@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.Local", "..\..\MasterDataProxies\src\VSS.MasterData.Proxies.Local.csproj", "{C6C30401-620E-48D7-8FDC-B42E96FA9E81}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore.Local", "..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj", "{D81A2F22-E2A1-4A21-925A-B434984DC3A8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions.Local", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj", "{6BE576E2-10C4-47B7-BD7B-969396A2140E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.Local", "VSS.TCCFileAccess.Local.csproj", "{547154AB-7437-416C-9140-8BAB2409B179}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.Local", "..\..\MasterDataModels\src\VSS.MasterData.Models.Local.csproj", "{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.UnitTests.Local", "..\test\UnitTests\VSS.TCCFileAccess.UnitTests.Local.csproj", "{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C6C30401-620E-48D7-8FDC-B42E96FA9E81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6C30401-620E-48D7-8FDC-B42E96FA9E81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6C30401-620E-48D7-8FDC-B42E96FA9E81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6C30401-620E-48D7-8FDC-B42E96FA9E81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D81A2F22-E2A1-4A21-925A-B434984DC3A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D81A2F22-E2A1-4A21-925A-B434984DC3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D81A2F22-E2A1-4A21-925A-B434984DC3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D81A2F22-E2A1-4A21-925A-B434984DC3A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BE576E2-10C4-47B7-BD7B-969396A2140E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{547154AB-7437-416C-9140-8BAB2409B179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{547154AB-7437-416C-9140-8BAB2409B179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{547154AB-7437-416C-9140-8BAB2409B179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{547154AB-7437-416C-9140-8BAB2409B179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4765BFDC-E4DF-4F24-9D1E-AB525C9E95E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C1CF3C77-8753-42CC-B075-84A25959A60B}
+	EndGlobalSection
+EndGlobal

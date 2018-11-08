@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "VSS.VersionTool": {
+      "commandName": "Project",
+      "commandLineArgs": "references -d C:\\Dev\\VSS.Productivity3D.MonoRepo -r -n VSS.Authentication.JWT -p -pv 1.*"
+    }
+  }
+}

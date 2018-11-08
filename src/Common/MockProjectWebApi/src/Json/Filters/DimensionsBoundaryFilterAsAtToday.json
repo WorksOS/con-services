@@ -1,0 +1,24 @@
+{
+  "dateRangeType": 0,
+  "asAtDate": true,
+  "polygonUID": "7f2fb9ec-2384-420e-b2e3-72b9cea939a3",
+  "polygonName": "Dimensions lower right bounday 2",
+  "polygonLL": [
+    {
+      "Lat": 36.206897,
+      "Lon": -115.01869
+    },
+    {
+      "Lat": 36.206795,
+      "Lon": -115.018701
+    },
+    {
+      "Lat": 36.206823,
+      "Lon": -115.018264
+    },
+    {
+      "Lat": 36.206977,
+      "Lon": -115.01828
+    }
+  ]
+}

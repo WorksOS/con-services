@@ -1,0 +1,52 @@
+properties([disableConcurrentBuilds(), pipelineTriggers([])])
+
+node('Jenkins-Win2016-Raptor') {
+    //Apply version number
+    //We will later use it to tag images
+
+    def branch = env.BRANCH_NAME
+    def buildNumber = env.BUILD_NUMBER
+    def versionPrefix = ""
+    def suffix = ""
+    def branchName = ""
+
+    if (branch.contains("QA")) {
+       versionPrefix = "1.0."
+       branchName = "QA"
+    } else if (branch.contains("Dev")) {
+       versionPrefix = "0.99."
+       branchName = "Dev"
+    } else {
+       branchName = branch.substring(branch.lastIndexOf("/") + 1)
+       suffix = "-" + branchName
+       versionPrefix = "0.98."
+    }
+    
+    def versionNumber = versionPrefix + buildNumber
+    def fullVersion = versionNumber + suffix
+    def workspacePath =""
+    currentBuild.displayName = versionNumber + suffix
+
+    stage ('Checkout') {
+      checkout scm
+	  currentBuild.result = 'SUCCESS'
+      dir('./MockProjectWebApi/src') {
+        stage ('Build MockApis') {
+          bat "./mockapis.bat"
+        }
+        echo "Build result is ${currentBuild.result}"
+        if (currentBuild.result=='SUCCESS') {
+          //Rebuild Image, tag & push to AWS Docker Repo
+          stage ('Build Images') {
+            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
+            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest ./Artifacts/MockProjectWebApi"
+          }
+
+          //Publish to AWS Repo
+          stage ('Get ecr login, push image to Repo') {
+            bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
+          }
+        }
+      }
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestRun": {
+      "commandName": "Project",
+      "commandLineArgs": "results=\\testresults\\results.xml project=KafkaTests messages=false"
+    }
+  }
+}

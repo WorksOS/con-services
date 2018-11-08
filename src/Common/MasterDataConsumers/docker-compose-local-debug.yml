@@ -1,0 +1,33 @@
+version: '2'
+services:  
+  schema:
+    build: ./database
+    env_file:
+     - docker-compose-local-debug.env
+    depends_on:
+      - db
+  db:
+    image: mysql/mysql-server:5.7.15 
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
+    env_file:
+     - docker-compose-local-debug.env
+    ports:
+      - "10307:3306"
+      - "3306:3306"
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    ports:
+     - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka:0.11.0.1
+    environment:
+     - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+     - KAFKA_ADVERTISED_HOST_NAME=localhost
+     - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.IAssetEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ICustomerEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IDeviceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IDeviceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IFilterEvent-Project:1:1
+    ports:
+     - "9092:9092"
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+     - zookeeper
+   

@@ -1,0 +1,4 @@
+[debug] Created tunnel using local port: '57050'
+
+[debug] SERVER: "127.0.0.1:57050"
+

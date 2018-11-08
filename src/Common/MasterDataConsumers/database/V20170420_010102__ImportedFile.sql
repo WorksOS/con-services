@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS ImportedFile (  
+  fk_ProjectUID varchar(36) NOT NULL,
+  ImportedFileUID varchar(36) NOT NULL,
+  fk_CustomerUID varchar(36) NOT NULL,  
+  fk_ImportedFileTypeID int(11) NOT NULL,
+  Name nvarchar(256) NOT NULL,
+  FileDescriptor varchar(1000) NOT NULL,
+  FileCreatedUTC datetime(6) NOT NULL,
+  FileUpdatedUTC datetime(6) NOT NULL,
+  ImportedBy varchar(256) NOT NULL,
+  SurveyedUTC datetime(6) DEFAULT NULL, 
+  IsDeleted tinyint(4) DEFAULT '0',
+  LastActionedUTC datetime(6) NOT NULL,
+  InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (ImportedFileUID),
+  UNIQUE KEY UIX_ImportedFile_ImportedFileUID (ImportedFileUID),
+  UNIQUE KEY UIX_ImportedFile_ProjectUID_Name_SurveyedUTC (fk_ProjectUID,Name, SurveyedUTC),
+  KEY IX_ImportedFile_ProjectUID_ImportedFileTypeID (fk_ProjectUID,fk_ImportedFileTypeID),
+  KEY IX_ImportedFile_CustomerUID_ProjectUID_ImportedFileTypeID (fk_CustomerUID,fk_ProjectUID,fk_ImportedFileTypeID)
+) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;
