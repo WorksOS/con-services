@@ -14,16 +14,16 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
-    <PackageReference Include="Apache.Ignite" Version="2.4.0" />
+    <PackageReference Include="Apache.Ignite" Version="2.6.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.csproj" />
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
     <ProjectReference Include="..\VSS.TRex.Mutable.Gateway.Common\VSS.TRex.Mutable.Gateway.Common.csproj" />
   </ItemGroup>
