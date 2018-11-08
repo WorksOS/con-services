@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Designs.TTM\VSS.TRex.Designs.TTM.csproj" />
+    <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+	<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>TAGFiles.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.3.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Apache.Ignite" Version="2.6.0" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.34.2" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.50.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Machines\VSS.TRex.Machines.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex\VSS.TRex.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\Tests.Common\Tests.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Tests\VSS.TRex.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAG-Header-Read.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAGFile-Read-File.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile-TAGFile-Read-Stream.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TAGFiles\TestTAGFile3.tag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

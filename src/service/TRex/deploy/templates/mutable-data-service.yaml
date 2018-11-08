@@ -1,0 +1,8 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "trex.deployname" . }}-mutable-data
+spec:
+  selector:
+      component: {{ template "trex.deployname" . }}-mds
+  clusterIP: None # custom value.

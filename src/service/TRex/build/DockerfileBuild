@@ -1,0 +1,35 @@
+FROM microsoft/dotnet:2.1.403-sdk-alpine3.7
+
+RUN apk --no-cache add bash nodejs nodejs-npm
+
+#Copy files from scm into build container and build
+COPY . /build/
+
+#publish TRex servers
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering
+RUN dotnet publish /build/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport
+RUN dotnet publish /build/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway
+RUN dotnet publish /build/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway
+RUN dotnet publish /build/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools
+RUN dotnet publish /build/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator
+RUN dotnet publish /build/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer
+
+
+
+#Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
+RUN cp -r /root/.nuget/packages/apache.ignite/2.6.0/libs/ /trex/libs/
+COPY ./build/ignite-kubernetes-2.6.0.jar /trex/libs/
+# This is a vss specific build of ignite with java implementation of affinity functions
+COPY ./build/ignite-corex.jar /trex/libs/
+WORKDIR /trex/libs/
+RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar
+RUN wget http://central.maven.org/maven2/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar
+RUN wget http://central.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
+RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.6.0/ignite-log4j-2.6.0.jar
+
+
+#TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile

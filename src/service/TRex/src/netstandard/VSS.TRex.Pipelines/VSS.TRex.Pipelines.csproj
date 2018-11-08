@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+    <ProjectReference Include="..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGrids\VSS.TRex.SubGrids.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

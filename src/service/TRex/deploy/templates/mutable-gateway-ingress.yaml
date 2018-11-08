@@ -1,0 +1,21 @@
+{{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
+{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "trex.deployname" . }}-mgateway
+  labels:
+    app: {{ template "trex.deployname" . }}
+  annotations:
+  {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  rules:
+    - host: trex.mutable.{{ $fdqn }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ template "trex.deployname" . }}-mgateway
+              servicePort: 80
+

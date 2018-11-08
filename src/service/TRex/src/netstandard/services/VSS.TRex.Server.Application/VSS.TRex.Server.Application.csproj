@@ -1,0 +1,188 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Cells\VSS.TRex.Cells.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Common\VSS.TRex.Common.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Compression\VSS.TRex.Compression.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Designs\VSS.TRex.Designs.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Events.Models\VSS.TRex.Events.Models.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Events\VSS.TRex.Events.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Exports\VSS.TRex.Exports.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Filters\VSS.TRex.Filters.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Machines\VSS.TRex.Machines.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Services.SurveyedSurfaces.Interfaces\VSS.TRex.Services.SurveyedSurfaces.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Services.SurveyedSurfaces\VSS.TRex.Services.SurveyedSurfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGrids\VSS.TRex.SubGrids.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Server.Interfaces\VSS.TRex.SubGridTrees.Server.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ignite-log4j.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="igniteKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

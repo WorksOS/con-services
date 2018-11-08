@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="config\java.util.logging.properties">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="igniteKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="igniteMutableKubeConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

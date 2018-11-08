@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.Caching\VSS.TRex.Caching.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Filters\VSS.TRex.Filters.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
+  </ItemGroup>
+
+</Project>

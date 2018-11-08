@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "trex.deployname" . }}-mgateway
+spec:
+  selector:
+    component: {{ template "trex.deployname" . }}-mgateway
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP

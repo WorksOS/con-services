@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Apache.Ignite" Version="2.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Services.SurveyedSurfaces.Interfaces\VSS.TRex.Services.SurveyedSurfaces.Interfaces.csproj" />
+    <ProjectReference Include="..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

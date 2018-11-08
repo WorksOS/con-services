@@ -1,0 +1,53 @@
+<h1>Upload Tag Files</h1>
+<div>
+  <p>
+    <span>
+      Org ID: <input [(ngModel)]="orgUid" type="text" value="" />
+      <button (click)="clearOrgUid()">Clear</button>
+    </span>
+    <span>
+      Project UID: <input [(ngModel)]="projectUid" type="text" value="" />
+      <button (click)="clearProjectUid()">Clear</button>
+    </span>
+  </p>
+
+  <h6>Dimensions</h6>
+  <ul>
+    <li>OrgId: 87bdf851-44c5-e311-aa77-00505688274d</li>
+    <li>ProjectUid: bea52e4f-faa2-e511-80e5-0050568821e6</li>
+  </ul>
+
+  <h6>Boone county expo</h6>
+  <ul>
+    <li>OrgId: 87bdf851-44c5-e311-aa77-00505688274d</li>
+    <li>ProjectUid: 62a52e4f-faa2-e511-80e5-0050568821e6</li>
+  </ul>
+
+</div>
+<div class="center">
+  <div>
+    <file-drop headertext="Drop files here" (onFileDrop)="dropped($event)"
+               (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+    </file-drop>
+  </div>
+  <div>
+    <button type="button" class="btn btn-success btn-xs"
+            (click)="uploadTagFiles()">
+      <span class="glyphicon glyphicon-upload"></span> Upload
+    </button>
+  </div>
+  <div class="upload-table">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody class="upload-name-style">
+        <tr *ngFor="let item of files; let i=index">
+          <td><strong>{{ item.relativePath }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,119 @@
+node ('jenkinsslave-pod') {
+
+    	// adds job parameters
+	properties([
+		parameters([
+			string(
+				defaultValue: null,
+				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
+				name: 'VSTS_BUILD_NUMBER'
+			),
+			string(
+				defaultValue: null,
+				description: 'The branch name to build',
+				name: 'BRANCH_NAME'
+			),
+		])
+	])
+
+
+    def branch = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
+    def buildNumber = env.BUILD_NUMBER
+    def jobnameparts = JOB_NAME.tokenize('/') as String[]
+    def project_name = jobnameparts[0].toLowerCase()
+    def versionNumber = branch + "-" + params.VSTS_BUILD_NUMBER
+
+	def buildContainerTag = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+	def runtimeContainerTag = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+
+	def trexComponents = [
+		"ApplicationServer",
+		"DesignElevation",
+		"MutableData",
+		"PSNode",
+		"TileRendering",
+		"TINSurfaceExport",
+		"Gateway",
+		"MutableGateway",
+		"Webtools",
+		"Utils"
+		]
+
+    //Set the build name so it is consistant with VSTS
+	currentBuild.displayName = versionNumber
+
+	stage("Prebuild Checks") {
+		if (params.VSTS_BUILD_NUMBER == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid build number supplied")
+		}
+	}
+	
+    try {
+		//Tests are done here because host volume mounts cannot be specified in the dockerfile
+		stage('Build Container') {
+			checkout scm
+			build_container = docker.build(buildContainerTag, "-f ./build/DockerfileBuild .")
+		}
+		
+        stage('Test Solution') {
+			//Create results directory in workspace
+			dir("/TestResults") {}
+			
+			// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+			// the volume to the bare metal host
+			
+			//Do not modify this unless you know the difference between ' and " in bash
+			// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
+			// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
+			def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build && ls tests/*/*/*.csproj | xargs -I@ -t dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="/TestResults/TestCoverage/" --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml" @'/$
+			
+			//Run the test command generated above
+			sh(script: testCommand)
+			
+			//List the test results - We should have some
+			sh "ls ${env.WORKSPACE}/TestResults"
+        }
+
+    } 	catch (Exception e) {
+		//force build to be success even with test failures as success/failure thresholds will be handled in finally below
+		currentBuild.result = 'SUCCESS'
+	}
+    finally {
+        //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
+        stage('Publish Results'){
+            step([$class: 'XUnitBuilder',
+                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '10']],
+                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*/*/**/*']]])
+
+        cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+        
+        //http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
+        //Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
+        //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
+        step([$class: 'TeamCollectResultsPostBuildAction', 
+            requestedResults: [
+                [includes: 'TestResults/*/*/**/*.xml', teamResultType: 'XUNIT'],
+                [includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA']
+            ]
+        ])
+        }
+    }
+
+	stage('Build Runtime Container') {
+		//TODO build common container and use that
+
+		for (int i = 0; i < trexComponents.size(); i++ ){
+			def component = trexComponents[i]
+			def imagetag = runtimeContainerTag + "." + component
+			def runtime_container = docker.build(imagetag, "-f ./build/DockerfileRuntime --build-arg BUILD_CONTAINER=${buildContainerTag} --build-arg COMPONENT=${component} .")
+			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
+			sh "docker images"
+			runtime_container.push()
+		}
+	}
+
+	stage('Publish helm chart'){
+		 archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+	}
+}

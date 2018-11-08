@@ -1,0 +1,425 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6EAD2931-5828-4D38-B141-ECF8A76E4347}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TRexApplicationServer</RootNamespace>
+    <AssemblyName>TRexApplicationServer</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Apache.Ignite, Version=2.6.0.30134, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.6.0\lib\net40\Apache.Ignite.exe</HintPath>
+    </Reference>
+    <Reference Include="Apache.Ignite.Core, Version=2.6.0.30134, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.6.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net.netcore, Version=1.2.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\log4net.netcore.3.0.0\lib\net45\log4net.netcore.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.0.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNetCore.Http.Abstractions.2.0.3\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Features, Version=2.0.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNetCore.Http.Features.2.0.3\lib\netstandard2.0\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DotNet.PlatformAbstractions, Version=2.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.DotNet.PlatformAbstractions.2.0.4\lib\net45\Microsoft.DotNet.PlatformAbstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.2.0.2\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Logging.Abstractions.2.0.2\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Options.2.0.2\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Drawing.Common.4.5.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Text.Encodings.Web.4.4.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VSS.Log4NetExtensions, Version=2.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\VSS.Log4NetExtensions.netcore.2.3.3\lib\netstandard2.0\VSS.Log4NetExtensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\interfaces\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj">
+      <Project>{3ff74fe8-c1b2-4a78-b685-99fabcd4989b}</Project>
+      <Name>VSS.TRex.Rendering.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj">
+      <Project>{c943b9d9-7331-40f9-bfcf-c2389b1b4974}</Project>
+      <Name>VSS.TRex.Analytics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Cells\VSS.TRex.Cells.csproj">
+      <Project>{37c353e7-2108-428e-a13b-56826a198b97}</Project>
+      <Name>VSS.TRex.Cells</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Common\VSS.TRex.Common.csproj">
+      <Project>{737bfd08-031b-4506-8205-947b82c6d2ba}</Project>
+      <Name>VSS.TRex.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Compression\VSS.TRex.Compression.csproj">
+      <Project>{ce39d1a3-6943-4b09-9074-86e4450f8c22}</Project>
+      <Name>VSS.TRex.Compression</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.CoordinateSystems.Interfaces\VSS.TRex.CoordinateSystems.Interfaces.csproj">
+      <Project>{4FE892A9-988E-4278-8936-1572520A586C}</Project>
+      <Name>VSS.TRex.CoordinateSystems.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj">
+      <Project>{bdee2918-72ec-448d-9a0c-60f1086202a8}</Project>
+      <Name>VSS.TRex.CoordinateSystems.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj">
+      <Project>{70A5EB23-A587-4A4B-819C-A724E078F6AA}</Project>
+      <Name>VSS.TRex.CoordinateSystems</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj">
+      <Project>{0d1d3c84-74b6-41a7-8296-bdedf3f9583f}</Project>
+      <Name>VSS.TRex.Designs.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj">
+      <Project>{211f9d49-5928-4b84-b9e6-12f4cc270adf}</Project>
+      <Name>VSS.TRex.Designs.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs\VSS.TRex.Designs.csproj">
+      <Project>{6ccbd780-2641-479b-aec0-f13907749ecf}</Project>
+      <Name>VSS.TRex.Designs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj">
+      <Project>{7071f5c6-36aa-4569-be23-f1211dc82bab}</Project>
+      <Name>VSS.TRex.DI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj">
+      <Project>{ef32db67-fbbc-48d4-a36f-41847c013a97}</Project>
+      <Name>VSS.TRex.Events.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Events.Models\VSS.TRex.Events.Models.csproj">
+      <Project>{83ff6163-19fd-4c7e-9df0-e0c15f78324b}</Project>
+      <Name>VSS.TRex.Events.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj">
+      <Project>{763a4e8f-9c42-4d3f-8188-5c7f34c0c583}</Project>
+      <Name>VSS.TRex.Events</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj">
+      <Project>{be38b653-ad52-4ac6-b12c-b5caeb18b4d3}</Project>
+      <Name>VSS.TRex.ExistenceMaps.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj">
+      <Project>{920b5030-74c9-48a9-85b2-8c09113025c2}</Project>
+      <Name>VSS.TRex.ExistenceMaps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Exports\VSS.TRex.Exports.csproj">
+      <Project>{13fa1282-4c45-44cb-bfe8-e9dd1793a0de}</Project>
+      <Name>VSS.TRex.Exports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Filters.Interfaces\VSS.TRex.Filters.Interfaces.csproj">
+      <Project>{78b63e5e-8d7b-42bc-bbfc-cacdd3838a94}</Project>
+      <Name>VSS.TRex.Filters.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Filters.Models\VSS.TRex.Filters.Models.csproj">
+      <Project>{46e7869f-f2a5-40ee-9281-bb18e24769e8}</Project>
+      <Name>VSS.TRex.Filters.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Filters\VSS.TRex.Filters.csproj">
+      <Project>{f1b8058c-7136-4f12-92ca-7db3ad7d548c}</Project>
+      <Name>VSS.TRex.Filters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj">
+      <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
+      <Name>VSS.TRex.Geometry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Interfaces\VSS.TRex.GridFabric.Interfaces.csproj">
+      <Project>{64ffe4bc-bc5f-42a7-9d71-7f726f1b08c9}</Project>
+      <Name>VSS.TRex.GridFabric.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj">
+      <Project>{7a68abbe-5cbb-4b54-ba85-93d4603fb0cb}</Project>
+      <Name>VSS.TRex.GridFabric.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj">
+      <Project>{0bf0bcd0-f93c-4a2e-bcb2-3d80b587e858}</Project>
+      <Name>VSS.TRex.GridFabric</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj">
+      <Project>{4fb06a26-18a7-4080-aebf-5197aeaba6b6}</Project>
+      <Name>VSS.TRex.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Machines.Interfaces\VSS.TRex.Machines.Interfaces.csproj">
+      <Project>{e747af05-d0dc-4a6a-b2d9-61185b5b01db}</Project>
+      <Name>VSS.TRex.Machines.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Machines\VSS.TRex.Machines.csproj">
+      <Project>{14cbb231-9fd9-4e6a-a828-c419e1c88879}</Project>
+      <Name>VSS.TRex.Machines</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj">
+      <Project>{45e4e12d-62ef-4a09-85b5-1cafa6014e2b}</Project>
+      <Name>VSS.TRex.Pipelines.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj">
+      <Project>{ebaba254-fbaf-4d73-825f-27359ec41e60}</Project>
+      <Name>VSS.TRex.Pipelines</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj">
+      <Project>{04f42031-2ede-4681-8c81-2da8dc0c583a}</Project>
+      <Name>VSS.TRex.Profiling.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj">
+      <Project>{a3f56f4f-2728-4fc8-aba6-23bcaa72c318}</Project>
+      <Name>VSS.TRex.Profiling.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj">
+      <Project>{78f19853-a3d3-4dcd-8ab5-f88650b83d3f}</Project>
+      <Name>VSS.TRex.Profiling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj">
+      <Project>{001cc650-d55d-458f-91a0-114108218772}</Project>
+      <Name>VSS.TRex.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.Designs.Interfaces\VSS.TRex.Services.Designs.Interfaces.csproj">
+      <Project>{17975eaa-a11a-4a08-8912-4d2de1aa4fd7}</Project>
+      <Name>VSS.TRex.Services.Designs.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.Designs\VSS.TRex.Services.Designs.csproj">
+      <Project>{fedb3a6f-f68f-4c39-bc0e-385c84af7319}</Project>
+      <Name>VSS.TRex.Services.Designs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.SurveyedSurfaces.Interfaces\VSS.TRex.Services.SurveyedSurfaces.Interfaces.csproj">
+      <Project>{8d4686b4-d5c3-483b-8071-c67cfe599122}</Project>
+      <Name>VSS.TRex.Services.SurveyedSurfaces.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Services.SurveyedSurfaces\VSS.TRex.Services.SurveyedSurfaces.csproj">
+      <Project>{786ee762-216e-46d3-936f-7f478693d76c}</Project>
+      <Name>VSS.TRex.Services.SurveyedSurfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj">
+      <Project>{780e0712-9e35-4fed-b936-cb86cc02ab53}</Project>
+      <Name>VSS.TRex.SiteModels.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj">
+      <Project>{A614210E-B1A6-4E02-96FC-1FF78A86C5A9}</Project>
+      <Name>VSS.TRex.SiteModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj">
+      <Project>{06b93475-a235-4f5d-a226-48e4205f9ba1}</Project>
+      <Name>VSS.TRex.Storage.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Models\VSS.TRex.Storage.Models.csproj">
+      <Project>{6c9c0264-67a6-4035-bbc2-6ab380a51c30}</Project>
+      <Name>VSS.TRex.Storage.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj">
+      <Project>{E9FFB4FA-AAF2-4EA3-93FB-82B0B38B7FA5}</Project>
+      <Name>VSS.TRex.Storage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGrids\VSS.TRex.SubGrids.csproj">
+      <Project>{b7f38df7-e2d8-4bef-8c72-e3e2becac99c}</Project>
+      <Name>VSS.TRex.SubGrids</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Client.Interfaces\VSS.TRex.SubGridTrees.Client.Interfaces.csproj">
+      <Project>{20f1835e-2e75-4327-a352-f355482aa0ff}</Project>
+      <Name>VSS.TRex.SubGridTrees.Client.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj">
+      <Project>{6b216a6b-b805-40f8-bd44-11ded7e5b2c1}</Project>
+      <Name>VSS.TRex.SubGridTrees.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj">
+      <Project>{c423088f-2b76-49f9-b601-666980a4c1c7}</Project>
+      <Name>VSS.TRex.SubGridTrees.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Interfaces\VSS.TRex.SubGridTrees.Interfaces.csproj">
+      <Project>{2da02751-d54e-4eb6-8e13-a4310aefba11}</Project>
+      <Name>VSS.TRex.SubGridTrees.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Server.Interfaces\VSS.TRex.SubGridTrees.Server.Interfaces.csproj">
+      <Project>{70ae2c13-b366-49df-aadb-80d22adc484d}</Project>
+      <Name>VSS.TRex.SubGridTrees.Server.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SubGridTrees.Server\VSS.TRex.SubGridTrees.Server.csproj">
+      <Project>{b67eae65-2e6e-4476-9fc8-20b4b3cf7470}</Project>
+      <Name>VSS.TRex.SubGridTrees.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj">
+      <Project>{cdee4496-d107-4b46-babe-8bd66a4e8434}</Project>
+      <Name>VSS.TRex.SurveyedSurfaces.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj">
+      <Project>{9f873cc8-c105-4141-ad06-9a2332d3ad7b}</Project>
+      <Name>VSS.TRex.SurveyedSurfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Volumes\VSS.TRex.Volumes.csproj">
+      <Project>{5bbd439b-f489-4ce9-9d9a-2ac9e13b1cd6}</Project>
+      <Name>VSS.TRex.Volumes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj">
+      <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
+      <Name>VSS.TRex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.TRex.Rendering.Implementations.Framework\VSS.TRex.Rendering.Implementations.Framework.csproj">
+      <Project>{663cdd68-0934-4ccb-b0ac-a47414c6b5db}</Project>
+      <Name>VSS.TRex.Rendering.Implementations.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(TargetDir)Libs"
+if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"
+xcopy /y "$(SolutionDir)build\ignite-corex.jar " "$(TargetDir)libs"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
