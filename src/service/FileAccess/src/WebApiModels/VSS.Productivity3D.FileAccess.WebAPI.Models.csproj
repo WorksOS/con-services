@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>VSS.Productivity3D.FileAccess.WebAPI.Models</AssemblyName>
+    <PackageId>FileAccessApiModels</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>VSS.Productivity3D.FileAccess.WebAPI.Models</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
+    <PackageTags>vss-productivity3d-fileaccess-service</PackageTags>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="3.7.16" />
+	    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.31.5" />
+	    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.11.2" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <NoWarn>1701;1702;1705;NU1605</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1705;NU1605</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fileaccessservice-testing
+data: 
+  TCCBASEURL: mock
+  TCCFILESPACEID: mock
+  TCCORG: vldev
+  TCCUSERNAME: vldev
+  TCCPWD: vldev_key
+  WEBAPI_DEBUG_URI: http://localhost:80/
+  WEBAPI_URI: http://localhost:80/

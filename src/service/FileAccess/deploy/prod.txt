@@ -1,0 +1,12 @@
+TCCBASEURL: https://www.myconnectedsite.com
+TCCUSERNAME: vlproduction
+TCCPWD: vlproduction_key5
+TCCORG: vlproduction
+TCCFILESPACEID: ucc083712-346e-466e-8cba-3c3eb0f9fb05
+JAEGER_AGENT_HOST: jaeger-agent.jaeger
+JAEGER_AGENT_PORT: "6831"
+JAEGER_SAMPLER_TYPE: const
+JAEGER_SERVICE_NAME: FileAccess Service
+NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
+NEW_RELIC_APP_NAME: k8s-fileaccess-service
+newrelic: "false"

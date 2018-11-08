@@ -1,0 +1,14 @@
+version: '2'
+services:
+  webapi:
+    build: ./artifacts/WebApi
+    env_file:
+     - docker-compose.env
+  accepttest:
+    build: ./AcceptanceTests/deploy
+    env_file:
+     - docker-compose.env
+    volumes:
+      - ./AcceptanceTests/deploy/testresults:/app/testresults
+    depends_on:
+      - webapi
