@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using Newtonsoft.Json.Schema;
+using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {
@@ -91,11 +92,23 @@ namespace VSS.TRex.Caching
       }
     }
 
+    /// <summary>
+    /// Invalidates an item held in the MRU list. Initially the element is just marked as invalid.
+    /// If the item being invalidated is already invalidated it is proactively removed.
+    /// </summary>
+    /// <param name="index"></param>
     public void Invalidate(int index)
     {
       lock (this)
       {
-        Items[index].Valid = false;
+        bool previousValid = Items[index].Invalidate();
+
+        if (!previousValid)
+        {
+          // As it is already invalid, to prevent recurring invalidation again and again, remove it
+          RemoveNoLock(index);
+          Items[index].RemoveFromContext();
+        }
       }
     }
 

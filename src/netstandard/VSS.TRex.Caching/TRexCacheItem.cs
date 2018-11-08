@@ -90,5 +90,27 @@ namespace VSS.TRex.Caching
     {
       Context?.RemoveFromContextTokensOnly(Item);
     }
+
+    /// <summary>
+    /// Sets the valid state of the item to true, returning the previous validity state 
+    /// </summary>
+    /// <returns></returns>
+    public bool Validate()
+    {
+      bool result = Valid;
+      Valid = true;
+      return result;
+    }
+
+    /// <summary>
+    /// Sets the valid state of the item to false, returning the previous validity state 
+    /// </summary>
+    /// <returns></returns>
+    public bool Invalidate()
+    {
+      bool result = Valid;
+      Valid = false;
+      return result;
+    }
   }
 }

@@ -95,7 +95,7 @@ namespace VSS.TRex.Caching
           return context; // It exists, return it
 
         // Create the establish the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration); 
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint); 
         Contexts.Add(contextFingerPrint, newContext);
 
         lock (ProjectContexts)
@@ -221,7 +221,8 @@ namespace VSS.TRex.Caching
         return;
 
       int numInvalidatedSubgrids = 0;
-      DateTime startTIme = DateTime.Now;
+      int numScannedSubgrids = 0;
+      DateTime startTime = DateTime.Now;
 
       // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
       // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
@@ -241,12 +242,18 @@ namespace VSS.TRex.Caching
           // Iterate across all elements in the mask:
           // 1. Locate the cache entry
           // 2. Mark it as dirty
-          mask.ScanAllSetBitsAsSubGridAddresses(origin => context.InvalidateSubgridNoLock(origin.X, origin.Y));
-          numInvalidatedSubgrids++;
+          mask.ScanAllSetBitsAsSubGridAddresses(origin =>
+          {
+            context.InvalidateSubgridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
+
+            numScannedSubgrids++;
+            if (subGridPresentForInvalidation)
+              numInvalidatedSubgrids++;
+          });
         }
       }
 
-      log.LogInformation($"Invalidated {numInvalidatedSubgrids} from {projectContexts.Count} contexts in {DateTime.Now - startTIme}");
+      log.LogInformation($"Invalidated {numInvalidatedSubgrids} out of {numScannedSubgrids} scanned subgrid from {projectContexts.Count} contexts in {DateTime.Now - startTime} [project {projectUid}]");
     }
   }
 }

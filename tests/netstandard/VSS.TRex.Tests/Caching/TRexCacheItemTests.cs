@@ -58,5 +58,35 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(prev == 1);
       Assert.True(next == 2);
     }
+
+    [Fact]
+    public void Test_TRexCacheItem_Validate()
+    {
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
+
+      item.Set(null, null, 100, 1, 2);
+      
+      Assert.False(item.Valid, "Newly created item is not valid");
+      bool previousValid = item.Validate();
+
+      Assert.False(previousValid, "previousValid not false after Validate");
+      Assert.True(item.Valid, "Item still invalid after Validate");
+    }
+
+    [Fact]
+    public void Test_TRexCacheItem_Invalidate()
+    {
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
+
+      item.Set(null, null, 100, 1, 2);
+      item.Validate();
+
+      Assert.True(item.Valid, "Newly created item is not valid");
+
+      bool previousValid = item.Invalidate();
+
+      Assert.True(previousValid, "Previous validity state not returned");
+      Assert.False(item.Valid, "Item still valid after Invalidate");
+    }
   }
 }
