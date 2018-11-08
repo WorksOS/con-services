@@ -45,7 +45,7 @@ namespace VSS.TRex.Servers
         /// </summary>
         public IgniteServer()
         {
-            SetupServerSpecificConfiguration();
+            SetupServerSpecificConfiguration(); // Todo: Virtual member call in constructor
         }
 
         /// <summary>

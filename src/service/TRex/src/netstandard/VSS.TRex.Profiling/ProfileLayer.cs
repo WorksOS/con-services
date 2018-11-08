@@ -1,4 +1,5 @@
 ﻿using System;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.CellPasses;
@@ -200,7 +201,7 @@ namespace VSS.TRex.Profiling
     /// <param name="source_"></param>
     public void Assign(IProfileLayer source_)
     {
-      ProfileLayer source = (ProfileLayer) source_;
+      ProfileLayer source = (ProfileLayer)source_;
 
       MachineID = source.MachineID;
       LastLayerPassTime = source.LastLayerPassTime;
@@ -249,6 +250,217 @@ namespace VSS.TRex.Profiling
         StartCellPassIdx = passIndex;
 
       EndCellPassIdx = passIndex;
+    }
+
+    /// <summary>
+    /// Serialises content of the cell to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteInt(StartCellPassIdx);
+      writer.WriteInt(EndCellPassIdx);
+      writer.WriteShort(MachineID);
+      writer.WriteTimestamp(LastLayerPassTime.ToUniversalTime());
+
+      writer.WriteShort(CCV);
+      writer.WriteTimestamp(CCV_Time.ToUniversalTime());
+      writer.WriteShort(CCV_MachineID);
+      writer.WriteFloat(CCV_Elev);
+      writer.WriteShort(TargetCCV);
+      writer.WriteInt(CCV_CellPassIdx);
+
+      writer.WriteShort(MDP);
+      writer.WriteTimestamp(MDP_Time.ToUniversalTime());
+      writer.WriteShort(MDP_MachineID);
+      writer.WriteFloat(MDP_Elev);
+      writer.WriteShort(TargetMDP);
+
+      writer.WriteByte(CCA);
+      writer.WriteTimestamp(CCA_Time.ToUniversalTime());
+      writer.WriteShort(CCA_MachineID);
+      writer.WriteFloat(CCA_Elev);
+      writer.WriteShort(TargetCCA);
+
+      writer.WriteByte(RadioLatency);
+      writer.WriteInt(TargetPassCount);
+      writer.WriteFloat(Thickness);
+      writer.WriteFloat(TargetThickness);
+      writer.WriteFloat(Height);
+      writer.WriteShort(RMV);
+      writer.WriteInt(Frequency);
+      writer.WriteInt(Amplitude);
+      writer.WriteInt(MaterialTemperature);
+      writer.WriteTimestamp(MaterialTemperature_Time.ToUniversalTime());
+      writer.WriteShort(MaterialTemperature_MachineID);
+      writer.WriteFloat(MaterialTemperature_Elev);
+
+      writer.WriteInt((int)Status);
+      writer.WriteFloat(MaxThickness);
+      writer.WriteInt(FilteredPassCount);
+      writer.WriteInt(FilteredHalfPassCount);
+      writer.WriteFloat(MinimumPassHeight);
+      writer.WriteFloat(MaximumPassHeight);
+      writer.WriteFloat(FirstPassHeight);
+      writer.WriteFloat(LastPassHeight);
+    }
+
+    /// <summary>
+    /// Serialises content of the cell from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      StartCellPassIdx = reader.ReadInt();
+      EndCellPassIdx = reader.ReadInt();
+      MachineID = reader.ReadShort();
+      LastLayerPassTime = reader.ReadTimestamp() ?? DateTime.Now;
+
+      CCV = reader.ReadShort();
+      CCV_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      CCV_MachineID = reader.ReadShort();
+      CCV_Elev = reader.ReadFloat();
+      TargetCCV = reader.ReadShort();
+      CCV_CellPassIdx = reader.ReadInt();
+
+      MDP = reader.ReadShort();
+      MDP_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      MDP_MachineID = reader.ReadShort();
+      MDP_Elev = reader.ReadFloat();
+      TargetMDP = reader.ReadShort();
+
+      CCA = reader.ReadByte();
+      CCA_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      CCA_MachineID = reader.ReadShort();
+      CCA_Elev = reader.ReadFloat();
+      TargetCCA = reader.ReadShort();
+
+      RadioLatency = reader.ReadByte();
+      TargetPassCount = (ushort)reader.ReadInt();
+      Thickness = reader.ReadFloat();
+      TargetThickness = reader.ReadFloat();
+      Height = reader.ReadFloat();
+      RMV = reader.ReadShort();
+      Frequency = (ushort)reader.ReadInt();
+      Amplitude = (ushort)reader.ReadInt();
+      MaterialTemperature = (ushort)reader.ReadInt();
+      MaterialTemperature_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      MaterialTemperature_MachineID = reader.ReadShort();
+      MaterialTemperature_Elev = reader.ReadFloat();
+
+      Status = (LayerStatus)reader.ReadInt();
+      MaxThickness = reader.ReadFloat();
+      FilteredPassCount = reader.ReadInt();
+      FilteredHalfPassCount = reader.ReadInt();
+      MinimumPassHeight = reader.ReadFloat();
+      MaximumPassHeight = reader.ReadFloat();
+      FirstPassHeight = reader.ReadFloat();
+      LastPassHeight = reader.ReadFloat();
+    }
+
+    protected bool Equals(ProfileLayer other)
+    {
+      return StartCellPassIdx == other.StartCellPassIdx && 
+             EndCellPassIdx == other.EndCellPassIdx && 
+             MachineID == other.MachineID && 
+             LastLayerPassTime.Equals(other.LastLayerPassTime) && 
+             CCV == other.CCV && 
+             CCV_Time.Equals(other.CCV_Time) && 
+             CCV_MachineID == other.CCV_MachineID && 
+             CCV_Elev.Equals(other.CCV_Elev) && 
+             TargetCCV == other.TargetCCV && 
+             CCV_CellPassIdx == other.CCV_CellPassIdx && 
+             MDP == other.MDP && 
+             MDP_Time.Equals(other.MDP_Time) && 
+             MDP_MachineID == other.MDP_MachineID && 
+             MDP_Elev.Equals(other.MDP_Elev) && 
+             TargetMDP == other.TargetMDP && 
+             CCA == other.CCA && 
+             CCA_Time.Equals(other.CCA_Time) && 
+             CCA_MachineID == other.CCA_MachineID && 
+             CCA_Elev.Equals(other.CCA_Elev) && 
+             TargetCCA == other.TargetCCA && 
+             RadioLatency == other.RadioLatency && 
+             TargetPassCount == other.TargetPassCount && 
+             Thickness.Equals(other.Thickness) && 
+             TargetThickness.Equals(other.TargetThickness) && 
+             Height.Equals(other.Height) && 
+             RMV == other.RMV && 
+             Frequency == other.Frequency && 
+             Amplitude == other.Amplitude && 
+             MaterialTemperature == other.MaterialTemperature && 
+             MaterialTemperature_Time.Equals(other.MaterialTemperature_Time) &&
+             MaterialTemperature_MachineID == other.MaterialTemperature_MachineID && 
+             MaterialTemperature_Elev.Equals(other.MaterialTemperature_Elev) && 
+             Status == other.Status && MaxThickness.Equals(other.MaxThickness) && 
+             FilteredPassCount == other.FilteredPassCount && 
+             FilteredHalfPassCount == other.FilteredHalfPassCount && 
+             MinimumPassHeight.Equals(other.MinimumPassHeight) && 
+             MaximumPassHeight.Equals(other.MaximumPassHeight) && 
+             FirstPassHeight.Equals(other.FirstPassHeight) && 
+             LastPassHeight.Equals(other.LastPassHeight);
+    }
+
+    public bool Equals(IProfileLayer other)
+    {
+      return Equals(other as ProfileLayer);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((ProfileLayer) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = (Owner != null ? Owner.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ StartCellPassIdx;
+        hashCode = (hashCode * 397) ^ EndCellPassIdx;
+        hashCode = (hashCode * 397) ^ MachineID.GetHashCode();
+        hashCode = (hashCode * 397) ^ LastLayerPassTime.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCV.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCV_Time.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCV_MachineID.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCV_Elev.GetHashCode();
+        hashCode = (hashCode * 397) ^ TargetCCV.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCV_CellPassIdx;
+        hashCode = (hashCode * 397) ^ MDP.GetHashCode();
+        hashCode = (hashCode * 397) ^ MDP_Time.GetHashCode();
+        hashCode = (hashCode * 397) ^ MDP_MachineID.GetHashCode();
+        hashCode = (hashCode * 397) ^ MDP_Elev.GetHashCode();
+        hashCode = (hashCode * 397) ^ TargetMDP.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCA.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCA_Time.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCA_MachineID.GetHashCode();
+        hashCode = (hashCode * 397) ^ CCA_Elev.GetHashCode();
+        hashCode = (hashCode * 397) ^ TargetCCA.GetHashCode();
+        hashCode = (hashCode * 397) ^ RadioLatency.GetHashCode();
+        hashCode = (hashCode * 397) ^ TargetPassCount.GetHashCode();
+        hashCode = (hashCode * 397) ^ Thickness.GetHashCode();
+        hashCode = (hashCode * 397) ^ TargetThickness.GetHashCode();
+        hashCode = (hashCode * 397) ^ Height.GetHashCode();
+        hashCode = (hashCode * 397) ^ RMV.GetHashCode();
+        hashCode = (hashCode * 397) ^ Frequency.GetHashCode();
+        hashCode = (hashCode * 397) ^ Amplitude.GetHashCode();
+        hashCode = (hashCode * 397) ^ MaterialTemperature.GetHashCode();
+        hashCode = (hashCode * 397) ^ MaterialTemperature_Time.GetHashCode();
+        hashCode = (hashCode * 397) ^ MaterialTemperature_MachineID.GetHashCode();
+        hashCode = (hashCode * 397) ^ MaterialTemperature_Elev.GetHashCode();
+        hashCode = (hashCode * 397) ^ (int) Status;
+        hashCode = (hashCode * 397) ^ MaxThickness.GetHashCode();
+        hashCode = (hashCode * 397) ^ FilteredPassCount;
+        hashCode = (hashCode * 397) ^ FilteredHalfPassCount;
+        hashCode = (hashCode * 397) ^ MinimumPassHeight.GetHashCode();
+        hashCode = (hashCode * 397) ^ MaximumPassHeight.GetHashCode();
+        hashCode = (hashCode * 397) ^ FirstPassHeight.GetHashCode();
+        hashCode = (hashCode * 397) ^ LastPassHeight.GetHashCode();
+        return hashCode;
+      }
     }
   }
 }

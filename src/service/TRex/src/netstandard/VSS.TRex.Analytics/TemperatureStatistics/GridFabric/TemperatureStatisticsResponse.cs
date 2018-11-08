@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+﻿using System;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Types;
@@ -8,7 +10,8 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// <summary>
 	/// The response state returned from a Temperature statistics request
 	/// </summary>
-	public class TemperatureStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>, IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>
+	public class TemperatureStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>, 
+	  IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>, IEquatable<StatisticsAnalyticsResponse>
   {
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
@@ -19,6 +22,30 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 		/// Holds last known good maximum temperature level value.
 		/// </summary>
 		public ushort LastTempRangeMax { get; set; }
+
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      base.ToBinary(writer);
+
+      writer.WriteShort((short)LastTempRangeMin);
+      writer.WriteShort((short)LastTempRangeMax);
+    }
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public override void FromBinary(IBinaryRawReader reader)
+    {
+      base.FromBinary(reader);
+
+      LastTempRangeMin = (ushort)reader.ReadShort();
+      LastTempRangeMax = (ushort)reader.ReadShort();
+    }
 
     /// <summary>
     /// Aggregate a set of Temperature statistics into this set and return the result.
@@ -55,6 +82,35 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     public TemperatureStatisticsResponse AggregateWith(TemperatureStatisticsResponse other)
     {
       return base.AggregateWith(other) as TemperatureStatisticsResponse;
+    }
+
+    protected bool Equals(TemperatureStatisticsResponse other)
+    {
+      return base.Equals(other) && LastTempRangeMin == other.LastTempRangeMin && LastTempRangeMax == other.LastTempRangeMax;
+    }
+
+    public bool Equals(StatisticsAnalyticsResponse other)
+    {
+      return Equals(other as TemperatureStatisticsResponse);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((TemperatureStatisticsResponse) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        int hashCode = base.GetHashCode();
+        hashCode = (hashCode * 397) ^ LastTempRangeMin.GetHashCode();
+        hashCode = (hashCode * 397) ^ LastTempRangeMax.GetHashCode();
+        return hashCode;
+      }
     }
   }
 }

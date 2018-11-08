@@ -55,9 +55,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             {
                 if (groupMap.TryGetValue(key.ProjectUID, out Dictionary<Guid, List<ITAGFileBufferQueueKey>> assetsDict))
                 {
-                    if (!assetsDict.TryGetValue(key.AssetID, out List<ITAGFileBufferQueueKey> keyList))
+                    if (!assetsDict.TryGetValue(key.AssetUID, out List<ITAGFileBufferQueueKey> keyList))
                     {
-                        assetsDict.Add(key.AssetID, new List<ITAGFileBufferQueueKey> { key });
+                        assetsDict.Add(key.AssetUID, new List<ITAGFileBufferQueueKey> { key });
                     }
                     else
                     {
@@ -67,13 +67,13 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         if (keyList.Count >= kMaxNumberOfTAGFilesPerBucket)
                         {
                             fullBuckets.Add(keyList.ToArray());
-                            assetsDict.Remove(key.AssetID);
+                            assetsDict.Remove(key.AssetUID);
                         }
                     }
                 }
                 else
                 {
-                    groupMap.Add(key.ProjectUID, new Dictionary<Guid, List<ITAGFileBufferQueueKey>> { { key.AssetID, new List<ITAGFileBufferQueueKey> {key} } });
+                    groupMap.Add(key.ProjectUID, new Dictionary<Guid, List<ITAGFileBufferQueueKey>> { { key.AssetUID, new List<ITAGFileBufferQueueKey> {key} } });
                 }
             }
         }
@@ -150,7 +150,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     // No full buckets - extract the first list of asset based TAG files from the grouper for the selected project
                     result = groupMap[projectID].Values.First();
-                    groupMap[projectID].Remove(result.First().AssetID);
+                    groupMap[projectID].Remove(result.First().AssetUID);
                 }
 
                 if (result.Any())

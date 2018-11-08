@@ -1,10 +1,10 @@
 ﻿using System;
-using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellPassAttributeFilterModel : IFromToBinary
+  public interface ICellPassAttributeFilterModel : IFromToBinary, IEquatable<ICellPassAttributeFilterModel>
   {
     /// <summary>
     /// RequestedGridDataType stores the type of grid data being requested at

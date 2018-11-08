@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// <summary>
     /// ID of the asset to process the TAG files into
     /// </summary>
-    // public long AssetID { get; set; } = -1;
+    // public long AssetUID { get; set; } = -1;
     public Guid AssetID { get; set; }
 
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Cluster;
+﻿using Apache.Ignite.Core.Cluster;
 
 namespace VSS.TRex.GridFabric.NodeFilters
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities;
@@ -357,5 +358,48 @@ namespace VSS.TRex.Cells
       MDP = reader.ReadInt16();
       CCA = reader.ReadByte();
     }
+
+    /// <summary>
+    /// Serialises content of the cell to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteByte(GPSModeStore);
+      writer.WriteShort(InternalSiteModelMachineIndex);
+      writer.WriteFloat(Height);
+      writer.WriteTimestamp(Time.ToUniversalTime());
+      writer.WriteShort(CCV);
+      writer.WriteByte(RadioLatency);
+      writer.WriteShort(RMV);
+      writer.WriteInt(Frequency);
+      writer.WriteInt(Amplitude);
+      writer.WriteInt(MaterialTemperature);
+      writer.WriteInt(MachineSpeed);
+      writer.WriteShort(MDP);
+      writer.WriteByte(CCA);
+    }
+
+    /// <summary>
+    /// Serialises content of the cell from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      GPSModeStore = reader.ReadByte();
+      InternalSiteModelMachineIndex = reader.ReadShort();
+      Height = reader.ReadFloat();
+      Time = reader.ReadTimestamp() ?? DateTime.Now;
+      CCV = reader.ReadShort();
+      RadioLatency = reader.ReadByte();
+      RMV = reader.ReadShort();
+      Frequency = (ushort)reader.ReadInt();
+      Amplitude = (ushort)reader.ReadInt();
+      MaterialTemperature = (ushort)reader.ReadInt();
+      MachineSpeed = (ushort)reader.ReadInt();
+      MDP = reader.ReadShort();
+      CCA = reader.ReadByte();
+    }
+
   }
 }

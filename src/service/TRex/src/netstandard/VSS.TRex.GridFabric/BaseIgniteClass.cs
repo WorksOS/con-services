@@ -3,14 +3,13 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.GridFabric
 {
     public class BaseIgniteClass
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<BaseIgniteClass>();
 
         /// <summary>
         /// Ignite instance.
@@ -54,7 +53,7 @@ namespace VSS.TRex.GridFabric
         public string GridName { get; set; }
 
         /// <summary>
-        /// Initialises the GridName and Role parameters and uses them to establish grid connectivity and compute projections
+        /// Initializes the GridName and Role parameters and uses them to establish grid connectivity and compute projections
         /// </summary>
         /// <param name="gridName"></param>
         /// <param name="role"></param>

@@ -1,15 +1,20 @@
 ﻿using System;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.GridFabric.Affinity
 {
-    /// <summary>
-    /// The key type used to drive spatial affinity key mapping for elements stored in the Ignite cache. This controls
-    /// which nodes in the PSNode layer the data for this key should reside. 
-    /// </summary>
-    public struct SubGridSpatialAffinityKey : ISubGridSpatialAffinityKey
+  /// <summary>
+  /// The key type used to drive spatial affinity key mapping for elements stored in the Ignite cache. This controls
+  /// which nodes in the PSNode layer the data for this key should reside. 
+  /// </summary>
+  public struct SubGridSpatialAffinityKey : ISubGridSpatialAffinityKey, IBinarizable, IFromToBinary, IEquatable<SubGridSpatialAffinityKey>
     {
+        private const byte versionNumber = 1;
+       
         /// <summary>
         /// The GUID for the project the subgrid data belongs to.
         /// </summary>
@@ -95,5 +100,54 @@ namespace VSS.TRex.GridFabric.Affinity
                 ? $"{ProjectUID}-{SubGridX}-{SubGridY}"
                 : $"{ProjectUID}-{SubGridX}-{SubGridY}-{SegmentIdentifier}";
         }
+
+    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
+
+    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
+
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteByte(versionNumber);
+      writer.WriteGuid(ProjectUID);
+      writer.WriteInt((int)SubGridX);
+      writer.WriteInt((int)SubGridY);
+      writer.WriteString(SegmentIdentifier);
+    }
+
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      int version = reader.ReadByte();
+
+      if (version != versionNumber)
+        throw new TRexException($"Invalid version number ({version}) in {nameof(SubGridSpatialAffinityKey)}, expected {versionNumber}");
+
+      ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+      SubGridX = (uint)reader.ReadInt();
+      SubGridY = (uint)reader.ReadInt();
+      SegmentIdentifier = reader.ReadString();
+    }
+
+      public bool Equals(SubGridSpatialAffinityKey other)
+      {
+        return ProjectUID.Equals(other.ProjectUID) && SubGridX == other.SubGridX && SubGridY == other.SubGridY && string.Equals(SegmentIdentifier, other.SegmentIdentifier);
+      }
+
+      public override bool Equals(object obj)
+      {
+        if (ReferenceEquals(null, obj)) return false;
+        return obj is SubGridSpatialAffinityKey other && Equals(other);
+      }
+
+      public override int GetHashCode()
+      {
+        unchecked
+        {
+          var hashCode = ProjectUID.GetHashCode();
+          hashCode = (hashCode * 397) ^ (int) SubGridX;
+          hashCode = (hashCode * 397) ^ (int) SubGridY;
+          hashCode = (hashCode * 397) ^ (SegmentIdentifier != null ? SegmentIdentifier.GetHashCode() : 0);
+          return hashCode;
+        }
+      }
     }
 }

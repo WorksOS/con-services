@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using System.Diagnostics;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
@@ -38,7 +37,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         private const int AddressBucketSize = 20;
 
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
         /// <summary>
         /// Local reference to the client subgrid factory
@@ -395,7 +394,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
           
             for (int i = 0; i < listCount; i++)
             {
-                // Execute a client grid request for each requester and create an array of the results
+                // Execute a client grid request for each reqeustor and create an array of the results
                 clientGrids[resultCount++] = Requestors.Select(x =>
                 {
                     ServerRequestResult result = PerformSubgridRequest(x, addresses[i], out IClientLeafSubGrid clientGrid);

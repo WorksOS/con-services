@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.GridFabric.Interfaces
 {
-    public interface IGenericASNodeRequest<TArgument, TResponse>
+    public interface IGenericASNodeRequest<in TArgument, out TResponse>
         where TResponse : class, new()
     {
         /// <summary>
