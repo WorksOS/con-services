@@ -1,0 +1,5 @@
+TCCBaseURL: https://www.myconnectedsite.com
+TCCUserName: vlbeta
+TCCOrganization: vlbeta
+TCCPassword: vlbeta_key8
+TagFileEndpoint: http://10.97.96.42:4001/api/v2/tagfiles
