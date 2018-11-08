@@ -1,13 +1,11 @@
 FROM registry.k8s.vspengg.com:80/dotnet:2.0-sdk as builder
+ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
 
-RUN chmod 777 *.sh
-
-RUN rm -rf /artifacts
-RUN dotnet publish ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp2.0
-RUN dotnet publish ./src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.0
+RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp2.0
+RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.0
 
 
 FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime
