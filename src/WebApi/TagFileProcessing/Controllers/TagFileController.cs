@@ -69,6 +69,20 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
 
+
+      //Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
+#pragma warning disable 4014
+      RequestExecutorContainerFactory
+        .Build<TagFileConnectedSiteSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+        .ProcessAsync(request).ContinueWith((task) =>
+        {
+          if (task.IsFaulted)
+          {
+            log.LogError(task.Exception,"Error Sending to Connected Site", null);
+          }
+        }, TaskContinuationOptions.OnlyOnFaulted);
+#pragma warning restore 4014
+
       ProjectData projectData = null;
 
       if (request.ProjectId != null)
@@ -105,7 +119,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       //  will need to rewrite the Trex result and handle these new codes in the Harvester.
       //  IMHO it would be nice to return the same response as for the DirectSubmission,
       //        which indicates whether a failure is permanent etc
-     
+
       return responseObj.Code == 0
         ? (IActionResult)Ok(responseObj)
         : BadRequest(responseObj);
