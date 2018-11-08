@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <PackageId>VSS.MasterData.Repositories.netcore</PackageId>
@@ -6,7 +6,6 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Repositories.netcore</Product>
     <Description>Shared lib to access Masterdata aspects in the DB</Description>
-    <VersionPrefix>2.11.18</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.MasterData.Repositories</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -23,10 +22,13 @@
     <PackageReference Include="Polly" Version="6.0.1" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.ITask.netcore" Version="2.1.*" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
-    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.32.0" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+    <ProjectReference Include="..\..\ITask\src\VSS.ITask.csproj" />
+    <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

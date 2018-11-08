@@ -1,18 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>VSS.ITask.netcore</PackageId>
-    <Authors>Merino</Authors>
-    <Company>VSS</Company>
-    <Product>VSS.ITask.netcore</Product>
-    <Description>Provides Async methods extensions (i.e. awaitable locks)</Description>
-    <VersionPrefix>2.1.0</VersionPrefix>
+    <Description>Provides support ITask interface for covariant interfaces for net core. Based on original ITask lib</Description>
+    <AssemblyTitle>ITask for dotnet core</AssemblyTitle>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>VSS.ITask</AssemblyName>
+    <AssemblyName>ITask.netcore</AssemblyName>
+    <PackageId>ITask</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

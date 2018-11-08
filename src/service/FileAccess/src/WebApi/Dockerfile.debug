@@ -1,8 +1,8 @@
-FROM microsoft/dotnet:2.0-runtime AS base
+FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM microsoft/dotnet:2.0-runtime AS build
+FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime AS build
 WORKDIR /src
 COPY ["src/WebApi/VSS.Productivity3D.FileAccess.WebAPI.csproj", "src/WebApi/"]
 COPY ["src/WebApiModels/VSS.Productivity3D.FileAccess.WebAPI.Models.csproj", "src/WebApiModels/"]

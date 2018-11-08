@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk 
+FROM registry.k8s.vspengg.com:80/dotnet:2.1-sdk
 
 COPY . /build/
 WORKDIR /build

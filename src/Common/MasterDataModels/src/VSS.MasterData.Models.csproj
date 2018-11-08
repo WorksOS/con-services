@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <PackageId>VSS.MasterData.Models.netcore</PackageId>
@@ -6,19 +6,12 @@
     <Company>VSS</Company>
     <Product>VSS.MasterData.Models.netcore</Product>
     <Description>Shared models for 3D Productivity</Description>
-    <VersionPrefix>2.34.1</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.MasterData.Models</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Package\**" />
-    <EmbeddedResource Remove="Package\**" />
-    <None Remove="Package\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.3" />
@@ -28,7 +21,6 @@
     <PackageReference Include="NodaTime" Version="2.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
   </ItemGroup>
 
@@ -42,4 +34,10 @@
     <WarningsAsErrors />
   </PropertyGroup>
 
+
+  <ItemGroup>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.4.0</Version>
+    </PackageReference>
+  </ItemGroup>
 </Project>

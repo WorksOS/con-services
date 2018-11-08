@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -12,40 +12,25 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.5.0" />  
-    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
-    <PackageReference Include="Apache.Ignite" Version="2.6.0" />
+    <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
+    <PackageReference Include="Apache.Ignite" Version="2.4.0" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.4" />
-    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.12" />
-    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.16.0" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.50.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.Exports\VSS.TRex.Exports.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric.Models\VSS.TRex.GridFabric.Models.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
-    <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex\VSS.TRex.csproj" />
-    <ProjectReference Include="..\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Mutable.Gateway.Common\VSS.TRex.Mutable.Gateway.Common.csproj" />
   </ItemGroup>
 
 
 
   <ItemGroup>
-    <None Update="igniteMutableKubeConfig.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -56,7 +41,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.1|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />

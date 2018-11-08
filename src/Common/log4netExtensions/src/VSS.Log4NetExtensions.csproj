@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <PackageId>VSS.Log4NetExtensions.netcore</PackageId>
@@ -7,7 +6,6 @@
     <Company>VSS</Company>
     <Product>VSS.Log4NetExtensions.netcore</Product>
     <Description>Can be used as an adapter between Log4Net and ASP.NET 5 logging facilities.</Description>
-    <VersionPrefix>2.4.0</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>VSS.Log4NetExtensions</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -16,8 +14,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.3" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
   </ItemGroup>
 
@@ -30,6 +34,5 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
-
-
+  
 </Project>

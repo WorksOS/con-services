@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -10,7 +10,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
     <PackageReference Include="RestSharp" Version="106.2.1" />
     <PackageReference Include="SimpleInjector" Version="4.3.0" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
   </ItemGroup>
 
 </Project>
