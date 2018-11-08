@@ -1,6 +1,4 @@
-﻿// Currently not used in caching implementation - ignore for now
-using System;
-using VSS.TRex.Caching.Interfaces;
+﻿using System;
 
 namespace VSS.TRex.Caching
 {

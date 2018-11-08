@@ -13,6 +13,21 @@ namespace VSS.TRex.Tests.SubGridTrees
         [Fact]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Creation()
         {
+            // Test the default constructor produces an AV as the bits array will be null
+            bool SawAnException = false;
+            try
+            {
+                SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits();
+                bits.Bits[0] = 0;
+            }
+            catch (Exception E)
+            {
+              SawAnException = true;
+                Assert.True(E is NullReferenceException, "Unexpected exception, should be NullReferenceException");
+            }
+
+            Assert.True(SawAnException, "Did not see an exception as expected.");
+
             // Test the constructor with filled false produces bitmask with all bits set to off
             SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
             Assert.True(bits2.IsEmpty() && !bits2.IsFull(), "Bits is not empty as expected");
@@ -469,14 +484,5 @@ namespace VSS.TRex.Tests.SubGridTrees
             bits.Fill();
             Assert.Equal(bits.SumBitRows(), SubGridTreeBitmapSubGridBits.SumBitRowsFullCount);
         }
-
-      [Fact]
-      public void Test_SubGridTreeBitmapSubGridBitsTests_IndicativeSizeInBytes()
-      {
-        SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
-
-        Assert.True(bits.Bits.Length == 32, "Bits does not contain 32 by 32 bit uints");
-        Assert.True(bits.IndicativeSizeInBytes() == 4 * bits.Bits.Length, "Bits does not contain 32 by 32 bit uints");
-      }
     }
 }

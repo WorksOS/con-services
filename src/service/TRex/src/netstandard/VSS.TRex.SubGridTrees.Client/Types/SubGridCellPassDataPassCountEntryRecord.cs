@@ -19,24 +19,18 @@ namespace VSS.TRex.SubGridTrees.Types
     public ushort TargetPassCount { get; set; }
 
     /// <summary>
-    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    ///  Constractor with arguments.
     /// </summary>
-    /// <returns></returns>
-    public static int IndicativeSizeInBytes() => 2 * sizeof(ushort);
-
-      /// <summary>
-      ///  Constructor with arguments.
-      /// </summary>
-      /// <param name="measuredPassCount"></param>
-      /// <param name="targetPassCount"></param>
-      public SubGridCellPassDataPassCountEntryRecord(ushort measuredPassCount, ushort targetPassCount)
+    /// <param name="measuredPassCount"></param>
+    /// <param name="targetPassCount"></param>
+    public SubGridCellPassDataPassCountEntryRecord(ushort measuredPassCount, ushort targetPassCount)
     {
       MeasuredPassCount = measuredPassCount;
       TargetPassCount = targetPassCount;
     }
 
     /// <summary>
-    /// Initializes the measured and target Pass Count properties with null values.
+    /// Initialises the measured and target Pass Count properties with null values.
     /// </summary>
     public void Clear()
     {
@@ -45,7 +39,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serializes content of the cell to the writer
+    /// Serialises content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -55,7 +49,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serializes content of the cell from the writer
+    /// Serialises comtent of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
@@ -65,7 +59,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Defines a publicly accessible null value for this cell value type
+    /// Defines a publically accessible null value for this cell value type
     /// </summary>
     public static SubGridCellPassDataPassCountEntryRecord NullValue = Null();
 

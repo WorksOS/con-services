@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 
-namespace VSS.TRex.SubGrids.GridFabric.Requests
+namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
     /// Performs subgrid requests where the processing result is aggregated and returned as one of set of partitioned responses
@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         }
 
         /// <summary>
-        /// Overrides the base Execute() semantics to add a listener available for aggregated processing of subgrids in the request engine.
+        /// Overrides the base Execute() semantics to add a listener available for aggregative processing of subgrids in the request engine.
         /// </summary>
         /// <returns></returns>
         public override ICollection<TSubGridRequestsResponse> Execute()
@@ -59,10 +59,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubgridRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
+                Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubgidRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
-            // Advise the pipeline of all the subgrids that were examined in the aggregated processing
+            // Advise the pipeline of all the subgrids that were examined in the aggregative processing
             Task.PipeLine.SubgridsProcessed(taskResult.NumSubgridsExamined);
 
             // Notify the pipeline that all processing has been completed for it

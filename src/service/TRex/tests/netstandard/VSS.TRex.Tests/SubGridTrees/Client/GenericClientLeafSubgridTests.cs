@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     static int GridDataTypeCount = GetGridDataTypeCount();
 
     private const int kGridDataTypeCount_Expected = 11;
-    private const int kGridDataTypeCount = 29;
+    private const int kGridDataTypeCount = 28;
 
     /// <summary>
     /// Which grid data types have implementations that should be tested?
@@ -154,39 +154,6 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
         else
           Assert.True(clientGrid.CellHasValue(x, y), "Cell does not have value when it should");
       });
-    }
-
-    [Theory]
-    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
-    public void Test_GenericClientLeafSubgrid_Implements_IndicativeSizeInBytes(GridDataType gridDataType)
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
-
-      Assert.True(clientGrid.IndicativeSizeInBytes() > 0, "Indicative size in bytes is <= 0!");
-    }
-
-    [Theory]
-    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
-    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid(GridDataType gridDataType)
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
-
-      clientGrid.AssignFromCachedPreProcessedClientSubgrid(clientGrid, clientGrid.FilterMap);
-
-      // If we get here it's all good!
-      Assert.True(true, "");
-    }
-
-    [Theory]
-    [MemberData(nameof(ClientLeafDataTypes_ExpectedOnly), parameters: kGridDataTypeCount_Expected)]
-    public void Test_GenericClientLeafSubgrid_Implements_AssignFromCachedPreProcessedClientSubgrid2(GridDataType gridDataType)
-    {
-      var clientGrid = ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
-
-      clientGrid.AssignFromCachedPreProcessedClientSubgrid(clientGrid);
-
-      // If we get here it's all good!
-      Assert.True(true, "");
     }
   }
 }

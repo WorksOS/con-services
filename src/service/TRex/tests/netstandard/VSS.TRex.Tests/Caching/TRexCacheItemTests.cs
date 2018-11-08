@@ -1,11 +1,10 @@
-﻿using VSS.TRex.Caching;
-using VSS.TRex.Caching.Interfaces;
-using VSS.TRex.Tests.TestFixtures;
+﻿using System;
+using VSS.TRex.Caching;
 using Xunit;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexCacheItemTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+  public class TRexCacheItemTests
   {
     [Fact]
     public void Test_TRexCacheItem_Creation_Default()
@@ -21,11 +20,8 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexCacheItem_Creation_Specific()
     {
-      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(10, 5);
-      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
-
       var theObject = new TRexSpatialMemoryCacheContextTests_Element();
-      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>(theObject, dummyCache, 100, 1, 2);
+      TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>(theObject, null, 100, 1, 2);
 
       Assert.True(ReferenceEquals(item.Item, theObject));
       Assert.True(item.Prev == 1);
@@ -50,6 +46,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexCacheItem_GetPrevAndNext()
     {
+      object theObject = new Object();
       TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
       
       item.Set(null, null, 100, 1, 2);

@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.Caching.Interfaces;
+﻿using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -11,34 +10,20 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
-    public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
+    public ITRexSpatialMemoryCache OwnerMemoryCache { get; private set; }
 
-    public IGenericSubGridTree_Int ContextTokens { get; }
+    public IGenericSubGridTree_Int ContextTokens { get; private set; }
 
-    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
+    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
 
     private int tokenCount;
-    public int TokenCount => tokenCount;
-
-    public TimeSpan CacheDurationTime { get; }
-
-    /// <summary>
-    /// The default cache expiry time period for new contexts
-    /// </summary>
-    public static readonly TimeSpan NullCacheTimeSpan = TimeSpan.FromDays(1000);
+    public int TokenCount { get => tokenCount; }
 
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
-      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan)
-    {
-    }
-
-    public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
-      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList,
-      TimeSpan cacheDurationTime)
+                                         ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList)
     {
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
-      CacheDurationTime = cacheDurationTime;
       OwnerMemoryCache = ownerMemoryCache;
     }
 
@@ -52,8 +37,8 @@ namespace VSS.TRex.Caching
     {
       lock (this)
       {
-        uint x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-        uint y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+        uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
         // Add the element to storage and obtain its index in that storage, inserting it into the context
         // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
@@ -80,8 +65,8 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Remove(ITRexMemoryCacheItem element)
     {
-      uint x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint x = element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       lock (this)
       {
@@ -105,10 +90,8 @@ namespace VSS.TRex.Caching
       {
         int index = ContextTokens[x, y];
 
-        if (index == 0)
-          return null;
-
-        return MRUList.Get(index - 1);
+        // Note: Adjust for the 1-based index obtained from ContextTokens
+        return index == 0 ? null : MRUList.Get(index - 1);
       }
     }
 
@@ -119,8 +102,8 @@ namespace VSS.TRex.Caching
     /// <param name="item"></param>
     public void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item)
     {
-      uint x = item.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
-      uint y = item.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint x = item.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = item.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       ContextTokens[x, y] = 0;
       OwnerMemoryCache.ItemRemovedFromContext(item.IndicativeSizeInBytes());

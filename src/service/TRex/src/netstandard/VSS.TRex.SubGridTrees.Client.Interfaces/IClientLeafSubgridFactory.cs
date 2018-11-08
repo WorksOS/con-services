@@ -22,7 +22,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
         /// <summary>
         /// Construct a concrete instance of a subgrid implementing the IClientLeafSubGrid interface based
         /// on the role it should play according to the grid data type requested. All aspects of leaf ownership
-        /// by a subgrid tree, parentage, level, cell size, index origin offset are delegated responsibilities
+        /// by a subgrid tree, parentage, level, cellsize, indexoriginoffset are delegated responsibilities
         /// of the caller or a derived factory class
         /// </summary>
         /// <param name="gridDataType"></param>

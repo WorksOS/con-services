@@ -131,7 +131,7 @@ namespace VSS.TRex.Designs.Storage
         /// <returns></returns>
         public override string ToString()
         {
-            return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID}; {DesignDescriptor.FileSpace};{DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
+            return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID};{DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{Extents}]";
         }
 
         /// <summary>

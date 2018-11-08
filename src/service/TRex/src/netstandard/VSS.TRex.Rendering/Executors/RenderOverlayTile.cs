@@ -506,10 +506,7 @@ namespace VSS.TRex.Rendering.Executors
         BoundingIntegerExtent2D CellExtents = new BoundingIntegerExtent2D((int) CellExtents_MinX, (int) CellExtents_MinY, (int) CellExtents_MaxX, (int) CellExtents_MaxY);
         CellExtents.Expand(1);
 
-        // Create the filter set for the request execution. Only include the second filter if the mode supports it
-        bool ModeRequiresTwoFilters = Mode == DisplayMode.VolumeCoverage;
-
-        IFilterSet Filters = ModeRequiresTwoFilters ? new FilterSet(Filter1, Filter2) : new FilterSet(Filter1);
+        IFilterSet Filters = new FilterSet(Filter1, Filter2);
 
         // Construct PipelineProcessor
         IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(

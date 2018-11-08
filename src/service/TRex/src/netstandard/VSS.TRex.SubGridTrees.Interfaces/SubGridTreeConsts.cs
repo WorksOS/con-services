@@ -33,10 +33,10 @@
     public const int SubGridTreeCellsPerSubgrid = SubGridTreeDimension * SubGridTreeDimension;
 
     /// <summary>
-    /// The number of cells on-the-ground a single cell in the
-    /// root a sub grid tree node spans in the X and Y dimensions. Each level down
-    /// will represent a smaller fraction of these on-the-ground cells given by
-    /// (1/ kSubGridTreeDimension)
+    // The number of cells on-the-ground a single cell in the
+    // root a sub grid tree node spans in the X and Y dimensions. Each level down
+    // will represent a smaller fraction of these on-the-ground cells given by
+    // (1/ kSubGridTreeDimension)
     /// </summary>
     public const uint RootSubGridCellSize = 1 << ((SubGridTreeLevels - 1) * SubGridIndexBitsPerLevel);
 

@@ -1,7 +1,4 @@
-﻿using System;
-using VSS.TRex.Caching.Interfaces;
-
-namespace VSS.TRex.Caching
+﻿namespace VSS.TRex.Caching
 {
   /// <summary>
   /// Provides a wrapper around items stored in the cache to facilitate LRU/MRU management
@@ -18,16 +15,6 @@ namespace VSS.TRex.Caching
     /// The token assigned to this item by the cache item store
     /// </summary>   
     public long MRUEpochToken; // No get/set semantics on purpose as this is a struct
-
-    /// <summary>
-    /// The time at which the cached item is no longer valid and will not be returned on a Get() call
-    /// </summary>
-    public DateTime ExpiryTime { get; internal set; }
-
-    /// <summary>
-    /// Determines if the cached item has hit it's expiry time
-    /// </summary>
-    public bool Expired => ExpiryTime < DateTime.Now;
 
     /// <summary>
     /// The context to which this cached item belongs
@@ -50,7 +37,6 @@ namespace VSS.TRex.Caching
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
-      ExpiryTime = DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
     }
@@ -60,7 +46,6 @@ namespace VSS.TRex.Caching
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
-      ExpiryTime = context == null ? DateTime.MinValue : DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
     }

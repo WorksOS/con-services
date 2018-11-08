@@ -18,13 +18,19 @@ namespace VSS.TRex.SubGridTrees.Client
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
+    /// First pass map records which cells hold cell pass heights that were derived
+    /// from the first pass a machine made over the corresponding cell
+    /// </summary>
+    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+    /// <summary>
     /// Surveyed surface map records which cells hold cell pass heights that were derived
     /// from a surveyed surface
     /// </summary>
     public SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// Initilise the null cell values for the client subgrid
     /// </summary>
     static ClientHeightLeafSubGrid()
     {
@@ -132,7 +138,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY] != Consts.NullHeight;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in this client leaf subgrid
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override float NullCell() => Consts.NullHeight;
@@ -144,6 +150,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Clear();
 
+      FirstPassMap.Clear();
       SurveyedSurfaceMap.Clear();
     }
 
@@ -177,6 +184,34 @@ namespace VSS.TRex.SubGridTrees.Client
       */
     }
 
+    /*
+            /// <summary>
+            /// Reads an elevation client leaf sub grid from a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Read(BinaryFormatter formatter, Stream stream)
+            {
+                base.Read(formatter, stream);
+
+                FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
+                SurveyedSurfaceMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
+            }
+
+            /// <summary>
+            /// Writes an elevation client leaf sub grid to a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Write(BinaryFormatter formatter, Stream stream)
+            {
+                base.Write(formatter, stream);
+
+                formatter.Serialize(stream, FirstPassMap);
+                formatter.Serialize(stream, SurveyedSurfaceMap);
+            }
+    */
+
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
     /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
@@ -188,6 +223,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
+      FirstPassMap.Write(writer, buffer);
       SurveyedSurfaceMap.Write(writer, buffer);
 
       Buffer.BlockCopy(Cells, 0, buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
@@ -205,6 +241,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
+      FirstPassMap.Read(reader, buffer);
       SurveyedSurfaceMap.Read(reader, buffer);
 
       reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float));
@@ -214,17 +251,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Sets all elevations in the height client leaf sub grid to zero (not null)
     /// </summary>
-    public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0);
-
-    /// <summary>
-    /// Return an indicative size for memory consumption of this class to be used in cache tracking
-    /// </summary>
-    /// <returns></returns>
-    public override int IndicativeSizeInBytes()
-    {
-      return base.IndicativeSizeInBytes() + 
-             SurveyedSurfaceMap.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(float);
-    }
+    public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0); 
   }
 }

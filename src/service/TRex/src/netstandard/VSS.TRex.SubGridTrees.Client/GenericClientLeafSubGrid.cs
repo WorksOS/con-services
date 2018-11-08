@@ -53,7 +53,7 @@ namespace VSS.TRex.SubGridTrees.Client
         public T[,] Clone2DArray()
         {
           T[,] result = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-          Array.Copy(Cells, 0, result, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
+          Array.Copy(Cells, 0, result, 0, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension);
        
           return result;
         }
@@ -106,35 +106,6 @@ namespace VSS.TRex.SubGridTrees.Client
           // Cells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
         }
 
-        /// <summary>
-        /// Assign cell information from a previously cached result held in the general subgrid result cache
-        /// using the supplied map to control which cells from the caches subgrid should be copied into this
-        /// client leaf sub grid
-        /// </summary>
-        /// <param name="source"></param>
-        public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
-        {
-          Array.Copy(((GenericClientLeafSubGrid<T>)source).Cells, Cells, SubGridTreeConsts.CellsPerSubgrid);
-        }
-
-        /// <summary>
-        /// Assign cell information from a previously cached result held in the general subgrid result cache
-        /// using the supplied map to control which cells from the caches subgrid should be copied into this
-        /// client leaf sub grid
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="map"></param>
-        public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
-        {
-          if (map.IsFull())
-            AssignFromCachedPreProcessedClientSubgrid(source);
-          else
-          {
-            var subGrid = (GenericClientLeafSubGrid<T>)source;
-            map.ForEachSetBit((x, y) => Cells[x, y] = subGrid.Cells[x, y]);
-          }
-        }
-
     /*
             /// <summary>
             /// Write the contents of leaf sub grid using the supplied formatter
@@ -173,12 +144,12 @@ namespace VSS.TRex.SubGridTrees.Client
         /// Assign 
         /// </summary>
         /// <param name="source"></param>
-        public void Assign_(IGenericClientLeafSubGrid<T> source)
+        public void Assign(GenericClientLeafSubGrid<T> source)
         {
             base.Assign(source);
 
             // Derived classes are responsible for performing assignation of the Cells structure as they can use optimal methods such as BlockCopy()
             // ForEach((x, y) => Cells[x, y] = source.Cells[x, y]);
         }
-    }
+  }
 }

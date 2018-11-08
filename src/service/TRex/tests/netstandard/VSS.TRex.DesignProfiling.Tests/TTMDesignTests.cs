@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Enumeration;
 using VSS.TRex.Designs;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -11,6 +12,8 @@ namespace VSS.TRex.DesignProfiling.Tests
   public class TTMDesignTests : IClassFixture<DILoggingFixture>
   {
     private readonly ITestOutputHelper output;
+    public const string testFilePath = "TestData";
+    public const string testFileName = "Bug36372.ttm";
 
     public TTMDesignTests(ITestOutputHelper output)
     {
@@ -19,148 +22,148 @@ namespace VSS.TRex.DesignProfiling.Tests
 
     private static TTMDesign design;
 
-        private void LoadTheDesign()
+    private void LoadTheDesign(string filePath = testFilePath, string fileName = testFileName)
+    {
+      lock (this)
+      {
+        if (design == null)
         {
-          lock (this)
-          {
-            if (design == null)
-            {
-              design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-              design.LoadFromFile(Path.Combine("TestData", "Bug36372.ttm"));
-            }
-          }
+          design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+          design.LoadFromFile(Path.Combine(filePath, fileName));
         }
+      }
+    }
 
-        [Fact(Skip = "not implemented")]
-        public void CreateAccessContextTest()
-        {
-        }
+    [Fact(Skip = "not implemented")]
+    public void CreateAccessContextTest()
+    {
+    }
 
-        [Fact(Skip = "not implemented")]
-        public void ComputeFilterPatchTest()
-        {
-        }
+    [Fact(Skip = "not implemented")]
+    public void ComputeFilterPatchTest()
+    {
+    }
 
-        [Fact()]
-        public void TTMDesignTest()
-        {
-            try
-            {
-                TTMDesign localDesign = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+    [Fact()]
+    public void TTMDesignTest()
+    {
+      try
+      {
+        TTMDesign localDesign = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
 
-                Assert.NotNull(localDesign);
-            }
-            catch (Exception)
-            {
-                Assert.False(true);
-            }
-        }
+        Assert.NotNull(localDesign);
+      }
+      catch (Exception)
+      {
+        Assert.False(true);
+      }
+    }
 
-        [Fact()]
-        public void GetExtentsTest()
-        {
-            LoadTheDesign();
+    [Fact()]
+    public void GetExtentsTest()
+    {
+      LoadTheDesign();
 
-            design.GetExtents(out double x1, out double y1, out double x2, out double y2);
+      design.GetExtents(out double x1, out double y1, out double x2, out double y2);
 
-            Assert.NotEqual(x1, Common.Consts.NullReal);
-            Assert.NotEqual(y1, Common.Consts.NullReal);
-            Assert.NotEqual(x2, Common.Consts.NullReal);
-            Assert.NotEqual(y2, Common.Consts.NullReal);
-        }
+      Assert.NotEqual(x1, Common.Consts.NullReal);
+      Assert.NotEqual(y1, Common.Consts.NullReal);
+      Assert.NotEqual(x2, Common.Consts.NullReal);
+      Assert.NotEqual(y2, Common.Consts.NullReal);
+    }
 
-        [Fact()]
-        public void GetHeightRangeTest()
-        {
-            LoadTheDesign();
+    [Fact()]
+    public void GetHeightRangeTest()
+    {
+      LoadTheDesign();
 
-            design.GetHeightRange(out double z1, out double z2);
+      design.GetHeightRange(out double z1, out double z2);
 
-            Assert.NotEqual(z1, Common.Consts.NullReal);
-            Assert.NotEqual(z2, Common.Consts.NullReal);
-            Assert.True(z2 >= z1, "Z2 is below Z1");
-        }
+      Assert.NotEqual(z1, Common.Consts.NullReal);
+      Assert.NotEqual(z2, Common.Consts.NullReal);
+      Assert.True(z2 >= z1, "Z2 is below Z1");
+    }
 
-        [Fact(Skip = "not implemented")]
-        public void HasElevationDataForSubGridPatchTest()
-        {
-        }
+    [Fact(Skip = "not implemented")]
+    public void HasElevationDataForSubGridPatchTest()
+    {
+    }
 
-        [Fact(Skip = "not implemented")]
-        public void HasElevationDataForSubGridPatchTest1()
-        {
-        }
+    [Fact(Skip = "not implemented")]
+    public void HasElevationDataForSubGridPatchTest1()
+    {
+    }
 
-        [Fact(Skip = "not implemented")]
-        public void HasFiltrationDataForSubGridPatchTest()
-        {
-        }
+    [Fact(Skip = "not implemented")]
+    public void HasFiltrationDataForSubGridPatchTest()
+    {
+    }
 
-        [Fact(Skip = "not implemented")]
-        public void HasFiltrationDataForSubGridPatchTest1()
-        {
-        }
+    [Fact(Skip = "not implemented")]
+    public void HasFiltrationDataForSubGridPatchTest1()
+    {
+    }
 
-        [Theory]
-        [InlineData(247500.0, 193350.0, 29.875899875665258)]
-        public void InterpolateHeightTest(double probeX, double probeY, double expectedZ)
-        {
-            LoadTheDesign();
+    [Theory]
+    [InlineData(247500.0, 193350.0, 29.875899875665258)]
+    public void InterpolateHeightTest(double probeX, double probeY, double expectedZ)
+    {
+      LoadTheDesign();
 
-            int Hint = -1;
+      int Hint = -1;
 
-            bool result = design.InterpolateHeight(ref Hint, probeX, probeY, 0, out double Z);
+      bool result = design.InterpolateHeight(ref Hint, probeX, probeY, 0, out double Z);
 
-            Assert.True(result, "Height interpolation returned false");
+      Assert.True(result, "Height interpolation returned false");
 
-            Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
-        }
+      Assert.True(Math.Abs(Z - expectedZ) < 0.001, $"Interpolated height value is incorrect, expected {expectedZ}");
+    }
 
-        [Theory]
-        [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTest(double probeX, double probeY)
-        {
-            LoadTheDesign();
-            float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+    [Theory]
+    [InlineData(247500.0, 193350.0)]
+    public void InterpolateHeightsTest(double probeX, double probeY)
+    {
+      LoadTheDesign();
+      float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
-            bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTreeConsts.DefaultCellSize, 0);
+      bool result = design.InterpolateHeights(Patch, probeX, probeY, SubGridTreeConsts.DefaultCellSize, 0);
 
-            Assert.True(result, "Heights interpolation returned false");
-        }
+      Assert.True(result, "Heights interpolation returned false");
+    }
 
-        [Theory]
-        [InlineData(247500.0, 193350.0)]
-        public void InterpolateHeightsTestPerf(double probeX, double probeY)
-        {
-            LoadTheDesign();
+    [Theory]
+    [InlineData(247500.0, 193350.0)]
+    public void InterpolateHeightsTestPerf(double probeX, double probeY)
+    {
+      LoadTheDesign();
 
-            float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+      float[,] Patch = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
-          DateTime _start = DateTime.Now;
-            for (int i = 0; i < 10000; i++)
-                design.InterpolateHeights(Patch, probeX, probeY, SubGridTreeConsts.DefaultCellSize, 0);
-          DateTime _end = DateTime.Now;
+      DateTime _start = DateTime.Now;
+      for (int i = 0; i < 10000; i++)
+        design.InterpolateHeights(Patch, probeX, probeY, SubGridTreeConsts.DefaultCellSize, 0);
+      DateTime _end = DateTime.Now;
 
-          output.WriteLine( $"Perf Test: Duration for 10000 patch requests: {_end - _start}");
-          Assert.True(true);
-        }
+      output.WriteLine($"Perf Test: Duration for 10000 patch requests: {_end - _start}");
+      Assert.True(true);
+    }
 
-        [Fact]
-        public void LoadFromFileTest()
-        {
-            LoadTheDesign();
+    [Fact]
+    public void LoadFromFileTest()
+    {
+      LoadTheDesign();
 
-            Assert.True(design.Data.Triangles.Items.Length > 0, "No triangles present in loaded TTM file.");
-            Assert.True(design.Data.Vertices.Items.Length > 0, "No vertices present in loaded TTM file.");
-        }
+      Assert.True(design.Data.Triangles.Items.Length > 0, "No triangles present in loaded TTM file.");
+      Assert.True(design.Data.Vertices.Items.Length > 0, "No vertices present in loaded TTM file.");
+    }
 
-        [Fact]
-        public void SubgridOverlayIndexTest()
-        {
-            LoadTheDesign();
+    [Fact]
+    public void SubgridOverlayIndexTest()
+    {
+      LoadTheDesign();
 
-            Assert.NotNull(design.SubgridOverlayIndex());
-        }
+      Assert.NotNull(design.SubgridOverlayIndex());
+    }
 
     private void LoadTheGiantDesign()
     {

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.TRex.Caching.Interfaces
+namespace VSS.TRex.Caching
 {
   public interface ITRexSpatialMemoryCacheContext
   {
@@ -20,7 +20,5 @@ namespace VSS.TRex.Caching.Interfaces
     ITRexMemoryCacheItem Get(uint originX, uint originY);
 
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
-
-    TimeSpan CacheDurationTime { get; }
   }
 }

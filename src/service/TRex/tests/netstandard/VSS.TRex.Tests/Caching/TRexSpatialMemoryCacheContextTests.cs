@@ -1,12 +1,10 @@
 ﻿using VSS.TRex.Caching;
-using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexSpatialMemoryCacheContextTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+  public class TRexSpatialMemoryCacheContextTests
   {
     [Fact]
     public void Test_TRexSpatialMemoryCacheContext_Creation_Default()
@@ -37,14 +35,14 @@ namespace VSS.TRex.Tests.Caching
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
-      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
+      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, OriginX = 2000, OriginY = 3000 };
       context.Add(element);
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");
       Assert.True(context.MRUList.TokenCount == 1, $"MRU list count incorrect (= {context.MRUList.TokenCount})");
 
       // Check the newly added element in the context is present in the context map with a 1-based index
-      int token = context.ContextTokens[element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel];
+      int token = context.ContextTokens[element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel];
       Assert.True(token == 1, "Single newly added element does not have index of 1 present in ContextTokens");
     }
 
@@ -55,18 +53,18 @@ namespace VSS.TRex.Tests.Caching
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
-      var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
+      var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, OriginX = 2000, OriginY = 3000};
       context.Add(element);
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");
       Assert.True(context.MRUList.TokenCount == 1, $"MRU list count incorrect (= {context.MRUList.TokenCount})");
 
       // Check the newly added element in the context is present in the context map with a 1-based index
-      Assert.True(context.ContextTokens[element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] == 1, "Single newly added element does not have index of 1 present in ContextTokens");
+      Assert.True(context.ContextTokens[element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] == 1, "Single newly added element does not have index of 1 present in ContextTokens");
 
       context.Remove(element);
 
-      Assert.True(context.ContextTokens[element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] == 0, "Removed element did not reset ContextTokens index to 0");
+      Assert.True(context.ContextTokens[element.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] == 0, "Removed element did not reset ContextTokens index to 0");
     }
 
     [Fact]
@@ -76,7 +74,7 @@ namespace VSS.TRex.Tests.Caching
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
-      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
+      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, OriginX = 2000, OriginY = 3000 };
 
       Assert.True(context.Add(element), "Result is false on addition of first element");
       Assert.False(context.Add(element), "Result is true on second addition of same element");

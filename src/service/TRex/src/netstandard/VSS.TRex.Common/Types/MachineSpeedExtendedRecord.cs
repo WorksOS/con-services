@@ -18,18 +18,12 @@ namespace VSS.TRex.Types
 	  /// </summary>
 	  public ushort Max { get; set; }
 
-	  /// <summary>
-	  /// Return an indicative size for memory consumption of this class to be used in cache tracking
-	  /// </summary>
-	  /// <returns></returns>
-	  public static int IndicativeSizeInBytes() => 2 * sizeof(ushort);
-
-	  /// <summary>
-    /// Constructor with arguments.
-    /// </summary>
-    /// <param name="min"></param>
-    /// <param name="max"></param>
-    public MachineSpeedExtendedRecord(ushort min, ushort max)
+		/// <summary>
+		/// Constractor with arguments.
+		/// </summary>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		public MachineSpeedExtendedRecord(ushort min, ushort max)
 		{
 			Min = min;
 			Max = max;

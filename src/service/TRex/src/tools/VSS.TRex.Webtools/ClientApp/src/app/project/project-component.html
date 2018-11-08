@@ -23,9 +23,7 @@
   </select> Timed call took {{timerTotalTime}}ms
 </p>
 <button (click)="getTile()">Render</button>
-<button (click)="getTileXTimes(10)">Render 10x</button>
-<button (click)="getTileXTimes(100)">100x</button>
-<button (click)="getTileXTimes(1000)">1000x</button>
+<button (click)="getTile10x()">Render 10x</button>
 <button (click)="zoomAll()">Zoom All</button>
 <button (click)="zoomIn()">Zoom In</button>
 <button (click)="zoomOut()">Zoom Out</button>
@@ -68,12 +66,13 @@
   Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} with offset {{surveyedSurface.designDescriptor.offset}} from file {{surveyedSurface.designDescriptor.fileName}}
 </p>
 <br />
-<H3>Designs [{{designs.length}} in total]</H3>
-<p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" /></p>
-<p><button (click)=addNewDesign()>Add New Design</button> <button (click)="addADummyDesign()">Add a dummy!</button></p>
+<H3>Design Surfaces [{{designs.length}} in total]</H3>
+<p><button (click)="addADummyDesign()">Add a dummy!</button></p>
+<p><button (click)=addNewDesign()>Add New Design</button>    Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /></p>
+<p><button (click)=addNewDesignFromS3()>Add New Design from S3</button>    Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /> DesignUID: <input [(ngModel)]="designUID" type="text" value="" /></p>
 <p *ngFor="let design of designs">
   <button (click)="deleteDesign(design)">Delete</button>
-  Design: {{ design.id }} with offset {{design.designDescriptor.offset}} from file {{design.designDescriptor.fileName}}
+  Design: {{ design.id }} from file {{design.designDescriptor.fileName}}
 </p>
 <br />
 <H3>Machine Events</H3>

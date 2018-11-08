@@ -8,7 +8,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Rendering.Executors.Tasks
 {
   /// <summary>
-  /// A Task specialized towards rendering subgrid based information onto Plan View Map tiles
+  /// A Task specialised towards rendering subgrid based information onto Plan View Map tiles
   /// </summary>
   public class PVMRenderingTask : PipelinedSubGridTask, IPVMRenderingTask
   {
@@ -23,7 +23,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         { }
 
         /// <summary>
-        /// Constructs the PVM rendering task to accept subgrids returning from the processing engine
+        /// Constructs the PVM renderering task to accept subgrids returning from the processing engine
         /// </summary>
         /// <param name="requestDescriptor"></param>
         /// <param name="tRexNodeId"></param>

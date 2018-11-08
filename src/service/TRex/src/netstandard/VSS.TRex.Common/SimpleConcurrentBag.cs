@@ -93,7 +93,7 @@ namespace VSS.TRex.Common
     }
 
     /// <summary>
-    /// Remove an item from the concurrent bag. If no item is available to be removed then return value, true otherwise
+    /// Remove an item from the concurrent bag. If no item is available to be removed then return falue, true otherwise
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>

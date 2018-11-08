@@ -111,34 +111,5 @@ namespace VSS.TRex.SubGridTrees.Client
       reader.Read(buffer, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
       Buffer.BlockCopy(buffer, 0, Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid * sizeof(long));
     }
-
-    /// <summary>
-    /// Assign cell information from a previously cached result held in the general subgrid result cache
-    /// using the supplied map to control which cells from the caches subgrid should be copied into this
-    /// client leaf sub grid
-    /// </summary>
-    /// <param name="source"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
-    {
-      base.AssignFromCachedPreProcessedClientSubgrid(source);
-
-      SurveyedSurfaceMap.Assign(((ClientHeightAndTimeLeafSubGrid)source).SurveyedSurfaceMap);
-    }
-
-
-    /// <summary>
-    /// Assign cell information from a previously cached result held in the general subgrid result cache
-    /// using the supplied map to control which cells from the caches subgrid should be copied into this
-    /// client leaf sub grid
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="map"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
-    {
-      base.AssignFromCachedPreProcessedClientSubgrid(source, map);
-
-      SurveyedSurfaceMap.Assign(((ClientHeightLeafSubGrid)source).SurveyedSurfaceMap);
-      SurveyedSurfaceMap.AndWith(map);
-    }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Reflection;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -8,23 +9,23 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
     public static partial class SubGridUtilities
     {
-        private static ILogger Log = Logging.Logger.CreateLogger("SubGridUtilities");
+        private static ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         /// GetOTGLeafSubGridCellIndex determines the local in-subgrid X/Y location of a
         /// cell given its absolute cell index in an on-the-ground leaf subgrid where the level of the subgrid is implicitly known
-        /// to be the same as FOwner.NumLevels. Do not call this method for a subgrid that is not a leaf subgrid
+        /// to be the same as FOwner.Numlevels. Do not call this method for a subgrid that is not a leaf subgrid
         /// WARNING: This call assumes the cell index does lie within this subgrid
         /// and (currently) no range checking is performed to ensure this}
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="subGridX"></param>
-        /// <param name="subGridY"></param>
-        public static void GetOTGLeafSubGridCellIndex(int cellX, int cellY, out byte subGridX, out byte subGridY)
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        /// <param name="SubGridX"></param>
+        /// <param name="SubGridY"></param>
+        public static void GetOTGLeafSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY)
         {
-            subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
-            subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
+            SubGridX = (byte)(CellX & SubGridTreeConsts.SubGridLocalKeyMask);
+            SubGridY = (byte)(CellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
             //  Debug.Assert((SubGridX >=0) && (SubGridX < SubGridTreeConsts.SubGridTreeDimension) &
             //         (SubGridY >=0) && (SubGridY < SubGridTreeConsts.SubGridTreeDimension),
@@ -36,97 +37,97 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
       /// sub grid tree cell address space. The tree level for the subgrid returned is specified in Level.
       /// </summary>
       /// <param name="storageProxy"></param>
-      /// <param name="forSubGridTree"></param>
-      /// <param name="cellX"></param>
-      /// <param name="cellY"></param>
-      /// <param name="level"></param>
-      /// <param name="lookInCacheOnly"></param>
-      /// <param name="acceptSpeculativeReadFailure"></param>
+      /// <param name="ForSubGridTree"></param>
+      /// <param name="CellX"></param>
+      /// <param name="CellY"></param>
+      /// <param name="Level"></param>
+      /// <param name="LookInCacheOnly"></param>
+      /// <param name="AcceptSpeculativeReadFailure"></param>
       /// <returns></returns>
       public static ISubGrid LocateSubGridContaining(IStorageProxy storageProxy,
-                                 IServerSubGridTree forSubGridTree,
+                                 IServerSubGridTree ForSubGridTree,
                                  //const GridDataCache : TICDataStoreCache;
-                                 uint cellX,
-                                 uint cellY,
-                                 byte level,
-                                 bool lookInCacheOnly,
-                                 bool acceptSpeculativeReadFailure)
+                                 uint CellX,
+                                 uint CellY,
+                                 byte Level,
+                                 bool LookInCacheOnly,
+                                 bool AcceptSpeculativeReadFailure)
         {
-            IServerLeafSubGrid leafSubGrid = null;
-            bool createdANewSubgrid = false;
+            IServerLeafSubGrid LeafSubGrid = null;
+            bool CreatedANewSubgrid = false;
 
-            ISubGrid result = null;
+            ISubGrid Result = null;
 
             try
             {
-                Debug.Assert(forSubGridTree != null, "Subgrid tree null in LocateSubGridContaining");
+                Debug.Assert(ForSubGridTree != null, "Subgridtree null in LocateSubGridContaining");
 
                 // Note: Subgrid tree specific interlocks are no longer used. The tree now internally
-                // manages fine grained locks across structurally mutating activities such as node/leaf
-                // subgrid addition and reading content from the persistent store.
+                // manages fine grained locks across structurally mutating actitivities such as node/leaf
+                // subgrid addition and reading content from the persisitent store.
 
               // First check to see if the requested cell is present in a leaf subgrid
-                ISubGrid subGrid = forSubGridTree.LocateClosestSubGridContaining(cellX, cellY, level);
+                ISubGrid SubGrid = ForSubGridTree.LocateClosestSubGridContaining(CellX, CellY, Level);
 
-                if (subGrid == null) // Something bad happened
+                if (SubGrid == null) // Something bad happened
                 {
-                    Log.LogWarning($"Failed to locate subgrid at {cellX}:{cellY}, level {level}, data model ID:{forSubGridTree.ID}");
+                    Log.LogWarning($"Failed to locate subgrid at {CellX}:{CellY}, level {Level}, data model ID:{ForSubGridTree.ID}");
                     return null;
                 }
 
-                if (!subGrid.IsLeafSubGrid() && !lookInCacheOnly && level == forSubGridTree.NumLevels)
+                if (!SubGrid.IsLeafSubGrid() && !LookInCacheOnly && Level == ForSubGridTree.NumLevels)
                 {
                     // Create the leaf subgrid that will be used to read in the subgrid from the disk.
                     // In the case where the subgrid isn't present on the disk this reference will
                     // be destroyed
-                    subGrid = forSubGridTree.ConstructPathToCell(cellX, cellY, Types.SubGridPathConstructionType.CreateLeaf);
+                    SubGrid = ForSubGridTree.ConstructPathToCell(CellX, CellY, Types.SubGridPathConstructionType.CreateLeaf);
 
-                    if (subGrid != null)
+                    if (SubGrid != null)
                     {
-                        createdANewSubgrid = true;
+                        CreatedANewSubgrid = true;
                     }
                     else
                     {
-                        Log.LogError($"Failed to create leaf subgrid in LocateSubGridContaining for subgrid at {cellX}x{cellY}");
+                        Log.LogError($"Failed to create leaf subgrid in LocateSubGridContaining for subgrid at {CellX}x{CellY}");
                         return null;
                     }
                 }
 
-                if (subGrid.IsLeafSubGrid())
+                if (SubGrid.IsLeafSubGrid())
                 {
-                    leafSubGrid = subGrid as IServerLeafSubGrid;
+                    LeafSubGrid = SubGrid as IServerLeafSubGrid;
                 }
 
-                if (leafSubGrid == null)  // Something bad happened
+                if (LeafSubGrid == null)  // Something bad happened
                 {
-                    Log.LogError($"Subgrid request result for {cellX}:{cellY} is not a leaf subgrid, it is a {subGrid.GetType().Name}.");
+                    Log.LogError($"Subgrid request result for {CellX}:{CellY} is not a leaf subgrid, it is a {SubGrid.GetType().Name}.");
                     return null;
                 }
 
-                if (!createdANewSubgrid)
+                if (!CreatedANewSubgrid)
                 {
-                    if (lookInCacheOnly)
+                    if (LookInCacheOnly)
                     {
-                        if (subGrid.Level == level)
+                        if (SubGrid.Level == Level)
                         {
-                            return subGrid;
+                            return SubGrid;
                         }
 
                         // If the returned subgrid is a leaf subgrid then it was already present in the
                         // cache. If the level of the returned subgrid matches the request level parameter
                         // then there is nothing more to do here.
-                        if (subGrid.IsLeafSubGrid() &&
-                            ((leafSubGrid.HaveSubgridDirectoryDetails || leafSubGrid.Dirty) &&
-                             leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData()) ||
-                           (!subGrid.IsLeafSubGrid() && subGrid.Level == level))
+                        if (SubGrid.IsLeafSubGrid() &&
+                            ((LeafSubGrid.HaveSubgridDirectoryDetails || LeafSubGrid.Dirty) &&
+                             LeafSubGrid.HasAllCellPasses() && LeafSubGrid.HasLatestData()) ||
+                           (!SubGrid.IsLeafSubGrid() && SubGrid.Level == Level))
                         {
-                            return subGrid;
+                            return SubGrid;
                         }
                     }
                 }
 
-                if ((!leafSubGrid.HaveSubgridDirectoryDetails && !leafSubGrid.Dirty) ||
-                    !(leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData()))
+                if ((!LeafSubGrid.HaveSubgridDirectoryDetails && !LeafSubGrid.Dirty) ||
+                    !(LeafSubGrid.HasAllCellPasses() && LeafSubGrid.HasLatestData()))
                 {
                     // The requested cell is either not present in the sub grid tree (cache),
                     // or it is residing on disk, and a newly created subgrid has been constructed
@@ -142,13 +143,13 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     // This is a different approach to desktop systems where the individual node subgrids
                     // contain mini existence maps for the subgrids below them.
 
-                    if (forSubGridTree.LoadLeafSubGrid(storageProxy,
-                                           new SubGridCellAddress(cellX, cellY),
+                    if (ForSubGridTree.LoadLeafSubGrid(storageProxy,
+                                           new SubGridCellAddress(CellX, CellY),
                                            true, true,
-                                           leafSubGrid))
+                                           LeafSubGrid))
                     {
                         // We've loaded it - get the reference to the new subgrid and return it
-                        result = leafSubGrid;
+                        Result = LeafSubGrid;
                     }
                     else
                     {
@@ -161,48 +162,48 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         // The failed subgrid is not proactively deleted and will remain so the normal cache
                         // expiry mechanism can remove it in its normal operations
 
-                        if (acceptSpeculativeReadFailure)
+                        if (AcceptSpeculativeReadFailure)
                         {
                             // Return the otherwise empty subgrid back to the caller and integrate it into the cache 
-                            Log.LogDebug($"Speculative read failure accepted for subgrid {leafSubGrid.Moniker()}. Blank subgrid returned to caller.");
-                            result = leafSubGrid;
+                            Log.LogDebug($"Speculative read failure accepted for subgrid {LeafSubGrid.Moniker()}. Blank subgrid returned to caller.");
+                            Result = LeafSubGrid;
                         }
                         else
                         {
-                            Log.LogWarning($"Failed to read leaf subgrid {leafSubGrid.Moniker()} in model {forSubGridTree.ID}. Failed subgrid is NOT removed from the tree");
+                            Log.LogWarning($"Failed to read leaf subgrid {LeafSubGrid.Moniker()} in model {ForSubGridTree.ID}. Failed subgrid is NOT removed from the tree");
 
                             // Empty the subgrid leaf based data to encourage it to be read on a secondary attempt
-                            leafSubGrid.DeAllocateLeafFullPassStacks();
-                            leafSubGrid.DeAllocateLeafLatestPassGrid();
+                            LeafSubGrid.DeAllocateLeafFullPassStacks();
+                            LeafSubGrid.DeAllocateLeafLatestPassGrid();
                         }
                     }
                 }
 
                 // TODO Ignite special case - allow Dirty leaf subgrids to be returned
-                if (result == null)
+                if (Result == null)
                 {
-                    if (leafSubGrid.HaveSubgridDirectoryDetails && leafSubGrid.Dirty && leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData())
+                    if (LeafSubGrid.HaveSubgridDirectoryDetails && LeafSubGrid.Dirty && LeafSubGrid.HasAllCellPasses() && LeafSubGrid.HasLatestData())
                     {
-                        result = leafSubGrid;
+                        Result = LeafSubGrid;
                     }
                 }
 
-                // IGNITE: Last gasp - if the subgrid is in memory and has directory details then just return it
-                if (result == null && leafSubGrid.HaveSubgridDirectoryDetails)
+                // IGNITE: Last gasp - if the subgrid is in memory and has direcotry details then just return it
+                if (Result == null && LeafSubGrid.HaveSubgridDirectoryDetails)
                 {
-                    result = leafSubGrid;
+                    Result = LeafSubGrid;
                 }
             }
             finally
             {
-                if (result != null && result.IsLeafSubGrid())
+                if (Result != null && Result.IsLeafSubGrid())
                 {
                   /* TODO ... caching semantics
                       // Add the subgrid we just read to the cache manager, even if the read failed
                       if (!Result.PresentInCache)
                       {
                           if (!GridDataCache.AddSubGridToCache(Result as TSubGridTreeSubGridBase))
-                              SIGLogMessage.PublishNoODS(Nil, Format('Failed to add subgrid %s to the cache', [Result.Moniker]), ...);
+                              SIGLogMessage.PublishNoODS(Nil, Format('Failed to add subgrid %s to the cache', [Result.Moniker]), slmcAssert);
                       }
         
                       if (VLPDSvcLocations.VLPDPSNode_TouchSubgridAndSegmentsInCacheDuringAccessOperations)
@@ -211,7 +212,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                   }
             }
 
-        return result;
+        return Result;
         }
     }
 }

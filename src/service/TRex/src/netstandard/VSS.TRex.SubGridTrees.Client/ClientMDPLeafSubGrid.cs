@@ -18,7 +18,13 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientMDPLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataMDPEntryRecord>
   {
     /// <summary>
-    /// Initialise the null cell values for the client subgrid
+    /// First pass map records which cells hold cell pass MDP that were derived
+    /// from the first pass a machine made over the corresponding cell
+    /// </summary>
+    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+    /// <summary>
+    /// Initilise the null cell values for the client subgrid
     /// </summary>
     static ClientMDPLeafSubGrid()
     {
@@ -54,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientMDPLeafSubGrid()
+    public ClientMDPLeafSubGrid() : base()
     {
       Initialise();
     }
@@ -188,7 +194,7 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredMDP != CellPassConsts.NullMDP;
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in this client leaf subgrid
+    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override SubGridCellPassDataMDPEntryRecord NullCell() => SubGridCellPassDataMDPEntryRecord.NullValue;
@@ -199,6 +205,8 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Clear()
     {
       base.Clear();
+
+      FirstPassMap.Clear();
     }
 
     /// <summary>
@@ -213,7 +221,7 @@ namespace VSS.TRex.SubGridTrees.Client
         I, J : Integer;
         S : String;
       begin
-        SIGLogMessage.PublishNoODS(Nil, Format('Dump of MDP map for subgrid %s', [Moniker]) , ...);
+        SIGLogMessage.PublishNoODS(Nil, Format('Dump of MDP map for subgrid %s', [Moniker]) , slmcDebug);
 
         for I := 0 to kSubGridTreeDimension - 1 do
           begin
@@ -225,11 +233,37 @@ namespace VSS.TRex.SubGridTrees.Client
               else
                 S := S + '     Null';
 
-            SIGLogMessage.PublishNoODS(Nil, S, ...);
+            SIGLogMessage.PublishNoODS(Nil, S, slmcDebug);
           end;
       end;
       */
     }
+
+    /*
+            /// <summary>
+            /// Reads an MDP client leaf sub grid from a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Read(BinaryFormatter formatter, Stream stream)
+            {
+                base.Read(formatter, stream);
+
+                FirstPassMap = (SubGridTreeBitmapSubGridBits)formatter.Deserialize(stream);
+            }
+
+            /// <summary>
+            /// Writes an MDP client leaf sub grid to a stream using a binary formatter
+            /// </summary>
+            /// <param name="formatter"></param>
+            /// <param name="stream"></param>
+            public override void Write(BinaryFormatter formatter, Stream stream)
+            {
+                base.Write(formatter, stream);
+
+                formatter.Serialize(stream, FirstPassMap);
+            }
+    */
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
@@ -241,6 +275,8 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Write(BinaryWriter writer, byte[] buffer)
     {
       base.Write(writer, buffer);
+
+      FirstPassMap.Write(writer, buffer);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
@@ -256,17 +292,9 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
-    }
+      FirstPassMap.Read(reader, buffer);
 
-    /// <summary>
-    /// Return an indicative size for memory consumption of this class to be used in cache tracking
-    /// </summary>
-    /// <returns></returns>
-    public override int IndicativeSizeInBytes()
-    {
-      return base.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataMDPEntryRecord.IndicativeSizeInBytes();
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
   }
 }

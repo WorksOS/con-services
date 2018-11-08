@@ -3,7 +3,7 @@
   /// <summary>
   /// Class representing long derivation of generic leaf subgrid class
   /// </summary>
-  public class GenericLeafSubGrid_Int : GenericLeafSubGrid<int>
+  public class GenericLeafSubGrid_Long : GenericLeafSubGrid<long>
   {
   }
 }

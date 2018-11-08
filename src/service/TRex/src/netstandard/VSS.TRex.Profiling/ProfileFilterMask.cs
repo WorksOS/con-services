@@ -11,7 +11,7 @@ namespace VSS.TRex.Profiling
   public static class ProfileFilterMask
   {
     /// <summary>
-    /// Constructs a mask using polygonal and positional spatial filtering aspects of a filter.
+    /// Constructs a mask using polygonal and positional spatial filtering aspects of a fitler.
     /// </summary>
     /// <param name="currentSubGridOrigin"></param>
     /// <param name="Intercepts"></param>
@@ -22,7 +22,7 @@ namespace VSS.TRex.Profiling
     public static void ConstructSubgridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList Intercepts,
       int fromProfileCellIndex,
-      SubGridTreeBitmapSubGridBits Mask,
+      ref SubGridTreeBitmapSubGridBits Mask,
       ICellSpatialFilter cellFilter,
       ISubGridTree SubGridTree)
     {
@@ -58,7 +58,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Constructs a mask using all spatial filtering elements active in the supplied filter
+    /// Constructs a mask using all spatial fitlering elements active in the supplied filter
     /// </summary>
     /// <param name="currentSubGridOrigin"></param>
     /// <param name="Intercepts"></param>
@@ -70,7 +70,7 @@ namespace VSS.TRex.Profiling
     public static bool ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList Intercepts,
       int fromProfileCellIndex,
-      SubGridTreeBitmapSubGridBits Mask,
+      ref SubGridTreeBitmapSubGridBits Mask,
       ICellSpatialFilter cellFilter,
       ISubGridTree SubGridTree)
     {
@@ -79,7 +79,7 @@ namespace VSS.TRex.Profiling
       //      DesignProfilerRequestResult RequestResult;
       //      bool Result = true;
 
-      ConstructSubgridSpatialAndPositionalMask(currentSubGridOrigin, Intercepts, fromProfileCellIndex, Mask,
+      ConstructSubgridSpatialAndPositionalMask(currentSubGridOrigin, Intercepts, fromProfileCellIndex, ref Mask,
         cellFilter, SubGridTree);
 
       // If the filter contains a design mask filter then compute this and AND it with the
@@ -107,7 +107,7 @@ namespace VSS.TRex.Profiling
           {
             Result = false;
             //SIGLogMessage.PublishNoODS(Nil, Format('Call (A1) to RequestDesignMaskFilterPatch in TICServerProfiler returned error result %s for %s.', 
-            //    [DesignProfilerErrorStatusName(RequestResult), CellFilter.ReferenceDesign.ToString]), ...);
+            //    [DesignProfilerErrorStatusName(RequestResult), CellFilter.ReferenceDesign.ToString]), slmcError);
           }
         }
         */
@@ -136,7 +136,7 @@ namespace VSS.TRex.Profiling
           {
             Result = false;
             //SIGLogMessage.PublishNoODS(Nil, Format('Call (A2) to RequestDesignMaskFilterPatch in TICServerProfiler returned error result %s for %s.', 
-            //    [DesignProfilerErrorStatusName(RequestResult), CellFilter.DesignFilter.ToString]), ...);
+            //    [DesignProfilerErrorStatusName(RequestResult), CellFilter.DesignFilter.ToString]), slmcError);
           }
         }
         */

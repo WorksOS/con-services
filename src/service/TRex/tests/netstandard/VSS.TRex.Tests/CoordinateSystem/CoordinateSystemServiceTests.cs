@@ -4,7 +4,6 @@ using System.Linq;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.Tests.Properties;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -13,6 +12,7 @@ namespace VSS.TRex.Tests.CoordinateSystem
   public class CoordinateSystemServiceTests : IClassFixture<CoordinatesAPIClientTestDIFixture>
   {
     private const string DIMENSIONS_2012_DC_CSIB = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
+    private const string DIMENTIONS2012_DC_FILE = @"J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Dimensions 2012\BC Data\Sites\BootCamp 2012\BootCamp 2012.dc";
 
     [Fact]
     public void CoordinateService_SimpleLLHToNEE()
@@ -183,21 +183,13 @@ namespace VSS.TRex.Tests.CoordinateSystem
     [Fact]
     public void CoordinateService_ImportCSIBFromDCAsync()
     {
-      var tmpFolder = Path.Combine(Directory.GetCurrentDirectory(), "tmp");
-
-      Directory.CreateDirectory(tmpFolder);
-
-      var filepath = Path.Combine(tmpFolder, "BootCamp_2012.dc");
-
-      File.WriteAllBytes(filepath, Resources.BootCamp_2012);
-
-      Assert.True(DIMENSIONS_2012_DC_CSIB == ConvertCoordinates.DCFileToCSIB(filepath));
+      Assert.True(DIMENSIONS_2012_DC_CSIB == ConvertCoordinates.DCFileToCSIB(DIMENTIONS2012_DC_FILE));
     }
 
     [Fact]
     public void CoordinateService_ImportFromDCContentAsync()
     {
-      var csib = ConvertCoordinates.DCFileContentToCSIB("BootCamp_2012.dc", Resources.BootCamp_2012);
+      var csib = ConvertCoordinates.DCFileContentToCSIB(DIMENTIONS2012_DC_FILE, File.ReadAllBytes(DIMENTIONS2012_DC_FILE));
 
       Assert.True(DIMENSIONS_2012_DC_CSIB == csib);
     }

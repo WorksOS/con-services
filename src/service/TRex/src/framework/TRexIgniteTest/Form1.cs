@@ -1069,7 +1069,7 @@ namespace TRexIgniteTest
 
 			MessageBox.Show($@"{numPatches} patches requested in {sw.Elapsed}, {(numPatches * 1024.0) / (sw.ElapsedMilliseconds / 1000.0)} per second");
 
-			Design ttmDesign = new Design(Guid.Empty, new DesignDescriptor(Guid.Empty, "", "", @"C:\Temp\", "Bug36372.ttm", 0.0), extents);
+			Design ttmDesign = new Design(Guid.Empty, new DesignDescriptor(Guid.Empty, @"C:\Temp\", "Bug36372.ttm", 0.0), extents);
 			sw.Reset();
 			sw.Start();
 

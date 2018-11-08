@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Specifies if under compacted.
+    /// Specifies if undercompacted.
     /// </summary>
     public bool IsUndercompacted
     {
@@ -59,7 +59,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Specifies if top layer is under compacted.
+    /// Specifies if top layer is undercompacted.
     /// </summary>
     public bool IsTopLayerUndercompacted
     {
@@ -68,7 +68,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Specifies if over compacted.
+    /// Specifies if overcompacted.
     /// </summary>
     public bool IsOvercompacted
     {
@@ -97,10 +97,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public short PreviousTargetCMV { get; set; }
 
-    public static int IndicativeSizeInBytes() => 4 * 2 + 1; // 4 shorts and a flags byte
-
     /// <summary>
-    /// Constructor with arguments.
+    /// Constractor with arguments.
     /// </summary>
     /// <param name="measuredCMV"></param>
     /// <param name="targetCMV"></param>
@@ -116,7 +114,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Initializes the measured and target CMV properties with null values.
+    /// Initialises the measured and target CMV properties with null values.
     /// </summary>
     public void Clear()
     {
@@ -127,7 +125,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serializes content of the cell to the writer
+    /// Serialises content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -139,7 +137,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serializes content of the cell from the writer
+    /// Serialises comtent of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
@@ -151,12 +149,12 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Defines a publicly accessible null value for this cell value type
+    /// Defines a publically accessible null value for this cell value type
     /// </summary>
     public static SubGridCellPassDataCMVEntryRecord NullValue = Null();
 
     /// <summary>
-    /// Implements the business logic to create the null value for this cell value type
+    /// Implements the business logic to create the null value for this cell valuye type
     /// </summary>
     /// <returns></returns>
     private static SubGridCellPassDataCMVEntryRecord Null()

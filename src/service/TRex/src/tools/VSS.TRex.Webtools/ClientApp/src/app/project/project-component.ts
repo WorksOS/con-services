@@ -58,6 +58,7 @@ export class ProjectComponent {
 
   public designFileName: string = "";
   public designOffset: number = 0.0;
+  public designUID: string = "";
 
   public newDesignGuid: string = "";
   public designs: Design[] = [];
@@ -285,13 +286,13 @@ constructor(
   }
 
   public performNTimes(doSomething: () => void, count: number): void {
-    for (var i = 0; i < count; i++) {
+    for (var i = 0; i < 10; i++) {
       doSomething();
     }
   }
 
-  public getTileXTimes(xTimes: number): void {
-    this.timeSomething(() => this.performNTimes(() => this.getTile(), xTimes));
+  public getTile10x(): void {
+    this.timeSomething(() => this.performNTimes(() => this.getTile(), 10));
   }
 
   private updateTimerCompletionTime() : void {
@@ -359,9 +360,20 @@ constructor(
   public addNewDesign(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
-    descriptor.offset = this.designOffset;
 
     this.projectService.addDesign(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
+      uid => {
+        this.newDesignGuid = uid.designId;
+        this.getDesigns();
+      });
+  }
+
+  public addNewDesignFromS3(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = this.designFileName;
+    descriptor.designId = this.designUID;
+
+    this.projectService.addDesignFromS3(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
         this.getDesigns();

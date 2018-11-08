@@ -10,7 +10,7 @@ namespace VSS.TRex.Profiling.Interfaces
   public interface IProfilerBuilderFactory
   {
     /// <summary>
-    /// Creates a new builder responsible for processing layer and other information for single cells in a profile
+    /// Creates a new builder responsible for processig layer and other information for single cells in a profile
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="gridDataType"></param>
@@ -25,7 +25,7 @@ namespace VSS.TRex.Profiling.Interfaces
       ICellPassFastEventLookerUpper cellPassFastEventLookerUpper);
 
     /// <summary>
-    /// Creates a new builder responsible for determining a vector of cells that are cross by a profile line
+    /// Creates a new bulder responsible for determining a vector of cells that are cross by a profile line
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="cellFilter"></param>
@@ -38,7 +38,7 @@ namespace VSS.TRex.Profiling.Interfaces
       bool slicerToolUsed);
 
     /// <summary>
-    /// Creates a new builder responsible for analyzing profile information for a cell of cells identified along a profile line
+    /// Creates a new builder responsible for analysing profile information for a cell of cells idenfitied along a profile line
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>

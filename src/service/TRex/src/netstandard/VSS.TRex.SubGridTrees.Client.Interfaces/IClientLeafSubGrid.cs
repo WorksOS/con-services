@@ -1,5 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
-using VSS.TRex.Events.Models;
+﻿using VSS.TRex.Events.Models;
+using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -9,19 +9,15 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
   /// <summary>
   /// Interface for ClientLeafSubgrid derivations based on ClientLeafSubGrid
   /// </summary>
-  public interface IClientLeafSubGrid : ILeafSubGrid, ITRexMemoryCacheItem
+  public interface IClientLeafSubGrid : ILeafSubGrid
   {
     double CellSize { set; get; }
-
-    uint IndexOriginOffset { get; set; }
 
     GridDataType GridDataType { get; }
 
     PopulationControlFlags EventPopulationFlags { get; set; }
 
     bool WantsLiftProcessingResults();
-
-    void Assign(IClientLeafSubGrid source);
 
     bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
 
@@ -40,16 +36,5 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// <param name="other"></param>
     /// <returns></returns>
     bool LeafContentEquals(IClientLeafSubGrid other);
-
-    void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source);
-
-    void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
-
-    SubGridTreeBitmapSubGridBits ProdDataMap { get; set; }
-
-    /// <summary>
-    /// Existence map of cells matching current filter settings
-    /// </summary>
-    SubGridTreeBitmapSubGridBits FilterMap { get; set; }
   }
 }

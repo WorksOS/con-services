@@ -47,12 +47,12 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     }
 
     /// <summary>
-    /// Initializes the service ready for accessing segment keys
+    /// Initialises the service ready for accessing segment keys
     /// </summary>
     /// <param name="context"></param>
     public void Init(IServiceContext context)
     {
-      Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} initializing");
+      Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} initialising");
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       if (mutableIgnite == null)
       {
-        Log.LogError("Mutable Ignite reference in service is null - aborting service execution");
+        Log.LogError($"Mutable Ignite reference in service is null - aborting service execution");
         return;
       }
 

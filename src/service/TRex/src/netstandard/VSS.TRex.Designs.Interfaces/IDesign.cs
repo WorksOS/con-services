@@ -58,7 +58,7 @@ namespace VSS.TRex.Designs.Interfaces
     bool Equals(IDesign other);
 
     /// <summary>
-    /// Calculates an elevation subgrid for a design subgrid on this design
+    /// Calculates an elevation subgrid for a desginatec subgrid on this design
     /// </summary>
     /// <param name="siteModelID"></param>
     /// <param name="originCellAddress"></param>

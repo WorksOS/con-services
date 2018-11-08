@@ -483,29 +483,32 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Serializes the events and stores the serialized represented in the persistent store
+    /// Serialises the events and stores the serialised represented in the persistent store
     /// </summary>
     /// <param name="storageProxy"></param>
     public void SaveToStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, GetMutableStream(), this);
+      // Do a trial serialisation using pure binary writer custom serialisation for comparison with the 
+      // .Net serialisation approach
+      storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter", FileSystemStreamType.Events, GetMutableStream(), this);
       EventsChanged = false;
     }
 
 
     /// <summary>
-    /// Loads the event list by requesting its serialized representation from the persistent store and 
-    /// deserializing it into the event list
+    /// Loads the event list by requesting its serialised representation from the persistent store and 
+    /// deserialising it into the event list
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <returns></returns>
     public void LoadFromStore(IStorageProxy storageProxy)
     {
-      storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName(),
+      storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName() + ".BinaryWriter",
         FileSystemStreamType.Events, out MemoryStream MS);
 
       if (MS != null)
       {
+        // Practice the binary event reading...
         MS.Position = 0;
         using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
         {

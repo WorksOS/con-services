@@ -7,37 +7,27 @@ namespace VSS.TRex.Designs.Models
     public struct DesignDescriptor : IEquatable<DesignDescriptor>
     {
         public Guid DesignID;
-        public string FileSpace;
-        public string FileSpaceID;
         public string Folder;
         public string FileName;
         public double Offset;
 
         public DesignDescriptor(Guid designID,
-                                string fileSpace,
-                                string fileSpaceID,
                                 string folder,
                                 string fileName,
                                 double offset)
         {
             DesignID = designID;
-            FileSpace = fileSpace;
-            FileSpaceID = fileSpaceID;
             Folder = folder;
             FileName = fileName;
             Offset = offset;
         }
 
         public void Init(Guid designID,
-                         string fileSpace,
-                         string fileSpaceID,
                          string folder,
                          string fileName,
                          double offset)
         {
             DesignID = designID;
-            FileSpace = fileSpace;
-            FileSpaceID = fileSpaceID;
             Folder = folder;
             FileName = fileName;
             Offset = offset;
@@ -53,19 +43,18 @@ namespace VSS.TRex.Designs.Models
         /// <returns></returns>
         public override string ToString()
         {
-            return $"[{DesignID}:'{FileSpace}', '{FileSpaceID}', '{Folder}', '{FileName}', '{Offset}']";
+            return $"[{DesignID}:'{Folder}', '{FileName}', '{Offset}']";
         }
 
         public bool Equals(DesignDescriptor other)
         {
             return (DesignID == other.DesignID) &&
-                   (FileSpaceID == other.FileSpaceID) &&
                    (Folder == other.Folder) &&
                    (FileName == other.FileName) &&
                    (Offset == other.Offset);
         }
 
-        public void Clear() => Init(Guid.Empty, "", "", "", "", 0.0);
+        public void Clear() => Init(Guid.Empty, "", "", 0.0);
 
         public static DesignDescriptor Null()
         {
@@ -77,8 +66,6 @@ namespace VSS.TRex.Designs.Models
         public void Write(BinaryWriter writer)
         {
             writer.Write(DesignID.ToByteArray());
-            writer.Write(FileSpace);
-            writer.Write(FileSpaceID);
             writer.Write(Folder);
             writer.Write(FileName);
             writer.Write(Offset);
@@ -87,8 +74,6 @@ namespace VSS.TRex.Designs.Models
         public void Read(BinaryReader reader)
         {
             DesignID = reader.ReadGuid();
-            FileSpace = reader.ReadString();
-            FileSpaceID = reader.ReadString();
             Folder = reader.ReadString();
             FileName = reader.ReadString();
             Offset = reader.ReadDouble();

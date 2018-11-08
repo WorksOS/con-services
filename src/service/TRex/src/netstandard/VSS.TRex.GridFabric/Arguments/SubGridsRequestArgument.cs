@@ -24,12 +24,12 @@ namespace VSS.TRex.GridFabric.Arguments
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
-        /// The serialized contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for production data
+        /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for production data
         /// </summary>
         public byte[] ProdDataMaskBytes { get; set; }
 
         /// <summary>
-        /// The serialized contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for surveyed surface data ONLY
+        /// The serialised contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for surveyed surface data ONLY
         /// </summary>
         public byte[] SurveyedSurfaceOnlyMaskBytes { get; set; }
 

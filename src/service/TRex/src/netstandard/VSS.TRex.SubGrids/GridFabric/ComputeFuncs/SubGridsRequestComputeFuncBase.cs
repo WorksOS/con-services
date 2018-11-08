@@ -4,8 +4,6 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Diagnostics;
-using VSS.TRex.Caching;
-using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
@@ -22,11 +20,11 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
 
-namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
+namespace VSS.TRex.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// The closure/function that implements subgrid request processing on compute nodes
@@ -35,9 +33,8 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        private const int AddressBucketSize = 20;
+        private const int addressBucketSize = 20;
 
-        // ReSharper disable once StaticMemberInGenericType
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
@@ -52,18 +49,18 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         // private static int requestCount = 0;
      
         /// <summary>
-        /// Mask is the internal sub grid bit mask tree created from the serialized mask contained in the 
+        /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
         /// ProdDataMaskBytes member of the argument. It is only used during processing of the request.
-        /// It is marked as non serialized so the Ignite GridCompute Broadcast method does not attempt 
+        /// It is marked as non serialised so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
         [NonSerialized]
         private ISubGridTreeBitMask ProdDataMask;
 
         /// <summary>
-        /// Mask is the internal sub grid bit mask tree created from the serialized mask contained in the 
-        /// SurveyedSurfaceOnlyMaskBytes member of the argument. It is only used during processing of the request.
-        /// It is marked as non serialized so the Ignite GridCompute Broadcast method does not attempt 
+        /// Mask is the internal sub grid bit mask tree created from the serialised mask contained in the 
+        /// SurveydSurfaceOnlyMaskBytes member of the argument. It is only used during processing of the request.
+        /// It is marked as non serialised so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
         [NonSerialized]
@@ -105,22 +102,11 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         [NonSerialized]
         private IDesign ReferenceDesign;
 
-        [NonSerialized] private IDesignManager designManager;
-
         /// <summary>
-        /// DI injected context for designs service
+        /// DI'ed context for designs service
         /// </summary>
-        private IDesignManager DesignManager => designManager ?? (designManager = DIContext.Obtain<IDesignManager>());
-
-        [NonSerialized] private ITRexSpatialMemoryCache subGridCache;
-
-        /// <summary>
-        /// The DI injected TRex spatial memory cache for general subgrid results
-        /// </summary>
-        private ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
-
         [NonSerialized]
-        private ITRexSpatialMemoryCacheContext SubGridCacheContext;
+        private IDesignManager designManager = DIContext.Obtain<IDesignManager>();
 
         /// <summary>
         /// Default no-arg constructor
@@ -154,6 +140,8 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
           try
           {
+            //  SIGLogMessage.PublishNoODS(Self, Format('DisplayMode in PSNode:%s', [GetEnumName(TypeInfo(TICDisplayMode), Requests.DisplayType)]), slmcError);
+
             // If performing simple volume calculations, there may be an intermediary filter in play. If this is
             // the case then the first two subgrid results will be HeightAndTime elevation subgrids and will
             // need to be merged into a single height and time subgrid before any secondary conversion of intermediary
@@ -182,6 +170,8 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
                 // Swap the lst two elements...
                 MinMax.Swap(ref SubgridResultArray[1], ref SubgridResultArray[2]);
               }
+
+              //  SIGLogMessage.PublishNoODS(Self, Format('DisplayMode in PSNode:%s', [GetEnumName(TypeInfo(TICDisplayMode), Requests.DisplayType)]), slmcError);
 
               if (SubgridResultArray.Length == 0)
                 {
@@ -276,6 +266,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
                 ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignID);
         }
 
+
         /// <summary>
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
         /// </summary>
@@ -288,27 +279,27 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         {
             try
             {
-                // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+        // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
-                if (localArg.GridDataType == GridDataType.DesignHeight)
-                {
-                  bool designResult = ReferenceDesign.GetDesignHeights(localArg.SiteModelID, address, siteModel.Grid.CellSize,
-                    out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
-           
-                  clientGrid = DesignElevations;
-                  if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-                     return ServerRequestResult.NoError;
-           
-                  Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");
-                  return ServerRequestResult.FailedToComputeDesignElevationPatch;
-                }
-           
-                clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
+              if (localArg.GridDataType == GridDataType.DesignHeight)
+              {
+                bool designResult = ReferenceDesign.GetDesignHeights(localArg.SiteModelID, address, siteModel.Grid.CellSize,
+                  out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
+
+                clientGrid = DesignElevations;
+                if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+                   return ServerRequestResult.NoError;
+
+                Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");
+                return ServerRequestResult.FailedToComputeDesignElevationPatch;
+              }
+
+              clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
 
                 clientGrid.CellSize = siteModel.Grid.CellSize;
                 clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
-                clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
-                                                     (uint)(address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+                clientGrid.SetAbsoluteOriginPosition((uint)(address.X & ~((int)SubGridTreeConsts.SubGridLocalKeyMask)),
+                                                     (uint)(address.Y & ~((int)SubGridTreeConsts.SubGridLocalKeyMask)));
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 requestor.CellOverrideMask.Fill();
@@ -333,7 +324,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
                         if (ClientArray.Length == 2)
                         {
                             // The cut fill is defined between two production data derived height subgrids
-                            // depending on volume type work out height difference
+                            // depending on volumetype work out height difference
                             CutFillUtilities.ComputeCutFillSubgrid((IClientHeightLeafSubGrid)ClientArray[0], // 'base'
                                                                    (IClientHeightLeafSubGrid)ClientArray[1]); // 'top'
                         }
@@ -376,7 +367,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         public abstract TSubGridRequestsResponse AcquireComputationResult();
 
         /// <summary>
-        /// Performs any necessary setup and configuration of Ignite infrastructure to support the processing of this request
+        /// Performs any necessary setup and configuration of Ignite insfrastructure to support the processing of this request
         /// </summary>
         public abstract bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse);
 
@@ -390,12 +381,11 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
             if (listCount == 0)
                 return;
 
-            //Log.LogInformation("Sending {0} subgrids to caller for processing", count);
-            //Log.LogInformation($"Requestors contains {Requestors.Length} items");
-          
+            //Log.InfoFormat("Sending {0} subgrids to caller for processing", count);
+
             for (int i = 0; i < listCount; i++)
             {
-                // Execute a client grid request for each requester and create an array of the results
+                // Execute a client grid request for each reqeustor and create an array of the results
                 clientGrids[resultCount++] = Requestors.Select(x =>
                 {
                     ServerRequestResult result = PerformSubgridRequest(x, addresses[i], out IClientLeafSubGrid clientGrid);
@@ -425,7 +415,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         {
             addresses[listCount++] = address;
 
-            if (listCount == AddressBucketSize)
+            if (listCount == addressBucketSize)
             {
                 // Process the subgrids...
                 PerformSubgridRequestList();
@@ -438,60 +428,28 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         /// </summary>
         private TSubGridRequestsResponse PerformSubgridRequests()
         {
-            clientGrids = new IClientLeafSubGrid[AddressBucketSize][];      
+            clientGrids = new IClientLeafSubGrid[addressBucketSize][];
 
             // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
             // noted with the 'set' bits in the bitmask, processing only those that matter for this server
 
             Log.LogInformation("Scanning subgrids in request");
 
-            ISurveyedSurfaces SurveyedSurfaceList = siteModel.SurveyedSurfaces;
-
-            // Construct the set of requester objects to be used for the filters present in the request
+            // Construct the set of requestors to be used for the filters present in the request
             Requestors = localArg.Filters.Filters.Select
-            (x => {
-              // Construct the appropriate list of surveyed surfaces
-              // Obtain local reference to surveyed surface list. If it is replaced while processing the
-              // list then the local reference will still be valid allowing lock free read access to the list.
-              ISurveyedSurfaces FilteredSurveyedSurfaces = null;
+                (x => new SubGridRequestor(siteModel,
+                                           siteModels.StorageProxy,
+                                           x,
+                                           false, // Override cell restriction
+                                           BoundingIntegerExtent2D.Inverted(),
+                                           SubGridTreeConsts.SubGridTreeLevels,
+                                           int.MaxValue, // MaxCellPasses
+                                           AreaControlSet,
+                                           new FilteredValuePopulationControl(),
+                                           ProdDataMask)
+                 ).ToArray();
 
-              if (localArg.IncludeSurveyedSurfaceInformation && SurveyedSurfaceList?.Count > 0)
-              {
-                FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-
-                // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-                SurveyedSurfaceList.FilterSurveyedSurfaceDetails(x.AttributeFilter.HasTimeFilter,
-                  x.AttributeFilter.StartTime, x.AttributeFilter.EndTime,
-                  x.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
-                  x.AttributeFilter.SurveyedSurfaceExclusionList);
-
-                // Ensure that the filtered surveyed surfaces are in a known ordered state
-                FilteredSurveyedSurfaces.SortChronologically(x.AttributeFilter.ReturnEarliestFilteredCellPass);
-              }
-
-              Guid[] FilteredSurveyedSurfacesAsArray = FilteredSurveyedSurfaces?.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0];
-
-              // Get a caching context for the subgrids returned by this requester
-              SubGridCacheContext = SubGridCache.LocateOrCreateContext(SpatialCacheFingerprint.ConstructFingerprint
-                (siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfacesAsArray));
-
-              return new SubGridRequestor(siteModel,
-                siteModels.StorageProxy,
-                x,
-                false, // Override cell restriction
-                BoundingIntegerExtent2D.Inverted(),
-                SubGridTreeConsts.SubGridTreeLevels,
-                int.MaxValue, // MaxCellPasses
-                AreaControlSet,
-                new FilteredValuePopulationControl(),
-                ProdDataMask,
-                SubGridCache,
-                SubGridCacheContext,
-                FilteredSurveyedSurfaces,
-                FilteredSurveyedSurfacesAsArray);
-            }).ToArray();
-
-            addresses = new ISubGridCellAddress[AddressBucketSize];
+            addresses = new ISubGridCellAddress[addressBucketSize];
 
             // Obtain the primary partition map to allow this request to determine the elements it needs to process
             bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions;
@@ -533,17 +491,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         }
 
         /// <summary>
-        /// Performs any initialization of this compute func that might ordinarily be achieved through automatic property
-        /// initialization or constructor initialization that is not invoked when the compute func is created at the
-        /// target server. Ignite performs an under-the-hood instantiation and hydration of state that does not invoke either
-        /// automatics field initialization or constructor invocation.
-        /// </summary>
-        private void InitialiseComputeFunc()
-        {
-          AreaControlSet = AreaControlSet.Null();
-        }
-
-        /// <summary>
         /// Invoke function called in the context of the cluster compute node
         /// </summary>
         /// <param name="arg"></param>
@@ -558,8 +505,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
             {
                 try
                 {
-                    InitialiseComputeFunc();
-
                     UnpackArgument(arg);
 
                     long NumSubgridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
@@ -596,7 +541,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         }
 
         /// <summary>
-        /// Implementation of the IDisposable interface
+        /// Implementation of the IDisposabe interface
         /// </summary>
         public void Dispose()
         {

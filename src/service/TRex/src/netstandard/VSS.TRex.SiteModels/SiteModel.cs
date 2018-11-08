@@ -56,7 +56,6 @@ namespace VSS.TRex.SiteModels
   public class SiteModel : ISiteModel, IBinaryReaderWriter
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
-
     public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
     public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
 
@@ -77,9 +76,6 @@ namespace VSS.TRex.SiteModels
     /// The grid data for this site model
     /// </summary>
     private IServerSubGridTree grid;
-
-    private object machineLoadLockObject = new object();
-    private object siteModelMachineDesignsLockObject = new object();
 
     /// <summary>
     /// The grid data for this site model
@@ -196,7 +192,7 @@ namespace VSS.TRex.SiteModels
       get { return siteModelDesigns; }
     }
 
-    private ISurveyedSurfaces surveyedSurfaces;
+    private ISurveyedSurfaces surveyedSurfaces = null;
 
     // This is a list of TTM descriptors which indicate designs
     // that can be used as a snapshot of an actual ground surface at a specific point in time
@@ -210,7 +206,7 @@ namespace VSS.TRex.SiteModels
       get => surveyedSurfaces != null;
     }
 
-    private IDesigns designs;
+    private IDesigns designs = null;
 
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the sitemodel
@@ -226,9 +222,9 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// SiteModelMachineDesigns records all the designs that have been seen in tag files for this sitemodel.
+    /// SiteModelMachineDesigns records all the designs that have been seen in tagfiles for this sitemodel.
     /// </summary>
-    private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; }
+    private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; } = null;
 
     public ISiteModelMachineDesignList SiteModelMachineDesigns
     {
@@ -236,19 +232,12 @@ namespace VSS.TRex.SiteModels
       {
         if (siteModelMachineDesigns == null)
         {
-          lock (siteModelMachineDesignsLockObject)
+          siteModelMachineDesigns = new SiteModelMachineDesignList
           {
-            if (siteModelMachineDesigns != null)
-              return siteModelMachineDesigns;
-
-            siteModelMachineDesigns = new SiteModelMachineDesignList
-            {
-              DataModelID = ID
-            };
-
-            if (!IsTransient)
-              siteModelMachineDesigns.LoadFromPersistentStore();
-          }
+            DataModelID = ID
+          };
+          if (!IsTransient)
+            siteModelMachineDesigns.LoadFromPersistentStore();
         }
 
         return siteModelMachineDesigns;
@@ -272,21 +261,12 @@ namespace VSS.TRex.SiteModels
       {
         if (machines == null)
         {
-          lock (machineLoadLockObject)
+          machines = new MachinesList
           {
-            if (machines != null)
-              return machines;
-
-            machines = new MachinesList
-            {
-              DataModelID = ID
-            };
-
-            if (!IsTransient)
-            {
-              machines.LoadFromPersistentStore();
-            }
-          }
+            DataModelID = ID
+          };
+          if (!IsTransient)
+            machines.LoadFromPersistentStore();
         }
 
         return machines;
