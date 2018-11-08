@@ -2,10 +2,9 @@ FROM registry.k8s.vspengg.com:80/dotnet:2.1-sdkas builder
 
 COPY . /build/
 WORKDIR /build
+ARG SERVICE_PATH
 
-RUN chmod 777 ./build/*.sh
-
-RUN ["/bin/sh", "/build/build/build.sh"]
+dotnet publish ./$SERVICE_PATH/src/VSS.Tile.Service.WebApi/VSS.Tile.Service.WebApi.csproj -o /build/artifacts/VSS.Tile.Service.WebApi --framework netcoreapp2.1 --runtime linux-x64
 
 FROM registry.k8s.vspengg.com:80/dotnet:2.1-runtime
 
