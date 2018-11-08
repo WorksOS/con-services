@@ -1,4 +1,4 @@
-FROM registry.k8s.vspengg.com:80/dotnet:2.1-sdkas builder
+FROM registry.k8s.vspengg.com:80/dotnet:2.1-sdk as builder
 
 COPY . /build/
 WORKDIR /build
@@ -13,11 +13,11 @@ ENV CORECLR_ENABLE_PROFILING=1 \
     CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
     CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so 
 
-#COPY ./build/newrelic /newrelic/
+COPY ./build/newrelic /newrelic/
 
-#RUN dpkg -i /newrelic/newrelic-netcore20*.deb
+RUN dpkg -i /newrelic/newrelic-netcore20*.deb
 
-#RUN ls -la /usr/local/newrelic-netcore20-agent
+RUN ls -la /usr/local/newrelic-netcore20-agent
 
 WORKDIR /app
 
