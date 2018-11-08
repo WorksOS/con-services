@@ -9,7 +9,7 @@ services:
       - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
       - AWS_SECRET_KEY=v0kHIWmLJ7cUvqgH4JEDdHWSxOU9767i+vgb4hdZ
       - AWS_TAGFILE_BUCKET_NAME=vss-stg-directtagfile-archives
-      - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.alpha.k8s.vspengg.com
+      - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.alpha.k8s.vspengg.com/api/position
       - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
       - CUSTOMER_CACHE_LIFE=00:30:00
       - DEFAULT_CONNECTION_LIMIT=64
