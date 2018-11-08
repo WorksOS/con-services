@@ -1,0 +1,4 @@
+[submodule "TestAutomation"]
+	path = TestAutomation
+    url = https://:jmkub5x2udviy4fu4z7ddil24h2ks5uwjktuwq5c4u3dbee4pt3q@visionlink.visualstudio.com/DefaultCollection/VSS/_git/TestAutomation
+	branch = master

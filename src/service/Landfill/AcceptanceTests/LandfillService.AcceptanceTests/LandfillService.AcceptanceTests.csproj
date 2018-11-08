@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{111E1767-DB5B-4F5F-8620-45F779ED95CE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LandfillService.AcceptanceTests</RootNamespace>
+    <AssemblyName>LandfillService.AcceptanceTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\deploy\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForDev|AnyCPU'">
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT01|AnyCPU'">
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForBeta|AnyCPU'">
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT02|AnyCPU'">
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForRelease|AnyCPU'">
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForProd|AnyCPU'">
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net1213, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Log4Net1213.3.3.1\lib\net40\Common.Logging.Log4Net1213.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HashLib.2.0.1\lib\net40\HashLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Beans.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Jdbc, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Jdbc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Management, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Management.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Text.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Util">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Util.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.Runtime, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="javax.jms-api-2.0.1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\javax.jms-api-2.0.1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kafka-clients-0.9.0.1-cp1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\kafka-clients-0.9.0.1-cp1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kafka-net, Version=0.9.0.65, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kafka-net.0.9.0.65\lib\net45\kafka-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4j-1.2.17, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\log4j-1.2.17.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="lz4-1.2.0, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\lz4-1.2.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mail-1.4.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\mail-1.4.7.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net452\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="slf4j-api, Version=1.7.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\slf4j-api.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="slf4j-NetCommonLogging, Version=1.7.5.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\slf4j-NetCommonLogging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TechTalk.SpecFlow">
+      <HintPath>..\packages\SpecFlow.2.0.0-preview20151221-10\lib\net45\TechTalk.SpecFlow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VSS.Kafka.DotNetClient, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>External References\VSS.Kafka.DotNetClient.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Kafka.Ikvm.Client, Version=1.0.61.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\VSS.Kafka.Ikvm.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VSS.Messaging.Kafka.Interfaces, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.DotNetClient.Helper.1.0.9.0\lib\net451\VSS.Messaging.Kafka.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="Auth\Jwt.cs" />
+    <Compile Include="Auth\TPaaS.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Kafka\IKafkaDriver.cs" />
+    <Compile Include="Kafka\KafkaResolver.cs" />
+    <Compile Include="Models\Landfill\CCAData.cs" />
+    <Compile Include="Models\Landfill\Geofence.cs" />
+    <Compile Include="Models\Landfill\GeofenceWeight.cs" />
+    <Compile Include="Models\Landfill\GeofenceWeightEntry.cs" />
+    <Compile Include="Models\Landfill\MachineDetails.cs" />
+    <Compile Include="Models\Landfill\VolumeTime.cs" />
+    <Compile Include="Models\Landfill\WeightData.cs" />
+    <Compile Include="Models\Landfill\WGSPoint.cs" />
+    <Compile Include="Models\MasterData\Customer\DeleteCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Customer\UpdateCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Geofence\CreateGeofenceEvent.cs" />
+    <Compile Include="Models\MasterData\Geofence\DeleteGeofenceEvent.cs" />
+    <Compile Include="Models\MasterData\Geofence\UpdateGeofenceEvent.cs" />
+    <Compile Include="Models\MasterData\Project\AssociateProjectGeofence.cs" />
+    <Compile Include="Models\MasterData\Project\DeleteProjectEvent.cs" />
+    <Compile Include="Models\MasterData\Project\UpdateProjectEvent.cs" />
+    <Compile Include="Scenarios\CCA.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CCA.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\CCASteps.cs" />
+    <Compile Include="Scenarios\MasterData.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MasterData.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\MasterDataSteps.cs" />
+    <Compile Include="Scenarios\ScenarioSupports\GeneralSlave.cs" />
+    <Compile Include="Scenarios\ScenarioSupports\MasterDataSupport.cs" />
+    <Compile Include="Models\Landfill\Project.cs" />
+    <Compile Include="Models\Landfill\WeightEntry.cs" />
+    <Compile Include="Models\Landfill\DayEntry.cs" />
+    <Compile Include="Kafka\KafkaDotNet.cs" />
+    <Compile Include="Models\MasterData\UserCustomer\AssociateCustomerUserEvent.cs" />
+    <Compile Include="Models\MasterData\Project\AssociateProjectCustomer.cs" />
+    <Compile Include="Models\MasterData\Subscription\AssociateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\MasterData\Customer\CreateCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Subscription\CreateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\MasterData\Project\CreateProjectEvent.cs" />
+    <Compile Include="Models\Landfill\ProjectData.cs" />
+    <Compile Include="Models\MasterData\Subscription\UpdateProjectSubscriptionEvent.cs" />
+    <Compile Include="Scenarios\AuthenticationSteps.cs" />
+    <Compile Include="TestData\MDMTestCustomer.cs" />
+    <Compile Include="TestData\TestCustomer.cs" />
+    <Compile Include="Utils\LandFillDb.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenarios\Projects.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Projects.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\ProjectsSteps.cs" />
+    <Compile Include="Scenarios\ScenarioSupports\BeforeAndAfter.cs" />
+    <Compile Include="Scenarios\Weights.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Weights.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\WeightsSteps.cs" />
+    <Compile Include="Utils\LandfillCommonUtils.cs" />
+    <Compile Include="Utils\ProjectsUtils.cs" />
+    <Compile Include="Utils\WeightsUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App.Debug.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App.Release.config">
+      <DependentUpon>App.config</DependentUpon>
+    </None>
+    <None Include="HtmlReportGenerator\specflow.exe.config" />
+    <None Include="packages.config" />
+    <None Include="restclientapp.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Scenarios\CCA.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CCA.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\MasterData.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>MasterData.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\Projects.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Projects.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\Weights.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Weights.feature.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TestAutomation\AutomationCore\AutomationCore.API.Framework\AutomationCore.API.Framework.csproj">
+      <Project>{af26f239-e452-41a1-b66c-d683eada57b2}</Project>
+      <Name>AutomationCore.API.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="HtmlReportGenerator\LandfillService.AcceptanceTests.csproj" />
+    <Content Include="HtmlReportGenerator\specflow.exe" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.dll" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.Generator.dll" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.Reporting.dll" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\Web\Microsoft.Web.Publishing.Tasks.dll" />
+  <Target Name="AfterBuild">
+    <TransformXml Source="App.config" Transform="App.$(Configuration).config" Destination="$(OutputPath)\$(AssemblyName).dll.config" />
+  </Target>
+  <Target Name="AfterCompile" Condition="Exists('App.$(Configuration).config')">
+    <!--Generate transformed app config in the intermediate directory-->
+    <TransformXml Source="App.config" Destination="$(IntermediateOutputPath)$(TargetFileName).config" Transform="App.$(Configuration).config" />
+    <!--Force build process to use the transformed configuration file from now on.-->
+    <ItemGroup>
+      <AppConfigWithTargetPath Remove="App.config" />
+      <AppConfigWithTargetPath Include="$(IntermediateOutputPath)$(TargetFileName).config">
+        <TargetPath>$(TargetFileName).config</TargetPath>
+      </AppConfigWithTargetPath>
+    </ItemGroup>
+  </Target>
+  <!--Override After Publish to support ClickOnce AfterPublish. Target replaces the untransformed config file copied to the deployment directory with the transformed one.-->
+  <Target Name="AfterPublish">
+    <PropertyGroup>
+      <DeployedConfig>$(_DeploymentApplicationDir)$(TargetName)$(TargetExt).config$(_DeploymentFileMappingExtension)</DeployedConfig>
+    </PropertyGroup>
+    <!--Publish copies the untransformed App.config to deployment directory so overwrite it-->
+    <Copy Condition="Exists('$(DeployedConfig)')" SourceFiles="$(IntermediateOutputPath)$(TargetFileName).config" DestinationFiles="$(DeployedConfig)" />
+  </Target>
+</Project>
