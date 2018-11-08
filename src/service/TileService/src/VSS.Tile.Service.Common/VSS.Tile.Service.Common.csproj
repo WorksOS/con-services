@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>VSS.Tile.Service.Common</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
+    <PackageReference Include="SixLabors.ImageSharp.drawing" Version="1.0.0-beta0005" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.3.3" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.57.1" />
+    <PackageReference Include="VSS.MasterData.Models.netcore" Version="2.34.2" />
+    <PackageReference Include="VSS.Productivity3D.Models.netcore" Version="1.16.2" />
+    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.3" />
+    <PackageReference Include="VSS.WebApi.Common.netcore" Version="1.2.10" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.12.2" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Authentication\" />
+  </ItemGroup>
+
+</Project>
