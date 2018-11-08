@@ -29,8 +29,8 @@
       ],
       "totalCoverageArea": 1678.9744000000003,
       "passCountTarget": {
-        "minPassCountMachineTarget": 0,
-        "maxPassCountMachineTarget": 0,
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
         "targetVaries": true
       }
     },
@@ -43,7 +43,7 @@
       "percentGreaterThanTarget": 65.665786413675448,
       "percentLessThanTarget": 19.632901900694421,
       "totalAreaCoveredSqMeters": 10637.396400000001,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 2.0,
         "maxPassCountMachineTarget": 3.0,
         "targetVaries": false
@@ -66,7 +66,7 @@
         28.105065258261881
       ],
       "totalCoverageArea": 10637.396400000001,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 2.0,
         "maxPassCountMachineTarget": 3.0,
         "targetVaries": false
@@ -87,8 +87,8 @@
       "percentLessThanTarget": 94.611727416798729,
       "totalAreaCoveredSqMeters": 72.9436,
       "passCountTarget": {
-        "minPassCountMachineTarget": 5,
-        "maxPassCountMachineTarget": 5,
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
         "targetVaries": false
       }
     },
@@ -116,7 +116,7 @@
       "percentGreaterThanTarget": 41.122311827956985,
       "percentLessThanTarget": 53.723118279569896,
       "totalAreaCoveredSqMeters": 1720.1280000000004,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 5.0,
         "maxPassCountMachineTarget": 5.0,
         "targetVaries": true
@@ -140,13 +140,13 @@
         1.5847860538827259,
         3.3280507131537242,
         0.47543581616481773,
-        0,
-        0
+        0.0,
+        0.0
       ],
       "totalCoverageArea": 72.9436,
       "passCountTarget": {
-        "minPassCountMachineTarget": 5,
-        "maxPassCountMachineTarget": 5,
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
         "targetVaries": false
       }
     },
@@ -167,7 +167,7 @@
         0.37025609379821045
       ],
       "totalCoverageArea": 0.0,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 0.0,
         "maxPassCountMachineTarget": 0.0,
         "targetVaries": false
@@ -190,7 +190,7 @@
         34.701389889568624
       ],
       "totalCoverageArea": 1720.1280000000004,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 0.0,
         "maxPassCountMachineTarget": 0.0,
         "targetVaries": true
@@ -213,7 +213,7 @@
         39.595483310584441
       ],
       "totalCoverageArea": 0.0,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 0.0,
         "maxPassCountMachineTarget": 0.0,
         "targetVaries": false
@@ -236,7 +236,7 @@
         61.674491392801258
       ],
       "totalCoverageArea": 0.0,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 0.0,
         "maxPassCountMachineTarget": 0.0,
         "targetVaries": false
@@ -259,7 +259,7 @@
         9.9216710182767613
       ],
       "totalCoverageArea": 487.02280000000007,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 5.0,
         "maxPassCountMachineTarget": 5.0,
         "targetVaries": false
@@ -310,7 +310,7 @@
         0.0
       ],
       "totalCoverageArea": 0.0,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 0.0,
         "maxPassCountMachineTarget": 0.0,
         "targetVaries": false
@@ -325,7 +325,7 @@
       "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 100.0,
       "totalAreaCoveredSqMeters": 24.276000000000003,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 5.0,
         "maxPassCountMachineTarget": 5.0,
         "targetVaries": false
@@ -340,7 +340,7 @@
       "percentGreaterThanTarget": 19.0363161642535,
       "percentLessThanTarget": 73.107049608355084,
       "totalAreaCoveredSqMeters": 487.02280000000007,
-      "PassCountTarget": {
+      "passCountTarget": {
         "minPassCountMachineTarget": 5.0,
         "maxPassCountMachineTarget": 5.0,
         "targetVaries": false
@@ -364,4 +364,4 @@
     "Code": 0,
     "Message": "success"
   }
-} 
+}

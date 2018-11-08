@@ -1,24 +1,23 @@
 ﻿Feature: CoordinateSystemPost
-	If I have a coordinate system then I should be able to post it.
-
-Background: 
-	Given the Coordinate service URI "/api/v1/coordsystem", request repo "CoordSysRequest.json" and result repo "CoordSysResponse.json"
+  If I have a coordinate system then I should be able to post it.
 
 Scenario Outline: CoordinateSystemPost - Good Request
-	When I Post CoordinateSystem supplying "<ParameterName>" paramters from the repository
-	Then the CoordinateSystem response should match "<ResultName>" result from the repository
-	Examples: 
-	| ParameterName             | ResultName                |
-	| CoordinateSystem          | CoordinateSystem          |
-	| CoordinateSystemWithGeoid | CoordinateSystemWithGeoid |
+  Given the service route "/api/v1/coordsystem" request repo "CoordSysRequest.json" and result repo "CoordSysResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName             | ResultName                | HttpCode |
+  | CoordinateSystem          | CoordinateSystem          | 200      |
+  | CoordinateSystemWithGeoid | CoordinateSystemWithGeoid | 200      |
 
 Scenario Outline: CoordinateSystemPost - Bad Request
-	When I Post CoordinateSystem supplying "<ParameterName>" paramters from the repository expecting http error code <httpCode>
-	Then the response should contain error code <errorCode>
-	Examples: 
-	| ParameterName     | httpCode | errorCode |
-	| NullFileContents  | 400      | -1        |
-	| NullFileName      | 400      | -1        |
-	| InvalidProjectId  | 400      | -1        |
-	| FileNameTooLong   | 400      | -1        |
-  | NullRequest       | 400      | -1        |
+  Given the service route "/api/v1/coordsystem" request repo "CoordSysRequest.json" and result repo "CoordSysResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain code "<ErrorCode>"
+  Examples: 
+  | ParameterName    | HttpCode | ErrorCode |
+  | NullFileContents | 400      | -1        |
+  | NullFileName     | 400      | -1        |
+  | InvalidProjectId | 400      | -1        |
+  | FileNameTooLong  | 400      | -1        |
+  | NullRequest      | 400      | -1        |

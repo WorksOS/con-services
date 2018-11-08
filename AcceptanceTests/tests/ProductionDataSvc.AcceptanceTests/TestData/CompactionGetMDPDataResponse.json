@@ -2,15 +2,15 @@
   "NoDesignFilter": {
     "mdpSummaryData": {
       "percentEqualsTarget": 79.3533176153587,
-      "percentGreaterThanTarget": 0,
+      "percentGreaterThanTarget": 0.0,
       "percentLessThanTarget": 20.646682384641295,
       "totalAreaCoveredSqMeters": 1029.6492000000003,
       "mdpTarget": {
         "mdpMachineTarget": 150.0,
         "targetVaries": false
       },
-      "minMDPPercent": 80,
-      "maxMDPPercent": 130
+      "minMDPPercent": 80.0,
+      "maxMDPPercent": 130.0
     },
     "Code": 0,
     "Message": "success"
@@ -38,16 +38,16 @@
   },
   "DesignIntersects": {
     "mdpSummaryData": {
-      "percentEqualsTarget": 100,
-      "percentGreaterThanTarget": 0,
-      "percentLessThanTarget": 0,
+      "percentEqualsTarget": 100.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 0.0,
       "totalAreaCoveredSqMeters": 0.80920000000000014,
       "mdpTarget": {
-        "mdpMachineTarget": 150,
+        "mdpMachineTarget": 150.0,
         "targetVaries": false
       },
-      "minMDPPercent": 80,
-      "maxMDPPercent": 130
+      "minMDPPercent": 80.0,
+      "maxMDPPercent": 130.0
     },
     "Code": 0,
     "Message": "success"

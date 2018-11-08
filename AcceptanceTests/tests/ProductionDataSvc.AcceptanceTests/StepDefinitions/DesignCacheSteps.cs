@@ -1,28 +1,23 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using System.Net.Http;
 using ProductionDataSvc.AcceptanceTests.Models;
-using RaptorSvcAcceptTestsCommon.Models;
-using RaptorSvcAcceptTestsCommon.Utils;
-using RestAPICoreTestFramework.Utils.Common;
-using System;
-using System.IO;
-using TechTalk.SpecFlow;
+using ProductionDataSvc.AcceptanceTests.Utils;
+using Xunit;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  [Binding, Scope(Feature = "DesignCache")]
-  public class DesignCacheSteps
+  [FeatureFile("DesignCache.feature")]
+  public class DesignCacheSteps : Feature
   {
     private Poster<DesignNameRequest, DummyRequestResult> designCacheDeleter;
 
     [Given(@"the DeleteDesignCacheFile service URI ""(.*)"", a project (.*) and a file named ""(.*)""")]
     public void GivenTheDeleteDesignCacheFileServiceURIAProjectAndAFileNamed(string uri, long projectID, string designName)
     {
-      if (!Directory.Exists("\\dev-iolv01.vssengg.com\\ProductionData\\DesignFileCache"))
-        ScenarioContext.Current.Pending();
-
       designCacheDeleter = new Poster<DesignNameRequest, DummyRequestResult>(
-          RaptorClientConfig.ProdSvcBaseUri + uri,
-          new DesignNameRequest() { ProjectId = projectID, DesignFilename = designName });
+          RestClient.ProdSvcBaseUri + uri,
+          new DesignNameRequest { ProjectId = projectID, DesignFilename = designName });
     }
 
     [Given(@"the following Summary Volumes request is sent to ""(.*)"" to make sure the design file is downloaded if required")]
@@ -36,21 +31,17 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       {
         try
         {
-          RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ReportSvcBaseUri + sVuri,
-              "POST", RestClientConfig.JsonMediaType, svRequestStr);
+          RestClient.SendHttpClientRequest(
+            RestClient.ReportSvcBaseUri,
+            sVuri,
+            HttpMethod.Post,
+            MediaTypes.JSON,
+            MediaTypes.JSON,
+            svRequestStr).ConfigureAwait(false);
         }
-        catch (Exception e)
+        catch
         {
-          Logger.Error(e, Logger.ContentType.Error);
-        }
-        finally
-        {
-          if (!File.Exists(fullDesignFileCachePath))
-          {
-            Logger.Error(string.Format("Design file {0} doesn't exist and can't download it, so give up deleting test.", fullDesignFileCachePath),
-                Logger.ContentType.Error);
-            ScenarioContext.Current.Pending();
-          }
+          //Logger.Error(e, Logger.ContentType.Error);
         }
       }
     }
@@ -58,7 +49,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I delete this file")]
     public void WhenIDeleteThisFile()
     {
-      designCacheDeleter.DoValidRequest();
+      designCacheDeleter.DoRequest();
     }
 
     [Then(@"the file should no longer exist in the design cache")]
@@ -68,7 +59,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       string fullDesignFileCachePath = Path.Combine(designFileCachePath,
           designCacheDeleter.CurrentRequest.ProjectId.ToString(), designCacheDeleter.CurrentRequest.DesignFilename);
 
-      Assert.IsFalse(File.Exists(fullDesignFileCachePath), string.Format("Expected file {0} deleted, but it's still there.", fullDesignFileCachePath));
+      Assert.False(File.Exists(fullDesignFileCachePath), $"Expected file {fullDesignFileCachePath} deleted, but it's still there.");
     }
 
     [Given(@"the file does not already exist in the design cache")]
@@ -82,20 +73,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       {
         try
         {
-          designCacheDeleter.DoValidRequest();
+          designCacheDeleter.DoRequest();
         }
-        catch (Exception e)
+        catch
         {
-          Logger.Error(e, Logger.ContentType.Error);
-        }
-        finally
-        {
-          if (File.Exists(fullDesignFileCachePath))
-          {
-            Logger.Error(string.Format("Can't delete design file {0}, so give up downloading test.", fullDesignFileCachePath),
-                Logger.ContentType.Error);
-            ScenarioContext.Current.Pending();
-          }
+          //Logger.Error(e, Logger.ContentType.Error);
         }
       }
     }
@@ -105,12 +87,17 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       try
       {
-        RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ReportSvcBaseUri + sVuri,
-            "POST", RestClientConfig.JsonMediaType, svRequestStr);
+        RestClient.SendHttpClientRequest(
+          RestClient.ReportSvcBaseUri,
+          sVuri,
+          HttpMethod.Post,
+          MediaTypes.JSON,
+          MediaTypes.JSON,
+          svRequestStr).ConfigureAwait(false);
       }
-      catch (Exception e)
+      catch
       {
-        Logger.Error(e, Logger.ContentType.Error);
+        //Logger.Error(e, Logger.ContentType.Error);
       }
     }
 
@@ -121,7 +108,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       string fullDesignFileCachePath = Path.Combine(designFileCachePath,
           designCacheDeleter.CurrentRequest.ProjectId.ToString(), designCacheDeleter.CurrentRequest.DesignFilename);
 
-      Assert.IsTrue(File.Exists(fullDesignFileCachePath), string.Format("Expected file {0} downloaded, but it's not there.", fullDesignFileCachePath));
+      Assert.True(File.Exists(fullDesignFileCachePath), $"Expected file {fullDesignFileCachePath} downloaded, but it's not there.");
     }
   }
 }

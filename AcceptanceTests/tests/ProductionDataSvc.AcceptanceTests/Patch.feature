@@ -1,21 +1,20 @@
 ﻿Feature: Patch
-    I should be able to request Production Data Patch
-
-Background: 
-    Given the Patch service URI "/api/v1/productiondata/patches", request repo "PatchRequest.json" and result repo "PatchResponse.json"
+  I should be able to request Production Data Patch
 
 @ignore
 Scenario Outline: Patch - Good Request
-    When I request Production Data Patch supplying "<ParameterName>" paramters from the repository
-    Then the Production Data Patch response should match "<ResultName>" result from the repository
-    Examples: 
-    | ParameterName    | ResultName       |
-    | HeightNoFilter   | HeightNoFilter   |
-    | HeightAreaFilter | HeightAreaFilter |
+  Given the service route "/api/v1/productiondata/patches" request repo "PatchRequest.json" and result repo "PatchResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName    | ResultName       | HttpCode |
+  | HeightNoFilter   | HeightNoFilter   | 200      |
+  | HeightAreaFilter | HeightAreaFilter | 200      |
 
 Scenario Outline: Patch - Bad Request
-    When I request Patch supplying "<ParameterName>" paramters from the repository expecting http error code <httpCode>
-    Then the response cell should contain error code <errorCode>
-    Examples: 
-    | ParameterName | httpCode | errorCode |
-    | NullProjectId | 400      | -1        |
+  Given the service route "/api/v1/productiondata/patches" request repo "PatchRequest.json" and result repo "PatchResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain code "<ErrorCode>"
+  Examples: 
+  | ParameterName | HttpCode | ErrorCode |
+  | NullProjectId | 400      | -1        |

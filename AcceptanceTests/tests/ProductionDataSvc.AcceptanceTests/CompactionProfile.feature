@@ -1,32 +1,36 @@
 ﻿Feature: CompactionProfile
-I should be able to request Compaction Profile data.
+  I should be able to request Compaction Profile data.
 
-Scenario: Compaction Get Slicer Empty Profile
-Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
-And the result file "Profiles/ProfileSummaryResponse.json"	
-And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
-And a startLatDegrees "36.209310" and a startLonDegrees "-115.019584" and an endLatDegrees "36.209322" And an endLonDegrees "-115.019574"
-When I request a Compaction Profile 
-Then the Compaction Profile result should be match expected "EmptyResponse"
+Scenario Outline: Compaction Get Slicer Empty Profile
+  Given the service route "/api/v2/profiles/productiondata/slicer" and result repo "Profiles/ProfileSummaryResponse.json"
+  And with parameter "projectUid" with value "7925f179-013d-4aaf-aff4-7b9833bb06d6"
+  And with parameter "startLatDegrees" with value "36.209310"
+  And with parameter "startLonDegrees" with value "-115.019584"
+  And with parameter "endLatDegrees" with value "36.209322"
+  And with parameter "endLonDegrees" with value "-115.019574"
+  When I send the GET request I expect response code 200
+  Then the response should match "EmptyResponse" from the repository
 
-#Until solved problem with variance in values returned from Raptor. Tests may have to compensate for inaccuraces at high decimal precion.
-#@Ignore
-Scenario: Compaction Get Slicer Profile
-Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
-And the result file "Profiles/ProfileSummaryResponse.json"	
-And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
-And a startLatDegrees "36.207310" and a startLonDegrees "-115.019584" and an endLatDegrees "36.207322" And an endLonDegrees "-115.019574"
-And a cutfillDesignUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
-When I request a Compaction Profile 
-Then the Compaction Profile result should be match expected "CutfillProfile"
+Scenario Outline: Compaction Get Slicer Profile
+  Given the service route "/api/v2/profiles/productiondata/slicer" and result repo "Profiles/ProfileSummaryResponse.json"
+  And with parameter "projectUid" with value "7925f179-013d-4aaf-aff4-7b9833bb06d6"
+  And with parameter "startLatDegrees" with value "36.207310"
+  And with parameter "startLonDegrees" with value "-115.019584"
+  And with parameter "endLatDegrees" with value "36.207322"
+  And with parameter "endLonDegrees" with value "-115.019574"
+  And with parameter "cutfillDesignUid" with value "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
+  When I send the GET request I expect response code 200 
+  Then the response should match "CutfillProfile" from the repository
 
-#Until solved problem with variance in values returned from Raptor. Tests may have to compensate for inaccuraces at high decimal precion.
-#@Ignore
-Scenario: Compaction Get Slicer Summary Volumes Profile
-Given the Compaction Profile service URI "/api/v2/profiles/productiondata/slicer"
-And the result file "Profiles/ProfileSummaryResponse.json"	
-And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-And a startLatDegrees "36.206627682520867" and a startLonDegrees "-115.0235567314591" and an endLatDegrees "36.206612363570869" And an endLonDegrees "-115.02356429221605"
-And a volumeCalcType "GroundToGround" and a topUid "A40814AA-9CDB-4981-9A21-96EA30FFECDD" and a baseUid "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B"
-When I request a Compaction Profile 
-Then the Compaction Profile result should be match expected "G2Gvolumes"
+Scenario Outline: Compaction Get Slicer Summary Volumes Profile
+  Given the service route "/api/v2/profiles/productiondata/slicer" and result repo "Profiles/ProfileSummaryResponse.json"
+  And with parameter "projectUid" with value "ff91dd40-1569-4765-a2bc-014321f76ace"
+  And with parameter "startLatDegrees" with value "36.206627682520867"
+  And with parameter "startLonDegrees" with value "-115.0235567314591"
+  And with parameter "endLatDegrees" with value "36.206612363570869"
+  And with parameter "endLonDegrees" with value "-115.02356429221605"
+  And with parameter "volumeCalcType" with value "GroundToGround"
+  And with parameter "volumeTopUid" with value "A40814AA-9CDB-4981-9A21-96EA30FFECDD"
+  And with parameter "volumeBaseUid" with value "F07ED071-F8A1-42C3-804A-1BDE7A78BE5B"
+  When I send the GET request I expect response code 200
+  Then the response should match "G2Gvolumes" from the repository

@@ -1,14 +1,12 @@
 ﻿Feature: CompactionMachineLiftIds
-  I should be able to request all machine lift Ids of a project
+  I should be able to request all lift Ids of a project
 
 Scenario Outline: CompactionMachineLiftIds
-  Given the Compaction service URI "/api/v2/projects/{projectUid}/machinelifts" for operation "All"
-  And the result file "CompactionMachineLiftIdsResponse.json"
-  And projectUid "<ProjectUid>"
-  When I send the request with expected HTTP status code "<HttpCode>"
-  Then the result should match the "<ResultName>" result from the repository
+  Given the service route "/api/v2/projects/<ProjectUID>/liftids" and result repo "CompactionMachineLiftIdsResponse.json"
+  When I send the GET request I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
   Examples:
-  | RequestName           | ProjectUid                           | HttpCode | ResultName            |
-  | MachineLiftsOneAsset  | 04c94921-6343-4ffb-9d35-db9d281743fc | 200      | MachineLiftsOneAsset  |
-  | MachineLiftsTwoAssets | ff91dd40-1569-4765-a2bc-014321f76ace | 200      | MachineLiftsTwoAssets |
-  | InvalidProjectUid     | 02c94921-6343-4ffb-9d35-db9d281743fc | 401      | InvalidProjectUid     |
+  | RequestName             | ProjectUID                           | HttpCode | ResultName              |
+  | MachineLiftIdsOneAsset  | 04c94921-6343-4ffb-9d35-db9d281743fc | 200      | MachineLiftIdsOneAsset  |
+  | MachineLiftIdsTwoAssets | ff91dd40-1569-4765-a2bc-014321f76ace | 200      | MachineLiftIdsTwoAssets |
+  | InvalidProjectUid       | 02c94921-6343-4ffb-9d35-db9d281743fc | 401      | InvalidProjectUid       |

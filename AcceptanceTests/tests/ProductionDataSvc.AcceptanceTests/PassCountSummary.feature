@@ -1,24 +1,22 @@
 ﻿Feature: PassCountSummary
-	I should be able to request Pass Count Summary.
+  I should be able to request Pass Count Summary.
 
-Background: 
-Given the Pass Count Summary service URI "/api/v1/compaction/passcounts/summary", request repo "PassCountSummaryRequest.json" and result repo "PassCountSummaryResponse.json"
-
-#  @ignore
 Scenario Outline: PassCountSummary - Good Request
-When I request Pass Count Summary supplying "<ParameterName>" paramters from the repository
-Then the Pass Count Summary response should match "<ResultName>" result from the repository
-Examples: 
-| ParameterName                    | ResultName                       |
-| PassCountSummary_SingleTarget    | PassCountSummary_SingleTarget    |
-| PassCountSummary_LowRangeTarget  | PassCountSummary_LowRangeTarget  |
-| PassCountSummary_HighRangeTarget | PassCountSummary_HighRangeTarget |  
+  Given the service route "/api/v1/compaction/passcounts/summary" request repo "PassCountSummaryRequest.json" and result repo "PassCountSummaryResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName                    | ResultName                       | HttpCode |
+  | PassCountSummary_SingleTarget    | PassCountSummary_SingleTarget    | 200      |
+  | PassCountSummary_LowRangeTarget  | PassCountSummary_LowRangeTarget  | 200      |
+  | PassCountSummary_HighRangeTarget | PassCountSummary_HighRangeTarget | 200      |
 
 Scenario Outline: PassCountSummary - Bad Request
-When I request Pass Count Summary supplying "<ParameterName>" paramters from the repository expecting http error code <httpCode>
-Then the response should contain error code <errorCode>
-Examples: 
-| ParameterName                     | httpCode | errorCode |
-| PassCountSummary_NullProjectId    | 400      | -1        |
-| PassCountSummary_InvalidProjectId | 400      | -1        |
-| PassCountSummary_BadRange         | 400      | -1        |
+  Given the service route "/api/v1/compaction/passcounts/summary" request repo "PassCountSummaryRequest.json" and result repo "PassCountSummaryResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain code "<ErrorCode>"
+  Examples: 
+  | ParameterName                     | HttpCode | ErrorCode |
+  | PassCountSummary_NullProjectId    | 400      | -1        |
+  | PassCountSummary_InvalidProjectId | 400      | -1        |
+  | PassCountSummary_BadRange         | 400      | -1        |

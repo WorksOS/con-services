@@ -47,7 +47,6 @@ node('Jenkins-Win2016-Raptor') {
             // Presence of the containers indicate another is building. Abort immediately.
             bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\check-container-state.ps1"
 
-            bat "./acceptancetests.bat"
             try {
                 stage ('Compose containers') {
                     bat  "PowerShell.exe -ExecutionPolicy Bypass -Command .\\start_containers.ps1 -branch ${branchName}"

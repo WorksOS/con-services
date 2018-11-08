@@ -36,16 +36,11 @@ function GetContainerIpAddress
     [Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "$containerIpAddress", "Machine")
 }
 
-WriteMsg "Removing Docker containers and images"
-docker stop $(docker ps -a -q)
-docker rm $(docker ps -a -q)
-docker rmi $(docker images -q --filter "dangling=true")
-
 WriteMsg "Logging in to image host"
 Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 
 WriteMsg "Pulling service images"
-docker-compose pull
+docker-compose pull --no-parallel
 WriteMsg "Building services"
 docker-compose up --build -d
 

@@ -1,103 +1,103 @@
 ﻿{
     "GetLiftIdsStandardResponse": {
-        "LayerIdDetailsArray": [
+        "layerIdDetailsArray": [
             {
-                "AssetId": 1244020666025812,
-                "DesignId": 1,
-                "LayerId": 0,
-                "StartDate": "1899-12-30T00:00:00",
-                "EndDate": "2012-10-30T23:39:07.881"
+                "assetId": 1244020666025812,
+                "designId": 1,
+                "layerId": 0,
+                "startDate": "1899-12-30T00:00:00",
+                "endDate": "2012-10-30T23:39:07.881"
             },
             {
-                "AssetId": 1,
-                "DesignId": 2,
-                "LayerId": 1,
-                "StartDate": "1899-12-30T00:00:00",
-                "EndDate": "2014-11-24T23:57:54.803"
+                "assetId": 1,
+                "designId": 2,
+                "layerId": 1,
+                "startDate": "1899-12-30T00:00:00",
+                "endDate": "2014-11-24T23:57:54.803"
             },
             {
-                "AssetId": 1,
-                "DesignId": 2,
-                "LayerId": 2,
-                "StartDate": "2014-11-24T23:57:54.803",
-                "EndDate": "2014-11-25T00:07:06.397"
+                "assetId": 1,
+                "designId": 2,
+                "layerId": 2,
+                "startDate": "2014-11-24T23:57:54.803",
+                "endDate": "2014-11-25T00:07:06.397"
             },
             {
-                "AssetId": 1,
-                "DesignId": 2,
-                "LayerId": 3,
-                "StartDate": "2014-11-25T00:07:06.397",
-                "EndDate": "2014-11-25T00:11:06.989"
+                "assetId": 1,
+                "designId": 2,
+                "layerId": 3,
+                "startDate": "2014-11-25T00:07:06.397",
+                "endDate": "2014-11-25T00:11:06.989"
             },
             {
-                "AssetId": 1,
-                "DesignId": 2,
-                "LayerId": 4,
-                "StartDate": "2014-11-25T00:11:06.989",
-                "EndDate": "2014-11-25T00:14:05.788"
+                "assetId": 1,
+                "designId": 2,
+                "layerId": 4,
+                "startDate": "2014-11-25T00:11:06.989",
+                "endDate": "2014-11-25T00:14:05.788"
             },
             {
-                "AssetId": 1,
-                "DesignId": 2,
-                "LayerId": 5,
-                "StartDate": "2014-11-25T00:14:05.788",
-                "EndDate": "2014-11-25T00:27:55.376"
+                "assetId": 1,
+                "designId": 2,
+                "layerId": 5,
+                "startDate": "2014-11-25T00:14:05.788",
+                "endDate": "2014-11-25T00:27:55.376"
             },
             {
-                "AssetId": 1,
-                "DesignId": 2,
-                "LayerId": 6,
-                "StartDate": "2014-11-25T00:27:55.376",
-                "EndDate": "2014-11-25T00:38:45.559"
+                "assetId": 1,
+                "designId": 2,
+                "layerId": 6,
+                "startDate": "2014-11-25T00:27:55.376",
+                "endDate": "2014-11-25T00:38:45.559"
             },
             {
-                "AssetId": 2,
-                "DesignId": 2,
-                "LayerId": 1,
-                "StartDate": "1899-12-30T00:00:00",
-                "EndDate": "2014-11-25T00:00:40.206"
+                "assetId": 2,
+                "designId": 2,
+                "layerId": 1,
+                "startDate": "1899-12-30T00:00:00",
+                "endDate": "2014-11-25T00:00:40.206"
             },
             {
-                "AssetId": 2,
-                "DesignId": 2,
-                "LayerId": 2,
-                "StartDate": "2014-11-25T00:00:40.206",
-                "EndDate": "2014-11-25T00:21:18.243"
+                "assetId": 2,
+                "designId": 2,
+                "layerId": 2,
+                "startDate": "2014-11-25T00:00:40.206",
+                "endDate": "2014-11-25T00:21:18.243"
             },
             {
-                "AssetId": 2,
-                "DesignId": 2,
-                "LayerId": 3,
-                "StartDate": "2014-11-25T00:21:18.243",
-                "EndDate": "2014-11-25T00:21:18.643"
+                "assetId": 2,
+                "designId": 2,
+                "layerId": 3,
+                "startDate": "2014-11-25T00:21:18.243",
+                "endDate": "2014-11-25T00:21:18.643"
             },
             {
-                "AssetId": 2,
-                "DesignId": 3,
-                "LayerId": 2,
-                "StartDate": "2014-11-25T00:21:18.643",
-                "EndDate": "2014-11-25T00:30:59.227"
+                "assetId": 2,
+                "designId": 3,
+                "layerId": 2,
+                "startDate": "2014-11-25T00:21:18.643",
+                "endDate": "2014-11-25T00:30:59.227"
             },
             {
-                "AssetId": 2,
-                "DesignId": 3,
-                "LayerId": 3,
-                "StartDate": "2014-11-25T00:30:59.227",
-                "EndDate": "2014-11-25T00:31:25.827"
+                "assetId": 2,
+                "designId": 3,
+                "layerId": 3,
+                "startDate": "2014-11-25T00:30:59.227",
+                "endDate": "2014-11-25T00:31:25.827"
             },
             {
-                "AssetId": 2,
-                "DesignId": 3,
-                "LayerId": 2,
-                "StartDate": "2014-11-25T00:31:25.827",
-                "EndDate": "2014-11-25T00:32:24.927"
+                "assetId": 2,
+                "designId": 3,
+                "layerId": 2,
+                "startDate": "2014-11-25T00:31:25.827",
+                "endDate": "2014-11-25T00:32:24.927"
             },
             {
-                "AssetId": 2,
-                "DesignId": 3,
-                "LayerId": 1,
-                "StartDate": "2014-11-25T00:32:24.927",
-                "EndDate": "2014-11-25T00:32:28.327"
+                "assetId": 2,
+                "designId": 3,
+                "layerId": 1,
+                "startDate": "2014-11-25T00:32:24.927",
+                "endDate": "2014-11-25T00:32:28.327"
             }
         ],
         "Code": 0,

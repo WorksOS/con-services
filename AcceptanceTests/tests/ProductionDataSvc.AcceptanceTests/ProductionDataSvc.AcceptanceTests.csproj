@@ -1,1103 +1,217 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6E7BACCA-3049-45F5-8118-8B45A5D39F85}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProductionDataSvc.AcceptanceTests</RootNamespace>
-    <AssemblyName>ProductionDataSvc.AcceptanceTests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net, Version=2.3.13.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\protobuf-net.2.3.13\lib\net40\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="RestAPICoreTestFramework">
-      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\RestAPICoreTestFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="ShineOn.Rtl">
-      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\ShineOn.Rtl.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Drawing.Common.4.5.0\lib\net461\System.Drawing.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Serialization" />
-    <Reference Include="TechTalk.SpecFlow, Version=2.3.2.0, Culture=neutral, PublicKeyToken=0778194805d6db41, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SpecFlow.2.3.2\lib\net45\TechTalk.SpecFlow.dll</HintPath>
-    </Reference>
-    <Reference Include="VSS.Velociraptor.Library">
-      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\VSS.Velociraptor.Library.dll</HintPath>
-    </Reference>
-    <Reference Include="VSS.Velociraptor.PDSInterface">
-      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\VSS.Velociraptor.PDSInterface.dll</HintPath>
-    </Reference>
-    <Reference Include="XnaFan.ImageComparison, Version=2.0.3.0, Culture=neutral, PublicKeyToken=ce5ccd6a9e11ca21, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageComparison.2.0.3\lib\net45\XnaFan.ImageComparison.dll</HintPath>
-    </Reference>
+    <None Remove="Log.txt" />
+    <None Remove="packages.config" />
   </ItemGroup>
-  <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+
   <ItemGroup>
-    <Compile Include="CcaColorPalette.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CcaColorPalette.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CCASummary.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CCASummary.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CMVChange.feature.cs">
-      <DependentUpon>CMVChange.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CMVDetail.feature.cs">
-      <DependentUpon>CMVDetail.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CMVSummary.feature.cs">
-      <DependentUpon>CMVSummary.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CompactionCellDatum.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionCellDatum.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionLiftIds.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionLiftIds.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionMachineLiftIds.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionMachineLiftIds.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionPatch.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionPatch.feature</DependentUpon>
-    </Compile>
-    <Compile Include="EditData.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EditData.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Map3dTile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Map3dTile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Models\CompactionTemperatureDetailResult.cs" />
-    <Compile Include="Models\GetMachineDesignDetailsResult.cs" />
-    <Compile Include="GetMachineDesigns.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GetMachineDesigns.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Models\MachineDesignDetails.cs" />
-    <Compile Include="Models\CompactionCellDatumResult.cs" />
-    <Compile Include="Models\CompactionTagFile.cs" />
-    <Compile Include="Models\PatchResult.cs" />
-    <Compile Include="Models\ProjectExtents.cs" />
-    <Compile Include="Patch.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Patch.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectThumbnails.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ProjectThumbnails.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ReportTile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ReportTile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="StepDefinitions\CompactionCellDatumSteps.cs" />
-    <Compile Include="CompactionCmv.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionCmv.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionCutFill.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionCutFill.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionDesignProfile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionDesignProfile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionElevation.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionElevation.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionMdp.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionMdp.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionPalette.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionPalette.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionPassCount.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionPassCount.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionProfile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionProfile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionSpeed.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionSpeed.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionSummaryVolumes.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionSummaryVolumes.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionTagFile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionTagFile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionTemperature.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionTemperature.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CompactionTile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CompactionTile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CoordinateConversion.feature.cs">
-      <DependentUpon>CoordinateConversion.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CoordinateSystemGet.feature.cs">
-      <DependentUpon>CoordinateSystemGet.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CoordinateSystemPost.feature.cs">
-      <DependentUpon>CoordinateSystemPost.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CoordinateSystemPostValidate.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CoordinateSystemPostValidate.feature</DependentUpon>
-    </Compile>
-    <Compile Include="DesignCache.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DesignCache.feature</DependentUpon>
-    </Compile>
-    <Compile Include="DxfTile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DxfTile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ElevationStatistics.feature.cs">
-      <DependentUpon>ElevationStatistics.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ExportGriddedCSV.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExportGriddedCSV.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ExportReport.feature.cs">
-      <DependentUpon>ExportReport.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ExportReportMachinePasses.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExportReportMachinePasses.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ExportReportToSurface.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExportReportToSurface.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ExportReportToVETA.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExportReportToVETA.feature</DependentUpon>
-    </Compile>
-    <Compile Include="GetDesignBoundaries.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GetDesignBoundaries.feature</DependentUpon>
-    </Compile>
-    <Compile Include="GetLifts.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GetLifts.feature</DependentUpon>
-    </Compile>
-    <Compile Include="GetProjectExtents.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GetProjectExtents.feature</DependentUpon>
-    </Compile>
-    <Compile Include="GetProjectMachines.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GetProjectMachines.feature</DependentUpon>
-    </Compile>
-    <Compile Include="GetRaptorConfig.feature.cs">
-      <DependentUpon>GetRaptorConfig.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="StateChangeTracking.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>StateChangeTracking.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Helpers\BeforeAndAfter.cs" />
-    <Compile Include="Models\AddFileResult.cs" />
-    <Compile Include="Models\AlignmentStationRangeResult.cs" />
-    <Compile Include="Models\CCA.cs" />
-    <Compile Include="Models\CCAColorPaletteResult.cs" />
-    <Compile Include="Models\CellDatumRequest.cs" />
-    <Compile Include="Models\CellPassesRequest.cs" />
-    <Compile Include="Models\CMV.cs" />
-    <Compile Include="Models\CMVChange.cs" />
-    <Compile Include="Models\CompactionCmvDetailedResult.cs" />
-    <Compile Include="Models\CompactionCmvPercentChangeResult.cs" />
-    <Compile Include="Models\CompactionCmvSummaryResult.cs" />
-    <Compile Include="Models\CompactionColorPalettesResult.cs" />
-    <Compile Include="Models\CompactionCutFillDetailedResult.cs" />
-    <Compile Include="Models\CompactionElevationPaletteResult.cs" />
-    <Compile Include="Models\CompactionFilter.cs" />
-    <Compile Include="Models\CompactionMdpSummaryResult.cs" />
-    <Compile Include="Models\CompactionPassCountDetailedResult.cs" />
-    <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
-    <Compile Include="Models\CompactionProfileResult.cs" />
-    <Compile Include="Models\CompactionReportResult.cs" />
-    <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
-    <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
-    <Compile Include="Models\CompactionTileRequest.cs" />
-    <Compile Include="Models\CompactionVolumesSummaryResult.cs" />
-    <Compile Include="Models\ConfigResult.cs" />
-    <Compile Include="Models\CoordinateConversion.cs" />
-    <Compile Include="Models\CoordinateSystemFile.cs" />
-    <Compile Include="Models\DesignNameRequest.cs" />
-    <Compile Include="Models\DesignName.cs" />
-    <Compile Include="Models\DesignResult.cs" />
-    <Compile Include="Models\ElevationStatistics.cs" />
-    <Compile Include="Models\ExportGriddedCSV.cs" />
-    <Compile Include="Models\ExportReport.cs" />
-    <Compile Include="Models\FiltersResult.cs" />
-    <Compile Include="Models\GetMachineDesignResult.cs" />
-    <Compile Include="Models\GetEditDataRequest.cs" />
-    <Compile Include="Models\GridReport.cs" />
-    <Compile Include="Models\GridReportRows.cs" />
-    <Compile Include="Models\LayerRequest.cs" />
-    <Compile Include="Models\PassCounts.cs" />
-    <Compile Include="Models\PatchRequest.cs" />
-    <Compile Include="Models\ProfileGridPoints.cs" />
-    <Compile Include="Models\ProfileLLPoints.cs" />
-    <Compile Include="Models\ProfileRequest.cs" />
-    <Compile Include="Models\ProjectExtentRequest.cs" />
-    <Compile Include="Models\GetMachinesResult.cs" />
-    <Compile Include="Models\ProjectSettingsRequest.cs" />
-    <Compile Include="Models\ProjectStatistics.cs" />
-    <Compile Include="Models\ScheduleResult.cs" />
-    <Compile Include="Models\SummaryParametersBase.cs" />
-    <Compile Include="Models\SummarySpeed.cs" />
-    <Compile Include="Models\SummaryThicknessResult.cs" />
-    <Compile Include="Models\SummaryVolumes.cs" />
-    <Compile Include="Models\SurveydSurfacesResult.cs" />
-    <Compile Include="Models\SurveyedSurfaceRequest.cs" />
-    <Compile Include="Models\TAGFile.cs" />
-    <Compile Include="Models\TileRequest.cs" />
-    <Compile Include="Notification.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Notification.feature</DependentUpon>
-    </Compile>
-    <Compile Include="PassCountDetail.feature.cs">
-      <DependentUpon>PassCountDetail.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="PassCountSummary.feature.cs">
-      <DependentUpon>PassCountSummary.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ProjectSettings.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ProjectSettings.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectSettingsPost.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ProjectSettingsPost.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectStatistics.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ProjectStatistics.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CellDatum.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CellDatum.feature</DependentUpon>
-    </Compile>
-    <Compile Include="CellPasses.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CellPasses.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Profile.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Profile.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Report.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Report.feature</DependentUpon>
-    </Compile>
-    <Compile Include="ScheduleExportToVETA.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ScheduleExportToVETA.feature</DependentUpon>
-    </Compile>
-    <Compile Include="StepDefinitions\BaseCompactionSteps.cs" />
-    <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
-    <Compile Include="StepDefinitions\CCASummarySteps.cs" />
-    <Compile Include="StepDefinitions\CMVChangeSteps.cs" />
-    <Compile Include="StepDefinitions\CMVDetailSteps.cs" />
-    <Compile Include="StepDefinitions\CMVSummarySteps.cs" />
-    <Compile Include="StepDefinitions\CompactionCmvSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionCutFillSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionElevationSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionMachineLiftIdsSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionLiftIdsSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionMdpSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionPaletteSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionPassCountSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionDesignProfileSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionProfileSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionSpeedSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionSummaryVolumesSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionTagFileSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionTemperatureSteps.cs" />
-    <Compile Include="StepDefinitions\CompactionTileSteps.cs" />
-    <Compile Include="StepDefinitions\CoordinateConversionSteps.cs" />
-    <Compile Include="StepDefinitions\CoordinateSystemGetSteps.cs" />
-    <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
-    <Compile Include="StepDefinitions\CoordinateSystemPostValidateSteps.cs" />
-    <Compile Include="StepDefinitions\DxfTileSteps.cs" />
-    <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
-    <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
-    <Compile Include="StepDefinitions\ExportReportMachinePassesSteps.cs" />
-    <Compile Include="StepDefinitions\ExportReportSteps.cs" />
-    <Compile Include="StepDefinitions\ExportReportToSurfaceSteps.cs" />
-    <Compile Include="StepDefinitions\ExportReportToVETASteps.cs" />
-    <Compile Include="StepDefinitions\FileAccessSteps.cs" />
-    <Compile Include="StepDefinitions\GetDesignBoundariesSteps.cs" />
-    <Compile Include="StepDefinitions\Map3dTileSteps.cs" />
-    <Compile Include="StepDefinitions\NotificationSteps.cs" />
-    <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
-    <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
-    <Compile Include="StepDefinitions\CompactionPatchSteps.cs" />
-    <Compile Include="StepDefinitions\ProjectSettingsPostSteps.cs" />
-    <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
-    <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
-    <Compile Include="StepDefinitions\ProjectThumbnailSteps.cs" />
-    <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
-    <Compile Include="StepDefinitions\ReportTileSteps.cs" />
-    <Compile Include="StepDefinitions\ReportSteps.cs" />
-    <Compile Include="StepDefinitions\ScheduleExportToVETASteps.cs" />
-    <Compile Include="StepDefinitions\SummarySpeedSteps.cs" />
-    <Compile Include="StepDefinitions\SummaryThicknessSteps.cs" />
-    <Compile Include="StepDefinitions\SummaryVolumesSteps.cs" />
-    <Compile Include="SummarySpeed.feature.cs">
-      <DependentUpon>SummarySpeed.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="SummaryThickness.feature.cs">
-      <DependentUpon>SummaryThickness.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="SummaryVolumes.feature.cs">
-      <DependentUpon>SummaryVolumes.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="StepDefinitions\DesignCacheSteps.cs" />
-    <Compile Include="StepDefinitions\StateChangeTrackingSteps.cs" />
-    <Compile Include="StepDefinitions\EditDataSteps.cs" />
-    <Compile Include="StepDefinitions\FilterServicesSteps.cs" />
-    <Compile Include="StepDefinitions\GetLiftsSteps.cs" />
-    <Compile Include="StepDefinitions\GetMachineDesignsSteps.cs" />
-    <Compile Include="StepDefinitions\GetProjectExtentsSteps.cs" />
-    <Compile Include="StepDefinitions\GetProjectMachinesSteps.cs" />
-    <Compile Include="StepDefinitions\CellDatumSteps.cs" />
-    <Compile Include="StepDefinitions\CellPassesSteps.cs" />
-    <Compile Include="StepDefinitions\PatchSteps.cs" />
-    <Compile Include="StepDefinitions\ProfileSteps.cs" />
-    <Compile Include="StepDefinitions\TilesSteps.cs" />
-    <Compile Include="Models\EditDataRequest.cs" />
-    <Compile Include="StepDefinitions\SurveyedSurfaceSteps.cs" />
-    <Compile Include="SurveyedSurface.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SurveyedSurface.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Tiles.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Tiles.feature</DependentUpon>
-    </Compile>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.70" />
+    <PackageReference Include="XnaFan.ImageComparison.netcore" Version="2.0.5" />
+    <PackageReference Include="Xunit.Gherkin.Quick" Version="3.2.0" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+    <PackageReference Include="protobuf-net" Version="2.4.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="CcaColorPalette.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CcaColorPalette.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CCASummary.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CCASummary.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CMVChange.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CMVChange.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CMVDetail.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CMVDetail.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CMVSummary.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CMVSummary.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionCellDatum.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionCellDatum.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionCmv.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionCmv.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionCutFill.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionCutFill.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionElevation.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionElevation.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionMachineLiftIds.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionMachineLiftIds.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionLiftIds.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionLiftIds.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionMdp.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionMdp.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionPalette.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionPalette.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionPassCount.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionPassCount.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionDesignProfile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionDesignProfile.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionProfile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionProfile.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionSpeed.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionSpeed.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionTagFile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionTagFile.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionTemperature.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionTemperature.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CompactionTile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionTile.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CoordinateConversion.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CoordinateConversion.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CoordinateSystemGet.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CoordinateSystemGet.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CoordinateSystemPost.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CoordinateSystemPost.feature.cs</LastGenOutput>
-    </None>
-    <None Include="CoordinateSystemPostValidate.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CoordinateSystemPostValidate.feature.cs</LastGenOutput>
-    </None>
-    <None Include="DesignCache.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>DesignCache.feature.cs</LastGenOutput>
-    </None>
-    <None Include="DxfTile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>DxfTile.feature.cs</LastGenOutput>
+    <None Update="CcaColorPalette.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="EditData.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>EditData.feature.cs</LastGenOutput>
+    <None Update="CCASummary.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ElevationStatistics.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ElevationStatistics.feature.cs</LastGenOutput>
+    <None Update="CellDatum.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ExportGriddedCSV.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ExportGriddedCSV.feature.cs</LastGenOutput>
+    <None Update="CellPasses.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ExportReport.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ExportReport.feature.cs</LastGenOutput>
+    <None Update="CMVChange.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ExportReportMachinePasses.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ExportReportMachinePasses.feature.cs</LastGenOutput>
+    <None Update="CMVDetail.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ExportReportToSurface.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ExportReportToSurface.feature.cs</LastGenOutput>
+    <None Update="CMVSummary.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ExportReportToVETA.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ExportReportToVETA.feature.cs</LastGenOutput>
+    <None Update="CompactionCellDatum.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GetDesignBoundaries.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetDesignBoundaries.feature.cs</LastGenOutput>
+    <None Update="CompactionCmv.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GetLifts.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetLifts.feature.cs</LastGenOutput>
+    <None Update="CompactionCutFill.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GetMachineDesigns.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetMachineDesigns.feature.cs</LastGenOutput>
+    <None Update="CompactionDesignProfile.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GetProjectExtents.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetProjectExtents.feature.cs</LastGenOutput>
+    <None Update="CompactionElevation.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GetProjectMachines.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetProjectMachines.feature.cs</LastGenOutput>
+    <None Update="CompactionLiftIds.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="GetRaptorConfig.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>GetRaptorConfig.feature.cs</LastGenOutput>
+    <None Update="CompactionMachineLiftIds.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Map3dTile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Map3dTile.feature.cs</LastGenOutput>
+    <None Update="CompactionMdp.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Notification.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Notification.feature.cs</LastGenOutput>
+    <None Update="CompactionPalette.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
-    <None Include="CellDatum.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CellDatum.feature.cs</LastGenOutput>
+    <None Update="CompactionPassCount.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="CellPasses.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CellPasses.feature.cs</LastGenOutput>
+    <None Update="CompactionPatch.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="PassCountDetail.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>PassCountDetail.feature.cs</LastGenOutput>
+    <None Update="CompactionProfile.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="PassCountSummary.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>PassCountSummary.feature.cs</LastGenOutput>
+    <None Update="CompactionSpeed.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="CompactionPatch.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionPatch.feature.cs</LastGenOutput>
+    <None Update="CompactionSummaryVolumes.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Patch.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Patch.feature.cs</LastGenOutput>
+    <None Update="CompactionTagFile.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Profile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Profile.feature.cs</LastGenOutput>
+    <None Update="CompactionTemperature.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ProjectSettings.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ProjectSettings.feature.cs</LastGenOutput>
+    <None Update="CompactionTile.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ProjectSettingsPost.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ProjectSettingsPost.feature.cs</LastGenOutput>
+    <None Update="CoordinateConversion.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ProjectStatistics.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ProjectStatistics.feature.cs</LastGenOutput>
+    <None Update="CoordinateSystemGet.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ProjectThumbnails.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ProjectThumbnails.feature.cs</LastGenOutput>
+    <None Update="CoordinateSystemPost.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Report.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Report.feature.cs</LastGenOutput>
+    <None Update="CoordinateSystemPostValidate.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ReportTile.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ReportTile.feature.cs</LastGenOutput>
+    <None Update="DesignCache.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ScheduleExportToVETA.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>ScheduleExportToVETA.feature.cs</LastGenOutput>
+    <None Update="DxfTile.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="StateChangeTracking.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>StateChangeTracking.feature.cs</LastGenOutput>
+    <None Update="EditData.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SummarySpeed.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>SummarySpeed.feature.cs</LastGenOutput>
+    <None Update="ElevationStatistics.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SummaryThickness.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>SummaryThickness.feature.cs</LastGenOutput>
+    <None Update="ExportGriddedCSV.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="CompactionSummaryVolumes.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CompactionSummaryVolumes.feature.cs</LastGenOutput>
+    <None Update="ExportReport.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SummaryVolumes.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>SummaryVolumes.feature.cs</LastGenOutput>
+    <None Update="ExportReportMachinePasses.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\0523J019SW--CB54XW  JLM00885--140826174539.tag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="ExportReportToSurface.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\0821J025SW--CAT CS433E BTT00503--110809165906.tag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="ExportReportToVETA.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\1112J010SW--B LHR934 S33251--120712065808.tag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="GetDesignBoundaries.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CCASummaryRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="GetLifts.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CCASummaryResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="GetMachineDesigns.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionCellDatumResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="GetProjectExtents.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CMVChangeRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="GetProjectMachines.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CMVChangeResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="NotificationAdd.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CMVDetailRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="RaptorConfig.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CMVDetailResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Map3dTile.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CMVSummaryRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="NotificationDelete.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CMVSummaryResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="PassCountDetail.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetCMVDataResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="PassCountSummary.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetCompactionPalettesResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Patch.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetCutFillDataResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Profile.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetElevationAndProjectStatisticsDataResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="ProjectSettings.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetMDPDataResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="ProjectSettingsPost.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetPassCountDataResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="ProjectStatistics.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetProductionDataTilesResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Report.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetSpeedDataResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="ScheduleExportToVETA.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionGetTemperatureDataResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="StateChangeTracking.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionMachineLiftIdsResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="SummarySpeed.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionLiftIdsResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="SummaryThickness.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionReportTileResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="SummaryVolumes.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionTagFileDirectSubmissionRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="SurveyedSurface.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\CompactionTagFileRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Tiles.feature">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\GetMachineDesignsResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CompactionPatchRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CompactionPatchResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\Map3dGetDataTilesResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\Profiles\ProfileSummaryResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ProjectSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CoordSysValidationResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CoordSysValidationRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CoordSysRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CoordSysResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Include="TestData\Marylands MH5-IntegrationTest.dc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="TestData\ElevationStatsRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ElevationStatsResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ExportGriddedCSVRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ExportReportRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ExportGriddedCSVResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ExportReportResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ExportReportToSurfaceResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ExportReportToVETAResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\GetLiftsRequestRepository.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\GetLiftsResponseRepository.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\OverrideDesignParamRepository.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\OverrideDesignResultRepository.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\PassCountDetailRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\PassCountDetailResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\PassCountSummaryRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\PassCountSummaryResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\Profiles\DesignProfileSummaryResponse.json" />
-    <None Include="TestData\ProjectSettingsValidationRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ProjectSettingsValidationResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ProjectThumbnailResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ReportGridResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ReportStationOffsetResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ScheduleExportToVETAResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\StateChangeTrackingRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\StateChangeTrackingResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\SummarySpeedRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\SummarySpeedResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\SummaryThicknessRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\SummaryThicknessResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\SummaryVolumeRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CompactionSummaryVolumeResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\SummaryVolumeResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\TA 50.dc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ExportReportMachinePassesResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\GetDesignBoundariesResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Tiles.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Tiles.feature.cs</LastGenOutput>
-    </None>
-    <None Include="TestData\SurveyedSurfaceRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="SurveyedSurface.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>SurveyedSurface.feature.cs</LastGenOutput>
-    </None>
-    <None Include="TestData\CellDatumRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CellDatumResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CellPassesRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\CellPassesResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\PatchRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\PatchResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ProfileRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\ProfileResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\TileRequest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\TileResponse.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.csproj">
-      <Project>{eff9d18e-1a7d-47bb-8421-69a08d0cabae}</Project>
-      <Name>RaptorSvcAcceptTestsCommon</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\..\packages\SpecFlow.2.3.2\build\SpecFlow.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SpecFlow.2.3.2\build\SpecFlow.targets'))" />
-  </Target>
-  <ProjectExtensions />
-  <Import Project="..\..\packages\SpecFlow.2.3.2\build\SpecFlow.targets" Condition="Exists('..\..\packages\SpecFlow.2.3.2\build\SpecFlow.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

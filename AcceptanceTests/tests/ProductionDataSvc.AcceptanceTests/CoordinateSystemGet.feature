@@ -1,20 +1,19 @@
 ﻿Feature: CoordinateSystemGet
   I should be able to get coordinate system
 
-Background: 
-  Given the Coordinate service URI "/api/v1/projects/{0}/coordsystem" and the request repo "CoordSysResponse.json"
-
 Scenario Outline: CoordinateSystemGet - Good Request
-  When I try to get Coordinate System for project <ProjectId>
-  Then the CoordinateSystem response should match "<ResultName>" result from the repository
+  Given the service route "/api/v1/projects/<ProjectId>/coordsystem" and result repo "CoordSysResponse.json"
+  When I send the GET request I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
   Examples: 
-  | ProjectId | ResultName          |
-  | 1001152   | GetCoordinateSystem |
+  | ProjectId | ResultName          | HttpCode |
+  | 1001152   | GetCoordinateSystem | 200      |
 
 Scenario Outline: CoordinateSystemGet - Bad Request
-  When I try to get Coordinate System for project <ProjectId> expecting http error code <httpCode>
-  Then the response should contain error code <errorCode>
+  Given the service route "/api/v1/projects/<ProjectId>/coordsystem" and result repo "CoordSysResponse.json"
+  When I send the GET request I expect response code <HttpCode>
+  Then the response should contain code <ErrorCode>
   Examples: 
-  | ProjectId | httpCode | errorCode |
+  | ProjectId | HttpCode | ErrorCode |
   | 0         | 400      | -1        |
   | 1099999   | 400      | -4        |

@@ -1,48 +1,34 @@
 ﻿Feature: ProjectSettings
-	I should be able to validate project settings
+  I should be able to validate project settings
 
 Scenario Outline: Project Settings Validate Default Settings
-	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
-	And a projectUid "<ProjectUID>"  
-  And a projectSettings ""
-  And a settingsType "<ProjectSettingsType>"
-	When I request settings validation
-  Then the result should contain code <Code> and message "<Message>"
+  Given only the service route "/api/v2/validatesettings"
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "settingsType" with value "<ProjectSettingsType>"
+  When I send the GET request I expect response code 200
+  Then the response should contain message "<Message>" and code "<Code>"
   Examples: 
   | RequestName | ProjectUID                           | ProjectSettingsType | Code | Message                            |
   | Targets     | ff91dd40-1569-4765-a2bc-014321f76ace | 1                   | 0    | Project settings Targets are valid |
   | Colors      | ff91dd40-1569-4765-a2bc-014321f76ace | 3                   | 0    | Project settings Colors are valid  |
 
 Scenario Outline:  Project Settings Validate Partial Custom Settings
-	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
-	And a projectUid "<ProjectUID>"  
-  And a projectSettings "<ProjectSettings>"
-  And a settingsType "<ProjectSettingsType>"
-	When I request settings validation
-  Then the result should contain code <Code> and message "<Message>"
+  Given only the service route "/api/v2/validatesettings" 
+  And with parameter "projectUid" with value "<ProjectUID>"
+  And with parameter "projectSettings" with value "<ProjectSettings>"
+  And with parameter "settingsType" with value "<ProjectSettingsType>"
+  When I send the GET request I expect response code 200
+  Then the response should contain message "<Message>" and code "<Code>"
   Examples: 
   | RequestName | ProjectUID                           | ProjectSettings                                                                                                                   | ProjectSettingsType | Code | Message                            |
   | Targets     | ff91dd40-1569-4765-a2bc-014321f76ace | { useMachineTargetPassCount : false, customTargetPassCountMinimum : 5, customTargetPassCountMaximum : 7 }                         | 1                   | 0    | Project settings Targets are valid |
   | Colors      | ff91dd40-1569-4765-a2bc-014321f76ace | { useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetColor : 0xD50000, mdpUnderTargetColor : 0x1579B } | 3                   | 0    | Project settings Colors are valid  |
 
-#Scenario Outline:  Project Settings Validate Full Custom Settings
-#  Given the Project Settings Validation service URI "/api/v2/validatesettings" and project settings repo "ProjectSettings.json"
-#	And a projectUid "<ProjectUID>"  
-#  And a settingsType "<ProjectSettingsType>"  
-#  And supplying "<ProjectSettingsName>" paramters from the repository
-#  When I request settings validation
-#  Then the result should contain code <Code> and message "<Message>"
-#  Examples: 
-#  | ProjectSettingsName | ProjectUID                           | ProjectSettingsType | Code | Message                            |
-#  | Targets             | ff91dd40-1569-4765-a2bc-014321f76ace | 1                   | 0    | Project settings Targets are valid |
-#  | Colors              | ff91dd40-1569-4765-a2bc-014321f76ace | 3                   | 0    | Project settings Colors are valid  |
-
-
 Scenario:  Project Settings Validate Full Custom Settings Targets
-	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
-	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-  And a settingsType "1"
-  And a projectSettings (multiline)
+  Given only the service route "/api/v2/validatesettings" 
+  And with parameter "projectUid" with value "ff91dd40-1569-4765-a2bc-014321f76ace"
+  And with parameter "settingsType" with value "1"
+  And with parameter "projectSettings" and multiline value:
   """
   {
     useMachineTargetPassCount: false,
@@ -77,8 +63,8 @@ Scenario:  Project Settings Validate Full Custom Settings Targets
     customTemperatureTargets: [0,40,80,120,160,200,240]
   }
   """
-	When I request settings validation
-	Then the settings validation result should be
+  When I send the GET request I expect response code 200
+  Then the response should be:
   """
   {
     "Code": 0,
@@ -87,10 +73,10 @@ Scenario:  Project Settings Validate Full Custom Settings Targets
   """
 
 Scenario:  Project Settings Validate Full Custom Settings Colors
-	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
-	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-  And a settingsType "3"
-  And a projectSettings (multiline)
+  Given only the service route "/api/v2/validatesettings"
+  And with parameter "projectUid" with value "ff91dd40-1569-4765-a2bc-014321f76ace"
+  And with parameter "settingsType" with value "3"
+  And with parameter "projectSettings" and multiline value:
   """
   {
     useDefaultElevationColors: true,
@@ -131,8 +117,8 @@ Scenario:  Project Settings Validate Full Custom Settings Colors
     mdpUnderTargetColor: 0x1579B
   }
   """
-	When I request settings validation
-	Then the settings validation result should be
+  When I send the GET request I expect response code 200
+  Then the response should be:
   """
   {
     "Code": 0,
@@ -140,34 +126,32 @@ Scenario:  Project Settings Validate Full Custom Settings Colors
   }
   """
 
-
 Scenario Outline:  Project Settings Validate Invalid Settings Missing Values
-	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
-	And a projectUid "<ProjectUID>"
-  And a projectSettings "<ProjectSettings>"
-  And a settingsType "<ProjectSettingsType>"
-	When I request settings validation expecting bad request
-	#Then I should get error code -1 and message "Both minimum and maximum target pass count must be specified"
-  Then the result should contain code <Code> and message "<Message>"
+(??)	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
+(??)	And a projectUid "<ProjectUID>"
+(??)  And a projectSettings "<ProjectSettings>"
+(??)  And a settingsType "<ProjectSettingsType>"
+(??)	When I request settings validation expecting bad request
+(??)	#Then I should get error code -1 and message "Both minimum and maximum target pass count must be specified"
+(??)  Then the reuslt should contain code <Code> and message "<Message>"
   Examples: 
   | RequestName | ProjectUID                           | ProjectSettings                                                                                    | ProjectSettingsType | Code | Message                                                      |
   | Targets     | ff91dd40-1569-4765-a2bc-014321f76ace | { useMachineTargetPassCount : false, customTargetPassCountMinimum : 5 }                            | 1                   | -1   | Both minimum and maximum target pass count must be specified |
   | Colors      | ff91dd40-1569-4765-a2bc-014321f76ace | { useDefaultMDPSummaryColors : false, mdpOnTargetColor : 0x8BC34A, mdpOverTargetColor : 0xD50000 } | 3                   | -1   | mdpUnderTargetColor colour values must be specified          |
 
-
  Scenario:  Project Settings Validate Invalid Settings Out Of Range Values
-	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
-	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-  And a projectSettings "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 0, customTargetPassCountMaximum : 7 }"
-  And a settingsType "1"
-	When I request settings validation expecting bad request
-	Then I should get error code -1 and message "The field customTargetPassCountMinimum must be between 1 and 80."
+  Given only the service route "/api/v2/validatesettings"
+  And with parameter "projectUid" with value "ff91dd40-1569-4765-a2bc-014321f76ace"
+  And with parameter "projectSettings" with value "{ useMachineTargetPassCount : false, customTargetPassCountMinimum : 0, customTargetPassCountMaximum : 7 }"
+  And with parameter "settingsType" with value "1"
+  When I send the GET request I expect response code 400
+  Then the response should contain message "The field customTargetPassCountMinimum must be between 1 and 80." and code "-1"
 
 Scenario:  Project Settings Validate Invalid Settings Out Of Order Values
-	Given the Project Settings Validation service URI "/api/v2/validatesettings" 
-	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
-  And a projectSettings "{ useDefaultCutFillTolerances : false, customCutFillTolerances : [3,2,1,0,-1,-3,-2] }"
-  And a settingsType "1"
-	When I request settings validation expecting bad request
-	Then I should get error code -1 and message "Cut-fill tolerances must be in order of highest cut to lowest fill"
+  Given only the service route "/api/v2/validatesettings"
+  And with parameter "projectUid" with value "ff91dd40-1569-4765-a2bc-014321f76ace"
+  And with parameter "projectSettings" with value "{ useDefaultCutFillTolerances : false, customCutFillTolerances : [3,2,1,0,-1,-3,-2] }"
+  And with parameter "settingsType" with value "1"
+  When I send the GET request I expect response code 400
+  Then the response should contain message "Cut-fill tolerances must be in order of highest cut to lowest fill" and code "-1"
 

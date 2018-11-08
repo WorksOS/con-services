@@ -3,7 +3,7 @@
 // Input: PatchResult.proto
 
 #pragma warning disable CS1591, CS0612, CS3021, IDE1006
-namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
+namespace ProductionDataSvc.AcceptanceTests.Models
 {
 
   [global::ProtoBuf.ProtoContract()]

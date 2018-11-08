@@ -1,22 +1,21 @@
 ﻿Feature: SummarySpeed
-	I should be able to request Summary Speed.
-
-Background: 
-	Given the Summary Speed service URI "/api/v1/speed/summary", request repo "SummarySpeedRequest.json" and result repo "SummarySpeedResponse.json"
+  I should be able to request Summary Speed.
 
 Scenario Outline: SummarySpeed - Good Request 
-	When I request Summary Speed supplying "<ParameterName>" paramters from the repository
-	Then the response should match "<ResultName>" result from the repository
-	Examples: 
-	| ParameterName          | ResultName             |
-	| NoFilterAtAll          | NoFilterAtAll          |
-	| ExcludeSupercededLifts | ExcludeSupercededLifts |
-	| IncludeSupercededLifts | IncludeSupercededLifts |
+  Given the service route "/api/v1/speed/summary" request repo "SummarySpeedRequest.json" and result repo "SummarySpeedResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should match "<ResultName>" from the repository
+  Examples: 
+  | ParameterName          | ResultName             | HttpCode |
+  | NoFilterAtAll          | NoFilterAtAll          | 200      |
+  | ExcludeSupercededLifts | ExcludeSupercededLifts | 200      |
+  | IncludeSupercededLifts | IncludeSupercededLifts | 200      |
 
 Scenario Outline: SummarySpeed - Bad Request
-	When I request Summary Speed supplying "<ParameterName>" paramters from the repository expecting BadRequest
-	Then the response body should contain Code <ErrorCode> and Message "<ErrorMessage>"
-	Examples:
-	| ParameterName                          | ErrorCode | ErrorMessage                                                |
-	| MissingSpeedTarget                     | -1        | Target speed must be specified for the request.             |
-	| MinSpeedTargetLargerThanMaxSpeedTarget | -1        | Target speed minimum must be less than target speed maximum |
+  Given the service route "/api/v1/speed/summary" request repo "SummarySpeedRequest.json" and result repo "SummarySpeedResponse.json"
+  When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then the response should contain message "<ErrorMessage>" and code "<ErrorCode>"
+  Examples:
+  | ParameterName                          | ErrorCode | ErrorMessage                                                | HttpCode |
+  | MissingSpeedTarget                     | -1        | Target speed must be specified for the request.             | 400      |
+  | MinSpeedTargetLargerThanMaxSpeedTarget | -1        | Target speed minimum must be less than target speed maximum | 400      |

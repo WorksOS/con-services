@@ -1,15 +1,16 @@
-﻿using TechTalk.SpecFlow;
+﻿using System.Threading;
+using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Models;
-using RaptorSvcAcceptTestsCommon.Utils;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
+using ProductionDataSvc.AcceptanceTests.Utils;
+using Xunit;
+using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
-  [Binding, Scope(Feature = "StateChangeTracking")]
-  public class StateChangeTrackingSteps
+  [FeatureFile("StateChangeTracking.feature")]
+  public class StateChangeTrackingSteps : Feature
   {
-    private Poster<CompactionTagFilePostParameter, CompactionTagFilePostResult> tagFilePoster;
+    private Poster<JObject, ResponseBase> tagFilePoster;
     private Getter<GetMachinesResult> machineStatusGetter;
 
     // In v2 overriding target MahineID/legacyAssetID is no longer permitted.
@@ -33,42 +34,46 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the Tag service URI ""(.*)"", Tag request repo file ""(.*)""")]
     public void GivenTheTagServiceURITagRequestRepoFile(string uri, string requestFile)
     {
-      uri = RaptorClientConfig.TagSvcBaseUri + uri;
-      tagFilePoster = new Poster<CompactionTagFilePostParameter, CompactionTagFilePostResult>(uri, requestFile, null);
+      uri = RestClient.TagSvcBaseUri + uri;
+      tagFilePoster = new Poster<JObject, ResponseBase>(uri, requestFile, null);
     }
 
-    [Given(@"the Machine service URI ""(.*)"", Machine result repo file ""(.*)""")]
+    [And(@"the Machine service URI ""(.*)"", Machine result repo file ""(.*)""")]
     public void GivenTheMachineServiceURIMachineResultRepoFile(string uri, string resultFile)
     {
-      uri = RaptorClientConfig.ProdSvcBaseUri + uri + _legacyAssetId;
+      uri = RestClient.ProdSvcBaseUri + uri + _legacyAssetId;
       machineStatusGetter = new Getter<GetMachinesResult>(uri, resultFile);
     }
 
-    [When(@"I post Tag file ""(.*)"" from the Tag request repo")]
+    [And(@"I post Tag file ""(.*)"" from the Tag request repo")]
     public void WhenIPostTagFileFromTheTagRequestRepo(string paramName)
     {
-      tagFilePoster.CurrentRequest = tagFilePoster.RequestRepo[paramName];
-      tagFilePoster.DoValidRequest();
+      tagFilePoster.CurrentRequest = JObject.FromObject(tagFilePoster.RequestRepo[paramName]);
+      tagFilePoster.DoRequest();
       Thread.Sleep(8000);
     }
 
-    [When(@"I get and save the machine detail in one place")]
+    [And(@"I get and save the machine detail in one place")]
     public void WhenIGetAndSaveTheMachineDetailInOnePlace()
     {
-      firstDotMachineStatus = machineStatusGetter.DoValidRequest();
+      firstDotMachineStatus = machineStatusGetter.SendRequest();
     }
 
     [Then(@"the first saved machine detail should match ""(.*)"" result from the Machine result repo")]
     public void ThenTheFirstSavedMachineDetailShouldMatchResultFromTheMachineResultRepo(string resultName)
     {
       if (firstDotMachineStatus.MachineStatuses.Length < 1)
-        Assert.Fail(string.Format("Unable to get machine status {0}", firstDotMachineStatus));
+      {
+        Assert.True(false, string.Format("Unable to get machine status {0}", firstDotMachineStatus));
+      }
 
-      // Need to ignore assetID in validation
-      GetMachinesResult expectedFirstDotMachineStatus = machineStatusGetter.ResponseRepo[resultName];
-      // expectedFirstDotMachineStatus.MachineStatuses[0].AssetId = firstDotMachineStatus.MachineStatuses[0].AssetId;
+      var actualObj = JObject.FromObject(firstDotMachineStatus);
+      var expectedObj = JObject.FromObject(machineStatusGetter.ResponseRepo[resultName]);
 
-      Assert.AreEqual(expectedFirstDotMachineStatus, firstDotMachineStatus);
+      ObjectComparer.RoundAllDoubleProperties(actualObj, roundingPrecision: 8);
+      ObjectComparer.RoundAllDoubleProperties(expectedObj, roundingPrecision: 8);
+
+      ObjectComparer.AssertAreEqual(actualResultObj: actualObj, expectedResultObj: expectedObj);
     }
   }
 }

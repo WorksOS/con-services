@@ -1,18 +1,20 @@
-﻿using RaptorSvcAcceptTestsCommon.Utils;
-using RestAPICoreTestFramework.Utils.Common;
-using TechTalk.SpecFlow;
+﻿using System.Net.Http;
+using ProductionDataSvc.AcceptanceTests.Utils;
 
 namespace ProductionDataSvc.AcceptanceTests.Helpers
 {
-  [Binding]
-    public class BeforeAndAfter
+  public static class BeforeAndAfter
+  {
+   // [BeforeScenario("requireSurveyedSurfaceLargerThanProductionData")]
+    public static void CreateSurveyedSurfaceLargerThanProductionData()
     {
-        [BeforeScenario("requireSurveyedSurfaceLargerThanProductionData")]
-        public static void CreateSurveyedSurfaceLargerThanProductionData()
-        {
-            RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/surveyedsurfaces",
-                "POST", RestClientConfig.JsonMediaType,
-                @"{
+      RestClient.SendHttpClientRequest(
+        RestClient.ProdSvcBaseUri,
+        "/api/v1/surveyedsurfaces",
+        HttpMethod.Post,
+        MediaTypes.JSON,
+        MediaTypes.JSON,
+          @"{
                       ""ProjectId"": 1001158,
                       ""SurveyedSurface"": {
                         ""id"": 111,
@@ -24,15 +26,19 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                         ""offset"": 0.0
                       },
                       ""SurveyedUtc"": ""2015-03-15T18:13:09.265Z""
-                }");
-        }
+                }").ConfigureAwait(false);
+    }
 
-        [BeforeScenario("requireSurveyedSurface")]
-        public static void CreateSurveyedSurface()
-        {
-            RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/surveyedsurfaces",
-                "POST", RestClientConfig.JsonMediaType,
-                @"{
+   // [BeforeScenario("requireSurveyedSurface")]
+    public static void CreateSurveyedSurface()
+    {
+      RestClient.SendHttpClientRequest(
+        RestClient.ProdSvcBaseUri,
+        "/api/v1/surveyedsurfaces",
+        HttpMethod.Post,
+        MediaTypes.JSON,
+        MediaTypes.JSON,
+          @"{
                     ""ProjectId"": 1001158,
                     ""SurveyedSurface"": {
                     ""id"": 111,
@@ -44,15 +50,19 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                     ""offset"": 0.0
                     },
                     ""SurveyedUtc"": ""2015-03-15T18:13:09.265Z""
-            }");
-        }
+            }").ConfigureAwait(false);
+    }
 
-        [BeforeScenario("requireOldSurveyedSurface")]
-        public static void CreateOldSurveyedSurface()
-        {
-            RaptorServicesClientUtil.DoHttpRequest(RaptorClientConfig.ProdSvcBaseUri + "/api/v1/surveyedsurfaces",
-                "POST", RestClientConfig.JsonMediaType,
-                @"{
+   // [BeforeScenario("requireOldSurveyedSurface")]
+    public static void CreateOldSurveyedSurface()
+    {
+      RestClient.SendHttpClientRequest(
+        RestClient.ProdSvcBaseUri,
+        "/api/v1/surveyedsurfaces",
+        HttpMethod.Post,
+        MediaTypes.JSON,
+        MediaTypes.JSON,
+          @"{
                     ""ProjectId"": 1001158,
                     ""SurveyedSurface"": {
                     ""id"": 111,
@@ -64,16 +74,21 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                     ""offset"": 0.0
                     },
                     ""SurveyedUtc"": ""2010-03-15T18:13:09.265Z""
-            }");
-        }
+            }").ConfigureAwait(false);
+    }
 
-        [AfterScenario("requireSurveyedSurface")]
-        [AfterScenario("requireOldSurveyedSurface")]
-        [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
-        private static void DeleteSurveyedSurfaceFile()
-        {
-            RaptorServicesClientUtil.DoHttpRequest($"{RaptorClientConfig.ProdSvcBaseUri}/api/v1/projects/1001158/surveyedsurfaces/111/delete",
-              "GET", RestClientConfig.JsonMediaType, null);
-        }
+  // [AfterScenario("requireSurveyedSurface")]
+  // [AfterScenario("requireOldSurveyedSurface")]
+  // [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
+    private static void DeleteSurveyedSurfaceFile()
+    {
+      RestClient.SendHttpClientRequest(
+        RestClient.ProdSvcBaseUri,
+        "/api/v1/projects/1001158/surveyedsurfaces/111/delete",
+        HttpMethod.Get,
+        MediaTypes.JSON,
+        MediaTypes.JSON,
+        null).ConfigureAwait(false);
+    }
   }
 }
