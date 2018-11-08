@@ -1,0 +1,75 @@
+version: '2'
+services:
+  webapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest
+    env_file:
+     - docker-compose-dev.env
+    volumes:
+      - ./artifacts/logs:/app/logs 
+    depends_on:
+      - schema
+    ports:
+      - 7001:80
+  masterdataconsumercustomer:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+    - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
+    - KAFKA_OFFSET=latest
+    - KAFKA_TOPIC_NAME_SUFFIX=-Dev
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema    
+  masterdataconsumerproject:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Dev
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema     
+  masterdataconsumersubscription:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Dev
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumerasset:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IAssetEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Dev
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema
+  masterdataconsumerdevice:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose-dev.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IDeviceEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Dev
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema
+  schema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db
+    env_file:
+     - docker-compose-dev.env
+    

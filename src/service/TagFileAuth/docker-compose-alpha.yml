@@ -1,0 +1,122 @@
+version: '3'
+services:
+  schema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release-[MVERSION]    
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_SERVER_NAME_ReadVSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth-Alpha
+     - MYSQL_PORT=3306
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=d3vRDS1234_
+  webapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-[WVERSION]
+    ports:
+      - 6001:80
+    deploy:
+      replicas: 1
+    environment:
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_SERVER_NAME_ReadVSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth-Alpha
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=d3vRDS1234_
+  masterdataconsumercustomer:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    deploy:
+      replicas: 1
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent	
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_SERVER_NAME_ReadVSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth-Alpha
+     - MYSQL_PORT=3306
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=d3vRDS1234_
+     - KAFKA_URI=10.97.97.96
+     - KAFKA_PORT=9092
+     - KAFKA_GROUP_NAME=TagFileAuth-Consumer-Alpha
+     - KAFKA_TOPIC_NAME_NOTIFICATIONS=VSS.Interfaces.Events.MasterData.INotificationEvent
+     - KAFKA_TOPIC_NAME_SUFFIX=-Alpha
+     - KAFKA_OFFSET=earliest
+     - CUSTOM_INIT_SCRIPT=zookeeper_check.sh
+    masterdataconsumersubscription:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    deploy:
+      replicas: 1
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent	
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_SERVER_NAME_ReadVSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth-Alpha
+     - MYSQL_PORT=3306
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=d3vRDS1234_
+     - KAFKA_URI=10.97.97.96
+     - KAFKA_PORT=9092
+     - KAFKA_GROUP_NAME=TagFileAuth-Consumer-Alpha
+     - KAFKA_TOPIC_NAME_NOTIFICATIONS=VSS.Interfaces.Events.MasterData.INotificationEvent
+     - KAFKA_TOPIC_NAME_SUFFIX=-Alpha
+     - KAFKA_OFFSET=earliest
+     - CUSTOM_INIT_SCRIPT=zookeeper_check.sh
+    masterdataconsumerdevice:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    deploy:
+      replicas: 1
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IDeviceEvent	
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_SERVER_NAME_ReadVSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth-Alpha
+     - MYSQL_PORT=3306
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=d3vRDS1234_
+     - KAFKA_URI=10.97.97.96
+     - KAFKA_PORT=9092
+     - KAFKA_GROUP_NAME=TagFileAuth-Consumer-Alpha
+     - KAFKA_TOPIC_NAME_NOTIFICATIONS=VSS.Interfaces.Events.MasterData.INotificationEvent
+     - KAFKA_TOPIC_NAME_SUFFIX=-Alpha
+     - KAFKA_OFFSET=earliest
+     - CUSTOM_INIT_SCRIPT=zookeeper_check.sh
+    masterdataconsumerasset:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    deploy:
+      replicas: 1
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IAssetEvent	
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_SERVER_NAME_ReadVSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth-Alpha
+     - MYSQL_PORT=3306
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=d3vRDS1234_
+     - KAFKA_URI=10.97.97.96
+     - KAFKA_PORT=9092
+     - KAFKA_GROUP_NAME=TagFileAuth-Consumer-Alpha
+     - KAFKA_TOPIC_NAME_NOTIFICATIONS=VSS.Interfaces.Events.MasterData.INotificationEvent
+     - KAFKA_TOPIC_NAME_SUFFIX=-Alpha
+     - KAFKA_OFFSET=earliest
+     - CUSTOM_INIT_SCRIPT=zookeeper_check.sh	 
+    masterdataconsumerproject:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    deploy:
+      replicas: 1
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent	
+     - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_SERVER_NAME_ReadVSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth-Alpha
+     - MYSQL_PORT=3306
+     - MYSQL_USERNAME=root
+     - MYSQL_ROOT_PASSWORD=d3vRDS1234_
+     - KAFKA_URI=10.97.97.96
+     - KAFKA_PORT=9092
+     - KAFKA_GROUP_NAME=TagFileAuth-Consumer-Alpha
+     - KAFKA_TOPIC_NAME_NOTIFICATIONS=VSS.Interfaces.Events.MasterData.INotificationEvent
+     - KAFKA_TOPIC_NAME_SUFFIX=-Alpha
+     - KAFKA_OFFSET=earliest
+     - CUSTOM_INIT_SCRIPT=zookeeper_check.sh 

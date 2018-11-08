@@ -1,0 +1,17 @@
+MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+MYSQL_DATABASE_NAME: VSS-TagFileAuth-Dev
+MYSQL_PORT: "3306"
+MYSQL_USERNAME: Merino
+MYSQL_ROOT_PASSWORD: R58Kper%5
+KAFKA_URI: 10.97.97.32
+KAFKA_PORT: "9092"
+KAFKA_GROUP_NAME: TagFileAuth-Datafeed
+KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAsset,VSS.Interfaces.Events.MasterData.IDeviceEvent
+KAFKA_TOPIC_NAME_SUFFIX: -Dev
+KAFKA_OFFSET: latest
+CUSTOM_INIT_SCRIPT: zookeeper_check.sh
+JAEGER_AGENT_HOST: jaeger-agent.jaeger
+JAEGER_AGENT_PORT: "6831"
+JAEGER_SAMPLER_TYPE: const
+JAEGER_SERVICE_NAME: Dev TagFileAuth Service API 
