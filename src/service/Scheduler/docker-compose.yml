@@ -1,0 +1,31 @@
+version: '2'
+services:
+  webapi:
+    build: ./artifacts/VSS.Productivity3D.Scheduler.WebApi
+    env_file:
+     - docker-compose.env
+    depends_on:
+      - schema
+  mockprojectwebapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    env_file:
+     - docker-compose.env
+  schema:
+    build: ./database 
+    env_file:
+     - docker-compose.env
+    depends_on:
+     - db
+  db:
+    image: mysql/mysql-server:5.7.15 
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
+    env_file:
+     - docker-compose.env
+  accepttest:
+    build: ./AcceptanceTests/deploy
+    env_file:
+     - docker-compose.env
+    volumes:
+      - ./AcceptanceTests/deploy/testresults:/app/testresults
+    depends_on:
+      - webapi
