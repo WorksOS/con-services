@@ -1,0 +1,44 @@
+{
+  "PassCountSummary_SingleTarget": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percentEqualsTarget": 4.290646062797961,
+    "percentGreaterThanTarget": 42.41739273384843,
+    "percentLessThanTarget": 53.29196120335361,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 2812.7792000000004,
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountSummary_LowRangeTarget": {
+    "constantTargetPassCountRange": {
+      "min": 1,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percentEqualsTarget": 57.58260726615157,
+    "percentGreaterThanTarget": 42.41739273384843,
+    "percentLessThanTarget": 0,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 2812.7792000000004,
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountSummary_HighRangeTarget": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 100
+    },
+    "isTargetPassCountConstant": true,
+    "percentEqualsTarget": 41.933097723350045,
+    "percentGreaterThanTarget": 4.7628832086792148,
+    "percentLessThanTarget": 53.304019067970742,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 2813.0104000000006,
+    "Code": 0,
+    "Message": "success"
+  }
+}

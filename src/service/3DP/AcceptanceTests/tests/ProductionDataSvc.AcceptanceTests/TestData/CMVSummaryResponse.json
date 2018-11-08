@@ -1,0 +1,46 @@
+{
+  "OverrideTargetAllLayers": {
+    "compactedPercent": 10,
+    "constantTargetCMV": 46,
+    "isTargetCMVConstant": true,
+    "overCompactedPercent": 70,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 1.1560000000000001,
+    "underCompactedPercent": 20,
+    "Code": 0,
+    "Message": "success"
+  },
+  "OverrideTargetTopLayerOnly": {
+    "compactedPercent": 0,
+    "constantTargetCMV": 46,
+    "isTargetCMVConstant": true,
+    "overCompactedPercent": 77.77777777777777,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 1.0404000000000002,
+    "underCompactedPercent": 22.22222222222222,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NotOverrideTargetAllLayers": {
+    "compactedPercent": 20,
+    "constantTargetCMV": 700,
+    "isTargetCMVConstant": true,
+    "overCompactedPercent": 60,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 1.1560000000000001,
+    "underCompactedPercent": 20,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NotOverrideTargetTopLayerOnly": {
+    "compactedPercent": 11.11111111111111,
+    "constantTargetCMV": 700,
+    "isTargetCMVConstant": true,
+    "overCompactedPercent": 66.66666666666667,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 1.0404000000000002,
+    "underCompactedPercent": 22.22222222222222,
+    "Code": 0,
+    "Message": "success"
+  }
+}

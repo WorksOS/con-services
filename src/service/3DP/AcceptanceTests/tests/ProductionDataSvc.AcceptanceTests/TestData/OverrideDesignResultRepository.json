@@ -1,0 +1,79 @@
+﻿{
+    "DesignOverrideAfterUndoBlankInitialEventsResponse": {
+        "dataEdits": [ ],
+        "Code": 0,
+        "Message": "success"
+    },
+
+
+    "DesignOverrideBeforeUndoBlankInitialEventsResponse": {
+        "dataEdits": [
+            {
+                "assetId": "1244020666025812",
+                "startUTC": "2012-11-27T00:31:37.218",
+                "endUTC": "2012-11-29T00:31:37.219",
+                "onMachineDesignName": "Bob Excavator",
+                "liftNumber": null
+            }
+        ],
+        "Code": 0,
+        "Message": "success"
+    },
+
+
+    "LayerOverrideAfterUndoBlankInitialEventsResponse": {
+        "dataEdits": [ ],
+        "Code": 0,
+        "Message": "success"
+    },
+
+
+    "LayerOverrideBeforeUndoBlankInitialEventsResponse": {
+        "dataEdits": [
+            {
+                "assetId": "1244020666025812",
+                "startUTC": "2012-11-27T00:31:37.218",
+                "endUTC": "2012-11-29T00:31:37.219",
+                "onMachineDesignName": null,
+                "liftNumber": 15
+            }
+        ],
+        "Code": 0,
+        "Message": "success"
+    },
+
+    "ResultDatumAfterOverrideResponse": {
+        "displayMode": 0,
+        "returnCode": 0,
+        "value": 37.875,
+        "timestamp": "2014-11-25T00:15:44.413",
+        "Code": 0,
+        "Message": "success"
+    },
+
+    "ResultDatumInitialResponse": {
+        "displayMode": 0,
+        "returnCode": 0,
+        "value": 38.08399963378906,
+        "timestamp": "2014-11-25T00:37:31.413",
+        "Code": 0,
+        "Message": "success"
+    },
+    "NoneDatumResult": {
+        "displayMode": 0,
+        "returnCode": 1,
+        "value": 0,
+        "timestamp": "1899-12-30T00:00:00",
+        "Code": 0,
+        "Message": "success"
+    },
+    "ResultDatumAfterLayerOverrideResponse": {
+        "displayMode": 0,
+        "returnCode": 0,
+        "value": 37.875,
+        "timestamp": "2014-11-25T00:16:29.413",
+        "Code": 0,
+        "Message": "success"
+    }
+
+}

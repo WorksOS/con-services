@@ -1,0 +1,18 @@
+version: '2.1'
+services:
+  webapi:
+    build: ./Artifacts/WebApi
+    env_file:
+     - docker-compose-local.env
+    ports:
+     - "3001:80"
+  accepttest:
+    build: ./AcceptanceTests/deploy
+    env_file:
+     - docker-compose-local.env
+    depends_on:
+     - webapi
+networks:
+  default:
+    external:
+      name: nat

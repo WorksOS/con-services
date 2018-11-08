@@ -1,0 +1,18 @@
+version: '3'
+services:
+  webapi:
+    build: ./Artifacts/WebApi
+    ports:
+     - "80:80"
+    env_file:
+     - docker-compose.env
+  mockprojectwebapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
+    env_file:
+     - docker-compose.env
+    ports:
+     - "5001:5001"
+networks:
+  default:
+    external:
+      name: nat

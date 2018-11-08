@@ -1,0 +1,79 @@
+﻿{
+  "FullProjectLatestDateElevationOnlyGriddedCSVExport": {
+    "projectID": 1001158,
+    "reportType": 1,
+    "reportElevation": true,
+    "reportCutFill": false,
+    "reportMDP": false,
+    "reportCMV": false,
+    "reportPassCount": false,
+    "reportTemperature": false,
+    "compress": true,
+    "interval": 15
+  },
+
+  "FullProjectSpecificDateElevationOnlyGriddedCSVExport": {
+    "projectID": 1001158,
+    "reportType": 1,
+    "reportElevation": true,
+    "reportCutFill": false,
+    "reportMDP": false,
+    "reportCMV": false,
+    "reportPassCount": false,
+    "reportTemperature": false,
+    "compress": true,
+    "interval": 15,
+    "filter": {
+      "endUTC": "2012-11-01T00:00:00Z"
+    }
+  },
+
+  "BadRequestNoReportType": {
+    "projectID": 1001158,
+    "reportElevation": true,
+    "reportCutFill": false,
+    "reportMDP": false,
+    "reportCMV": false,
+    "reportPassCount": false,
+    "reportTemperature": false,
+    "compress": true,
+    "interval": 15
+  },
+
+  "BadRequestUnknownReportType": {
+    "projectID": 1001158,
+    "reportType": 10,
+    "reportElevation": true,
+    "reportCutFill": false,
+    "reportMDP": false,
+    "reportCMV": false,
+    "reportPassCount": false,
+    "reportTemperature": false,
+    "compress": true,
+    "interval": 15
+  },
+
+  "BadRequestIntervalTooSmall": {
+    "projectID": 1001158,
+    "reportType": 1,
+    "reportElevation": true,
+    "compress": true,
+    "interval": 0.09
+  },
+
+  "BadRequestIntervalTooLarge": {
+    "projectID": 1001158,
+    "reportType": 1,
+    "reportElevation": true,
+    "compress": true,
+    "interval": 101.0
+  },
+
+  "BadRequestNoOutputFieldsConfigured": {
+    "projectID": 1001158,
+    "reportType": 1,
+    "compress": true,
+    "interval": 1
+  }
+}
+

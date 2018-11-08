@@ -1,0 +1,367 @@
+{
+  "NoDesignFilter_Summary": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.12620950778291964,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 99.873790492217083,
+      "totalAreaCoveredSqMeters": 549.56240000000014,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_PercentChange": {
+    "cmvChangeData": {
+      "percents": [
+        2.8559602649006623,
+        11.506622516556291,
+        4.6564569536423841,
+        5.1945364238410594,
+        4.056291390728477,
+        3.80794701986755,
+        9.064569536423841,
+        58.857615894039739
+      ],
+      "totalAreaCoveredSqMeters": 558.57920000000013
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details": {
+    "percents": [0.0, 100.0, 0.0, 0.0, 0.0],
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_PercentChangeSummary": {
+    "cmvChangeData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_PercentChangeSummary": {
+    "cmvChangeData": {
+      "percents": [
+        9.742647058823529,
+        18.382352941176471,
+        4.0441176470588234,
+        8.2720588235294112,
+        6.9852941176470589,
+        5.6985294117647056,
+        16.911764705882355,
+        29.963235294117645
+      ],
+      "totalAreaCoveredSqMeters": 62.886400000000009
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryFilter_PercentChangeSummary": {
+    "cmvChangeData": {
+      "percents": [
+        1.4263074484944533,
+        10.618066561014263,
+        6.0221870047543584,
+        6.286318013734812,
+        4.3845747490755409,
+        4.7015319598520868,
+        10.353935552033809,
+        56.20707871104068
+      ],
+      "totalAreaCoveredSqMeters": 218.83080000000004
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AsAtCustom_PercentChangeSummary": {
+    "cmvChangeData": {
+      "percents": [
+        2.9844097995545655,
+        10.623608017817372,
+        4.3652561247216042,
+        4.8552338530066814,
+        3.2962138084632517,
+        3.5189309576837413,
+        8.0178173719376389,
+        62.338530066815146
+      ],
+      "totalAreaCoveredSqMeters": 519.0440000000001
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TemperatureFilter_PercentChangeSummary": {
+    "cmvChangeData": {
+      "percents": [
+        3.089675960813866,
+        13.300678221552372,
+        6.3677467972871131,
+        4.7098718914845517,
+        4.257724189902035,
+        4.2954031650339113,
+        9.3067068575734737,
+        54.672192916352678
+      ],
+      "totalAreaCoveredSqMeters": 306.80240000000003
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_PercentChangeSummary": {
+    "cmvChangeData": {
+      "percents": [
+        2.8559602649006623,
+        11.506622516556291,
+        4.6564569536423841,
+        5.1945364238410594,
+        4.056291390728477,
+        3.80794701986755,
+        9.064569536423841,
+        58.857615894039739
+      ],
+      "totalAreaCoveredSqMeters": 558.57920000000013
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Details": {
+    "percents": null,
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Details": {
+    "percents": [
+      0.0,
+      100.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Summary_PS": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 23.264619267984855,
+      "percentGreaterThanTarget": 30.374421539755996,
+      "percentLessThanTarget": 46.360959192259152,
+      "totalAreaCoveredSqMeters": 549.56240000000014,
+      "cmvTarget": {
+        "cmvMachineTarget": 10.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 75.0,
+      "maxCMVPercent": 100.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Summary": {
+    "cmvSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Summary": {
+    "CmvSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 62.424000000000007,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryFilter_Summary": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 215.24720000000005,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AsAtCustom_Summary": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.13617793917385385,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 99.863822060826152,
+      "totalAreaCoveredSqMeters": 509.3336000000001,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TemperatureFilter_Summary": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 304.02800000000008,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Summary": {
+    "cmvSummaryData": {
+      "percentEqualsTarget": 0.12620950778291964,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 99.873790492217083,
+      "totalAreaCoveredSqMeters": 549.56240000000014,
+      "cmvTarget": {
+        "cmvMachineTarget": 70.0,
+        "targetVaries": false
+      },
+      "minCMVPercent": 80.0,
+      "maxCMVPercent": 130.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AutomaticsFilter_Summary": {
+    "cmvSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details_PS": {
+    "percents": [0.0, 68.321413546487165, 1.3041649137568363, 30.374421539755996, 0.0],
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_PercentChange_PS": {
+    "cmvChangeData": {
+      "percents": [
+        2.8559602649006623,
+        11.506622516556291,
+        4.6564569536423841,
+        5.1945364238410594,
+        4.056291390728477,
+        3.80794701986755,
+        9.064569536423841,
+        58.857615894039739
+      ],
+      "totalAreaCoveredSqMeters": 558.57920000000013
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_NoData": {
+    "cmvSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "Ext_NoDesignFilter_Details": {
+    "Percents": [
+      99.116533445519565,
+      0.88346655448043754,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cmvTarget": {
+      "cmvMachineTarget": 70.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 80.0,
+    "maxCMVPercent": 130.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "Ext_NoDesignFilter_Details_PS_Default": {
+    "Percents": [
+      99.116533445519565,
+      0.88346655448043754,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cmvTarget": {
+      "cmvMachineTarget": 10.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 75.0,
+    "maxCMVPercent": 100.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "Ext_NoDesignFilter_Details_PS": {
+    "Percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cmvTarget": {
+      "cmvMachineTarget": 10.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 75.0,
+    "maxCMVPercent": 100.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "Ext_DesignOutside_Details": {
+    "percents": null,
+    "cmvTarget": null,
+    "minCMVPercent": 0.0,
+    "maxCMVPercent": 0.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "Ext_DesignIntersects_Details": {
+    "Percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "cmvTarget": {
+      "cmvMachineTarget": 70.0,
+      "targetVaries": false
+    },
+    "minCMVPercent": 80.0,
+    "maxCMVPercent": 130.0,
+    "Code": 0,
+    "Message": "success"
+  }
+}

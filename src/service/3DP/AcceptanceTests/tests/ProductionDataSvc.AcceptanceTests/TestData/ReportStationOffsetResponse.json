@@ -1,0 +1,1438 @@
+{
+  "NoColumns": {
+    "Code": -1,
+    "Message": "There are no selected fields to be reported on"
+  },
+  "Elevation": {
+    "reportData": {
+      "startTime": "2017-11-29T10:20:45.8938062+13:00",
+      "endTime": "2017-11-29T10:20:45.8938062+13:00",
+      "rows": [
+        {
+          "station": 0,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0,
+              "northing": 1216.8633295690231,
+              "easting": 2699.770835302359,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 0,
+              "northing": 1217.16291843973,
+              "easting": 2699.7865358930667,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -2,
+              "station": 0,
+              "northing": 1217.8619591380459,
+              "easting": 2699.8231706047181,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1.5,
+              "station": 0,
+              "northing": 1214.3667556464657,
+              "easting": 2699.6399970464613,
+              "elevation": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 1.2,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.2,
+              "northing": 1216.8005272061921,
+              "easting": 2700.9691907851866,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 1.2,
+              "northing": 1217.100116076899,
+              "easting": 2700.9848913758942,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -2,
+              "station": 1.2,
+              "northing": 1217.7991567752149,
+              "easting": 2701.0215260875457,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1.5,
+              "station": 1.2,
+              "northing": 1214.3039532836347,
+              "easting": 2700.8383525292888,
+              "elevation": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 2.4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2.4,
+              "northing": 1216.7377248433613,
+              "easting": 2702.1675462680141,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 2.4,
+              "northing": 1217.0373137140682,
+              "easting": 2702.1832468587218,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -2,
+              "station": 2.4,
+              "northing": 1217.7363544123841,
+              "easting": 2702.2198815703732,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1.5,
+              "station": 2.4,
+              "northing": 1214.2411509208039,
+              "easting": 2702.0367080121164,
+              "elevation": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 3.5999999999999996,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3.5999999999999996,
+              "northing": 1216.6749224805303,
+              "easting": 2703.3659017508417,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 3.5999999999999996,
+              "northing": 1216.9745113512372,
+              "easting": 2703.3816023415493,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -2,
+              "station": 3.5999999999999996,
+              "northing": 1217.6735520495531,
+              "easting": 2703.4182370532008,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1.5,
+              "station": 3.5999999999999996,
+              "northing": 1214.1783485579729,
+              "easting": 2703.2350634949439,
+              "elevation": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 4,
+              "northing": 1216.6539883595867,
+              "easting": 2703.7653535784507,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 4,
+              "northing": 1216.9535772302936,
+              "easting": 2703.7810541691583,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": -2,
+              "station": 4,
+              "northing": 1217.6526179286095,
+              "easting": 2703.81768888081,
+              "elevation": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1.5,
+              "station": 4,
+              "northing": 1214.1574144370293,
+              "easting": 2703.6345153225529,
+              "elevation": 3.3999999521443642e+38
+            }
+          ]
+        }
+      ],
+      "elevationReport": true,
+      "cutFillReport": false,
+      "cmvReport": false,
+      "mdpReport": false,
+      "passCountReport": false,
+      "temperatureReport": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCount": {
+    "reportData": {
+      "startTime": "2017-11-28T16:38:08.0712779+13:00",
+      "endTime": "2017-11-28T16:38:08.0712779+13:00",
+      "rows": [
+        {
+          "station": 0,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0,
+              "northing": 1216.8633295690231,
+              "easting": 2699.770835302359,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -1.3,
+              "station": 0,
+              "northing": 1217.16291843973,
+              "easting": 2699.7865358930667,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -2,
+              "station": 0,
+              "northing": 1217.8619591380459,
+              "easting": 2699.8231706047181,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 1.5,
+              "station": 0,
+              "northing": 1214.3667556464657,
+              "easting": 2699.6399970464613,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 1.2,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.2,
+              "northing": 1216.8005272061921,
+              "easting": 2700.9691907851866,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -1.3,
+              "station": 1.2,
+              "northing": 1217.100116076899,
+              "easting": 2700.9848913758942,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -2,
+              "station": 1.2,
+              "northing": 1217.7991567752149,
+              "easting": 2701.0215260875457,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 1.5,
+              "station": 1.2,
+              "northing": 1214.3039532836347,
+              "easting": 2700.8383525292888,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 2.4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2.4,
+              "northing": 1216.7377248433613,
+              "easting": 2702.1675462680141,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -1.3,
+              "station": 2.4,
+              "northing": 1217.0373137140682,
+              "easting": 2702.1832468587218,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -2,
+              "station": 2.4,
+              "northing": 1217.7363544123841,
+              "easting": 2702.2198815703732,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 1.5,
+              "station": 2.4,
+              "northing": 1214.2411509208039,
+              "easting": 2702.0367080121164,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 3.5999999999999996,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3.5999999999999996,
+              "northing": 1216.6749224805303,
+              "easting": 2703.3659017508417,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -1.3,
+              "station": 3.5999999999999996,
+              "northing": 1216.9745113512372,
+              "easting": 2703.3816023415493,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -2,
+              "station": 3.5999999999999996,
+              "northing": 1217.6735520495531,
+              "easting": 2703.4182370532008,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 1.5,
+              "station": 3.5999999999999996,
+              "northing": 1214.1783485579729,
+              "easting": 2703.2350634949439,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 4,
+              "northing": 1216.6539883595867,
+              "easting": 2703.7653535784507,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -1.3,
+              "station": 4,
+              "northing": 1216.9535772302936,
+              "easting": 2703.7810541691583,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": -2,
+              "station": 4,
+              "northing": 1217.6526179286095,
+              "easting": 2703.81768888081,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 1.5,
+              "station": 4,
+              "northing": 1214.1574144370293,
+              "easting": 2703.6345153225529,
+              "elevation": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        }
+      ],
+      "elevationReport": true,
+      "cutFillReport": false,
+      "cmvReport": true,
+      "mdpReport": true,
+      "passCountReport": true,
+      "temperatureReport": true
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "CutFill": {
+    "reportData": {
+      "startTime": "2012-11-01T07:00:00Z",
+      "endTime": "2012-11-01T07:00:00Z",
+      "rows": [
+        {
+          "station": 0,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0,
+              "northing": 1216.8633295690231,
+              "easting": 2699.770835302359,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 0,
+              "northing": 1217.16291843973,
+              "easting": 2699.7865358930667,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 0,
+              "northing": 1214.8660704309771,
+              "easting": 2699.6661646976409,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 0.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0.5,
+              "northing": 1216.8371619178436,
+              "easting": 2700.2701500868707,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 0.5,
+              "northing": 1217.1367507885504,
+              "easting": 2700.2858506775783,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 0.5,
+              "northing": 1214.8399027797975,
+              "easting": 2700.1654794821525,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 1,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1,
+              "northing": 1216.810994266664,
+              "easting": 2700.7694648713818,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 1,
+              "northing": 1217.1105831373709,
+              "easting": 2700.7851654620895,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 1,
+              "northing": 1214.813735128618,
+              "easting": 2700.6647942666636,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 1.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.5,
+              "northing": 1216.7848266154845,
+              "easting": 2701.2687796558935,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 1.5,
+              "northing": 1217.0844154861914,
+              "easting": 2701.2844802466011,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 1.5,
+              "northing": 1214.7875674774384,
+              "easting": 2701.1641090511753,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 2,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2,
+              "northing": 1216.7586589643049,
+              "easting": 2701.7680944404051,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 2,
+              "northing": 1217.0582478350118,
+              "easting": 2701.7837950311127,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 2,
+              "northing": 1214.7613998262589,
+              "easting": 2701.6634238356869,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 2.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2.5,
+              "northing": 1216.7324913131254,
+              "easting": 2702.2674092249163,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 2.5,
+              "northing": 1217.0320801838323,
+              "easting": 2702.2831098156239,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 2.5,
+              "northing": 1214.7352321750793,
+              "easting": 2702.1627386201981,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 3,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3,
+              "northing": 1216.7063236619458,
+              "easting": 2702.7667240094279,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 3,
+              "northing": 1217.0059125326527,
+              "easting": 2702.7824246001355,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 3,
+              "northing": 1214.7090645238998,
+              "easting": 2702.6620534047097,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 3.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3.5,
+              "northing": 1216.6801560107663,
+              "easting": 2703.2660387939395,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 3.5,
+              "northing": 1216.9797448814732,
+              "easting": 2703.2817393846472,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 3.5,
+              "northing": 1214.6828968727202,
+              "easting": 2703.1613681892213,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        },
+        {
+          "station": 4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 4,
+              "northing": 1216.6539883595867,
+              "easting": 2703.7653535784507,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": -1.3,
+              "station": 4,
+              "northing": 1216.9535772302936,
+              "easting": 2703.7810541691583,
+              "cutFill": 3.3999999521443642e+38
+            },
+            {
+              "offset": 1,
+              "station": 4,
+              "northing": 1214.6567292215407,
+              "easting": 2703.6606829737325,
+              "cutFill": 3.3999999521443642e+38
+            }
+          ]
+        }
+      ],
+      "elevationReport": false,
+      "cutFillReport": true,
+      "cmvReport": false,
+      "mdpReport": false,
+      "passCountReport": false,
+      "temperatureReport": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AllColumns": {
+    "reportData": {
+      "startTime": "2017-11-29T11:11:23.3978304+13:00",
+      "endTime": "2017-11-29T11:11:23.3978304+13:00",
+      "rows": [
+        {
+          "station": 0,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0,
+              "northing": 1173.1714981629893,
+              "easting": 2718.2650121222664,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 0.5,
+              "station": 0,
+              "northing": 1171.7160509185053,
+              "easting": 2717.9021439388666,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 0.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0.5,
+              "northing": 1173.050628840391,
+              "easting": 2718.7498182538452,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 0.5,
+              "station": 0.5,
+              "northing": 1171.5951687942682,
+              "easting": 2718.3870014210765,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 1,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1,
+              "northing": 1172.9298095647644,
+              "easting": 2719.2345682625651,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 0.5,
+              "station": 1,
+              "northing": 1171.474311566152,
+              "easting": 2718.8719037122769,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 1.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.5,
+              "northing": 1172.809073310154,
+              "easting": 2719.7192731944028,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 0.5,
+              "station": 1.5,
+              "northing": 1171.3535122394644,
+              "easting": 2719.3568618680156,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        },
+        {
+          "station": 1.75,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.75,
+              "northing": 1172.7487466198506,
+              "easting": 2719.9616121951703,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            },
+            {
+              "offset": 0.5,
+              "station": 1.75,
+              "northing": 1171.2931446087155,
+              "easting": 2719.5993653384835,
+              "elevation": 3.3999999521443642e+38,
+              "cutFill": 3.3999999521443642e+38,
+              "passCount": 0
+            }
+          ]
+        }
+      ],
+      "elevationReport": true,
+      "cutFillReport": true,
+      "cmvReport": true,
+      "mdpReport": true,
+      "passCountReport": true,
+      "temperatureReport": true
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "MDP": {
+    "reportData": {
+      "startTime": "2012-11-01T07:00:00Z",
+      "endTime": "2012-11-01T07:00:00Z",
+      "rows": [
+        {
+          "station": 0,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0,
+              "northing": 1216.8633295690231,
+              "easting": 2699.770835302359
+            },
+            {
+              "offset": -1.3,
+              "station": 0,
+              "northing": 1217.16291843973,
+              "easting": 2699.7865358930667
+            },
+            {
+              "offset": 1,
+              "station": 0,
+              "northing": 1214.8660704309771,
+              "easting": 2699.6661646976409
+            }
+          ]
+        },
+        {
+          "station": 0.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0.5,
+              "northing": 1216.8371619178436,
+              "easting": 2700.2701500868707
+            },
+            {
+              "offset": -1.3,
+              "station": 0.5,
+              "northing": 1217.1367507885504,
+              "easting": 2700.2858506775783
+            },
+            {
+              "offset": 1,
+              "station": 0.5,
+              "northing": 1214.8399027797975,
+              "easting": 2700.1654794821525
+            }
+          ]
+        },
+        {
+          "station": 1,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1,
+              "northing": 1216.810994266664,
+              "easting": 2700.7694648713818
+            },
+            {
+              "offset": -1.3,
+              "station": 1,
+              "northing": 1217.1105831373709,
+              "easting": 2700.7851654620895
+            },
+            {
+              "offset": 1,
+              "station": 1,
+              "northing": 1214.813735128618,
+              "easting": 2700.6647942666636
+            }
+          ]
+        },
+        {
+          "station": 1.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.5,
+              "northing": 1216.7848266154845,
+              "easting": 2701.2687796558935
+            },
+            {
+              "offset": -1.3,
+              "station": 1.5,
+              "northing": 1217.0844154861914,
+              "easting": 2701.2844802466011
+            },
+            {
+              "offset": 1,
+              "station": 1.5,
+              "northing": 1214.7875674774384,
+              "easting": 2701.1641090511753
+            }
+          ]
+        },
+        {
+          "station": 2,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2,
+              "northing": 1216.7586589643049,
+              "easting": 2701.7680944404051
+            },
+            {
+              "offset": -1.3,
+              "station": 2,
+              "northing": 1217.0582478350118,
+              "easting": 2701.7837950311127
+            },
+            {
+              "offset": 1,
+              "station": 2,
+              "northing": 1214.7613998262589,
+              "easting": 2701.6634238356869
+            }
+          ]
+        },
+        {
+          "station": 2.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2.5,
+              "northing": 1216.7324913131254,
+              "easting": 2702.2674092249163
+            },
+            {
+              "offset": -1.3,
+              "station": 2.5,
+              "northing": 1217.0320801838323,
+              "easting": 2702.2831098156239
+            },
+            {
+              "offset": 1,
+              "station": 2.5,
+              "northing": 1214.7352321750793,
+              "easting": 2702.1627386201981
+            }
+          ]
+        },
+        {
+          "station": 3,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3,
+              "northing": 1216.7063236619458,
+              "easting": 2702.7667240094279
+            },
+            {
+              "offset": -1.3,
+              "station": 3,
+              "northing": 1217.0059125326527,
+              "easting": 2702.7824246001355
+            },
+            {
+              "offset": 1,
+              "station": 3,
+              "northing": 1214.7090645238998,
+              "easting": 2702.6620534047097
+            }
+          ]
+        },
+        {
+          "station": 3.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3.5,
+              "northing": 1216.6801560107663,
+              "easting": 2703.2660387939395
+            },
+            {
+              "offset": -1.3,
+              "station": 3.5,
+              "northing": 1216.9797448814732,
+              "easting": 2703.2817393846472
+            },
+            {
+              "offset": 1,
+              "station": 3.5,
+              "northing": 1214.6828968727202,
+              "easting": 2703.1613681892213
+            }
+          ]
+        },
+        {
+          "station": 4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 4,
+              "northing": 1216.6539883595867,
+              "easting": 2703.7653535784507
+            },
+            {
+              "offset": -1.3,
+              "station": 4,
+              "northing": 1216.9535772302936,
+              "easting": 2703.7810541691583
+            },
+            {
+              "offset": 1,
+              "station": 4,
+              "northing": 1214.6567292215407,
+              "easting": 2703.6606829737325
+            }
+          ]
+        }
+      ],
+      "elevationReport": false,
+      "cutFillReport": false,
+      "cmvReport": false,
+      "mdpReport": true,
+      "passCountReport": false,
+      "temperatureReport": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "CMV": {
+    "reportData": {
+      "startTime": "2012-11-01T07:00:00Z",
+      "endTime": "2012-11-01T07:00:00Z",
+      "rows": [
+        {
+          "station": 0,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0,
+              "northing": 1216.8633295690231,
+              "easting": 2699.770835302359
+            },
+            {
+              "offset": -1.3,
+              "station": 0,
+              "northing": 1217.16291843973,
+              "easting": 2699.7865358930667
+            },
+            {
+              "offset": 1,
+              "station": 0,
+              "northing": 1214.8660704309771,
+              "easting": 2699.6661646976409
+            }
+          ]
+        },
+        {
+          "station": 0.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0.5,
+              "northing": 1216.8371619178436,
+              "easting": 2700.2701500868707
+            },
+            {
+              "offset": -1.3,
+              "station": 0.5,
+              "northing": 1217.1367507885504,
+              "easting": 2700.2858506775783
+            },
+            {
+              "offset": 1,
+              "station": 0.5,
+              "northing": 1214.8399027797975,
+              "easting": 2700.1654794821525
+            }
+          ]
+        },
+        {
+          "station": 1,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1,
+              "northing": 1216.810994266664,
+              "easting": 2700.7694648713818
+            },
+            {
+              "offset": -1.3,
+              "station": 1,
+              "northing": 1217.1105831373709,
+              "easting": 2700.7851654620895
+            },
+            {
+              "offset": 1,
+              "station": 1,
+              "northing": 1214.813735128618,
+              "easting": 2700.6647942666636
+            }
+          ]
+        },
+        {
+          "station": 1.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.5,
+              "northing": 1216.7848266154845,
+              "easting": 2701.2687796558935
+            },
+            {
+              "offset": -1.3,
+              "station": 1.5,
+              "northing": 1217.0844154861914,
+              "easting": 2701.2844802466011
+            },
+            {
+              "offset": 1,
+              "station": 1.5,
+              "northing": 1214.7875674774384,
+              "easting": 2701.1641090511753
+            }
+          ]
+        },
+        {
+          "station": 2,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2,
+              "northing": 1216.7586589643049,
+              "easting": 2701.7680944404051
+            },
+            {
+              "offset": -1.3,
+              "station": 2,
+              "northing": 1217.0582478350118,
+              "easting": 2701.7837950311127
+            },
+            {
+              "offset": 1,
+              "station": 2,
+              "northing": 1214.7613998262589,
+              "easting": 2701.6634238356869
+            }
+          ]
+        },
+        {
+          "station": 2.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2.5,
+              "northing": 1216.7324913131254,
+              "easting": 2702.2674092249163
+            },
+            {
+              "offset": -1.3,
+              "station": 2.5,
+              "northing": 1217.0320801838323,
+              "easting": 2702.2831098156239
+            },
+            {
+              "offset": 1,
+              "station": 2.5,
+              "northing": 1214.7352321750793,
+              "easting": 2702.1627386201981
+            }
+          ]
+        },
+        {
+          "station": 3,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3,
+              "northing": 1216.7063236619458,
+              "easting": 2702.7667240094279
+            },
+            {
+              "offset": -1.3,
+              "station": 3,
+              "northing": 1217.0059125326527,
+              "easting": 2702.7824246001355
+            },
+            {
+              "offset": 1,
+              "station": 3,
+              "northing": 1214.7090645238998,
+              "easting": 2702.6620534047097
+            }
+          ]
+        },
+        {
+          "station": 3.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3.5,
+              "northing": 1216.6801560107663,
+              "easting": 2703.2660387939395
+            },
+            {
+              "offset": -1.3,
+              "station": 3.5,
+              "northing": 1216.9797448814732,
+              "easting": 2703.2817393846472
+            },
+            {
+              "offset": 1,
+              "station": 3.5,
+              "northing": 1214.6828968727202,
+              "easting": 2703.1613681892213
+            }
+          ]
+        },
+        {
+          "station": 4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 4,
+              "northing": 1216.6539883595867,
+              "easting": 2703.7653535784507
+            },
+            {
+              "offset": -1.3,
+              "station": 4,
+              "northing": 1216.9535772302936,
+              "easting": 2703.7810541691583
+            },
+            {
+              "offset": 1,
+              "station": 4,
+              "northing": 1214.6567292215407,
+              "easting": 2703.6606829737325
+            }
+          ]
+        }
+      ],
+      "elevationReport": false,
+      "cutFillReport": false,
+      "cmvReport": true,
+      "mdpReport": false,
+      "passCountReport": false,
+      "temperatureReport": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "Temperature": {
+    "reportData": {
+      "startTime": "2012-11-01T07:00:00Z",
+      "endTime": "2012-11-01T07:00:00Z",
+      "rows": [
+        {
+          "station": 0,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0,
+              "northing": 1216.8633295690231,
+              "easting": 2699.770835302359
+            },
+            {
+              "offset": -1.3,
+              "station": 0,
+              "northing": 1217.16291843973,
+              "easting": 2699.7865358930667
+            },
+            {
+              "offset": 1,
+              "station": 0,
+              "northing": 1214.8660704309771,
+              "easting": 2699.6661646976409
+            }
+          ]
+        },
+        {
+          "station": 0.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 0.5,
+              "northing": 1216.8371619178436,
+              "easting": 2700.2701500868707
+            },
+            {
+              "offset": -1.3,
+              "station": 0.5,
+              "northing": 1217.1367507885504,
+              "easting": 2700.2858506775783
+            },
+            {
+              "offset": 1,
+              "station": 0.5,
+              "northing": 1214.8399027797975,
+              "easting": 2700.1654794821525
+            }
+          ]
+        },
+        {
+          "station": 1,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1,
+              "northing": 1216.810994266664,
+              "easting": 2700.7694648713818
+            },
+            {
+              "offset": -1.3,
+              "station": 1,
+              "northing": 1217.1105831373709,
+              "easting": 2700.7851654620895
+            },
+            {
+              "offset": 1,
+              "station": 1,
+              "northing": 1214.813735128618,
+              "easting": 2700.6647942666636
+            }
+          ]
+        },
+        {
+          "station": 1.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 1.5,
+              "northing": 1216.7848266154845,
+              "easting": 2701.2687796558935
+            },
+            {
+              "offset": -1.3,
+              "station": 1.5,
+              "northing": 1217.0844154861914,
+              "easting": 2701.2844802466011
+            },
+            {
+              "offset": 1,
+              "station": 1.5,
+              "northing": 1214.7875674774384,
+              "easting": 2701.1641090511753
+            }
+          ]
+        },
+        {
+          "station": 2,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2,
+              "northing": 1216.7586589643049,
+              "easting": 2701.7680944404051
+            },
+            {
+              "offset": -1.3,
+              "station": 2,
+              "northing": 1217.0582478350118,
+              "easting": 2701.7837950311127
+            },
+            {
+              "offset": 1,
+              "station": 2,
+              "northing": 1214.7613998262589,
+              "easting": 2701.6634238356869
+            }
+          ]
+        },
+        {
+          "station": 2.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 2.5,
+              "northing": 1216.7324913131254,
+              "easting": 2702.2674092249163
+            },
+            {
+              "offset": -1.3,
+              "station": 2.5,
+              "northing": 1217.0320801838323,
+              "easting": 2702.2831098156239
+            },
+            {
+              "offset": 1,
+              "station": 2.5,
+              "northing": 1214.7352321750793,
+              "easting": 2702.1627386201981
+            }
+          ]
+        },
+        {
+          "station": 3,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3,
+              "northing": 1216.7063236619458,
+              "easting": 2702.7667240094279
+            },
+            {
+              "offset": -1.3,
+              "station": 3,
+              "northing": 1217.0059125326527,
+              "easting": 2702.7824246001355
+            },
+            {
+              "offset": 1,
+              "station": 3,
+              "northing": 1214.7090645238998,
+              "easting": 2702.6620534047097
+            }
+          ]
+        },
+        {
+          "station": 3.5,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 3.5,
+              "northing": 1216.6801560107663,
+              "easting": 2703.2660387939395
+            },
+            {
+              "offset": -1.3,
+              "station": 3.5,
+              "northing": 1216.9797448814732,
+              "easting": 2703.2817393846472
+            },
+            {
+              "offset": 1,
+              "station": 3.5,
+              "northing": 1214.6828968727202,
+              "easting": 2703.1613681892213
+            }
+          ]
+        },
+        {
+          "station": 4,
+          "offsets": [
+            {
+              "offset": -1,
+              "station": 4,
+              "northing": 1216.6539883595867,
+              "easting": 2703.7653535784507
+            },
+            {
+              "offset": -1.3,
+              "station": 4,
+              "northing": 1216.9535772302936,
+              "easting": 2703.7810541691583
+            },
+            {
+              "offset": 1,
+              "station": 4,
+              "northing": 1214.6567292215407,
+              "easting": 2703.6606829737325
+            }
+          ]
+        }
+      ],
+      "elevationReport": false,
+      "cutFillReport": false,
+      "cmvReport": false,
+      "mdpReport": false,
+      "passCountReport": false,
+      "temperatureReport": true
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

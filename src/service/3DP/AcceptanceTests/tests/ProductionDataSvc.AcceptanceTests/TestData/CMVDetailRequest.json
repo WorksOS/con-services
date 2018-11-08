@@ -1,0 +1,546 @@
+{
+  "OverrideTargetAllLayer": {
+    "projectId": 1001158,
+    "callId": null,
+    "cmvSettings": {
+      "minCMV": 47,
+      "cmvTarget": 54,
+      "maxCMV": 62,
+      "minCMVPercent": 0,
+      "maxCMVPercent": 250,
+      "overrideTargetCMV": true
+    },
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "CCvSummaryType": 0,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+      {
+        "x": 2783.576,
+        "y": 1170.967
+      },
+      {
+        "x": 2788.336,
+        "y": 1170.967
+      },
+      {
+        "x": 2788.336,
+        "y": 1170.627
+      },
+      {
+        "x": 2783.576,
+        "y": 1170.627
+      }
+    ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null
+    },
+    "filterID": -1,
+    "overrideStartUTC": null,
+    "overrideEndUTC": null,
+    "overrideAssetIds": null
+  },
+  "OverrideTargetTopLayerOnly": {
+    "projectId": 1001158,
+    "callId": null,
+    "cmvSettings": {
+      "minCMV": 47,
+      "cmvTarget": 54,
+      "maxCMV": 62,
+      "minCMVPercent": 0,
+      "maxCMVPercent": 250,
+      "overrideTargetCMV": true
+    },
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "CCvSummaryType": 0,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+      {
+        "x": 2783.576,
+        "y": 1170.967
+      },
+      {
+        "x": 2788.336,
+        "y": 1170.967
+      },
+      {
+        "x": 2788.336,
+        "y": 1170.627
+      },
+      {
+        "x": 2783.576,
+        "y": 1170.627
+      }
+    ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null
+    },
+    "filterID": -1,
+    "overrideStartUTC": null,
+    "overrideEndUTC": null,
+    "overrideAssetIds": null
+  },
+  "NotOverrideTarget": {
+    "projectId": 1001158,
+    "callId": null,
+    "cmvSettings": {
+      "minCMV": 47,
+      "cmvTarget": 54,
+      "maxCMV": 62,
+      "minCMVPercent": 0,
+      "maxCMVPercent": 250,
+      "overrideTargetCMV": false
+    },
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "CCvSummaryType": 0,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+      {
+        "x": 2783.576,
+        "y": 1170.967
+      },
+      {
+        "x": 2788.336,
+        "y": 1170.967
+      },
+      {
+        "x": 2788.336,
+        "y": 1170.627
+      },
+      {
+        "x": 2783.576,
+        "y": 1170.627
+      }
+    ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null
+    },
+    "filterID": -1,
+    "overrideStartUTC": null,
+    "overrideEndUTC": null,
+    "overrideAssetIds": null
+  },
+  "MinCmvTooSmall": {
+    "projectId": 1001158,
+    "callId": null,
+    "cmvSettings": {
+      "cmvTarget": 150,
+      "minCMV": -1,
+      "maxCMV": 195,
+      "minCMVPercent": 0,
+      "maxCMVPercent": 250,
+      "overrideTargetCMV": true
+    },
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null
+    },
+    "filterID": -1,
+    "overrideStartUTC": null,
+    "overrideEndUTC": null,
+    "overrideAssetIds": null
+  },
+  "MaxCmvTooLarge": {
+    "projectId": 1001158,
+    "callId": null,
+    "cmvSettings": {
+      "cmvTarget": 150,
+      "minCMV": 120,
+      "maxCMV": 10001,
+      "minCMVPercent": 0,
+      "maxCMVPercent": 250,
+      "overrideTargetCMV": true
+    },
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null
+    },
+    "filterID": -1,
+    "overrideStartUTC": null,
+    "overrideEndUTC": null,
+    "overrideAssetIds": null
+  },
+  "MinCmvLargerThanMaxCmv": {
+    "projectId": 1001158,
+    "callId": null,
+    "cmvSettings": {
+      "cmvTarget": 150,
+      "minCMV": 195,
+      "maxCMV": 120,
+      "minCMVPercent": 0,
+      "maxCMVPercent": 250,
+      "overrideTargetCMV": true
+    },
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null
+    },
+    "filterID": -1,
+    "overrideStartUTC": null,
+    "overrideEndUTC": null,
+    "overrideAssetIds": null
+  },
+  "CmvTargetOutOfBound": {
+    "projectId": 1001158,
+    "callId": null,
+    "cmvSettings": {
+      "cmvTarget": 200,
+      "minCMV": 120,
+      "maxCMV": 195,
+      "minCMVPercent": 0,
+      "maxCMVPercent": 250,
+      "overrideTargetCMV": true
+    },
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null
+    },
+    "filterID": -1,
+    "overrideStartUTC": null,
+    "overrideEndUTC": null,
+    "overrideAssetIds": null
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "Large_Sites_Align_Good": {
+    "StartStation": 0.0,
+    "EndStation": 197.7762153912619,
+    "Code": 0,
+    "Message": "success"
+  },
+  "TopCon_Align_Good": {
+    "StartStation": 0.0,
+    "EndStation": 91.44018288036564,
+    "Code": 0,
+    "Message": "success"
+  },
+
+  "Milling_Align_Good": {
+    "StartStation": 0.0,
+    "EndStation": 87.000000000000028,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_ER": {
+    "boundingExtents": {
+      "maxX": 2913.2900000000004,
+      "maxY": 1250.69,
+      "maxZ": 624.1365966796875,
+      "minX": 2306.05,
+      "minY": 1125.2300000000003,
+      "minZ": 591.953857421875
+    },
+    "minElevation": 591.953857421875,
+    "maxElevation": 624.1365966796875,
+    "totalCoverageArea": 0.0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoData_ER": {
+    "boundingExtents": null,
+    "minElevation": 0.0,
+    "maxElevation": 0.0,
+    "totalCoverageArea": 0.0,
+    "Code": -4,
+    "Message": "No elevation range"
+  },
+  "AutomaticsFilter_ER": {
+    "boundingExtents": {
+      "maxX": -115.02477404574897,
+      "maxY": 36.207347660105043,
+      "maxZ": 1E+308,
+      "minX": -115.02489501829339,
+      "minY": 36.2072496172315,
+      "minZ": 1E+308
+    },
+    "minElevation": 609.99200439453125,
+    "maxElevation": 609.99200439453125,
+    "totalCoverageArea": 0.11560000000000002,
+    "Code": 0,
+    "Message": "success"
+  },
+  "GoodRequest_PRS": {
+    "startTime": "2012-10-30T00:12:09.109",
+    "endTime": "2015-03-15T18:13:09.265",
+    "cellSize": 0.34,
+    "indexOriginOffset": 536870912,
+    "extents": {
+      "maxX": 2913.2900000000004,
+      "maxY": 1250.69,
+      "maxZ": 624.1365966796875,
+      "minX": 2306.05,
+      "minY": 1125.2300000000003,
+      "minZ": 591.953857421875
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "GoodReq_Extents": {
+    "minLat": 36.206604688828079,
+    "minLng": -115.02502164741648,
+    "maxLat": 36.207735146259026,
+    "maxLng": -115.01826973325758,
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter": {
+    "boundingExtents": {
+      "maxX": -115.01824137935459,
+      "maxY": 36.207739740800292,
+      "maxZ": 1E+308,
+      "minX": -115.02513694938637,
+      "minY": 36.206563325785233,
+      "minZ": 1E+308
+    },
+    "minElevation": 595.8179931640625,
+    "maxElevation": 622.7540283203125,
+    "totalCoverageArea": 1453.4388000000004,
+    "Code": 0,
+    "Message": "success"
+  }
+}

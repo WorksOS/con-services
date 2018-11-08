@@ -1,0 +1,223 @@
+{
+  "SimpleVolumeSummary": {
+    "volumeSummaryData": {
+      "netVolume": 0.0,
+      "totalVolume": 0.0,
+      "totalCutVolume": 0.0,
+      "totalFillVolume": 0.0,
+      "totalMachineCoveragePlanArea": 0.46240000000000009,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "GroundToGroundEarliestToLatest": {
+    "volumeSummaryData": {
+      "netVolume": 228.68299062499989,
+      "totalVolume": 1134.095267578125,
+      "totalCutVolume": 681.3891291015625,
+      "totalFillVolume": 452.70613847656261,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "GroundToGroundLatestToEarliest": {
+    "volumeSummaryData": {
+      "netVolume": -206.62090983886753,
+      "totalVolume": 1111.4519270751957,
+      "totalCutVolume": 452.41550861816415,
+      "totalFillVolume": 659.03641845703169,
+      "totalMachineCoveragePlanArea": 5298.5260000000007,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "GroundToGroundNoLatLonToday": {
+    "volumeSummaryData": {
+      "netVolume": 857.31167717285325,
+      "totalVolume": 1363.1968213623068,
+      "totalCutVolume": 1110.25424926758,
+      "totalFillVolume": 252.94257209472679,
+      "totalMachineCoveragePlanArea": 3595.1600000000008,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "GroundToGroundNoLatLonYesterday": {
+    "volumeSummaryData": {
+      "netVolume": 2566.0680634033165,
+      "totalVolume": 3009.4801283935508,
+      "totalCutVolume": 2787.7740958984336,
+      "totalFillVolume": 221.70603249511723,
+      "totalMachineCoveragePlanArea": 3908.0892000000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterAndDesign": {
+    "volumeSummaryData": {
+      "netVolume": 0.0,
+      "totalVolume": 0.0,
+      "totalCutVolume": 0.0,
+      "totalFillVolume": 0.0,
+      "totalMachineCoveragePlanArea": 0.0,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignToLatestGround": {
+    "volumeSummaryData": {
+      "netVolume": 228.6829906249996,
+      "totalVolume": 1134.0952675781241,
+      "totalCutVolume": 681.38912910156182,
+      "totalFillVolume": 452.70613847656222,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "LatestGroundToLatestGround": {
+    "volumeSummaryData": {
+      "netVolume": 0.0,
+      "totalVolume": 0.0,
+      "totalCutVolume": 0.0,
+      "totalFillVolume": 0.0,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "CustomBulkingAndShrinkage": {
+    "volumeSummaryData": {
+      "netVolume": 0.0,
+      "totalVolume": 0.0,
+      "totalCutVolume": 0.0,
+      "totalFillVolume": 0.0,
+      "totalMachineCoveragePlanArea": 2488.1744000000008,
+      "shrinkage": 3.0,
+      "bulking": 6.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "VolumeSummaryToday": {
+    "volumeSummaryData": {
+      "netVolume": -3.49684355468753,
+      "totalVolume": 101.3237951171875,
+      "totalCutVolume": 48.913475781249986,
+      "totalFillVolume": 52.410319335937515,
+      "totalMachineCoveragePlanArea": 1203.6272000000004,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "VolumeSummaryYesterday": {
+    "volumeSummaryData": {
+      "netVolume": -23.236679516601541,
+      "totalVolume": 66.681902758789022,
+      "totalCutVolume": 21.722611621093741,
+      "totalFillVolume": 44.959291137695281,
+      "totalMachineCoveragePlanArea": 1481.7608000000002,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "SummaryVolumesFilterNull20121101": {
+    "volumeSummaryData": {
+      "netVolume": 41.934217504882653,
+      "totalVolume": 170.10149821777355,
+      "totalCutVolume": 106.01785786132811,
+      "totalFillVolume": 64.083640356445457,
+      "totalMachineCoveragePlanArea": 2409.5664000000006,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "EmptyJsonResponse": {
+    "volumeSummaryData": {
+      "netVolume": 0.0,
+      "totalVolume": 0.0,
+      "totalCutVolume": 0.0,
+      "totalFillVolume": 0.0,
+      "totalMachineCoveragePlanArea": 0,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDataResponse": {
+    "Code": -4,
+    "Message": "Failed to get/update data requested by SummaryVolumesExecutorV2 with error: No production data found"
+  },
+  "NullJsonResponse": {
+    "volumeSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterAndInvalidDesign": {
+    "Code": -1,
+    "Message": "Invalid surface parameter(s)."
+  },
+  "PassCountRangeEarliestToLatest": {
+    "volumeSummaryData": {
+      "netVolume": 283.05944130859325,
+      "totalVolume": 972.92075781249969,
+      "totalCutVolume": 627.99009956054647,
+      "totalFillVolume": 344.93065825195322,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountRangeDesignToLatest": {
+    "volumeSummaryData": {
+      "netVolume": 283.05944130859297,
+      "totalVolume": 972.92075781249946,
+      "totalCutVolume": 627.99009956054624,
+      "totalFillVolume": 344.93065825195328,
+      "totalMachineCoveragePlanArea": 137012.4724,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountRangeEarliestToDesign": {
+    "volumeSummaryData": {
+      "netVolume": 0.0,
+      "totalVolume": 0.0,
+      "totalCutVolume": 0.0,
+      "totalFillVolume": 0.0,
+      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "shrinkage": 0.0,
+      "bulking": 0.0
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

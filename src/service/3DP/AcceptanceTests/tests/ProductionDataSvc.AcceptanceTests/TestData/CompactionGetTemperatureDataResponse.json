@@ -1,0 +1,253 @@
+{
+  "NoDesignFilter_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 953.93120000000022,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Summary_PS": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 953.93120000000022,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 75.0,
+        "maxTemperatureMachineTarget": 130.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Summary": {
+    "temperatureSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 72.943600000000018,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryTempFilter": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 364.14000000000004,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 22.542000000000005,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TemperatureFilter_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 226.46040000000005,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TempBoundaryFilter_Summary": {
+    "temperatureSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Summary": {
+    "temperatureSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 953.93120000000022,
+      "temperatureTarget": {
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details": {
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details_PS": {
+    "percents": [
+      21.097915656810471,
+      0.036354823073194376,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      78.865729520116332
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 75.0,
+      "maxTemperatureMachineTarget": 130.0,
+      "targetVaries": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Details": {
+    "percents": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Details": {
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryTempFilter_Det": {
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_Details": {
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TemperatureFilter_Details": {
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TempBoundaryFilter_Details": {
+    "percents": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Details": {
+    "percents": [
+      100.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperatureTarget": {
+      "minTemperatureMachineTarget": 90.0,
+      "maxTemperatureMachineTarget": 143.0,
+      "targetVaries": false
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

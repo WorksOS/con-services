@@ -1,0 +1,50 @@
+﻿{
+  "LatestToEarliest": {
+    "BoundingExtents": {
+      "maxX": -115.02005982231809,
+      "maxY": 36.206934024928714,
+      "maxZ": 1e+308,
+      "minX": -115.02007494432699,
+      "minY": 36.20692789773758,
+      "minZ": 1e+308
+    },
+    "AboveTarget": 0.3468,
+    "BelowTarget": 0.3468,
+    "MatchTarget": 0.1156,
+    "NoCoverageArea": 0,
+    "Code": 0,
+    "Message": "success"
+  },
+  "LayerIdFiltered": {
+    "BoundingExtents": {
+      "maxX": -115.02005982231809,
+      "maxY": 36.206934024928714,
+      "maxZ": 1e+308,
+      "minX": -115.02007494432699,
+      "minY": 36.20692789773758,
+      "minZ": 1e+308
+    },
+    "AboveTarget": 0.3468,
+    "BelowTarget": 0.2312,
+    "MatchTarget": 0.1156,
+    "NoCoverageArea": 0.1156,
+    "Code": 0,
+    "Message": "success"
+  },
+  "PartialOverlap": {
+    "BoundingExtents": {
+      "maxX": -115.02005982231809,
+      "maxY": 36.206934024928714,
+      "maxZ": 1e+308,
+      "minX": -115.02007494432699,
+      "minY": 36.20692789773758,
+      "minZ": 1e+308
+    },
+    "AboveTarget": 0.3468,
+    "BelowTarget": 0.3468,
+    "MatchTarget": 0.1156,
+    "NoCoverageArea": 0.4624,
+    "Code": 0,
+    "Message": "success"
+  }
+}

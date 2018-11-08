@@ -1,0 +1,254 @@
+﻿{
+  "AllLayersNoFilterAtAll": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": false
+    },
+    "filter": null,
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      40
+    ]
+  },
+  "AllLayersExcludeSupersededLifts": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": false
+    },
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      40
+    ]
+  },
+  "AllLayersIncludeSupersededLifts": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": true
+    },
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      40
+    ]
+  },
+  "TopLayerIncludeSupersededLifts": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": true,
+      "includeSupersededLifts": true
+    },
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      40
+    ]
+  },
+  "TopLayerNoFilterAtAll": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": true,
+      "includeSupersededLifts": false
+    },
+    "filter": null,
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      40
+    ]
+  },
+  "NoneLiftDetection": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 4,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": true,
+      "includeSupersededLifts": false
+    },
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      40
+    ]
+  },
+  "NoneLiftDetectionNoFilterAtAll": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 4,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": true,
+      "includeSupersededLifts": false
+    },
+    "filter": null,
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      40
+    ]
+  },
+  "DecendingBoundaryValues": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": false
+    },
+    "filter": null,
+    "CMVChangeSummaryValues": [
+      -40,
+      -20,
+      -10,
+      0,
+      40,
+      20,
+      10
+    ]
+  }
+}

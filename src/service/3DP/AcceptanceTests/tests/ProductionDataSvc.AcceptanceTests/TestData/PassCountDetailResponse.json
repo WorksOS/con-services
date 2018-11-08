@@ -1,0 +1,474 @@
+{
+  "CommonSetting": {
+        "constantTargetPassCountRange": {
+            "min": 5,
+            "max": 5
+        },
+        "isTargetPassCountConstant": true,
+        "percents": [
+            0,
+            24.926023343744863,
+            12.52260397830018,
+            10.167680420844977,
+            5.675653460463588,
+            4.290646062797961,
+            4.220779220779221,
+            4.278316620088772,
+            3.353608416899556,
+            30.56468847608088
+        ],
+        "TotalCoverageArea": 2812.7792000000004,
+        "Code": 0,
+        "Message": "success"
+    },
+  "NonContiguousSetting": {
+        "constantTargetPassCountRange": {
+            "min": 5,
+            "max": 5
+        },
+        "isTargetPassCountConstant": true,
+        "percents": [
+            0,
+            60,
+            20,
+            20,
+            0
+        ],
+        "TotalCoverageArea": 0.5780000000000001,
+        "Code": 0,
+        "Message": "success"
+    },
+  "SingleSetting": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+      60,
+      20,
+      20
+    ],
+    "TotalCoverageArea": 0.5780000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByFineGPS": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        50,
+        33.333333333333336,
+        16.666666666666668,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.6936000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByFineGPSInc": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        50,
+        33.333333333333336,
+        16.666666666666668,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.6936000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByMediumGPS": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        0,
+        50,
+        0,
+        50,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.23120000000000004,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByMediumGPSInc": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        25,
+        25,
+        25,
+        25,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByCoarseGPS": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        50,
+        0,
+        0,
+        0,
+        50,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.23120000000000004,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByCoarseGPSInc": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+         0,
+        60,
+        0,
+        20,
+        0,
+        20,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.5780000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByAllGPS": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        60,
+        0,
+        20,
+        0,
+        20,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.5780000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByOnMachineDesignId": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        11.11111111111111,
+        0,
+        0,
+        11.11111111111111,
+        11.11111111111111,
+        44.44444444444444,
+        0,
+        22.22222222222222,
+        0
+    ],
+    "TotalCoverageArea": 1.0404000000000002,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByVibrationOn": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        25,
+        75,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByVibrationOff": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        50,
+        0,
+        25,
+        0,
+        0,
+        0,
+        25,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByForward": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        83.33333333333333,
+        16.666666666666668,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.6936000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByReverse": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0, 
+        16.666666666666668,
+        16.666666666666668,
+        16.666666666666668,
+        50,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.6936000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByOffsetFromDesign": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        0,
+        0,
+        20,
+        20,
+        0,
+        20,
+        20,
+        20,
+        0
+    ],
+    "TotalCoverageArea": 0.5780000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByOffsetFromBench": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+         0,
+        20,
+        20,
+        20,
+        10,
+        10,
+        10,
+        10,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 1.1560000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByMachines": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        0,
+        0,
+        0,
+        25,
+        25,
+        25,
+        25,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "LiftDetectTypeAutoMapReset": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+         0,
+        25,
+        0,
+        0,
+        25,
+        25,
+        25,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "LiftDetectTypeNone": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+        0,
+        0,
+        0,
+        25,
+        0,
+        0,
+        0,
+        25,
+        0,
+        50
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "MachineHalfPassTwoDrum": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+         0,
+        25,
+        25,
+        25,
+        25,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "MachineHalfPassFourWheel": {
+    "constantTargetPassCountRange": {
+      "min": 5,
+      "max": 5
+    },
+    "isTargetPassCountConstant": true,
+    "percents": [
+         0,
+        25,
+        25,
+        25,
+        25,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "TotalCoverageArea": 0.4624000000000001,
+    "Code": 0,
+    "Message": "success"
+  }
+}

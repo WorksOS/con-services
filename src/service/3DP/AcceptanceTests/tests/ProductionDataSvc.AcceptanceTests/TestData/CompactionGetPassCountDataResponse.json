@@ -1,0 +1,367 @@
+{
+  "NoDesignFilter_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 3.3255301569815479,
+      "percentGreaterThanTarget": 45.311209033324154,
+      "percentLessThanTarget": 51.3632608096943,
+      "totalAreaCoveredSqMeters": 1678.9744000000003,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        19.632901900694421,
+        8.5406274791075756,
+        6.160684206522566,
+        5.132635651332877,
+        4.1589237005401056,
+        3.5981699431639118,
+        2.8341972853432442,
+        2.0126278268618436,
+        47.929232006433452
+      ],
+      "totalCoverageArea": 1678.9744000000003,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Summary_PS": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 14.701311685630142,
+      "percentGreaterThanTarget": 65.665786413675448,
+      "percentLessThanTarget": 19.632901900694421,
+      "totalAreaCoveredSqMeters": 10637.396400000001,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 2.0,
+        "maxPassCountMachineTarget": 3.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoDesignFilter_Details_PS": {
+    "passCountDetailsData": {
+      "percents": [
+        19.632901900694421,
+        8.5406274791075756,
+        6.160684206522566,
+        5.132635651332877,
+        14.624153707386517,
+        10.799943489931426,
+        6.4073723904845741,
+        0.59661591627815991,
+        28.105065258261881
+      ],
+      "totalCoverageArea": 10637.396400000001,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 2.0,
+        "maxPassCountMachineTarget": 3.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Summary": {
+    "passCountSummaryData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 1.5847860538827259,
+      "percentGreaterThanTarget": 3.8034865293185418,
+      "percentLessThanTarget": 94.611727416798729,
+      "totalAreaCoveredSqMeters": 72.9436,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryFilter_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 4.327666151468315,
+      "percentGreaterThanTarget": 39.232354456465742,
+      "percentLessThanTarget": 56.439979392065943,
+      "totalAreaCoveredSqMeters": 448.75920000000008,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AsAtCustom_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 5.154569892473118,
+      "percentGreaterThanTarget": 41.122311827956985,
+      "percentLessThanTarget": 53.723118279569896,
+      "totalAreaCoveredSqMeters": 1720.1280000000004,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside_Details": {
+    "passCountDetailsData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersects_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        10.45958795562599,
+        12.836767036450079,
+        44.849445324881138,
+        26.465927099841522,
+        1.5847860538827259,
+        3.3280507131537242,
+        0.47543581616481773,
+        0.0,
+        0.0
+      ],
+      "totalCoverageArea": 72.9436,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryFilterPCDetails": {
+    "passCountDetailsData": {
+      "percents": [
+        28.910829990743597,
+        21.042887997531626,
+        15.705029311940761,
+        15.334773218142548,
+        10.089478556001234,
+        4.6899105214439993,
+        2.8694847269361308,
+        0.9873495834618945,
+        0.37025609379821045
+      ],
+      "totalCoverageArea": 0.0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AsAtCustomPCDetails": {
+    "passCountDetailsData": {
+      "percents": [
+        24.49270995716363,
+        10.388147294234775,
+        9.011357533044265,
+        6.8800188637227038,
+        5.5936177738187247,
+        3.7399950220731752,
+        3.003785844348088,
+        2.1889778220260161,
+        34.701389889568624
+      ],
+      "totalCoverageArea": 1720.1280000000004,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "BoundaryMachineFilterPCDetails": {
+    "passCountDetailsData": {
+      "percents": [
+        18.786449931753317,
+        8.214418662365059,
+        4.6159573148033255,
+        5.7451296686933864,
+        6.4400049633949612,
+        7.9538404268519676,
+        4.9758034495594989,
+        3.6729122719940435,
+        39.595483310584441
+      ],
+      "totalCoverageArea": 0.0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        7.7151799687010953,
+        5.6025039123630673,
+        4.6948356807511731,
+        4.7261345852895147,
+        4.8043818466353683,
+        4.2566510172143976,
+        3.6619718309859155,
+        2.863849765258216,
+        61.674491392801258
+      ],
+      "totalCoverageArea": 0.0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TemperatureFilter_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        34.9869451697128,
+        18.253026347021127,
+        10.25397578922383,
+        9.6131023023973423,
+        7.8566342273914067,
+        3.8927130310942326,
+        2.9907429385236171,
+        2.2311891763588889,
+        9.9216710182767613
+      ],
+      "totalCoverageArea": 487.02280000000007,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TempBoundaryFilter_Details": {
+    "passCountDetailsData": null,
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        19.632901900694421,
+        8.5406274791075756,
+        6.160684206522566,
+        5.132635651332877,
+        4.1589237005401056,
+        3.5981699431639118,
+        2.8341972853432442,
+        49.9418598332953,
+        0.0
+      ],
+      "totalCoverageArea": 1678.9744000000003,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AutomaticsFilter_Details": {
+    "passCountDetailsData": {
+      "percents": [
+        0.0,
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "totalCoverageArea": 0.0,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 0.0,
+        "maxPassCountMachineTarget": 0.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "AlignmentFilter_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 0.0,
+      "percentGreaterThanTarget": 0.0,
+      "percentLessThanTarget": 100.0,
+      "totalAreaCoveredSqMeters": 24.276000000000003,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "TemperatureFilter_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 7.8566342273914067,
+      "percentGreaterThanTarget": 19.0363161642535,
+      "percentLessThanTarget": 73.107049608355084,
+      "totalAreaCoveredSqMeters": 487.02280000000007,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": false
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "PassCountFilter_Summary": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 3.3255301569815479,
+      "percentGreaterThanTarget": 45.311209033324154,
+      "percentLessThanTarget": 51.3632608096943,
+      "totalAreaCoveredSqMeters": 1678.9744000000003,
+      "PassCountTarget": {
+        "minPassCountMachineTarget": 5.0,
+        "maxPassCountMachineTarget": 5.0,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

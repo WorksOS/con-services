@@ -1,0 +1,29 @@
+﻿{
+  "NoFilterAtAll": {
+    "completePercent": 0.2772367317343646,
+    "overCompletePercent": 0.19762002928757266,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 8130.957200000002,
+    "underCompletePercent": 99.52514323897806,
+    "Code": 0,
+    "Message": "success"
+  },
+  "Over33Under33On33": {
+    "completePercent": 33.33333333333333,
+    "overCompletePercent": 33.33333333333333,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 0.34680000000000005,
+    "underCompletePercent": 33.33333333333333,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FilterByLayerAndTime": {
+    "completePercent": 100,
+    "overCompletePercent": 0,
+    "returnCode": 0,
+    "totalAreaCoveredSqMeters": 0.11560000000000002,
+    "underCompletePercent": 0,
+    "Code": 0,
+    "Message": "success"
+  }
+}

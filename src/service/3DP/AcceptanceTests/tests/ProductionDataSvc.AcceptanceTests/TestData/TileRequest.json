@@ -1,0 +1,3262 @@
+{
+  "Height": {
+    "projectId": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 0,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": 0,
+    "filter2": null,
+    "filterId2": 0,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2817.931,
+      "bottomleftY": 1196.133,
+      "topRightX": 2818.25,
+      "topRightY": 1196.449
+    },
+    "width": 128,
+    "height": 128
+  },
+  "CCV": {
+    "projectId": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 1,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 46
+      },
+      {
+        "color": 255,
+        "value": 52
+      },
+      {
+        "color": 16776960,
+        "value": 59
+      },
+      {
+        "color": 16711935,
+        "value": 77
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2783.58,
+      "bottomleftY": 1170.621,
+      "topRightX": 2788.34,
+      "topRightY": 1170.95
+    },
+    "width": 896,
+    "height": 64
+  },
+  "CCVPercent": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 2,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 6
+      },
+      {
+        "color": 255,
+        "value": 7
+      },
+      {
+        "color": 16776960,
+        "value": 8
+      },
+      {
+        "color": 16711935,
+        "value": 9
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2783.58,
+      "bottomleftY": 1170.621,
+      "topRightX": 2788.34,
+      "topRightY": 1170.95
+    },
+    "width": 896,
+    "height": 64
+  },
+  "PassCount": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 4,
+    "palettes": [
+      {
+        "color": 16763955,
+        "value": 1
+      },
+      {
+        "color": 16776960,
+        "value": 2
+      },
+      {
+        "color": 65535,
+        "value": 3
+      },
+      {
+        "color": 39423,
+        "value": 4
+      },
+      {
+        "color": 13434624,
+        "value": 5
+      },
+      {
+        "color": 16711935,
+        "value": 6
+      },
+      {
+        "color": 6684825,
+        "value": 7
+      },
+      {
+        "color": 6697728,
+        "value": 8
+      },
+      {
+        "color": 3355392,
+        "value": 9
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2874.01,
+      "bottomleftY": 1182.177,
+      "topRightX": 2874.69,
+      "topRightY": 1183.877
+    },
+    "width": 64,
+    "height": 160
+  },
+  "CutFill": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 8,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2816.56,
+      "bottomleftY": 1203.938,
+      "topRightX": 2818.254,
+      "topRightY": 1204.618
+    },
+    "width": 320,
+    "height": 128
+  },
+  "CutFillCustomPalettes": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 8,
+    "palettes": [
+      {
+        "Color": 16711680,
+        "Value": 0.2
+      },
+      {
+        "Color": 16737792,
+        "Value": 0.1
+      },
+      {
+        "Color": 16776960,
+        "Value": 0.05
+      },
+      {
+        "Color": 6749952,
+        "Value": 0
+      },
+      {
+        "Color": 65535,
+        "Value": -0.05
+      },
+      {
+        "Color": 26367,
+        "Value": -0.1
+      },
+      {
+        "Color": 255,
+        "Value": -0.2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2816.56,
+      "bottomleftY": 1203.938,
+      "topRightX": 2818.254,
+      "topRightY": 1204.618
+    },
+    "width": 320,
+    "height": 128
+  },
+  "TemperatureSummary": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 10,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 16711680,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 150,
+        "max": 160
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2729.518,
+      "bottomleftY": 1159.739,
+      "topRightX": 2732.238,
+      "topRightY": 1160.079
+    },
+    "width": 512,
+    "height": 64
+  },
+  "CCVSummary": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 12,
+    "palettes": [
+      {
+        "color": 65280,
+        "value": 0
+      },
+      {
+        "color": 16776960,
+        "value": 1
+      },
+      {
+        "color": 255,
+        "value": 2
+      },
+      {
+        "color": 16711680,
+        "value": 3
+      },
+      {
+        "color": 8388736,
+        "value": 4
+      },
+      {
+        "color": 0,
+        "value": 5
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 8,
+        "max": 13
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2746.18,
+      "bottomleftY": 1160.42,
+      "topRightX": 2747.2,
+      "topRightY": 1162.45
+    },
+    "width": 96,
+    "height": 192
+  },
+  "CCVPercentSummary": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 13,
+    "palettes": [
+      {
+        "color": 65280,
+        "value": 0
+      },
+      {
+        "color": 16776960,
+        "value": 1
+      },
+      {
+        "color": 255,
+        "value": 2
+      },
+      {
+        "color": 16711680,
+        "value": 3
+      },
+      {
+        "color": 8388736,
+        "value": 4
+      },
+      {
+        "color": 0,
+        "value": 5
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 8,
+        "max": 13
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2746.18,
+      "bottomleftY": 1160.42,
+      "topRightX": 2747.2,
+      "topRightY": 1162.45
+    },
+    "width": 96,
+    "height": 192
+  },
+  "PassCountSummaryConstTarget": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 14,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 16711680,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2874.01,
+      "bottomleftY": 1182.177,
+      "topRightX": 2874.69,
+      "topRightY": 1183.877
+    },
+    "width": 64,
+    "height": 160
+  },
+  "PassCountSummaryRangeTarget": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 14,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 16711680,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 4,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2874.01,
+      "bottomleftY": 1182.177,
+      "topRightX": 2874.69,
+      "topRightY": 1183.877
+    },
+    "width": 64,
+    "height": 160
+  },
+  "CompactionCoverage": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 15,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": 0,
+    "filter2": null,
+    "filterId2": 0,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2750.262,
+      "bottomleftY": 1160.098,
+      "topRightX": 2751.241,
+      "topRightY": 1161.077
+    },
+    "width": 128,
+    "height": 128
+  },
+  "VolumeCoverage": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 16,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 255,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 4,
+    "computeVolNoChangeTolerance": 0.02,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2747.63,
+          "y": 1227.795
+        },
+        {
+          "x": 2858.052,
+          "y": 1225.938
+        },
+        {
+          "x": 2858.054,
+          "y": 1165.354
+        },
+        {
+          "x": 2747.632,
+          "y": 1163.008
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true
+    },
+    "filterId1": 1194,
+    "filter2": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2747.63,
+          "y": 1227.795
+        },
+        {
+          "x": 2858.052,
+          "y": 1225.938
+        },
+        {
+          "x": 2858.054,
+          "y": 1165.354
+        },
+        {
+          "x": 2747.632,
+          "y": 1163.008
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "filterId2": 1194,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2744.811,
+      "bottomleftY": 1220.257,
+      "topRightX": 2751.611,
+      "topRightY": 1220.597
+    },
+    "width": 1280,
+    "height": 64
+  },
+  "MDP": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 17,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1220
+      },
+      {
+        "color": 255,
+        "value": 1240
+      },
+      {
+        "color": 16776960,
+        "value": 1250
+      },
+      {
+        "color": 16711935,
+        "value": 1260
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2825.055,
+      "bottomleftY": 1213.116,
+      "topRightX": 2828.451,
+      "topRightY": 1213.456
+    },
+    "width": 640,
+    "height": 64
+  },
+  "MDPSummary": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 18,
+    "palettes": [
+      {
+        "color": 65280,
+        "value": 0
+      },
+      {
+        "color": 16776960,
+        "value": 1
+      },
+      {
+        "color": 255,
+        "value": 2
+      },
+      {
+        "color": 16711680,
+        "value": 3
+      },
+      {
+        "color": 8388736,
+        "value": 4
+      },
+      {
+        "color": 0,
+        "value": 5
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 79,
+        "max": 99
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2870.957,
+      "bottomleftY": 1222.298,
+      "topRightX": 2871.98,
+      "topRightY": 1223.31
+    },
+    "width": 192,
+    "height": 192
+  },
+  "MDPPercent": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 19,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 81.5
+      },
+      {
+        "color": 255,
+        "value": 82.5
+      },
+      {
+        "color": 16776960,
+        "value": 83.5
+      },
+      {
+        "color": 16711935,
+        "value": 84
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2825.055,
+      "bottomleftY": 1213.116,
+      "topRightX": 2828.451,
+      "topRightY": 1213.456
+    },
+    "width": 640,
+    "height": 64
+  },
+  "MDPPercentSummary": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 20,
+    "palettes": [
+      {
+        "color": 65280,
+        "value": 0
+      },
+      {
+        "color": 16776960,
+        "value": 1
+      },
+      {
+        "color": 255,
+        "value": 2
+      },
+      {
+        "color": 16711680,
+        "value": 3
+      },
+      {
+        "color": 8388736,
+        "value": 4
+      },
+      {
+        "color": 0,
+        "value": 5
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 79,
+        "max": 99
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2870.957,
+      "bottomleftY": 1222.298,
+      "topRightX": 2871.98,
+      "topRightY": 1223.31
+    },
+    "width": 192,
+    "height": 192
+  },
+  "MachineSpeed": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 23,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 63
+      },
+      {
+        "color": 255,
+        "value": 149
+      },
+      {
+        "color": 16776960,
+        "value": 271
+      },
+      {
+        "color": 16711935,
+        "value": 388
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2321.52,
+      "bottomleftY": 1206.322,
+      "topRightX": 2323.216,
+      "topRightY": 1206.653
+    },
+    "width": 320,
+    "height": 64
+  },
+  "MachineSpeedSummary": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 23,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 255,
+        "value": 63
+      },
+      {
+        "color": 65280,
+        "value": 149
+      },
+      {
+        "color": 16711680,
+        "value": 271
+      },
+      {
+        "color": 16711680,
+        "value": 388
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2321.52,
+      "bottomleftY": 1206.322,
+      "topRightX": 2323.216,
+      "topRightY": 1206.653
+    },
+    "width": 320,
+    "height": 64
+  },
+  "NullProjectId": {
+    "projectId": null,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 0,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": 0,
+    "filter2": null,
+    "filterId2": 0,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2640,
+      "bottomleftY": 1140,
+      "topRightX": 2920,
+      "topRightY": 1260
+    },
+    "width": 280,
+    "height": 120
+  },
+  "CutfillMissingDesign": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 8,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": null,
+    "filterId1": 0,
+    "filter2": null,
+    "filterId2": 0,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2640,
+      "bottomleftY": 1140,
+      "topRightX": 2920,
+      "topRightY": 1260
+    },
+    "width": 280,
+    "height": 120
+  },
+  "UnsupportedVolumeType": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 16,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 36.207529,
+          "Lon": -115.020112
+        },
+        {
+          "Lat": 36.207512,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206966,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206945,
+          "Lon": -115.020112
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true
+    },
+    "filterId1": 1194,
+    "filter2": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 36.207529,
+          "Lon": -115.020112
+        },
+        {
+          "Lat": 36.207512,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206966,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206945,
+          "Lon": -115.020112
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "filterId2": 1194,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2640,
+      "bottomleftY": 1140,
+      "topRightX": 2920,
+      "topRightY": 1260
+    },
+    "width": 280,
+    "height": 120
+  },
+  "CCVPercentChange": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 24,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": -80
+      },
+      {
+        "color": 65280,
+        "value": -20
+      },
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 16776960,
+        "value": 10
+      },
+      {
+        "color": 16711935,
+        "value": 50
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 8,
+        "max": 13
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2746.18,
+      "bottomleftY": 1160.43,
+      "topRightX": 2747.88,
+      "topRightY": 1162.45
+    },
+    "width": 320,
+    "height": 384
+  },
+  "CCVPercentChangeFiltered": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 24,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": -50
+      },
+      {
+        "color": 65280,
+        "value": 0
+      },
+      {
+        "color": 255,
+        "value": 25
+      },
+      {
+        "color": 16776960,
+        "value": 50
+      },
+      {
+        "color": 16711935,
+        "value": 100
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 8,
+        "max": 13
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": 7,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": 13,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null
+    },
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2746.18,
+      "bottomleftY": 1160.43,
+      "topRightX": 2747.88,
+      "topRightY": 1162.45
+    },
+    "width": 320,
+    "height": 384
+  },
+  "CCVPercentChangeSinglePass": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 24,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": -50
+      },
+      {
+        "color": 65280,
+        "value": 0
+      },
+      {
+        "color": 255,
+        "value": 25
+      },
+      {
+        "color": 16776960,
+        "value": 50
+      },
+      {
+        "color": 16711935,
+        "value": 100
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 8,
+        "max": 13
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2789.021,
+      "bottomleftY": 1170.63,
+      "topRightX": 2789.699,
+      "topRightY": 1170.959
+    },
+    "width": 128,
+    "height": 64
+  },
+  "CCVPercentChangeOverrideCCV": {
+    "projectId": 1000450,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 24,
+    "palettes": [
+      {
+        "color": 16711680,
+        "value": -80
+      },
+      {
+        "color": 65280,
+        "value": -50
+      },
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 16776960,
+        "value": 10
+      },
+      {
+        "color": 16711935,
+        "value": 50
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 100,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": "2013-04-27T17:23:00.000Z",
+      "endUTC": "2013-04-27T17:26:00.000Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": true,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": -80.242,
+      "bottomleftY": 3110.32,
+      "topRightX": -79.902,
+      "topRightY": 3110.659
+    },
+    "width": 64,
+    "height": 64
+  },
+  "ThicknessSummary": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 25,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 16711680,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      },
+      "liftThicknessTarget": {
+        "TargetLiftThickness": 0.05,
+        "AboveToleranceLiftThickness": 0.05,
+        "BelowToleranceLiftThickness": 0.05
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2883.197,
+          "y": 1186.946
+        },
+        {
+          "x": 2885.916,
+          "y": 1186.932
+        },
+        {
+          "x": 2885.916,
+          "y": 1186.247
+        },
+        {
+          "x": 2883.197,
+          "y": 1186.247
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "filterId1": -1,
+    "filter2": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2883.197,
+          "y": 1186.946
+        },
+        {
+          "x": 2885.916,
+          "y": 1186.932
+        },
+        {
+          "x": 2885.916,
+          "y": 1186.247
+        },
+        {
+          "x": 2883.197,
+          "y": 1186.247
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2883.197,
+      "bottomleftY": 1186.255,
+      "topRightX": 2885.916,
+      "topRightY": 1186.932
+    },
+    "width": 512,
+    "height": 128
+  },
+  "ThicknessSummaryPartialOverlap": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 25,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 16711680,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      },
+      "liftThicknessTarget": {
+        "TargetLiftThickness": 0.05,
+        "AboveToleranceLiftThickness": 0.05,
+        "BelowToleranceLiftThickness": 0.05
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2883.197,
+          "y": 1187.286
+        },
+        {
+          "x": 2885.916,
+          "y": 1187.286
+        },
+        {
+          "x": 2885.916,
+          "y": 1186.247
+        },
+        {
+          "x": 2883.197,
+          "y": 1186.247
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "filterId1": -1,
+    "filter2": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2883.197,
+          "y": 1186.946
+        },
+        {
+          "x": 2885.916,
+          "y": 1186.932
+        },
+        {
+          "x": 2885.916,
+          "y": 1186.247
+        },
+        {
+          "x": 2883.197,
+          "y": 1186.247
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2883.197,
+      "bottomleftY": 1186.255,
+      "topRightX": 2885.916,
+      "topRightY": 1187.286
+    },
+    "width": 512,
+    "height": 192
+  },
+  "ThicknessSummaryLayerIdFiltered": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 25,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 16711680,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      },
+      "liftThicknessTarget": {
+        "TargetLiftThickness": 0.05,
+        "AboveToleranceLiftThickness": 0.05,
+        "BelowToleranceLiftThickness": 0.05
+      }
+    },
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": null,
+    "filter1": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2763.522,
+          "y": 1167.903
+        },
+        {
+          "x": 2764.191,
+          "y": 1167.903
+        },
+        {
+          "x": 2764.191,
+          "y": 1167.56
+        },
+        {
+          "x": 2763.522,
+          "y": 1167.56
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": 7,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": 9,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "filterId1": -1,
+    "filter2": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2763.522,
+          "y": 1167.903
+        },
+        {
+          "x": 2764.191,
+          "y": 1167.903
+        },
+        {
+          "x": 2764.191,
+          "y": 1167.56
+        },
+        {
+          "x": 2763.522,
+          "y": 1167.56
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2763.522,
+      "bottomleftY": 1167.56,
+      "topRightX": 2764.191,
+      "topRightY": 1167.903
+    },
+    "width": 128,
+    "height": 64
+  },
+  "ThicknessSummaryDesignToFilter": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 25,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 0
+      },
+      {
+        "color": 65280,
+        "value": 1
+      },
+      {
+        "color": 16711680,
+        "value": 2
+      }
+    ],
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      },
+      "liftThicknessTarget": {
+        "TargetLiftThickness": 0.15,
+        "AboveToleranceLiftThickness": 0.001,
+        "BelowToleranceLiftThickness": 0.001
+      }
+    },
+    "computeVolType": 6,
+    "computeVolNoChangeTolerance": 0,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 0,
+    "boundBoxLL": null,
+    "boundBoxGrid": {
+      "bottomLeftX": 2819.615,
+      "bottomleftY": 1201.899,
+      "topRightX": 2820.635,
+      "topRightY": 1202.239
+    },
+    "width": 192,
+    "height": 64
+  },
+  "PassCountOutOfBoundary": {
+    "projectID": 1001158,
+    "mode": 4,
+    "boundBoxGrid": {
+      "bottomLeftX": 3000,
+      "bottomleftY": 1500,
+      "topRightX": 3001,
+      "topRightY": 1501
+    },
+    "width": 64,
+    "height": 64
+  },
+  "SpeedSummaryExcludeSuperdedLifts": {
+    "projectID": 1001158,
+    "mode": 26,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 1
+      },
+      {
+        "color": 65280,
+        "value": 2
+      },
+      {
+        "color": 16711680,
+        "value": 3
+      }
+    ],
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "machineSpeedTarget": {
+        "MinTargetMachineSpeed": 120,
+        "MaxTargetMachineSpeed": 150
+      },
+      "includeSupersededLifts": false
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2804.995,
+      "bottomleftY": 1242.357,
+      "topRightX": 2806.012,
+      "topRightY": 1243.35
+    },
+    "width": 128,
+    "height": 128
+  },
+  "SpeedSummaryIncludeSuperdedLifts": {
+    "projectID": 1001158,
+    "mode": 26,
+    "palettes": [
+      {
+        "color": 255,
+        "value": 1
+      },
+      {
+        "color": 65280,
+        "value": 2
+      },
+      {
+        "color": 16711680,
+        "value": 3
+      }
+    ],
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "machineSpeedTarget": {
+        "MinTargetMachineSpeed": 120,
+        "MaxTargetMachineSpeed": 150
+      },
+      "includeSupersededLifts": true
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2804.995,
+      "bottomleftY": 1242.357,
+      "topRightX": 2806.012,
+      "topRightY": 1243.35
+    },
+    "width": 128,
+    "height": 128
+  },
+  "RedWhenZoomedOutTooMuch": {
+    "projectID": 1001158,
+    "mode": 4,
+    "representationalDisplayColor": 16711680,
+    "boundBoxGrid": {
+      "bottomLeftX": 2306.05,
+      "bottomleftY": 1125.23,
+      "topRightX": 8378.45,
+      "topRightY": 2379.83
+    },
+    "width": 512,
+    "height": 128
+  },
+  "SpeedSummaryTooManyColorValues": {
+    "projectID": 1001158,
+    "mode": 26,
+    "palettes": [
+      {
+        "color": 0,
+        "value": 0
+      },
+      {
+        "color": 255,
+        "value": 1
+      },
+      {
+        "color": 65280,
+        "value": 2
+      },
+      {
+        "color": 16711680,
+        "value": 3
+      }
+    ],
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "machineSpeedTarget": {
+        "MinTargetMachineSpeed": 120,
+        "MaxTargetMachineSpeed": 150
+      },
+      "includeSupersededLifts": false
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2804.995,
+      "bottomleftY": 1242.357,
+      "topRightX": 2806.012,
+      "topRightY": 1243.35
+    },
+    "width": 128,
+    "height": 128
+  },
+  "CCVChangeExcludeSupersededLifts": {
+    "projectID": 1001158,
+    "mode": 27,
+    "palettes": [
+      {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
+        "color": 65280,
+        "value": 10
+      },
+      {
+        "color": 16776960,
+        "value": 20
+      },
+      {
+        "color": 16744192,
+        "value": 40
+      },
+      {
+        "color": 16711935,
+        "value": 80
+      },
+      {
+        "color": 16711680,
+        "value": 1000000
+      }
+    ],
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": false
+    },
+    "filter1": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {                                                                                                                                          
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2732.238,
+      "bottomleftY": 1159.747,
+      "topRightX": 2733.598,
+      "topRightY": 1161.44
+    },
+    "width": 128,
+    "height": 160
+  },
+  "CCVChangeIncludeSupersededLifts": {
+    "projectID": 1001158,
+    "mode": 27,
+    "palettes": [
+      {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
+        "color": 65280,
+        "value": 10
+      },
+      {
+        "color": 16776960,
+        "value": 20
+      },
+      {
+        "color": 16744192,
+        "value": 40
+      },
+      {
+        "color": 16711935,
+        "value": 80
+      },
+      {
+        "color": 16711680,
+        "value": 1000000
+      }
+    ],
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": true
+    },
+    "filter1": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2732.238,
+      "bottomleftY": 1159.747,
+      "topRightX": 2733.598,
+      "topRightY": 1161.44
+    },
+    "width": 128,
+    "height": 160
+  },
+  "CCVChangeTopLayerIncludeSupersededLifts": {
+    "projectID": 1001158,
+    "mode": 27,
+    "palettes": [
+      {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
+        "color": 65280,
+        "value": 10
+      },
+      {
+        "color": 16776960,
+        "value": 20
+      },
+      {
+        "color": 16744192,
+        "value": 40
+      },
+      {
+        "color": 16711935,
+        "value": 80
+      },
+      {
+        "color": 16711680,
+        "value": 1000000
+      }
+    ],
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": true,
+      "includeSupersededLifts": true
+    },
+    "filter1": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2732.238,
+      "bottomleftY": 1159.747,
+      "topRightX": 2733.598,
+      "topRightY": 1161.44
+    },
+    "width": 128,
+    "height": 160
+  },
+  "CCVChangeNoneLiftDetection": {
+    "projectID": 1001158,
+    "mode": 27,
+    "palettes": [
+      {
+        "color": 80,
+        "value": -255
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
+        "color": 65280,
+        "value": 10
+      },
+      {
+        "color": 16776960,
+        "value": 20
+      },
+      {
+        "color": 16744192,
+        "value": 40
+      },
+      {
+        "color": 16711935,
+        "value": 80
+      },
+      {
+        "color": 16711680,
+        "value": 1000000
+      }
+    ], 
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 4,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": true,
+      "includeSupersededLifts": false
+    },
+    "filter1": {
+      "polygonGrid": [
+        {
+          "x": 2732.238,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1161.44
+        },
+        {
+          "x": 2733.598,
+          "y": 1159.747
+        },
+        {
+          "x": 2732.238,
+          "y": 1159.747
+        }
+      ]
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2732.238,
+      "bottomleftY": 1159.747,
+      "topRightX": 2733.598,
+      "topRightY": 1161.44
+    },
+    "width": 128,
+    "height": 160
+  },
+  "CCVChangeNoChange": {
+    "projectID": 1001158,
+    "mode": 27,
+    "palettes": [
+      {
+        "color": 80,
+        "value": -60
+      },
+      {
+        "color": 5280,
+        "value": -40
+      },
+	  {
+        "color": 60200,
+        "value": -20
+      },
+	  {
+        "color": 64290,
+        "value": -10
+      },
+      {
+        "color": 65280,
+        "value": 10
+      },
+      {
+        "color": 16776960,
+        "value": 20
+      },
+      {
+        "color": 16744192,
+        "value": 40
+      },
+      {
+        "color": 16711935,
+        "value": 80
+      },
+      {
+        "color": 16711680,
+        "value": 1000000
+      }
+    ],
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": false
+    },
+    "filter1": {
+      "startUTC": "2012-10-30T22:08:00Z",
+      "endUTC": "2012-10-30T22:09:30Z"
+    },
+    "boundBoxGrid": {
+      "bottomLeftX": 2667.301,
+      "bottomleftY": 1231.141,
+      "topRightX": 2667.634,
+      "topRightY": 1231.809
+    },
+    "width": 64,
+    "height": 128
+  }
+}

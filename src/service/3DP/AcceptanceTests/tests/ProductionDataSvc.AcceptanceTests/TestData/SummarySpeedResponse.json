@@ -1,0 +1,26 @@
+﻿{
+  "NoFilterAtAll": {
+      "AboveTarget": 85.4,
+      "BelowTarget": 6.8,
+      "MatchTarget": 7.8,
+      "CoverageArea": 10635.4312,
+      "Code": 0,
+      "Message": "success"
+  },
+  "ExcludeSupercededLifts": {
+    "AboveTarget": 55.6,
+    "BelowTarget": 22.2,
+    "MatchTarget": 22.2,
+    "CoverageArea": 1.0404,
+    "Code": 0,
+    "Message": "success"
+  },
+  "IncludeSupercededLifts": {
+    "AboveTarget": 66.7,
+    "BelowTarget": 22.2,
+    "MatchTarget": 11.1,
+    "CoverageArea": 1.0404,
+    "Code": 0,
+    "Message": "success"
+  }
+}

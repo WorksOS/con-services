@@ -1,0 +1,15 @@
+﻿{
+    "PostStandardFile": {
+        "projectID": 1001151,
+        "SurveyedSurface": {
+            "id": 1234,
+            "file": {
+                "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+                "path": "/77561/1151",
+                "filename": "ML3 - Marylands Road - Marylands.ttm"
+            },
+            "offset": 0.0
+        },
+        "surveyedUTC": "2014-12-02T02:14:33.1153287Z"
+    }
+}

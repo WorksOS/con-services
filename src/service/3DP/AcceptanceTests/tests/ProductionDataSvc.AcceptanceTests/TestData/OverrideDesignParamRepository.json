@@ -1,0 +1,213 @@
+﻿{
+  "DesignOverrideBlankInitialEvents": {
+    "projectId": 1151,
+    "undo": false,
+    "dataEdit": {
+      "assetId": 1244020666025812,
+      "startUTC": "2012-11-27T00:31:37.2183287Z",
+      "endUTC": "2012-11-29T00:31:37.2193287Z",
+      "onMachineDesignName": "Bob Excavator",
+      "liftNumber": null
+    }
+  },
+  "GetDesignOverrideBlankInitialEventsRequest": {
+    "projectId": 1151,
+    "assetId": 1244020666025812
+  },
+  "UndoDesignOverrideBlankInitialEventsRequest": {
+    "projectId": 1151,
+    "undo": true,
+    "dataEdit": {
+      "assetId": 1244020666025812,
+      "startUTC": "2012-11-27T00:31:37.2183287Z",
+      "endUTC": "2012-11-29T00:31:37.2193287Z",
+      "onMachineDesignName": "Bob Excavator",
+      "liftNumber": null
+    }
+  },
+  "LayerOverrideBlankInitialEvents": {
+    "projectId": 1151,
+    "undo": false,
+    "dataEdit": {
+      "assetId": 1244020666025812,
+      "startUTC": "2012-11-27T00:31:37.2183287Z",
+      "endUTC": "2012-11-29T00:31:37.2193287Z",
+      "onMachineDesignName": null,
+      "liftNumber": 15
+    }
+  },
+  "GetLayerOverrideBlankInitialEventsRequest": {
+    "projectId": 1151,
+    "assetId": 1244020666025812
+  },
+  "UndoLayerOverrideBlankInitialEventsRequest": {
+    "projectId": 1151,
+    "undo": true,
+    "dataEdit": {
+      "assetId": 1244020666025812,
+      "startUTC": "2012-11-27T00:31:37.2183287Z",
+      "endUTC": "2012-11-29T00:31:37.2193287Z",
+      "onMachineDesignName": null,
+      "liftNumber": 15
+    }
+  },
+  "DesignOverrideForFiltering": {
+    "projectId": 1151,
+    "undo": false,
+    "dataEdit": {
+      "assetId": 1,
+      "startUTC": "2014-11-25T00:12:00Z",
+      "endUTC": "2014-11-25T00:16:00Z",
+      "onMachineDesignName": "Bob Excavator",
+      "liftNumber": null
+    }
+  },
+  "CellDatumRequestFilteredByDesign4": {
+    "projectId": 1151,
+    "displayMode": 0,
+    "llPoint": null,
+    "gridPoint": {
+      "x": 381395.51,
+      "y": 806877.97
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": 4,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null
+    },
+    "filterId": -1
+  },
+  "UndoDesignsForCellDatumRequest": {
+    "projectId": 1151,
+    "undo": true,
+    "dataEdit": {
+      "assetId": 1,
+      "startUTC": "2014-11-25T00:12:00Z",
+      "endUTC": "2014-11-25T00:16:00Z",
+      "onMachineDesignName": "Bob Excavator",
+      "liftNumber": null
+    }
+  },
+  "CellDatumRequestFilteredByNone": {
+    "projectId": 1151,
+    "displayMode": 0,
+    "llPoint": null,
+    "gridPoint": {
+      "x": 381395.51,
+      "y": 806877.97
+    },
+    "filter": null
+  },
+  "CellDatumRequestFilteredByDesign3": {
+    "projectId": 1151,
+    "displayMode": 0,
+    "llPoint": null,
+    "gridPoint": {
+      "x": 381395.51,
+      "y": 806877.97
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": 3,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null
+    },
+    "filterId": -1
+  },
+  "LayerOverrideForFiltering": {
+    "projectId": 1151,
+    "undo": false,
+    "dataEdit": {
+      "assetId": 1,
+      "startUTC": "2014-11-25T00:04:00Z",
+      "endUTC": "2014-11-25T00:26:00Z",
+      "onMachineDesignName": null,
+      "liftNumber": 15
+    }
+  },
+  "CellDatumRequestFilteredByLayer15": {
+    "projectId": 1151,
+    "displayMode": 0,
+    "llPoint": null,
+    "gridPoint": {
+      "x": 381395.51,
+      "y": 806877.97
+    },
+    "filter": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": 2,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": 7,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": 15,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": null
+    },
+    "filterId": -1
+  },
+  "UndoLayerForCellDatumRequest": {
+    "projectId": 1151,
+    "undo": true,
+    "dataEdit": {
+      "assetId": 1,
+      "startUTC": "2014-11-25T00:04:00Z",
+      "endUTC": "2014-11-25T00:26:00Z",
+      "onMachineDesignName": null,
+      "liftNumber": 15
+    }
+  }
+}

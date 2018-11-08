@@ -1,0 +1,47 @@
+﻿{
+  "NoFilter": {
+    "BoundingExtents": {
+      "maxX": -115.01824137935459,
+      "maxY": 36.20773974080029,
+      "maxZ": 1e+308,
+      "minX": -115.02513694938635,
+      "minY": 36.20656332578522,
+      "minZ": 1e+308
+    },
+    "MinElevation": 591.9539794921875,
+    "MaxElevation": 624.0980224609375,
+    "TotalCoverageArea": 10637.396400000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FiveCells": {
+    "BoundingExtents": {
+      "maxX": -115.0192092021632,
+      "maxY": 36.20734761146156,
+      "maxZ": 1e+308,
+      "minX": -115.0194511563568,
+      "minY": 36.207249577899844,
+      "minZ": 1e+308
+    },
+    "MinElevation": 597.6220092773438,
+    "MaxElevation": 598.0189819335938,
+    "TotalCoverageArea": 0.5780000000000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "FiveCellsOneMachine": {
+    "BoundingExtents": {
+      "maxX": -115.01933018164755,
+      "maxY": 36.207249574213385,
+      "maxZ": 1e+308,
+      "minX": -115.01945116083013,
+      "minY": 36.207151536841266,
+      "minZ": 1e+308
+    },
+    "MinElevation": 597.5499877929688,
+    "MaxElevation": 597.5670166015625,
+    "TotalCoverageArea": 0.6936000000000001,
+    "Code": 0,
+    "Message": "success"
+  }
+}
