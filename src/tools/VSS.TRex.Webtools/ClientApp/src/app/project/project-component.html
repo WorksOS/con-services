@@ -22,11 +22,14 @@
     </option>
   </select> Timed call took {{timerTotalTime}}ms
 </p>
-<button (click)="getTile()">Render</button>
-<button (click)="getTileXTimes(10)">Render 10x</button>
+<button (click)="getTileXTimes(1)">Render</button>
+<button (click)="getTileXTimes(10)">10x</button>
 <button (click)="getTileXTimes(100)">100x</button>
 <button (click)="getTileXTimes(1000)">1000x</button>
-<button (click)="zoomAll()">Zoom All</button>
+<button (click)="zoomAllXTimes(1)">Zoom All</button>
+<button (click)="zoomAllXTimes(10)">10x</button>
+<button (click)="zoomAllXTimes(100)">100x</button>
+<button (click)="zoomAllXTimes(1000)">1000x</button>
 <button (click)="zoomIn()">Zoom In</button>
 <button (click)="zoomOut()">Zoom Out</button>
 <button (click)="panLeft()">Left</button>
@@ -50,6 +53,7 @@
 <table>
   <tr>
     <th *ngFor="let col of machineColumnNames">
+      of
       {{col}}
     </th>
   </tr>
