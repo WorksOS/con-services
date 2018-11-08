@@ -1,0 +1,11 @@
+
+CREATE TABLE IF NOT EXISTS ProjectGeofence (
+  ID bigint(20) NOT NULL AUTO_INCREMENT,
+  fk_GeofenceUID varchar(36) NOT NULL,
+  fk_ProjectUID varchar(36) NOT NULL,
+  LastActionedUTC datetime(6) NULL,
+  InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (ID),
+  UNIQUE KEY UIX_Geofence_GeofenceUID (fk_GeofenceUID)
+) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;

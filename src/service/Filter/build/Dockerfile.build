@@ -1,0 +1,13 @@
+FROM microsoft/dotnet:2.0-sdk 
+
+
+
+COPY . /build/
+WORKDIR /build
+
+RUN rm -rf /artifacts
+RUN dotnet publish ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp2.0
+RUN dotnet publish ./src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.0
+
+RUN chmod 777 *.sh
+RUN ["/bin/sh", "/build/unittests.sh"]
