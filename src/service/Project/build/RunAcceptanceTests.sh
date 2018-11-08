@@ -5,8 +5,8 @@ mkdir testresults
 echo "List out files in current directory"
 ls
 
-echo "Wait for 30 seconds"
-sleep 30s
+echo "Wait for 60 seconds"
+sleep 60s
 echo "Check the database and kafka to see if port is available"
 # Polling the database and kafka status before test
 #/bin/bash wait-for-it.sh localhost:3306 -t 0
