@@ -16,9 +16,10 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
-    <PackageReference Include="OpenCover" Version="4.6.519" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
+    <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
