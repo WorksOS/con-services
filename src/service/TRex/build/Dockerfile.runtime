@@ -6,7 +6,7 @@ FROM ${BUILD_CONTAINER} as build_container
 
 # Now create runtime container
 # Why bash? it seems to be needed for ignite to run (maybe a dependency?)
-FROM registry.k8s.vspengg.com:80/dotnet:2.1-runtime-alpine3.7
+FROM registry-docker-registry.jenkins:5000/dotnet:2.1-runtime-alpine3.7
 RUN \
   apk --no-cache add openjdk8 && \
   apk --no-cache add bash nodejs nodejs-npm

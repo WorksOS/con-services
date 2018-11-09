@@ -1,2 +1,2 @@
-docker build -t registry.k8s.vspengg.com:80/vss-jenkinsslave:core21 ./
-docker push registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
+docker build -t registry-docker-registry.jenkins:5000/vss-jenkinsslave:core21 ./
+docker push registry-docker-registry.jenkins:5000/vss-jenkinsslave:core21
