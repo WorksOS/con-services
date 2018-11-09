@@ -48,6 +48,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\gateway\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />

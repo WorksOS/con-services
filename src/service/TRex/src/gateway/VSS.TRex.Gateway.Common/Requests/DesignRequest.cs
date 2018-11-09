@@ -50,7 +50,7 @@ namespace VSS.TRex.Gateway.Common.Requests
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid must be provided"));
       }
 
-      if (FileType != ImportedFileType.DesignSurface || FileType != ImportedFileType.SurveyedSurface )
+      if (FileType != ImportedFileType.DesignSurface && FileType != ImportedFileType.SurveyedSurface )
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface or SurveyedSurface"));
       }
