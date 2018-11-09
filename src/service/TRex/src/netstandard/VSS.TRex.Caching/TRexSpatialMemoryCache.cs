@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -84,6 +85,7 @@ namespace VSS.TRex.Caching
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
+    /// <param name="projectUid"></param>
     /// <param name="contextFingerPrint"></param>
     /// <param name="cacheDuration"></param>
     /// <returns></returns>
@@ -94,7 +96,7 @@ namespace VSS.TRex.Caching
         if (Contexts.TryGetValue(contextFingerPrint, out ITRexSpatialMemoryCacheContext context))
           return context; // It exists, return it
 
-        // Create the establish the new context
+        // Create the new context
         ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint); 
         Contexts.Add(contextFingerPrint, newContext);
 
@@ -115,6 +117,7 @@ namespace VSS.TRex.Caching
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
+    /// <param name="projectUid"></param>
     /// <param name="contextFingerPrint"></param>
     /// <returns></returns>
     public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint)
@@ -161,16 +164,16 @@ namespace VSS.TRex.Caching
     public void ItemAddedToContext(int sizeInBytes)
     {
       // Increment the number of elements in the cache
-      System.Threading.Interlocked.Increment(ref currentNumElements);
+      Interlocked.Increment(ref currentNumElements);
 
       // Increment the memory usage in the cache
-      System.Threading.Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
+      Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
     }
 
     public void ItemRemovedFromContext(int sizeInBytes)
     {
       // Decrement the memory usage in the cache
-      var number = System.Threading.Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
+      var number = Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
 
       if (number < 0)
       {
@@ -178,7 +181,7 @@ namespace VSS.TRex.Caching
       }
 
       // Decrement the number of elements in the cache
-      System.Threading.Interlocked.Decrement(ref currentNumElements);
+      Interlocked.Decrement(ref currentNumElements);
     }
 
     /// <summary>
@@ -229,7 +232,7 @@ namespace VSS.TRex.Caching
       // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
       foreach (var context in projectContexts)
       {
-        lock (Contexts)
+        lock (context)
         {
           // Empty contexts are ignored
           if (context.TokenCount == 0)
