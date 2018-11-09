@@ -1,12 +1,8 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.1-sdkas builder
+FROM registry-docker-registry.jenkins:5000/dotnet:2.1-sdk as builder
 ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
-
-RUN chmod 777 *.sh
-
-RUN rm -rf /artifacts
 RUN dotnet publish ./$SERVICE_PATH/src/MasterDataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o /artifacts -f netcoreapp2.0
 
 FROM registry-docker-registry.jenkins:5000/dotnet:2.1-runtime
