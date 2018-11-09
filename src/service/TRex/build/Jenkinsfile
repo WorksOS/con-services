@@ -64,7 +64,7 @@ node ('jenkinsslave-pod') {
 		//Tests are done here because host volume mounts cannot be specified in the dockerfile
 		stage('Build Container') {
 			checkout scm
-			build_container = docker.build(container, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
+			build_container = docker.build(buildContainerTag, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
 		}
 		
         stage('Test Solution') {
@@ -125,7 +125,8 @@ node ('jenkinsslave-pod') {
 	}
 
 	stage('Publish helm chart'){
-		
-		 archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
+		sh "mv ${servicePath}/deploy ${env.WORKSPACE}"
+		sh "ls -la"
+		archiveArtifacts artifacts: 'deploy/**/*.*', fingerprint: true
 	}
 }
