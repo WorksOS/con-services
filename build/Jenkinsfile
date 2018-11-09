@@ -191,7 +191,6 @@ node ('jenkinsslave-pod') {
 								[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']
 							]
 						])
-						sh "sleep 30s"
 					}
 				}		
 			}
