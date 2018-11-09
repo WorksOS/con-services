@@ -360,27 +360,6 @@ namespace VSS.TRex.SubGridTrees
             OriginY = reader.ReadUInt32();
         }
 
-/*
-        /// Write the contents of the Items array using the supplied writer
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public virtual void Write(BinaryFormatter formatter, Stream stream)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Fill the items array by reading the binary representation using the provided formatter
-        /// </summary>
-        /// <param name="formatter"></param>
-        /// <param name="stream"></param>
-        public virtual void Read(BinaryFormatter formatter, Stream stream)
-        {
-            throw new NotImplementedException();
-        }
-*/
-
         /// <summary>
         /// Converts the subgrid origin cell location into a SubGridAddress identifying this subgrid
         /// </summary>

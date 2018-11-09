@@ -89,22 +89,16 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// Internal numeric identifier for the sub grid tree. All internal operations will refer to the sub grid
-        /// tree using this identitifer. 
+        /// tree using this identifier. 
         /// </summary>
         public Guid ID { get; set; }
-
-        /// <summary>
-        /// External identifier (GUID) for the subgrid tree. The instance may be tagged with this ID as an 
-        /// association to the primary numeric identifier.
-        /// </summary>
-        public Guid ExternalID { get; set; }
 
         /// <summary>
         /// The number of levels defined in this subgrid tree. 
         /// A 6 level tree typically defines leaf cells as relating to on-the-ground cell in the real world
         /// coordinate system (eg: cells tracking passes made by construction machines)
         /// A 5 level tree typically defines leaf cells that represent some aspect of the subgrids in the 
-        /// 6th layer of the tree containing on-the-groun leaf cells (eg: subgrid existence map)
+        /// 6th layer of the tree containing on-the-ground leaf cells (eg: subgrid existence map)
         /// This property is assignable only at the time the subgrid tree is constructed.
         /// </summary>
         public byte NumLevels { get; }
@@ -115,7 +109,7 @@ namespace VSS.TRex.SubGridTrees
         private double cellSize;
 
         /// <summary>
-        /// Store the 'divide by 2' version of cellsize to reduce compute in operations that use this quantity a lot
+        /// Store the 'divide by 2' version of cell size to reduce compute in operations that use this quantity a lot
         /// </summary>
         public double CellSizeOver2;
 
@@ -152,8 +146,8 @@ namespace VSS.TRex.SubGridTrees
         public uint IndexOriginOffset { get; }
 
         /// <summary>
-        /// Base Sub Grid Tree constructor. Creates a tree with the requested numner of levels, 
-        /// using the requested cell size for leaf cells and th esupplied subgrid factory to create
+        /// Base Sub Grid Tree constructor. Creates a tree with the requested number of levels, 
+        /// using the requested cell size for leaf cells and the supplied subgrid factory to create
         /// its leaf and node subgrids
         /// </summary>
         /// <param name="numLevels"></param>
@@ -261,7 +255,7 @@ namespace VSS.TRex.SubGridTrees
             try
             {
                 // First calculate the leaf data cell indexes for the given real world extent
-                // If the world coorindates lie outside of the extent covered by the grid, then
+                // If the world coordinates lie outside of the extent covered by the grid, then
                 // clamp them to the boundaries of the grid.
                 if (CalculateIndexOfCellContainingPosition(
                         Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
@@ -303,7 +297,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// FullCellExtent returns the total extent of cells within this subgridtree. 
+        /// FullCellExtent returns the total extent of cells within this subgrid tree. 
         /// </summary>
         /// <returns></returns>
         public BoundingIntegerExtent2D FullCellExtent()
@@ -329,7 +323,7 @@ namespace VSS.TRex.SubGridTrees
             // First calculate the leaf data cell indexes for the given real world extent
             if (!CalculateRegionGridCoverage(extent, out BoundingIntegerExtent2D cellExtent))
             {
-                // The extents requested lie at least partially ouside the tree. Ignore this request.
+                // The extents requested lie at least partially outside the tree. Ignore this request.
                 Log.LogWarning($"{nameof(ScanSubGrids)} could not convert {extent} in a cell extent");
                 return false;
             }
@@ -370,7 +364,7 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// ConstructPathToCell constructs all necessary subgrids in all levels in
-        /// the tree so that there is a traversable path from the root of the
+        /// the tree so that there is a path that can be traversed from the root of the
         /// tree to the leaf subgrid that will contain the cell identified by
         /// CellX and CellY. If PathType is pctCreateLeaf it returns the leaf
         /// subgrid instance into which the caller may place the cell data. If
@@ -532,10 +526,10 @@ namespace VSS.TRex.SubGridTrees
         public ISubGrid LocateSubGridContaining(uint cellX, uint cellY) => LocateSubGridContaining(cellX, cellY, NumLevels);
 
         /// <summary>
-        // LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
-        // except that it walks as far through the tree as it can up to the designated
-        // Level to find the requested cell, then returns that subgrid.
-        // The returned node may be a leaf subgrid or a node subgrid
+        /// LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
+        /// except that it walks as far through the tree as it can up to the designated
+        /// Level to find the requested cell, then returns that subgrid.
+        /// The returned node may be a leaf subgrid or a node subgrid
         /// </summary>
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
@@ -561,7 +555,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// GetCellCenterPosition conputes the real world location of the center
+        /// GetCellCenterPosition computes the real world location of the center
         /// of the on-the-ground cell identified by X and Y. X and Y are in the
         /// bottom left origin of the grid. The returned CX, CY values are translated
         /// to the centered origin of the real world coordinate system
@@ -577,7 +571,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
         /// <summary>
-        /// GetCellOriginPosition conputes the real world location of the origin
+        /// GetCellOriginPosition computes the real world location of the origin
         /// of the on-the-ground cell identified by X and Y. X and Y are in the
         /// bottom left origin of the grid. The returned OX, OY values are translated
         /// to the centered origin of the real world coordinate system
@@ -630,12 +624,12 @@ namespace VSS.TRex.SubGridTrees
         extents.MaxY = OriginY + CellSize;
       }
 
-        /// <summary>
-    // CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
-    // it to the caller. The newly created subgrid is _not_ attached to this grid.
-    /// </summary>
-    /// <returns></returns>
-    public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubgrid(NumLevels) as ILeafSubGrid;
+      /// <summary>
+      /// CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
+      /// it to the caller. The newly created subgrid is _not_ attached to this grid.
+      /// </summary>
+      /// <returns></returns>
+      public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubgrid(NumLevels) as ILeafSubGrid;
 
       public IEnumerator<ISubGrid> GetEnumerator()
       {
@@ -662,13 +656,13 @@ namespace VSS.TRex.SubGridTrees
       }
 
       /// <summary>
-      /// The header string to be written into a serialised subgrid tree
+      /// The header string to be written into a serialized subgrid tree
       /// </summary>
       /// <returns></returns>
       public virtual string SerialisedHeaderName() => string.Empty;
 
       /// <summary>
-      /// The header version to be written into a serialised subgrid tree
+      /// The header version to be written into a serialized subgrid tree
       /// </summary>
       /// <returns></returns>
       public virtual int SerialisedVersion() => 0;
@@ -686,19 +680,19 @@ namespace VSS.TRex.SubGridTrees
       private void SerialiseOutWriter(BinaryWriter writer) => SubGridTreePersistor.Write(this, SerialisedHeaderName(), SerialisedVersion(), writer);
 
       /// <summary>
-      /// Serialises the content of the subgrid tree to a byte array
+      /// Serializes the content of the subgrid tree to a byte array
       /// </summary>
       /// <returns></returns>
       public byte[] ToBytes() => FromToBytes.ToBytes(SerialiseOutWriter);
 
       /// <summary>
-      /// Deserialises the content of the subgrid tree from a byte array
+      /// Deserializes the content of the subgrid tree from a byte array
       /// </summary>
       /// <returns></returns>
       public void FromBytes(byte[] bytes) => FromToBytes.FromBytes(bytes, SerialiseInReader);
 
       /// <summary>
-      /// Serialises the content of the subgrid tree to a memory stream
+      /// Serializes the content of the subgrid tree to a memory stream
       /// </summary>
       /// <returns></returns>
       public MemoryStream ToStream() => FromToBytes.ToStream(SerialiseOutWriter);
@@ -706,7 +700,7 @@ namespace VSS.TRex.SubGridTrees
       public void ToStream(Stream stream) => FromToBytes.ToStream(stream, SerialiseOutWriter);
 
       /// <summary>
-      /// Deserialises the content of the subgrid tree from a memory stream
+      /// Deserializes the content of the subgrid tree from a memory stream
       /// </summary>
       /// <returns></returns>
       public void FromStream(MemoryStream stream) => FromToBytes.FromStream(stream, SerialiseInReader);

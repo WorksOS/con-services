@@ -149,7 +149,7 @@ namespace VSS.TRex.Profiling
         ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
       };
 
-      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.CacheFingerprint());
+      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
     }
 
     /// <summary>

@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Diagnostics;
+using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -39,6 +40,8 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
         // ReSharper disable once StaticMemberInGenericType
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+
+        private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.kEnableGeneralSubgridResultCaching);
 
         /// <summary>
         /// Local reference to the client subgrid factory
@@ -118,9 +121,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         /// The DI injected TRex spatial memory cache for general subgrid results
         /// </summary>
         private ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
-
-        [NonSerialized]
-        private ITRexSpatialMemoryCacheContext SubGridCacheContext;
 
         /// <summary>
         /// Default no-arg constructor
@@ -471,9 +471,14 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
               Guid[] FilteredSurveyedSurfacesAsArray = FilteredSurveyedSurfaces?.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0];
 
-              // Get a caching context for the subgrids returned by this requester
-              SubGridCacheContext = SubGridCache.LocateOrCreateContext(SpatialCacheFingerprint.ConstructFingerprint
-                (siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfacesAsArray));
+              // Get a caching context for the subgrids returned by this requester, but only if the requested grid data type supports it
+              ITRexSpatialMemoryCacheContext SubGridCacheContext = null;
+
+              if (_enableGeneralSubgridResultCaching &&
+                  ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid[(int) localArg.GridDataType])
+              {
+                SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfacesAsArray));
+              }
 
               return new SubGridRequestor(siteModel,
                 siteModels.StorageProxy,

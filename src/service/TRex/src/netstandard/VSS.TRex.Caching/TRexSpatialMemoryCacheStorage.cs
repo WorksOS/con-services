@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using Newtonsoft.Json.Schema;
+using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {
@@ -88,6 +89,26 @@ namespace VSS.TRex.Caching
       lock (this)
       {
         EvictOneLRUItemNoLock();
+      }
+    }
+
+    /// <summary>
+    /// Invalidates an item held in the MRU list. Initially the element is just marked as invalid.
+    /// If the item being invalidated is already invalidated it is proactively removed.
+    /// </summary>
+    /// <param name="index"></param>
+    public void Invalidate(int index)
+    {
+      lock (this)
+      {
+        bool previousValid = Items[index].Invalidate();
+
+        if (!previousValid)
+        {
+          // As it is already invalid, to prevent recurring invalidation again and again, remove it
+          RemoveNoLock(index);
+          Items[index].RemoveFromContext();
+        }
       }
     }
 
@@ -193,6 +214,8 @@ namespace VSS.TRex.Caching
 
     /// <summary>
     /// Retrieves the cached item from the specified index in the MRU list
+    /// If the element present in the MRU list is Expired or not Valid it
+    /// is proactively removed and null is returned to the caller.
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
@@ -202,7 +225,7 @@ namespace VSS.TRex.Caching
       {
         var cacheItem = Items[index];
 
-        if (cacheItem.Expired)
+        if (cacheItem.Expired || !cacheItem.Valid)
         {
           RemoveNoLock(index);
           cacheItem.RemoveFromContext();

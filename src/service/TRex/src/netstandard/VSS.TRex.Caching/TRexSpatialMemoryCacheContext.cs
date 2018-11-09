@@ -11,6 +11,8 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
+    public string FingerPrint { get; private set; }
+
     public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
     public IGenericSubGridTree_Int ContextTokens { get; }
@@ -27,18 +29,38 @@ namespace VSS.TRex.Caching
     /// </summary>
     public static readonly TimeSpan NullCacheTimeSpan = TimeSpan.FromDays(1000);
 
+    /// <summary>
+    /// Determine what external stimuli elements in this cache are sensitive to with respect to
+    /// invalidation and eviction of elements contained in the cache.
+    /// </summary>
+    public TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; set; } = TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest;
+
+    /// <summary>
+    /// Constructs a new cache context for the given owning cache and MRU list. Time base expiry is defaulted to 'never'.
+    /// </summary>
+    /// <param name="ownerMemoryCache"></param>
+    /// <param name="mruList"></param>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
-      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan)
+      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan, null)
     {
     }
 
+    /// <summary>
+    /// Constructs a new cache context for the given owning cache and MRU list. Time base expiry is controlled by
+    /// specifying a cacheDurationTime each element will observe before proactive removal from the cache.
+    /// </summary>
+    /// <param name="ownerMemoryCache"></param>
+    /// <param name="mruList"></param>
+    /// <param name="cacheDurationTime"></param>
+    /// <param name="fingerPrint"></param>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
       ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList,
-      TimeSpan cacheDurationTime)
+      TimeSpan cacheDurationTime, string fingerPrint)
     {
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
       CacheDurationTime = cacheDurationTime;
+      FingerPrint = fingerPrint;
       OwnerMemoryCache = ownerMemoryCache;
     }
 
@@ -85,15 +107,24 @@ namespace VSS.TRex.Caching
 
       lock (this)
       {
-
-        // Locate the index for the element in the context token tree and remove it from storage,
-        // null out the entry in the context token tree.
-        // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Remove
-        MRUList.Remove(ContextTokens[x, y] - 1);
-        ContextTokens[x, y] = 0;
-
-        tokenCount--;
+        RemoveNoLock(x, y);
       }
+    }
+
+    /// <summary>
+    /// Removes an item from a context within the overall memory cache of these items. The context must be obtained from the
+    /// memory cache instance prior to use. This operation is thread safe - all operations are concurrency locked within the
+    /// confines of the context.
+    /// </summary>
+    private void RemoveNoLock(uint x, uint y)
+    {
+      // Locate the index for the element in the context token tree and remove it from storage,
+      // null out the entry in the context token tree.
+      // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Remove
+      MRUList.Remove(ContextTokens[x, y] - 1);
+      ContextTokens[x, y] = 0;
+      
+      tokenCount--;
     }
 
     public ITRexMemoryCacheItem Get(uint originX, uint originY)
@@ -125,6 +156,31 @@ namespace VSS.TRex.Caching
       ContextTokens[x, y] = 0;
       OwnerMemoryCache.ItemRemovedFromContext(item.IndicativeSizeInBytes());
       tokenCount--;
+    }
+
+    /// <summary>
+    /// Invalidates the cached item within this context at the specified origin location 
+    /// </summary>
+    /// <param name="originX"></param>
+    /// <param name="originY"></param>
+    /// <param name="subGridPresentForInvalidation"></param>
+    public void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation)
+    {
+      uint x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+      uint y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
+
+      var contextToken = ContextTokens[x, y];
+
+      if (contextToken == 0)
+      {
+        // Nothing to do
+        subGridPresentForInvalidation = false;
+        return;
+      }
+
+      // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
+      MRUList.Invalidate(contextToken - 1);
+      subGridPresentForInvalidation = true;
     }
   }
 }
