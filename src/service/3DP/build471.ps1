@@ -26,7 +26,7 @@ if ($LastExitCode -ne 0) {
 }
 
 Write-Host "Build Unit Tests project..." -ForegroundColor "darkgray"
-Invoke-Expression "dotnet build ./test/UnitTests/WebApiTests/VSS.Productivity3D.WebApi.Tests.csproj"
+Invoke-Expression "dotnet build ./test/UnitTests/WebApiTests/WebApiTests.csproj"
 if ($LastExitCode -ne 0) {
     throw "Build unit tests project **** Failed ****"
 }

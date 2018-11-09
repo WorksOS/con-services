@@ -9,6 +9,8 @@
     <None Remove="appsettings.json" />
   </ItemGroup>
 
+  <PropertyGroup> <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest> </PropertyGroup>
+
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
