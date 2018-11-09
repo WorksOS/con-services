@@ -1,14 +1,8 @@
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-sdk as builder
-
-COPY . /build/
-WORKDIR /build
-
-RUN chmod 777 *.sh
-
 FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
 
+COPY . /app
+
 WORKDIR /app
-COPY --from=builder /build .
 
 VOLUME testresults
 

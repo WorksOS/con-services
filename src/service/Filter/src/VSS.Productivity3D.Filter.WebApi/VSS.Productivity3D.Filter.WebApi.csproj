@@ -23,6 +23,8 @@
     <None Remove="Dockerfile" />
     <None Remove="Dockerfile_win" />
   </ItemGroup>
+
+  <PropertyGroup> <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest> </PropertyGroup>
       
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
