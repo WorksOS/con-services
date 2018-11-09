@@ -81,7 +81,7 @@ namespace VSS.TRex.Gateway.Tests
       var isWrittenToS3Ok = S3FileTransfer.WriteFile("TestData", projectUid, transferFileName);
       Assert.True(isWrittenToS3Ok);
 
-      var isReadFromS3Ok = S3FileTransfer.ReadFile(projectUid, transferFileName, Path.Combine(Path.GetTempPath(), projectUid.ToString())).Result;
+      var isReadFromS3Ok = S3FileTransfer.ReadFile(projectUid, transferFileName, Path.GetTempPath()).Result;
       Assert.True(isReadFromS3Ok);
     }
 
