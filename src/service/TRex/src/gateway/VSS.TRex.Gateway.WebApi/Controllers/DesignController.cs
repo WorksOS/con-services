@@ -32,6 +32,29 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
+    /// Returns surface and surveyedsurface designs
+    ///    which is registered for a sitemodel.
+    /// If there are no designs the result will be an empty list.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public DesignListResult GetDesignsForSiteModel([FromQuery] Guid projectUid)
+    {
+      var designList = DIContext.Obtain<IDesignManager>().List(projectUid);
+      var designFileDescriptorList = designList.Select(designSurface =>
+          AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+        .ToList();
+
+      var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
+      designFileDescriptorList.AddRange(designSurfaceList.Select(designSurface =>
+          AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+        .ToList());
+
+      return new DesignListResult {DesignFileDescriptors = designFileDescriptorList.ToImmutableList()};
+    }
+
+    /// <summary>
     /// Returns the list of designs of requested type,
     ///    which is registered for a sitemodel.
     /// If there are no designs the result will be an empty list.
@@ -40,7 +63,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="fileType"></param>
     /// <returns></returns>
     [HttpGet]
-    public DesignListResult GetDesignsForSiteModel([FromQuery] Guid projectUid, ImportedFileType fileType)
+    public DesignListResult GetDesignsForSiteModel([FromQuery] Guid projectUid, [FromQuery] ImportedFileType fileType)
     {
       if (fileType == ImportedFileType.DesignSurface)
       {
@@ -48,7 +71,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         var designFileDescriptorList = designList.Select(designSurface =>
             AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
           .ToList();
-        return new DesignListResult {DesignFileDescriptors = designFileDescriptorList.ToImmutableList()};
+        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList.ToImmutableList() };
       }
       else if (fileType == ImportedFileType.SurveyedSurface)
       {
@@ -56,7 +79,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         var designFileDescriptorList = designSurfaceList.Select(designSurface =>
             AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
           .ToList();
-        return new DesignListResult {DesignFileDescriptors = designFileDescriptorList.ToImmutableList()};
+        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList.ToImmutableList() };
       }
 
       return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"FileType: {fileType.ToString()} is not supported by TRex.") as DesignListResult;
@@ -70,65 +93,61 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     ///    Path:     projectUid
     ///    Filename: bowlfill 1290 6-5-18.ttm 
     /// </summary>
-    /// <param name="designSurfaceRequest"></param>
+    /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    public ContractExecutionResult CreateDesignSurface([FromBody] DesignRequest designSurfaceRequest)
+    public ContractExecutionResult CreateDesignSurface([FromBody] DesignRequest designRequest)
     {
       /* todojeannie move env vars from appsettings to yaml - which services? */
 
-      Log.LogInformation($"{nameof(CreateDesignSurface)}: {JsonConvert.SerializeObject(designSurfaceRequest)}");
-      designSurfaceRequest.Validate();
+      Log.LogInformation($"{nameof(CreateDesignSurface)}: {JsonConvert.SerializeObject(designRequest)}");
+      designRequest.Validate();
 
-      if (designSurfaceRequest.FileType == ImportedFileType.DesignSurface)
+      if (GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
-        var existsAlready = GetDesignsForSiteModel(designSurfaceRequest.ProjectUid, ImportedFileType.DesignSurface).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designSurfaceRequest.DesignUid.ToString());
-        if (existsAlready)
-        {
-          return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
-        }
-
-        return WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
-            .Build<UpsertDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designSurfaceRequest));
+        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
       }
 
-      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Create of Design FileType: {designSurfaceRequest.FileType.ToString()} is not YET supported by TRex.");
+      if (designRequest.FileType == ImportedFileType.DesignSurface)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<AddDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(designRequest));
+      }
+
+      if (designRequest.FileType == ImportedFileType.SurveyedSurface)
+      {
+        return WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<AddDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler) 
+            .Process(designRequest));
+      }
+
+      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Create of Design FileType: {designRequest.FileType.ToString()} is not YET supported by TRex.");
     }
 
 
     /// <summary>
     /// Update a design
     /// </summary>
-    /// <param name="designSurfaceRequest"></param>
+    /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPut]
-    public ContractExecutionResult UpdateDesignSurface([FromBody] DesignRequest designSurfaceRequest)
+    public ContractExecutionResult UpdateDesignSurface([FromBody] DesignRequest designRequest)
     {
-      Log.LogInformation($"{nameof(UpdateDesignSurface)}: {JsonConvert.SerializeObject(designSurfaceRequest)}");
-      designSurfaceRequest.Validate();
+      Log.LogInformation($"{nameof(UpdateDesignSurface)}: {JsonConvert.SerializeObject(designRequest)}");
+      designRequest.Validate();
 
-      if (designSurfaceRequest.FileType == ImportedFileType.DesignSurface)
+      if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
-        var existsAlready = GetDesignsForSiteModel(designSurfaceRequest.ProjectUid, ImportedFileType.DesignSurface).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designSurfaceRequest.DesignUid.ToString());
-        if (!existsAlready)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update."));
-        }
-
-        // todojeannie rather than removing it here, should there be a DesignManager.Update() which effectively does this?
-        //    how about removing the indexes from local and s3 storage?
-        //    should this remove go into the Designmanager.Update?
-        var isDeletedOk = DIContext.Obtain<IDesignManager>().Remove(designSurfaceRequest.ProjectUid, designSurfaceRequest.DesignUid);
-
-        return WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
-            .Build<UpsertDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designSurfaceRequest));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update."));
       }
 
-      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Update of Design FileType: {designSurfaceRequest.FileType.ToString()} is not YET supported by TRex.");
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<UpdateDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(designRequest));
     }
 
 
@@ -137,38 +156,23 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     ///    Also removes the index files from S3.
     ///    Removal of the design file from S3 is done by ProjectSvc.
     /// </summary>
-    /// <param name="designSurfaceRequest"></param>
+    /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpDelete]
-    public ContractExecutionResult DeleteDesignSurface([FromBody] DesignRequest designSurfaceRequest)
+    public ContractExecutionResult DeleteDesignSurface([FromBody] DesignRequest designRequest)
     {
-      Log.LogInformation($"{nameof(DeleteDesignSurface)}: {JsonConvert.SerializeObject(designSurfaceRequest)}");
-      designSurfaceRequest.Validate();
+      Log.LogInformation($"{nameof(DeleteDesignSurface)}: {JsonConvert.SerializeObject(designRequest)}");
+      designRequest.Validate();
 
-      if (designSurfaceRequest.FileType == ImportedFileType.DesignSurface)
+      if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
-        var existsAlready = GetDesignsForSiteModel(designSurfaceRequest.ProjectUid, ImportedFileType.DesignSurface).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designSurfaceRequest.DesignUid.ToString());
-        if (!existsAlready)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot delete."));
-        }
-
-        var isDeletedOk = DIContext.Obtain<IDesignManager>().Remove(designSurfaceRequest.ProjectUid, designSurfaceRequest.DesignUid);
-        if (isDeletedOk)
-        {
-          // todojeannie should remove  index file/s from s3, however ITransferProxy has no remove at present.
-          //              ProjectSvc to remove the original
-          return new ContractExecutionResult();
-        }
-        else
-        {
-          return new ContractExecutionResult( /* todojeannie*/
-            9999, "whatever");
-        }
-
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update."));
       }
 
-      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Update of Design FileType: {designSurfaceRequest.FileType.ToString()} is not YET supported by TRex.");
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<DeleteDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(designRequest));
     }
   }
 }

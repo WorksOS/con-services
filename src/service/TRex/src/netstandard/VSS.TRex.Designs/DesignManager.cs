@@ -102,10 +102,8 @@ namespace VSS.TRex.Designs
     public IDesign Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
       IDesigns designs = Load(SiteModelID);
-      // todojeannie check if design exists?
       IDesign result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(SiteModelID, designs);
-      // todojeannie copy index files to s3
       return result;
     }
 

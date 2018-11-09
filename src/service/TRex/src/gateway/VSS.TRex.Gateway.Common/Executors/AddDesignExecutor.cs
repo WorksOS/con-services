@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -15,11 +14,13 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class UpsertDesignExecutor : RequestExecutorContainer
+  public class AddDesignExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// TagFileExecutor
@@ -27,7 +28,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <param name="configStore"></param>
     /// <param name="logger"></param>
     /// <param name="exceptionHandler"></param>
-    public UpsertDesignExecutor(IConfigurationStore configStore,
+    public AddDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
     }
@@ -35,7 +36,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public UpsertDesignExecutor()
+    public AddDesignExecutor()
     {
     }
 
@@ -57,8 +58,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       try
       {
-        log.LogInformation($"#In# UpsertDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#In# AddDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
+        // add or update, load core file from s3 to local
         var localPath = Path.Combine(new[] {TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid.ToString()});
         var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName});
         TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
@@ -67,30 +69,43 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 99 /* todojeannie */);
         }
+        // This generates the 2 index files below
         TTM.LoadFromFile(localPathAndFileName);
 
         BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
         TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
-        // Create the new design for the site model
-        var design = DIContext.Obtain<IDesignManager>().Add(request.ProjectUid,
-          new VSS.TRex.Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
-          extents);
+        if (request.FileType == ImportedFileType.DesignSurface)
+        {
+          // Create the new designSurface in our site model
+          var designSurface = DIContext.Obtain<IDesignManager>().Add(request.ProjectUid,
+            new VSS.TRex.Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
+            extents);
+          DIContext.Obtain<IExistenceMaps>().SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, TTM.SubgridOverlayIndex());
+        }
 
-        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+        if (request.FileType == ImportedFileType.SurveyedSurface)
+        {
+          // Create the new SurveyedSurface in our site model
+          var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(request.ProjectUid,
+            new VSS.TRex.Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
+            request.SurveyedUtc ?? DateTime.MinValue, // validation will have ensured this exists
+            extents);
+          DIContext.Obtain<IExistenceMaps>().SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, TTM.SubgridOverlayIndex());
+        }
 
-        // todojeannie should these go in designmanager.add?
+        //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required
         S3FileTransfer.WriteFile(TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
         S3FileTransfer.WriteFile(TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
       }
       catch (Exception e)
       {
-        result = new ContractExecutionResult(/* todojeannie */ 9999, "Unable to Add Design");
+        result = new ContractExecutionResult(/* todojeannie */ 9999, "Unable to Add Design. Exception: {e}");
       }
       finally
       {
-        log.LogInformation($"#Out# UpsertDesignExecutor. Process add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
+        log.LogInformation($"#Out# AddDesignExecutor. Process add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
       }
 
       return result;

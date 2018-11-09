@@ -5,11 +5,12 @@ using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Core;
 using Xunit;
 using VSS.TRex.SubGridTrees.Factories;
+using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridTests
-    {
+        public class SubGridTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_SubGrid_Creation()
         {

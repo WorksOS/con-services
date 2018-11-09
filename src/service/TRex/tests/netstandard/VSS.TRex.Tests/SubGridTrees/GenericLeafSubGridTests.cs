@@ -5,12 +5,13 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
-namespace VSS.TRex.Tests.SubGridTrees
+namespace VSS.TRex.Tests.SubGridTrees 
 {
-        public class GenericLeafSubGridTests
-    {
+        public class GenericLeafSubGridTests : IClassFixture<DILoggingFixture>
+  {
         [Fact(Skip = "Not Implemented")]
         public void Test_GenericLeafSubGridTests_Creation()
         {

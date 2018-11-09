@@ -94,7 +94,7 @@ namespace VSS.TRex.Gateway.Tests
     //  DesignSurfaceRequest request = new DesignSurfaceRequest(projectUid, transferFileName, designUid);
 
     //  var executor =
-    //    RequestExecutorContainer.Build<UpsertDesignExecutor>(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
+    //    RequestExecutorContainer.Build<UpdateDesignExecutor>(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
     //  var result = executor.Process(request);
 
     //  Assert.Equal(0, result.Code);
