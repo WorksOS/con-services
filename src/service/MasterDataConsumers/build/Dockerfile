@@ -1,4 +1,4 @@
-FROM registry.k8s.vspengg.com:80/dotnet:2.1-sdkas builder
+FROM registry-docker-registry.jenkins:5000/dotnet:2.1-sdkas builder
 ARG SERVICE_PATH
 
 COPY . /build/
@@ -9,7 +9,7 @@ RUN chmod 777 *.sh
 RUN rm -rf /artifacts
 RUN dotnet publish ./$SERVICE_PATH/src/MasterDataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o /artifacts -f netcoreapp2.0
 
-FROM registry.k8s.vspengg.com:80/dotnet:2.1-runtime
+FROM registry-docker-registry.jenkins:5000/dotnet:2.1-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \

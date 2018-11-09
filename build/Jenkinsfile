@@ -36,9 +36,9 @@ node ('jenkinsslave-pod') {
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    def container = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
-	def containerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
-    def testContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"
+    def container = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
+	def containerDb = "registry-docker-registry.jenkins:5000/${project_name}.db:${versionNumber}"
+    def testContainer = "registry-docker-registry.jenkins:5000/${project_name}.tests:${versionNumber}"
     def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	def servicePath = params.SERVICE_PATH
@@ -145,7 +145,7 @@ node ('jenkinsslave-pod') {
 				acceptance_testing_yaml = acceptance_testing_yaml.replace('!db-container!', "${containerDb}")
 			}
 				def label = "testingpod-${UUID.randomUUID().toString()}"
-			podTemplate(label: label, namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
+			podTemplate(label: label, nodeSelector:"kops.k8s.io/instancegroup=spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
 			{
 				node (label) {
 					dir ("/app/${servicePath}") {

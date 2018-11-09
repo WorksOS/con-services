@@ -1,4 +1,4 @@
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-sdk as builder
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk as builder
 ARG SERVICE_PATH
 
 COPY . /build/
@@ -6,7 +6,7 @@ WORKDIR /build
 
 RUN dotnet publish ./$SERVICE_PATH/MockProjectWebApi.csproj -o /artifacts -f netcoreapp2.0 --runtime linux-x64
 
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
 
 WORKDIR /app
 

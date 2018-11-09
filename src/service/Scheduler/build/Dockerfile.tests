@@ -1,4 +1,4 @@
-FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
+FROM registry-docker-registry.jenkins:5000/vss-jenkinsslave:core21
 
 COPY . /app
 

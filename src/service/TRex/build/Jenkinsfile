@@ -30,7 +30,7 @@ node ('jenkinsslave-pod') {
 	def servicePath = params.SERVICE_PATH
 
 
-	def buildContainerTag = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+	def buildContainerTag = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
 	def runtimeContainerTag = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 
 	def trexComponents = [
