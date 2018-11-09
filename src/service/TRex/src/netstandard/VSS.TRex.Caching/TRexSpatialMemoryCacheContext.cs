@@ -11,6 +11,8 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
+    public Guid ProjectUID { get; private set; }
+
     public string FingerPrint { get; private set; }
 
     public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
@@ -41,7 +43,7 @@ namespace VSS.TRex.Caching
     /// <param name="ownerMemoryCache"></param>
     /// <param name="mruList"></param>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
-      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan, null)
+      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan, null, Guid.Empty)
     {
     }
 
@@ -55,12 +57,13 @@ namespace VSS.TRex.Caching
     /// <param name="fingerPrint"></param>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
       ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList,
-      TimeSpan cacheDurationTime, string fingerPrint)
+      TimeSpan cacheDurationTime, string fingerPrint, Guid projectUID)
     {
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
       CacheDurationTime = cacheDurationTime;
       FingerPrint = fingerPrint;
+      ProjectUID = projectUID;
       OwnerMemoryCache = ownerMemoryCache;
     }
 

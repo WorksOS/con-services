@@ -5,6 +5,8 @@ namespace VSS.TRex.Caching.Interfaces
 {
   public interface ITRexSpatialMemoryCacheContext
   {
+    Guid ProjectUID { get; }
+
     string FingerPrint { get; }
 
     ITRexSpatialMemoryCache OwnerMemoryCache { get; }

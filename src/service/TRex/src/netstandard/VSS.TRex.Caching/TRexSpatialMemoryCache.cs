@@ -100,7 +100,7 @@ namespace VSS.TRex.Caching
           return context; // It exists, return it
 
         // Create the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint); 
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint, projectUid); 
         Contexts.Add(contextFingerPrint, newContext);
 
         lock (ProjectContexts)

@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching;
+﻿using System;
+using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -25,6 +26,24 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(context.Sensitivity == TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest,
         "Default cache invalidation sensitivity is not production data ingest.");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_Creation_Default_Project()
+    {
+      ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null);
+
+      Assert.True(context.ProjectUID == Guid.Empty, "Default projectUID not set.");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_Creation_NonDefault_Project()
+    {
+      Guid _projectUID = Guid.NewGuid();
+
+      ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null, TimeSpan.Zero, "", _projectUID);
+
+      Assert.True(context.ProjectUID == _projectUID, "Default projectUID not set.");
     }
 
     [Fact]
