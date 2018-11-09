@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
@@ -65,6 +66,7 @@ namespace VSS.TRex.SubGridTrees
             return (SubGrid as SubGridTreeLeafBitmapSubGrid).Bits.BitSet(SubGridX, SubGridY);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Performs the fundamental SetCell operation that sets the state of bit in the tree at the 
         /// [CellX, CellY] location according to the boolean value parameter
@@ -75,55 +77,15 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>     
         public void SetCell(uint CellX, uint CellY, bool Value)
         {
-
             ISubGrid SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreateLeaf);
 
-            if (SubGrid != null)
-            {
-                SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
-
-                (SubGrid as SubGridTreeLeafBitmapSubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
-
-                // Set the bit for the leaf subgrid itself (in the parent)
-                if (SubGrid.Parent != null)
-                {
-                    SubGrid.Parent.GetSubGridCellIndex(CellX, CellY, out SubGridX, out SubGridY);
-
-                    // We only propagate flags up into the leaf bits if the bit is actually
-                    // being set. Otherwise we ignore it. This permits 'set' bits to bubble
-                    // up to the parent while stopping clearing a single cell bit from
-                    // removing the fact that other cells in the leaf may be flagged with a bit.
-                    if (Value)
-                    {
-                        (SubGrid.Parent as SubGridTreeNodeBitmapSubGrid).Bits.SetBit(SubGridX, SubGridY);
-                    }
-                }
-            }
-            else
+            if (SubGrid == null)
             {
                 Debug.Assert(false, "Unable to create cell subgrid for bitmask");
             }
-        }
 
-        /// <summary>
-        /// Determines if there is an existing leaf containing the requested bit, and if that bit it set to 1 (true)
-        /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
-        public bool GetLeaf(uint CellX, uint CellY)
-        {
-            ISubGrid SubGrid = LocateSubGridContaining(CellX, CellY, NumLevels);
-
-            if (SubGrid != null)
-            {
-                SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
-                return (SubGrid as SubGridTreeNodeBitmapSubGrid).Bits.BitSet(SubGridX, SubGridY);
-            }
-            else
-            {
-                return false;
-            }
+            SubGrid.GetSubGridCellIndex(CellX, CellY, out byte SubGridX, out byte SubGridY);
+            (SubGrid as SubGridTreeLeafBitmapSubGrid).Bits.SetBitValue(SubGridX, SubGridY, Value);
         }
 
         /// <summary>
@@ -175,8 +137,6 @@ namespace VSS.TRex.SubGridTrees
             SubGridTreeNodeBitmapSubGrid bitmapSubGrid = SubGrid as SubGridTreeNodeBitmapSubGrid;
 
             // Free the node containing the bits for the cells in the leaf
-            bitmapSubGrid.Bits.ClearBit(SubGridX, SubGridY);
-
             bitmapSubGrid.SetSubGrid(SubGridX, SubGridY, null);
         }
 
@@ -357,6 +317,7 @@ namespace VSS.TRex.SubGridTrees
         }
 
     public override string SerialisedHeaderName() => "ExistenceMap";
+
     public override int SerialisedVersion() => 1;
   }
 }

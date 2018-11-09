@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -93,6 +94,8 @@ namespace VSS.TRex.Server.PSNode
 
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
         .Complete();
     }
 
@@ -144,6 +147,10 @@ namespace VSS.TRex.Server.PSNode
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+
+      // Register the PSNode heartbeat logger
+      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new SpatialMemoryCacheHeartBeatLogger());      
     }
 
     static async Task<int> Main(string[] args)

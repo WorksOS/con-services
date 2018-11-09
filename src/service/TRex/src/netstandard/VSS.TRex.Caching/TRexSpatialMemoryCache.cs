@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Caching
 {
@@ -10,6 +13,8 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache
   {
+    private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
+
     private const int MAX_NUM_ELEMENTS = 1000000000;
 
     /// <summary>
@@ -17,10 +22,25 @@ namespace VSS.TRex.Caching
     /// </summary>
     public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
 
+    /// <summary>
+    /// The collection of contexts managed within the overall memory cache.
+    /// Each context is identified by a string based fingerprint that encodes information such
+    /// as project, grid data type requests & filter parameters etc
+    /// </summary>
     private readonly Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts;
 
+    /// <summary>
+    /// A collection of cache context lists, one per project active in the system.
+    /// This provides a single clear boundary for locating all cache contexts related
+    /// to a project for operations such as invalidation due to TAG file ingest and
+    /// eviction of contexts that are empty or are otherwise subject to removal.
+    /// </summary>
+    private readonly Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>> ProjectContexts;
+
     // ReSharper disable once InconsistentlySynchronizedField
-    public int ContextCount() => Contexts.Count;
+    public int ContextCount => Contexts.Count;
+
+    public int ProjectCount => ProjectContexts.Count;
 
     public int MaxNumElements { get; }
 
@@ -60,25 +80,36 @@ namespace VSS.TRex.Caching
 
       MRUList = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(maxNumElements, MruNonUpdateableSlotCount);
       Contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
+      ProjectContexts = new Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>>();
     }
 
     /// <summary>
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
+    /// <param name="projectUid"></param>
     /// <param name="contextFingerPrint"></param>
     /// <param name="cacheDuration"></param>
     /// <returns></returns>
-    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint, TimeSpan cacheDuration)
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint, TimeSpan cacheDuration)
     {
       lock (Contexts)
       {
         if (Contexts.TryGetValue(contextFingerPrint, out ITRexSpatialMemoryCacheContext context))
           return context; // It exists, return it
 
-        // Create the establish the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration); 
+        // Create the new context
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint); 
         Contexts.Add(contextFingerPrint, newContext);
+
+        lock (ProjectContexts)
+        {
+          // Add a reference to this context into the project specific list of contexts
+          if (ProjectContexts.TryGetValue(projectUid, out var projectList))
+            projectList.Add(newContext);
+          else
+            ProjectContexts.Add(projectUid, new List<ITRexSpatialMemoryCacheContext> {newContext});
+        }
 
         return newContext;
       }
@@ -88,11 +119,12 @@ namespace VSS.TRex.Caching
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
+    /// <param name="projectUid"></param>
     /// <param name="contextFingerPrint"></param>
     /// <returns></returns>
-    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(string contextFingerPrint)
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint)
     {
-      return LocateOrCreateContext(contextFingerPrint, TRexSpatialMemoryCacheContext.NullCacheTimeSpan);
+      return LocateOrCreateContext(projectUid, contextFingerPrint, TRexSpatialMemoryCacheContext.NullCacheTimeSpan);
     }
 
     /// <summary>
@@ -125,7 +157,7 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-        context.Remove(element);
+        context.Remove(element);        
 
         // Perform some house keeping to keep the cache size in bounds
         ItemRemovedFromContext(element.IndicativeSizeInBytes());
@@ -134,16 +166,16 @@ namespace VSS.TRex.Caching
     public void ItemAddedToContext(int sizeInBytes)
     {
       // Increment the number of elements in the cache
-      System.Threading.Interlocked.Increment(ref currentNumElements);
+      Interlocked.Increment(ref currentNumElements);
 
       // Increment the memory usage in the cache
-      System.Threading.Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
+      Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
     }
 
     public void ItemRemovedFromContext(int sizeInBytes)
     {
       // Decrement the memory usage in the cache
-      var number = System.Threading.Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
+      var number = Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
 
       if (number < 0)
       {
@@ -151,7 +183,7 @@ namespace VSS.TRex.Caching
       }
 
       // Decrement the number of elements in the cache
-      System.Threading.Interlocked.Decrement(ref currentNumElements);
+      Interlocked.Decrement(ref currentNumElements);
     }
 
     /// <summary>
@@ -164,6 +196,69 @@ namespace VSS.TRex.Caching
     public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY)
     {
       return context.Get(originX, originY);
+    }
+
+    /// <summary>
+    /// Invalidates subgrids held within all cache contexts for a project that are sensitive to
+    /// ingest of production data (eg: from TAG files)
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="mask"></param>
+    public void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask)
+    {
+      List<ITRexSpatialMemoryCacheContext> projectContexts;
+
+      // Obtain the list of contexts for this project
+      lock (Contexts)
+      {
+        if (!ProjectContexts.TryGetValue(projectUid, out projectContexts))
+        {
+          // There are no cache contexts for this project, leave...
+          return;
+        }
+
+        // Make a clone of this list to facilitate working through the evictions without holding
+        // a long term lock on the global set of contexts
+        projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
+      }
+
+      if (projectContexts.Count == 0)
+        return;
+
+      int numInvalidatedSubgrids = 0;
+      int numScannedSubgrids = 0;
+      DateTime startTime = DateTime.Now;
+
+      // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
+      // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
+      // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
+      foreach (var context in projectContexts)
+      {
+        lock (context)
+        {
+          // Empty contexts are ignored
+          if (context.TokenCount == 0)
+            continue;
+
+          // If the context in question is not sensitive to production data ingest then ignore it
+          if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) == 0)
+            continue;
+
+          // Iterate across all elements in the mask:
+          // 1. Locate the cache entry
+          // 2. Mark it as dirty
+          mask.ScanAllSetBitsAsSubGridAddresses(origin =>
+          {
+            context.InvalidateSubgridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
+
+            numScannedSubgrids++;
+            if (subGridPresentForInvalidation)
+              numInvalidatedSubgrids++;
+          });
+        }
+      }
+
+      log.LogInformation($"Invalidated {numInvalidatedSubgrids} out of {numScannedSubgrids} scanned subgrid from {projectContexts.Count} contexts in {DateTime.Now - startTime} [project {projectUid}]");
     }
   }
 }

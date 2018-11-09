@@ -59,11 +59,11 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <summary>
         /// A map of flags indicating which grid data types are supported by the intermediary subgrid result cache
         /// </summary>
-        private static bool[] SupportsAssignationFromCachedPreProcessedClientSubgrid = // GridDataType
+        public static bool[] SupportsAssignationFromCachedPreProcessedClientSubgrid = // GridDataType
         {
           false, // All = $00000000;
           true,  // CCV = $00000001;
-          false, // Height = $00000002;
+          true, // Height = $00000002;
           false, // Latency = $00000003;
           true,  // PassCount = $00000004;
           false, // Frequency = $00000005;
@@ -73,19 +73,32 @@ namespace VSS.TRex.SubGridTrees.Client
           false, // RMV = $00000009;
           true,  // CCVPercent = $0000000B;
           false, // GPSMode = $0000000A;
-          false, // SimpleVolumeOverlay = $0000000C;
-          false, // HeightAndTime = $0000000D;
+          true, // SimpleVolumeOverlay = $0000000C;
+          true, // HeightAndTime = $0000000D;
+
+          // Note: Composite heights are used for profiling only 
+          // These subgrids are very large and profiling heavily optimizes for specific cells so
+          // don't cache these subgrids
           false, // CompositeHeights = $0000000E;
           true,  // MDP = $0000000F;
           true,  // MDPPercent = $00000010;
           false, // CellProfile = $00000011;
           false, // CellPasses = $00000012;
-          false, // MachineSpeed = $00000013;
-          false, // CCVPercentChange = $00000014;
-          false, // MachineSpeedTarget = $00000015;
-          false, // CCVPercentChangeIgnoredTopNullValue = $0000016
-          true,  // CCA = $0000017
-          true   // CCAPercent = $0000018
+          true, // MachineSpeed = $00000013;
+          true, // CCVPercentChange = $00000014;
+          true, // MachineSpeedTarget = $00000015;
+          true, // CCVPercentChangeIgnoredTopNullValue = $0000016
+          true, // CCA = $0000017
+          true, // CCAPercent = $0000018
+          true, // Temperature details = $0000019
+          true, // CutFill = 0x0000001A,
+          true, // DesignHeight = 0x0000001B,
+
+          // SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
+          // used to construct this data. Differentiating the grid types allows coherent caching in a single spatial
+          // general subgrid result cache along with HeightAndTime results that are derived from production data
+          // and SurveyedSurfaceHeightAndTime results
+          true, // SurveyedSurfaceHeightAndTime = 0x0000001C
         };
 
         /// <summary>
