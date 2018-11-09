@@ -30,7 +30,7 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=builder /artifacts/VSS.Productivity3D.Scheduler.WebApi .
+COPY --from=builder /artifacts/ .
 
 
 ENTRYPOINT ["dotnet", "VSS.Productivity3D.Scheduler.WebAPI.dll"]
