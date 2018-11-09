@@ -1,5 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Net.Http;
 using DotNetCore.CAP;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +15,7 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
@@ -26,6 +29,9 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
+using VSS.TRex.HttpClients.Clients;
+using VSS.TRex.HttpClients.RequestHandlers;
+using VSS.TRrex.HttpClients.Abstractions;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI
@@ -44,6 +50,8 @@ namespace VSS.MasterData.Project.WebAPI
     /// </summary>
     public const string LoggerRepoName = "WebApi";
     private IServiceCollection serviceCollection;
+
+    private const string DATA_OCEAN_URL_ENV_KEY = "DATA_OCEAN_URL";
 
 
     /// <summary>
@@ -100,6 +108,22 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddTransient<ITransferProxy, TransferProxy>();
 
+      var serviceProvider = services.BuildServiceProvider();
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      services.AddHttpClient<ITPaaSClient, TPaaSClient>(client =>
+        client.BaseAddress = new Uri(configStore.GetValueString(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY))
+      ).ConfigurePrimaryHttpMessageHandler(() =>
+      {
+        return new TPaaSApplicationCredentialsRequestHandler()
+        {
+          TPaaSToken = configStore.GetValueString(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN__ENV_KEY),
+          InnerHandler = new HttpClientHandler()
+        };
+      });
+      services.AddHttpClient<DataOceanClient>(client =>
+        client.BaseAddress = new Uri(configStore.GetValueString(DATA_OCEAN_URL_ENV_KEY))
+      ).AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>();
+
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>
@@ -115,8 +139,8 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddMemoryCache();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      var serviceProvider = services.BuildServiceProvider();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      //var serviceProvider = services.BuildServiceProvider();
+      //var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       //Note: The injection of CAP subscriber service needed before 'services.AddCap()'
       services.AddTransient<ISubscriberService, SubscriberService>();
       //Disable CAP for now #76666

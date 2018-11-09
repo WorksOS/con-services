@@ -41,3 +41,6 @@ NEW_RELIC_APP_NAME: YOUR_APP_NAME
 AWS_BUCKET_NAME: vss-exports-stg
 AWS_ACCESS_KEY: AKIAIBGOEETXHMANDX7A
 AWS_SECRET_KEY: v0kHIWmLJ7cUvqgH4JEDdHWSxOU9767i+vgb4hdZ
+TPAAS_APP_TOKEN=QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
+TPAAS_AUTH_URL=https://identity-stg.trimble.com/i/oauth2/token
+DATA_OCEAN_URL=https://api-stg-usw2.trimblepaas.com/data_ocean_stage-v1.0
