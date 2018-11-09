@@ -17,6 +17,7 @@ namespace VSS.TRex.Caching.Interfaces
     void ItemRemovedFromContext(int sizeInBytes);
 
     int ContextCount { get; }
+    int ProjectCount { get; }
 
     bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element);
     ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY);

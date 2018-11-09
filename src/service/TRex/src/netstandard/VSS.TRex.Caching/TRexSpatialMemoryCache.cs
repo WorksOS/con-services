@@ -40,6 +40,8 @@ namespace VSS.TRex.Caching
     // ReSharper disable once InconsistentlySynchronizedField
     public int ContextCount => Contexts.Count;
 
+    public int ProjectCount => ProjectContexts.Count;
+
     public int MaxNumElements { get; }
 
     private int currentNumElements;
