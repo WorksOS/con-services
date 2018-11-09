@@ -13,7 +13,7 @@ namespace VSS.TRex.Caching.Interfaces
 
     int CurrentNumElements { get; }
 
-    void ItemAddedToContext(int sizeInBytes);
+    //void ItemAddedToContext(int sizeInBytes);
     void ItemRemovedFromContext(int sizeInBytes);
 
     int ContextCount { get; }

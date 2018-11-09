@@ -40,6 +40,7 @@ namespace VSS.TRex.Caching
     // ReSharper disable once InconsistentlySynchronizedField
     public int ContextCount => Contexts.Count;
 
+    // ReSharper disable once InconsistentlySynchronizedField
     public int ProjectCount => ProjectContexts.Count;
 
     public int MaxNumElements { get; }
@@ -163,7 +164,7 @@ namespace VSS.TRex.Caching
         ItemRemovedFromContext(element.IndicativeSizeInBytes());
     }
 
-    public void ItemAddedToContext(int sizeInBytes)
+    private void ItemAddedToContext(int sizeInBytes)
     {
       // Increment the number of elements in the cache
       Interlocked.Increment(ref currentNumElements);
