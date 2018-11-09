@@ -4,7 +4,7 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish ./$SERVICE_PATH/src/MockProjectWebApi/MockProjectWebApi.csproj -o /artifacts -f netcoreapp2.0 --runtime linux-x64
+RUN dotnet publish ./$SERVICE_PATH/MockProjectWebApi.csproj -o /artifacts -f netcoreapp2.0 --runtime linux-x64
 
 FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime
 
