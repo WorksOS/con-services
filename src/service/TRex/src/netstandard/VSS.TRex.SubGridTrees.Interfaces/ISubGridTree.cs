@@ -9,22 +9,16 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     {
         /// <summary>
         /// Internal numeric identifier for the sub grid tree. All internal operations will refer to the sub grid
-        /// tree using this identitifer. 
+        /// tree using this identifier. 
         /// </summary>
         Guid ID { get; set; }
-
-        /// <summary>
-        /// External identifier (GUID) for the subgrid tree. The instance may be tagged with this ID as an 
-        /// association to the primary numeric identifier.
-        /// </summary>
-        Guid ExternalID { get; set; }
 
         /// <summary>
         /// The number of levels defined in this subgrid tree. 
         /// A 6 level tree typically defines leaf cells as relating to on-the-ground cell in the real world
         /// coordinate system (eg: cells tracking passes made by construction machines)
         /// A 5 level tree typically defines leaf cells that represent some aspect of the subgrids in the 
-        /// 6th layer of the tree containing on-the-groun leaf cells (eg: subgrid existence map)
+        /// 6th layer of the tree containing on-the-ground leaf cells (eg: subgrid existence map)
         /// This property is assignable only at the time the subgrid tree is constructed.
         /// </summary>
         byte NumLevels { get; }
@@ -46,7 +40,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// Root is the top level subgrid in a subgrid tree. All other subgrids are children or descendents from
         /// this node. Root is an INodeSubGrid interface, a descendent from ISubGrid. Root is automatically created when the SubGridTree is created.
         /// </summary>
-        INodeSubGrid Root { get; set; }
+        INodeSubGrid Root { get; }
 
         /// <summary>
         /// Clears all content from the subgrid tree and resets the root node to empty
@@ -102,14 +96,14 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         BoundingWorldExtent3D FullGridExtent();
 
         /// <summary>
-        /// FullCellExtent returns the total extent of cells within this subgridtree. 
+        /// FullCellExtent returns the total extent of cells within this subgrid tree. 
         /// </summary>
         /// <returns></returns>
         BoundingIntegerExtent2D FullCellExtent();
 
         /// <summary>
         /// ConstructPathToCell constructs all necessary subgrids in all levels in
-        /// the tree so that there is a traversable path from the root of the
+        /// the tree so that there is a path that is can be traversed from the root of the
         /// tree to the leaf subgrid that will contain the cell identified by
         /// CellX and CellY. If PathType is pctCreateLeaf it returns the leaf
         /// subgrid instance into which the caller may place the cell data. If
@@ -148,7 +142,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
         /// <summary>
         /// LocateSubGridContaining attempts to locate a subgrid at the level in the tree,
-        /// but defaults to looking at the bottom lavel
+        /// but defaults to looking at the bottom level
         /// CellX and CellY
         /// </summary>
         /// <param name="cellX"></param>
@@ -157,10 +151,10 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         ISubGrid LocateSubGridContaining(uint cellX, uint cellY);
 
         /// <summary>
-        // LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
-        // except that it walks as far through the tree as it can up to the designated
-        // Level to find the requested cell, then returns that subgrid.
-        // The returned node may be a leaf subgrid or a node subgrid
+        /// LocateClosestSubGridContaining behaves much like LocateSubGridContaining()
+        /// except that it walks as far through the tree as it can up to the designated
+        /// Level to find the requested cell, then returns that subgrid.
+        /// The returned node may be a leaf subgrid or a node subgrid
         /// </summary>
         /// <param name="cellX"></param>
         /// <param name="cellY"></param>
@@ -169,7 +163,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         ISubGrid LocateClosestSubGridContaining(uint cellX, uint cellY, byte level);
 
         /// <summary>
-        /// GetCellCenterPosition conputes the real world location of the center
+        /// GetCellCenterPosition computes the real world location of the center
         /// of the on-the-ground cell identified by X and Y. X and Y are in the
         /// bottom left origin of the grid. The returned CX, CY values are translated
         /// to the centered origin of the real world coordinate system
@@ -181,7 +175,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         void GetCellCenterPosition(uint X, uint Y, out double cx, out double cy);
 
         /// <summary>
-        /// GetCellOriginPosition conputes the real world location of the origin
+        /// GetCellOriginPosition computes the real world location of the origin
         /// of the on-the-ground cell identified by X and Y. X and Y are in the
         /// bottom left origin of the grid. The returned OX, OY values are translated
         /// to the centered origin of the real world coordinate system
@@ -193,7 +187,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         void GetCellOriginPosition(uint X, uint Y, out double ox, out double oy);
 
         /// <summary>
-        /// GetCellExtentsconputes the real world extents of the OTG cell identified
+        /// GetCellExtents computes the real world extents of the OTG cell identified
         /// by X and Y. X and Y are in the bottom left origin of the grid.
         /// The returned extents are translated to the centered origin of the real
         /// world coordinate system
@@ -216,8 +210,8 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         void GetCellExtents(uint X, uint Y, ref BoundingWorldExtent3D extents);
    
         /// <summary>
-        // CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
-        // it to the caller. The newly created subgrid is _not_ attached to this grid.
+        /// CreateUnattachedLeaf Creates an instance of a subgrid leaf node and returns
+        /// it to the caller. The newly created subgrid is _not_ attached to this grid.
         /// </summary>
         /// <returns></returns>
         ILeafSubGrid CreateUnattachedLeaf();

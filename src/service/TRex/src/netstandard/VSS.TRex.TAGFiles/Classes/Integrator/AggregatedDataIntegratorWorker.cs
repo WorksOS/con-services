@@ -31,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <summary>
     /// A queue of the tasks this worker will process into the TRex data stores
     /// </summary>
-    private ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess;
+    private readonly ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess;
 
     /// <summary>
     /// A bitmask sub grid tree that tracks all subgrids modified by the tasks this worker has processed
@@ -41,16 +41,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <summary>
     /// The mutable grid storage proxy
     /// </summary>
-    private IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+    private readonly IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
     private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.kAdviseOtherServicesOfDataModelChangesDefault);
 
     private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.kMaxMappedTagFilesToProcessPerAggregationEpochDefault);
 
-    /// <summary>
-    /// Worker constructor that obtains the necessary storage proxies
-    /// </summary>
-    public AggregatedDataIntegratorWorker()
+    private AggregatedDataIntegratorWorker()
     {
     }
 
@@ -341,12 +338,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               return false;
             }
 
-            // Transfer the working sitemodel update map to the Task to allow the task finalizer to
-            // synchronise completion of this work unit in terms of persistence of
-            // all the changes to disk with the notification to the wider TRex stack
-            // that a set of subgrids have been changed
-            Task.SetAggregateModifiedSubgrids(ref WorkingModelUpdateMap);
-
             // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
             SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
 
@@ -399,29 +390,36 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                   Log.LogCritical($"{invalidatedItem}");
               }
             }
+
+            if (_adviseOtherServicesOfDataModelChanges)
+            {
+              // Notify the site model in all contents in the grid that it's attributes have changed
+              Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
+
+              // Notify the immutable grid listeners that attributes of this sitemodel have changed.
+              var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+              sender.ModelAttributesChanged
+              (targetGrid: SiteModelNotificationEventGridMutability.NotifyImmutable,
+                siteModelID: SiteModelFromDM.ID,
+                existenceMapChanged: true,
+                existenceMapChangeMask: WorkingModelUpdateMap,
+                machinesChanged: true,
+                machineTargetValuesChanged: true,
+                machineDesignsModified: true);
+            }
+
+            // Update the metadata for the site model
+            Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
+            DIContext.Obtain<ISiteModelMetadataManager>().Update
+            (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.Now, siteModelExtent: SiteModelFromDM.SiteModelExtent,
+              machineCount: SiteModelFromDM.Machines.Count);
+
           }
           finally
           {
             Task.AggregatedCellPasses = null;
             WorkingModelUpdateMap = null;
           }
-
-          if (_adviseOtherServicesOfDataModelChanges)
-          {
-            // Notify the site model in all contents in the grid that it's attributes have changed
-            Log.LogInformation($"Notifying site model attributes changed for {SiteModelFromDM.ID}");
-
-            // Notify the immutable grid listeners that attributes of this sitemodel have changed.
-            var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-            sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, SiteModelFromDM.ID,
-              existenceMapChanged: true, machinesChanged: true, machineTargetValuesChanged: true, machineDesignsModified: true);
-          }
-
-          // Update the metadata for the site model
-          Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
-          DIContext.Obtain<ISiteModelMetadataManager>().Update
-          (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.Now, siteModelExtent: SiteModelFromDM.SiteModelExtent,
-            machineCount: SiteModelFromDM.Machines.Count);
         }
         finally
         {

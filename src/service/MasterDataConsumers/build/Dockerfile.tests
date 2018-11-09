@@ -1,0 +1,8 @@
+FROM registry.k8s.vspengg.com:80/vss-jenkinsslave:core21
+
+COPY . /app
+
+WORKDIR /app
+
+VOLUME testresults
+

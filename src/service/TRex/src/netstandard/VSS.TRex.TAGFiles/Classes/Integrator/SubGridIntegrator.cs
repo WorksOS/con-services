@@ -20,41 +20,38 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     public class SubGridIntegrator
     {
-      private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridIntegrator>();
-
-      /// <summary>
-      /// The subgrid tree from which information is being integrated
-      /// </summary>
-      private IServerSubGridTree Source;
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridIntegrator>();
+     
+        /// <summary>
+        /// The subgrid tree from which information is being integrated
+        /// </summary>
+        private readonly IServerSubGridTree Source;
 
         /// <summary>
         /// Sitemodel representing the target sub grid tree
         /// </summary>
-        private ISiteModel SiteModel;
+        private readonly ISiteModel SiteModel;
 
         /// <summary>
         /// The subgrid tree the receives the subgrid information from the source subgrid tree
         /// </summary>
-        private IServerSubGridTree Target;
+        private readonly IServerSubGridTree Target;
 
         private IServerLeafSubGrid SourceSubGrid;
         private IServerLeafSubGrid TargetSubGrid;
 
         private Action<uint, uint> SubGridChangeNotifier;
 
-        private IStorageProxy StorageProxy;
+        private readonly IStorageProxy StorageProxy;
 
-        public List<ISubGridSpatialAffinityKey> InvalidatedSpatialStreams = new List<ISubGridSpatialAffinityKey>(100);
+        public readonly List<ISubGridSpatialAffinityKey> InvalidatedSpatialStreams = new List<ISubGridSpatialAffinityKey>(100);
 
-        /// <summary>
-        ///  Default no-args constructor
-        /// </summary>
-        public SubGridIntegrator()
+      private SubGridIntegrator()
         {
         }
 
         /// <summary>
-        /// Constructor the initialises state ready for integration
+        /// Constructor the initializes state ready for integration
         /// </summary>
         /// <param name="source">The subgrid tree from which information is being integrated</param>
         /// <param name="siteModel">The sitemodel representing the target subgrid tree</param>
@@ -73,6 +70,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             TargetSubGrid = Target.ConstructPathToCell(SourceSubGrid.OriginX,
                                                        SourceSubGrid.OriginY,
                                                        SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+
+            if (TargetSubGrid == null)
+            {
+                Log.LogCritical($"Failed to create target subgrid in intermediary grid at {SourceSubGrid.OriginX}:{SourceSubGrid.OriginY}");
+                return;
+            }
 
             TargetSubGrid.AllocateLeafFullPassStacks();
 
@@ -112,12 +115,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             SubGridChangeNotifier?.Invoke(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
 
-            // Save the integrated state of the subgrid segments to allow Ignite to store & socialise the update
+            // Save the integrated state of the subgrid segments to allow Ignite to store & socialize the update
             // within the cluster. 
 
             if (Target.SaveLeafSubGrid(TargetSubGrid, SegmentIterator.StorageProxy, InvalidatedSpatialStreams))
             {
-              // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
+              // Successfully saving the subgrid directory information is the point at which this subgrid may be recognized to exist
               // in the sitemodel. Note this by including it within the SiteModel existence map
         
               SiteModel.ExistenceMap.SetCell(TargetSubGrid.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
@@ -189,13 +192,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 // and assign the subgrid from the iterator to it. If there is one, process
                 // the cell pass stacks merging the two together
                 if (IntegratingIntoIntermediaryGrid)
-                {
                     IntegrateIntoIntermediaryGrid(SegmentIterator);
-                }
                 else
-                {
                     IntegrateIntoLiveGrid(SegmentIterator);
-                }
             }
 
             return true;
@@ -207,13 +206,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// copy of the requested data that is valid for the duration the request holds a reference to it. Updates
         /// to subgrids in this data model from ingest processing and other operations performed in mutable contexts
         /// can occur while this request is in process, but will not affected the immutable copy initially requested.
-        /// If requested from a mutable grid context the calling context is responsible for ensuring serialised write access
+        /// If requested from a mutable grid context the calling context is responsible for ensuring serialized write access
         /// to the data elements being requested. 
         /// </summary>
         /// <param name="Grid"></param>
         /// <param name="CellX"></param>
         /// <param name="CellY"></param>
         /// <returns></returns>
+        // ReSharper disable once MemberCanBePrivate.Global
         public IServerLeafSubGrid LocateOrCreateSubgrid(IServerSubGridTree Grid, uint CellX, uint CellY)
         {
             IServerLeafSubGrid Result = SubGridUtilities.LocateSubGridContaining(
@@ -224,14 +224,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                     Grid.NumLevels,
                                     false, true) as IServerLeafSubGrid;
 
-            // Ensure the cells and segment directory are initialised if this is a new subgrid
+            // Ensure the cells and segment directory are initialized if this is a new subgrid
             if (Result != null)
             {
                 // By definition, any new subgrid we create here is dirty, even if we
                 // ultimately do not add any cell passes to it. This is necessary to
-                // enourage even otherwise empty subgrids to be persisted to disk if
+                // encourage even otherwise empty subgrids to be persisted to disk if
                 // they have been created, but never populated with cell passes.
-                // The subgrid persistency layer may implement a rule that no empty
+                // The subgrid persistent layer may implement a rule that no empty
                 // subgrids are saved to disk if this becomes an issue...
                 Result.Dirty = true;
 

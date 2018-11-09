@@ -25,14 +25,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     void SetCell(uint CellX, uint CellY, bool Value);
 
     /// <summary>
-    /// Determines if there is an existing leaf containing the requested bit, and if that bit it set to 1 (true)
-    /// </summary>
-    /// <param name="CellX"></param>
-    /// <param name="CellY"></param>
-    /// <returns></returns>
-    bool GetLeaf(uint CellX, uint CellY);
-
-    /// <summary>
     /// Default array indexer for the bits in the subgrid tree mask
     /// </summary>
     /// <param name="CellX"></param>

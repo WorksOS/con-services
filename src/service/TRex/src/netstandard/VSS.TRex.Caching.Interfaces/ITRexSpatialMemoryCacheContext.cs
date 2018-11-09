@@ -5,6 +5,8 @@ namespace VSS.TRex.Caching.Interfaces
 {
   public interface ITRexSpatialMemoryCacheContext
   {
+    string FingerPrint { get; }
+
     ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
     IGenericSubGridTree_Int ContextTokens { get; }
@@ -12,6 +14,10 @@ namespace VSS.TRex.Caching.Interfaces
     ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
 
     int TokenCount { get; }
+
+    TimeSpan CacheDurationTime { get; }
+
+    TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; }
 
     bool Add(ITRexMemoryCacheItem element);
 
@@ -21,6 +27,6 @@ namespace VSS.TRex.Caching.Interfaces
 
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
 
-    TimeSpan CacheDurationTime { get; }
+    void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation);
   }
 }
