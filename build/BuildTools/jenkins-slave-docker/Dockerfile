@@ -81,7 +81,7 @@ RUN usermod -aG docker jenkins
 RUN apk add supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN mkdir /etc/docker && echo  '{ "insecure-registries":["registry-docker-registry.jenkins:5000"] }' > /etc/docker/daemon.json
+RUN mkdir /etc/docker && echo  '{ "insecure-registries":["0.0.0.0/0"] }' > /etc/docker/daemon.json
 RUN tail /etc/docker/daemon.json
 
 #Try this out

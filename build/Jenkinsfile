@@ -39,6 +39,11 @@ node ('jenkinsslave-pod') {
     def container = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
 	def containerDb = "registry-docker-registry.jenkins:5000/${project_name}.db:${versionNumber}"
     def testContainer = "registry-docker-registry.jenkins:5000/${project_name}.tests:${versionNumber}"
+
+	def elbContainer = "registry.k8s.vspengg.com:80/${project_name}:${versionNumber}"
+	def elbContainerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
+    def elbTestContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"	
+
     def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	def servicePath = params.SERVICE_PATH
@@ -141,11 +146,11 @@ node ('jenkinsslave-pod') {
 					vars.add(envVar(key: key, value: value))
 					}
 				acceptance_testing_yaml = readFile("pod.yaml")
-				acceptance_testing_yaml = acceptance_testing_yaml.replace('!container!', "${container}")
-				acceptance_testing_yaml = acceptance_testing_yaml.replace('!db-container!', "${containerDb}")
+				acceptance_testing_yaml = acceptance_testing_yaml.replace('!container!', "${elbContainer}")
+				acceptance_testing_yaml = acceptance_testing_yaml.replace('!db-container!', "${elbContainerDb}")
 			}
 				def label = "testingpod-${UUID.randomUUID().toString()}"
-			podTemplate(label: label, nodeSelector:"kops.k8s.io/instancegroup=spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: testContainer, ttyEnabled: true,  envVars: vars)])
+			podTemplate(label: label, nodeSelector:"kops.k8s.io/instancegroup=spot", namespace: "testing", yaml: acceptance_testing_yaml, containers: [containerTemplate(name: "jnlp", image: elbTestContainer, ttyEnabled: true,  envVars: vars)])
 			{
 				node (label) {
 					dir ("/app/${servicePath}") {
