@@ -40,7 +40,7 @@ if ($Tests -eq "true") {
     WriteMsg "Run unit tests" "green" $False
     WriteMsg "-------------------------------------------------------" "green" $False
 
-    & 'C:\Program Files\dotnet\dotnet.exe' vstest test\UnitTests\WebApiTests\bin\Debug\net471\WebApiTests.dll /Platform:x64
+    & 'C:\Program Files\dotnet\dotnet.exe' vstest test\UnitTests\WebApiTests\bin\Debug\net471\VSS.Productivity3D.WebApiTests.dll /Platform:x64
 }
 
 WriteMsg "-------------------------------------------------------" "green" $False
