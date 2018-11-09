@@ -76,7 +76,11 @@ node ('jenkinsslave-pod') {
 	
     stage('Build Solution') {
         
-		checkout([$class: 'GitSCM', branches: [[name: fullBranchName]], [$class: 'CloneOption', depth: 1, noTags: true, shallow: true]]) 
+		checkout([$class: 'GitSCM', 
+        branches: [[name: fullBranchName]],
+        extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: true]]		
+        ])
+		
 		// checkout scm
 		
 	    def build_container = docker.build(container, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
