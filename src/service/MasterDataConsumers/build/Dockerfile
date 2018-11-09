@@ -1,4 +1,5 @@
 FROM registry.k8s.vspengg.com:80/dotnet:2.1-sdkas builder
+ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
@@ -6,7 +7,7 @@ WORKDIR /build
 RUN chmod 777 *.sh
 
 RUN rm -rf /artifacts
-RUN dotnet publish ./src/MasterDataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o /artifacts -f netcoreapp2.0
+RUN dotnet publish ./$SERVICE_PATH/MasterDataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o /artifacts -f netcoreapp2.0
 
 FROM registry.k8s.vspengg.com:80/dotnet:2.1-runtime
 
