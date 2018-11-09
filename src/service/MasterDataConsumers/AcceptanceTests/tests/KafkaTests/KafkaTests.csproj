@@ -31,6 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.*" />
     <PackageReference Include="Confluent.Kafka" Version="1.0.0-beta" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
