@@ -5,13 +5,13 @@ VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi", "MockProjectWebApi.csproj", "{8FA2A126-9A88-4006-97EF-11266B4765E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{4F4DE324-53D6-471B-A4AE-A6207084DAE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{4F4DE324-53D6-471B-A4AE-A6207084DAE4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..\..\MasterDataModels\src\VSS.MasterData.Models.csproj", "{C4D0983C-7C87-48C2-AF1A-A806A7A2C445}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj", "{C4D0983C-7C87-48C2-AF1A-A806A7A2C445}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{0C508533-9058-4B9B-AC3D-43E419BF1B59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{0C508533-9058-4B9B-AC3D-43E419BF1B59}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models", "..\..\Productivity3DModels\src\VSS.Productivity3D.Models.csproj", "{AB7488A7-58ED-4262-AB4B-15A055F04FFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models", "..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj", "{AB7488A7-58ED-4262-AB4B-15A055F04FFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
