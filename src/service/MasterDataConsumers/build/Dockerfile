@@ -7,7 +7,7 @@ WORKDIR /build
 RUN chmod 777 *.sh
 
 RUN rm -rf /artifacts
-RUN dotnet publish ./$SERVICE_PATH/MasterDataConsumers/VSS.Productivity3D.MasterDataConsumer.csproj -o /artifacts -f netcoreapp2.0
+RUN dotnet publish ./$SERVICE_PATH/src/MasterDataConsumer/VSS.Productivity3D.MasterDataConsumer.csproj -o /artifacts -f netcoreapp2.0
 
 FROM registry.k8s.vspengg.com:80/dotnet:2.1-runtime
 
