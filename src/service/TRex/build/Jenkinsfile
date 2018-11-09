@@ -54,6 +54,10 @@ node ('jenkinsslave-pod') {
 			currentBuild.result = 'ABORTED'
 			error("Build stopping, no valid build number supplied")
 		}
+		if (params.SERVICE_PATH == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no service path")
+		}
 	}
 	
     try {
