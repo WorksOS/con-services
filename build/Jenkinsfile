@@ -179,6 +179,7 @@ node ('jenkinsslave-pod') {
 								[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']
 							]
 						])
+						sh "sleep 30s"
 					}
 				}		
 			}
@@ -196,7 +197,9 @@ node ('jenkinsslave-pod') {
 				sh "docker tag ${containerDb} ${dbFinalImage}"
 				sh "docker push ${dbFinalImage}"
 			}
-			archiveArtifacts artifacts: "${servicePath}/deploy/**/*.*", fingerprint: true
+			sh "mv ${servicePath}/deploy ${env.WORKSPACE}"
+			sh "ls -la"
+			archiveArtifacts artifacts: "deploy/**/*.*", fingerprint: true
 		}
 	}
 }
