@@ -117,7 +117,7 @@ node ('jenkinsslave-pod') {
 		for (int i = 0; i < trexComponents.size(); i++ ){
 			def component = trexComponents[i]
 			def imagetag = runtimeContainerTag + "." + component
-			def runtime_container = docker.build(imagetag, "-f .${servicePath}/build/DockerfileRuntime --build-arg BUILD_CONTAINER=${buildContainerTag} --build-arg COMPONENT=${component} .")
+			def runtime_container = docker.build(imagetag, "-f .${servicePath}/build/Dockerfile.runtime --build-arg BUILD_CONTAINER=${buildContainerTag} --build-arg COMPONENT=${component} .")
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker images"
 			runtime_container.push()
