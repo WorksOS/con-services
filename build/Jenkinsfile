@@ -196,7 +196,7 @@ node ('jenkinsslave-pod') {
 				sh "docker tag ${containerDb} ${dbFinalImage}"
 				sh "docker push ${dbFinalImage}"
 			}
-			archiveArtifacts artifacts: '${servicePath}/deploy/**/*.*', fingerprint: true
+			archiveArtifacts artifacts: "${servicePath}/deploy/**/*.*", fingerprint: true
 		}
 	}
 }
