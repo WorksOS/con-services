@@ -22,6 +22,14 @@ RUN apk add --no-cache \
 	openssh-client \
 	docker
 
+ENV KUBE_LATEST_VERSION="v1.12.2"
+RUN apk add --update ca-certificates \
+ && apk add --update -t deps curl \
+ && curl -L https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
+ && chmod +x /usr/local/bin/kubectl \
+ && apk del --purge deps \
+ && rm /var/cache/apk/*
+
 
 # https://github.com/docker/docker/blob/master/project/PACKAGERS.md#runtime-dependencies
 RUN set -eux; \
@@ -78,7 +86,7 @@ RUN tail /etc/docker/daemon.json
 
 #Try this out
 COPY *.sh /usr/local/bin/ 
-COPY *.tar /usr/local/bin/ 
+#COPY *.tar /usr/local/bin/ 
 
 RUN chmod 755 /usr/local/bin/*.sh
 

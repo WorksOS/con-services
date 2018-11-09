@@ -15,6 +15,14 @@ RUN apt-get update \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
 
+#Install chrome
+RUN apt update && apt install -y libglib2.0 libx11-6 libnss3 
+
+RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
+RUN dpkg -i /chrome.deb || apt-get install -yf
+RUN rm /chrome.deb
+
+
 # Install .NET Core SDK
 ENV DOTNET_SDK_VERSION 2.1.300
 

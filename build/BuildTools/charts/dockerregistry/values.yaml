@@ -30,7 +30,7 @@ ingress:
     - registry.k8s.vspengg.com
   annotations:
      kubernetes.io/ingress.class: nginx
-     ingress.kubernetes.io/proxy-body-size: 1000m 
+     ingress.kubernetes.io/proxy-body-size: 4000m 
   tls:
     # Secrets must be manually created in the namespace.
     # - secretName: chart-example-tls
@@ -45,7 +45,7 @@ resources:
 persistence:
   accessMode: 'ReadWriteOnce'
   enabled: true
-  size: 50Gi
+  size: 500Gi
   # storageClass: '-'
 
 # set the type of filesystem to use: filesystem, s3
