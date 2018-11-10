@@ -151,7 +151,7 @@ namespace VSS.TRex.Caching
     {
       lock (Contexts)
       {
-        if (Contexts.TryGetValue(contextFingerPrint, out ITRexSpatialMemoryCacheContext context))
+        if (Contexts.TryGetValue(contextFingerPrint, out var context))
         {
           if (context.MarkedForRemoval)
             context.Reanimate();
@@ -160,7 +160,7 @@ namespace VSS.TRex.Caching
         }
 
         // Create the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint, projectUid); 
+        var newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint, projectUid); 
         Contexts.Add(contextFingerPrint, newContext);
 
         lock (ProjectContexts)
@@ -171,6 +171,11 @@ namespace VSS.TRex.Caching
           else
             ProjectContexts.Add(projectUid, new List<ITRexSpatialMemoryCacheContext> {newContext});
         }
+
+        // Mark the newly created context for removal. This may seem counter intuitive, but covers the case
+        // where a context is created but has no elements added to it, or subsequently removed
+        // Todo: Add initial future time increment for marked for removal at... [see: new TimeSpan(0, 10, 0)]
+        newContext.MarkForRemoval(DateTime.Now + new TimeSpan(0, 10, 0));
 
         return newContext;
       }

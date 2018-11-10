@@ -148,7 +148,7 @@ namespace VSS.TRex.Caching
       // If the context has been emptied by the removal of this item them marked as a candidate for removal
       if (tokenCount == 0)
       {
-        MarkForRemoval();
+        MarkForRemoval(DateTime.Now);
       }
     }
 
@@ -211,9 +211,9 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// Mark this context as a candidate for removal
     /// </summary>
-    public void MarkForRemoval()
+    public void MarkForRemoval(DateTime markedForRemovalAt)
     {
-      MarkedForRemovalAt = DateTime.Now;
+      MarkedForRemovalAt = markedForRemovalAt;
       MarkedForRemoval = true;
     }
 

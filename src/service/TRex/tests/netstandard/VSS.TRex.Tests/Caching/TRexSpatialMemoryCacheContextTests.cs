@@ -124,7 +124,7 @@ namespace VSS.TRex.Tests.Caching
 
       var currentDate = DateTime.Now;
 
-      context.MarkForRemoval();
+      context.MarkForRemoval(DateTime.Now);
       Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
       Assert.True(context.MarkedForRemovalAt >= currentDate && context.MarkedForRemovalAt <= DateTime.Now, "Marking context for removal did not set state");
     }
@@ -161,7 +161,7 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
 
-      context.MarkForRemoval();
+      context.MarkForRemoval(DateTime.Now);
       Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
 
       context.Reanimate();
@@ -178,7 +178,7 @@ namespace VSS.TRex.Tests.Caching
 
       var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
 
-      context.MarkForRemoval();
+      context.MarkForRemoval(DateTime.Now);
       Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
 
       // Reanimate by adding an element
