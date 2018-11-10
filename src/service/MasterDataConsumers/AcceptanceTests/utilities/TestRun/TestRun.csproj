@@ -32,7 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.2" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.11"/>
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Confluent.Kafka" Version="1.0.0-beta" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
@@ -40,8 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
-    <ProjectReference Include="..\..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\TestUtility\TestUtility.csproj" />
   </ItemGroup>
 

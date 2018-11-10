@@ -35,8 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
-    <ProjectReference Include="..\..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
