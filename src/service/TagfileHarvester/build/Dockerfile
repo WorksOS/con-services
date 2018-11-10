@@ -4,7 +4,7 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-dotnet publish ./$SERVICE_PATH/TagFileHarvester.netcore/TagFileHarvester.netcore.csproj -o /artifacts --framework netcoreapp2.0 --runtime linux-x64
+RUN dotnet publish ./$SERVICE_PATH/TagFileHarvester.netcore/TagFileHarvester.netcore.csproj -o /artifacts --framework netcoreapp2.0 --runtime linux-x64
 
 FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
 
