@@ -64,7 +64,7 @@ node ('jenkinsslave-pod') {
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
-	currentBuild.result=='SUCCESS'
+	currentBuild.result='SUCCESS'
 
 	stage("Prebuild Checks") {
 		if (params.VSTS_BUILD_NUMBER == null) {
@@ -149,9 +149,6 @@ node ('jenkinsslave-pod') {
 		stage('Build Acceptance tests') {	
 			docker.build(testContainer, "-f ./${servicePath}/build/Dockerfile.tests . --build-arg SERVICE_PATH=${servicePath}").push()
 		}
-	
-
-	
 	
 		stage ('Run acceptance tests') {
 			dir ("./${servicePath}/build/yaml") {
