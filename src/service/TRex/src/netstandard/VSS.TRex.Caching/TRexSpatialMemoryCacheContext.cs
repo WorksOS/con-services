@@ -11,9 +11,25 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
   {
+    /// <summary>
+    /// The project for which this cache context stores items
+    /// </summary>
     public Guid ProjectUID { get; private set; }
 
+    /// <summary>
+    /// THe fingerprint used to distinguish this cache context from others stored in the overall cache
+    /// </summary>
     public string FingerPrint { get; private set; }
+
+    /// <summary>
+    /// Notes if this context has been marked for removal, for instance as a result of the last element within it
+    /// being evicted or removed due to invalidation. Contexts marked for removal are in a zombie state that either ends
+    /// in the concrete removal and destruction of the context, or the context is retrieved from the cache, or if an
+    /// element is added to the context.
+    /// </summary>
+    public bool MarkedForRemoval { get; set; }
+
+    public DateTime MarkedForRemovalAt { get; set; } = DateTime.MinValue;
 
     public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
@@ -128,6 +144,12 @@ namespace VSS.TRex.Caching
       ContextTokens[x, y] = 0;
       
       tokenCount--;
+
+      // If the context has been emptied by the removal of this item them marked as a candidate for removal
+      if (tokenCount == 0)
+      {
+        MarkForRemoval();
+      }
     }
 
     public ITRexMemoryCacheItem Get(uint originX, uint originY)
@@ -184,6 +206,24 @@ namespace VSS.TRex.Caching
       // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
       MRUList.Invalidate(contextToken - 1);
       subGridPresentForInvalidation = true;
+    }
+
+    /// <summary>
+    /// Mark this context as a candidate for removal
+    /// </summary>
+    public void MarkForRemoval()
+    {
+      MarkedForRemovalAt = DateTime.Now;
+      MarkedForRemoval = true;
+    }
+
+    /// <summary>
+    /// Reanimates the context from being marked for removal to actively used
+    /// </summary>
+    public void Reanimate()
+    {
+      MarkedForRemovalAt = DateTime.MinValue;
+      MarkedForRemoval = false;
     }
   }
 }

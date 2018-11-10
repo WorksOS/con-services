@@ -9,6 +9,10 @@ namespace VSS.TRex.Caching.Interfaces
 
     string FingerPrint { get; }
 
+    bool MarkedForRemoval { get; set; }
+
+    DateTime MarkedForRemovalAt { get; set; }
+
     ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
     IGenericSubGridTree_Int ContextTokens { get; }
@@ -30,5 +34,9 @@ namespace VSS.TRex.Caching.Interfaces
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
 
     void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation);
+
+    void MarkForRemoval();
+
+    void Reanimate();
   }
 }
