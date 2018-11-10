@@ -1,9 +1,0 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk 
-
-COPY . /build/
-WORKDIR /build
-
-RUN chmod 777 *.sh
-
-RUN ["/bin/sh", "build.sh"]
-
