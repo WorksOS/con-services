@@ -1,0 +1,5 @@
+TCCBaseURL: https://www.myconnectedsite.com
+TCCUserName: vlproduction
+TCCOrganization: vlproduction
+TCCPassword: vlproduction_key5
+TagFileEndpoint: http://MerinoPerformance-929517642.us-west-2.elb.amazonaws.com/api/v2/tagfiles
