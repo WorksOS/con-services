@@ -19,7 +19,7 @@ ENV CORECLR_ENABLE_PROFILING=1 \
     CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
     CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so 
 
-COPY ./newrelic /newrelic/
+COPY ./build/newrelic /newrelic/
 
 RUN dpkg -i /newrelic/newrelic-netcore20*.deb
 
