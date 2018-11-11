@@ -10,7 +10,13 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NodaTime" Version="2.3.0" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.6.2" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.1.0" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.34.*" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
   </ItemGroup>
 </Project>
