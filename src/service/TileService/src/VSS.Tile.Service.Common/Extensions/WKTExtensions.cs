@@ -17,9 +17,26 @@ namespace VSS.Tile.Service.Common.Extensions
       foreach (var point in points)
       {
         var parts = point.Trim().Split(' ');
-        var lng = double.Parse(parts[0]);
-        var lat = double.Parse(parts[1]);
-        latlngs.Add(WGSPoint.CreatePoint(lat * DEGREES_TO_RADIANS, lng * DEGREES_TO_RADIANS));
+        var lng = double.Parse(parts[0]) * DEGREES_TO_RADIANS;
+        var lat = double.Parse(parts[1]) * DEGREES_TO_RADIANS;
+        //Latitude Must be in range -pi/2 to pi/2 and longitude in the range -pi to pi
+        if (lat < -Math.PI / 2)
+        {
+          lat += Math.PI;
+        }
+        else if (lat > Math.PI / 2)
+        {
+          lat -= Math.PI;
+        }
+        if (lng < -Math.PI)
+        {
+          lng += 2 * Math.PI;
+        }
+        else if (lng > Math.PI)
+        {
+          lng -= 2 * Math.PI;
+        }
+        latlngs.Add(WGSPoint.CreatePoint(lat, lng));
       }
       return latlngs;
     }

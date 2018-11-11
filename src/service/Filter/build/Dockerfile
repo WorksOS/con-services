@@ -1,4 +1,4 @@
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-sdk as builder
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk as builder
 ARG SERVICE_PATH
 
 COPY . /build/
@@ -8,7 +8,7 @@ RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.WebApi/VSS.Prod
 RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.0
 
 
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \
