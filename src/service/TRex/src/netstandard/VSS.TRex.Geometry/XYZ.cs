@@ -601,27 +601,5 @@ namespace VSS.TRex.Geometry
         (P1.Y + P2.Y + P3.Y) / 3,
         (P1.Z + P2.Z + P3.Z) / 3);
     }
-
-    /// <summary>
-    /// Serialises content of the cell to the writer
-    /// </summary>
-    /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
-    {
-      writer.WriteDouble(X);
-      writer.WriteDouble(Y);
-      writer.WriteDouble(Z);
-    }
-
-    /// <summary>
-    /// Serialises content of the cell from the writer
-    /// </summary>
-    /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
-    {
-      X = reader.ReadDouble();
-      Y = reader.ReadDouble();
-      Z = reader.ReadDouble();
-    }
   }
 }
