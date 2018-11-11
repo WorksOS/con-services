@@ -261,23 +261,23 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(StartCellPassIdx);
       writer.WriteInt(EndCellPassIdx);
       writer.WriteShort(MachineID);
-      writer.WriteTimestamp(LastLayerPassTime.ToUniversalTime());
+      writer.WriteLong(LastLayerPassTime.Ticks);
 
       writer.WriteShort(CCV);
-      writer.WriteTimestamp(CCV_Time.ToUniversalTime());
+      writer.WriteLong(CCV_Time.Ticks);
       writer.WriteShort(CCV_MachineID);
       writer.WriteFloat(CCV_Elev);
       writer.WriteShort(TargetCCV);
       writer.WriteInt(CCV_CellPassIdx);
 
       writer.WriteShort(MDP);
-      writer.WriteTimestamp(MDP_Time.ToUniversalTime());
+      writer.WriteLong(MDP_Time.Ticks);
       writer.WriteShort(MDP_MachineID);
       writer.WriteFloat(MDP_Elev);
       writer.WriteShort(TargetMDP);
 
       writer.WriteByte(CCA);
-      writer.WriteTimestamp(CCA_Time.ToUniversalTime());
+      writer.WriteLong(CCA_Time.Ticks);
       writer.WriteShort(CCA_MachineID);
       writer.WriteFloat(CCA_Elev);
       writer.WriteShort(TargetCCA);
@@ -291,7 +291,7 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(Frequency);
       writer.WriteInt(Amplitude);
       writer.WriteInt(MaterialTemperature);
-      writer.WriteTimestamp(MaterialTemperature_Time.ToUniversalTime());
+      writer.WriteLong(MaterialTemperature_Time.Ticks);
       writer.WriteShort(MaterialTemperature_MachineID);
       writer.WriteFloat(MaterialTemperature_Elev);
 
@@ -314,23 +314,23 @@ namespace VSS.TRex.Profiling
       StartCellPassIdx = reader.ReadInt();
       EndCellPassIdx = reader.ReadInt();
       MachineID = reader.ReadShort();
-      LastLayerPassTime = reader.ReadTimestamp() ?? DateTime.Now;
+      LastLayerPassTime = new DateTime(reader.ReadLong());
 
       CCV = reader.ReadShort();
-      CCV_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      CCV_Time = new DateTime(reader.ReadLong());
       CCV_MachineID = reader.ReadShort();
       CCV_Elev = reader.ReadFloat();
       TargetCCV = reader.ReadShort();
       CCV_CellPassIdx = reader.ReadInt();
 
       MDP = reader.ReadShort();
-      MDP_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      MDP_Time = new DateTime(reader.ReadLong());
       MDP_MachineID = reader.ReadShort();
       MDP_Elev = reader.ReadFloat();
       TargetMDP = reader.ReadShort();
 
       CCA = reader.ReadByte();
-      CCA_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      CCA_Time = new DateTime(reader.ReadLong());
       CCA_MachineID = reader.ReadShort();
       CCA_Elev = reader.ReadFloat();
       TargetCCA = reader.ReadShort();
@@ -344,7 +344,7 @@ namespace VSS.TRex.Profiling
       Frequency = (ushort)reader.ReadInt();
       Amplitude = (ushort)reader.ReadInt();
       MaterialTemperature = (ushort)reader.ReadInt();
-      MaterialTemperature_Time = reader.ReadTimestamp() ?? DateTime.Now;
+      MaterialTemperature_Time = new DateTime(reader.ReadLong());
       MaterialTemperature_MachineID = reader.ReadShort();
       MaterialTemperature_Elev = reader.ReadFloat();
 

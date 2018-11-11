@@ -368,7 +368,7 @@ namespace VSS.TRex.Cells
       writer.WriteByte(GPSModeStore);
       writer.WriteShort(InternalSiteModelMachineIndex);
       writer.WriteFloat(Height);
-      writer.WriteTimestamp(Time.ToUniversalTime());
+      writer.WriteLong(Time.Ticks);
       writer.WriteShort(CCV);
       writer.WriteByte(RadioLatency);
       writer.WriteShort(RMV);
@@ -389,7 +389,7 @@ namespace VSS.TRex.Cells
       GPSModeStore = reader.ReadByte();
       InternalSiteModelMachineIndex = reader.ReadShort();
       Height = reader.ReadFloat();
-      Time = reader.ReadTimestamp() ?? DateTime.Now;
+      Time = new DateTime(reader.ReadLong());
       CCV = reader.ReadShort();
       RadioLatency = reader.ReadByte();
       RMV = reader.ReadShort();

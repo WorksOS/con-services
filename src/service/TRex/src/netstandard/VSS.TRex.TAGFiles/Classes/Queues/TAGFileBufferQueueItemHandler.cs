@@ -117,7 +117,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                             {
                                 ProjectID = projectID,
-                                AssetID = TAGQueueItems[0].AssetID,
+                                AssetUID = TAGQueueItems[0].AssetID,
                                 TAGFiles = fileItems
                             });
 
@@ -227,7 +227,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                 {
                     ProjectID = projectID,
-                    AssetID = TAGQueueItems[0].AssetID,
+                    AssetUID = TAGQueueItems[0].AssetID,
                     TAGFiles = fileItems
                 });
 

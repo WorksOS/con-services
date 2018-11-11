@@ -394,7 +394,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
           
             for (int i = 0; i < listCount; i++)
             {
-                // Execute a client grid request for each reqeustor and create an array of the results
+                // Execute a client grid request for each requestor and create an array of the results
                 clientGrids[resultCount++] = Requestors.Select(x =>
                 {
                     ServerRequestResult result = PerformSubgridRequest(x, addresses[i], out IClientLeafSubGrid clientGrid);

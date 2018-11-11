@@ -193,7 +193,7 @@ namespace VSS.TRex.Filters
       const byte versionNumber = 1;
       writer.WriteByte(versionNumber);
 
-      writer.WriteInt((int)RequestedGridDataType);
+      writer.WriteInt((int) RequestedGridDataType);
       writer.WriteBoolean(HasTimeFilter);
       writer.WriteBoolean(HasMachineFilter);
       writer.WriteBoolean(HasMachineDirectionFilter);
@@ -217,10 +217,14 @@ namespace VSS.TRex.Filters
       writer.WriteLong(StartTime.Ticks);
       writer.WriteLong(EndTime.Ticks);
 
-      writer.WriteInt(MachinesList?.Length ?? 0);
-      for (var i = 0; i < (MachinesList?.Length ?? 0); i++)
-        writer.WriteGuid(MachinesList?[i]);
-
+      writer.WriteBoolean(MachinesList != null);
+      if (MachinesList != null)
+      { 
+        writer.WriteInt(MachinesList.Length);
+        for (var i = 0; i < (MachinesList.Length); i++)
+          writer.WriteGuid(MachinesList[i]);
+      }
+      
       writer.WriteInt(DesignNameID);
       writer.WriteInt((int)VibeState);
       writer.WriteInt((int)MachineDirection);
@@ -300,12 +304,15 @@ namespace VSS.TRex.Filters
       StartTime = new DateTime(reader.ReadLong());
       EndTime = new DateTime(reader.ReadLong());
 
-      var machineCount = reader.ReadInt();
-      if (machineCount > 0)
+      if (reader.ReadBoolean())
       {
-        MachinesList = new Guid[machineCount];
-        for (var i = 0; i < MachinesList.Length; i++)
-          MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
+        var machineCount = reader.ReadInt();
+        if (machineCount > 0)
+        {
+          MachinesList = new Guid[machineCount];
+          for (var i = 0; i < MachinesList.Length; i++)
+            MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
+        }
       }
 
       DesignNameID = reader.ReadInt();

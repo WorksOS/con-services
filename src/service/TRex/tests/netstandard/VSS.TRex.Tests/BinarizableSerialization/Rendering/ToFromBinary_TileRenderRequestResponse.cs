@@ -8,7 +8,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
 {
-  public class ToFromBinary_TileRenderRequestResponse : IClassFixture<DILoggingFixture>
+  public class ToFromBinary_TileRenderRequestResponse : IClassFixture<DIRenderingFixture>
   {
     [Fact]
     public void Test_TileRenderResponse_Core2_Simple()

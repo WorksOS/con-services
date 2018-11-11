@@ -160,7 +160,7 @@ namespace VSS.TRex.Cells
       writer.WriteInt((int)PositioningTechnology);
       writer.WriteInt(GPSTolerance);
       writer.WriteInt((int)GPSAccuracy);
-      writer.WriteTimestamp(MapReset_PriorDate.ToUniversalTime());
+      writer.WriteLong(MapReset_PriorDate.Ticks);
       writer.WriteInt(MapReset_DesignNameID);
       writer.WriteInt(LayerID);
       writer.WriteByte(EventFlags);
@@ -183,7 +183,7 @@ namespace VSS.TRex.Cells
       PositioningTechnology = (PositioningTech)reader.ReadInt();
       GPSTolerance = (ushort)reader.ReadInt();
       GPSAccuracy = (GPSAccuracy)reader.ReadInt();
-      MapReset_PriorDate = reader.ReadTimestamp() ?? DateTime.Now;
+      MapReset_PriorDate = new DateTime(reader.ReadLong());
       MapReset_DesignNameID = reader.ReadInt();
       LayerID = (ushort)reader.ReadInt();
       EventFlags = reader.ReadByte();
