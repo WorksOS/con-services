@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Draw = System.Drawing;
 using System.Reflection;
@@ -33,6 +34,8 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
         public TileRenderResponse Invoke(TileRenderRequestArgument arg)
         {
+            DateTime startTime = DateTime.Now;
+
             Log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
             try
@@ -71,7 +74,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
             }
             finally
             {
-                Log.LogInformation("Exiting TileRenderRequestComputeFunc.Invoke()");
+                Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.Now - startTime}");
             }
         }
     }

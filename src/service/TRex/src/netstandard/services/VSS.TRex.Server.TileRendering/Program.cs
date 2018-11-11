@@ -91,7 +91,7 @@ namespace VSS.TRex.Server.TileRendering
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
 
-        // Setup dependencies for communciation with the Trimble Coordinate Service.
+        // Setup dependencies for communication with the Trimble Coordinate Service.
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
         .Add(x => x.AddTransient<TPaaSAuthenticatedRequestHandler>())
         .Add(x => x.AddTransient<TPaaSApplicationCredentialsRequestHandler>())
