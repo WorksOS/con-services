@@ -134,10 +134,29 @@ namespace VSS.ConfigurationStore
       return valueInt;
     }
 
+    public long GetValueLong(string key)
+    {
+      // zero is valid. Returns long.MinValue on error
+      if (!long.TryParse(_configuration[key], out long valueLong))
+      {
+        valueLong = -1;
+      }
+
+      _log.LogTrace($"Served configuration value {key}:{valueLong}");
+
+      return valueLong;
+    }
+
     public int GetValueInt(string key, int defaultValue)
     {
       _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<int>(key, defaultValue)}");
       return _configuration.GetValue<int>(key, defaultValue);
+    }
+
+    public long GetValueLong(string key, long defaultValue)
+    {
+      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<long>(key, defaultValue)}");
+      return _configuration.GetValue<long>(key, defaultValue);
     }
 
     public bool? GetValueBool(string key)
@@ -152,7 +171,6 @@ namespace VSS.ConfigurationStore
 
       return theBoolToReturn;
     }
-
 
     public bool GetValueBool(string key, bool defaultValue)
     {
