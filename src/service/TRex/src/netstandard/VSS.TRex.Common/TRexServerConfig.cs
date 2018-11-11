@@ -41,7 +41,7 @@ namespace VSS.TRex.Common
             return instance;
         }
 
-        public TRexServerConfig()
+        private TRexServerConfig()
         {
             // Pick up the parameters from command line or other sources...
         }
@@ -49,26 +49,26 @@ namespace VSS.TRex.Common
         /// <summary>
         /// UseMutableCellPassSegments controls whether the subgrid segments containing cell passes use a mutable structure 
         /// that permits addition/removal of cell passes (eg: in the context of processing in-bound TAG files and other 
-        /// changes), or an immutable structure that favours memory allocation efficiency given read-only operations
+        /// changes), or an immutable structure that favors memory allocation efficiency given read-only operations
         /// </summary>
         public bool UseMutableSpatialData { get; set; } = true;
 
         /// <summary>
         /// Defines whether spatial data (eg: cell pass sets for subgrid segments) should be compressed
         /// </summary>
-        public bool CompressImmutableSpatialData { get; set; } = true;
+        public bool CompressImmutableSpatialData { get; } = true;
 
         /// <summary>
         /// UseMutableSpatialData controls whether the event list and other non-spatial information in a datamodel
         /// use a mutable structure that permits addition/removal of non-spatial information or an immutable structure 
-        /// that favours memory allocation efficiency given read-only operations
+        /// that favors memory allocation efficiency given read-only operations
         /// </summary>
         public bool UseMutableNonSpatialData { get; set; } = true;
 
         /// <summary>
         /// Defines whether non spatial data should be compressed in it's immutable form
         /// </summary>
-        public bool CompressImmutableNonSpatialData { get; set; } = true;
+        public bool CompressImmutableNonSpatialData { get; } = true;
 
       /// <summary>
       /// The file system location in which to store Ignite persistent data

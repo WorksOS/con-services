@@ -130,5 +130,10 @@ namespace VSS.TRex.Common
     /// Cache intermediary subgrid results for reuse in subsequent requests
     /// </summary>
     public const bool kEnableGeneralSubgridResultCaching = true;                 // override with: ENABLE_GENERAL_SUBGRID_RESULT_CACHING
+
+    /// <summary>
+    /// The time interval between heart beat logging epochs, in milliseconds. Default is 10 seconds
+    /// </summary>
+    public const int kHeartBeatLoggerInterval = 10000;              // override with: HEARTBEAT_LOGGER_INTERVAL
   }
 }
