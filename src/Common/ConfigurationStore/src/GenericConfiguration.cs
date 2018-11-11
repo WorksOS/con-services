@@ -126,7 +126,7 @@ namespace VSS.ConfigurationStore
       // zero is valid. Returns int.MinValue on error
       if (!int.TryParse(_configuration[key], out int valueInt))
       {
-        valueInt = -1;
+        valueInt = int.MaxValue;
       }
 
       _log.LogTrace($"Served configuration value {key}:{valueInt}");
@@ -145,7 +145,7 @@ namespace VSS.ConfigurationStore
       // zero is valid. Returns long.MinValue on error
       if (!long.TryParse(_configuration[key], out long valueLong))
       {
-        valueLong = -1;
+        valueLong = long.MinValue;
       }
 
       _log.LogTrace($"Served configuration value {key}:{valueLong}");
@@ -164,7 +164,7 @@ namespace VSS.ConfigurationStore
       // zero is valid. Returns double.MinValue on error
       if (!double.TryParse(_configuration[key], out double valueDouble))
       {
-        valueDouble = -1;
+        valueDouble = Double.MinValue;
       }
 
       _log.LogTrace($"Served configuration value {key}:{valueDouble}");
