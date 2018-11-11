@@ -80,6 +80,9 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
         if (ProfileCells == null || other.ProfileCells == null)
           return false;
 
+        if (ProfileCells.Count != other.ProfileCells.Count)
+          return false;
+
         for (var i = 0; i < ProfileCells.Count; i++)
         {
           if (!Equals(ProfileCells[i], other.ProfileCells[i]))

@@ -21,8 +21,8 @@ namespace VSS.TRex.Types
     {
       var otherPoint = obj as WGS84Point;
       if (otherPoint == null) return false;
-      return Math.Abs(otherPoint.Lat - Lat) < Consts.TOLERANCE_DIMENSION && 
-             Math.Abs(otherPoint.Lon - Lon) < Consts.TOLERANCE_DIMENSION && 
+      return Math.Abs(otherPoint.Lat - Lat) < Consts.TOLERANCE_DECIMAL_DEGREE && 
+             Math.Abs(otherPoint.Lon - Lon) < Consts.TOLERANCE_DECIMAL_DEGREE && 
              Math.Abs(otherPoint.Height - Height) < Consts.TOLERANCE_DIMENSION;
     }
 

@@ -5,7 +5,7 @@ namespace VSS.TRex.Common.Exceptions
 {
   public class TRexNonBinarizableException : TRexException
   {
-    private const string ERROR_MESSAGE = "The content is no binarizably serializable";
+    private const string ERROR_MESSAGE = "The content is not binarizably serializable";
 
     public TRexNonBinarizableException(string message = ERROR_MESSAGE) : base(message)
     {

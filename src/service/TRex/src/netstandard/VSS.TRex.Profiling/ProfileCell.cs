@@ -484,7 +484,7 @@ namespace VSS.TRex.Profiling
         writer.WriteInt(Layers.Count());
 
         foreach (var layer in Layers)
-          layer?.ToBinary(writer);
+          layer.ToBinary(writer);
       }
 
       writer.WriteInt((int)OTGCellX);
@@ -673,6 +673,9 @@ namespace VSS.TRex.Profiling
       bool AreLayersEqual()
       {
         if (Layers == null || other.Layers == null)
+          return false;
+
+        if (Layers.Count() != other.Layers.Count())
           return false;
 
         for (var i = 0; i < Layers.Count(); i++)
