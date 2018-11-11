@@ -148,7 +148,7 @@ namespace VSS.TRex.Server.PSNode
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
-      // Register the PSNode heartbeat logger
+      // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new SpatialMemoryCacheHeartBeatLogger());      
     }

@@ -2,12 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Trex.HTTPClients.Clients;
 using VSS.Trex.HTTPClients.RequestHandlers;
+using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -63,7 +63,8 @@ namespace VSS.TRex.Server.TileRendering
 
     private static void DependencyInjection()
     {
-      DIBuilder.New()
+      DIBuilder
+        .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
@@ -144,17 +145,15 @@ namespace VSS.TRex.Server.TileRendering
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+
+      // Register the heartbeat loggers
+      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new MemoryHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)
     {
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
-
-      ILogger Log = Logging.Logger.CreateLogger<Program>();
-
-      Log.LogInformation("Creating service");
-      Log.LogDebug("Creating service");
 
       var cancelTokenSource = new CancellationTokenSource();
       AppDomain.CurrentDomain.ProcessExit += (s, e) =>
