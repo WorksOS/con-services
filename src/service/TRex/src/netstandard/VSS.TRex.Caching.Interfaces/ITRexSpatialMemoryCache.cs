@@ -30,6 +30,6 @@ namespace VSS.TRex.Caching.Interfaces
 
     void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask);
 
-    int RemoveContextsMarkedForRemoval(TimeSpan age);
+    void RemoveContextsMarkedForRemoval(TimeSpan age);
   }
 }

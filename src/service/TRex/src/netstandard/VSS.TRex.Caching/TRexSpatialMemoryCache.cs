@@ -17,7 +17,7 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContextRemover
   {
-    private readonly TRexSpatialMemoryCache _cache;
+    private readonly ITRexSpatialMemoryCache _cache;
     private readonly Thread _removalThread;
     private readonly int _sleepTimeMS;
     private readonly TimeSpan _removalWaitTime;
@@ -35,7 +35,7 @@ namespace VSS.TRex.Caching
       }
     }
 
-    public TRexSpatialMemoryCacheContextRemover(TRexSpatialMemoryCache cache, TimeSpan sleepTimeMS, TimeSpan removalWaitTime)
+    public TRexSpatialMemoryCacheContextRemover(ITRexSpatialMemoryCache cache, TimeSpan sleepTimeMS, TimeSpan removalWaitTime)
     {
       _cache = cache;
       _removalWaitTime = removalWaitTime;
@@ -335,7 +335,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     /// <param name="age"></param>
     /// <returns></returns>
-    public int RemoveContextsMarkedForRemoval(TimeSpan age)
+    public void RemoveContextsMarkedForRemoval(TimeSpan age)
     {
       int numRemoved = 0;
       DateTime removalDate = DateTime.Now - age;
@@ -363,11 +363,11 @@ namespace VSS.TRex.Caching
           ProjectContexts[context.ProjectUID].Remove(context);
 
           numRemoved++;
+          Interlocked.Increment(ref contextRemovalCount);
         }
       }
 
       log.LogInformation($"{numRemoved} contexts removed in {DateTime.Now - startTime}");
-      return numRemoved;
     }
   }
 }
