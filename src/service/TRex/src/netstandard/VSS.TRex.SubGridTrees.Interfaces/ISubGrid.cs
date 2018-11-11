@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
   public interface ISubGrid
   {
     /// <summary>
-    /// ‘Level’ in the subgridtree in which this subgrid resides. Level 1 is the root node in the tree
+    /// ‘Level’ in the subgrid tree in which this subgrid resides. Level 1 is the root node in the tree
     /// </summary>
     byte Level { get; set; }
 
@@ -74,5 +74,5 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// </summary>
     /// <param name="action"></param>
     void ForEach(Action<byte, byte> action);
-    }
+  }
 }

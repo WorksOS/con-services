@@ -25,7 +25,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request
         /// </summary>
-        public ITask Task;
+        public Pipelines.Interfaces.Tasks.ITask Task;
 
         /// <summary>
         /// The request argument to be passed to target of the request
@@ -100,7 +100,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <param name="surveyedSurfaceOnlyMask"></param>
         /// <param name="filters"></param>
         /// <param name="referenceDesignId"></param>
-        public SubGridRequestsBase(ITask task,
+        public SubGridRequestsBase(Pipelines.Interfaces.Tasks.ITask task,
                                    Guid siteModelID, 
                                    Guid requestID, 
                                    string trexNodeId, 

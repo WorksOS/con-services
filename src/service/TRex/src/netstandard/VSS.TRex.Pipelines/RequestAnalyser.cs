@@ -14,7 +14,7 @@ namespace VSS.TRex.Pipelines
   /// <summary>
   /// RequestAnalyzer examines the set of parameters defining a request and determines the full set of subgrids
   /// the need to be requested, and the production data/surveyed surface aspects of those requests.
-  /// Its implementation was modelled on the activities of the Legacy TSVOICSubGridSubmissionThread class.
+  /// Its implementation was modeled on the activities of the Legacy TSVOICSubGridSubmissionThread class.
   /// </summary>
   public class RequestAnalyser : IRequestAnalyser
   {
@@ -45,7 +45,7 @@ namespace VSS.TRex.Pipelines
     public BoundingIntegerExtent2D OverrideSpatialCellRestriction = BoundingIntegerExtent2D.Inverted();
 
     /// <summary>
-    /// The bounding world extents costraining the query, derived from filter, design and other spatial restrictions
+    /// The bounding world extents constraining the query, derived from filter, design and other spatial restrictions
     /// and criteria related to the query parameters
     /// </summary>
     public BoundingWorldExtent3D WorldExtents { get; set; } = BoundingWorldExtent3D.Inverted();
@@ -57,7 +57,7 @@ namespace VSS.TRex.Pipelines
     protected bool ScanningFullWorldExtent;
 
     /// <summary>
-    /// Indicates if the request analyser is only counting the subgrid requests that will be made
+    /// Indicates if the request analyzer is only counting the subgrid requests that will be made
     /// </summary>
     private bool CountingRequestsOnly { get; set; } = false;
 
@@ -86,7 +86,7 @@ namespace VSS.TRex.Pipelines
     }
 
     /// <summary>
-    /// Constructor accepting the pipeline (analyser client) and the bounding world coordinate extents within which subgrids
+    /// Constructor accepting the pipeline (analyzer client) and the bounding world coordinate extents within which subgrids
     /// are being requested
     /// </summary>
     /// <param name="pipeline"></param>
@@ -147,7 +147,7 @@ namespace VSS.TRex.Pipelines
     }
 
     /// <summary>
-    /// The executor method for the analyser
+    /// The executor method for the analyzer
     /// </summary>
     /// <returns></returns>
     public bool Execute()
@@ -173,12 +173,12 @@ namespace VSS.TRex.Pipelines
     /// <returns></returns>
     protected bool SubGridEvent(ISubGrid SubGrid)
     {
-      // The given subgrid is a leaf sudgrid containing a bit mask recording subgrid inclusion in the overall subgrid map 
+      // The given subgrid is a leaf subgrid containing a bit mask recording subgrid inclusion in the overall subgrid map 
       // being iterated over. This map includes, production data only subgrids, surveyed surface data only subgrids and
-      // subgrids that will have both types of data retrived for them. The analyser needs to seaprate out the two in terms
+      // subgrids that will have both types of data retrieved for them. The analyzer needs to separate out the two in terms
       // of the masks of subgrids that needs to be queried, one for production data (and optionally surveyed surface data) and 
       // one for surveyed surface data only. 
-      // Get the matching subgrid from the production data only bit mask subgrid tree and use this subgrid to be able to sepearat 
+      // Get the matching subgrid from the production data only bit mask subgrid tree and use this subgrid to be able to separate
       // the two sets of subgrids
 
       SubGridTreeLeafBitmapSubGrid ProdDataSubGrid =
@@ -224,7 +224,7 @@ namespace VSS.TRex.Pipelines
         SubGrid.GetSubGridCellIndex(ScanMaxX, ScanMaxY, out ScanMaxXb, out ScanMaxYb);
       }
 
-      // Iterate over the subrange of cells (bits) in this subgrid and request the matching subgrids
+      // Iterate over the sub range of cells (bits) in this subgrid and request the matching subgrids
 
       for (byte I = ScanMinXb; I <= ScanMaxXb; I++)
       {
@@ -292,7 +292,7 @@ namespace VSS.TRex.Pipelines
                   return false; // Returning false halts scanning of subgrids
               }
 
-              // Add the leaf subgrid identitied by the address below, along with the production data and surveyed surface
+              // Add the leaf subgrid identified by the address below, along with the production data and surveyed surface
               // flags to the subgrid tree being used to aggregate all the subgrids that need to be queried for the request
 
               TotalNumberOfSubgridsToRequest++;
@@ -323,7 +323,7 @@ namespace VSS.TRex.Pipelines
 
     /// <summary>
     /// Counts the number of subgrids that will be submitted to the processing engine given the request parameters
-    /// supplied to th erequest analyser.
+    /// supplied to the request analyzer.
     /// </summary>
     /// <returns></returns>
     public long CountOfSubgridsThatWillBeSubmitted()

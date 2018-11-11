@@ -94,11 +94,26 @@ namespace VSS.Tile.Service.Common.Services
           x = tileTopLeft.x * WebMercatorProjection.TILE_SIZE,
           y = tileTopLeft.y * WebMercatorProjection.TILE_SIZE
         };
-        //Clip to the actual bounding box within the tiles
+        //Clip to the actual bounding box within the tiles. 
+        int clipWidth = parameters.mapWidth;
+        int clipHeight = parameters.mapHeight;
         int xClipTopLeft = (int) (parameters.pixelTopLeft.x - point.x);
         int yClipTopLeft = (int) (parameters.pixelTopLeft.y - point.y);
-        Rectangle clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, parameters.mapWidth, parameters.mapHeight);
+        //Unlike System.Drawing, which allows the clipRect to have negative x, y and which moves as well as clips when used with DrawImage
+        //as the source rectangle, ImageSharp does not respect negative values. So we will have to do extra work in this situation.
+        if (xClipTopLeft < 0)
+        {
+          clipWidth += xClipTopLeft;
+          xClipTopLeft = 0;
+        }
+        if (yClipTopLeft < 0)
+        {
+          clipHeight += yClipTopLeft;
+          yClipTopLeft = 0;
+        }
+        Rectangle clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
 
+        //Join all the DXF tiles into one large tile
         var suffix = FileUtils.GeneratedFileSuffix(dxfFile.ImportedFileType);
         string generatedName = FileUtils.GeneratedFileName(dxfFile.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
         string zoomPath =
@@ -128,9 +143,21 @@ namespace VSS.Tile.Service.Common.Services
             }
           }
         }
+        //Now clip the large tile
+        tileBitmap.Mutate(ctx => ctx.Crop(clipRect));
+        if (clipWidth >= parameters.mapWidth && clipHeight >= parameters.mapHeight)
+        {
+          return tileBitmap.BitmapToByteArray();
+        }
 
-        tileBitmap.Mutate(ctx => ctx.Crop(clipRect).Resize(parameters.mapWidth, parameters.mapHeight));
-        return tileBitmap.BitmapToByteArray();
+        //and resize it if required tile area was overlapping rather than within the large tile
+        //(negative clip values above)
+        using (Image<Rgba32> resizedBitmap = new Image<Rgba32>(parameters.mapWidth, parameters.mapHeight))
+        {
+          Point offset = new Point(parameters.mapWidth-clipWidth, parameters.mapHeight-clipHeight);
+          resizedBitmap.Mutate(ctx => ctx.DrawImage(tileBitmap, PixelBlenderMode.Normal, 1f, offset));
+          return resizedBitmap.BitmapToByteArray();
+        }            
       }
     }
   }

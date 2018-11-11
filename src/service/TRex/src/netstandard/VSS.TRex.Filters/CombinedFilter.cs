@@ -10,7 +10,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CombinedFilter : ICombinedFilter, IEquatable<ICombinedFilter>
   {
-/// <summary>
+    /// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
     /// </summary>
     public ICellPassAttributeFilter AttributeFilter { get; set; }
@@ -27,6 +27,17 @@ namespace VSS.TRex.Filters
     {
       AttributeFilter = new CellPassAttributeFilter();
       SpatialFilter = new CellSpatialFilter();
+    }
+
+    /// <summary>
+    /// Creates a new combined filter based on a supplied spatial filter and a newly created
+    /// attribute filter
+    /// </summary>
+    /// <param name="spatialFilter"></param>
+    public CombinedFilter(ICellSpatialFilter spatialFilter)
+    {
+      AttributeFilter = new CellPassAttributeFilter();
+      SpatialFilter = spatialFilter;
     }
 
     public CombinedFilter(IBinaryRawReader reader)
@@ -85,7 +96,7 @@ namespace VSS.TRex.Filters
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != GetType()) return false;
-      return Equals((ICombinedFilter) obj);
+      return Equals((ICombinedFilter)obj);
     }
 
     public override int GetHashCode()

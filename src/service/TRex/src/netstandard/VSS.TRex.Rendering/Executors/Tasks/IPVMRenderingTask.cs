@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.Rendering.Executors.Tasks
 {
-  public interface IPVMRenderingTask : ITask
+  public interface IPVMRenderingTask : Pipelines.Interfaces.Tasks.ITask
   {
     PlanViewTileRenderer TileRenderer { get; set; }
   }

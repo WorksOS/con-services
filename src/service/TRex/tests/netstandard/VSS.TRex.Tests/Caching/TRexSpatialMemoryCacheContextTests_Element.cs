@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Caching;
+﻿using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Tests.Caching
 {
@@ -8,7 +8,9 @@ namespace VSS.TRex.Tests.Caching
 
     public int IndicativeSizeInBytes() => SizeInBytes;
 
-    public uint OriginX { get; set; }
-    public uint OriginY { get; set; }
+    public uint CacheOriginX { get; set; }
+    public uint CacheOriginY { get; set; }
+
+    public override string ToString() => $"{CacheOriginX}:{CacheOriginY}:{SizeInBytes}";
   }
 }

@@ -102,7 +102,7 @@ namespace VSS.TRex.Common
     public const int kMaxMappedTagFilesToProcessPerAggregationEpochDefault = 20;  // overide with: MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH
 
     /// <summary>
-    /// The number of paritions configured for caches that store spatial subgrid data
+    /// The number of partitions configured for caches that store spatial subgrid data
     /// </summary>
     public const uint kNumPartitionsPerDataCacheDefault = 1024;                   // overide with: NUMPARTITIONS_PERDATACACHE
 
@@ -126,5 +126,9 @@ namespace VSS.TRex.Common
     /// </summary>
     public const bool kEnableTagFileArchivingMetaDataDefault = false;            // overide with: ENABLE_TAGFILE_ARCHIVING_METADATA
 
+    /// <summary>
+    /// Cache intermediary subgrid results for reuse in subsequent requests
+    /// </summary>
+    public const bool kEnableGeneralSubgridResultCaching = true;                 // override with: ENABLE_GENERAL_SUBGRID_RESULT_CACHING
   }
 }

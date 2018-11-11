@@ -155,10 +155,10 @@ constructor(
 
   public displayModeChanged(event : any): void {
     this.mode = this.displayMode.item1;
-    this.getTile();
+    this.getTileXTimes(1);
   }
 
-  public getTile(): void {
+  public getTile() : void {
     // If there is no project bail...
     if (this.projectUid == undefined)
       return;
@@ -170,6 +170,10 @@ constructor(
         this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
         this.updateTimerCompletionTime();      
       });
+  }
+
+  public zoomAllXTimes(xTimes: number): void {
+    this.timeSomething(() => this.performNTimes(() => this.zoomAll(), xTimes));
   }
 
   public zoomAll(): void {
@@ -197,32 +201,32 @@ constructor(
 
   public zoomIn(): void {
     this.tileExtents.shrink(this.zoomFactor, this.zoomFactor);
-    this.getTile();
+    this.getTileXTimes(1);
   }
 
   public zoomOut(): void {
     this.tileExtents.expand(this.zoomFactor, this.zoomFactor);
-    this.getTile();
+    this.getTileXTimes(1);
   }
 
   public panLeft(): void {
     this.tileExtents.panByFactor(-this.zoomFactor, 0.0);
-    this.getTile();
+    this.getTileXTimes(1);
   }
 
   public panRight(): void {
     this.tileExtents.panByFactor(this.zoomFactor, 0.0);
-    this.getTile();
+    this.getTileXTimes(1);
   }
 
   public panUp(): void {
     this.tileExtents.panByFactor(0, this.zoomFactor);
-    this.getTile();
+    this.getTileXTimes(1);
   }
 
   public panDown(): void {
     this.tileExtents.panByFactor(0, -this.zoomFactor);
-    this.getTile();
+    this.getTileXTimes(1);
   }
 
   public getSimpleFullVolume(): void {

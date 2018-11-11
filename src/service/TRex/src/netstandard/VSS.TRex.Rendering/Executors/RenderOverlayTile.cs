@@ -517,7 +517,7 @@ namespace VSS.TRex.Rendering.Executors
           response: new SubGridsPipelinedReponseBase(),
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.PVMRendering),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, Pipelines.Interfaces.Tasks.ITask>>()(PipelineProcessorTaskStyle.PVMRendering),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&

@@ -11,13 +11,11 @@
 [Dd]ebugPublic/
 [Rr]elease/
 x64/
-build/
 bld/
 [Bb]in/
 [Oo]bj/
 [Pp]ackages/
 *.boltdata/
-[Dd]eploy/
 
 # Roslyn cache directories
 *.ide/

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 
 namespace VSS.TRex.GridFabric.Requests

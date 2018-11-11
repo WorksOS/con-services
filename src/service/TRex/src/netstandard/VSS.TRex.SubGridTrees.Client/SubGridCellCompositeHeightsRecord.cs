@@ -6,7 +6,7 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// Stores the heights representing the first measure elevation, last measured elevation,
   /// lowest measured elevation and highest measured elevation spanning a set of cell passes
-  /// and optionally a set of survyed surfaces within a time range.
+  /// and optionally a set of surveyed surfaces within a time range.
   /// Note: Do not implement any interfaces on this record
   /// </summary>
   public struct SubGridCellCompositeHeightsRecord
@@ -22,6 +22,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public long LowestHeightTime, HighestHeightTime, LastHeightTime, FirstHeightTime;
 
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public static int IndicativeSizeInBytes()
+    {
+      return 4 * sizeof(float) + 4 * sizeof(long); // 4 floats (@four bytes) + four longs (@ 6 bytes)
+    }
+
     public void Clear()
     {
       LowestHeight = Consts.NullHeight;
@@ -35,12 +44,12 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Defines a publically accessible null value for this cell value type
+    /// Defines a publicly accessible null value for this cell value type
     /// </summary>
     public static SubGridCellCompositeHeightsRecord NullValue = Null();
-    
+
     /// <summary>
-    /// Implements the business logic to create the null value for this cell valuye type
+    /// Implements the business logic to create the null value for this cell value type
     /// </summary>
     /// <returns></returns>
     public static SubGridCellCompositeHeightsRecord Null()

@@ -53,6 +53,7 @@ services:
       - TILE_RENDER_MAX_ZOOM_RANGE=14
       - TILE_RENDER_WAIT_INTERVAL=2000
       - TREX_TAGFILE_API_URL=http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
+      - RAPTORUSERNAME=svcRaptor
       - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
       - MYSQL_PORT=3306
       - MYSQL_USERNAME=Merino

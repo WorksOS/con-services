@@ -3,6 +3,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
@@ -19,7 +20,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
         /// <summary>
         /// The Task responsible for handling further processing of subgrid query responses
         /// </summary>
-        public ITask Task { get; set; }
+        public Pipelines.Interfaces.Tasks.ITask Task { get; set; }
 
         /// <summary>
         /// Default no-arg constructor

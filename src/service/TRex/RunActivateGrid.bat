@@ -1,4 +1,4 @@
-start ..\VSS.TRex\src\framework\TRexGridActivator\bin\debug\TRexGridActivator.exe
+start ..\TRex\src\framework\TRexGridActivator\bin\debug\TRexGridActivator.exe
 
 
 	

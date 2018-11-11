@@ -37,7 +37,15 @@ namespace VSS.TRex.Types
     CCAPercent = 0x00000018,
     TemperatureDetail = 0x00000019,
     CutFill = 0x0000001A,
-    DesignHeight = 0x0000001B
+    DesignHeight = 0x0000001B,
+
+    /// <summary>
+    /// SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
+    /// used to construct this data. Differentiating the grid types allows coherent caching in a single spatial
+    /// general subgrid result cache along with HeightAndTime results that are derived from production data
+    /// and SurveyedSurfaceHeightAndTime results
+    /// </summary>
+    SurveyedSurfaceHeightAndTime = 0x0000001C
   }
 
   public static class GridDataFromModeConverter

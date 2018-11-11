@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "outDir": ".tmp",
+        "sourceMap": true,
+        "noImplicitAny": false,
+        "rootDir": "." 
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "include": [
+        "./global.d.ts"
+    ]
+}

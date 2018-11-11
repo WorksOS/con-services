@@ -18,7 +18,7 @@ spec:
     spec:
       initContainers:
       - name: init-schedulerdb
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-db:{{ .Values.image.tag }}
+        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi-db:{{ .Values.image.tag }}
         tty: true
         envFrom:
         - configMapRef:

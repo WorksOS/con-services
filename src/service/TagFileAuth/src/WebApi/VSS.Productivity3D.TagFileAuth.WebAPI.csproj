@@ -5,7 +5,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>VSS.Productivity3D.TagFileAuth.WebAPI</AssemblyName>
-    <PackageId>ProjectWebApi</PackageId>
     <RootNamespace>VSS.Productivity3D.TagFileAuth.WebAPI</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
@@ -22,6 +21,8 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+
+  <PropertyGroup> <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest> </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

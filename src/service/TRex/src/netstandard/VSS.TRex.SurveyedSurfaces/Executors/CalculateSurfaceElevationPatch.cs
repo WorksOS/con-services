@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -64,7 +65,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
       try
       {
-        // if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
+        // if <config>.Debug_PerformDPServiceRequestHighRateLogging then
         //   SIGLogMessage.PublishNoODS(Self, Format('In %s.Execute for DataModel:%d  OTGCellBottomLeftX:%d  OTGCellBottomLeftY:%d', [Self.ClassName, Args.DataModelID, Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY]), slmcDebug);
         // InterlockedIncrement64(DesignProfilerRequestStats.NumSurfacePatchesComputed);
 
@@ -98,13 +99,15 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
           double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
 
+          ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Args.SiteModelID);
+
           // Work down through the list of surfaces in the time ordering provided by the caller
-          for (int i = 0; i < Args.IncludedSurveyedSurfaces.Count; i++)
+          for (int i = 0; i < Args.IncludedSurveyedSurfaces.Length; i++)
           {
             if (Args.ProcessingMap.IsEmpty())
               break;
 
-            ISurveyedSurface ThisSurveyedSurface = Args.IncludedSurveyedSurfaces[i];
+            ISurveyedSurface ThisSurveyedSurface = siteModel.SurveyedSurfaces.Locate(Args.IncludedSurveyedSurfaces[i]);
 
             // Lock & load the design
             Design = DesignFiles.Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor(), Args.SiteModelID, Args.CellSize, out _);
@@ -142,48 +145,48 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                   {
                     switch (Args.SurveyedSurfacePatchType)
                     {
-                      // Check for compositie elevation processing
+                      // Check for composite elevation processing
                       case SurveyedSurfacePatchType.CompositeElevations:
-                      {
-                        // Set the first elevation if not already set
-                        if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
                         {
-                          PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
-                          PatchComposite.Cells[x, y].FirstHeight = (float) z;
+                          // Set the first elevation if not already set
+                          if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
+                          {
+                            PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
+                            PatchComposite.Cells[x, y].FirstHeight = (float)z;
+                          }
+
+                          // Always set the latest elevation (surfaces ordered by increasing date)
+                          PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
+                          PatchComposite.Cells[x, y].LastHeight = (float)z;
+
+                          // Update the lowest height
+                          if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
+                              PatchComposite.Cells[x, y].LowestHeight > z)
+                          {
+                            PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
+                            PatchComposite.Cells[x, y].LowestHeight = (float)z;
+                          }
+
+                          // Update the highest height
+                          if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
+                              PatchComposite.Cells[x, y].HighestHeight > z)
+                          {
+                            PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
+                            PatchComposite.Cells[x, y].HighestHeight = (float)z;
+                          }
+
+                          break;
                         }
-
-                        // Always set the latest elevation (surfaces ordered by increasing date)
-                        PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
-                        PatchComposite.Cells[x, y].LastHeight = (float) z;
-
-                        // Update the lowest height
-                        if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
-                            PatchComposite.Cells[x, y].LowestHeight > z)
-                        {
-                          PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
-                          PatchComposite.Cells[x, y].LowestHeight = (float) z;
-                        }
-
-                        // Update the highest height
-                        if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
-                            PatchComposite.Cells[x, y].HighestHeight > z)
-                        {
-                          PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
-                          PatchComposite.Cells[x, y].HighestHeight = (float) z;
-                        }
-
-                        break;
-                      }
 
                       // checked for earliest/latest singular value processing
                       case SurveyedSurfacePatchType.LatestSingleElevation:
                       case SurveyedSurfacePatchType.EarliestSingleElevation:
-                      {
+                        {
 
-                        PatchSingle.Cells[x, y] = (float) z;
-                        PatchSingle.Times[x, y] = AsAtDate;
-                        break;
-                      }
+                          PatchSingle.Cells[x, y] = (float)z;
+                          PatchSingle.Times[x, y] = AsAtDate;
+                          break;
+                        }
 
                       default:
                         Debug.Assert(false, $"Unknown SurveyedSurfacePatchType: {Args.SurveyedSurfacePatchType}");
@@ -215,7 +218,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         }
         finally
         {
-          //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
+          //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
           //Log.LogInformation($"Out {nameof(CalculateSurfaceElevationPatch)}.Execute");
         }
       }
@@ -251,7 +254,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         }
         finally
         {
-          //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
+          //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
           // Log.LogInformation($"#Out# {nameof(CalculateSurfaceElevationPatch)}.Execute #Result# {CalcResult}");
         }
       }

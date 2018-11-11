@@ -1,4 +1,7 @@
-﻿namespace VSS.TRex.Caching
+﻿using System;
+using VSS.TRex.Caching.Interfaces;
+
+namespace VSS.TRex.Caching
 {
   /// <summary>
   /// Provides a wrapper around items stored in the cache to facilitate LRU/MRU management
@@ -17,9 +20,26 @@
     public long MRUEpochToken; // No get/set semantics on purpose as this is a struct
 
     /// <summary>
+    /// The time at which the cached item is no longer valid and will not be returned on a Get() call
+    /// </summary>
+    public DateTime ExpiryTime { get; internal set; }
+
+    /// <summary>
+    /// Determines if the cached item has hit it's expiry time
+    /// </summary>
+    public bool Expired => ExpiryTime < DateTime.Now;
+
+    /// <summary>
     /// The context to which this cached item belongs
     /// </summary>
-    public ITRexSpatialMemoryCacheContext Context { get; set; }
+    private ITRexSpatialMemoryCacheContext Context { get; set; }
+
+    /// <summary>
+    /// Describes whether the state containing in this cache item is still valid
+    /// Items are considered to be valid at the time of creation, and stay that way until explicit invalidation or
+    /// overriding of the references item with null.
+    /// </summary>
+    public bool Valid { get; set; }
 
     /// <summary>
     /// The index of the previous element in the list of elements
@@ -37,8 +57,11 @@
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
+      ExpiryTime = DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
+
+      Valid = item != null;
     }
 
     public void Set(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, int prev, int next)
@@ -46,8 +69,11 @@
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
+      ExpiryTime = context == null ? DateTime.MinValue : DateTime.Now + context.CacheDurationTime;
       Prev = prev;
       Next = next;
+
+      Valid = item != null;
     }
 
     public void GetPrevAndNext(out int prev, out int next)
@@ -63,6 +89,28 @@
     public void RemoveFromContext()
     {
       Context?.RemoveFromContextTokensOnly(Item);
+    }
+
+    /// <summary>
+    /// Sets the valid state of the item to true, returning the previous validity state 
+    /// </summary>
+    /// <returns></returns>
+    public bool Validate()
+    {
+      bool result = Valid;
+      Valid = true;
+      return result;
+    }
+
+    /// <summary>
+    /// Sets the valid state of the item to false, returning the previous validity state 
+    /// </summary>
+    /// <returns></returns>
+    public bool Invalidate()
+    {
+      bool result = Valid;
+      Valid = false;
+      return result;
     }
   }
 }

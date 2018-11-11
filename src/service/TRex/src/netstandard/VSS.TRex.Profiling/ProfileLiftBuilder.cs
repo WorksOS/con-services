@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -87,7 +88,7 @@ namespace VSS.TRex.Profiling
     private ISurveyedSurfaces FilteredSurveyedSurfaces;
 
     /// <summary>
-    /// The argument to be used when requesting composite elevation subgrids to support profiel analysis
+    /// The argument to be used when requesting composite elevation subgrids to support profile analysis
     /// </summary>
     public SurfaceElevationPatchArgument SurfaceElevationPatchArg;
 
@@ -137,18 +138,18 @@ namespace VSS.TRex.Profiling
           FilteredSurveyedSurfaces = null;
       }
 
-      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest();
-
       // Instantiate a single instance of the argument object for the surface elevation patch requests to obtain composite
       // elevation subgrids and populate it with the common elements for this set of subgrids being requested.
-      SurfaceElevationPatchArg = new SurfaceElevationPatchArgument()
+      SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
       {
         SiteModelID = SiteModel?.ID ?? Guid.Empty,
         CellSize = SiteModel?.Grid.CellSize ?? 0,
-        IncludedSurveyedSurfaces = FilteredSurveyedSurfaces,
+        IncludedSurveyedSurfaces = FilteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0],
         SurveyedSurfacePatchType = SurveyedSurfacePatchType.CompositeElevations,
         ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
       };
+
+      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
     }
 
     /// <summary>
@@ -244,7 +245,7 @@ namespace VSS.TRex.Profiling
       ProfileCell.TopLayerPassCountTargetRangeMin = ProfileCell.TopLayerPassCount;
       ProfileCell.TopLayerPassCountTargetRangeMax = ProfileCell.TopLayerPassCount;
 
-// WorkOut Speed Min Max
+      // WorkOut Speed Min Max
       // ReSharper disable once UseMethodAny.0
       if (ProfileCell.Layers.Count() > 0)
       {
@@ -276,7 +277,7 @@ namespace VSS.TRex.Profiling
             if ((LayerStatus.Superseded & ProfileCell.Layers[I].Status) != 0)
               continue;
 
-            ProfileCell.TopLayerPassCount = (ushort) (ProfileCell.FilteredHalfPassCount / 2);
+            ProfileCell.TopLayerPassCount = (ushort)(ProfileCell.FilteredHalfPassCount / 2);
 
             if (Dummy_LiftBuildSettings.OverrideTargetPassCount)
             {
@@ -416,7 +417,7 @@ namespace VSS.TRex.Profiling
               !DataStillRequiredForTMP)
             break;
 
-// CCA not part of legacy setup as yet
+          // CCA not part of legacy setup as yet
           if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
             DataStillRequiredForCCV = false;
           if (Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)
@@ -440,7 +441,7 @@ namespace VSS.TRex.Profiling
 
       ProfileCell.SetFirstLastHighestLowestElevations(PassFilter.HasElevationTypeFilter, PassFilter.ElevationType);
 
-// are coords set right?
+      // are coords set right?
       uint CellX = ProfileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
       uint CellY = ProfileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
       bool HaveCompositeSurfaceForCell = CompositeHeightsGrid?.ProdDataMap.BitSet(CellX, CellY) ?? false;
@@ -492,7 +493,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Builds a fully analysed vector of profield cells from the list of cell passed to it
+    /// Builds a fully analyzed vector of profiled cells from the list of cell passed to it
     /// </summary>
     /// <param name="ProfileCells"></param>
     /// <param name="cellPassIterator"></param>
@@ -507,15 +508,15 @@ namespace VSS.TRex.Profiling
       ISubGrid SubGrid = null;
       IServerLeafSubGrid _SubGridAsLeaf = null;
       ProfileCell = null;
-//      FilterDesignElevations = null;
+      //      FilterDesignElevations = null;
       bool IgnoreSubgrid = false;
 
       for (int I = 0; I < ProfileCells.Count; I++)
       {
-        ProfileCell = (ProfileCell) ProfileCells[I];
+        ProfileCell = (ProfileCell)ProfileCells[I];
 
         // get subgrid setup iterator and set cell address
-        // get sugbrid origin for cell address
+        // get subgrid origin for cell address
         SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
           ProfileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
@@ -525,7 +526,7 @@ namespace VSS.TRex.Profiling
           CurrentSubgridOrigin = ThisSubgridOrigin;
           SubGrid = null;
 
-          // Does the subgridtree contain this node in it's existence map?
+          // Does the subgrid tree contain this node in it's existence map?
           if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
             SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY,
               SiteModel.Grid.NumLevels);
@@ -544,7 +545,7 @@ namespace VSS.TRex.Profiling
           }
 
           if (LiftFilterMask.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
-            ProfileCells, ref FilterMask, I, CellFilter))
+            ProfileCells, FilterMask, I, CellFilter))
             continue;
 
           if (FilteredSurveyedSurfaces != null)
@@ -552,7 +553,7 @@ namespace VSS.TRex.Profiling
             // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
             SurfaceElevationPatchArg.OTGCellBottomLeftX = _SubGridAsLeaf.OriginX;
             SurfaceElevationPatchArg.OTGCellBottomLeftY = _SubGridAsLeaf.OriginY;
-            SurfaceElevationPatchArg.ProcessingMap = FilterMask;
+            SurfaceElevationPatchArg.ProcessingMap.Assign(FilterMask);
 
             CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
             CompositeHeightsGrid = CompositeHeightsGridIntf as ClientCompositeHeightsLeafSubgrid;
@@ -594,8 +595,8 @@ namespace VSS.TRex.Profiling
 
           // get cell address relative to subgrid and SetCellCoordinatesInSubgrid
           cellPassIterator.SetCellCoordinatesInSubgrid(
-            (byte) (ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
-            (byte) (ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
+            (byte)(ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
+            (byte)(ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
           PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
 
           if (CellLiftBuilder.Build(ProfileCell, /*todo Dummy_LiftBuildSettings, */ null, null, cellPassIterator, false))
