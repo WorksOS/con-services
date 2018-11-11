@@ -12,7 +12,8 @@ namespace LandfillDatasync.netcore
 
     private static void Main(string[] args)
     {
-      XmlConfigurator.Configure(new FileInfo("log4net.xml"));
+      //TODO logging is not working!!
+   //   XmlConfigurator.Configure( new FileInfo("log4net.xml"));
       var dataSync = new DataSynchronizer(Log);
 
       // *************  Process the volumes for the last nn days  *************** 
