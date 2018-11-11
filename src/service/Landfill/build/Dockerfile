@@ -1,4 +1,4 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk 
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk as build_container
 
 ARG SERVICE_PATH
 
