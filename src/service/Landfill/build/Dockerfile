@@ -5,7 +5,7 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish ./$SERVICE_PATH/src/Landfill/VSS.VisionLink.Landfill.netcore.sln -o /artifacts --runtime linux-x64
+RUN dotnet publish ./$SERVICE_PATH/VSS.VisionLink.Landfill.netcore.sln -o /artifacts --runtime linux-x64
 
 FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
 
