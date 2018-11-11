@@ -134,6 +134,12 @@ namespace VSS.ConfigurationStore
       return valueInt;
     }
 
+    public int GetValueInt(string key, int defaultValue)
+    {
+      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<int>(key, defaultValue)}");
+      return _configuration.GetValue<int>(key, defaultValue);
+    }
+
     public long GetValueLong(string key)
     {
       // zero is valid. Returns long.MinValue on error
@@ -147,16 +153,29 @@ namespace VSS.ConfigurationStore
       return valueLong;
     }
 
-    public int GetValueInt(string key, int defaultValue)
-    {
-      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<int>(key, defaultValue)}");
-      return _configuration.GetValue<int>(key, defaultValue);
-    }
-
     public long GetValueLong(string key, long defaultValue)
     {
       _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<long>(key, defaultValue)}");
       return _configuration.GetValue<long>(key, defaultValue);
+    }
+
+    public double GetValueDouble(string key)
+    {
+      // zero is valid. Returns double.MinValue on error
+      if (!double.TryParse(_configuration[key], out double valueDouble))
+      {
+        valueDouble = -1;
+      }
+
+      _log.LogTrace($"Served configuration value {key}:{valueDouble}");
+
+      return valueDouble;
+    }
+
+    public double GetValueDouble(string key, double defaultValue)
+    {
+      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<double>(key, defaultValue)}");
+      return _configuration.GetValue<double>(key, defaultValue);
     }
 
     public bool? GetValueBool(string key)
