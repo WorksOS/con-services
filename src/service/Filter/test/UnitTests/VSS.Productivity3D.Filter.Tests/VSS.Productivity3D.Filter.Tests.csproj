@@ -24,6 +24,8 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
     <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
+    <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+    <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +43,12 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
     <None Update="appsettings.json;log4net.xml;log4nettest.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

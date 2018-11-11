@@ -1,2 +1,2 @@
-start ..\VSS.TRex\src\framework\TRexIgniteTest\bin\debug\TRexIgniteTest.exe
+start ..\TRex\src\framework\TRexIgniteTest\bin\debug\TRexIgniteTest.exe
 	

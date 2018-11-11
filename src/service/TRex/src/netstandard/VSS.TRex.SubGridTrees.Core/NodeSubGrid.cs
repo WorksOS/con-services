@@ -107,10 +107,10 @@ namespace VSS.TRex.SubGridTrees.Core
       {
         for (int I = 0; I < _sparseCellCount; I++)
         {
-          SubgridTreeSparseCellRecord sparceCell = _sparseCells[I];
+          SubgridTreeSparseCellRecord sparseCell = _sparseCells[I];
 
-          if ((sparceCell.CellX == X) && (sparceCell.CellY == Y))
-            return sparceCell.Cell;
+          if ((sparseCell.CellX == X) && (sparseCell.CellY == Y))
+            return sparseCell.Cell;
         }
       }
 
@@ -236,11 +236,11 @@ namespace VSS.TRex.SubGridTrees.Core
       {
         for (int I = 0; I < _sparseCellCount; I++)
         {
-          SubgridTreeSparseCellRecord sparceCell = _sparseCells[I];
+          SubgridTreeSparseCellRecord sparseCell = _sparseCells[I];
 
-          if ((sparceCell.CellX >= minSubGridCellX && sparceCell.CellX <= maxSubGridCellX &&
-               sparceCell.CellY >= minSubGridCellY && sparceCell.CellY <= maxSubGridCellY) &&
-              (functor(sparceCell.CellX, sparceCell.CellY, sparceCell.Cell) != SubGridProcessNodeSubGridResult.OK))
+          if ((sparseCell.CellX >= minSubGridCellX && sparseCell.CellX <= maxSubGridCellX &&
+               sparseCell.CellY >= minSubGridCellY && sparseCell.CellY <= maxSubGridCellY) &&
+              (functor(sparseCell.CellX, sparseCell.CellY, sparseCell.Cell) != SubGridProcessNodeSubGridResult.OK))
           {
             return;
           }
@@ -341,8 +341,8 @@ namespace VSS.TRex.SubGridTrees.Core
 
           for (int I = 0; I < _sparseCellCount; I++)
           {
-            SubgridTreeSparseCellRecord sparceCell = _sparseCells[I];
-            _cells[sparceCell.CellX, sparceCell.CellY] = sparceCell.Cell;
+            SubgridTreeSparseCellRecord sparseCell = _sparseCells[I];
+            _cells[sparseCell.CellX, sparseCell.CellY] = sparseCell.Cell;
           }
 
           _sparseCellCount = 0;

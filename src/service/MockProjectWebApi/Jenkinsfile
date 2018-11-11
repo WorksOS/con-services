@@ -1,0 +1,84 @@
+node ('jenkinsslave-pod') {
+
+	// adds job parameters
+	properties([
+		parameters([
+			string(
+				defaultValue: null,
+				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
+				name: 'VSTS_BUILD_NUMBER'
+			),
+			string(
+				defaultValue: null,
+				description: 'The branch name to build',
+				name: 'BRANCH_NAME'
+			),
+		])
+	])
+
+	// We may need to rename the branch to conform to DNS name spec
+    def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
+	def jobnameparts = JOB_NAME.tokenize('/') as String[]
+	def project_name = jobnameparts[0].toLowerCase() 	
+    def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
+    def container = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
+	def containerDb = "registry-docker-registry.jenkins:5000/${project_name}.db:${versionNumber}"
+    def testContainer = "registry-docker-registry.jenkins:5000/${project_name}.tests:${versionNumber}"
+	//his is required for backwards compatibility
+    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+	def legacyfinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:latest-linux"
+	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
+	
+    def vars = []
+    def acceptance_testing_yaml
+	def runtimeImage
+	def dbRuntimeImage
+
+	//Set the build name so it is consistant with VSTS
+	currentBuild.displayName = versionNumber
+	
+	stage("Prebuild Checks") {
+		if (params.VSTS_BUILD_NUMBER == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid build number supplied")
+		}
+		if (params.BRANCH_NAME == null) {
+			currentBuild.result = 'ABORTED'
+			error("Build stopping, no valid branch supplied")
+		}
+	}
+
+	stage("Checkout") {
+		checkout scm
+	}
+
+	
+    dir ('./MockProjectWebApi/src')
+	{
+	
+	sh "ls -la"
+	
+    stage('Build Solution') {
+	
+	    def build_container = docker.build(container, "-f ./Dockerfile.build .")
+	}
+	
+	stage('Preparing runtime image') {
+		//runtimeImage = docker.build(container, "-f ./Dockerfile .")
+        runtimeImage = docker.build(container, "-f ./Dockerfile --build-arg BUILD_CONTAINER=${container} .")
+		runtimeImage.push()
+		currentBuild.result = 'SUCCESS'
+	}
+	    
+	
+	stage ('Publish results') {
+	    if (currentBuild.result=='SUCCESS') { 
+			sh "docker tag ${container} ${finalImage}"
+			sh "docker tag ${container} ${legacyfinalImage}"
+			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
+			sh "docker push ${finalImage}"
+			sh "docker push ${legacyfinalImage}"
+		}
+	}
+	}
+}

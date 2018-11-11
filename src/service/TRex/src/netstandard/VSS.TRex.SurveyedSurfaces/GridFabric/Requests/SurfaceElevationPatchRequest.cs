@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Cluster;
+﻿using System;
+using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -38,10 +39,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SurfaceElevationPatchRequest(string cacheFingerprint)
+        public SurfaceElevationPatchRequest(Guid projectUid, string cacheFingerprint)
         {
           _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
-          _context = _cache?.LocateOrCreateContext(cacheFingerprint);
+          _context = _cache?.LocateOrCreateContext(projectUid, cacheFingerprint);
         }
      
         private SurfaceElevationPatchRequest()

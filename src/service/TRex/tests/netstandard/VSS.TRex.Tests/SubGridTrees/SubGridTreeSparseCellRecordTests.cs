@@ -8,21 +8,19 @@ using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class SubGridTreeSparseCellRecordTests : IClassFixture<DILoggingFixture>
-
+        public class SubGridTreeSparseCellRecordTests : IClassFixture<DILoggingAndStorgeProxyFixture>
   {
-  [Fact]
-  public void Test_SubGridTreeSparseCellRecord_Creation()
-  {
-    ISubGrid leafSubgrid = null;
-    SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
+        [Fact]
+        public void Test_SubGridTreeSparseCellRecord_Creation()
+        {
+            SubGridTree tree = new SubGridTree(SubGridTreeConsts.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
 
-    leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
+            ISubGrid leafSubgrid = new SubGrid(tree, null, SubGridTreeConsts.SubGridTreeLevels);
 
-    SubgridTreeSparseCellRecord sparseCell = new SubgridTreeSparseCellRecord(15, 15, leafSubgrid);
+            SubgridTreeSparseCellRecord sparseCell = new SubgridTreeSparseCellRecord(15, 15, leafSubgrid);
 
-    Assert.True(sparseCell.CellX == 15 && sparseCell.CellY == 15 && sparseCell.Cell == leafSubgrid,
-      "Sparce subgrid tree cell record failed to initialise");
-  }
-  }
+            Assert.True(sparseCell.CellX == 15 && sparseCell.CellY == 15 && sparseCell.Cell == leafSubgrid,
+                          "Sparse subgrid tree cell record failed to initialise");
+        }
+    }
 }

@@ -1,4 +1,4 @@
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
 # Set the Working Directory
 WORKDIR /app
 

@@ -1,13 +1,12 @@
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-sdk as builder
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk as builder
+ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
 
-RUN chmod 777 *.sh
+RUN dotnet publish ./$SERVICE_PATH/src/VSS.Productivity3D.Scheduler.WebApi/VSS.Productivity3D.Scheduler.WebApi.csproj -o /artifacts -f netcoreapp2.0
 
-RUN ["/bin/sh", "/build/build.sh"]
-
-FROM registry.k8s.vspengg.com:80/dotnet:2.0-runtime
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \
@@ -31,7 +30,7 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=builder /build/artifacts/VSS.Productivity3D.Scheduler.WebApi .
+COPY --from=builder /artifacts/ .
 
 
 ENTRYPOINT ["dotnet", "VSS.Productivity3D.Scheduler.WebAPI.dll"]

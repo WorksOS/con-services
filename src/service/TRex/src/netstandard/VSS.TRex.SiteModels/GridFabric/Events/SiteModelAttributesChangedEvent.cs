@@ -23,7 +23,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     public bool MachineDesignsModified { get; set; }
 
     /// <summary>
-    /// A serialised bit mask subgrid tree representing the set of subgrids that have been changed in a
+    /// A serialized bit mask subgrid tree representing the set of subgrids that have been changed in a
     /// mutating event on the sitemodel such as TAG file processing
     /// </summary>
     public byte[] ExistenceMapChangeMask { get; set;  }
