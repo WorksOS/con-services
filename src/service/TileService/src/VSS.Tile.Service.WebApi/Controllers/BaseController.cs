@@ -22,6 +22,7 @@ using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
 {
@@ -247,20 +248,26 @@ namespace VSS.Tile.Service.WebApi.Controllers
       return result;
     }
 
+
+    private static AsyncDuplicateLock _lock = new AsyncDuplicateLock();
     /// <summary>
     /// Get user preferences
     /// </summary>
     private async Task<UserPreferenceData> GetShortCachedUserPreferences()
     {
-      var userPreferences = await prefProxy.GetShortCachedUserPreferences(((TilePrincipal)User).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
-      if (userPreferences == null)
+      using (await _lock.LockAsync(((TilePrincipal) User).UserEmail))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to retrieve preferences for current user"));
-      }
+        var userPreferences = await prefProxy.GetShortCachedUserPreferences(((TilePrincipal) User).UserEmail,
+          TimeSpan.FromSeconds(10), CustomHeaders);
+        if (userPreferences == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to retrieve preferences for current user"));
+        }
 
-      return userPreferences;
+        return userPreferences;
+      }
     }
 
     /// <summary>
