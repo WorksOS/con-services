@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -185,6 +186,75 @@ namespace VSS.Tile.Service.WebApi.Controllers
       return GetStreamContents(result);
     }
 
+
+    public sealed class AsyncDuplicateLock
+    {
+      private sealed class RefCounted<T>
+      {
+        public RefCounted(T value)
+        {
+          RefCount = 1;
+          Value = value;
+        }
+
+        public int RefCount { get; set; }
+        public T Value { get; private set; }
+      }
+
+      private static readonly Dictionary<string, RefCounted<SemaphoreSlim>> SemaphoreSlims
+        = new Dictionary<string, RefCounted<SemaphoreSlim>>();
+
+      private SemaphoreSlim GetOrCreate(string key)
+      {
+        RefCounted<SemaphoreSlim> item;
+        lock (SemaphoreSlims)
+        {
+          if (SemaphoreSlims.TryGetValue(key, out item))
+          {
+            ++item.RefCount;
+          }
+          else
+          {
+            item = new RefCounted<SemaphoreSlim>(new SemaphoreSlim(1, 1));
+            SemaphoreSlims[key] = item;
+          }
+        }
+        return item.Value;
+      }
+
+      public IDisposable Lock(string key)
+      {
+        GetOrCreate(key).Wait();
+        return new Releaser { Key = key };
+      }
+
+      public async Task<IDisposable> LockAsync(string key)
+      {
+        await GetOrCreate(key).WaitAsync().ConfigureAwait(false);
+        return new Releaser { Key = key };
+      }
+
+      private sealed class Releaser : IDisposable
+      {
+        public string Key { get; set; }
+
+        public void Dispose()
+        {
+          RefCounted<SemaphoreSlim> item;
+          lock (SemaphoreSlims)
+          {
+            item = SemaphoreSlims[Key];
+            --item.RefCount;
+            if (item.RefCount == 0)
+              SemaphoreSlims.Remove(Key);
+          }
+          item.Value.Release();
+        }
+      }
+    }
+
+    private static AsyncDuplicateLock _lock = new AsyncDuplicateLock();
+
     /// <summary>
     /// Gets a list of geofence thumbnail images as Base64 encoded strings.
     /// </summary>
@@ -193,12 +263,16 @@ namespace VSS.Tile.Service.WebApi.Controllers
     public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsBase64([FromQuery] Guid[] geofenceUids)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailsBase64)}: {Request.QueryString}");
-
-      var geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
-      if (geofenceUids.Any(g => !geofences.Select(k => k.GeofenceUID).Contains(g)))
+      var customer = GetCustomerUid.ToString();
+      List<GeofenceData> geofences;
+      using (await _lock.LockAsync(customer))
       {
-        geofenceProxy.ClearCacheItem(GetCustomerUid);
         geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+        if (geofenceUids.Any(g => !geofences.Select(k => k.GeofenceUID).Contains(g)))
+        {
+          geofenceProxy.ClearCacheItem(GetCustomerUid);
+          geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+        }
       }
 
       var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0 ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID)) : geofences;
