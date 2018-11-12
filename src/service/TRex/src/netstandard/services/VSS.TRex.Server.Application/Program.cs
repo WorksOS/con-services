@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -81,6 +82,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, IPipelineTask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IClientLeafSubgridFactory>(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
@@ -134,6 +136,9 @@ namespace VSS.TRex.Server.Application
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+
+      // Register the heartbeat loggers
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
     }
 
     static async Task<int> Main()

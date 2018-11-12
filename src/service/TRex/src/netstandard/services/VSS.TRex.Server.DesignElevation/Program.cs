@@ -6,6 +6,7 @@ using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events;
@@ -39,6 +40,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
         .Complete();
     }
 
@@ -67,6 +69,13 @@ namespace VSS.TRex.Server.DesignElevation
         if (asmType.Assembly == null)
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
+
+    private static void DoServiceInitialisation()
+    {
+      // Register the heartbeat loggers
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+    }
+
     static async Task<int> Main(string[] args)
     {
       EnsureAssemblyDependenciesAreLoaded();
@@ -79,6 +88,9 @@ namespace VSS.TRex.Server.DesignElevation
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+
+      DoServiceInitialisation();
+
       await Task.Delay(-1, cancelTokenSource.Token);
       return 0;
     }
