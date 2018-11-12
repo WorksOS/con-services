@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,13 +10,13 @@ namespace TestUtility
 {
   public class RdKafkaDriver
   {
-    public Producer kafkaProducer;
+    public Producer<byte[], byte[]> kafkaProducer;
 
     public RdKafkaDriver()
     {
       var appConfig = new TestConfig();
       Log.Info($"Kafka Server: {appConfig.kafkaServer} ", Log.ContentType.URI);
-      var producerConfig = new Dictionary<string, object>
+      var producerConfig = new Dictionary<string, string>
       {
         {"bootstrap.servers", appConfig.kafkaServer},
         {"session.timeout.ms", "10000"},
@@ -25,8 +26,7 @@ namespace TestUtility
         //{"acks", "all"},
         //{"block.on.buffer.full", "true"}
       };
-
-      kafkaProducer = new Producer(producerConfig);
+      kafkaProducer = new Producer<byte[], byte[]>(producerConfig.ToList<KeyValuePair<string, string>>());
     }
 
     /// <summary>
@@ -42,7 +42,8 @@ namespace TestUtility
         Console.WriteLine($"Publish: {topicName} Message: {message} ");
         var data = Encoding.UTF8.GetBytes(message);
         var key = Encoding.UTF8.GetBytes(message);
-        var deliveryReport = kafkaProducer.ProduceAsync(topicName, key, data).ContinueWith(task =>
+
+        var deliveryReport = kafkaProducer.ProduceAsync(topicName, new Message<byte[], byte[]>() { Key = key, Value = data }).ContinueWith(task =>
         {
           Log.Info(
             $"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {task.Status.ToString()}",

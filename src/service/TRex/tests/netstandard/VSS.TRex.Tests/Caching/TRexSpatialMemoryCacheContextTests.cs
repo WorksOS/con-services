@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching;
+﻿using System;
+using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -16,6 +17,8 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(context.ContextTokens != null, "No index subgrid tree created");
       Assert.True(context.MRUList == null);
       Assert.True(context.OwnerMemoryCache == null);
+      Assert.False(context.MarkedForRemoval);
+      Assert.True(context.MarkedForRemovalAt == DateTime.MinValue);
     }
 
     [Fact]
@@ -28,11 +31,29 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_Creation_Default_Project()
+    {
+      ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null);
+
+      Assert.True(context.ProjectUID == Guid.Empty, "Default projectUID not set.");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_Creation_NonDefault_Project()
+    {
+      Guid _projectUID = Guid.NewGuid();
+
+      ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null, TimeSpan.Zero, "", _projectUID);
+
+      Assert.True(context.ProjectUID == _projectUID, "Default projectUID not set.");
+    }
+
+    [Fact]
     public void Test_TRexSpatialMemoryCacheContext_Creation_WithOwnerAndMRU()
     {
-      ITRexSpatialMemoryCacheContext context = 
-        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5), 
-                                          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       Assert.True(context.ContextTokens != null, "No index subgrid tree created");
       Assert.True(context.MRUList != null, "No MRU list available");
@@ -46,7 +67,7 @@ namespace VSS.TRex.Tests.Caching
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
-      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
+      var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
       context.Add(element);
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");
@@ -65,13 +86,14 @@ namespace VSS.TRex.Tests.Caching
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
-      context.Add(element);
+      context.OwnerMemoryCache.Add(context, element);
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");
       Assert.True(context.MRUList.TokenCount == 1, $"MRU list count incorrect (= {context.MRUList.TokenCount})");
 
       // Check the newly added element in the context is present in the context map with a 1-based index
-      Assert.True(context.ContextTokens[element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] == 1, "Single newly added element does not have index of 1 present in ContextTokens");
+      Assert.True(context.ContextTokens[element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] == 1,
+        "Single newly added element does not have index of 1 present in ContextTokens");
 
       context.Remove(element);
 
@@ -85,10 +107,85 @@ namespace VSS.TRex.Tests.Caching
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
+      var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
+
+      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
+      Assert.False(context.OwnerMemoryCache.Add(context, element), "Result is true on second addition of same element");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_MarkForRemovalDirect()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+      Assert.False(context.MarkedForRemoval);
+
+      var currentDate = DateTime.Now;
+
+      context.MarkForRemoval(DateTime.Now);
+      Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
+      Assert.True(context.MarkedForRemovalAt >= currentDate && context.MarkedForRemovalAt <= DateTime.Now, "Marking context for removal did not set state");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_MarkForRemovalViaLastElementRemoved()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+      Assert.False(context.MarkedForRemoval);
+
+      var currentDate = DateTime.Now;
       var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
 
-      Assert.True(context.Add(element), "Result is false on addition of first element");
-      Assert.False(context.Add(element), "Result is true on second addition of same element");
+      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
+      Assert.True(!context.MarkedForRemoval && context.TokenCount == 1);
+
+      context.Remove(element);
+
+      Assert.True(context.MarkedForRemoval, "Removing last element in context for removal did not mark for removal");
+      Assert.True(context.MarkedForRemovalAt >= currentDate && context.MarkedForRemovalAt <= DateTime.Now, "Removal date not expected");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_ReanimateDirect()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+      var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
+
+      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
+
+      context.MarkForRemoval(DateTime.Now);
+      Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
+
+      context.Reanimate();
+      Assert.False(context.MarkedForRemoval, "Marking context for removal did not set state");
+      Assert.True(context.MarkedForRemovalAt == DateTime.MinValue, "Marking context for removal did not set date");
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_ReanimateViaItemAddition()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
+
+      context.MarkForRemoval(DateTime.Now);
+      Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
+
+      // Reanimate by adding an element
+      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
+
+      Assert.False(context.MarkedForRemoval, "Marking context for removal did not set state");
+      Assert.True(context.MarkedForRemovalAt == DateTime.MinValue, "Marking context for removal did not set date");
     }
   }
 }

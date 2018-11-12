@@ -13,11 +13,12 @@ namespace VSS.TRex.Caching.Interfaces
 
     int CurrentNumElements { get; }
 
-    void ItemAddedToContext(int sizeInBytes);
     void ItemRemovedFromContext(int sizeInBytes);
 
     int ContextCount { get; }
     int ProjectCount { get; }
+
+    long ContextRemovalCount { get; }
 
     bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element);
     ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, uint originX, uint originY);
@@ -27,5 +28,7 @@ namespace VSS.TRex.Caching.Interfaces
     ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint, TimeSpan cacheDuration);
 
     void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask);
+
+    void RemoveContextsMarkedForRemoval(TimeSpan age);
   }
 }
