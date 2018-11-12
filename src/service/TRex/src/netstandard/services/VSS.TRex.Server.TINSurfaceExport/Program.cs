@@ -82,6 +82,9 @@ namespace VSS.TRex.Server.TINSurfaceExport
         // Register the listener for site model attribute change notifications
       .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
       .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+
+      .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+
       .Complete();
     }
 
@@ -132,7 +135,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
-      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

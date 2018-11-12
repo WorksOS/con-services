@@ -40,6 +40,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
         .Complete();
     }
 
@@ -72,7 +73,7 @@ namespace VSS.TRex.Server.DesignElevation
     private static void DoServiceInitialisation()
     {
       // Register the heartbeat loggers
-      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

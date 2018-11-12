@@ -94,6 +94,8 @@ namespace VSS.TRex.Server.TileRendering
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
 
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+
         // Setup dependencies for communication with the Trimble Coordinate Service.
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
         .Add(x => x.AddTransient<TPaaSAuthenticatedRequestHandler>())
@@ -149,7 +151,7 @@ namespace VSS.TRex.Server.TileRendering
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
-      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

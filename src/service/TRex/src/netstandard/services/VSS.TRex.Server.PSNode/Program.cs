@@ -157,8 +157,8 @@ namespace VSS.TRex.Server.PSNode
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
-      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new MemoryHeartBeatLogger());
-      DIContext.Obtain<ITRexHeartBeatLogger>()?.AddContext(new SpatialMemoryCacheHeartBeatLogger());      
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SpatialMemoryCacheHeartBeatLogger());      
     }
 
     static async Task<int> Main(string[] args)
