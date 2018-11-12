@@ -126,7 +126,7 @@ namespace VSS.ConfigurationStore
       // zero is valid. Returns int.MinValue on error
       if (!int.TryParse(_configuration[key], out int valueInt))
       {
-        valueInt = int.MaxValue;
+        valueInt = int.MinValue;
       }
 
       _log.LogTrace($"Served configuration value {key}:{valueInt}");

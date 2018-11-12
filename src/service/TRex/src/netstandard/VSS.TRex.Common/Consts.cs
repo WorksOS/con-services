@@ -144,7 +144,7 @@ namespace VSS.TRex.Common
     /// <summary>
     /// The maximum aggregate size in bytes of all data stores in the general subgrid result cache
     /// </summary>
-    public const int kGeneralSubgridResultCacheMaximumSize = 1_000_000_000; // override with GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE
+    public const long kGeneralSubgridResultCacheMaximumSize = 1_000_000_000; // override with GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE
 
     /// <summary>
     /// The fraction of the Most Recently Used elements stored in the cache that are not such to
