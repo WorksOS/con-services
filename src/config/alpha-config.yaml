@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: 3dapp-alpha
+  namespace: alpha
+data: 
+# TCC configuration
+  TCCBASEURL: https://www.myconnectedsite.com
+  TCCORG: vldev
+  TCCUSERNAME: vldev
+  TCCPWD: vldev_key
+  TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
+#Jaeger configuration  
+  JAEGER_AGENT_HOST: jaeger-agent.jaeger
+  JAEGER_AGENT_PORT: "6831"
+  JAEGER_SAMPLER_TYPE: const
+#MySql configuration  
+  MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+  MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+  MYSQL_PORT: "3306"
+  MYSQL_USERNAME: Merino
+  MYSQL_ROOT_PASSWORD: "R58Kper%5"
+  MYSQL_USERNAME_BUILD: "vssBuildUsr"
+  MYSQL_PASSWORD_BUILD: "V$$8u1ld45er"
+#Kafka configuration  
+  KAFKA_URI: 10.97.97.96
+  KAFKA_PORT: 9092
+  KAFKA_TOPIC_NAME_SUFFIX: -Alpha
+  KAFKA_OFFSET: latest
+  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
+#Service references  
+  ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/associateprojectsubscription
+  DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/dissociateprojectsubscription
+  CONNECTED_SITE_GATEWAY_URL: http://connectedsite.alpha.k8s.vspengg.com/api/position
+  COORDSYSPOST_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/1.0/coordsystem
+  COORDSYSVALIDATE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/1.0/coordsystem/validation
+  CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
+  FILTER_API_URL: http://filter.alpha.k8s.vspengg.com/api/v1
+  GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/
+  IMPORTED_FILE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles
+  IMPORTED_FILE_API_URL2: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfile
+  PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
+  PROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project?includeLandfill=true
+  PROJECT_INTERNAL_BASE_URL: http://project.alpha.k8s.vspengg.com
+  PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4
+  RAPTOR_3DPM_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0
+  RAPTOR_NOTIFICATION_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0/notification
+  RAPTOR_PROJECT_SETTINGS_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0
+  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.alpha.k8s.vspengg.com/internal/v1/background
+  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.alpha.k8s.vspengg.com/internal/v1/export
+  VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0/export/veta
+  TREX_TAGFILE_API_URL: http://trex.mutable.alpha.k8s.vspengg.com/api/v2/tagfiles
+#CAP configuration  
+  MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Alpha
+  MYSQL_CAP_TABLE_PREFIX: Project
+  KAFKA_CAP_GROUP_NAME: Project-CAP
+#Misc stuff   
+  TILE_RENDER_MAX_ZOOM_LEVEL: 21
+  TILE_RENDER_MAX_ZOOM_RANGE: 14
+  TILE_RENDER_WAIT_INTERVAL: 2000
+  CUSTOM_INIT_SCRIPT: zookeeper_check.sh
+  LOG_MAX_CHAR: "1000"
+  SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES: "720"
+  DOWNLOAD_FOLDER: "C:/temp/"  
+  ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
+  AWS_TAGFILE_BUCKET_NAME: vss-stg-directtagfile-archives
+#AWS configuration  
+  AWS_BUCKET_NAME: vss-exports-stg
+  AWS_ACCESS_KEY: AKIAIBGOEETXHMANDX7A
+  AWS_SECRET_KEY: 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
+  AWS_PRESIGNED_URL_EXPIRY: "7.00:00:00"
+#Raptor configuration
+  ASNODEIP:10.97.96.150
+  ENABLE_CONNECTED_SITE_GATEWAY: false
+  ENABLE_RAPTOR_GATEWAY: false
+  ENABLE_TREX_GATEWAY: false
+  IONODEIP: 10.97.96.165
+  SHAREUNC: \\alpha-iolv01.vssengg.com\ProductionData
+  RAPTORUSERNAME: svcRaptor
+  TCCSynchOtherIssueFolder: Other... (Issue)
+  TCCSynchProductionDataArchivedFolder: Production-Data (Archived)
+  TCCSynchProjectBoundaryIssueFolder: Project Boundary (Issue)
+  TCCSynchSubscriptionIssueFolder: Subscription (Issue)
+#Cache
+  MAX_FILE_SIZE: "100000000"
+  TILE_CACHE_LIFE: 00:15:00
+  CUSTOMER_CACHE_LIFE: 00:30:00
+  ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
+  FILTER_CACHE_LIFE: 00:15:00
+  GEOFENCE_CACHE_LIFE: 00:15:00
+  IMPORTED_FILE_CACHE_LIFE: 00:15:00
+  PROJECT_CACHE_LIFE: 00:30:00
+  PROJECT_SETTINGS_CACHE_LIFE: 00:15:00
+  TILE_RENDER_JOB_TIMEOUT: 00:00:10  
+  DEFAULT_CONNECTION_LIMIT: 64
+  LIBUV_THREAD_COUNT: 32
+  MAX_IO_THREADS: 1024
+  MAX_WORKER_THREADS: 512
+  MIN_IO_THREADS: 1024
+  MIN_WORKER_THREADS: 512
+  SCHEDULED_JOB_TIMEOUT: 900000
+
+
+
+
+  

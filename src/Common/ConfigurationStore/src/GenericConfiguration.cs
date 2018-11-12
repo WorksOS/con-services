@@ -1,14 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace VSS.ConfigurationStore
 {
+
+  internal enum KubernetesState
+  {
+    Initialized,
+    Requested,
+    NotInitialized,
+    NotRequired,
+    Disabled
+  };
+
   /// <summary>
   /// Settings come from 2 sources:
   /// environment variables and 'internal' (appsettings.json)
+  /// Kubernetes configuration has the lowest priority
+  /// environment vars will override k8s
   /// Appsettings will override any environment setting
   /// if neither present then we'll use some defaults
   /// </summary>
@@ -17,6 +32,44 @@ namespace VSS.ConfigurationStore
     private readonly IConfigurationRoot _configuration;
     private readonly ILogger _log;
 
+
+    private static Dictionary<string, string> kubernetesConfig=null;
+    private static bool useKubernetes = false;
+    private static string kubernetesConfigMapName = null;
+    private static string kubernetesNamespace = null;
+    private static string kubernetesContext = null;
+    private static KubernetesState kubernetesInitialized = KubernetesState.NotInitialized;
+    private object kubernetesInitLock = new object();
+      
+
+    public bool UseKubernetes
+    {
+      get => useKubernetes;
+      set
+      {
+        useKubernetes = value;
+        kubernetesInitialized = KubernetesState.Requested;
+      }
+    }
+
+    public string KubernetesConfigMapName
+    {
+      get => kubernetesConfigMapName;
+      private set => kubernetesConfigMapName = value;
+    }
+
+    public string KubernetesNamespace
+    {
+      get => kubernetesNamespace;
+      private set => kubernetesNamespace = value;
+    }
+
+    public string KubernetesContext
+    {
+      get => kubernetesContext;
+      private set => kubernetesContext = value;
+    }
+
     public GenericConfiguration(ILoggerFactory logger)
     {
       IConfigurationBuilder configBuilder;
@@ -24,6 +77,8 @@ namespace VSS.ConfigurationStore
       _log.LogTrace("GenericConfig constructing");
       var builder = configBuilder = new ConfigurationBuilder()
         .AddEnvironmentVariables();
+
+
       try
       {
         _log.LogTrace("Base:" + AppContext.BaseDirectory);
@@ -54,12 +109,60 @@ namespace VSS.ConfigurationStore
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+        if (kubernetesConfig != null) builder.AddInMemoryCollection(kubernetesConfig);
+
         _configuration = configBuilder.Build();
       }
       catch (Exception ex)
       {
         _log.LogCritical($"GenericConfiguration exception: {ex.Message}, {ex.Source}, {ex.StackTrace}");
         throw;
+      }
+
+      if (kubernetesInitialized != KubernetesState.NotInitialized)
+        return;
+
+      lock (kubernetesInitLock)
+      {
+        if (_configuration["UseKubernetes"] == "true" && kubernetesInitialized == KubernetesState.NotInitialized)
+        {
+          kubernetesInitialized = KubernetesState.Requested;
+          UseKubernetes = true;
+          KubernetesConfigMapName = _configuration["KubernetesConfigMapName"];
+          KubernetesNamespace = _configuration["KubernetesNamespace"];
+          KubernetesContext = _configuration["KubernetesNamespace"];
+        }
+
+        if (!UseKubernetes)
+        {
+          kubernetesInitialized = KubernetesState.NotRequired;
+          return;
+        }
+
+        //try initialize Kubernetes
+        if (kubernetesInitialized == KubernetesState.Requested)
+        {
+          try
+          {
+            var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
+            var client = new Kubernetes(config);
+
+            kubernetesConfig = new Dictionary<string, string>(client
+              .ReadNamespacedConfigMapWithHttpMessagesAsync(KubernetesConfigMapName, KubernetesNamespace).Result.Body
+              .Data);
+            kubernetesInitialized = KubernetesState.Initialized;
+            builder.AddInMemoryCollection(kubernetesConfig);
+            _configuration = configBuilder.Build();
+          }
+          catch (Exception ex)
+          {
+            _log.LogWarning(
+              $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process.");
+            kubernetesInitialized = KubernetesState.Disabled;
+            UseKubernetes = false;
+          }
+        }
       }
     }
 

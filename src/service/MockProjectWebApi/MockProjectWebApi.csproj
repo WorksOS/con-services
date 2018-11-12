@@ -102,8 +102,6 @@
     <ProjectReference Include="..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
-    <ProjectReference Include="..\..\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

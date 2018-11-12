@@ -21,5 +21,9 @@ namespace VSS.ConfigurationStore
     string GetConnectionString(string connectionType);
     IConfigurationSection GetSection(string key);
     IConfigurationSection GetLoggingConfig();
+
+    bool UseKubernetes { get; }
+    string KubernetesConfigMapName { get; }
+    string KubernetesNamespace { get; }
   }
 }
