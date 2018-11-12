@@ -49,9 +49,8 @@ Set-Location .\AcceptanceTests
 Remove-Item *.trx
 
 Write-Host "Running tests..." -ForegroundColor DarkGray
-dotnet test .\VSS.Productivity3D.Service.AcceptanceTests.sln --logger "xunit;LogFileName=acceptancetestresults.xml"
-#mstest /testcontainer:ProductionDataSvc.AcceptanceTests.dll /resultsfile:testresults.trx
+dotnet test .\VSS.Productivity3D.Service.AcceptanceTests.sln --logger "trx;LogFileName=TestResults.trx"
 docker logs $containerName > logs.txt
 
-#Set-Location $PSScriptRoot
+Set-Location $PSScriptRoot
 Exit 0

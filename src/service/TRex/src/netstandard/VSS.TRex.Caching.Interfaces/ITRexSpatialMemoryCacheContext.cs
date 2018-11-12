@@ -5,7 +5,13 @@ namespace VSS.TRex.Caching.Interfaces
 {
   public interface ITRexSpatialMemoryCacheContext
   {
+    Guid ProjectUID { get; }
+
     string FingerPrint { get; }
+
+    bool MarkedForRemoval { get; set; }
+
+    DateTime MarkedForRemovalAt { get; set; }
 
     ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
@@ -28,5 +34,9 @@ namespace VSS.TRex.Caching.Interfaces
     void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
 
     void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation);
+
+    void MarkForRemoval(DateTime markedForRemovalAt);
+
+    void Reanimate();
   }
 }
