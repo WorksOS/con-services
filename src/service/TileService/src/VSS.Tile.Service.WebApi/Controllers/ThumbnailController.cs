@@ -195,7 +195,14 @@ namespace VSS.Tile.Service.WebApi.Controllers
       Log.LogDebug($"{nameof(GetGeofenceThumbnailsBase64)}: {Request.QueryString}");
 
       var geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+      if (geofenceUids.Any(g => !geofences.Select(k => k.GeofenceUID).Contains(g)))
+      {
+        geofenceProxy.ClearCacheItem(GetCustomerUid);
+        geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+      }
+
       var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0 ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID)) : geofences;
+
       var thumbnailsTasks = selectedGeofences.Select(GeofenceThumbnailPng);
 
       var thumbnails = await Task.WhenAll(thumbnailsTasks);
