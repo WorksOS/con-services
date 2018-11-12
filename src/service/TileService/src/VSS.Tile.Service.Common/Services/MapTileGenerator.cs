@@ -105,16 +105,14 @@ namespace VSS.Tile.Service.Common.Services
       log.LogInformation("Getting map tile");
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
-      Dictionary<TileOverlayType, byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
-      object lockObject = new object();
-
       log.LogDebug("Awaiting tiles to be completed");
 
       var overlays = await Task.WhenAll(request.overlays.Select(overlay => RequestTile(request, overlay)));
 
-      log.LogDebug($"Tiles completed: {tileList.Count} overlays");
+      log.LogDebug($"Tiles completed: {overlays.Count()} overlays");
 
-      var overlayTile = TileServiceUtils.OverlayTiles(request.mapParameters, tileList);
+      var overlayTile =
+        TileServiceUtils.OverlayTiles(request.mapParameters, overlays.ToDictionary(k => k.Item1, v => v.Item2));
       log.LogDebug("Tiles overlaid");
       overlayTile = ScaleTile(request, overlayTile);
       log.LogDebug("Tiles scaled");
