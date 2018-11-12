@@ -1,0 +1,20 @@
+{{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "trex.deployname" . }}-csg
+  labels:
+    app: {{ template "trex.deployname" . }}
+  annotations:
+  {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  rules:
+    - host: connectedsite.{{ $fdqn }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ template "trex.deployname" . }}-csg
+              servicePort: 80
+
