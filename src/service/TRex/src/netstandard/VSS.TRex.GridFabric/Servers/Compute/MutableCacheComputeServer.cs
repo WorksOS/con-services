@@ -10,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Serialisation;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -115,7 +117,10 @@ namespace VSS.TRex.Servers.Compute
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
 
-      //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
+      cfg.BinaryConfiguration = new BinaryConfiguration
+      {
+        Serializer = new BinarizableSerializer()
+      };
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);

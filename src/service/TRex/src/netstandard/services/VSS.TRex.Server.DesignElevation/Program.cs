@@ -6,6 +6,7 @@ using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -78,8 +79,9 @@ namespace VSS.TRex.Server.DesignElevation
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
+      Log4NetAspExtensions.ConfigureLog4Net("TRex");
 
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
       var cancelTokenSource = new CancellationTokenSource();
