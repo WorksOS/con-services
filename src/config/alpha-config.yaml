@@ -12,16 +12,16 @@ data:
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
 #Jaeger configuration  
   JAEGER_AGENT_HOST: jaeger-agent.jaeger
-  JAEGER_AGENT_PORT: "6831"
+  JAEGER_AGENT_PORT: 6831
   JAEGER_SAMPLER_TYPE: const
 #MySql configuration  
   MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
-  MYSQL_PORT: "3306"
+  MYSQL_PORT: 3306
   MYSQL_USERNAME: Merino
-  MYSQL_ROOT_PASSWORD: "R58Kper%5"
-  MYSQL_USERNAME_BUILD: "vssBuildUsr"
-  MYSQL_PASSWORD_BUILD: "V$$8u1ld45er"
+  MYSQL_ROOT_PASSWORD: R58Kper%5
+  MYSQL_USERNAME_BUILD: vssBuildUsr
+  MYSQL_PASSWORD_BUILD: V$$8u1ld45er
 #Kafka configuration  
   KAFKA_URI: 10.97.97.96
   KAFKA_PORT: 9092
@@ -70,7 +70,7 @@ data:
   AWS_SECRET_KEY: v0kHIWmLJ7cUvqgH4JEDdHWSxOU9767i+vgb4hdZ
   AWS_PRESIGNED_URL_EXPIRY: "7.00:00:00"
 #Raptor configuration
-  ASNODEIP:10.97.96.150
+  ASNODEIP: 10.97.96.150
   ENABLE_CONNECTED_SITE_GATEWAY: false
   ENABLE_RAPTOR_GATEWAY: false
   ENABLE_TREX_GATEWAY: false
@@ -82,7 +82,7 @@ data:
   TCCSynchProjectBoundaryIssueFolder: Project Boundary (Issue)
   TCCSynchSubscriptionIssueFolder: Subscription (Issue)
 #Cache
-  MAX_FILE_SIZE: "100000000"
+  MAX_FILE_SIZE: 100000000
   TILE_CACHE_LIFE: 00:15:00
   CUSTOMER_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
