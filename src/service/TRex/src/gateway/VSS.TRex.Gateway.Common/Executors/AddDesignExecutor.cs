@@ -15,6 +15,7 @@ using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Types;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
@@ -67,7 +68,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         var designLoadResult = TTM.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 99 /* todojeannie */);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int) RequestErrorStatus.DesignImportUnableToRetrieveFromS3);
         }
         // This generates the 2 index files below
         TTM.LoadFromFile(localPathAndFileName);
@@ -98,14 +99,13 @@ namespace VSS.TRex.Gateway.Common.Executors
         //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required
         S3FileTransfer.WriteFile(TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
         S3FileTransfer.WriteFile(TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
+
+        log.LogInformation($"#Out# AddDesignExecutor. Process add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
       }
       catch (Exception e)
       {
-        result = new ContractExecutionResult(/* todojeannie */ 9999, "Unable to Add Design. Exception: {e}");
-      }
-      finally
-      {
-        log.LogInformation($"#Out# AddDesignExecutor. Process add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
+        log.LogError($"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception: {e}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
       }
 
       return result;

@@ -15,6 +15,7 @@ using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Types;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
@@ -58,29 +59,37 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       try
       {
-        log.LogInformation($"#In# DeleteDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
-
-        // todojeannie rather than removing it here, should there be a DesignManager/SS.Update() which effectively does this?
-        //    how about removing the indexes from local and s3 storage?
-        //    should this remove go into the Designmanager.Update?
+        log.LogInformation($"#In# DeleteDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
         if (request.FileType == ImportedFileType.SurveyedSurface)
         {
-          var isDeletedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
-
+          DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
         }
         else
         {
-          var isDeletedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
+          DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
         }
+
+        var localPathAndFileName = Path.Combine(new[] { TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid.ToString(), request.FileName });
+        if (File.Exists(localPathAndFileName))
+        {
+          try
+          {
+            File.Delete(localPathAndFileName);
+            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
+            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
+          }
+          catch (Exception)
+          {
+            // ignored
+          }
+        }
+        log.LogInformation($"#Out# DeleteDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
       }
       catch (Exception e)
       {
-        result = new ContractExecutionResult(/* todojeannie */ 9999, "Unable to Delete Design. Exception: {e}");
-      }
-      finally
-      {
-        log.LogInformation($"#Out# DeleteDesignExecutor. Process add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
+        log.LogError($"#Out# DeleteDesignExecutor. Deletion failed design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception: {e}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
 
       return result;

@@ -1,45 +1,24 @@
 ﻿using System;
-using System.Data;
 using System.IO;
-using System.IO.Enumeration;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moq;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.Designs;
-using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Storage;
 using VSS.TRex.DI;
-using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Requests;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
-using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
-using VSS.TRex.SubGridTrees.Server;
-using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Geometry;
+using VSS.TRex.SurveyedSurfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Gateway.Tests
 {
-  public class CreateDesignExecutorTests
+  public class DesignExecutorTests
   {
 
     private Guid projectUid = Guid.Parse("A11F2458-6666-424F-A995-4426a00771AE");
@@ -85,71 +64,42 @@ namespace VSS.TRex.Gateway.Tests
       Assert.True(isReadFromS3Ok);
     }
 
-    //[Fact]
-    //public void AddDesign_HappyPath()
-    //{
-    //  SetupDI();
-    //  TRexServerConfig.PersistentCacheStoreLocation = Path.GetTempPath();
-    //  Guid designUid = Guid.NewGuid();
-    //  DesignSurfaceRequest request = new DesignSurfaceRequest(projectUid, transferFileName, designUid);
+    [Fact]
+    public void MapDesignsurfaceToResult()
+    {
+      var fileName = "theFile name.ttm";
+      var designUid = Guid.NewGuid();
+      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName, 0);
+      var extents = new BoundingWorldExtent3D(1, 2, 50, 100 );
+      var design = new Design(designUid, designDescriptor, extents);
 
-    //  var executor =
-    //    RequestExecutorContainer.Build<UpdateDesignExecutor>(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
-    //  var result = executor.Process(request);
+      var result = AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(design);
 
-    //  Assert.Equal(0, result.Code);
-    //  Assert.Equal("success", result.Message);
-    //}
+      Assert.Equal(ImportedFileType.DesignSurface, result.FileType);
+      Assert.Equal(fileName, result.Name);
+      Assert.Equal(designUid.ToString(), result.DesignUid);
+      Assert.Equal(extents.MaxX, result.Extents.MaxX);
+      Assert.Null(result.SurveyedUtc);
+    }
 
-    //private void SetupDI(string sourceFullPath = null)
-    //{
-    //  //var moqtransferProxy = new Mock<ITransferProxy>();
-    //  //var mockReadStream = new Mock<Stream>();
-    //  //byte[] bytes = new byte[] { 5,6,7,8 };
-    //  //mockReadStream.SetupSequence(s => s.ReadAsync(It.IsAny<byte[]>(), 0, 0x1000, CancellationToken.None))
-    //  //  .Returns(Task.FromResult(0x1000));
-    //  //  .Returns(Task.FromResult(0x500))
-    //  //  .Returns(Task.FromResult(0));
-    //  //mockReadStream.Setup(mk => mk.SetLength(5));
-    //  //var sourceFileStream = new FileStreamResult(mockReadStream.Object, "text/plain");
-    //  //  moqtransferProxy.Setup(mk => mk.Download(It.IsAny<string>())).Returns(Task.FromResult(sourceFileStream));
-    //  //  moqtransferProxy.Setup(mk => mk.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
+    [Fact]
+    public void MapSurveyedSurfaceToResult()
+    {
+      var fileName = "theFile name.ttm";
+      var designUid = Guid.NewGuid();
+      var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName, 0);
+      var extents = new BoundingWorldExtent3D(1, 2, 50, 100);
+      var surveyedUtc = DateTime.UtcNow.AddDays(-2);
+      var design = new SurveyedSurface(designUid, designDescriptor, surveyedUtc, extents);
 
-    //  DIBuilder
-    //    .New()
-    //    .AddLogging()
-    //    .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-    //    .Add(x => x.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>())
-    //    .Add(x => x.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>())
-    //    .Add(x => x.AddSingleton<ITransferProxy, TransferProxy>())
-    //    .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()))
-    //    .Build();
+      var result = AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(design);
 
+      Assert.Equal(ImportedFileType.SurveyedSurface, result.FileType);
+      Assert.Equal(fileName, result.Name);
+      Assert.Equal(designUid.ToString(), result.DesignUid);
+      Assert.Equal(extents.MaxX, result.Extents.MaxX);
+      Assert.Equal(surveyedUtc, result.SurveyedUtc);
+    }
 
-    //  var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
-    //  storageProxy.SetImmutableStorageProxy(new StorageProxy_Ignite_Transactional(StorageMutability.Immutable));
-
-    //  var moqStorageProxyFactory = new Mock<IStorageProxyFactory>();
-    //  moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Immutable)).Returns(storageProxy);
-    //  moqStorageProxyFactory.Setup(mk => mk.Storage(StorageMutability.Mutable)).Returns(storageProxy);
-    //  moqStorageProxyFactory.Setup(mk => mk.MutableGridStorage()).Returns(storageProxy);
-    //  moqStorageProxyFactory.Setup(mk => mk.ImmutableGridStorage()).Returns(storageProxy);
-
-    //  //var moqSurveyedSurfaces = new Mock<ISurveyedSurfaces>();
-    //  var moqSiteModels = new Mock<ISiteModels>();
-    //  moqSiteModels.Setup(mk => mk.StorageProxy).Returns(storageProxy);
-
-    //  DIBuilder
-    //    .Continue()
-    //    .Add(x => x.AddSingleton<IStorageProxy>(storageProxy))
-    //    .Add(x => x.AddSingleton<IStorageProxyFactory>(moqStorageProxyFactory.Object))
-    //    .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
-    //    .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
-    //    .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
-    //    //  .Add(x => x.AddSingleton<ISurveyedSurfaces>(moqSurveyedSurfaces.Object))
-    //    //  .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
-    //    .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
-    //    .Complete();
-    //}
   }
 }

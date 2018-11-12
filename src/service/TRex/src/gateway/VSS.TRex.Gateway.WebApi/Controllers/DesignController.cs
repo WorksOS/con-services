@@ -96,11 +96,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="designRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    public ContractExecutionResult CreateDesignSurface([FromBody] DesignRequest designRequest)
+    public ContractExecutionResult CreateDesign([FromBody] DesignRequest designRequest)
     {
-      /* todojeannie move env vars from appsettings to yaml - which services? */
-
-      Log.LogInformation($"{nameof(CreateDesignSurface)}: {JsonConvert.SerializeObject(designRequest)}");
+      Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
 
       if (GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
@@ -141,7 +139,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update."));
+        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
       }
 
       return WithServiceExceptionTryExecute(() =>
@@ -153,8 +151,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
     /// <summary>
     /// Deletes a design from a sitemodel.
-    ///    Also removes the index files from S3.
-    ///    Removal of the design file from S3 is done by ProjectSvc.
+    ///    Files are left on S3 (as per Dmitry)
+    ///    Local copies in temp are removed
     /// </summary>
     /// <param name="designRequest"></param>
     /// <returns></returns>
@@ -166,7 +164,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update."));
+        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot update.");
       }
 
       return WithServiceExceptionTryExecute(() =>
