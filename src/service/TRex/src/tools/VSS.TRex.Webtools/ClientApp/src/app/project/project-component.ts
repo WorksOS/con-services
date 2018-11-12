@@ -157,6 +157,36 @@ constructor(
     this.getTileXTimes(1);
   }
 
+  public async getTileAsync(projectUid: string,
+    mode: number,
+    pixelsX: number,
+    pixelsY: number,
+    tileExtents: ProjectExtents): Promise<string> {
+
+    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents)
+        .subscribe(tile => {
+          this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
+          resolve();
+        }
+        ));
+  }
+
+  public performNTimesSync(doSomething: (numRemaining:number) => Promise<any>, count: number): void {
+//    for (var i = count; i > 0; i) {
+      let result: Promise<any> = doSomething(count);
+      result.then(() => {
+      if (count > 0) {
+        doSomething(count - 1);
+      }
+    });  
+//  };
+  }
+
+  public testAsync() {
+    this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
+    this.performNTimesSync(() => this.getTileAsync(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents), 10);
+  }
+
   public getTile() : void {
     // If there is no project bail...
     if (this.projectUid == undefined)

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Common
 {
@@ -12,7 +15,7 @@ namespace VSS.TRex.Common
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexHeartBeatLogger>();
 
-    private const int kDefaultIntervalInMilliseconds = 10000;
+    private static readonly int kDefaultIntervalInMilliseconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("HEARTBEAT_LOGGER_INTERVAL", Common.Consts.kHeartBeatLoggerInterval);
 
     private readonly List<object> loggingContexts;
 
@@ -21,12 +24,15 @@ namespace VSS.TRex.Common
     public int IntervalInMilliseconds { get; }
 
     /// <summary>
-    /// Creates a new heartbeat logger with the default interval between heart beat epochs
+    /// Creates a new heartbeat logger with a defined interval between heart beat epochs
     /// </summary>
-    public TRexHeartBeatLogger()
+    public TRexHeartBeatLogger(int intervalMS)
     {
+      if (intervalMS <= 100)
+        throw new ArgumentException("Heart beat logger interval cannot be <= 100 milliseconds");
+
       loggingContexts = new List<object>();
-      IntervalInMilliseconds = kDefaultIntervalInMilliseconds;
+      IntervalInMilliseconds = intervalMS;
 
       contextRunner = new Thread(() =>
       {
@@ -40,6 +46,13 @@ namespace VSS.TRex.Common
       });
 
       contextRunner.Start();
+    }
+
+    /// <summary>
+    /// Creates a new heartbeat logger with the default interval between heart beat epochs
+    /// </summary>
+    public TRexHeartBeatLogger() : this(kDefaultIntervalInMilliseconds)
+    {
     }
 
     public void AddContext(object context) => loggingContexts.Add(context);

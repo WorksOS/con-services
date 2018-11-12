@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -57,6 +58,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
 
         .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager()))
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
        .Complete();
     }
@@ -117,6 +119,11 @@ namespace VSS.TRex.Server.MutableData
       }
     }
 
+    private static void DoServiceInitialisation()
+    {
+      // Register the heartbeat loggers
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+    }
 
     static async Task<int> Main(string[] args)
     {
@@ -133,6 +140,9 @@ namespace VSS.TRex.Server.MutableData
         Console.WriteLine("Exiting");
         cancelTokenSource.Cancel();
       };
+
+      DoServiceInitialisation();
+
       await Task.Delay(-1, cancelTokenSource.Token);
       return 0;
     }
