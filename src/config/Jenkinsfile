@@ -1,0 +1,5 @@
+node ('jenkinsslave-pod') {
+
+ sh "kubectl apply -f ./src/config/*.yaml"
+
+}
