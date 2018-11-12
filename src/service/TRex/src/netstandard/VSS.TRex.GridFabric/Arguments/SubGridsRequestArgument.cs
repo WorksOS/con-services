@@ -9,11 +9,6 @@ namespace VSS.TRex.GridFabric.Arguments
     public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>
-        /// The ID of the SiteModel to execute the request against
-        /// </summary>
-        public Guid SiteModelID = Guid.Empty;
-
-        /// <summary>
         /// The request ID for the subgrid request
         /// </summary>
         public Guid RequestID = Guid.Empty;
