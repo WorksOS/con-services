@@ -163,23 +163,22 @@ constructor(
     pixelsY: number,
     tileExtents: ProjectExtents): Promise<string> {
 
+    var vm = this;
     return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents)
         .subscribe(tile => {
-          this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
+          vm.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
           resolve();
         }
         ));
   }
 
   public performNTimesSync(doSomething: (numRemaining:number) => Promise<any>, count: number): void {
-//    for (var i = count; i > 0; i) {
       let result: Promise<any> = doSomething(count);
       result.then(() => {
       if (count > 0) {
         doSomething(count - 1);
       }
     });  
-//  };
   }
 
   public testAsync() {
