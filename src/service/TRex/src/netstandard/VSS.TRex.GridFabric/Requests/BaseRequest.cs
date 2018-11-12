@@ -1,4 +1,4 @@
-﻿using System;
+﻿using VSS.TRex.Exceptions;
 
 namespace VSS.TRex.GridFabric.Requests
 {
@@ -26,7 +26,7 @@ namespace VSS.TRex.GridFabric.Requests
         public virtual TResponse Execute(TArgument arg)
         {
           // No implementation in base class - complain if we are called
-          throw new NotImplementedException("BaseRequest.Execute invalid to call.");
+          throw new TRexException("BaseRequest.Execute invalid to call.");
         }
     }
 }

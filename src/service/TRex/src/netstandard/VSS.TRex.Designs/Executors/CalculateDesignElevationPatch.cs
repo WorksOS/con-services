@@ -30,7 +30,7 @@ namespace VSS.TRex.Designs.Executors
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
 
-            DesignBase Design = DesignFiles.Designs.Lock(Args.DesignDescriptor, Args.SiteModelID, Args.CellSize, out DesignLoadResult LockResult);
+            DesignBase Design = DesignFiles.Designs.Lock(Args.DesignDescriptor, Args.ProjectID, Args.CellSize, out DesignLoadResult LockResult);
 
             if (Design == null)
             {

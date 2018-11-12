@@ -1,4 +1,5 @@
-﻿using VSS.TRex.GridFabric.Interfaces;
+﻿using VSS.TRex.Common;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 
 namespace VSS.TRex.Rendering.GridFabric.Responses
@@ -6,7 +7,7 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
     /// <summary>
     /// Contains the response bitmap for a tile request. Supports compositing of another bitmap with this one
     /// </summary>
-    public class TileRenderResponse : ITileRenderResponse, IAggregateWith<ITileRenderResponse>
+    public class TileRenderResponse : SubGridsPipelinedReponseBase, ITileRenderResponse, IAggregateWith<ITileRenderResponse>
     {
 //        public Bitmap Bitmap { get; set; }
 

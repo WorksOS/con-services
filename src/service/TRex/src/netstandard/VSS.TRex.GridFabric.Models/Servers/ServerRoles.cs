@@ -51,7 +51,7 @@
     public const string PATCH_REQUEST_ROLE = "Patches";
 
     /// <summary>
-    /// A server responsible for computing various analytics, such as cut fill statistics, from production data
+    /// A server responsible for computing various analytic queries, such as cut fill statistics, from production data
     /// </summary>
     public const string ANALYTICS_NODE = "Analytics";
 

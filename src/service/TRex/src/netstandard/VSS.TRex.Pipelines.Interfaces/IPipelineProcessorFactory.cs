@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces.Tasks;

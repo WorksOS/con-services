@@ -135,7 +135,7 @@ namespace VSS.TRex.SubGridTrees.Server
       // to disk). If not, it is only in memory and can represent one part of the set
       // of cloven segments waiting for persistence.
       if (CleavingSegment.SegmentInfo.ExistsInPersistentStore)
-        PersistedClovenSegments.Add(CleavingSegment.SegmentInfo.AffinityKey());
+        PersistedClovenSegments.Add(CleavingSegment.SegmentInfo.AffinityKey(Owner.Parent.Owner.ID));
 
       // Look for the time that splits the segment. Stop when we are within 100 cell passes
       // of the exact time.

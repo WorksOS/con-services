@@ -6,6 +6,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.CMVStatistics;
 using VSS.TRex.Analytics.CMVStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 using CMVStatisticsResult = VSS.TRex.Analytics.CMVStatistics.CMVStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.CMVSummaryResult;

@@ -61,6 +61,7 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling.Interfaces\VSS.TRex.Profiling.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling.Models\VSS.TRex.Profiling.Models.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Profiling\VSS.TRex.Profiling.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Storage.Interfaces\VSS.TRex.Storage.Interfaces.csproj" />

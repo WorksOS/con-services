@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -30,7 +29,7 @@ namespace VSS.TRex.Servers.Compute
   /// </summary>
   public class ImmutableCacheComputeServer : IgniteServer
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logger.CreateLogger<ImmutableCacheComputeServer>();
 
     /// <summary>
     /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid

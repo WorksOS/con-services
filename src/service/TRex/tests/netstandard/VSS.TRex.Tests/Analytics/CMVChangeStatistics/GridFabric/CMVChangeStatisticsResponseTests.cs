@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Common;
 using VSS.TRex.Tests.Analytics.Common;
@@ -18,7 +19,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       CellsScannedUnderTarget = CELLS_UNDER_TARGET,
       SummaryCellsScanned = CELLS_OVER_TARGET + CELLS_AT_TARGET + CELLS_UNDER_TARGET,
       IsTargetValueConstant = true,
-      Counts = new long[] { 10, 5, 45, 30, 15, 25, 55 }
+      Counts = CountsArray
     };
 
     [Fact]
@@ -56,14 +57,14 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
     {
       var responseClone = new CMVChangeStatisticsResponse()
       {
-        ResultStatus = _response.ResultStatus,
+        ResultStatus = _response.ResultStatus, 
         CellSize = _response.CellSize,
         CellsScannedOverTarget = _response.CellsScannedOverTarget,
         CellsScannedAtTarget = _response.CellsScannedAtTarget,
         CellsScannedUnderTarget = _response.CellsScannedUnderTarget,
         SummaryCellsScanned = _response.SummaryCellsScanned,
         IsTargetValueConstant = _response.IsTargetValueConstant,
-        Counts = _response.Counts
+        Counts = _response.Counts.ToArray()
       };
 
       var response = _response.AggregateWith(responseClone);
@@ -72,10 +73,9 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       Assert.True(response.SummaryCellsScanned == _response.SummaryCellsScanned * 2, "Invalid aggregated value for SummaryCellsScanned.");
       Assert.True(Math.Abs(response.SummaryProcessedArea - _response.SummaryProcessedArea * 2) < Consts.TOLERANCE_DIMENSION, "Invalid aggregated value for SummaryProcessedArea.");
 
-      Assert.True(response.Counts.Length == _response.Counts.Length, "Invalid value for Counts.");
+      Assert.True(response.Counts.Length == responseClone.Counts.Length, "Invalid value for Counts.");
       for (int i = 0; i < response.Counts.Length; i++)
-        Assert.True(response.Counts[i] > _response.Counts[i], $"Invalid aggregated value for Counts[{i}].");
+        Assert.True(response.Counts[i] > responseClone.Counts[i], $"Invalid aggregated value for Counts[{i}].");
     }
-
   }
 }

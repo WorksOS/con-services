@@ -1,6 +1,6 @@
 ﻿using System;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {
@@ -102,7 +102,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// The design used as an alignment mask spatial filter
     /// </summary>
     Guid AlignmentMaskDesignUID { get; set; }
-
+/*
     /// <summary>
     /// Delegates hash code to default object implementation
     /// </summary>
@@ -122,6 +122,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    bool Equals(ICellSpatialFilterModel other);
+    new bool Equals(ICellSpatialFilterModel other);
+ */
   }
 }

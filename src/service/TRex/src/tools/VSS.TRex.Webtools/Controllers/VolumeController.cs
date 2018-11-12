@@ -38,7 +38,7 @@ namespace VSS.TRex.Webtools.Controllers
       var request = new SimpleVolumesRequest_ApplicationService();
        var response = request.Execute(new SimpleVolumesRequestArgument
        {
-         SiteModelID = Guid.Parse(siteModelID),
+         ProjectID = Guid.Parse(siteModelID),
          VolumeType = VolumeComputationType.Between2Filters,
          BaseFilter = baseFilter,
          TopFilter = topFilter

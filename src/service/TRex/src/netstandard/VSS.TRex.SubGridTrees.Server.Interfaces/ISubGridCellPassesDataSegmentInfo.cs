@@ -34,7 +34,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
 
-    ISubGridSpatialAffinityKey AffinityKey();
+    ISubGridSpatialAffinityKey AffinityKey(Guid projectUID);
 
     /// <summary>
     /// Updates the version of the segment to reflect the current date time

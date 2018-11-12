@@ -252,7 +252,7 @@ namespace VSS.TRex.SubGridTrees.Server
         if (cleaver.PersistedClovenSegments != null)
           invalidatedSpatialStreams.AddRange(cleaver.PersistedClovenSegments);
 
-        invalidatedSpatialStreams.AddRange(ModifiedOriginaSegments.Select(x => x.SegmentInfo.AffinityKey()));
+        invalidatedSpatialStreams.AddRange(ModifiedOriginaSegments.Select(x => x.SegmentInfo.AffinityKey(ID)));
 
         //**********************************************************************
         //*** Construct list of new segment files that have been created     ***

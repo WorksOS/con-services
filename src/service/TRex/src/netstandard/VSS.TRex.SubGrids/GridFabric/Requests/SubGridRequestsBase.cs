@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Requests;
@@ -21,7 +20,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+      // ReSharper disable once StaticMemberInGenericType
+      private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request
@@ -61,7 +61,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         public ISubGridTreeBitMask ProdDataMask { get; set; }
 
         /// <summary>
-        /// A subgrid bit mask tree identifying all the surveyd surface subgrids that require processing
+        /// A subgrid bit mask tree identifying all the surveyed surface subgrids that require processing
         /// </summary>
         public ISubGridTreeBitMask SurveyedSurfaceOnlyMask { get; set; }
 
@@ -153,13 +153,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             if (ProdDataMask == null || SurveyedSurfaceOnlyMask == null || Filters == null || RequestID == Guid.Empty)
             {
                 if (ProdDataMask == null)
-                    throw new ArgumentException("ProdDataMask not initialised");
+                    throw new ArgumentException("ProdDataMask not initialized");
                 if (SurveyedSurfaceOnlyMask == null)
-                    throw new ArgumentException("SurveyedSurfaceOnlyMask not initialised");
+                    throw new ArgumentException("SurveyedSurfaceOnlyMask not initialized");
                 if (Filters == null)
-                    throw new ArgumentException("Filters not initialised");
+                    throw new ArgumentException("Filters not initialized");
                 if (RequestID == Guid.Empty)
-                    throw new ArgumentException("RequestID not initialised");
+                    throw new ArgumentException("RequestID not initialized");
             }
         }
 
