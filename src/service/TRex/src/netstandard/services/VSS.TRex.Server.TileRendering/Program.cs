@@ -13,6 +13,8 @@ using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
@@ -99,7 +101,7 @@ namespace VSS.TRex.Server.TileRendering
           .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
         .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
           .AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>()
-
+        .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Complete();
     }
 

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using Apache.Ignite.Core.Binary;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Arguments
 {
@@ -10,10 +7,8 @@ namespace VSS.TRex.GridFabric.Arguments
   ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include
   ///  containing the identifier of a TRex Application Service Node that originated the request
   /// </summary>
-  public class BaseApplicationServiceRequestBinarizableArgument : BaseRequestBinarizableArgument, IFromToBinary
+  public class BaseApplicationServiceRequestNonBinarizableArgument
   {
-    private const byte versionNumber = 1;
-
     // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor
 
     /// <summary>
@@ -38,27 +33,5 @@ namespace VSS.TRex.GridFabric.Arguments
     public Guid ReferenceDesignID { get; set; } = Guid.Empty;
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
-
-    public override void ToBinary(IBinaryRawWriter writer)
-    {
-      writer.WriteString(TRexNodeID);
-      writer.WriteGuid(ProjectID);
-      writer.WriteGuid(ReferenceDesignID);
-
-      Filters.ToBinary(writer);
-    }
-
-    public override void FromBinary(IBinaryRawReader reader)
-    {
-      byte readVersionNumber = reader.ReadByte();
-
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
-
-      TRexNodeID = reader.ReadString();
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      ReferenceDesignID = reader.ReadGuid() ?? Guid.Empty;
-
-      Filters.FromBinary(reader);
-    }
   }
 }

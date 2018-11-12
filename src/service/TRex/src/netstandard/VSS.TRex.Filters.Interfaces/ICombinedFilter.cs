@@ -1,4 +1,4 @@
-﻿using VSS.TRex.GridFabric.Interfaces;
+﻿using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {

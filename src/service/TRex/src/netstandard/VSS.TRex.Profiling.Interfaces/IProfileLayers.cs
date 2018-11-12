@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Apache.Ignite.Core.Binary;
 
 namespace VSS.TRex.Profiling.Interfaces
 {

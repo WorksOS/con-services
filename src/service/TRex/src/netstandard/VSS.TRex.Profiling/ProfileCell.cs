@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -275,37 +279,38 @@ namespace VSS.TRex.Profiling
       }
 
       if (hasElevationTypeFilter)
-      { // this means we are only interested in one pass so other results should match elev type selected
+      {
+        // this means we are only interested in one pass so other results should match elev type selected
         switch (elevationType)
         {
           case ElevationType.Last:
-          {
-            CellLowestElev = CellLastElev;
-            CellHighestElev = CellLastElev;
-            CellFirstElev = CellLastElev;
-            break;
-          }
+            {
+              CellLowestElev = CellLastElev;
+              CellHighestElev = CellLastElev;
+              CellFirstElev = CellLastElev;
+              break;
+            }
           case ElevationType.First:
-          {
-            CellLowestElev = CellFirstElev;
-            CellHighestElev = CellFirstElev;
-            CellLastElev = CellFirstElev;
-            break;
-          }
+            {
+              CellLowestElev = CellFirstElev;
+              CellHighestElev = CellFirstElev;
+              CellLastElev = CellFirstElev;
+              break;
+            }
           case ElevationType.Highest:
-          {
-            CellLowestElev = CellHighestElev;
-            CellFirstElev = CellHighestElev;
-            CellLastElev = CellHighestElev;
-            break;
-          }
+            {
+              CellLowestElev = CellHighestElev;
+              CellFirstElev = CellHighestElev;
+              CellLastElev = CellHighestElev;
+              break;
+            }
           case ElevationType.Lowest:
-          {
-            CellHighestElev = CellLowestElev;
-            CellFirstElev = CellLowestElev;
-            CellLastElev = CellLowestElev;
-            break;
-          }
+            {
+              CellHighestElev = CellLowestElev;
+              CellFirstElev = CellLowestElev;
+              CellLastElev = CellLowestElev;
+              break;
+            }
         }
       }
     }
@@ -463,57 +468,331 @@ namespace VSS.TRex.Profiling
 
       return false;
     }
+
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteDouble(Station);
+      writer.WriteDouble(InterceptLength);
+
+      writer.WriteBoolean(Layers != null);
+      if (Layers != null)
+      {
+        writer.WriteInt(Layers.Count());
+
+        foreach (var layer in Layers)
+          layer.ToBinary(writer);
+      }
+
+      writer.WriteInt((int)OTGCellX);
+      writer.WriteInt((int)OTGCellY);
+
+      writer.WriteFloat(CellLowestElev);
+      writer.WriteFloat(CellHighestElev);
+      writer.WriteFloat(CellLastElev);
+      writer.WriteFloat(CellFirstElev);
+      writer.WriteFloat(CellLowestCompositeElev);
+      writer.WriteFloat(CellHighestCompositeElev);
+      writer.WriteFloat(CellLastCompositeElev);
+      writer.WriteFloat(CellFirstCompositeElev);
+      writer.WriteFloat(DesignElev);
+
+      writer.WriteShort(CellCCV);
+      writer.WriteShort(CellTargetCCV);
+      writer.WriteShort(CellPreviousMeasuredCCV);
+      writer.WriteShort(CellPreviousMeasuredTargetCCV);
+
+      writer.WriteFloat(CellCCVElev);
+
+      writer.WriteShort(CellMDP);
+      writer.WriteShort(CellTargetMDP);
+      writer.WriteFloat(CellMDPElev);
+
+      writer.WriteByte(CellCCA);
+      writer.WriteShort(CellTargetCCA);
+      writer.WriteFloat(CellCCAElev);
+
+      writer.WriteFloat(CellTopLayerThickness);
+      writer.WriteBoolean(IncludesProductionData);
+
+      writer.WriteInt(TopLayerPassCount);
+      writer.WriteInt(TopLayerPassCountTargetRangeMin);
+      writer.WriteInt(TopLayerPassCountTargetRangeMax);
+
+      writer.WriteInt(CellMaxSpeed);
+      writer.WriteInt(CellMinSpeed);
+
+      Passes.ToBinary(writer);
+
+      writer.WriteBooleanArray(FilteredPassFlags);
+      writer.WriteInt(FilteredPassCount);
+      writer.WriteInt(FilteredHalfPassCount);
+      writer.WriteInt((int)AttributeExistenceFlags);
+
+      writer.WriteInt(CellMaterialTemperature);
+      writer.WriteInt(CellMaterialTemperatureWarnMin);
+      writer.WriteInt(CellMaterialTemperatureWarnMax);
+
+      writer.WriteFloat(CellMaterialTemperatureElev);
+    }
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      Station = reader.ReadDouble();
+      InterceptLength = reader.ReadDouble();
+
+      if (reader.ReadBoolean())
+      {
+        var numberOfLayers = reader.ReadInt();
+
+        if (numberOfLayers > 0)
+        {
+          for (var i = 1; i <= numberOfLayers; i++)
+          {
+            var layer = new ProfileLayer(this);
+            layer.FromBinary(reader);
+
+            Layers.Add(layer, -1);
+          }
+        }
+      }
+
+      OTGCellX = (uint)reader.ReadInt();
+      OTGCellY = (uint)reader.ReadInt();
+
+      CellLowestElev = reader.ReadFloat();
+      CellHighestElev = reader.ReadFloat();
+      CellLastElev = reader.ReadFloat();
+      CellFirstElev = reader.ReadFloat();
+      CellLowestCompositeElev = reader.ReadFloat();
+      CellHighestCompositeElev = reader.ReadFloat();
+      CellLastCompositeElev = reader.ReadFloat();
+      CellFirstCompositeElev = reader.ReadFloat();
+      DesignElev = reader.ReadFloat();
+
+      CellCCV = reader.ReadShort();
+      CellTargetCCV = reader.ReadShort();
+      CellPreviousMeasuredCCV = reader.ReadShort();
+      CellPreviousMeasuredTargetCCV = reader.ReadShort();
+
+      CellCCVElev = reader.ReadFloat();
+
+      CellMDP = reader.ReadShort();
+      CellTargetMDP = reader.ReadShort();
+      CellMDPElev = reader.ReadFloat();
+
+      CellCCA = reader.ReadByte();
+      CellTargetCCA = reader.ReadShort();
+      CellCCAElev = reader.ReadFloat();
+
+      CellTopLayerThickness = reader.ReadFloat();
+      IncludesProductionData = reader.ReadBoolean();
+
+      TopLayerPassCount = (ushort)reader.ReadInt();
+      TopLayerPassCountTargetRangeMin = (ushort)reader.ReadInt();
+      TopLayerPassCountTargetRangeMax = (ushort)reader.ReadInt();
+
+      CellMaxSpeed = (ushort)reader.ReadInt();
+      CellMinSpeed = (ushort)reader.ReadInt();
+
+      Passes.FromBinary(reader);
+
+      FilteredPassFlags = reader.ReadBooleanArray();
+      FilteredPassCount = reader.ReadInt();
+      FilteredHalfPassCount = reader.ReadInt();
+      AttributeExistenceFlags = (ProfileCellAttributeExistenceFlags)reader.ReadInt();
+
+      CellMaterialTemperature = (ushort)reader.ReadInt();
+      CellMaterialTemperatureWarnMin = (ushort)reader.ReadInt();
+      CellMaterialTemperatureWarnMax = (ushort)reader.ReadInt();
+
+      CellMaterialTemperatureElev = reader.ReadFloat();
+    }
+
+    //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
+    //procedure WriteToStream(const Stream : TStream; const WriteCellPassesAndLayers : Boolean; APassesPackager : TICFilteredMultiplePassInfoPackager);
+
+    /*
+      TICProfileCell = {$IFDEF PRISM} public {$ENDIF} class(TObject)
+      public
+        // Initialises a profile cell by assigning the passes over a cell
+        // to the layers constituting a profile
+        procedure Assign(const FilteredPassInfo: TICFilteredMultiplePassInfo;
+                         const AOTGX, AOTGY: Integer;
+                         const AStation, AInterceptLength: Double); Overload;
+        procedure Assign(const Source : TICProfileCell); Overload;
+
+        procedure GetNotSupersededLayers(NotSupersededLayers :TICProfileLayers);
+
+        function  GetNearestValdLayerHeight(const LayerIndex :Integer) :TICCellHeight;
+
+        function  MaxNumberOfPasses  (const IncludeSupersededLayers :Boolean = False) :Integer;
+        function  TotalNumberOfHalfPasses(const IncludeSupersededLayers :Boolean = False) :Integer;
+        function  TotalNumberOfWholePasses(const IncludeSupersededLayers :Boolean = False) :Integer;
+
+        function  MaxCCVValue              :TICCCVValue;
+        function  MaxTargetCCVValue        :TICCCVValue;
+        function  MaxMDPValue              :TICMDPValue;
+        function  MaxTargetMDPValue        :TICMDPValue;
+        function  MaxCCAValue              :TICCCAValue;
+        function  MaxTargetCCAValue        :TICCCAMinPassesValue;
+
+        function  MinLayerThickness        :TICCellHeight;
+        function  MaxLayerThickness        :TICCellHeight;
+        function  MinNonZeroLayerThickness :TICCellHeight;
+        function  MaxLayerHeight           :TICCellHeight;
+        function  MinLayerHeight           :TICCellHeight; // This is the lowest height of any of the layers minus it's thickness
+        function  MaxLayerElevation        :TICCellHeight;
+        function  MinLayerElevation        :TICCellHeight;
+
+        function  TopPassTargetCCVByCompactor      (const Layer :TICProfileLayer) :TICCCVValue;
+        function  TopPassTargetMDPByCompactor      (const Layer :TICProfileLayer) :TICMDPValue;
+        function  TopPassTargetCCAByCompactor      (const Layer :TICProfileLayer) :TICCCAMinPassesValue;
+        function  TopPassTargetThicknessByCompactor(const Layer :TICProfileLayer) :TICLiftThickness;
+
+        procedure NormalizeLayersMaxThickness(const FirstPassThickness :TICCellHeight);
+
+        Function  NullCellCoordinate : Boolean; Inline;
+
+        procedure SetLayersStatus(const LiftBuildSettings :TICLiftBuildSettings; GridDataType :TICGridDataType);
+
+        Function ToString : String; Override;
+      end;
+     */
+
+    protected bool Equals(ProfileCell other)
+    {
+      //===========================================================
+      bool AreLayersEqual()
+      {
+        if (Layers == null || other.Layers == null)
+          return false;
+
+        if (Layers.Count() != other.Layers.Count())
+          return false;
+
+        for (var i = 0; i < Layers.Count(); i++)
+        {
+          if (!Equals(Layers[i], other.Layers[i]))
+            return false;
+        }
+
+        return true;
+      }
+      //===========================================================
+
+      return InterceptLength.Equals(other.InterceptLength) &&
+             CellLowestElev.Equals(other.CellLowestElev) &&
+             CellHighestElev.Equals(other.CellHighestElev) &&
+             CellLastElev.Equals(other.CellLastElev) &&
+             CellFirstElev.Equals(other.CellFirstElev) &&
+             CellLowestCompositeElev.Equals(other.CellLowestCompositeElev) &&
+             CellHighestCompositeElev.Equals(other.CellHighestCompositeElev) &&
+             CellLastCompositeElev.Equals(other.CellLastCompositeElev) &&
+             CellFirstCompositeElev.Equals(other.CellFirstCompositeElev) &&
+             DesignElev.Equals(other.DesignElev) &&
+             CellCCV == other.CellCCV &&
+             CellTargetCCV == other.CellTargetCCV &&
+             CellPreviousMeasuredCCV == other.CellPreviousMeasuredCCV &&
+             CellPreviousMeasuredTargetCCV == other.CellPreviousMeasuredTargetCCV &&
+             CellCCVElev.Equals(other.CellCCVElev) &&
+             CellMDP == other.CellMDP &&
+             CellTargetMDP == other.CellTargetMDP &&
+             CellMDPElev.Equals(other.CellMDPElev) &&
+             CellCCA == other.CellCCA &&
+             CellTargetCCA == other.CellTargetCCA &&
+             CellCCAElev.Equals(other.CellCCAElev) &&
+             CellTopLayerThickness.Equals(other.CellTopLayerThickness) &&
+             IncludesProductionData == other.IncludesProductionData &&
+             TopLayerPassCount == other.TopLayerPassCount &&
+             TopLayerPassCountTargetRangeMin == other.TopLayerPassCountTargetRangeMin &&
+             TopLayerPassCountTargetRangeMax == other.TopLayerPassCountTargetRangeMax &&
+             Passes.Equals(other.Passes) &&
+             (Equals(FilteredPassFlags, other.FilteredPassFlags) ||
+              (FilteredPassFlags != null && other.FilteredPassFlags != null && FilteredPassFlags.SequenceEqual(other.FilteredPassFlags))) &&
+             FilteredPassCount == other.FilteredPassCount &&
+             FilteredHalfPassCount == other.FilteredHalfPassCount &&
+             AttributeExistenceFlags == other.AttributeExistenceFlags &&
+             CellMaterialTemperature == other.CellMaterialTemperature &&
+             CellMaterialTemperatureWarnMin == other.CellMaterialTemperatureWarnMin &&
+             CellMaterialTemperatureWarnMax == other.CellMaterialTemperatureWarnMax &&
+             CellMaterialTemperatureElev.Equals(other.CellMaterialTemperatureElev) &&
+             Station.Equals(other.Station) &&
+             (Equals(Layers, other.Layers) || AreLayersEqual()) &&
+             OTGCellX == other.OTGCellX &&
+             OTGCellY == other.OTGCellY &&
+             CellMaxSpeed == other.CellMaxSpeed &&
+             CellMinSpeed == other.CellMinSpeed;
+    }
+
+    public bool Equals(IProfileCell other)
+    {
+      return Equals(other as ProfileCell);
+    }
+
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((ProfileCell)obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = InterceptLength.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellLowestElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellHighestElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellLastElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellFirstElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellLowestCompositeElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellHighestCompositeElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellLastCompositeElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellFirstCompositeElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ DesignElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellCCV.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellTargetCCV.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellPreviousMeasuredCCV.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellPreviousMeasuredTargetCCV.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellCCVElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellMDP.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellTargetMDP.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellMDPElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellCCA.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellTargetCCA.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellCCAElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellTopLayerThickness.GetHashCode();
+        hashCode = (hashCode * 397) ^ IncludesProductionData.GetHashCode();
+        hashCode = (hashCode * 397) ^ TopLayerPassCount.GetHashCode();
+        hashCode = (hashCode * 397) ^ TopLayerPassCountTargetRangeMin.GetHashCode();
+        hashCode = (hashCode * 397) ^ TopLayerPassCountTargetRangeMax.GetHashCode();
+        hashCode = (hashCode * 397) ^ Passes.GetHashCode();
+        hashCode = (hashCode * 397) ^ (FilteredPassFlags != null ? FilteredPassFlags.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ FilteredPassCount;
+        hashCode = (hashCode * 397) ^ FilteredHalfPassCount;
+        hashCode = (hashCode * 397) ^ (int)AttributeExistenceFlags;
+        hashCode = (hashCode * 397) ^ CellMaterialTemperature.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellMaterialTemperatureWarnMin.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellMaterialTemperatureWarnMax.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellMaterialTemperatureElev.GetHashCode();
+        hashCode = (hashCode * 397) ^ Station.GetHashCode();
+        hashCode = (hashCode * 397) ^ (Layers != null ? Layers.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (int)OTGCellX;
+        hashCode = (hashCode * 397) ^ (int)OTGCellY;
+        hashCode = (hashCode * 397) ^ CellMaxSpeed.GetHashCode();
+        hashCode = (hashCode * 397) ^ CellMinSpeed.GetHashCode();
+        return hashCode;
+      }
+    }
   }
-
-  //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
-  //procedure WriteToStream(const Stream : TStream; const WriteCellPassesAndLayers : Boolean; APassesPackager : TICFilteredMultiplePassInfoPackager);
-
-  /*
-    TICProfileCell = {$IFDEF PRISM} public {$ENDIF} class(TObject)
-    public
-      // Initialises a profile cell by assigning the passes over a cell
-      // to the layers constituting a profile
-      procedure Assign(const FilteredPassInfo: TICFilteredMultiplePassInfo;
-                       const AOTGX, AOTGY: Integer;
-                       const AStation, AInterceptLength: Double); Overload;
-      procedure Assign(const Source : TICProfileCell); Overload;
-
-      procedure GetNotSupersededLayers(NotSupersededLayers :TICProfileLayers);
-
-      function  GetNearestValdLayerHeight(const LayerIndex :Integer) :TICCellHeight;
-
-      function  MaxNumberOfPasses  (const IncludeSupersededLayers :Boolean = False) :Integer;
-      function  TotalNumberOfHalfPasses(const IncludeSupersededLayers :Boolean = False) :Integer;
-      function  TotalNumberOfWholePasses(const IncludeSupersededLayers :Boolean = False) :Integer;
-
-      function  MaxCCVValue              :TICCCVValue;
-      function  MaxTargetCCVValue        :TICCCVValue;
-      function  MaxMDPValue              :TICMDPValue;
-      function  MaxTargetMDPValue        :TICMDPValue;
-      function  MaxCCAValue              :TICCCAValue;
-      function  MaxTargetCCAValue        :TICCCAMinPassesValue;
-
-      function  MinLayerThickness        :TICCellHeight;
-      function  MaxLayerThickness        :TICCellHeight;
-      function  MinNonZeroLayerThickness :TICCellHeight;
-      function  MaxLayerHeight           :TICCellHeight;
-      function  MinLayerHeight           :TICCellHeight; // This is the lowest height of any of the layers minus it's thickness
-      function  MaxLayerElevation        :TICCellHeight;
-      function  MinLayerElevation        :TICCellHeight;
-
-      function  TopPassTargetCCVByCompactor      (const Layer :TICProfileLayer) :TICCCVValue;
-      function  TopPassTargetMDPByCompactor      (const Layer :TICProfileLayer) :TICMDPValue;
-      function  TopPassTargetCCAByCompactor      (const Layer :TICProfileLayer) :TICCCAMinPassesValue;
-      function  TopPassTargetThicknessByCompactor(const Layer :TICProfileLayer) :TICLiftThickness;
-
-      procedure NormalizeLayersMaxThickness(const FirstPassThickness :TICCellHeight);
-
-      Function  NullCellCoordinate : Boolean; Inline;
-
-      procedure SetLayersStatus(const LiftBuildSettings :TICLiftBuildSettings; GridDataType :TICGridDataType);
-
-      Function ToString : String; Override;
-    end;
-   */
-
 }

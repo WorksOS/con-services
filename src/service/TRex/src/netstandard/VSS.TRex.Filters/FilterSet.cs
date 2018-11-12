@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Geometry;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Filters
 {
@@ -12,6 +12,8 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class FilterSet : IFilterSet, IEquatable<IFilterSet>
   {
+    private const byte versionNumber = 1;
+
     /// <summary>
     /// The list of combined attribute and spatial filters to be used
     /// </summary>
@@ -78,8 +80,6 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
-
       writer.WriteByte(versionNumber);
 
       writer.WriteInt(Filters.Length);
@@ -93,8 +93,6 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
-
       byte readVersionNumber = reader.ReadByte();
 
       Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");

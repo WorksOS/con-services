@@ -81,7 +81,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     /// <summary>
     /// An extension method providing a ToBinary() semantic to BoundingIntegerExtent2D
     /// </summary>
-    public static BoundingIntegerExtent2D ToBinary(this BoundingIntegerExtent2D item, IBinaryRawWriter writer)
+    public static void ToBinary(this BoundingIntegerExtent2D item, IBinaryRawWriter writer)
     {
       const byte versionNumber = 1;
 
@@ -91,8 +91,6 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       writer.WriteInt(item.MinY);
       writer.WriteInt(item.MaxX);
       writer.WriteInt(item.MaxY);
-
-      return item;
     }
 
     /// <summary>
@@ -113,37 +111,35 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       return item;
     }
 
-/*    /// <summary>
-    /// An extension method providing a FromBinary() semantic to BoundingIntegerExtent2D
-    /// </summary>
-    public static BoundingIntegerExtent2D FromBinary(IBinaryRawReader reader)
-    {
-      BoundingIntegerExtent2D result = new BoundingIntegerExtent2D();
-      result.FromBinary(reader);
-      return result;
-    }
-*/
-
-    /*
     /// <summary>
-    /// An extension method providing a ToBinary() semantic to Guid[]
+    /// An extension method providing a ToBinary() semantic to XYZ
     /// </summary>
-    public static void ToBinary(this Guid[] item, IBinaryRawWriter writer)
+    public static void ToBinary(this XYZ item, IBinaryRawWriter writer)
     {
-      writer.WriteInt(item.Length);
-      foreach(var guid in item)
-        writer.WriteGuid(guid);
+      const byte versionNumber = 1;
+
+      writer.WriteByte(versionNumber);
+
+      writer.WriteDouble(item.X);
+      writer.WriteDouble(item.Y);
+      writer.WriteDouble(item.Z);
     }
 
     /// <summary>
-    /// An extension method providing a FromBinary() semantic to Guid[]
+    /// An extension method providing a FromBinary() semantic to XYZ
     /// </summary>
-    public static void FromBinary(this Guid[] item, IBinaryRawReader reader)
+    public static XYZ FromBinary(this XYZ item, IBinaryRawReader reader)
     {
-      this = new Guid[reader.ReadInt()];
-      for (int i = 0; i < item.Length; i++)
-        item[i] = reader.ReadGuid().Value;
+      const byte versionNumber = 1;
+      byte readVersionNumber = reader.ReadByte();
+
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+
+      item.X = reader.ReadDouble();
+      item.Y = reader.ReadDouble();
+      item.Z = reader.ReadDouble();
+
+      return item;
     }
-    */
   }
 }

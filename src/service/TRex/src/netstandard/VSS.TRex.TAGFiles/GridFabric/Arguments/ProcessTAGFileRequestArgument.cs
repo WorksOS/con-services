@@ -18,8 +18,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// <summary>
     /// ID of the asset to process the TAG files into
     /// </summary>
-    // public long AssetID { get; set; } = -1;
-    public Guid AssetID { get; set; }
+    // public long AssetUID { get; set; } = -1;
+    public Guid AssetUID { get; set; }
 
     /// <summary>
     /// A dictionary mapping TAG file names to the content of each file
@@ -37,7 +37,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     {
       writer.WriteByte(versionNumber);
       writer.WriteGuid(ProjectID);
-      writer.WriteGuid(AssetID);
+      writer.WriteGuid(AssetUID);
 
       writer.WriteInt(TAGFiles.Count);
       foreach (var tagFile in TAGFiles)

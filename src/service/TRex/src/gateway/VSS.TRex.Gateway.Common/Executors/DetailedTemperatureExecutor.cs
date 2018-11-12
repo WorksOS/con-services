@@ -7,6 +7,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 
 

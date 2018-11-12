@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.Types
@@ -58,6 +59,26 @@ namespace VSS.TRex.Types
     {
       Min = reader.ReadUInt16();
       Max = reader.ReadUInt16();
+    }
+
+    /// <summary>
+    /// Serialises content of the cell to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteInt(Min);
+      writer.WriteInt(Max);
+    }
+
+    /// <summary>
+    /// Serialises content of the cell from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      Min = (ushort)reader.ReadInt();
+      Max = (ushort)reader.ReadInt();
     }
 
     public bool Equal(TemperatureWarningLevelsRecord other)

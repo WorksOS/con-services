@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VSS.TRex.GridFabric.Interfaces
+﻿namespace VSS.TRex.GridFabric.Interfaces
 {
   public interface INonSpatialAffinityKey : IProjectAffinity
   {

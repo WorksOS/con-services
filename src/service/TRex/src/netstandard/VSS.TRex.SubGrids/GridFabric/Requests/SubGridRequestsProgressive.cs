@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
@@ -21,7 +20,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
         /// <summary>
         /// The listener to which the processing engine may send in-progress updates during processing of the overall subgrids request

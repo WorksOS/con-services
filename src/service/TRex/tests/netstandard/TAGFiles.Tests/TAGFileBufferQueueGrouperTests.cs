@@ -43,7 +43,7 @@ namespace TAGFiles.Tests
             Assert.True(1 == tagFiles.Count, $"Returned list of grouped tag files does not have a single item (count = {tagFiles.Count}");
 
             Assert.True(extractedProjectID == tagFiles[0].ProjectUID, $"Project UID does not match project UID out parameter from extract call {extractedProjectID} versus {tagFiles[0].ProjectUID}");
-            Assert.True(tagKey.AssetID == tagFiles[0].AssetID, $"Asset UIDs do not match {tagKey.AssetID} versus {tagFiles[0].AssetID}");
+            Assert.True(tagKey.AssetUID == tagFiles[0].AssetUID, $"Asset UIDs do not match {tagKey.AssetUID} versus {tagFiles[0].AssetUID}");
             Assert.True(tagKey.ProjectUID == tagFiles[0].ProjectUID, $"Project UIDs do not match {tagKey.ProjectUID} versus {tagFiles[0].ProjectUID}");
             Assert.True(tagKey.FileName == tagFiles[0].FileName, $"File names do not match {tagKey.FileName} versus {tagFiles[0].FileName}");
 

@@ -7,6 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Interfaces;

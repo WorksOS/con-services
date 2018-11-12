@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Apache.Ignite.Core.Binary;
 using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -10,7 +12,7 @@ namespace VSS.TRex.Filters.Models
   /// FilteredMultiplePassInfo records all the information that a filtering operation
   ///   selected from an IC grid cell containing all the recorded machine passes.
   /// </summary>
-  public struct FilteredMultiplePassInfo
+  public struct FilteredMultiplePassInfo : IEquatable<FilteredMultiplePassInfo>
   {
     /// <summary>
     /// PassCount keeps track of the actual number of passes in the list
@@ -440,5 +442,61 @@ begin
 SetLength(FilteredPassData, Value);
 end;
 */
+
+    /// <summary>
+    /// Serialises content of the cell to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteInt(PassCount);
+
+      writer.WriteBoolean(FilteredPassData != null);
+      if (FilteredPassData != null)
+      {
+        writer.WriteInt(FilteredPassData.Length);
+        foreach (var pass in FilteredPassData)
+          pass.ToBinary(writer);
+      }
+
+    }
+
+    /// <summary>
+    /// Serialises content of the cell from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void FromBinary(IBinaryRawReader reader)
+    {
+      PassCount = reader.ReadInt();
+
+      if (reader.ReadBoolean())
+      {
+        var count = reader.ReadInt();
+        FilteredPassData = new FilteredPassData[count];
+        foreach (var pass in FilteredPassData)
+          pass.FromBinary(reader);
+      }
+    }
+
+    public bool Equals(FilteredMultiplePassInfo other)
+    {
+      return PassCount == other.PassCount && 
+             (Equals(FilteredPassData, other.FilteredPassData) ||
+              (FilteredPassData != null && other.FilteredPassData != null && FilteredPassData.SequenceEqual(other.FilteredPassData)));
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      return obj is FilteredMultiplePassInfo && Equals((FilteredMultiplePassInfo) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        return (PassCount * 397) ^ (FilteredPassData != null ? FilteredPassData.GetHashCode() : 0);
+      }
+    }
   }
 }

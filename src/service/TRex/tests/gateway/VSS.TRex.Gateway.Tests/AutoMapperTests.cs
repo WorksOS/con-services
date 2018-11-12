@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using Xunit;
-using VSS.Productivity3D.Models.Models;
-using Prod3d = VSS.Productivity3D.Models.Models;
 using VSS.MasterData.Models.Models;
-using VSS.TRex.Geometry;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Geometry;
+using Xunit;
 
 namespace VSS.TRex.Gateway.Tests
-{ 
+{
   public class AutoMapperTests : IClassFixture<AutoMapperFixture>
   {
     [Fact]

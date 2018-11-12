@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces.Events
 {

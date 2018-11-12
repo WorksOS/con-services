@@ -3,7 +3,7 @@
 namespace VSS.TRex.Servers.Client
 {
     /// <summary>
-    /// Represents a server instance that client servers implmenting application service type capabilities such as
+    /// Represents a server instance that client servers implementing application service type capabilities such as
     /// tile rendering should descend from
     /// </summary>
     public class ApplicationServiceServer : ImmutableClientServer

@@ -4,7 +4,6 @@ using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
@@ -21,7 +20,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
         [NonSerialized]
         private IMessaging rmtMsg;

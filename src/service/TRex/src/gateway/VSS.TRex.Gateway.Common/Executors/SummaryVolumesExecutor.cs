@@ -53,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       SimpleVolumesResponse simpleVolumesResponse = summaryVolumesRequest.Execute(new SimpleVolumesRequestArgument()
       {
-        SiteModelID = siteModel.ID,
+        ProjectID = siteModel.ID,
         BaseFilter = baseFilter,
         TopFilter = topFilter,
         AdditionalSpatialFilter = additionalSpatialFilter,
