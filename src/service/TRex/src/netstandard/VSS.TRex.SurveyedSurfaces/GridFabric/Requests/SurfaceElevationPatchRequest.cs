@@ -21,12 +21,12 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         /// <summary>
         /// Reference to the general subgrid result cache
         /// </summary>
-        private ITRexSpatialMemoryCache _cache;
+        private readonly ITRexSpatialMemoryCache _cache;
 
         /// <summary>
         /// The cache context to be used for all requests made through this request instance
         /// </summary>
-        private ITRexSpatialMemoryCacheContext _context;
+        private readonly ITRexSpatialMemoryCacheContext _context;
 
         /// <summary>
         /// Local reference to the client subgrid factory
@@ -39,7 +39,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         /// <summary>
         /// Default no-arg constructor
         /// </summary>
-        public SurfaceElevationPatchRequest(Guid projectUid, string cacheFingerprint)
+        public SurfaceElevationPatchRequest(Guid projectUid, string cacheFingerprint) : this()
         {
           _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
           _context = _cache?.LocateOrCreateContext(projectUid, cacheFingerprint);
