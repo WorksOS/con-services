@@ -110,7 +110,7 @@ namespace VSS.TRex.Designs
             {
               // Load the design into the cache (in this case just TTM files)
               design = new TTMDesign(ACellSize);
-              if (!File.Exists(designDescriptor.FullPath)) // todoJeannie should we check for index files also? Also, should this fullpath include siteModelID
+              if (!File.Exists(designDescriptor.FullPath))
               {
                 design.LoadFromStorage(DataModelID, designDescriptor.Folder, designDescriptor.FileName, true);
               }

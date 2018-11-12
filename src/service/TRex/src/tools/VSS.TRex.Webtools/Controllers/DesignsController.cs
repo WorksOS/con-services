@@ -101,11 +101,9 @@ namespace VSS.TRex.Webtools.Controllers
       var downladedok = await DownloadFileFromS3Async(s3Path, downloadLocalPath, fileName).ConfigureAwait(false);
       var loadedDesign = AddTheDesignToSiteModel(siteModelUID, designUID, downloadLocalPath, fileName);
 
-      // todojeannie should this go into IDesignManager().Add?
       var spatialUploadedOk = UploadFileToS3(downloadLocalPath, fileName + ".$DesignSpatialIndex$", s3Path);
       var subgridUploadedOk = UploadFileToS3(downloadLocalPath, fileName + ".$DesignSubgridIndex$", s3Path);
-
-      // todojeannie should remove delete the file/s from s3? ProjectSvc probably the orig and Trex the indices
+      
       return new JsonResult(DIContext.Obtain<IDesignManager>().List(Guid.Parse(siteModelID)).Locate(Guid.Parse(designID))); 
     }
 

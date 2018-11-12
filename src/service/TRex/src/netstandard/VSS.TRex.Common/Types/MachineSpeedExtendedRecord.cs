@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
 
 namespace VSS.TRex.Types
@@ -76,9 +77,29 @@ namespace VSS.TRex.Types
 	  }
 
 	  /// <summary>
-	  /// Defines a publically accessible null value for this cell value type
+	  /// Serialises content of the cell to the writer
 	  /// </summary>
-	  public static MachineSpeedExtendedRecord NullValue = MachineSpeedExtendedRecord.Null();
+	  /// <param name="writer"></param>
+	  public void ToBinary(IBinaryRawWriter writer)
+	  {
+	    writer.WriteInt(Min);
+	    writer.WriteInt(Max);
+	  }
+
+	  /// <summary>
+	  /// Serialises content of the cell from the writer
+	  /// </summary>
+	  /// <param name="reader"></param>
+	  public void FromBinary(IBinaryRawReader reader)
+	  {
+	    Min = (ushort)reader.ReadInt();
+	    Max = (ushort)reader.ReadInt();
+	  }
+
+    /// <summary>
+    /// Defines a publically accessible null value for this cell value type
+    /// </summary>
+    public static MachineSpeedExtendedRecord NullValue = MachineSpeedExtendedRecord.Null();
 
 	  /// <summary>
 	  /// Implements the business logic to create the null value for this cell valuye type

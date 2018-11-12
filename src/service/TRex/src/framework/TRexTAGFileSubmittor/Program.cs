@@ -76,7 +76,7 @@ namespace TRexTAGFileSubmittor
         arg = new ProcessTAGFileRequestArgument()
         {
           ProjectID = projectID,
-          AssetID = machineID,
+          AssetUID = machineID,
           TAGFiles = new List<ProcessTAGFileRequestFileItem>()
           {
             new ProcessTAGFileRequestFileItem()
@@ -101,7 +101,7 @@ namespace TRexTAGFileSubmittor
       ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument
       {
         ProjectID = projectID,
-        AssetID = machineID,
+        AssetUID = machineID,
         TAGFiles = new List<ProcessTAGFileRequestFileItem>()
       };
 

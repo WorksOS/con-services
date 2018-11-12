@@ -50,7 +50,7 @@ namespace VSS.TRex.Filters
     /// tile generation where the tile region itself is an overriding constraint
     /// on the data that needs to be queried
     /// </summary>
-    public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = new BoundingIntegerExtent2D();
+    public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
 
     // <summary>
     // A design that acts as a spatial filter for cell selection. Only cells that have center locations that lie over the 
@@ -137,8 +137,7 @@ namespace VSS.TRex.Filters
       writer.WriteDouble(PositionRadius);
       writer.WriteBoolean(IsSquare);
 
-      BoundingIntegerExtent2D overrideSpatialCellRestriction = OverrideSpatialCellRestriction;
-      overrideSpatialCellRestriction.ToBinary(writer);
+      OverrideSpatialCellRestriction.ToBinary(writer);
 
       writer.WriteBoolean(StartStation.HasValue);
       if (StartStation.HasValue)
@@ -189,11 +188,9 @@ namespace VSS.TRex.Filters
       PositionRadius = reader.ReadDouble();
       IsSquare = reader.ReadBoolean();
 
-      BoundingIntegerExtent2D overrideSpatialCellRestriction = new BoundingIntegerExtent2D();
-      overrideSpatialCellRestriction.FromBinary(reader);
-      OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
+      OverrideSpatialCellRestriction = OverrideSpatialCellRestriction.FromBinary(reader);
 
-      StartStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
+      StartStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;
       EndStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
       LeftOffset = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
       RightOffset = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
@@ -209,11 +206,41 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// Delegates hash code to default object implementation
+    /// Override equality comparision function with a protected access
     /// </summary>
-    /// <param name="obj"></param>
+    /// <param name="other"></param>
     /// <returns></returns>
-    public int GetHashCode(object obj) => obj.GetHashCode();
+    protected bool Equals(CellSpatialFilterModel other)
+    {
+      return Equals(Fence, other.Fence) && 
+             Equals(AlignmentFence, other.AlignmentFence) && 
+             PositionX.Equals(other.PositionX) && 
+             PositionY.Equals(other.PositionY) && 
+             PositionRadius.Equals(other.PositionRadius) && 
+             IsSquare == other.IsSquare && 
+             OverrideSpatialCellRestriction.Equals(other.OverrideSpatialCellRestriction) && 
+             StartStation.Equals(other.StartStation) && 
+             EndStation.Equals(other.EndStation) && 
+             LeftOffset.Equals(other.LeftOffset) && 
+             RightOffset.Equals(other.RightOffset) && 
+             CoordsAreGrid == other.CoordsAreGrid && 
+             IsSpatial == other.IsSpatial && 
+             IsPositional == other.IsPositional && 
+             IsDesignMask == other.IsDesignMask && 
+             SurfaceDesignMaskDesignUid.Equals(other.SurfaceDesignMaskDesignUid) && 
+             IsAlignmentMask == other.IsAlignmentMask && 
+             AlignmentMaskDesignUID.Equals(other.AlignmentMaskDesignUID);
+    }
+
+    /// <summary>
+    /// Equality comparision function with a public access.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(ICellSpatialFilterModel other)
+    {
+      return Equals(other as CellSpatialFilterModel);
+    }
 
     /// <summary>
     /// Overrides generic object equals implementation to call custom implementation
@@ -222,34 +249,40 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public override bool Equals(object obj)
     {
-      return this == obj || Equals(obj as ICellSpatialFilterModel);
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((CellSpatialFilterModel) obj);
     }
 
     /// <summary>
-    /// Equality comparision function
+    /// Gets hash code.
     /// </summary>
-    /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(ICellSpatialFilterModel other)
+    public override int GetHashCode()
     {
-      return Fence.Equals(other.Fence) &&
-             AlignmentFence.Equals(other.AlignmentFence) &&
-             PositionX == other.PositionX &&
-             PositionY == other.PositionY &&
-             PositionRadius == other.PositionRadius &&
-             IsSquare == other.IsSquare &&
-             OverrideSpatialCellRestriction.Equals(OverrideSpatialCellRestriction) &&
-             StartStation == other.StartStation &&
-             EndStation == other.EndStation &&
-             LeftOffset == other.LeftOffset &&
-             RightOffset == other.RightOffset &&
-             CoordsAreGrid == CoordsAreGrid &&
-             IsSpatial == other.IsSpatial &&
-             IsPositional == other.IsPositional &&
-             IsDesignMask == other.IsDesignMask &&
-             SurfaceDesignMaskDesignUid == other.SurfaceDesignMaskDesignUid &&
-             IsAlignmentMask == other.IsAlignmentMask &&
-             AlignmentMaskDesignUID == other.AlignmentMaskDesignUID;
+      unchecked
+      {
+        var hashCode = (Fence != null ? Fence.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (AlignmentFence != null ? AlignmentFence.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ PositionX.GetHashCode();
+        hashCode = (hashCode * 397) ^ PositionY.GetHashCode();
+        hashCode = (hashCode * 397) ^ PositionRadius.GetHashCode();
+        hashCode = (hashCode * 397) ^ IsSquare.GetHashCode();
+        hashCode = (hashCode * 397) ^ OverrideSpatialCellRestriction.GetHashCode();
+        hashCode = (hashCode * 397) ^ StartStation.GetHashCode();
+        hashCode = (hashCode * 397) ^ EndStation.GetHashCode();
+        hashCode = (hashCode * 397) ^ LeftOffset.GetHashCode();
+        hashCode = (hashCode * 397) ^ RightOffset.GetHashCode();
+        hashCode = (hashCode * 397) ^ CoordsAreGrid.GetHashCode();
+        hashCode = (hashCode * 397) ^ IsSpatial.GetHashCode();
+        hashCode = (hashCode * 397) ^ IsPositional.GetHashCode();
+        hashCode = (hashCode * 397) ^ IsDesignMask.GetHashCode();
+        hashCode = (hashCode * 397) ^ SurfaceDesignMaskDesignUid.GetHashCode();
+        hashCode = (hashCode * 397) ^ IsAlignmentMask.GetHashCode();
+        hashCode = (hashCode * 397) ^ AlignmentMaskDesignUID.GetHashCode();
+        return hashCode;
+      }
     }
   }
 }

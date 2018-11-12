@@ -6,7 +6,7 @@ using VSS.TRex.GridFabric.Interfaces;
 namespace VSS.TRex.GridFabric.Requests
 {
     /// <summary>
-    /// Provides a highly genericised class for making mapReduce style requests to the 'PSNode' compute cluster.
+    /// Provides a generic class for making mapReduce style requests to the 'PSNode' compute cluster.
     /// This class coordinates broadcasting of requests to the compute cluster and reduce the final result
     /// from the per-partition results returned to it.
     /// </summary>
@@ -18,7 +18,7 @@ namespace VSS.TRex.GridFabric.Requests
         where TResponse : class, IAggregateWith<TResponse>
     {
         /// <summary>
-        /// Executes a request genericised through it's templated types
+        /// Executes a request through it's generic types
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>

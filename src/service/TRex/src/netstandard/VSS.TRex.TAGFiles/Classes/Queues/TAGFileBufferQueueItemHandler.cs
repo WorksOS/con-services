@@ -117,12 +117,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                             {
                                 ProjectID = projectID,
-                                AssetID = TAGQueueItems[0].AssetID,
+                                AssetUID = TAGQueueItems[0].AssetID,
                                 TAGFiles = fileItems
                             });
 
                             removalKey.ProjectUID = projectID;
-                            removalKey.AssetID = TAGQueueItems[0].AssetID;
+                            removalKey.AssetUID = TAGQueueItems[0].AssetID;
 
                             // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
                             foreach (var tagFileResponse in response.Results)
@@ -227,14 +227,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 ProcessTAGFileResponse response = request.Execute(new ProcessTAGFileRequestArgument
                 {
                     ProjectID = projectID,
-                    AssetID = TAGQueueItems[0].AssetID,
+                    AssetUID = TAGQueueItems[0].AssetID,
                     TAGFiles = fileItems
                 });
 
                 ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
                 {
                     ProjectUID = projectID,
-                    AssetID = TAGQueueItems[0].AssetID
+                    AssetUID = TAGQueueItems[0].AssetID
                 };
 
                 // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)

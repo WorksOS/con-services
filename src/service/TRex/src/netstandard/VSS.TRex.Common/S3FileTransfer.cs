@@ -33,7 +33,6 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        // todojeannie what to do about retries?
         Log.LogError($"Exception reading design from s3: {e}");
         return false;
       }

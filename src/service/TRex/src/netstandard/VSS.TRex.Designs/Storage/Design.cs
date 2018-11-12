@@ -174,7 +174,7 @@ namespace VSS.TRex.Designs.Storage
                     OriginX = originCellAddress.X,
                     OriginY = originCellAddress.Y,
                     // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
-                    SiteModelID = siteModelID
+                    ProjectID = siteModelID
                 });
             }
             catch

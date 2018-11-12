@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.GridFabric.Arguments
@@ -7,8 +9,10 @@ namespace VSS.TRex.GridFabric.Arguments
   ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include
   ///  containing the identifier of a TRex Application Service Node that originated the request
   /// </summary>
-  public class BaseApplicationServiceRequestArgument
+  public class BaseApplicationServiceRequestArgument : BaseRequestBinarizableArgument, IEquatable<BaseRequestBinarizableArgument>
   {
+    private const byte versionNumber = 1;
+
     // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor
 
     /// <summary>
@@ -33,5 +37,68 @@ namespace VSS.TRex.GridFabric.Arguments
     public Guid ReferenceDesignID { get; set; } = Guid.Empty;
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
+
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteByte(versionNumber);
+
+      writer.WriteString(TRexNodeID);
+      writer.WriteGuid(ProjectID);
+      writer.WriteGuid(ReferenceDesignID);
+
+      writer.WriteBoolean(Filters != null);
+
+      Filters?.ToBinary(writer);
+    }
+
+    public override void FromBinary(IBinaryRawReader reader)
+    {
+      byte readVersionNumber = reader.ReadByte();
+
+      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+
+      TRexNodeID = reader.ReadString();
+      ProjectID = reader.ReadGuid() ?? Guid.Empty;
+      ReferenceDesignID = reader.ReadGuid() ?? Guid.Empty;
+
+      if (reader.ReadBoolean())
+      {
+        Filters = DI.DIContext.Obtain<IFilterSet>();
+        Filters.FromBinary(reader);
+      }
+    }
+
+    protected bool Equals(BaseApplicationServiceRequestArgument other)
+    {
+      return string.Equals(TRexNodeID, other.TRexNodeID) && 
+             ProjectID.Equals(other.ProjectID) && 
+             Equals(Filters, other.Filters) && 
+             ReferenceDesignID.Equals(other.ReferenceDesignID);
+    }
+
+    public bool Equals(BaseRequestBinarizableArgument other)
+    {
+      return Equals(other as BaseApplicationServiceRequestArgument);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((BaseApplicationServiceRequestArgument) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = (TRexNodeID != null ? TRexNodeID.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ ProjectID.GetHashCode();
+        hashCode = (hashCode * 397) ^ (Filters != null ? Filters.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ ReferenceDesignID.GetHashCode();
+        return hashCode;
+      }
+    }
   }
 }

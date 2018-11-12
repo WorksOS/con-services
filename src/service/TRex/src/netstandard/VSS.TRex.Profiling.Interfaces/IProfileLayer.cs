@@ -1,9 +1,10 @@
 ﻿using System;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Filters.Models;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
-  public interface IProfileLayer
+  public interface IProfileLayer : IEquatable<IProfileLayer>
   {
     /// <summary>
     /// StartCellPssIdx and EndCellPassIdx hold the start and end indices of
@@ -106,5 +107,17 @@ namespace VSS.TRex.Profiling.Interfaces
     /// </summary>
     /// <param name="passIndex"></param>
     void AddPass(int passIndex);
+
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    void ToBinary(IBinaryRawWriter writer);
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    void FromBinary(IBinaryRawReader reader);
   }
 }

@@ -1,5 +1,5 @@
-﻿using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Interfaces;
+﻿using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Filters.Interfaces
 {

@@ -12,7 +12,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Contains all of the model state relevant to describing the parameters of a cell attribute filter
   /// </summary>
-  public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel //, IEquatable<ICellPassAttributeFilterModel>
+  public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
   {
     /// <summary>
     /// RequestedGridDataType stores the type of grid data being requested at
@@ -193,25 +193,50 @@ namespace VSS.TRex.Filters
       const byte versionNumber = 1;
       writer.WriteByte(versionNumber);
 
+      writer.WriteInt((int) RequestedGridDataType);
+      writer.WriteBoolean(HasTimeFilter);
+      writer.WriteBoolean(HasMachineFilter);
+      writer.WriteBoolean(HasMachineDirectionFilter);
+      writer.WriteBoolean(HasDesignFilter);
+      writer.WriteBoolean(HasVibeStateFilter);
+      writer.WriteBoolean(HasLayerStateFilter);
+      writer.WriteBoolean(HasMinElevMappingFilter);
+      writer.WriteBoolean(HasElevationTypeFilter);
+      writer.WriteBoolean(HasGCSGuidanceModeFilter);
+      writer.WriteBoolean(HasGPSAccuracyFilter);
+      writer.WriteBoolean(HasGPSToleranceFilter);
+      writer.WriteBoolean(HasPositioningTechFilter);
+      writer.WriteBoolean(HasLayerIDFilter);
+      writer.WriteBoolean(HasElevationRangeFilter);
+      writer.WriteBoolean(HasPassTypeFilter);
+      writer.WriteBoolean(HasCompactionMachinesOnlyFilter);
+      writer.WriteBoolean(HasTemperatureRangeFilter);
+      writer.WriteBoolean(FilterTemperatureByLastPass);
+      writer.WriteBoolean(HasPassCountRangeFilter);
+
       writer.WriteLong(StartTime.Ticks);
       writer.WriteLong(EndTime.Ticks);
 
-      writer.WriteInt(MachinesList?.Length ?? 0);
-      for (int i = 0; i < (MachinesList?.Length ?? 0); i++)
-        writer.WriteGuid(MachinesList[i]);
-
+      writer.WriteBoolean(MachinesList != null);
+      if (MachinesList != null)
+      { 
+        writer.WriteInt(MachinesList.Length);
+        for (var i = 0; i < (MachinesList.Length); i++)
+          writer.WriteGuid(MachinesList[i]);
+      }
+      
       writer.WriteInt(DesignNameID);
       writer.WriteInt((int)VibeState);
       writer.WriteInt((int)MachineDirection);
       writer.WriteInt((int)PassTypeSet);
-      writer.WriteBoolean(MinElevationMapping);
 
+      writer.WriteBoolean(MinElevationMapping);
       writer.WriteInt((int)PositioningTech);
       writer.WriteInt(GPSTolerance); // No WriteUShort is provided, use an int...
-
       writer.WriteBoolean(GPSAccuracyIsInclusive);
       writer.WriteInt((int)GPSAccuracy);
       writer.WriteBoolean(GPSToleranceIsGreaterThan);
+
       writer.WriteInt((int)ElevationType);
       writer.WriteInt((int)GCSGuidanceMode);
 
@@ -223,6 +248,12 @@ namespace VSS.TRex.Filters
 
       writer.WriteGuid(ElevationRangeDesignID);
 
+      writer.WriteBoolean(ElevationRangeIsInitialised);
+      writer.WriteBoolean(ElevationRangeIsLevelAndThicknessOnly);
+
+      writer.WriteDouble(ElevationRangeTopElevationForCell);
+      writer.WriteDouble(ElevationRangeBottomElevationForCell);
+
       writer.WriteInt((int)LayerState);
       writer.WriteInt(LayerID);
 
@@ -230,7 +261,7 @@ namespace VSS.TRex.Filters
 
       writer.WriteInt(SurveyedSurfaceExclusionList?.Length ?? 0);
       for (int i = 0; i < (SurveyedSurfaceExclusionList?.Length ?? 0); i++)
-        writer.WriteGuid(SurveyedSurfaceExclusionList[i]);
+        writer.WriteGuid(SurveyedSurfaceExclusionList?[i]);
 
       writer.WriteInt(MaterialTemperatureMin); // No Writer.WriteUShort, use int instead
       writer.WriteInt(MaterialTemperatureMax); // No Writer.WriteUShort, use int instead
@@ -249,15 +280,39 @@ namespace VSS.TRex.Filters
 
       Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
 
+      RequestedGridDataType = (GridDataType)reader.ReadInt();
+      HasTimeFilter = reader.ReadBoolean();
+      HasMachineFilter = reader.ReadBoolean();
+      HasMachineDirectionFilter = reader.ReadBoolean();
+      HasDesignFilter = reader.ReadBoolean();
+      HasVibeStateFilter = reader.ReadBoolean();
+      HasLayerStateFilter = reader.ReadBoolean();
+      HasMinElevMappingFilter = reader.ReadBoolean();
+      HasElevationTypeFilter = reader.ReadBoolean();
+      HasGCSGuidanceModeFilter = reader.ReadBoolean();
+      HasGPSAccuracyFilter = reader.ReadBoolean();
+      HasGPSToleranceFilter = reader.ReadBoolean();
+      HasPositioningTechFilter = reader.ReadBoolean();
+      HasLayerIDFilter = reader.ReadBoolean();
+      HasElevationRangeFilter = reader.ReadBoolean();
+      HasPassTypeFilter = reader.ReadBoolean();
+      HasCompactionMachinesOnlyFilter = reader.ReadBoolean();
+      HasTemperatureRangeFilter = reader.ReadBoolean();
+      FilterTemperatureByLastPass = reader.ReadBoolean();
+      HasPassCountRangeFilter = reader.ReadBoolean();
+
       StartTime = new DateTime(reader.ReadLong());
       EndTime = new DateTime(reader.ReadLong());
 
-      int machineCount = reader.ReadInt();
-      if (machineCount > 0)
+      if (reader.ReadBoolean())
       {
-        MachinesList = new Guid[machineCount];
-        for (int i = 0; i < MachinesList.Length; i++)
-          MachinesList[i] = reader.ReadGuid().Value;
+        var machineCount = reader.ReadInt();
+        if (machineCount > 0)
+        {
+          MachinesList = new Guid[machineCount];
+          for (var i = 0; i < MachinesList.Length; i++)
+            MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
+        }
       }
 
       DesignNameID = reader.ReadInt();
@@ -266,13 +321,10 @@ namespace VSS.TRex.Filters
       PassTypeSet = (PassTypeSet)reader.ReadInt();
 
       MinElevationMapping = reader.ReadBoolean();
-
       PositioningTech = (PositioningTech)reader.ReadInt();
       GPSTolerance = (ushort)reader.ReadInt();
-
       GPSAccuracyIsInclusive = reader.ReadBoolean();
       GPSAccuracy = (GPSAccuracy)reader.ReadInt();
-
       GPSToleranceIsGreaterThan = reader.ReadBoolean();
 
       ElevationType = (ElevationType)reader.ReadInt();
@@ -284,7 +336,13 @@ namespace VSS.TRex.Filters
       ElevationRangeOffset = reader.ReadDouble();
       ElevationRangeThickness = reader.ReadDouble();
 
-      ElevationRangeDesignID = reader.ReadGuid().Value;
+      ElevationRangeDesignID = reader.ReadGuid() ?? Guid.Empty;
+
+      ElevationRangeIsInitialised = reader.ReadBoolean();
+      ElevationRangeIsLevelAndThicknessOnly = reader.ReadBoolean();
+
+      ElevationRangeTopElevationForCell = reader.ReadDouble();
+      ElevationRangeBottomElevationForCell = reader.ReadDouble();
 
       LayerState = (LayerState)reader.ReadInt();
       LayerID = reader.ReadInt();
@@ -296,7 +354,7 @@ namespace VSS.TRex.Filters
       {
         SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
         for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
-          SurveyedSurfaceExclusionList[i] = reader.ReadGuid().Value;
+          SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
       }
 
       MaterialTemperatureMin = (ushort)reader.ReadInt();
@@ -305,79 +363,103 @@ namespace VSS.TRex.Filters
       PasscountRangeMax = (ushort)reader.ReadInt();
     }
 
+    /// <summary>
+    /// Override equality comparision function with a protected access
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     protected bool Equals(CellPassAttributeFilterModel other)
     {
-      return RequestedGridDataType == other.RequestedGridDataType && 
-             HasTimeFilter == other.HasTimeFilter && 
-             HasMachineFilter == other.HasMachineFilter && 
+      return RequestedGridDataType == other.RequestedGridDataType &&
+             HasTimeFilter == other.HasTimeFilter &&
+             HasMachineFilter == other.HasMachineFilter &&
              HasMachineDirectionFilter == other.HasMachineDirectionFilter &&
-             HasDesignFilter == other.HasDesignFilter && 
-             HasVibeStateFilter == other.HasVibeStateFilter && 
-             HasLayerStateFilter == other.HasLayerStateFilter && 
-             HasMinElevMappingFilter == other.HasMinElevMappingFilter && 
-             HasElevationTypeFilter == other.HasElevationTypeFilter && 
-             HasGCSGuidanceModeFilter == other.HasGCSGuidanceModeFilter && 
-             HasGPSAccuracyFilter == other.HasGPSAccuracyFilter && 
-             HasGPSToleranceFilter == other.HasGPSToleranceFilter && 
-             HasPositioningTechFilter == other.HasPositioningTechFilter && 
-             HasLayerIDFilter == other.HasLayerIDFilter && 
-             HasElevationRangeFilter == other.HasElevationRangeFilter && 
-             HasPassTypeFilter == other.HasPassTypeFilter && 
-             HasCompactionMachinesOnlyFilter == other.HasCompactionMachinesOnlyFilter && 
+             HasDesignFilter == other.HasDesignFilter &&
+             HasVibeStateFilter == other.HasVibeStateFilter &&
+             HasLayerStateFilter == other.HasLayerStateFilter &&
+             HasMinElevMappingFilter == other.HasMinElevMappingFilter &&
+             HasElevationTypeFilter == other.HasElevationTypeFilter &&
+             HasGCSGuidanceModeFilter == other.HasGCSGuidanceModeFilter &&
+             HasGPSAccuracyFilter == other.HasGPSAccuracyFilter &&
+             HasGPSToleranceFilter == other.HasGPSToleranceFilter &&
+             HasPositioningTechFilter == other.HasPositioningTechFilter &&
+             HasLayerIDFilter == other.HasLayerIDFilter &&
+             HasElevationRangeFilter == other.HasElevationRangeFilter &&
+             HasPassTypeFilter == other.HasPassTypeFilter &&
+             HasCompactionMachinesOnlyFilter == other.HasCompactionMachinesOnlyFilter &&
              HasTemperatureRangeFilter == other.HasTemperatureRangeFilter &&
-             FilterTemperatureByLastPass == other.FilterTemperatureByLastPass && 
-             HasPassCountRangeFilter == other.HasPassCountRangeFilter && 
-             StartTime.Equals(other.StartTime) && 
-             EndTime.Equals(other.EndTime) && 
+             FilterTemperatureByLastPass == other.FilterTemperatureByLastPass &&
+             HasPassCountRangeFilter == other.HasPassCountRangeFilter &&
+             StartTime.Equals(other.StartTime) &&
+             EndTime.Equals(other.EndTime) &&
 
              GuidExtensions.GuidsEqual(MachinesList, other.MachinesList) &&
-             
-             DesignNameID == other.DesignNameID && 
-             VibeState == other.VibeState && 
-             MachineDirection == other.MachineDirection && 
-             PassTypeSet == other.PassTypeSet && 
-             MinElevationMapping == other.MinElevationMapping && 
+
+             DesignNameID == other.DesignNameID &&
+             VibeState == other.VibeState &&
+             MachineDirection == other.MachineDirection &&
+             PassTypeSet == other.PassTypeSet &&
+             MinElevationMapping == other.MinElevationMapping &&
              PositioningTech == other.PositioningTech &&
-             GPSTolerance == other.GPSTolerance && 
+             GPSTolerance == other.GPSTolerance &&
              GPSAccuracyIsInclusive == other.GPSAccuracyIsInclusive &&
-             GPSAccuracy == other.GPSAccuracy && 
-             GPSToleranceIsGreaterThan == other.GPSToleranceIsGreaterThan && 
-             ElevationType == other.ElevationType && 
-             GCSGuidanceMode == other.GCSGuidanceMode && 
-             ReturnEarliestFilteredCellPass == other.ReturnEarliestFilteredCellPass && 
-             ElevationRangeLevel.Equals(other.ElevationRangeLevel) && 
-             ElevationRangeOffset.Equals(other.ElevationRangeOffset) && 
-             ElevationRangeThickness.Equals(other.ElevationRangeThickness) && 
-             ElevationRangeDesignID.Equals(other.ElevationRangeDesignID) && 
-             ElevationRangeIsInitialised == other.ElevationRangeIsInitialised && 
-             ElevationRangeIsLevelAndThicknessOnly == other.ElevationRangeIsLevelAndThicknessOnly && 
-             ElevationRangeTopElevationForCell.Equals(other.ElevationRangeTopElevationForCell) && 
-             ElevationRangeBottomElevationForCell.Equals(other.ElevationRangeBottomElevationForCell) && 
-             LayerState == other.LayerState && 
-             LayerID == other.LayerID && 
+             GPSAccuracy == other.GPSAccuracy &&
+             GPSToleranceIsGreaterThan == other.GPSToleranceIsGreaterThan &&
+             ElevationType == other.ElevationType &&
+             GCSGuidanceMode == other.GCSGuidanceMode &&
+             ReturnEarliestFilteredCellPass == other.ReturnEarliestFilteredCellPass &&
+             ElevationRangeLevel.Equals(other.ElevationRangeLevel) &&
+             ElevationRangeOffset.Equals(other.ElevationRangeOffset) &&
+             ElevationRangeThickness.Equals(other.ElevationRangeThickness) &&
+             ElevationRangeDesignID.Equals(other.ElevationRangeDesignID) &&
+             ElevationRangeIsInitialised == other.ElevationRangeIsInitialised &&
+             ElevationRangeIsLevelAndThicknessOnly == other.ElevationRangeIsLevelAndThicknessOnly &&
+             ElevationRangeTopElevationForCell.Equals(other.ElevationRangeTopElevationForCell) &&
+             ElevationRangeBottomElevationForCell.Equals(other.ElevationRangeBottomElevationForCell) &&
+             LayerState == other.LayerState &&
+             LayerID == other.LayerID &&
              RestrictFilteredDataToCompactorsOnly == other.RestrictFilteredDataToCompactorsOnly &&
 
-             GuidExtensions.GuidsEqual(SurveyedSurfaceExclusionList, other.SurveyedSurfaceExclusionList) &&
+             SurveyedSurfaceExclusionList.GuidsEqual(other.SurveyedSurfaceExclusionList) &&
 
-             MaterialTemperatureMin == other.MaterialTemperatureMin && 
-             MaterialTemperatureMax == other.MaterialTemperatureMax && 
-             PasscountRangeMin == other.PasscountRangeMin && 
+             MaterialTemperatureMin == other.MaterialTemperatureMin &&
+             MaterialTemperatureMax == other.MaterialTemperatureMax &&
+             PasscountRangeMin == other.PasscountRangeMin &&
              PasscountRangeMax == other.PasscountRangeMax;
     }
 
+    /// <summary>
+    /// Equality comparision function with a public access.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(ICellPassAttributeFilterModel other)
+    {
+      return Equals(other as CellPassAttributeFilterModel);
+    }
+
+    /// <summary>
+    /// Overrides generic object equals implementation to call custom implementation
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object obj)
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != GetType()) return false;
-      return Equals((CellPassAttributeFilterModel) obj);
+      return Equals((CellPassAttributeFilterModel)obj);
     }
 
+    /// <summary>
+    /// Gets hash code.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode()
     {
       unchecked
       {
-        var hashCode = (int) RequestedGridDataType;
+        var hashCode = (int)RequestedGridDataType;
         hashCode = (hashCode * 397) ^ HasTimeFilter.GetHashCode();
         hashCode = (hashCode * 397) ^ HasMachineFilter.GetHashCode();
         hashCode = (hashCode * 397) ^ HasMachineDirectionFilter.GetHashCode();
@@ -401,17 +483,17 @@ namespace VSS.TRex.Filters
         hashCode = (hashCode * 397) ^ EndTime.GetHashCode();
         hashCode = (hashCode * 397) ^ (MachinesList != null ? MachinesList.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ DesignNameID;
-        hashCode = (hashCode * 397) ^ (int) VibeState;
-        hashCode = (hashCode * 397) ^ (int) MachineDirection;
-        hashCode = (hashCode * 397) ^ (int) PassTypeSet;
+        hashCode = (hashCode * 397) ^ (int)VibeState;
+        hashCode = (hashCode * 397) ^ (int)MachineDirection;
+        hashCode = (hashCode * 397) ^ (int)PassTypeSet;
         hashCode = (hashCode * 397) ^ MinElevationMapping.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) PositioningTech;
+        hashCode = (hashCode * 397) ^ (int)PositioningTech;
         hashCode = (hashCode * 397) ^ GPSTolerance.GetHashCode();
         hashCode = (hashCode * 397) ^ GPSAccuracyIsInclusive.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) GPSAccuracy;
+        hashCode = (hashCode * 397) ^ (int)GPSAccuracy;
         hashCode = (hashCode * 397) ^ GPSToleranceIsGreaterThan.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) ElevationType;
-        hashCode = (hashCode * 397) ^ (int) GCSGuidanceMode;
+        hashCode = (hashCode * 397) ^ (int)ElevationType;
+        hashCode = (hashCode * 397) ^ (int)GCSGuidanceMode;
         hashCode = (hashCode * 397) ^ ReturnEarliestFilteredCellPass.GetHashCode();
         hashCode = (hashCode * 397) ^ ElevationRangeLevel.GetHashCode();
         hashCode = (hashCode * 397) ^ ElevationRangeOffset.GetHashCode();
@@ -421,7 +503,7 @@ namespace VSS.TRex.Filters
         hashCode = (hashCode * 397) ^ ElevationRangeIsLevelAndThicknessOnly.GetHashCode();
         hashCode = (hashCode * 397) ^ ElevationRangeTopElevationForCell.GetHashCode();
         hashCode = (hashCode * 397) ^ ElevationRangeBottomElevationForCell.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) LayerState;
+        hashCode = (hashCode * 397) ^ (int)LayerState;
         hashCode = (hashCode * 397) ^ LayerID;
         hashCode = (hashCode * 397) ^ RestrictFilteredDataToCompactorsOnly.GetHashCode();
         hashCode = (hashCode * 397) ^ (SurveyedSurfaceExclusionList != null ? SurveyedSurfaceExclusionList.GetHashCode() : 0);

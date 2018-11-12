@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Types
@@ -53,6 +54,26 @@ namespace VSS.TRex.Types
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
+    {
+      Min = reader.ReadDouble();
+      Max = reader.ReadDouble();
+    }
+
+    /// <summary>
+    /// Serialises content of the cell to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+      writer.WriteDouble(Min);
+      writer.WriteDouble(Max);
+    }
+
+    /// <summary>
+    /// Serialises comtent of the cell from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public void FromBinary(IBinaryRawReader reader)
     {
       Min = reader.ReadDouble();
       Max = reader.ReadDouble();

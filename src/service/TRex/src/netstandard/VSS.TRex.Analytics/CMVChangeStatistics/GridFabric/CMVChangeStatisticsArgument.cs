@@ -1,4 +1,7 @@
-﻿using VSS.TRex.GridFabric.Arguments;
+﻿using System;
+using System.Linq;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
 {
@@ -6,11 +9,58 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
   /// Argument containing the parameters required for a CMV change statistics request.
   /// The CMV change is exposed on the client as CMV % change.
   /// </summary>    
-  public class CMVChangeStatisticsArgument : BaseApplicationServiceRequestArgument
+  public class CMVChangeStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
   {
     /// <summary>
     /// CMV change details values.
     /// </summary>
     public double[] CMVChangeDetailsDatalValues { get; set; }
+
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    public override void ToBinary(IBinaryRawWriter writer)
+    {
+      base.ToBinary(writer);
+
+      writer.WriteDoubleArray(CMVChangeDetailsDatalValues);
+    }
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    public override void FromBinary(IBinaryRawReader reader)
+    {
+      base.FromBinary(reader);
+
+      CMVChangeDetailsDatalValues = reader.ReadDoubleArray();
+    }
+
+    protected bool Equals(CMVChangeStatisticsArgument other)
+    {
+      return base.Equals(other) && 
+             (Equals(CMVChangeDetailsDatalValues, other.CMVChangeDetailsDatalValues) ||
+             (CMVChangeDetailsDatalValues != null && other.CMVChangeDetailsDatalValues != null && CMVChangeDetailsDatalValues.SequenceEqual(other.CMVChangeDetailsDatalValues)));
+    }
+
+    public new bool Equals(BaseApplicationServiceRequestArgument other)
+    {
+      return Equals(other as CMVChangeStatisticsArgument);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((CMVChangeStatisticsArgument)obj);
+    }
+
+    public override int GetHashCode()
+    {
+      return (CMVChangeDetailsDatalValues != null ? CMVChangeDetailsDatalValues.GetHashCode() : 0);
+    }
   }
 }

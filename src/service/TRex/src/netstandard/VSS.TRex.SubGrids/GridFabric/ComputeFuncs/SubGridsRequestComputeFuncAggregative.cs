@@ -53,7 +53,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         }
 
         /// <summary>
-        /// Set up Ignite elements for aggregative subgrid requests
+        /// Set up Ignite elements for aggregated subgrid requests
         /// </summary>
         public override bool EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse)
         {

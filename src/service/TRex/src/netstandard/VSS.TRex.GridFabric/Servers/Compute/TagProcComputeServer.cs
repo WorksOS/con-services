@@ -1,7 +1,6 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Servers.Client;
 
@@ -13,7 +12,7 @@ namespace VSS.TRex.Servers.Compute
     /// </summary>
     public class TagProcComputeServer : MutableCacheComputeServer
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TagProcComputeServer>();
 
         /// <summary>
         /// A client reference to the immutable data grid for the TAG file processing logic to write immutable versions

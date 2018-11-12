@@ -31,7 +31,7 @@ namespace VSS.TRex.Servers.Compute
         }
 
         /// <summary>
-        /// Sets up the loocal server configuration to reflect the requirements of subgrid processing
+        /// Sets up the local server configuration to reflect the requirements of subgrid processing
         /// </summary>
         public override void SetupServerSpecificConfiguration()
         {

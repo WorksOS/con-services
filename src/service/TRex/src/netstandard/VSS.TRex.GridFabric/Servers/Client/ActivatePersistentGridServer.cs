@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Servers.Client
 {

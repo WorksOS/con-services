@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         /// <returns></returns>
         public ProcessTAGFileResponse Invoke(ProcessTAGFileRequestArgument arg)
         {
-            return ProcessTAGFilesExecutor.Execute(arg.ProjectID, arg.AssetID, arg.TAGFiles);
+            return ProcessTAGFilesExecutor.Execute(arg.ProjectID, arg.AssetUID, arg.TAGFiles);
         }
     }
 }

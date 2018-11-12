@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 
@@ -17,7 +16,7 @@ namespace VSS.TRex.SubGrids
     private static ILogger Log = Logging.Logger.CreateLogger("CutFillUtilities");
 
     /// <summary>
-    /// Calculates a cutfill subgrid from a production data elevation subgrid and an elevation subgrid computed from a referenced design,
+    /// Calculates a cut/fill subgrid from a production data elevation subgrid and an elevation subgrid computed from a referenced design,
     /// replacing the elevations in the first subgrid with the resulting cut fill values
     /// </summary>
     /// <param name="design"></param>
@@ -53,17 +52,13 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <summary>
-    /// Calculates a cutfill subgrid from two elevation subgrids, replacing the elevations
+    /// Calculates a cut/fill subgrid from two elevation subgrids, replacing the elevations
     /// in the first subgrid with the resulting cut fill values
     /// </summary>
-    /// <param name="SubGrid1"></param>
+    /// <param name="subgrid1"></param>
     /// <param name="subgrid2"></param>
-    public static void ComputeCutFillSubgrid(IClientHeightLeafSubGrid SubGrid1,
-      IClientHeightLeafSubGrid subgrid2)
+    public static void ComputeCutFillSubgrid(IClientHeightLeafSubGrid subgrid1, IClientHeightLeafSubGrid subgrid2)
     {
-      ClientHeightLeafSubGrid subgrid1 = SubGrid1 as ClientHeightLeafSubGrid;
-      //ClientHeightLeafSubGrid subgrid2 = SubGrid2 as ClientHeightLeafSubGrid;
-
       SubGridUtilities.SubGridDimensionalIterator((I, J) =>
       {
         if (subgrid1.Cells[I, J] != Consts.NullHeight)

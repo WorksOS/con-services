@@ -10,6 +10,8 @@ using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
+using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
@@ -78,7 +80,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
 
         // Register the listener for site model attribute change notifications
       .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
-
+      .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
       .Complete();
     }
 
