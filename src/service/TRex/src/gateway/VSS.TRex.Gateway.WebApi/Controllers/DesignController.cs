@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
         .ToList());
 
-      return new DesignListResult {DesignFileDescriptors = designFileDescriptorList.ToImmutableList()};
+      return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         var designFileDescriptorList = designList.Select(designSurface =>
             AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
           .ToList();
-        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList.ToImmutableList() };
+        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList };
       }
       else if (fileType == ImportedFileType.SurveyedSurface)
       {
@@ -82,7 +82,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         var designFileDescriptorList = designSurfaceList.Select(designSurface =>
             AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
           .ToList();
-        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList.ToImmutableList() };
+        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList };
       }
 
       return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"FileType: {fileType.ToString()} is not supported by TRex.") as DesignListResult;

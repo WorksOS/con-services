@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <value>
     /// The ImportedFile descriptors.
     /// </value>
-    public ImmutableList<DesignFileDescriptor> DesignFileDescriptors { get; set; }
+    public List<DesignFileDescriptor> DesignFileDescriptors { get; set; }
   }
   
 
