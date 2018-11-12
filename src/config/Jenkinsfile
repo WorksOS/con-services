@@ -1,0 +1,7 @@
+node ('jenkinsslave-pod') {
+ checkout scm
+ dir ("./src/config")
+ {
+   sh "/bin/bash ./apply.sh"
+ }
+}
