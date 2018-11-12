@@ -217,7 +217,6 @@ namespace VSS.Tile.Service.WebApi.Controllers
         language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
 
         var geofences = new List<GeofenceData> { geofence };
-
         var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
 
         var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, geofences,
@@ -225,6 +224,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
         request.Validate();
 
+        Log.LogDebug("The tile doesn't exist in cache - generating it");
         return await WithServiceExceptionTryExecuteAsync(async () =>
           await tileGenerator.GetMapData(request));
       });

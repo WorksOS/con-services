@@ -211,9 +211,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0 ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID)) : geofences;
 
-      var thumbnailsTasks = selectedGeofences.Select(GeofenceThumbnailPng);
-
-      var thumbnails = await Task.WhenAll(thumbnailsTasks);
+      var thumbnails = await Task.WhenAll(selectedGeofences.Select(GeofenceThumbnailPng));
 
       return new MultipleThumbnailsResult
       {
@@ -233,11 +231,14 @@ namespace VSS.Tile.Service.WebApi.Controllers
       //We don't need to do it twice as the very first caching request should be enough
       //var geofence = await geofenceProxy.GetGeofenceForCustomer(GetCustomerUid, geofenceUid.ToString(), CustomHeaders);
 
+
       if (geofence == null)
       {
         return (geofence.GeofenceUID, new FileStreamResult(
           new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), "image/png"));
       }
+
+      Log.LogDebug($"Generating geofence tile for {geofence.GeofenceUID}");
 
       var bbox = GetBoundingBoxFromWKT(geofence.GeometryWKT);
 

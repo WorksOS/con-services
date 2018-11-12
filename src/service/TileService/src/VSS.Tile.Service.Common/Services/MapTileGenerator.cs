@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
@@ -101,68 +102,16 @@ namespace VSS.Tile.Service.Common.Services
     /// <returns>A TileResult</returns>
     public async Task<byte[]> GetMapData(TileGenerationRequest request)
     {
-      log.LogInformation("Getting map tile for reports");
+      log.LogInformation("Getting map tile");
       log.LogDebug("TileGenerationRequest: " + JsonConvert.SerializeObject(request));
 
       Dictionary<TileOverlayType, byte[]> tileList = new Dictionary<TileOverlayType, byte[]>();
       object lockObject = new object();
 
-      var overlayTasks = request.overlays.Select(async overlay =>
-      {
-        byte[] bitmap = null;
-        switch (overlay)
-        {
-          case TileOverlayType.BaseMap:
-            bitmap = mapTileService.GetMapBitmap(request.mapParameters, request.mapType.Value, request.language.Substring(0, 2));
-            break;
-          case TileOverlayType.ProductionData:
-            var bbox = $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
-            bitmap = await raptorProxy.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
-              request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
-              bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders);
-            break;
-          case TileOverlayType.ProjectBoundary:
-            bitmap = projectTileService.GetProjectBitmap(request.mapParameters, request.project);
-            break;
-          case TileOverlayType.GeofenceBoundary:
-          case TileOverlayType.Geofences:
-            bitmap = geofenceTileService.GetSitesBitmap(request.mapParameters, request.geofences);
-            break;
-          case TileOverlayType.FilterCustomBoundary:
-            bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.customFilterBoundary, FilterBoundaryType.Polygon);
-            break;
-          case TileOverlayType.FilterDesignBoundary:
-            bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.designFilterBoundary, FilterBoundaryType.Design);
-            break;
-          case TileOverlayType.FilterAlignmentBoundary:
-            bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.alignmentFilterBoundary, FilterBoundaryType.Alignment);
-            break;
-          case TileOverlayType.CutFillDesignBoundary:
-            bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.designBoundaryPoints, FilterBoundaryType.Design);
-            break;
-          case TileOverlayType.Alignments:
-            bitmap = alignmentTileService.GetAlignmentsBitmap(request.mapParameters, request.project.LegacyProjectId,
-              request.alignmentPointsList);
-            break;
-          case TileOverlayType.DxfLinework:
-            bitmap = await dxfTileService.GetDxfBitmap(request.mapParameters, request.dxfFiles);
-            break;
-          case TileOverlayType.LoadDumpData:
-            var loadDumpLocations = await loadDumpProxy.GetLoadDumpLocations(request.project.ProjectUid, request.customHeaders);
-            bitmap = loadDumpTileService.GetLoadDumpBitmap(request.mapParameters, loadDumpLocations);
-            break;
-        }
-        if (bitmap != null)
-        {
-          lock (lockObject)
-          {
-            tileList.Add(overlay, bitmap);
-          }
-        }
-      });
-
       log.LogDebug("Awaiting tiles to be completed");
-      await Task.WhenAll(overlayTasks);
+
+      var overlays = await Task.WhenAll(request.overlays.Select(overlay => RequestTile(request, overlay)));
+
       log.LogDebug($"Tiles completed: {tileList.Count} overlays");
 
       var overlayTile = TileServiceUtils.OverlayTiles(request.mapParameters, tileList);
@@ -170,6 +119,63 @@ namespace VSS.Tile.Service.Common.Services
       overlayTile = ScaleTile(request, overlayTile);
       log.LogDebug("Tiles scaled");
       return overlayTile;
+    }
+
+    private async Task<(TileOverlayType,byte[])> RequestTile(TileGenerationRequest request, TileOverlayType overlay)
+    {
+      byte[] bitmap=null;
+      log.LogDebug($"Processing tile of type {overlay}");
+      switch (overlay)
+      {
+        case TileOverlayType.BaseMap:
+          bitmap = mapTileService.GetMapBitmap(request.mapParameters, request.mapType.Value,
+            request.language.Substring(0, 2));
+          break;
+        case TileOverlayType.ProductionData:
+          var bbox =
+            $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
+          bitmap = await raptorProxy.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
+            request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
+            bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders);
+          break;
+        case TileOverlayType.ProjectBoundary:
+          bitmap = projectTileService.GetProjectBitmap(request.mapParameters, request.project);
+          break;
+        case TileOverlayType.GeofenceBoundary:
+        case TileOverlayType.Geofences:
+          bitmap = geofenceTileService.GetSitesBitmap(request.mapParameters, request.geofences);
+          break;
+        case TileOverlayType.FilterCustomBoundary:
+          bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.customFilterBoundary,
+            FilterBoundaryType.Polygon);
+          break;
+        case TileOverlayType.FilterDesignBoundary:
+          bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.designFilterBoundary,
+            FilterBoundaryType.Design);
+          break;
+        case TileOverlayType.FilterAlignmentBoundary:
+          bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.alignmentFilterBoundary,
+            FilterBoundaryType.Alignment);
+          break;
+        case TileOverlayType.CutFillDesignBoundary:
+          bitmap = geofenceTileService.GetFilterBoundaryBitmap(request.mapParameters, request.designBoundaryPoints,
+            FilterBoundaryType.Design);
+          break;
+        case TileOverlayType.Alignments:
+          bitmap = alignmentTileService.GetAlignmentsBitmap(request.mapParameters, request.project.LegacyProjectId,
+            request.alignmentPointsList);
+          break;
+        case TileOverlayType.DxfLinework:
+          bitmap = await dxfTileService.GetDxfBitmap(request.mapParameters, request.dxfFiles);
+          break;
+        case TileOverlayType.LoadDumpData:
+          var loadDumpLocations =
+            await loadDumpProxy.GetLoadDumpLocations(request.project.ProjectUid, request.customHeaders);
+          bitmap = loadDumpTileService.GetLoadDumpBitmap(request.mapParameters, loadDumpLocations);
+          break;
+      }
+
+      return (overlay,bitmap);
     }
 
     /// <summary>

@@ -81,7 +81,7 @@ namespace VSS.Tile.Service.Common.Services
 
       return alkCache.GetOrCreate(mapURL, entry =>
       {
-
+        log.LogDebug("Retrieving ALK tile since it is not in cache");
         byte[] mapImage = null;
         using (WebClient wc = new WebClient())
         using (Stream stream = wc.OpenRead(mapURL))
