@@ -24,8 +24,12 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       };
 
       foreach (var asmType in AssemblyDependencies)
+      {
         if (asmType.Assembly == null)
+        {
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
+        }
+      }
     }
 
     public static void Main(string[] args)

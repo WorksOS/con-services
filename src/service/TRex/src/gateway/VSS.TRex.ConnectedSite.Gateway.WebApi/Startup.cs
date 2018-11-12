@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,18 +10,12 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Trex.HTTPClients.Clients;
-using VSS.Trex.HTTPClients.RequestHandlers;
+using VSS.TRex.HttpClients.Clients;
+using VSS.TRex.HttpClients.RequestHandlers;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.HTTPClients.RequestHandlers;
-using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage;
-using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
+using VSS.TRrex.HttpClients.Abstractions;
+using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 {
@@ -34,6 +30,9 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
     /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
 
+
+    private const string CONNECTED_SITE_URL_ENV_KEY = "CONNECTED_SITE_URL";
+
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -41,27 +40,23 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
     public void ConfigureServices(IServiceCollection services)
     {
       // Add framework services.
-      var storageProxyFactory = new StorageProxyFactory();
-
-      services.AddSingleton<ITRexGridFactory>(new TRexGridFactory());
-      services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
-      services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.MutableGridStorage()));
-      services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddTransient<TPaaSAuthenticatedRequestHandler>();
-      services.AddTransient<TPaaSApplicationCredentialsRequestHandler>();
-      services.AddHttpClient<TPaaSClient>(client =>
-        client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token")
-      ).AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>();
-      services.AddHttpClient<ConnectedSiteClient>(client => 
-          client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/cws/connectedsite/") 
+      services.AddHttpClient<ITPaaSClient, TPaaSClient>(client =>
+        client.BaseAddress = new Uri(GetRequiredEnvironmentVariable(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY))
+      ).ConfigurePrimaryHttpMessageHandler(() =>
+      {
+        return new TPaaSApplicationCredentialsRequestHandler()
+        {
+          TPaaSToken = GetRequiredEnvironmentVariable(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN__ENV_KEY),
+          InnerHandler = new HttpClientHandler()
+        };
+      });
+      services.AddHttpClient<IConnectedSiteClient, ConnectedSiteClient>(client =>
+          client.BaseAddress = new Uri(GetRequiredEnvironmentVariable(CONNECTED_SITE_URL_ENV_KEY))
       ).AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>();
-      
-
 
       services.AddOpenTracing(builder =>
       {
@@ -97,6 +92,20 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 
       app.UseCommon(SERVICE_TITLE);
       app.UseMvc();
+    }
+
+    private string GetRequiredEnvironmentVariable(string key)
+    {
+      string value = string.Empty;
+      value = Environment.GetEnvironmentVariable(key);
+      if (string.IsNullOrEmpty(value))
+      {
+        throw new ConfigurationErrorsException($"Missing Envar {key}");
+      }
+      else
+      {
+        return value;
+      }
     }
   }
 }
