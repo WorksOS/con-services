@@ -5,6 +5,8 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.DI;
@@ -70,7 +72,7 @@ namespace VSS.TRex.Gateway.Tests
       var fileName = "theFile name.ttm";
       var designUid = Guid.NewGuid();
       var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName, 0);
-      var extents = new BoundingWorldExtent3D(1, 2, 50, 100 );
+      var extents = new BoundingWorldExtent3D(1, 2, 50, 100, -45, 50 );
       var design = new Design(designUid, designDescriptor, extents);
 
       var result = AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(design);

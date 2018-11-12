@@ -2,6 +2,7 @@
 using AutoMapper;
 using VSS.Productivity3D.Models.Models;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.Filters;
@@ -179,7 +180,21 @@ namespace VSS.TRex.Gateway.Common.Converters
     public class DesignResultProfile : Profile
     {
       public DesignResultProfile()
-      { 
+      {
+        CreateMap<BoundingWorldExtent3D, BoundingExtents3D>()
+          .ForMember(x => x.MinX,
+            opt => opt.MapFrom(f => f.MinX))
+          .ForMember(x => x.MinY,
+            opt => opt.MapFrom(f => f.MinY))
+          .ForMember(x => x.MinZ,
+            opt => opt.MapFrom(f => f.MinZ))
+          .ForMember(x => x.MaxX,
+            opt => opt.MapFrom(f => f.MaxX))
+          .ForMember(x => x.MaxY,
+            opt => opt.MapFrom(f => f.MaxY))
+          .ForMember(x => x.MaxZ,
+            opt => opt.MapFrom(f => f.MaxZ));
+
         CreateMap<Design, DesignFileDescriptor>()
           .ForMember(x => x.FileType,
             opt => opt.UseValue(ImportedFileType.DesignSurface))

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Immutable;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.Geometry;
+using VSS.Productivity3D.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.TRex.Gateway.Common.ResultHandling
+namespace VSS.Productivity3D.Models.ResultHandling
 {
   /// <summary>
   /// List of Designs
@@ -46,21 +46,21 @@ namespace VSS.TRex.Gateway.Common.ResultHandling
     public string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the file uid.
+    /// Gets or sets the design uid.
+    ///    this originates from the ProjectSvc's ImportedFileUid
     /// </summary>
     /// <value>
-    /// The file uid.
+    /// The design uid.
     /// </value>
     public string DesignUid { get; set; }
 
     /// <summary>
-    /// Gets or sets the Surveyed Utc. 
-    /// This only applies to a file type of SurveyedSurface, else null.
+    /// Gets the bounding extents in 3d
     /// </summary>
     /// <value>
     /// The start date.
     /// </value>
-    public BoundingWorldExtent3D Extents { get; set; }
+    public BoundingExtents3D Extents { get; set; }
 
     /// <summary>
     /// Gets or sets the Surveyed Utc. 
