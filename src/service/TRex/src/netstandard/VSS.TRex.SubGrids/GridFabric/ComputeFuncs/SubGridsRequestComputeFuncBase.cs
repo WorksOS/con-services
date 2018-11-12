@@ -38,10 +38,10 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     {
         private const int AddressBucketSize = 20;
 
-        // ReSharper disable once StaticMemberInGenericType
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    // ReSharper disable once StaticMemberInGenericType
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
-        private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.kEnableGeneralSubgridResultCaching);
+    private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.kEnableGeneralSubgridResultCaching);
 
         /// <summary>
         /// Local reference to the client subgrid factory

@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 
 /*

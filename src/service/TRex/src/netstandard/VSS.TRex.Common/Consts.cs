@@ -7,7 +7,7 @@ namespace VSS.TRex.Common
     public const double TOLERANCE_PERCENTAGE = 0.00001;
     public const double TOLERANCE_DIMENSION = 0.00001;
     public const double TOLERANCE_TEMPERATURE = 0.00001;
-    public const double TOLERANCE_DECIMAL_DEGREE = 1e10;
+    public const double TOLERANCE_DECIMAL_DEGREE = 1e-10;
 
     public const double NullReal = 1E308;
 
