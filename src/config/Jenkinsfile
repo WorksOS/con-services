@@ -1,4 +1,4 @@
 node ('jenkinsslave-pod') {
  checkout scm
- sh "kubectl apply -f ./src/config/*.yaml"
+ sh "apply.sh"
 }
