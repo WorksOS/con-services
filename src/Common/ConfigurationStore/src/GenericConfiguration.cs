@@ -75,42 +75,26 @@ namespace VSS.ConfigurationStore
       IConfigurationBuilder configBuilder;
       _log = logger.CreateLogger<GenericConfiguration>();
       _log.LogTrace("GenericConfig constructing");
-      var builder = configBuilder = new ConfigurationBuilder()
-        .AddEnvironmentVariables();
+
+      if (kubernetesInitialized == KubernetesState.NotInitialized)
+      {
+        _log.LogDebug("Initializing Kubernetes plugin");
+        InitKubernetes();
+      }
+
+      var builder = configBuilder = new ConfigurationBuilder();
+      if (kubernetesConfig != null) builder.AddInMemoryCollection(kubernetesConfig);
+      builder.AddEnvironmentVariables();
 
 
       try
       {
-        _log.LogTrace("Base:" + AppContext.BaseDirectory);
-        var dirToAppsettings = Directory.GetCurrentDirectory();
-        _log.LogTrace("Current:" + dirToAppsettings);
-        string pathToConfigFile;
-
-        _log.LogDebug($"Testing default path for the config file {Directory.GetCurrentDirectory()} and {AppContext.BaseDirectory}");
-
-        //Test if appsettings exists in the default folder for the console application
-        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")))
-        {
-          pathToConfigFile = Directory.GetCurrentDirectory();
-        }
-        else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json")))
-        {
-          pathToConfigFile = AppContext.BaseDirectory;
-        }
-        else
-        {
-          var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-          pathToConfigFile = Path.GetDirectoryName(pathToExe);
-
-          _log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
-        }
+        var pathToConfigFile = PathToConfigFile();
 
         _log.LogTrace($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-        if (kubernetesConfig != null) builder.AddInMemoryCollection(kubernetesConfig);
 
         _configuration = configBuilder.Build();
       }
@@ -119,25 +103,58 @@ namespace VSS.ConfigurationStore
         _log.LogCritical($"GenericConfiguration exception: {ex.Message}, {ex.Source}, {ex.StackTrace}");
         throw;
       }
+    }
 
-      if (kubernetesInitialized != KubernetesState.NotInitialized)
-        return;
+    private string PathToConfigFile()
+    {
+      _log.LogTrace("Base:" + AppContext.BaseDirectory);
+      var dirToAppsettings = Directory.GetCurrentDirectory();
+      _log.LogTrace("Current:" + dirToAppsettings);
+      string pathToConfigFile;
 
+      _log.LogDebug(
+        $"Testing default path for the config file {Directory.GetCurrentDirectory()} and {AppContext.BaseDirectory}");
+
+      //Test if appsettings exists in the default folder for the console application
+      if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")))
+      {
+        pathToConfigFile = Directory.GetCurrentDirectory();
+      }
+      else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json")))
+      {
+        pathToConfigFile = AppContext.BaseDirectory;
+      }
+      else
+      {
+        var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+        pathToConfigFile = Path.GetDirectoryName(pathToExe);
+
+        _log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
+      }
+
+      return pathToConfigFile;
+    }
+
+    private void InitKubernetes()
+    {
       lock (kubernetesInitLock)
       {
-        if (_configuration["UseKubernetes"] == "true" && kubernetesInitialized == KubernetesState.NotInitialized)
+        var localConfig = new ConfigurationBuilder().AddEnvironmentVariables().SetBasePath(PathToConfigFile())
+          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+
+        if (localConfig["UseKubernetes"] =="true" && kubernetesInitialized == KubernetesState.NotInitialized)
         {
           kubernetesInitialized = KubernetesState.Requested;
           UseKubernetes = true;
-          KubernetesConfigMapName = _configuration["KubernetesConfigMapName"];
-          KubernetesNamespace = _configuration["KubernetesNamespace"];
-          KubernetesContext = _configuration["KubernetesNamespace"];
+          _log.LogTrace("Setting variables for kubernetes");
+          KubernetesConfigMapName = localConfig["KubernetesConfigMapName"];
+          KubernetesNamespace = localConfig["KubernetesNamespace"];
+          KubernetesContext = localConfig["KubernetesContext"];
         }
 
         if (!UseKubernetes)
         {
           kubernetesInitialized = KubernetesState.NotRequired;
-          return;
         }
 
         //try initialize Kubernetes
@@ -145,6 +162,7 @@ namespace VSS.ConfigurationStore
         {
           try
           {
+            _log.LogTrace("Connecting to kubernetes cluster");
             var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
             var client = new Kubernetes(config);
 
@@ -152,8 +170,7 @@ namespace VSS.ConfigurationStore
               .ReadNamespacedConfigMapWithHttpMessagesAsync(KubernetesConfigMapName, KubernetesNamespace).Result.Body
               .Data);
             kubernetesInitialized = KubernetesState.Initialized;
-            builder.AddInMemoryCollection(kubernetesConfig);
-            _configuration = configBuilder.Build();
+            _log.LogTrace("Successfully retrieved configuration from Kubernetes");
           }
           catch (Exception ex)
           {
