@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace VSS.TRex.Server.PSNode
+namespace VSS.TRex.Common
 {
   public class MemoryHeartBeatLogger
   {

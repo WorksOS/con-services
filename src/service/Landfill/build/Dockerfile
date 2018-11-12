@@ -1,6 +1,11 @@
-#BUILD_CONTAINER is the container where landfill was just built and unit tested in usually this should be local i.e. not pushed to ecr or elsewhere.
-ARG BUILD_CONTAINER
-FROM ${BUILD_CONTAINER} as build_container
+FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk as build_container
+
+ARG SERVICE_PATH
+
+COPY . /build/
+WORKDIR /build
+
+RUN dotnet publish ./$SERVICE_PATH/VSS.VisionLink.Landfill.netcore.sln -o /artifacts --runtime linux-x64
 
 FROM registry-docker-registry.jenkins:5000/dotnet:2.0-runtime
 
@@ -15,7 +20,7 @@ ENV CORECLR_ENABLE_PROFILING=1 \
     CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
     CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so 
 
-COPY ./newrelic /newrelic/
+COPY ./build/newrelic /newrelic/
 
 RUN dpkg -i /newrelic/newrelic-netcore20*.deb
 
@@ -26,4 +31,4 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=build_container /landfillapp .
+COPY --from=build_container /artifacts .
