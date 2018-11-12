@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
-using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -12,14 +11,8 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   public class ClientMachineTargetSpeedLeafSubGrid : GenericClientLeafSubGrid<MachineSpeedExtendedRecord>
 	{
-		/// <summary>
-		/// First pass map records which cells hold cell pass machine speed targets that were derived
-		/// from the first pass a machine made over the corresponding cell
-		/// </summary>
-		public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
 	  /// <summary>
-	  /// Initilise the null cell values for the client subgrid
+	  /// Initialise the null cell values for the client subgrid
 	  /// </summary>
 	  static ClientMachineTargetSpeedLeafSubGrid()
 	  {
@@ -35,7 +28,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientMachineTargetSpeedLeafSubGrid() : base()
+    public ClientMachineTargetSpeedLeafSubGrid()
 	  {
       Initialise();
 	  }
@@ -95,19 +88,17 @@ namespace VSS.TRex.SubGridTrees.Client
 	  public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].Min != CellPassConsts.NullMachineSpeed || Cells[cellX, cellY].Max != CellPassConsts.NullMachineSpeed;
 
 	  /// <summary>
-	  /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+	  /// Provides a copy of the null value defined for cells in this client leaf subgrid
 	  /// </summary>
 	  /// <returns></returns>
 	  public override MachineSpeedExtendedRecord NullCell() => MachineSpeedExtendedRecord.NullValue;
 
 	  /// <summary>
-	  /// Sets all min/max cell machine speeds to null and clears the first pass and sureyed surface pass maps
+	  /// Sets all min/max cell machine speeds to null and clears the first pass and surveyed surface pass maps
 	  /// </summary>
 	  public override void Clear()
 	  {
 	    base.Clear();
-
-	    FirstPassMap.Clear();
 	  }
 
 	  /// <summary>
@@ -145,8 +136,6 @@ namespace VSS.TRex.SubGridTrees.Client
 	  {
 	    base.Write(writer, buffer);
 
-	    FirstPassMap.Write(writer, buffer);
-
 	    SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
 	  }
 
@@ -161,9 +150,17 @@ namespace VSS.TRex.SubGridTrees.Client
 	  {
 	    base.Read(reader, buffer);
 
-	    FirstPassMap.Read(reader, buffer);
-
 	    SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
+	  }
+
+	  /// <summary>
+	  /// Return an indicative size for memory consumption of this class to be used in cache tracking
+	  /// </summary>
+	  /// <returns></returns>
+	  public override int IndicativeSizeInBytes()
+	  {
+	    return base.IndicativeSizeInBytes() +
+	           SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension * MachineSpeedExtendedRecord.IndicativeSizeInBytes();
 	  }
   }
 }

@@ -123,7 +123,7 @@ namespace VSS.TRex.Caching
       // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Remove
       MRUList.Remove(ContextTokens[x, y] - 1);
       ContextTokens[x, y] = 0;
-
+      
       tokenCount--;
     }
 

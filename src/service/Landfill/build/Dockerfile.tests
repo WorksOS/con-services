@@ -1,0 +1,14 @@
+FROM registry-docker-registry.jenkins:5000/dotnet:2.1-sdkas builder
+
+COPY . /build/
+WORKDIR /build
+
+RUN chmod 777 *.sh
+
+FROM registry-docker-registry.jenkins:5000/vss-jenkinsslave:core21
+
+WORKDIR /app
+COPY --from=builder /build .
+
+VOLUME testresults
+

@@ -290,13 +290,13 @@ constructor(
   }
 
   public performNTimes(doSomething: () => void, count: number): void {
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < count; i++) {
       doSomething();
     }
   }
 
-  public getTile10x(): void {
-    this.timeSomething(() => this.performNTimes(() => this.getTile(), 10));
+  public getTileXTimes(xTimes: number): void {
+    this.timeSomething(() => this.performNTimes(() => this.getTile(), xTimes));
   }
 
   private updateTimerCompletionTime() : void {
@@ -364,6 +364,7 @@ constructor(
   public addNewDesign(): void {
     var descriptor = new DesignDescriptor();
     descriptor.fileName = this.designFileName;
+    descriptor.offset = this.designOffset;
 
     this.projectService.addDesign(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {

@@ -74,5 +74,5 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// </summary>
     /// <param name="action"></param>
     void ForEach(Action<byte, byte> action);
-  }
+    }
 }

@@ -99,7 +99,7 @@ namespace VSS.TRex.Caching
           return context; // It exists, return it
 
         // Create the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint);
+        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint); 
         Contexts.Add(contextFingerPrint, newContext);
 
         lock (ProjectContexts)
@@ -108,7 +108,7 @@ namespace VSS.TRex.Caching
           if (ProjectContexts.TryGetValue(projectUid, out var projectList))
             projectList.Add(newContext);
           else
-            ProjectContexts.Add(projectUid, new List<ITRexSpatialMemoryCacheContext> { newContext });
+            ProjectContexts.Add(projectUid, new List<ITRexSpatialMemoryCacheContext> {newContext});
         }
 
         return newContext;
@@ -157,10 +157,10 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-      context.Remove(element);
+        context.Remove(element);        
 
-      // Perform some house keeping to keep the cache size in bounds
-      ItemRemovedFromContext(element.IndicativeSizeInBytes());
+        // Perform some house keeping to keep the cache size in bounds
+        ItemRemovedFromContext(element.IndicativeSizeInBytes());
     }
 
     public void ItemAddedToContext(int sizeInBytes)

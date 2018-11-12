@@ -147,46 +147,46 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                     {
                       // Check for composite elevation processing
                       case SurveyedSurfacePatchType.CompositeElevations:
+                      {
+                        // Set the first elevation if not already set
+                        if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
                         {
-                          // Set the first elevation if not already set
-                          if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
-                          {
-                            PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
-                            PatchComposite.Cells[x, y].FirstHeight = (float)z;
-                          }
-
-                          // Always set the latest elevation (surfaces ordered by increasing date)
-                          PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
-                          PatchComposite.Cells[x, y].LastHeight = (float)z;
-
-                          // Update the lowest height
-                          if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
-                              PatchComposite.Cells[x, y].LowestHeight > z)
-                          {
-                            PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
-                            PatchComposite.Cells[x, y].LowestHeight = (float)z;
-                          }
-
-                          // Update the highest height
-                          if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
-                              PatchComposite.Cells[x, y].HighestHeight > z)
-                          {
-                            PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
-                            PatchComposite.Cells[x, y].HighestHeight = (float)z;
-                          }
-
-                          break;
+                          PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
+                          PatchComposite.Cells[x, y].FirstHeight = (float) z;
                         }
+
+                        // Always set the latest elevation (surfaces ordered by increasing date)
+                        PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
+                        PatchComposite.Cells[x, y].LastHeight = (float) z;
+
+                        // Update the lowest height
+                        if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
+                            PatchComposite.Cells[x, y].LowestHeight > z)
+                        {
+                          PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
+                          PatchComposite.Cells[x, y].LowestHeight = (float) z;
+                        }
+
+                        // Update the highest height
+                        if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
+                            PatchComposite.Cells[x, y].HighestHeight > z)
+                        {
+                          PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
+                          PatchComposite.Cells[x, y].HighestHeight = (float) z;
+                        }
+
+                        break;
+                      }
 
                       // checked for earliest/latest singular value processing
                       case SurveyedSurfacePatchType.LatestSingleElevation:
                       case SurveyedSurfacePatchType.EarliestSingleElevation:
-                        {
+                      {
 
-                          PatchSingle.Cells[x, y] = (float)z;
-                          PatchSingle.Times[x, y] = AsAtDate;
-                          break;
-                        }
+                        PatchSingle.Cells[x, y] = (float) z;
+                        PatchSingle.Times[x, y] = AsAtDate;
+                        break;
+                      }
 
                       default:
                         Debug.Assert(false, $"Unknown SurveyedSurfacePatchType: {Args.SurveyedSurfacePatchType}");

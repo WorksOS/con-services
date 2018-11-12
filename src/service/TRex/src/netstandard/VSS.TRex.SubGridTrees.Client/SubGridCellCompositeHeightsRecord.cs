@@ -47,7 +47,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Defines a publicly accessible null value for this cell value type
     /// </summary>
     public static SubGridCellCompositeHeightsRecord NullValue = Null();
-
+    
     /// <summary>
     /// Implements the business logic to create the null value for this cell value type
     /// </summary>

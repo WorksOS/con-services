@@ -127,7 +127,7 @@ namespace VSS.TRex.SurveyedSurfaces
         public override string ToString()
         {
             return
-              $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate};{DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{extents}]";
+              $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} {DesignDescriptor.Offset:F3} [{extents}]";
         }
 
        public DesignDescriptor Get_DesignDescriptor() => DesignDescriptor;

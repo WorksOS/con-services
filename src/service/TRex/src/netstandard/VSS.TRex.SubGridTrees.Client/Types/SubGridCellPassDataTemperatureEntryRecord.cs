@@ -19,19 +19,28 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public TemperatureWarningLevelsRecord TemperatureLevels;
 
-		/// <summary>
-		/// Constractor with arguments.
-		/// </summary>
-		/// <param name="measuredTemperature"></param>
-		/// <param name="temperatureLevels"></param>
-		public SubGridCellPassDataTemperatureEntryRecord(ushort measuredTemperature, TemperatureWarningLevelsRecord temperatureLevels)
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public static int IndicativeSizeInBytes()
+    {
+      return sizeof(ushort) + 4 * TemperatureWarningLevelsRecord.IndicativeSizeInBytes(); 
+    }
+
+    /// <summary>
+    /// Constructor with arguments.
+    /// </summary>
+    /// <param name="measuredTemperature"></param>
+    /// <param name="temperatureLevels"></param>
+    public SubGridCellPassDataTemperatureEntryRecord(ushort measuredTemperature, TemperatureWarningLevelsRecord temperatureLevels)
 	  {
 		  MeasuredTemperature = measuredTemperature;
 		  TemperatureLevels = temperatureLevels;
 	  }
 
 		/// <summary>
-		/// Initialises the measured temperature and its warning leveles with null values.
+		/// Initializes the measured temperature and its warning levels with null values.
 		/// </summary>
 		public void Clear()
 	  {
@@ -40,12 +49,12 @@ namespace VSS.TRex.SubGridTrees.Types
 	  }
 
     /// <summary>
-    /// Defines a publically accessible null value for this cell value type
+    /// Defines a publicly accessible null value for this cell value type
     /// </summary>
     public static SubGridCellPassDataTemperatureEntryRecord NullValue = Null();
 
     /// <summary>
-    /// Implements the business logic to create the null value for this cell valuye type
+    /// Implements the business logic to create the null value for this cell value type
     /// </summary>
     /// <returns></returns>
     public static SubGridCellPassDataTemperatureEntryRecord Null()
@@ -56,7 +65,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -66,7 +75,7 @@ namespace VSS.TRex.SubGridTrees.Types
     }
 
     /// <summary>
-    /// Serialises comtent of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)

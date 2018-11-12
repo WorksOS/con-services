@@ -30,8 +30,8 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_TRexSpatialMemoryCacheContext_Creation_WithOwnerAndMRU()
     {
-      ITRexSpatialMemoryCacheContext context =
-        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+      ITRexSpatialMemoryCacheContext context = 
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5), 
                                           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       Assert.True(context.ContextTokens != null, "No index subgrid tree created");
@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.Caching
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
-      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
+      var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
       context.Add(element);
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");

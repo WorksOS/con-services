@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.GridFabric.Requests
+namespace VSS.TRex.SubGrids.GridFabric.Requests
 {
     /// <summary>
     /// The SubGridRequests GridFabric class sends a request to the grid for a collection of subgrids to be processed according 
@@ -25,7 +26,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request
         /// </summary>
-        public Pipelines.Interfaces.Tasks.ITask Task;
+        public ITask Task;
 
         /// <summary>
         /// The request argument to be passed to target of the request
@@ -100,7 +101,7 @@ namespace VSS.TRex.GridFabric.Requests
         /// <param name="surveyedSurfaceOnlyMask"></param>
         /// <param name="filters"></param>
         /// <param name="referenceDesignId"></param>
-        public SubGridRequestsBase(Pipelines.Interfaces.Tasks.ITask task,
+        public SubGridRequestsBase(ITask task,
                                    Guid siteModelID, 
                                    Guid requestID, 
                                    string trexNodeId, 

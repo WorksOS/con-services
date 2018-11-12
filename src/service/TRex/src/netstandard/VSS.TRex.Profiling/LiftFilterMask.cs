@@ -20,7 +20,7 @@ namespace VSS.TRex.Profiling
   {
     private static ILogger Log = Logging.Logger.CreateLogger("LiftFilterMask");
 
-    public static void ConstructSubgridSpatialAndPositionalMask(ISubGridTree tree,
+    public static void ConstructSubgridSpatialAndPositionalMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, List<IProfileCell> profileCells, SubGridTreeBitmapSubGridBits mask,
       int fromProfileCellIndex, ICellSpatialFilter cellFilter)
     {
@@ -30,7 +30,7 @@ namespace VSS.TRex.Profiling
       // from current position to end
       for (int CellIdx = fromProfileCellIndex; CellIdx < profileCells.Count; CellIdx++)
       {
-        ProfileCell profileCell = (ProfileCell)profileCells[CellIdx];
+        ProfileCell profileCell = (ProfileCell) profileCells[CellIdx];
         SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(
           profileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
           profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
@@ -53,7 +53,7 @@ namespace VSS.TRex.Profiling
       }
     }
 
-    public static bool ConstructSubgridCellFilterMask(ISubGridTree tree,
+    public static bool ConstructSubgridCellFilterMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, List<IProfileCell> profileCells, SubGridTreeBitmapSubGridBits mask,
       int fromProfileCellIndex, ICellSpatialFilter cellFilter)
     {

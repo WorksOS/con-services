@@ -3,7 +3,6 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.DI;

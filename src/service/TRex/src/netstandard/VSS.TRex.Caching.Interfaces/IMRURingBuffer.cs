@@ -1,5 +1,5 @@
 ﻿
-namespace VSS.TRex.Caching
+namespace VSS.TRex.Caching.Interfaces
 {
   public interface IMRURingBuffer<T>
   {

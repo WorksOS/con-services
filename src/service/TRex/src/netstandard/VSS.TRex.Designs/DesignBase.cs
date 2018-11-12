@@ -27,7 +27,7 @@ namespace VSS.TRex.Designs
     {
     }
 
-    public abstract DesignLoadResult LoadFromFile(string localPathAndFileName);
+    public abstract DesignLoadResult LoadFromFile(string fileName);
 
     public abstract DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false);
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.Designs
     // filtering operations to be applied prior to this filtering step.
     public abstract bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
       SubGridTreeBitmapSubGridBits Mask,
-      ref SubGridTreeBitmapSubGridBits Patch,
+      SubGridTreeBitmapSubGridBits Patch,
       double OriginX, double OriginY,
       double CellSize,
       DesignDescriptor DesignDescriptor);

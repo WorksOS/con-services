@@ -14,19 +14,25 @@ namespace VSS.TRex.Types
 		/// </summary>
 		public ushort Max { get; set; }
 
-		/// <summary>
-		/// Constractor with arguments.
-		/// </summary>
-		/// <param name="min"></param>
-		/// <param name="max"></param>
-		public TemperatureWarningLevelsRecord(ushort min, ushort max)
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public static int IndicativeSizeInBytes() => 2 * sizeof(ushort);
+
+    /// <summary>
+    /// Constructor with arguments.
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    public TemperatureWarningLevelsRecord(ushort min, ushort max)
 	  {
 		  Min = min;
 		  Max = max;
 	  }
 
 		/// <summary>
-		/// Initialises the Min and Max properties with null values.
+		/// Initializes the Min and Max properties with null values.
 		/// </summary>
 	  public void Clear()
 	  {
@@ -35,7 +41,7 @@ namespace VSS.TRex.Types
 		}
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
@@ -45,7 +51,7 @@ namespace VSS.TRex.Types
     }
 
     /// <summary>
-    /// Serialises comtent of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)

@@ -9,13 +9,13 @@ using VSS.TRex.SubGridTrees.Types;
 namespace VSS.TRex.SubGridTrees.Core
 {
   /// <summary>
-  /// Base class for 'node' subgrids that form the structure of a subgridtree at all levels from the root
+  /// Base class for 'node' subgrids that form the structure of a subgrid tree at all levels from the root
   /// to the level above the leaf subgrids at the bottom layer of the tree.
   /// </summary>
   public class NodeSubGrid : SubGrid, INodeSubGrid
   {
     /// <summary>
-    /// The array of sparse cell refernces that form the known cells in this subgrid
+    /// The array of sparse cell references that form the known cells in this subgrid
     /// </summary>
     private SubgridTreeSparseCellRecord[] _sparseCells;
 
@@ -183,7 +183,7 @@ namespace VSS.TRex.SubGridTrees.Core
         throw new ArgumentException("Min/max subgrid cell X/Y bounds are out of range");
       }
 
-      // Make use of the three parameter functor verion of ForEachSubgrid and ignore the subgrid location paramters.
+      // Make use of the three parameter functor version of ForEachSubgrid and ignore the subgrid location parameters.
       ForEachSubGrid((x, y, subgrid) => functor(subgrid),
         minSubGridCellX, minSubGridCellY, maxSubGridCellX, maxSubGridCellY);
     }
@@ -260,7 +260,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// <param name="Extent"></param>
     /// <param name="leafFunctor"></param>
     /// <param name="nodeFunctor"></param>
-    /// <returns>A boolean indicating the ScanSubGrids operation was successful andnot aborted by a functor</returns>
+    /// <returns>A boolean indicating the ScanSubGrids operation was successful and not aborted by a functor</returns>
     public bool ScanSubGrids(BoundingIntegerExtent2D Extent,
       Func<ISubGrid, bool> leafFunctor = null,
       Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
@@ -302,7 +302,7 @@ namespace VSS.TRex.SubGridTrees.Core
     {
       // Set the origin position and level for the subgrid as these quantities are
       // relative to the location of the subgrid in the tree. Throw an exception if the 
-      // level of the sudgrid is not 0 (null), and is not the same as this.Level + 1
+      // level of the subgrid is not 0 (null), and is not the same as this.Level + 1
       // (ie: the caller is trying to be too clever!)
       if (Value != null)
       {

@@ -126,7 +126,7 @@ namespace VSS.TRex.SubGridTrees.Client
       int lowLayerIndex = -1;
       int highLayerIndex = -1;
 
-      IProfileLayers layers = ((IProfileCell)Context.CellProfile).Layers;
+      IProfileLayers layers = ((IProfileCell) Context.CellProfile).Layers;
 
       if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
       {
@@ -249,28 +249,28 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="title"></param>
     public override void DumpToLog(string title)
     {
-      base.DumpToLog(title);
-      /*
-        * var
-        I, J : Integer;
-        S : String;
-      begin
-        SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , ...);
+        base.DumpToLog(title);
+        /*
+          * var
+          I, J : Integer;
+          S : String;
+        begin
+          SIGLogMessage.PublishNoODS(Nil, Format('Dump of machine speed map for subgrid %s', [Moniker]) , ...);
 
-        for I := 0 to kSubGridTreeDimension - 1 do
-          begin
-            S := Format('%2d:', [I]);
+          for I := 0 to kSubGridTreeDimension - 1 do
+            begin
+              S := Format('%2d:', [I]);
 
-            for J := 0 to kSubGridTreeDimension - 1 do
-              if CellHasValue(I, J) then
-                S := S + Format('%9.3f', [Cells[I, J]])
-              else
-                S := S + '     Null';
+              for J := 0 to kSubGridTreeDimension - 1 do
+                if CellHasValue(I, J) then
+                  S := S + Format('%9.3f', [Cells[I, J]])
+                else
+                  S := S + '     Null';
 
-            SIGLogMessage.PublishNoODS(Nil, S, ...);
-          end;
-      end;
-      */
+              SIGLogMessage.PublishNoODS(Nil, S, ...);
+            end;
+        end;
+        */
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="writer"></param>
     /// <param name="buffer"></param>
-    public override void Write(BinaryWriter writer, byte[] buffer)
+    public override void Write(BinaryWriter writer, byte [] buffer)
     {
       base.Write(writer, buffer);
 
@@ -294,7 +294,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="buffer"></param>
-    public override void Read(BinaryReader reader, byte[] buffer)
+    public override void Read(BinaryReader reader, byte [] buffer)
     {
       base.Read(reader, buffer);
 

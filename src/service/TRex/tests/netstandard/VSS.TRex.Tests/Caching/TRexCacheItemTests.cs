@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.Caching
       TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
 
       item.Set(theObject, null, 100, 1, 2);
-
+      
       Assert.True(ReferenceEquals(item.Item, theObject));
       Assert.True(item.Prev == 1);
       Assert.True(item.Next == 2);
@@ -51,7 +51,7 @@ namespace VSS.TRex.Tests.Caching
     public void Test_TRexCacheItem_GetPrevAndNext()
     {
       TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
-
+      
       item.Set(null, null, 100, 1, 2);
       item.GetPrevAndNext(out int prev, out int next);
 
@@ -65,7 +65,7 @@ namespace VSS.TRex.Tests.Caching
       TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element> item = new TRexCacheItem<TRexSpatialMemoryCacheContextTests_Element>();
 
       item.Set(null, null, 100, 1, 2);
-
+      
       Assert.False(item.Valid, "Newly created item is not valid");
       bool previousValid = item.Validate();
 

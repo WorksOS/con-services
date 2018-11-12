@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientCompositeHeightsLeafSubgrid()
     {
-      ForEachStatic((x, y) => NullCells[x, y] = SubGridCellCompositeHeightsRecord.NullValue);
+       ForEachStatic((x, y) => NullCells[x, y] = SubGridCellCompositeHeightsRecord.NullValue);
     }
 
     private void Initialise()
@@ -105,10 +105,10 @@ namespace VSS.TRex.SubGridTrees.Client
         LowestHeight = x,
         FirstHeight = y,
         LowestHeightTime = x + y,
-        HighestHeight = 2 * (x + y),
+        HighestHeight = 2 * (x + y),        
       });
     }
-
+    
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
     /// </summary>

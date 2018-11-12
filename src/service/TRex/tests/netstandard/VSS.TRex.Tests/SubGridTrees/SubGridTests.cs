@@ -9,7 +9,7 @@ using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridTests : IClassFixture<DILoggingFixture>
+        public class SubGridTests : IClassFixture<DILoggingAndStorgeProxyFixture>
   {
         [Fact]
         public void Test_SubGrid_Creation()
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.Equal(nodeSubgrid.Level, SubGridTreeConsts.SubGridTreeLevels - 1);
 
             // A subgrid one level above a leaf subgrid covers sqr(SubGridTreeConsts.SubGridTreeDimension) cells in each dimension (X & Y)
-            Assert.Equal((int)nodeSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension);
+            Assert.Equal((int)nodeSubgrid.AxialCellCoverageByThisSubgrid(), SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
 
             // A child subgrid of this parent shoudl ahve an axial coverage of SubGridTreeConsts.SubGridTreeDimension cells in each dimension (X & Y)
             // (as there are SubGridTreeConsts.SubGridTreeDimension children cells in the X and Y dimensions

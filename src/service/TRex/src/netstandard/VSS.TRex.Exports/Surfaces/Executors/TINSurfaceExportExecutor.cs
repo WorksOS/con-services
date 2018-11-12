@@ -127,7 +127,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           response: SurfaceSubGridsResponse,
           filters: Filters,
           cutFillDesignID: Guid.Empty,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, Pipelines.Interfaces.Tasks.ITask>>()(PipelineProcessorTaskStyle.SurfaceExport),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.SurfaceExport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),

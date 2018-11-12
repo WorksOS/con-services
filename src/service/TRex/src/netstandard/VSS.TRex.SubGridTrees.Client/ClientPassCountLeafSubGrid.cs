@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Events.Models;
-using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -17,13 +16,7 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientPassCountLeafSubGrid : GenericClientLeafSubGrid<SubGridCellPassDataPassCountEntryRecord>
   {
     /// <summary>
-    /// First pass map records which cells hold cell pass Pass Counts that were derived
-    /// from the first pass a machine made over the corresponding cell
-    /// </summary>
-    public SubGridTreeBitmapSubGridBits FirstPassMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-    /// <summary>
-    /// Initilise the null cell values for the client subgrid
+    /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientPassCountLeafSubGrid()
     {
@@ -47,7 +40,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientPassCountLeafSubGrid() : base()
+    public ClientPassCountLeafSubGrid()
     {
       Initialise();
     }
@@ -74,13 +67,11 @@ namespace VSS.TRex.SubGridTrees.Client
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].MeasuredPassCount != CellPassConsts.NullPassCountValue;
 
     /// <summary>
-    /// Sets all cell Pass Counts to null and clears the first pass and sureyed surface pass maps
+    /// Sets all cell Pass Counts to null and clears the first pass and surveyed surface pass maps
     /// </summary>
     public override void Clear()
     {
       base.Clear();
-
-      FirstPassMap.Clear();
     }
 
     /// <summary>
@@ -126,7 +117,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Provides a copy of the null value defined for cells in thie client leaf subgrid
+    /// Provides a copy of the null value defined for cells in this client leaf subgrid
     /// </summary>
     /// <returns></returns>
     public override SubGridCellPassDataPassCountEntryRecord NullCell() => SubGridCellPassDataPassCountEntryRecord.NullValue;
@@ -142,8 +133,6 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer, buffer);
 
-      FirstPassMap.Write(writer, buffer);
-
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Write(writer));
     }
 
@@ -158,10 +147,17 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader, buffer);
 
-      FirstPassMap.Read(reader, buffer);
-
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
     }
 
+    /// <summary>
+    /// Return an indicative size for memory consumption of this class to be used in cache tracking
+    /// </summary>
+    /// <returns></returns>
+    public override int IndicativeSizeInBytes()
+    {
+      return base.IndicativeSizeInBytes() +
+             SubGridTreeConsts.SubGridTreeCellsPerSubgrid * SubGridCellPassDataPassCountEntryRecord.IndicativeSizeInBytes();
+    }
   }
 }

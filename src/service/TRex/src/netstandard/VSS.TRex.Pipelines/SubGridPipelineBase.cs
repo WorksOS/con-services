@@ -12,12 +12,13 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SubGrids.GridFabric.Requests;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Pipelines
 {
     /// <summary>
-    /// Derived from TSVOICSubGridPipelineBase = class(TObject)
+    /// Derived from SVO SubGridPipelineBase
     /// </summary>
     public class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
@@ -39,7 +40,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         private long SubgridsRemainingToProcess;
 
-        public Interfaces.Tasks.ITask PipelineTask { get; set; }
+        public ITask PipelineTask { get; set; }
 
         public bool Aborted { get; set; }
 
@@ -186,7 +187,7 @@ namespace VSS.TRex.Pipelines
         /// Constructor accepting an identifier for the pipeline and a task for the pipeline to operate with
         /// </summary>
         /// <param name="task"></param>
-        public SubGridPipelineBase(/*int AID, *//*PipelinedSubGridTask */ Interfaces.Tasks.ITask task) : this()
+        public SubGridPipelineBase(/*int AID, *//*PipelinedSubGridTask */ ITask task) : this()
         {
             //ID = AID;
             PipelineTask = task;

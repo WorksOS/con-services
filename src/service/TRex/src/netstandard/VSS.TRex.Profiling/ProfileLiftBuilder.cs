@@ -245,7 +245,7 @@ namespace VSS.TRex.Profiling
       ProfileCell.TopLayerPassCountTargetRangeMin = ProfileCell.TopLayerPassCount;
       ProfileCell.TopLayerPassCountTargetRangeMax = ProfileCell.TopLayerPassCount;
 
-      // WorkOut Speed Min Max
+// WorkOut Speed Min Max
       // ReSharper disable once UseMethodAny.0
       if (ProfileCell.Layers.Count() > 0)
       {
@@ -277,7 +277,7 @@ namespace VSS.TRex.Profiling
             if ((LayerStatus.Superseded & ProfileCell.Layers[I].Status) != 0)
               continue;
 
-            ProfileCell.TopLayerPassCount = (ushort)(ProfileCell.FilteredHalfPassCount / 2);
+            ProfileCell.TopLayerPassCount = (ushort) (ProfileCell.FilteredHalfPassCount / 2);
 
             if (Dummy_LiftBuildSettings.OverrideTargetPassCount)
             {
@@ -417,7 +417,7 @@ namespace VSS.TRex.Profiling
               !DataStillRequiredForTMP)
             break;
 
-          // CCA not part of legacy setup as yet
+// CCA not part of legacy setup as yet
           if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
             DataStillRequiredForCCV = false;
           if (Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)
@@ -441,7 +441,7 @@ namespace VSS.TRex.Profiling
 
       ProfileCell.SetFirstLastHighestLowestElevations(PassFilter.HasElevationTypeFilter, PassFilter.ElevationType);
 
-      // are coords set right?
+// are coords set right?
       uint CellX = ProfileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
       uint CellY = ProfileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
       bool HaveCompositeSurfaceForCell = CompositeHeightsGrid?.ProdDataMap.BitSet(CellX, CellY) ?? false;
@@ -508,12 +508,12 @@ namespace VSS.TRex.Profiling
       ISubGrid SubGrid = null;
       IServerLeafSubGrid _SubGridAsLeaf = null;
       ProfileCell = null;
-      //      FilterDesignElevations = null;
+//      FilterDesignElevations = null;
       bool IgnoreSubgrid = false;
 
       for (int I = 0; I < ProfileCells.Count; I++)
       {
-        ProfileCell = (ProfileCell)ProfileCells[I];
+        ProfileCell = (ProfileCell) ProfileCells[I];
 
         // get subgrid setup iterator and set cell address
         // get subgrid origin for cell address
@@ -595,8 +595,8 @@ namespace VSS.TRex.Profiling
 
           // get cell address relative to subgrid and SetCellCoordinatesInSubgrid
           cellPassIterator.SetCellCoordinatesInSubgrid(
-            (byte)(ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
-            (byte)(ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
+            (byte) (ProfileCells[I].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
+            (byte) (ProfileCells[I].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
           PassFilter.InitaliaseFilteringForCell(cellPassIterator.CellX, cellPassIterator.CellY);
 
           if (CellLiftBuilder.Build(ProfileCell, /*todo Dummy_LiftBuildSettings, */ null, null, cellPassIterator, false))

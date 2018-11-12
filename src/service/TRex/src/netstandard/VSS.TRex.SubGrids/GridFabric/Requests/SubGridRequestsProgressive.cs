@@ -7,12 +7,11 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 
-namespace VSS.TRex.GridFabric.Requests
+namespace VSS.TRex.SubGrids.GridFabric.Requests
 {
     /// <summary>
     /// Requests subgrids from the cache compute cluster allowing in-progress updates of results to be sent back to

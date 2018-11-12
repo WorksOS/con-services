@@ -1,8 +1,7 @@
 ﻿using System;
-using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.TRex.Caching
+namespace VSS.TRex.Caching.Interfaces
 {
   public interface ITRexSpatialMemoryCacheContext
   {
@@ -16,7 +15,7 @@ namespace VSS.TRex.Caching
 
     int TokenCount { get; }
 
-   TimeSpan CacheDurationTime { get; }
+    TimeSpan CacheDurationTime { get; }
 
     TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; }
 

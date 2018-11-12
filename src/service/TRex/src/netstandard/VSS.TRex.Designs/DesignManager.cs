@@ -81,7 +81,7 @@ namespace VSS.TRex.Designs
       {
         StorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream(), designs);
         StorageProxy.Commit();
-        // todojeannie pass designUid and in the integrator, clear cache/s
+
         // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
         sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, 
@@ -104,6 +104,7 @@ namespace VSS.TRex.Designs
       IDesigns designs = Load(SiteModelID);
       IDesign result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(SiteModelID, designs);
+
       return result;
     }
 
@@ -128,10 +129,9 @@ namespace VSS.TRex.Designs
     public bool Remove(Guid siteModelID, Guid designID)
     {
       IDesigns designs = Load(siteModelID);
-      // todojeannie check if design exists?
       bool result = designs.RemoveDesign(designID);
       Store(siteModelID, designs);
-      // todojeannie remove index files from s3
+
       return result;
     }
   }

@@ -6,11 +6,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using Microsoft.AspNetCore.Mvc;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM.Optimised;
-using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -520,7 +518,7 @@ namespace VSS.TRex.Designs
 
     public override bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
       SubGridTreeBitmapSubGridBits Mask,
-      ref SubGridTreeBitmapSubGridBits Patch,
+      SubGridTreeBitmapSubGridBits Patch,
       double OriginX, double OriginY,
       double CellSize,
       DesignDescriptor DesignDescriptor)
@@ -529,16 +527,11 @@ namespace VSS.TRex.Designs
 
       if (InterpolateHeights(Heights, OriginX, OriginY, CellSize, DesignDescriptor.Offset))
       {
-        // Iterate over the cell bitmask in Mask (ie: the cell this function is instructed to care about and remove cell fromn
-        // that mask where there is no non-null elevation in the heights calculated by InterpolateHeights. Return the result
-        // back as Patch. Use TempMask as local var capturable by the anonymous function...
-        SubGridTreeBitmapSubGridBits TempMask = Mask;
-
-        TempMask.ForEachSetBit((x, y) =>
+        Mask.ForEachSetBit((x, y) =>
         {
-          if (Heights[x, y] == Common.Consts.NullHeight) TempMask.ClearBit(x, y);
+          if (Heights[x, y] == Common.Consts.NullHeight) Mask.ClearBit(x, y);
         });
-        Patch = TempMask;
+        Patch.Assign(Mask);
 
         //{$IFDEF DEBUG}
         //SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [Patch.CountBits]), slmcDebug);
@@ -822,7 +815,7 @@ namespace VSS.TRex.Designs
         }
 
         // Initialise Patch to null height values
-        Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension);
+        Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeCellsPerSubgrid);
 
         // Iterate over all the cells in the grid using the triangle subgrid cell extents to filter
         // triangles in the leaf that will be considered for point-in-triangle & elevation checks.

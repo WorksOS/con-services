@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-webapi
+  labels:
+    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+    spec:
+      containers:
+      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag }}
+        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+        command: ["dotnet"]
+        args: ["LandfillService.WebApi.netcore.dll"]
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /ping
+            port: 80
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 80
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
