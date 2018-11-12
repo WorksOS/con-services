@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -17,7 +16,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// </summary>
     public class SubGridListener : IMessageListener<byte[]>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridListener>();
 
         /// <summary>
         /// Count of the number of responses received by this listener

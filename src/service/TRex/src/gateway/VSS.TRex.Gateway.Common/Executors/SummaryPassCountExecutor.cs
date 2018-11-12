@@ -6,6 +6,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 using PassCountStatisticsResult = VSS.TRex.Analytics.PassCountStatistics.PassCountStatisticsResult;
 using SummaryResult = VSS.Productivity3D.Models.ResultHandling.PassCountSummaryResult;

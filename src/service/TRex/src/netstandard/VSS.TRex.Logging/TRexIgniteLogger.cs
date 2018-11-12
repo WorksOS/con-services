@@ -11,7 +11,7 @@ namespace VSS.TRex.Logging
   public class TRexIgniteLogger : Apache.Ignite.Core.Log.ILogger
   {
     /// Wrapped logger.
-    private readonly Microsoft.Extensions.Logging.ILogger _logger;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the TRexIgniteLogger class.
@@ -21,7 +21,7 @@ namespace VSS.TRex.Logging
     }
 
     /// <summary>
-    /// Initialises a new instance of the TRexIgniteLogger class with the provided ILog interface
+    /// Initializes a new instance of the TRexIgniteLogger class with the provided ILog interface
     /// </summary>
     /// <param name="logger"></param>
     public TRexIgniteLogger(Microsoft.Extensions.Logging.ILogger logger)

@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.Volumes
             SimpleVolumesRequest_ApplicationService request = new SimpleVolumesRequest_ApplicationService();
             SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
             {
-                SiteModelID = Guid.NewGuid(), // = 6; This needs to change to refer to an actual project
+                ProjectID = Guid.NewGuid(),
                 VolumeType = VolumeComputationType.Between2Filters,
                 BaseFilter = new CombinedFilter()
                 {
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.Volumes
             SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
             SimpleVolumesRequestArgument arg = new SimpleVolumesRequestArgument()
             {
-                SiteModelID = Guid.NewGuid(), // = 6; This needs to change to refer to an actual project
+                ProjectID = Guid.NewGuid(), // = 6; This needs to change to refer to an actual project
                 VolumeType = VolumeComputationType.Between2Filters,
                 BaseFilter = new CombinedFilter()
                 {

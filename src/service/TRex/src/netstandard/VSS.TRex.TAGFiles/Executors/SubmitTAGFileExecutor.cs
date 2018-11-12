@@ -83,7 +83,7 @@ namespace VSS.TRex.TAGFiles.Executors
             Guid validProjectId = td.projectId ?? Guid.Empty;
             Guid validAssetId = td.assetId ?? Guid.Empty;
 
-            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
+            Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetUID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe{td.IsJohnDoe} ");
             TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {

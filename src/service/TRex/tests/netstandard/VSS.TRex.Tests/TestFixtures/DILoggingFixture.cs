@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.TRex.DI;
+using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -17,6 +18,7 @@ namespace VSS.TRex.Tests.TestFixtures
           .New()
           .AddLogging()
           .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+          .Add(x => x.AddSingleton(ClientLeafSubgridFactoryFactory.CreateClientSubGridFactory()))
           .Complete();
       }
     }

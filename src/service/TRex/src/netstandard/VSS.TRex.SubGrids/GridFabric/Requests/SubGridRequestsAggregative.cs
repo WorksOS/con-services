@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
@@ -17,7 +16,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
         /// <summary>
         /// Default no-arg constructor that delegates construction to the base class
@@ -63,13 +63,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
 
             // Advise the pipeline of all the subgrids that were examined in the aggregated processing
-            Task.PipeLine.SubgridsProcessed(taskResult.NumSubgridsExamined);
+            Task.PipeLine.SubgridsProcessed(taskResult?.NumSubgridsExamined ?? 0);
 
             // Notify the pipeline that all processing has been completed for it
             Task.PipeLine.PipelineCompleted = true;
 
             // Send the appropriate response to the caller
-            return new List<TSubGridRequestsResponse>() { taskResult };
+            return new List<TSubGridRequestsResponse> { taskResult };
         }
     }
 }

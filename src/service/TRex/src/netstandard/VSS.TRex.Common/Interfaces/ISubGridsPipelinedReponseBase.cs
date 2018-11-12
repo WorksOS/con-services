@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Types;
 
-namespace VSS.TRex.Common
+namespace VSS.TRex.Common.Interfaces
 {
   public interface ISubGridsPipelinedReponseBase
   {

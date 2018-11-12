@@ -27,7 +27,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   }
 
   /// <summary>
-  /// The controller for generating TIN surfaces decimatied from elevation data
+  /// The controller for generating TIN surfaces decimated from elevation data
   /// </summary>
   public class TINSurfaceExportController : BaseController
   {

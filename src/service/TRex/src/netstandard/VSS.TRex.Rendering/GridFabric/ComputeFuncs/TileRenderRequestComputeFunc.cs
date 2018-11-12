@@ -47,7 +47,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
                 Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
                 RenderOverlayTile render = new RenderOverlayTile
-                    (arg.SiteModelID,
+                    (arg.ProjectID,
                      arg.Mode,
                      new XYZ(arg.Extents.MinX, arg.Extents.MinY),
                      new XYZ(arg.Extents.MaxX, arg.Extents.MaxY),

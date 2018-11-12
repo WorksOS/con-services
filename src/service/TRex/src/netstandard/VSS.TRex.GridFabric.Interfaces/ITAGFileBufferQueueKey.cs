@@ -9,6 +9,6 @@ namespace VSS.TRex.GridFabric.Interfaces
     /// </summary>
     string FileName { get; set; }
 
-    Guid AssetID { get; set; }
+    Guid AssetUID { get; set; }
   }
 }

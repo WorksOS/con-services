@@ -1,8 +1,14 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.GridFabric.Arguments
 {
-  public abstract class BaseRequestBinarizableArgument : IBinarizable
+  /// <summary>
+  /// Defines a base class implementation of the Ignite binarizable serialization. It also defines a separate
+  /// set of methods from IFromToBinary based on the Ignite raw read/write serialisation as the preferred performant serialisation
+  /// approach
+  /// </summary>
+  public abstract class BaseRequestBinarizableArgument : IBinarizable, IFromToBinary
   {
     public abstract void ToBinary(IBinaryRawWriter writer);
 

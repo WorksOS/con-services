@@ -36,7 +36,7 @@ namespace VSS.TRex.TAGFiles.Models
         public Guid AssetID;
 
         /// <summary>
-        ///   Is machine a JohnDoe. No telematic device on board to identify machine or No AssetID in system
+        ///   Is machine a JohnDoe. No telematic device on board to identify machine or No AssetUID in system
         ///   JohnDoe machine are assigned a unique Guid
         /// </summary>
         public bool IsJohnDoe;

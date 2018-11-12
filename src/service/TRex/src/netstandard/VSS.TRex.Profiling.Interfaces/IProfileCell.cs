@@ -1,11 +1,13 @@
-﻿using VSS.TRex.Cells;
+﻿using System;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Cells;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
   /// <summary>
   /// Currently jsut a generic interface holder for a profile cell. All consumers will need to cast to a ProfileCell concrete implementation to access it
   /// </summary>
-  public interface IProfileCell
+  public interface IProfileCell: IEquatable<IProfileCell>
   {
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
@@ -42,5 +44,17 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="Pass"></param>
     /// <returns></returns>
     bool IsInSupersededLayer(CellPass Pass);
+
+    /// <summary>
+    /// Serialises content to the writer
+    /// </summary>
+    /// <param name="writer"></param>
+    void ToBinary(IBinaryRawWriter writer);
+
+    /// <summary>
+    /// Serialises content from the writer
+    /// </summary>
+    /// <param name="reader"></param>
+    void FromBinary(IBinaryRawReader reader);
   }
 }

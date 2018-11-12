@@ -73,7 +73,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         arg = new ProcessTAGFileRequestArgument()
         {
           ProjectID = projectID,
-          AssetID = machine.ID,
+          AssetUID = machine.ID,
           TAGFiles = new List<ProcessTAGFileRequestFileItem>()
           {
             new ProcessTAGFileRequestFileItem()
@@ -97,7 +97,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       ProcessTAGFileRequestArgument arg = new ProcessTAGFileRequestArgument
       {
         ProjectID = projectID,
-        AssetID = machine.ID,
+        AssetUID = machine.ID,
         TAGFiles = new List<ProcessTAGFileRequestFileItem>()
       };
 

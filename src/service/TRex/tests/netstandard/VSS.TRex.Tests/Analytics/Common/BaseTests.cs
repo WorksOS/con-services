@@ -9,5 +9,7 @@ namespace VSS.TRex.Tests.Analytics.Common
     protected const int CELLS_OVER_TARGET = 25;
     protected const int CELLS_AT_TARGET = 45;
     protected const int CELLS_UNDER_TARGET = 85;
+
+    protected long[] CountsArray = {10, 5, 45, 30, 15, 25, 55};
   }
 }
