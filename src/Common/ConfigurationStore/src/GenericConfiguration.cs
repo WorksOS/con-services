@@ -25,7 +25,7 @@ namespace VSS.ConfigurationStore
   /// Kubernetes configuration has the lowest priority
   /// environment vars will override k8s
   /// Appsettings will override any environment setting
-  /// if neither present then we'll use some defaults
+  /// if neither present then we'll use some def=aults
   /// </summary>
   public class GenericConfiguration : IConfigurationStore
   {
@@ -40,6 +40,7 @@ namespace VSS.ConfigurationStore
     private static string kubernetesContext = null;
     private static KubernetesState kubernetesInitialized = KubernetesState.NotInitialized;
     private object kubernetesInitLock = new object();
+    private static bool configListed = false;
       
 
     public bool UseKubernetes
@@ -102,6 +103,18 @@ namespace VSS.ConfigurationStore
       {
         _log.LogCritical($"GenericConfiguration exception: {ex.Message}, {ex.Source}, {ex.StackTrace}");
         throw;
+      }
+
+      if (!configListed)
+      {
+        configListed = true;
+        _log.LogInformation("*************CONFIGURATION DETAILS*******************");
+        //Log current configuration 
+        foreach (var keyValuePair in _configuration.AsEnumerable())
+        {
+          _log.LogInformation($"{keyValuePair.Key}={keyValuePair.Value}");
+
+        }
       }
     }
 
