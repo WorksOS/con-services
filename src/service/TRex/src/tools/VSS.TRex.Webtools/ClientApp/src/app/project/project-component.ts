@@ -163,10 +163,11 @@ constructor(
     pixelsY: number,
     tileExtents: ProjectExtents): Promise<string> {
 
-    return new Promise<string>(resolve => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents)
+    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents)
         .subscribe(tile => {
           this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
-          }
+          resolve();
+        }
         ));
   }
 
