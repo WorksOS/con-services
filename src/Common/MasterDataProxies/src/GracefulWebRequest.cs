@@ -170,6 +170,7 @@ namespace VSS.MasterData.Proxies
             throw new HttpRequestException($"Request returned non-ok code {result.Item1} with response {contents}");
           }
           log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.Item1}");
+          if (typeof(T) == typeof(string)) return (T)Convert.ChangeType(contents,typeof(T));
           return JsonConvert.DeserializeObject<T>(contents);
         });
 
