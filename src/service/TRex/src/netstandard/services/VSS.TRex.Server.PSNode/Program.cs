@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
@@ -163,6 +164,8 @@ namespace VSS.TRex.Server.PSNode
 
     static async Task<int> Main(string[] args)
     {
+      Log4NetAspExtensions.ConfigureLog4Net("TRex");
+
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 

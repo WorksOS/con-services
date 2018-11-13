@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Trex.HTTPClients.Clients;
@@ -156,6 +157,8 @@ namespace VSS.TRex.Server.TileRendering
 
     static async Task<int> Main(string[] args)
     {
+      Log4NetAspExtensions.ConfigureLog4Net("TRex");
+
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 

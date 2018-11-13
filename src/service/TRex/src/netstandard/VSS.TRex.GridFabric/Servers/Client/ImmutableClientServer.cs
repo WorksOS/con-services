@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Logging;
 using VSS.TRex.GridFabric.Grids;
@@ -18,6 +19,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Servers.Client
@@ -98,9 +100,12 @@ namespace VSS.TRex.Servers.Client
 
             PublicThreadPoolSize = 50,
 
-            PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled
+            PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled,
 
-            // BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem))
+            BinaryConfiguration = new BinaryConfiguration
+            {
+              Serializer = new BinarizableSerializer()
+            }
           };
 
           foreach (string roleName in roles)
@@ -158,7 +163,7 @@ namespace VSS.TRex.Servers.Client
 
         IpFinder = new TcpDiscoveryStaticIpFinder()
         {
-          Endpoints = new[] { "127.0.0.1:47500..47509" }
+          Endpoints = new[] { "127.0.0.1:47500..47502" }
         }
       };
 

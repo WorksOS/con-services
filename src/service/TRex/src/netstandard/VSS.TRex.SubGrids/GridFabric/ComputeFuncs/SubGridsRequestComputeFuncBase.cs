@@ -255,7 +255,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
             localArg = arg;
 
             siteModels = DIContext.Obtain<ISiteModels>();
-            siteModel = siteModels.GetSiteModel(localArg.SiteModelID);
+            siteModel = siteModels.GetSiteModel(localArg.ProjectID);
 
             // Unpack the mask from the argument.
             if (arg.ProdDataMaskBytes != null)
@@ -291,7 +291,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
                 if (localArg.GridDataType == GridDataType.DesignHeight)
                 {
-                  bool designResult = ReferenceDesign.GetDesignHeights(localArg.SiteModelID, address, siteModel.Grid.CellSize,
+                  bool designResult = ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
                     out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
            
                   clientGrid = DesignElevations;
@@ -342,7 +342,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
                             // height subgrid to be calculated from a designated design
                             if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
                                                                         ReferenceDesign, // 'top'
-                                                                        localArg.SiteModelID,
+                                                                        localArg.ProjectID,
                                                                         out _ /*ProfilerRequestResult*/))
                                 result = ServerRequestResult.FailedToComputeDesignElevationPatch;
                         }
