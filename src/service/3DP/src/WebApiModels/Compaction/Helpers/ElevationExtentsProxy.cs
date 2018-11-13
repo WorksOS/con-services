@@ -100,9 +100,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
       var opts = new MemoryCacheEntryOptions().GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
 
-      return elevationExtentsCache.GetOrAdd(cacheKey, opts, () =>
+      return elevationExtentsCache.GetOrCreate(cacheKey, entry =>
       {
         ElevationStatisticsResult result;
+        entry.SetOptions(opts);
         if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
         {
           log.LogDebug(
