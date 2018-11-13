@@ -45,8 +45,25 @@ namespace VSS.MasterData.Proxies
       if (customHeaders != null)
       {
         foreach (var customHeader in customHeaders)
-          client.DefaultRequestHeaders.Add(customHeader.Key, customHeader.Value);
+         // if (customHeader.Key != "Content-Type")
+           if (!client.DefaultRequestHeaders.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
+             log.LogWarning($"Can't add header {customHeader.Key}");
       }
+
+     /* var contentType = string.Empty;
+      var data = string.Empty;
+      HttpContent content = null;
+      if (customHeaders.ContainsKey("Content-Type"))
+      {
+        contentType = customHeaders["Content-Type"];
+        data = new StreamReader(requestStream).ReadToEnd();
+        content = new StringContent(data, Encoding.UTF8, contentType);
+      }
+      else
+      {
+        content = new StreamContent(requestStream);
+      }*/
+
       HttpResponseMessage response;
       switch (method)
       {
