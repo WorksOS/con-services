@@ -272,7 +272,7 @@ namespace VSS.TCCFileAccess
       {
         if (!cacheable)
         {
-          using (var responseStream = await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers, retries: 0))
+          using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers, retries: 0)).ReadAsStreamAsync())
           {
             responseStream.Position = 0;
             file = new byte[responseStream.Length];
@@ -281,7 +281,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        using (var responseStream = await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers))
+        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers)).ReadAsStreamAsync())
         {
           Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
           responseStream.Position = 0;
