@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -88,7 +89,7 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <inheritdoc />
-    public async Task<StreamContent> GetBackgroundJobResults(string jobId, IDictionary<string, string> customHeaders)
+    public async Task<Stream> GetBackgroundJobResults(string jobId, IDictionary<string, string> customHeaders)
     {
       var result = await GetMasterDataStreamContent("SCHEDULER_EXTERNAL_BACKGROUND_JOB_URL", customHeaders, string.Empty, $"{jobId}/result");
 
