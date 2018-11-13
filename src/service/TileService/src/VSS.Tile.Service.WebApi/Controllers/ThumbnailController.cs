@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
@@ -187,8 +188,6 @@ namespace VSS.Tile.Service.WebApi.Controllers
       return GetStreamContents(result);
     }
 
-    private static AsyncDuplicateLock _lock = new AsyncDuplicateLock();
-
     /// <summary>
     /// Gets a list of geofence thumbnail images as Base64 encoded strings.
     /// </summary>
@@ -197,19 +196,19 @@ namespace VSS.Tile.Service.WebApi.Controllers
     public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsBase64([FromQuery] Guid[] geofenceUids)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailsBase64)}: {Request.QueryString}");
-      var customer = GetCustomerUid.ToString();
       List<GeofenceData> geofences;
-      using (await _lock.LockAsync(customer))
+
+      geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+      if (geofenceUids.Any(g => !geofences.Select(k => k.GeofenceUID).Contains(g)))
       {
+        geofenceProxy.ClearCacheItem(GetCustomerUid);
         geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
-        if (geofenceUids.Any(g => !geofences.Select(k => k.GeofenceUID).Contains(g)))
-        {
-          geofenceProxy.ClearCacheItem(GetCustomerUid);
-          geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
-        }
       }
 
-      var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0 ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID)) : geofences;
+
+      var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0
+        ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID))
+        : geofences;
 
       var thumbnails = await Task.WhenAll(selectedGeofences.Select(GeofenceThumbnailPng));
 

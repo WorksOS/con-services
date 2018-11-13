@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.MasterData.Proxies
 {
@@ -18,6 +21,7 @@ namespace VSS.MasterData.Proxies
   public class BaseProxy
   {
     private readonly IMemoryCache cache;
+    private readonly static AsyncDuplicateLock memCacheLock = new AsyncDuplicateLock();
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
     protected readonly ILoggerFactory logger;
@@ -42,6 +46,35 @@ namespace VSS.MasterData.Proxies
       this.configurationStore = configurationStore;
     }
 
+    private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
+      string method = "POST", string payload = null, Stream streamPayload = null)
+    {
+      var result = default(T);
+      try
+      {
+        var request = new GracefulWebRequest(logger, configurationStore);
+        if (streamPayload != null && payload==null)
+          result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+        else
+        {
+          if (payload != null)
+          {
+            streamPayload = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, payload);
+          }
+        }
+
+        log.LogDebug("Result of send to master data request: {0}", result);
+      }
+      catch (Exception ex)
+      {
+        LogWebRequestException(ex);
+        throw;
+      }
+
+      return result;
+    }
+
     /// <summary>
     ///   Executes a request against masterdata service
     /// </summary>
@@ -56,28 +89,6 @@ namespace VSS.MasterData.Proxies
       string route = null, string method = "POST", string queryParameters = null)
     {
       return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
-    }
-
-
-    private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
-      string method = "POST", string payload = null, Stream streamPayload = null)
-    {
-      var result = default(T);
-      try
-      {
-        var request = new GracefulWebRequest(logger, configurationStore);
-        if (streamPayload != null)
-          result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
-        else
-          result = await request.ExecuteRequest<T>(url, method, customHeaders, payload);
-        log.LogDebug("Result of send to master data request: {0}", result);
-      }
-      catch (Exception ex)
-      {
-        LogWebRequestException(ex);
-        throw;
-      }
-      return result;
     }
 
     /// <summary>
@@ -140,7 +151,7 @@ namespace VSS.MasterData.Proxies
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
-        result = await request.ExecuteRequest<K>(url, "GET", customHeaders);
+        result = await request.ExecuteRequest<K>(url, customHeaders: customHeaders, method: "GET");
         log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
       }
       catch (Exception ex)
@@ -148,6 +159,7 @@ namespace VSS.MasterData.Proxies
         LogWebRequestException(ex);
         throw;
       }
+
       return result;
     }
 
@@ -186,11 +198,11 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    protected async Task<StreamContent> GetMasterDataStreamContent(string urlKey,
+    protected async Task<Stream> GetMasterDataStreamContent(string urlKey,
       IDictionary<string, string> customHeaders,
       string queryParams = null, string route = null)
     {
-      StreamContent result =null;
+      Stream result = null;
       var url = ExtractUrl(urlKey, route, queryParams);
       try
       {
@@ -203,6 +215,7 @@ namespace VSS.MasterData.Proxies
         LogWebRequestException(ex);
         throw;
       }
+
       return result;
     }
 
@@ -245,7 +258,6 @@ namespace VSS.MasterData.Proxies
     {
       if (cache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-      ClearCacheIfRequired<T>(uid, userId, customHeaders);
       var cacheKey = GetCacheKey<T>(uid, userId);
       var opts = new MemoryCacheEntryOptions();
 
@@ -261,18 +273,30 @@ namespace VSS.MasterData.Proxies
           throw new InvalidOperationException("Incorrect expiration time parameter");
       }
 
-      if (!IfCacheNeedsToBeInvalidated(customHeaders))
-        return await cache.GetOrAdd(cacheKey, opts, async () =>
-        {
-          log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
-          return await action.Invoke();
-        });
+      T result =default(T);
 
-      return await cache.Add(cacheKey, opts, async () =>
+      using (await memCacheLock.LockAsync(cacheKey))
       {
+        if (!IfCacheNeedsToBeInvalidated(customHeaders))
+          return await cache.GetOrCreate(cacheKey, async entry =>
+          {
+            entry.SetOptions(opts);
+            log.LogDebug($"Item for key {cacheKey} not found in cache, getting from web api");
+            result = await action.Invoke();
+            if (result != null) return result;
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                "Unable to request data from a webapi"));
+          });
+
         log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
-        return await action.Invoke();
-      });
+        result = await action.Invoke();
+        if (result != null)
+          return cache.Set(cacheKey, result, opts);
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            "Unable to request data from a webapi"));
+      }
     }
 
 
@@ -366,6 +390,7 @@ namespace VSS.MasterData.Proxies
         url += new FormUrlEncodedContent(queryParameters)
           .ReadAsStringAsync().Result;
       }
+
       return url;
     }
 
@@ -380,6 +405,7 @@ namespace VSS.MasterData.Proxies
         log.LogError(errorString);
         throw new InvalidOperationException(errorString);
       }
+
       if (!string.IsNullOrEmpty(route))
         url += route;
       return url;
@@ -412,7 +438,7 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    /// Determines if the cache needs to be invalidated.
+    ///   Determines if the cache needs to be invalidated.
     /// </summary>
     /// <param name="customHeaders">The custom headers.</param>
     /// <returns></returns>
@@ -436,8 +462,9 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"Clearing item from cache: {cacheKey}");
       cache.Remove(cacheKey);
     }
+
     /// <summary>
-    /// Gets an item from a list.
+    ///   Gets an item from a list.
     /// </summary>
     /// <typeparam name="U">The type of item in the list</typeparam>
     /// <param name="listUid">The uid for the get request, also the cache key</param>
@@ -452,11 +479,10 @@ namespace VSS.MasterData.Proxies
     {
       var list = await getList(listUid, customHeaders);
       return list.SingleOrDefault(itemSelector);
-
     }
 
     /// <summary>
-    /// Check exception for Web Request details and log a warning
+    ///   Check exception for Web Request details and log a warning
     /// </summary>
     /// <param name="ex">Exception to be logged</param>
     private void LogWebRequestException(Exception ex)
@@ -469,14 +495,15 @@ namespace VSS.MasterData.Proxies
         message = ex.InnerException.Message;
         stacktrace = ex.InnerException.StackTrace;
       }
+
       log.LogWarning("Error sending data from master data: ", message);
       log.LogWarning("Stacktrace: ", stacktrace);
     }
 
     /// <summary>
-    /// Gets an item from a list. If the item is not in the list then clears the cache and does the get again
-    /// which will issue the http request to get the list again. This lets us pick up items which have been
-    /// added since the list was cached (default 15 mins).
+    ///   Gets an item from a list. If the item is not in the list then clears the cache and does the get again
+    ///   which will issue the http request to get the list again. This lets us pick up items which have been
+    ///   added since the list was cached (default 15 mins).
     /// </summary>
     /// <typeparam name="T">The type of the result from the http request</typeparam>
     /// <typeparam name="U">The type of item in the list</typeparam>
@@ -485,10 +512,10 @@ namespace VSS.MasterData.Proxies
     /// <param name="listUid">The uid for the get request, also the cache key</param>
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <returns></returns>
-    public async Task<U> GetItemWithRetry<T,U>(
+    public async Task<U> GetItemWithRetry<T, U>(
       Func<string, IDictionary<string, string>, Task<List<U>>> getList,
       Func<U, bool> itemSelector,
-      string listUid,  IDictionary<string, string> customHeaders = null)
+      string listUid, IDictionary<string, string> customHeaders = null)
     {
       var item = await GetItemFromList(listUid, getList, itemSelector, customHeaders);
       if (item == null)
@@ -496,10 +523,8 @@ namespace VSS.MasterData.Proxies
         ClearCacheItem<T>(listUid, null);
         item = await GetItemFromList(listUid, getList, itemSelector, customHeaders);
       }
+
       return item;
     }
   }
-
- 
-
 }
