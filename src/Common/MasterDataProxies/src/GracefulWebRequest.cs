@@ -42,8 +42,11 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
     {
       var client = new HttpClient();
-      foreach (var customHeader in customHeaders)
-        client.DefaultRequestHeaders.Add(customHeader.Key, customHeader.Value);
+      if (customHeaders != null)
+      {
+        foreach (var customHeader in customHeaders)
+          client.DefaultRequestHeaders.Add(customHeader.Key, customHeader.Value);
+      }
       HttpResponseMessage response;
       switch (method)
       {
