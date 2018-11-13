@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.HttpClients\VSS.TRex.HttpClients.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />

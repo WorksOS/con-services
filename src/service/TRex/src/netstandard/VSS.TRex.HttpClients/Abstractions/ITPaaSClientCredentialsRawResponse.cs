@@ -1,9 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Newtonsoft.Json;
 
-namespace VSS.Trex.HTTPClients.Abstractions
+namespace VSS.TRex.HttpClients.Abstractions
 {
   interface ITPaaSClientCredentialsRawResponse
   {
+
     [JsonProperty("access_token")]
     string AccessToken { get; set; }
 
@@ -12,5 +16,6 @@ namespace VSS.Trex.HTTPClients.Abstractions
 
     [JsonProperty("expires_in")]
     int TokenExpiry { get; set; }
+    
   }
 }
