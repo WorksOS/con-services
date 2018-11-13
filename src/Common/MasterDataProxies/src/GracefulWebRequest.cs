@@ -163,9 +163,10 @@ namespace VSS.MasterData.Proxies
           var contents = (new StreamReader(result.Item2)).ReadToEnd();
           if (result.Item1 != HttpStatusCode.OK)
           {
+            log.LogDebug($"Request returned non-ok code {result.Item1} with response {contents}");
             throw new HttpRequestException($"Request returned non-ok code {result.Item1} with response {contents}");
           }
-
+          log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.Item1}");
           return JsonConvert.DeserializeObject<T>(contents);
         });
 
