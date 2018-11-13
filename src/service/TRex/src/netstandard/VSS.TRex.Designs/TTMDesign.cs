@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Geometry;
@@ -13,6 +14,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Utilities;
+using Consts = VSS.TRex.Designs.TTM.Optimised.Consts;
 using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 
 namespace VSS.TRex.Designs
@@ -1181,27 +1183,62 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
+    /// Loads the TTM design file/s, from storage
+    ///    Includes design file and 2 index files (if they exist)
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="fileName"></param>
+    /// <param name="localPath"></param>
+    /// <param name="loadIndices"></param>
+    /// <returns></returns>
+    public override DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
+    {
+      var isDownloaded = S3FileTransfer.ReadFile(siteModelUid, fileName, localPath).Result;
+      if (!isDownloaded)
+      {
+        return DesignLoadResult.UnknownFailure;
+      }
+
+      if (loadIndices)
+      {
+        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.kDesignSubgridIndexFileExt), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        if (!isDownloaded)
+        {
+          return DesignLoadResult.UnableToLoadSubgridIndex;
+        }
+
+        isDownloaded = S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.kDesignSpatialIndexFileExt), TRexServerConfig.PersistentCacheStoreLocation).Result;
+        if (!isDownloaded)
+        {
+          return DesignLoadResult.UnableToLoadSpatialIndex;
+        }
+      }
+
+      return DesignLoadResult.Success;
+    }
+
+    /// <summary>
     /// Loads the TTM design from a TTM file, along with the subgrid existence map file if it exists (created otherwise)
     /// </summary>
-    /// <param name="fileName"></param>
+    /// <param name="localPathAndFileName"></param>
     /// <returns></returns>
-    public override DesignLoadResult LoadFromFile(string fileName)
+    public override DesignLoadResult LoadFromFile(string localPathAndFileName)
     {
       try
       {
-        FData.LoadFromFile(fileName);
+        FData.LoadFromFile(localPathAndFileName);
         TriangleItems = FData.Triangles.Items;
         VertexItems = FData.Vertices.Items;
 
-        Log.LogInformation($"Loaded TTM file {fileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
+        Log.LogInformation($"Loaded TTM file {localPathAndFileName} containing {FData.Header.NumberOfTriangles} triangles and {FData.Header.NumberOfVertices} vertices.");
 
         FMinHeight = Common.Consts.NullReal;
         FMaxHeight = Common.Consts.NullReal;
 
-        if (!LoadSubgridIndexFile(fileName + Consts.kDesignSubgridIndexFileExt))
+        if (!LoadSubgridIndexFile(localPathAndFileName + Consts.kDesignSubgridIndexFileExt))
           return DesignLoadResult.UnableToLoadSubgridIndex;
 
-        if (!LoadSpatialIndexFile(fileName + Consts.kDesignSpatialIndexFileExt))
+        if (!LoadSpatialIndexFile(localPathAndFileName + Consts.kDesignSpatialIndexFileExt))
           return DesignLoadResult.UnableToLoadSubgridIndex;
 
         Log.LogInformation(

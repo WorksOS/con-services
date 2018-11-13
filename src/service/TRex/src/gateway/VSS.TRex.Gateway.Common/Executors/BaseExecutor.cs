@@ -245,6 +245,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         (int)RequestErrorStatus.InvalidArgument);
       ContractExecutionStates.DynamicAddwithOffset("Failed to create coordinate transformer.",
         (int)RequestErrorStatus.FailedToConfigureInternalPipeline);
+      ContractExecutionStates.DynamicAddwithOffset("Failed to retrieve design file from storage.",
+        (int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3);
     }
 
     protected ServiceException CreateServiceException<T>(RequestErrorStatus resultStatus = RequestErrorStatus.OK)

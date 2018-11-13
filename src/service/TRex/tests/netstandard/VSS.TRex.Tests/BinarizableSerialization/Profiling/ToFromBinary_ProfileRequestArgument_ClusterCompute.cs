@@ -39,9 +39,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         {
           DesignID = Guid.NewGuid(),
           FileName = "",
-          FileSpace = "",
           Folder = "",
-          FileSpaceID = "",
           Offset = OFFSET
         }
       };
