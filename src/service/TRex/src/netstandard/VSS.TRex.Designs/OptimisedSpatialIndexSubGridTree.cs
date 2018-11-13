@@ -5,13 +5,13 @@ namespace VSS.TRex.Designs
   public class OptimisedSpatialIndexSubGridTree : GenericSubGridTree<TriangleArrayReference, TriangleArrayReferenceSubGrid>
   {
     /// <summary>
-    /// The header string to be written into a serialised subgrid tree
+    /// The header string to be written into a serialized subgrid tree
     /// </summary>
     /// <returns></returns>
     public override string SerialisedHeaderName() => "OptmisedSpatialIndex";
 
     /// <summary>
-    /// The header version to be written into a serialised subgrid tree
+    /// The header version to be written into a serialized subgrid tree
     /// </summary>
     /// <returns></returns>
     public override int SerialisedVersion() => 1;
