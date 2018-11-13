@@ -5,6 +5,9 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
 {
+  /// <summary>
+  /// Concrete Implementation of a L2 Connected Site message aka status message
+  /// </summary>
   public class L2ConnectedSiteMessage : AbstractConnectedSiteMessage, IL2ConnectedSiteMessage
   {
     private const string API_ROUTE = "status/in/v1/GCS900";
@@ -15,7 +18,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
     public string AppVersion { get; set; }
     public string AppName { get { return "GCS900"; } }
     public string AssetNickname { get; set; }
-    public override string Route { get { return $"{API_ROUTE}-{HardwareID}"; } }
+    public override string Route { get => $"{API_ROUTE}-{HardwareID}"; }
 
     public L2ConnectedSiteMessage() { }
 
