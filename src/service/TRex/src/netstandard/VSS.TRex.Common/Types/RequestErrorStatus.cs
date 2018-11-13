@@ -92,6 +92,10 @@
         ExportInvalidDateRange,
         ExportDateRangesNoOverlap,
         InvalidArgument,
-        FailedToConfigureInternalPipeline
-    }
+        FailedToConfigureInternalPipeline,
+        DesignImportUnableToRetrieveFromS3,
+        DesignImportUnableToCreateDesign,
+        DesignImportUnableToUpdateDesign,
+        DesignImportUnableToDeleteDesign,
+  }
 }

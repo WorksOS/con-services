@@ -58,6 +58,7 @@ export class ProjectComponent {
 
   public designFileName: string = "";
   public designOffset: number = 0.0;
+  public designUID: string = "";
 
   public newDesignGuid: string = "";
   public designs: Design[] = [];
@@ -395,6 +396,18 @@ constructor(
     descriptor.offset = this.designOffset;
 
     this.projectService.addDesign(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
+      uid => {
+        this.newDesignGuid = uid.designId;
+        this.getDesigns();
+      });
+  }
+
+  public addNewDesignFromS3(): void {
+    var descriptor = new DesignDescriptor();
+    descriptor.fileName = this.designFileName;
+    descriptor.designId = this.designUID;
+
+    this.projectService.addDesignFromS3(this.projectUid, descriptor, new ProjectExtents(0, 0, 0, 0)).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
         this.getDesigns();

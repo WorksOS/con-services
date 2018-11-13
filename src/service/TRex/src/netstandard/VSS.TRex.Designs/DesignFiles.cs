@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs
@@ -107,9 +108,14 @@ namespace VSS.TRex.Designs
 
             if (design == null)
             {
-                // Load the design into the cache (in this case just TTM files)
-                design = new TTMDesign(ACellSize);
-                design.LoadFromFile(designDescriptor.FullPath);
+              // Load the design into the cache (in this case just TTM files)
+              design = new TTMDesign(ACellSize);
+              if (!File.Exists(designDescriptor.FullPath))
+              {
+                design.LoadFromStorage(DataModelID, designDescriptor.Folder, designDescriptor.FileName, true);
+              }
+
+              design.LoadFromFile(designDescriptor.FullPath);
 
                 AddDesignToCache(designDescriptor, design);
             }
