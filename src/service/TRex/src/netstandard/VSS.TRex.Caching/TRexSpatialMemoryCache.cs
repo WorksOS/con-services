@@ -1,13 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using ThreadState = System.Threading.ThreadState;
 
 namespace VSS.TRex.Caching
 {
+  /// <summary>
+  /// Implements a management thread that periodically checks the contexts in the cache for ones
+  /// that are marked for removal and removes them. This is done in a single mutually exclusive lock
+  /// within the main cache.
+  /// </summary>
+  public class TRexSpatialMemoryCacheContextRemover
+  {
+    private readonly ITRexSpatialMemoryCache _cache;
+    private readonly Thread _removalThread;
+    private readonly int _sleepTimeMS;
+    private readonly TimeSpan _removalWaitTime;
+
+    private void PerformRemovalOperation()
+    {
+      while (_removalThread.ThreadState == ThreadState.Running)
+      {
+        // Instruct the cache to perform the cleanup...
+        // Wait a time period minutes to remove items marked for removal
+        // Todo: Place the removal wait period in the configuration
+        _cache.RemoveContextsMarkedForRemoval(_removalWaitTime);
+
+        Thread.Sleep(_sleepTimeMS);
+      }
+    }
+
+    public TRexSpatialMemoryCacheContextRemover(ITRexSpatialMemoryCache cache, TimeSpan sleepTimeMS, TimeSpan removalWaitTime)
+    {
+      _cache = cache;
+      _removalWaitTime = removalWaitTime;
+      _sleepTimeMS = (int)Math.Truncate(removalWaitTime.TotalMilliseconds);
+      _removalThread = new Thread(PerformRemovalOperation);
+      _removalThread.Start();
+    }
+  }
+
   /// <summary>
   /// The top level class that implements spatial data caching in TRex where that spatial data is represented by SubGrids and SubGridTrees
   /// </summary>
@@ -40,8 +77,22 @@ namespace VSS.TRex.Caching
     // ReSharper disable once InconsistentlySynchronizedField
     public int ContextCount => Contexts.Count;
 
+    // ReSharper disable once InconsistentlySynchronizedField
     public int ProjectCount => ProjectContexts.Count;
 
+    /// <summary>
+    /// The internal modifiable count of contexts that have been removed
+    /// </summary>
+    private long contextRemovalCount = 0;
+
+    /// <summary>
+    /// THe exposed readonly property for the number of removed contexts
+    /// </summary>
+    public long ContextRemovalCount => contextRemovalCount;
+
+    /// <summary>
+    /// The maximum number of elements that may be contained in this cache
+    /// </summary>
     public int MaxNumElements { get; }
 
     private int currentNumElements;
@@ -53,6 +104,8 @@ namespace VSS.TRex.Caching
     public int MruNonUpdateableSlotCount { get; }
 
     public long MaxSizeInBytes { get; }
+
+    private TRexSpatialMemoryCacheContextRemover ContextRemover;
 
     /// <summary>
     /// Creates a new spatial data cache containing at most maxNumElements items. Elements are stored in
@@ -81,6 +134,9 @@ namespace VSS.TRex.Caching
       MRUList = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(maxNumElements, MruNonUpdateableSlotCount);
       Contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
       ProjectContexts = new Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>>();
+
+      // todo: Place configuration items for interval and age in environment configuration
+      ContextRemover = new TRexSpatialMemoryCacheContextRemover(this, new TimeSpan(0, 10, 0), new TimeSpan(0, 10, 0));
     }
 
     /// <summary>
@@ -95,11 +151,16 @@ namespace VSS.TRex.Caching
     {
       lock (Contexts)
       {
-        if (Contexts.TryGetValue(contextFingerPrint, out ITRexSpatialMemoryCacheContext context))
+        if (Contexts.TryGetValue(contextFingerPrint, out var context))
+        {
+          if (context.MarkedForRemoval)
+            context.Reanimate();
+
           return context; // It exists, return it
+        }
 
         // Create the new context
-        ITRexSpatialMemoryCacheContext newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint); 
+        var newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint, projectUid); 
         Contexts.Add(contextFingerPrint, newContext);
 
         lock (ProjectContexts)
@@ -110,6 +171,11 @@ namespace VSS.TRex.Caching
           else
             ProjectContexts.Add(projectUid, new List<ITRexSpatialMemoryCacheContext> {newContext});
         }
+
+        // Mark the newly created context for removal. This may seem counter intuitive, but covers the case
+        // where a context is created but has no elements added to it, or subsequently removed
+        // Todo: Add initial future time increment for marked for removal at... [see: new TimeSpan(0, 10, 0)]
+        newContext.MarkForRemoval(DateTime.Now + new TimeSpan(0, 10, 0));
 
         return newContext;
       }
@@ -136,6 +202,9 @@ namespace VSS.TRex.Caching
     /// <param name="element"></param>
     public bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
+      if (context.MarkedForRemoval)
+        context.Reanimate();
+
       bool result = context.Add(element);
 
       // Perform some house keeping to keep the cache size in bounds
@@ -163,7 +232,7 @@ namespace VSS.TRex.Caching
         ItemRemovedFromContext(element.IndicativeSizeInBytes());
     }
 
-    public void ItemAddedToContext(int sizeInBytes)
+    private void ItemAddedToContext(int sizeInBytes)
     {
       // Increment the number of elements in the cache
       Interlocked.Increment(ref currentNumElements);
@@ -259,6 +328,46 @@ namespace VSS.TRex.Caching
       }
 
       log.LogInformation($"Invalidated {numInvalidatedSubgrids} out of {numScannedSubgrids} scanned subgrid from {projectContexts.Count} contexts in {DateTime.Now - startTime} [project {projectUid}]");
+    }
+
+    /// <summary>
+    /// Removes all contexts in the cache that are marked for removal more than 'age' ago
+    /// </summary>
+    /// <param name="age"></param>
+    /// <returns></returns>
+    public void RemoveContextsMarkedForRemoval(TimeSpan age)
+    {
+      int numRemoved = 0;
+      DateTime removalDate = DateTime.Now - age;
+      DateTime startTime = DateTime.Now;
+      
+      lock (Contexts)
+      {
+        // Construct a list of candidates to work through so there are not issues with modifying a collection being enumerated
+        var candidates = Contexts.Values.Where(x => x.MarkedForRemoval && x.MarkedForRemovalAt < removalDate).ToList();
+        foreach (var context in candidates)
+        {
+          if (context.TokenCount != 0)
+          {
+            log.LogError($"Context in project {context.ProjectUID} with fingerprint {context.FingerPrint} has tokens in it {context.TokenCount} and is set for removal. Resetting context state to normal.");
+            context.Reanimate();
+
+            continue;
+          }
+
+          // Remove the context:
+          // 1. From the primary contexts dictionary
+          Contexts.Remove(context.FingerPrint);
+
+          // 2. From the project list of contexts
+          ProjectContexts[context.ProjectUID].Remove(context);
+
+          numRemoved++;
+          Interlocked.Increment(ref contextRemovalCount);
+        }
+      }
+
+      log.LogInformation($"{numRemoved} contexts removed in {DateTime.Now - startTime}");
     }
   }
 }
