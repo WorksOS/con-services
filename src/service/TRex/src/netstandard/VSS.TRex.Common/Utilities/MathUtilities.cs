@@ -8,7 +8,7 @@ namespace VSS.TRex.Utilities
   public static class MathUtilities
   {
     /// <summary>
-    /// Calculates the lenth of the hypotenuse of a right angled triangle where the length of
+    /// Calculates the length of the hypotenuse of a right angled triangle where the length of
     /// the other two sides is given by dx and dy
     /// </summary>
     /// <param name="dx"></param>

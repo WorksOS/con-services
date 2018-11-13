@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
@@ -7,12 +8,26 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 {
+  public struct XYZS
+  {
+    public double X, Y, Z, Station;
+
+    public XYZS(double x, double y, double z, double station)
+    {
+      X = x;
+      Y = y;
+      Z = z;
+      Station = station;
+    }
+  }
+
   public interface IOptimisedTTMProfiler
   {
-    XYZ[] Compute(XYZ startPt, XYZ endPoint);
+    List<XYZS> Compute(XYZ startPt, XYZ endPoint);
   }
 
   /// <summary>
@@ -42,7 +57,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       Index = index;
     }
 
-    public XYZ[] Compute(XYZ startPoint, XYZ endPoint)
+    public List<XYZS> Compute(XYZ startPoint, XYZ endPoint)
     {
       // 1. Determine the set of subgrids the profile line cross using the same logic used to
       // compute cell cross by production data profiling
@@ -50,7 +65,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // ...
       var cellProfileBuilder = new OptimisedTTCellProfileBuilder(SiteModel, true);
       if (!cellProfileBuilder.Build(new [] {startPoint, endPoint}))
-        return new XYZ[0];
+        return null;
 
       // 2. Iterate across each subgrid in turn locating all triangles in that subgrid
       // that intersect the line and sorting them according to the distance of the closest
@@ -62,6 +77,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // Iterate through the intercepts looking for ones that hit a subgrid in the TTM
       // spatial index that contains triangles
 
+      var intercepts = new List<XYZS>();
       var TTM = (VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel)Design;
 
       foreach (var intercept in VtHzIntercepts.Items)
@@ -96,7 +112,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
         }
 
         // Locate all triangles in this subgrid that intersect the profile line
-        var intercepts = new List<XYZ>();
 
         var endIndex = referenceList.TriangleArrayIndex + referenceList.Count;
         for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
@@ -111,47 +126,78 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
           XYZ v1 = TTM.Vertices.Items[tri.Vertex1];
           XYZ v2 = TTM.Vertices.Items[tri.Vertex2];
 
+          int interceptCount = 0;
+
           if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y,
              v0.X, v0.Y, v1.X, v1.Y, out intersectX, out intersectY, true, out linesAreColinear))
           {
-            // If the lines are co-linear there is nothing more to do. The two vertices need to be added 
-            // and no more checking is required
+            // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
             if (linesAreColinear)
             {
-              intercepts.Add(new XYZ(v0.X, v0.Y, 0));
-              intercepts.Add(new XYZ(v1.X, v1.Y, 0));
+              intercepts.Add(new XYZS(v0.X, v0.Y, v0.Z, MathUtilities.Hypot(startPoint.X - v0.X, startPoint.Y - v0.Y)));
+              intercepts.Add(new XYZS(v1.X, v1.Y, v1.Z, MathUtilities.Hypot(startPoint.X - v1.X, startPoint.Y - v1.Y)));
               continue;
             }
 
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZ(intersectX, intersectY, 0));
+            intercepts.Add(new XYZS(intersectX, intersectY, 
+              XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), 
+              MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
+
+            interceptCount++;
           }
 
           if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y,
             v0.X, v0.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
           {
-            // If the lines are co-linear there is nothing more to do. The two vertices need to be added 
-            // and no more checking is required
-            // todo ...
+            // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
+            if (linesAreColinear)
+            {
+              intercepts.Add(new XYZS(v0.X, v0.Y, v0.Z, MathUtilities.Hypot(startPoint.X - v0.X, startPoint.Y - v0.Y)));
+              intercepts.Add(new XYZS(v2.X, v2.Y, v2.Z, MathUtilities.Hypot(startPoint.X - v2.X, startPoint.Y - v2.Y)));
+              continue;
+            }
 
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZ(intersectX, intersectY, 0));
+            intercepts.Add(new XYZS(intersectX, intersectY,
+              XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), 
+              MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
+
+            interceptCount++;
+          }
+
+          if (interceptCount == 2)
+          {
+            // No need to check the third edge
+            continue;
           }
 
           if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y,
-            v2.X, v2.Y, v1.X, v1.Y, out intersectX, out intersectY, true, out linesAreColinear))
+            v1.X, v1.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
           {
-            // If the lines are co-linear there is nothing more to do. The two vertices need to be added 
-            // and no more checking is required
-            // todo ...
+            // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
+            if (linesAreColinear)
+            {
+              intercepts.Add(new XYZS(v1.X, v1.Y, v1.Z, MathUtilities.Hypot(startPoint.X - v1.X, startPoint.Y - v1.Y)));
+              intercepts.Add(new XYZS(v2.X, v2.Y, v2.Z, MathUtilities.Hypot(startPoint.X - v2.X, startPoint.Y - v2.Y)));
+              continue;
+            }
 
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZ(intersectX, intersectY, 0));
+            intercepts.Add(new XYZS(intersectX, intersectY,
+              XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY),
+              MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
           }
         }
       }
 
-      return new XYZ[0];
+      // Sort the computed intercepts into station order
+      intercepts.Sort((a, b) => a.Station.CompareTo(b.Station)); //x => x.Station);
+
+      // remove any duplicates
+      intercepts = intercepts.Where((x, i) => x.Station > intercepts[i].Station).ToList();
+
+      return intercepts;
     }
   }
 }

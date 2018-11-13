@@ -107,20 +107,20 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Create an XYZ instance initialised to NullDoubles for X, Y, and Z
+    /// Create an XYZ instance initialized to NullDoubles for X, Y, and Z
     /// </summary>
     /// <returns></returns>
     public static XYZ Null => new XYZ(Consts.NullDouble, Consts.NullDouble, Consts.NullDouble);
 
     /// <summary>
-    /// Move side to the next side on a triangle (labelled 1, 2, & 3)
+    /// Move side to the next side on a triangle (labeled 1, 2, & 3)
     /// </summary>
     /// <param name="side"></param>
     /// <returns></returns>
     public static int NextSide(int side) => (side + 1) % 3;
 
     /// <summary>
-    /// Move side to the previous side on a triangle (labelled 1, 2, & 3)
+    /// Move side to the previous side on a triangle (labeled 1, 2, & 3)
     /// </summary>
     /// <param name="side"></param>
     /// <returns></returns>
