@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
@@ -35,9 +36,9 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="jobRequest">Details of the job request</param>
     /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
     /// <returns>The result of the HTTP request as a stream</returns>
-    public async Task<StreamContent> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
+    public async Task<Stream> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
     {
-      StreamContent result = null;
+      Stream result = null;
       var method = jobRequest.Method ?? "GET";
       try
       {
@@ -61,12 +62,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         {
           using (var ms = new MemoryStream(jobRequest.PayloadBytes))
           {
-            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, ms, jobRequest.Timeout, 0);
+            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms,
+              jobRequest.Timeout, 0);
           }
         }
         else
         {
-          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, jobRequest.Payload, null, jobRequest.Timeout, 0);
+          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders,
+            new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload)), jobRequest.Timeout, 0);
         }
 
         log.LogDebug("Result of send request: Stream Content={0}", result);
