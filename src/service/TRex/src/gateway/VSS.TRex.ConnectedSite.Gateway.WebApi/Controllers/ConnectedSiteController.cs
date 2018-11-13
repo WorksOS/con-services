@@ -7,6 +7,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.ConnectedSite.Gateway.Executors;
+using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
 using VSS.TRex.ConnectedSite.Gateway.WebApi.Models;
 using VSS.TRex.ConnectedSite.Gateway.WebApi.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
@@ -51,11 +52,8 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
     [HttpPost]
     public async Task<ContractExecutionResult> PostPosition([FromBody]CompactionTagFileRequest request)
     {
-      var connectedSiteRequest = new ConnectedSiteRequest
-      {
-        TagRequest = request,
-        MessageType = Abstractions.ConnectedSiteMessageType.L1PositionMessage
-      };
+      var connectedSiteRequest = new ConnectedSiteRequest(request, ConnectedSiteMessageType.L1PositionMessage);
+
       var serializedRequest = ConvertObjectForLogging.SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("Position request: " + serializedRequest);
       return await ExecuteRequest(connectedSiteRequest);
@@ -70,11 +68,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Controllers
     [HttpPost]
     public async Task<ContractExecutionResult> PostStatus([FromBody]CompactionTagFileRequest request)
     {
-      var connectedSiteRequest = new ConnectedSiteRequest
-      {
-        TagRequest = request,
-        MessageType = Abstractions.ConnectedSiteMessageType.L2StatusMessage
-      };
+      var connectedSiteRequest = new ConnectedSiteRequest(request, ConnectedSiteMessageType.L2StatusMessage);
       var serializedRequest = ConvertObjectForLogging.SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("Position request: " + serializedRequest);
 
