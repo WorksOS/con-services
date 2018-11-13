@@ -7,6 +7,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions
 {
   public enum ConnectedSiteMessageType
   {
+    Undefined,
     L1PositionMessage,
     L2StatusMessage
   }

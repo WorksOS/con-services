@@ -14,7 +14,7 @@ namespace VSS.TRex.Gateway.Common.Converters
     {
       return JsonConvert.SerializeObject(
           request,
-          Formatting.None,
+          Formatting.Indented,
           new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver(properties) });
     }
   }

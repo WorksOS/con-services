@@ -29,7 +29,7 @@ namespace VSS.TRex.HttpClients.Clients
     {
       _client = client;
       _logger = logger;
-      _state =  TPaaSClientState.Instance;
+      _state = TPaaSClientState.Instance;
     }
 
     public async Task<string> GetBearerTokenAsync()
@@ -78,26 +78,20 @@ namespace VSS.TRex.HttpClients.Clients
       var grantMessage = new Dictionary<string, string>();
       grantMessage.Add("grant_type", "client_credentials");
       var result = await _client.PostAsync(GET_TOKEN_URI, new FormUrlEncodedContent(grantMessage)).ConfigureAwait(false);
-      if (result.IsSuccessStatusCode)
+
+      if (result.Content == null)
       {
-        if (result.Content != null)
-        {
-          var content = await result.Content?.ReadAsStringAsync();
-          var auth = JsonConvert.DeserializeObject<TPaaSClientCredentialsRawResponse>(content);
-          _state.TokenType = auth.TokenType;
-          _state.TPaaSToken = auth.AccessToken;
-          _state.TPaaSTokenExpiry = DateTime.Now.AddSeconds(auth.TokenExpiry - TOKEN_EXPIRY_GRACE_SECONDS);
-        }
-        else
-        {
-          throw new TPaaSAuthenticationException("No content response from TPaaS while getting token");
-        }
+        throw new TPaaSAuthenticationException(
+          $"No content response from TPaaS while getting token. Result was: {Environment.NewLine} {result}");
       }
+
+      var content = await result.Content.ReadAsStringAsync();
+      var auth = JsonConvert.DeserializeObject<TPaaSClientCredentialsRawResponse>(content);
+      _state.TokenType = auth.TokenType;
+      _state.TPaaSToken = auth.AccessToken;
+      _state.TPaaSTokenExpiry = DateTime.Now.AddSeconds(auth.TokenExpiry - TOKEN_EXPIRY_GRACE_SECONDS);
+
       _logger.LogInformation($"Authenticating with TPaaS was {(!result.IsSuccessStatusCode ? "not " : "")}successful");
-      if (!result.IsSuccessStatusCode)
-      {
-        throw new TPaaSAuthenticationException("Could not authenticate with TPaaS", result);
-      }
     }
 
     /// <summary>

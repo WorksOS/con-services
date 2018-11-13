@@ -324,7 +324,7 @@ namespace VSS.TRex.HttpClients.Tests
 
 
       Func<Task> act = async () => { await tpaasClient.GetBearerTokenAsync(); };
-      act.Should().Throw<TPaaSAuthenticationException>().WithMessage("No content response from TPaaS while getting token");
+      act.Should().Throw<TPaaSAuthenticationException>().WithMessage("No content response from TPaaS while getting token*");
 
       //Check that the client calling the correct methods
       handlerMock.Protected().Verify(
@@ -408,7 +408,7 @@ namespace VSS.TRex.HttpClients.Tests
 
 
       Func<Task> act = async () => { await tpaasClient.GetBearerTokenAsync(); };
-      act.Should().Throw<TPaaSAuthenticationException>().WithMessage("Could not authenticate with TPaaS*");
+      act.Should().Throw<TPaaSAuthenticationException>().WithMessage("No content response from TPaaS while getting token*");
 
       //Check that the client calling the correct methods
       handlerMock.Protected().Verify(

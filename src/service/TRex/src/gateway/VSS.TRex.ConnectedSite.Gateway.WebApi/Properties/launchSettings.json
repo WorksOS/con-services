@@ -18,7 +18,6 @@
     },
     "TRexConnectedSiteGateway": {
       "commandName": "Project",
-      "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

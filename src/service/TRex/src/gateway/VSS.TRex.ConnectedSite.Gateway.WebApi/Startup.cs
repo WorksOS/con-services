@@ -102,10 +102,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       {
         throw new ConfigurationErrorsException($"Missing Envar {key}");
       }
-      else
-      {
-        return value;
-      }
+      return value;
     }
   }
 }

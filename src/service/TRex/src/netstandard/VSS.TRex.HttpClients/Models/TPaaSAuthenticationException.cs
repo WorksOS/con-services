@@ -9,7 +9,7 @@ namespace VSS.TRex.HttpClients.Models
     { }
 
     public TPaaSAuthenticationException(string message, HttpResponseMessage result) :
-      base($"{message} result was: \n {result.ToString()}" )
+      base($"{message}. {System.Environment.NewLine} Result was: {System.Environment.NewLine} {result.ToString()}" )
     {
     }
   }
