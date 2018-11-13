@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -36,9 +37,9 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="jobRequest">Details of the job request</param>
     /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
     /// <returns>The result of the HTTP request as a stream</returns>
-    public async Task<Stream> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
+    public async Task<HttpContent> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
     {
-      Stream result = null;
+      HttpContent result = null;
       var method = jobRequest.Method ?? "GET";
       try
       {

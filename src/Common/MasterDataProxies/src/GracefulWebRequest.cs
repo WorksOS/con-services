@@ -38,7 +38,7 @@ namespace VSS.MasterData.Proxies
     }
 
 
-    private async Task<(HttpStatusCode, Stream)> ExecuteRequestInternal(string endpoint, string method,
+    private async Task<(HttpStatusCode, HttpContent)> ExecuteRequestInternal(string endpoint, string method,
       IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
     {
       var client = new HttpClient();
@@ -49,20 +49,6 @@ namespace VSS.MasterData.Proxies
            if (!client.DefaultRequestHeaders.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
              log.LogWarning($"Can't add header {customHeader.Key}");
       }
-
-     /* var contentType = string.Empty;
-      var data = string.Empty;
-      HttpContent content = null;
-      if (customHeaders.ContainsKey("Content-Type"))
-      {
-        contentType = customHeaders["Content-Type"];
-        data = new StreamReader(requestStream).ReadToEnd();
-        content = new StringContent(data, Encoding.UTF8, contentType);
-      }
-      else
-      {
-        content = new StreamContent(requestStream);
-      }*/
 
       HttpResponseMessage response;
       switch (method)
@@ -88,7 +74,7 @@ namespace VSS.MasterData.Proxies
         }
       }
 
-      return (response.StatusCode, await response.Content.ReadAsStreamAsync());
+      return (response.StatusCode, response.Content);
     }
 
 
@@ -105,7 +91,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <returns>A stream content representing the result returned from the endpoint if successful, otherwise null</returns>
-    public async Task<Stream> ExecuteRequestAsStreamContent(string endpoint, string method,
+    public async Task<HttpContent> ExecuteRequestAsStreamContent(string endpoint, string method,
       IDictionary<string, string> customHeaders = null, Stream payloadStream = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
@@ -127,7 +113,7 @@ namespace VSS.MasterData.Proxies
 
           if (result.Item1 != HttpStatusCode.OK)
           {
-            var contents = (new StreamReader(result.Item2)).ReadToEnd();
+            var contents = result.Item2;
             throw new HttpRequestException($"Request returned non-ok code {result.Item1} with response {contents}");
           }
 
@@ -180,7 +166,7 @@ namespace VSS.MasterData.Proxies
           log.LogDebug($"Trying to execute request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
 
-          var contents = (new StreamReader(result.Item2)).ReadToEnd();
+          var contents = await result.Item2.ReadAsStringAsync();
           if (result.Item1 != HttpStatusCode.OK)
           {
             log.LogDebug($"Request returned non-ok code {result.Item1} with response {contents}");

@@ -328,11 +328,7 @@ namespace VSS.MasterData.Proxies
       var request = new GracefulWebRequest(logger, configurationStore);
       var url = ExtractUrl("RAPTOR_3DPM_API_URL", "/productiondatatiles/png", queryParams);
       var stream = await request.ExecuteRequestAsStreamContent(url, method: "GET", customHeaders: customHeaders, retries: 3);
-      using (var ms = new MemoryStream())
-      {
-        await stream.CopyToAsync(ms);
-        return ms.ToArray();
-      }
+      return await stream.ReadAsByteArrayAsync();
     }
 
     /// <summary>

@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var context = GetMockHangfireContext(TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).ReturnsAsync(new MemoryStream());
+      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).ReturnsAsync(new StreamContent(new MemoryStream()));
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
@@ -99,8 +99,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var context = GetMockHangfireContext(TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      var apiresult = new MemoryStream();
-      //apiresult.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+
+      var apiresult = new StringContent("some content",Encoding.UTF8,contentType);
+
+
       apiClient.Setup(a => a.SendRequest(It.IsAny<ScheduleJobRequest>(), customHeaders)).ReturnsAsync(apiresult);
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();

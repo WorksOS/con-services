@@ -216,7 +216,7 @@ namespace VSS.MasterData.Proxies
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
-        result = await request.ExecuteRequestAsStreamContent(url, "GET", customHeaders);
+        result = await (await request.ExecuteRequestAsStreamContent(url, "GET", customHeaders)).ReadAsStreamAsync();
         log.LogDebug($"Result of get stream content request: {JsonConvert.SerializeObject(result)}");
       }
       catch (Exception ex)

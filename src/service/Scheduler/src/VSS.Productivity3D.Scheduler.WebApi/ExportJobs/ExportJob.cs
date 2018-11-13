@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
@@ -116,24 +117,24 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       // Refetch the Request Model from S3
       var request = await DownloadRequest(requestId);
 
-      using (var data = await apiClient.SendRequest(request, customHeaders))
+      var data = await apiClient.SendRequest(request, customHeaders);
       {
         //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
         //where app name and userId (appId or userUid) from JWT
-        var stream = data;
-//        var contentType = data.Headers.ContentType == null ? string.Empty : data.Headers.ContentType.MediaType;
+        var stream = await data.ReadAsStreamAsync();
+        var contentType = data.Headers.ContentType.MediaType;
         var path = GetS3Key(context.BackgroundJob.Id, request.Filename);
 
-        //if (string.IsNullOrEmpty(contentType))
+        if (string.IsNullOrEmpty(contentType))
         {
           // The default data will be zip file (for backwards compatability where it defaulted to zip files)
           path = path + ".zip"; 
-          //contentType = "application/octet-stream";
+          contentType = "application/octet-stream";
         }
 
         // Transfer proxy will upload the file with a potentially different extension, matching the contenttype
         // So we may get a new path
-        var newPath = transferProxy.Upload(stream, path, "application/octet-stream");
+        var newPath = transferProxy.Upload(stream, path, contentType);
         
         // Set the results so the results can access the final url easily
         JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3KeyStateKey, newPath);
