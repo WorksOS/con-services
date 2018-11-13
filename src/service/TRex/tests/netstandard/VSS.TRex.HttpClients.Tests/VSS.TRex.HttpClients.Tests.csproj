@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\netstandard\VSS.Trex.HTTPClients\VSS.TRex.HttpClients.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.Trex.HttpClients\VSS.TRex.HttpClients.csproj" />
   </ItemGroup>
 
 </Project>
