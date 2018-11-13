@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VSS.Trex.HTTPClients.Abstractions;
+using VSS.TRex.HttpClients.Abstractions;
 
-namespace VSS.Trex.HTTPClients.Models.Responses
+namespace VSS.TRex.HttpClients.Models.Responses
 {
   public class TPaaSClientCredentialsRawResponse : ITPaaSClientCredentialsRawResponse
   {

@@ -32,6 +32,10 @@ namespace VSS.TRex.TAGFiles.Executors
     public string MachineID { get; set; } = string.Empty;
     public string HardwareID { get; set; } = string.Empty;
 
+    public string ApplicationVersion { get; set; } = string.Empty;
+
+    public string DesignName { get; set; } = string.Empty;
+
 
     public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;
 
@@ -77,11 +81,11 @@ namespace VSS.TRex.TAGFiles.Executors
       ProcessedEpochCount = Processor.ProcessedEpochCount;
       RadioType = Processor.RadioType;
       RadioSerial = Processor.RadioSerial;
-
       MachineType = Processor.MachineType;
-
       MachineID = Processor.MachineID;
       HardwareID = Processor.HardwareID;
+      ApplicationVersion = Processor.ApplicationVersion;
+      DesignName = Processor.Design;
     }
 
     /// <summary>
