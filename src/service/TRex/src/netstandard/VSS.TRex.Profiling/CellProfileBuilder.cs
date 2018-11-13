@@ -16,7 +16,7 @@ using VSS.TRex.Utilities;
 namespace VSS.TRex.Profiling
 {
   /// <summary>
-  /// Contains the business logic to construct a vector of cells containing the infomation calculated for a profile along a vecotr of points
+  /// Contains the business logic to construct a vector of cells containing the information calculated for a profile along a vector of points
   /// </summary>
   public class CellProfileBuilder : ICellProfileBuilder
   {
@@ -84,7 +84,7 @@ namespace VSS.TRex.Profiling
       int Increment = Math.Sign(VGridLineEndIndex - VGridLineStartIndex);
 
       // To find a match, tell the intersection matching method that each
-      // horizontal gridline starts 'before' the StartX parameter and 'ends'
+      // horizontal grid line starts 'before' the StartX parameter and 'ends'
       // after the EndX parameter - use the CellSize as an arbitrary value for this.
       // This gets around an issue where with a perfectly vertical profile line,
       // no intersections were being determined.
@@ -126,7 +126,7 @@ namespace VSS.TRex.Profiling
       int Increment = Math.Sign(HGridLineEndIndex - HGridLineStartIndex);
 
       // To find a match, tell the intersection matching method that each
-      // vertical gridline starts 'before' the StartX parameter and 'ends'
+      // vertical grid line starts 'before' the StartX parameter and 'ends'
       // after the EndX parameter - use the CellSize as an arbitrary value for this.
       // This gets around an issue where with a perfectly horizontal profile line,
       // no intersections were being determined.
@@ -157,7 +157,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Adds the data for a single cell into the list ocntaining the result fof the profile cells
+    /// Adds the data for a single cell into the list containing the result fof the profile cells
     /// </summary>
     /// <param name="OTGX"></param>
     /// <param name="OTGY"></param>

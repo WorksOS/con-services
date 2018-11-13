@@ -1,27 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Profiling
 {
   /// <summary>
-  /// Contains a vector of IntercepRec instances that describe all the cells a profile line has crossed
+  /// Contains a vector of InterceptRec instances that describe all the cells a profile line has crossed
   /// </summary>
   public class InterceptList
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<InterceptList>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<InterceptList>();
 
     /// <summary>
-    /// The amount by which the size of the list shoudl be increased as more elements are added.
+    /// The amount by which the size of the list should be increased as more elements are added.
     /// This is also the initial size of the intercept rec list.
     /// </summary>
     public const int ListInc = 2000;
 
     /// <summary>
-    /// Profiel lines which require more intercepts than this are not supported
+    /// Profile lines which require more intercepts than this are not supported
     /// </summary>
     public const int MaxIntercepts = 20000; // note this should give a profile at least up to 4-6km long
 
@@ -130,7 +127,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Takes two intercepot lists and merges the two into a single list within this instance
+    /// Takes two intercept lists and merges the two into a single list within this instance
     /// </summary>
     /// <param name="List1"></param>
     /// <param name="List2"></param>
