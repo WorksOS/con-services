@@ -1,10 +1,10 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using VSS.Trex.HTTPClients.Clients;
 using VSS.TRex.DI;
-
-namespace VSS.TRex.HTTPClients.RequestHandlers
+using VSS.TRrex.HttpClients.Abstractions;
+namespace VSS.TRex.HttpClients.RequestHandlers
 {
   /// <summary>
   /// This is a request handler which acts a middleware to outingoing requests
@@ -25,19 +25,31 @@ namespace VSS.TRex.HTTPClients.RequestHandlers
   /// </summary>
   public class TPaaSAuthenticatedRequestHandler : DelegatingHandler
   {
+
+    public TPaaSAuthenticatedRequestHandler() : base() { }
+
+    public TPaaSAuthenticatedRequestHandler(HttpMessageHandler innerHandler) : base(innerHandler) { }
+
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-      //DI.DIContext.Obtain<TPaaSClient>().GetBearerToken();
-
-      if (!request.Headers.Contains("Authorization"))
+      try
       {
-        request.Headers.Add("Authorization", DIContext.Obtain<TPaaSClient>().GetBearerToken());
-      }
+        string bearerToken = await DIContext.Obtain<ITPaaSClient>().GetBearerTokenAsync().ConfigureAwait(false);
 
-      return await base.SendAsync(request, cancellationToken);
+        if (!request.Headers.Contains("Authorization"))
+        {
+          request.Headers.Add("Authorization", bearerToken);
+        }
+
+        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+      }
+      catch (ArgumentNullException ex)
+      {
+        throw new TPaaSAuthenticatedRequestHandlerException("Bearer could not be obtained, have you DI'd the TPaaSAppCreds Client?", ex);
+      }
     }
   }
 }

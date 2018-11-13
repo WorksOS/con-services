@@ -1,45 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Trex.HTTPClients.Abstractions;
-using VSS.Trex.HTTPClients.Models.Responses;
+using VSS.TRex.HttpClients.Models;
+using VSS.TRex.HttpClients.Models.Responses;
+using VSS.TRrex.HttpClients.Abstractions;
 
-namespace VSS.Trex.HTTPClients.Clients
+namespace VSS.TRex.HttpClients.Clients
 {
-  public class TPaaSClient
+  public class TPaaSClient : ITPaaSClient
   {
-    //private ILogger<ValuesClient> _logger;
+    private ILogger<TPaaSClient> _logger;
     private HttpClient _client;
 
     private readonly int TOKEN_EXPIRY_GRACE_SECONDS = 60;
     private const string REVOKE_TOKEN_URI = "/revoke";
     private const string GET_TOKEN_URI = "/token";
-    private static string TPaaSToken { get; set; } = string.Empty;
-    private static string TokenType { get; set; } = string.Empty;
-    private static DateTime TPaaSTokenExpiry = DateTime.MinValue;
-    private readonly object lockToken = new object();
+    private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
 
-    public TPaaSClient(HttpClient client)
+    private ITPaaSClientState _state;
+
+    public const string TPAAS_AUTH_URL_ENV_KEY = "TPAAS_AUTH_URL";
+
+    public TPaaSClient(HttpClient client, ILogger<TPaaSClient> logger)
     {
       _client = client;
-      //_logger = logger;
+      _logger = logger;
+      _state =  TPaaSClientState.Instance;
     }
 
-    public string GetBearerToken()
+    public async Task<string> GetBearerTokenAsync()
     {
-      if (TPaaSTokenExpiry < DateTime.Now)
+      if (_state.TPaaSTokenExpiry < DateTime.Now)
       {
+        _logger.LogInformation("TPaaS Token has expired retrieving a new one");
         //Only one request should update the token
-        lock (lockToken)
+        await semaphore.WaitAsync();
+        try
         {
-          //make sure it hasn't been updated if we have been waiting for a lock
-          // if it is still expired contine and refresh.
-          if (TPaaSTokenExpiry < DateTime.Now)
-            RefreshAuthToken();
+          {
+            //make sure it hasn't been updated if we have been waiting for a lock
+            // if it is still expired contine and refresh.
+            if (_state.TPaaSTokenExpiry < DateTime.Now)
+              await RefreshAuthToken().ConfigureAwait(false);
+          }
+        }
+        finally
+        {
+          semaphore.Release();
         }
       }
-      return $"{TokenType} {TPaaSToken}";
+      return $"{_state.TokenType} {_state.TPaaSToken}";
     }
 
 
@@ -47,42 +61,83 @@ namespace VSS.Trex.HTTPClients.Clients
     /// Authenticate with TPaaS
     /// </summary>
     /// <returns>True if authentication was successful</returns>
-    protected bool RefreshAuthToken()
+    private async Task RefreshAuthToken()
     {
-      RevokeBearerToken();
-      var auth = Authenticate();
-      TokenType = auth.TokenType;
-      TPaaSToken = auth.AccessToken;
-      TPaaSTokenExpiry = DateTime.Now.AddSeconds(auth.TokenExpiry - TOKEN_EXPIRY_GRACE_SECONDS);
-
-      return true;
+      _logger.LogInformation("Refreshing TPaaS Token");
+      await RevokeBearerToken().ConfigureAwait(false);
+      await Authenticate().ConfigureAwait(false);
     }
 
-
-    private ITPaaSClientCredentialsRawResponse Authenticate()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private async Task Authenticate()
     {
+      _logger.LogInformation("Authenticating with TPaaS");
       var grantMessage = new Dictionary<string, string>();
-      grantMessage.Add("grant_type", "client_credentials");      
-      var res = _client.PostAsync(GET_TOKEN_URI, new FormUrlEncodedContent(grantMessage));
-      return JsonConvert.DeserializeObject<TPaaSClientCredentialsRawResponse>(res.Result.Content.ReadAsStringAsync().Result);
+      grantMessage.Add("grant_type", "client_credentials");
+      var result = await _client.PostAsync(GET_TOKEN_URI, new FormUrlEncodedContent(grantMessage)).ConfigureAwait(false);
+      if (result.IsSuccessStatusCode)
+      {
+        if (result.Content != null)
+        {
+          var content = await result.Content?.ReadAsStringAsync();
+          var auth = JsonConvert.DeserializeObject<TPaaSClientCredentialsRawResponse>(content);
+          _state.TokenType = auth.TokenType;
+          _state.TPaaSToken = auth.AccessToken;
+          _state.TPaaSTokenExpiry = DateTime.Now.AddSeconds(auth.TokenExpiry - TOKEN_EXPIRY_GRACE_SECONDS);
+        }
+        else
+        {
+          throw new TPaaSAuthenticationException("No content response from TPaaS while getting token");
+        }
+      }
+      _logger.LogInformation($"Authenticating with TPaaS was {(!result.IsSuccessStatusCode ? "not " : "")}successful");
+      if (!result.IsSuccessStatusCode)
+      {
+        throw new TPaaSAuthenticationException("Could not authenticate with TPaaS", result);
+      }
     }
 
     /// <summary>
     /// Invalidates the bearer token if there is a valid one stored.
     /// </summary>
     /// <returns>True if the bearer token is now invalid</returns>
-    private bool RevokeBearerToken()
+    private async Task RevokeBearerToken()
     {
-      if (!string.IsNullOrEmpty(TPaaSToken))
+      if (!string.IsNullOrEmpty(_state.TPaaSToken))
       {
-        var revokeMessage = new Dictionary<string, string>();
-        revokeMessage.Add("token", TPaaSToken);
+        try
+        {
+          _logger.LogInformation("Constructing Revoke token request");
+          var revokeMessage = new Dictionary<string, string>();
+          revokeMessage.Add("token", _state.TPaaSToken);
 
-        var revokeBody = new FormUrlEncodedContent(revokeMessage);
-        return _client.PostAsync(REVOKE_TOKEN_URI, revokeBody).Result.IsSuccessStatusCode;
+          var revokeBody = new FormUrlEncodedContent(revokeMessage);
+          _logger.LogInformation("Sending Revoke token request");
+          var result = await _client.PostAsync(REVOKE_TOKEN_URI, revokeBody);
+
+          if (!result.IsSuccessStatusCode)
+          {
+            throw new TPaaSAuthenticationException("Error revoking access token", result);
+          }
+        }
+        finally
+        {
+          _state.TPaaSToken = string.Empty;
+          _state.TokenType = string.Empty;
+          _state.TPaaSTokenExpiry = DateTime.MinValue;
+        }
       }
-      return true;
+    }
 
+    public async Task setState(ITPaaSClientState state)
+    {
+      //Don't change the state while setting it elsewhere
+      await semaphore.WaitAsync();
+      _state = state;
+      semaphore.Release();
     }
   }
 }
