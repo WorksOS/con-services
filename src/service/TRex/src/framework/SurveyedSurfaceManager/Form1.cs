@@ -59,7 +59,7 @@ namespace SurveyedSurfaceManager
 
                 ISurveyedSurface surveyedSurface = 
                   surveyedSurfaceManager.Add(ID, 
-                                             new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                                             new DesignDescriptor(Guid.NewGuid(), txtFilePath.Text, txtFileName.Text, offset),
                                              dateTimePicker.Value,
                                              extents);
 
@@ -197,7 +197,7 @@ namespace SurveyedSurfaceManager
 
               // Create the new design for the site model
               IDesign design = designManager.Add(SiteModelID,
-                new DesignDescriptor(Guid.NewGuid(), "", "", txtFilePath.Text, txtFileName.Text, offset),
+                new DesignDescriptor(Guid.NewGuid(), txtFilePath.Text, txtFileName.Text, offset),
                 extents);
 
               // Store the existence map for the design for later use
