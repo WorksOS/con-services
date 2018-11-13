@@ -12,18 +12,16 @@ namespace VSS.TRex.Tests.DesignProfiling
   {
     public static TrimbleTINModel CreateOptimisedTTM_WithOneTriangleAtOrigin()
     {
-      var TTM = new VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel();
-
-      TTM.Vertices.Items = new XYZ[]
+      var TTM = new TrimbleTINModel
       {
-        new XYZ(0, 0, 0),
-        new XYZ(1, 0, 0),
-        new XYZ(0, 1, 0)
-      };
-
-      TTM.Triangles.Items = new Triangle[]
-      {
-        new Triangle(0, 1, 2)
+        Vertices =
+        {
+          Items = new XYZ[] {new XYZ(0, 0, 0), new XYZ(1, 0, 0), new XYZ(0, 1, 0)}
+        },
+        Triangles =
+        {
+          Items = new Triangle[] {new Triangle(0, 1, 2)}
+        }
       };
 
       return TTM;

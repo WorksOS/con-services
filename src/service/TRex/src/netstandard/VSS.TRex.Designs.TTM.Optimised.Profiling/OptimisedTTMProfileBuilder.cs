@@ -15,7 +15,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
   {
     public const int kMaxHzVtGridInterceptsToCalculate = 8000;
 
-    private readonly ISiteModel SiteModel;
     private double CellSize;
     public bool Aborted { get; set; }
 
@@ -33,12 +32,14 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// <summary>
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
     /// </summary>
-    /// <param name="siteModel"></param>
+    /// <param name="cellSize"></param>
     /// <param name="slicerToolUsed"></param>
-    public OptimisedTTMCellProfileBuilder(ISiteModel siteModel,
-      bool slicerToolUsed)
+    public OptimisedTTMCellProfileBuilder(double cellSize, bool slicerToolUsed)
     {
-      SiteModel = siteModel;
+      // Modify the cell size to represent the node subgrid above the leaf subgrid as these are the size of the
+      // cells in the spatial TIN index
+      CellSize = cellSize * SubGridTreeConsts.SubGridTreeDimension;
+
       SlicerToolUsed = slicerToolUsed;
     }
 
@@ -133,8 +134,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// <returns></returns>
     public bool Build(XYZ[] nEECoords)
     {
-      CellSize = SiteModel.Grid.CellSize * SubGridTreeConsts.SubGridTreeDimension;
-
       CurrStationPos = 0;
 
       for (int loopBound = nEECoords.Length - 1, I = 0; I < loopBound; I++)

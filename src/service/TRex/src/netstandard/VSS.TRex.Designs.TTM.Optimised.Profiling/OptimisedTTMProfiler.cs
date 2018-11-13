@@ -1,35 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 {
-  public struct XYZS
-  {
-    public double X, Y, Z, Station;
-
-    public XYZS(double x, double y, double z, double station)
-    {
-      X = x;
-      Y = y;
-      Z = z;
-      Station = station;
-    }
-  }
-
-  public interface IOptimisedTTMProfiler
-  {
-    List<XYZS> Compute(XYZ startPt, XYZ endPoint);
-  }
-
   /// <summary>
   /// Implements support for computing profile lines across a TIN surface expressed in the
   /// VSS.TRex.Designs.TTM.Optimised schema
@@ -38,22 +18,26 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<OptimisedTTMProfiler>();
 
-    private readonly ISiteModel SiteModel;
-    private readonly IDesign Design;
+    public ISiteModel SiteModel { get; private set; }
+
+//    private readonly IDesign Design;
+    private readonly TrimbleTINModel TTM;
+
     private readonly OptimisedSpatialIndexSubGridTree Index;
 
     /// <summary>
     /// Creates an empty profiler context
     /// </summary>
     public OptimisedTTMProfiler(ISiteModel siteModel,
-                                IDesign design,
+                                TrimbleTINModel ttm, // IDesign design,
                                 OptimisedSpatialIndexSubGridTree index)
     {
-      if (!(design is VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel))
-        throw new ArgumentException("Design must be a VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel instance");
+//      if (!(design is VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel))
+//        throw new ArgumentException("Design must be a VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel instance");
 
       SiteModel = siteModel;
-      Design = design;
+   //   Design = design;
+      TTM = ttm;
       Index = index;
     }
 
@@ -63,7 +47,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // compute cell cross by production data profiling
 
       // ...
-      var cellProfileBuilder = new OptimisedTTMCellProfileBuilder(SiteModel, true);
+      var cellProfileBuilder = new OptimisedTTMCellProfileBuilder(SiteModel.Grid.CellSize, true);
       if (!cellProfileBuilder.Build(new [] {startPoint, endPoint}))
         return null;
 
@@ -78,10 +62,11 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // spatial index that contains triangles
 
       var intercepts = new List<XYZS>();
-      var TTM = (VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel)Design;
 
-      foreach (var intercept in VtHzIntercepts.Items)
+      for (int interceptIndex = 0; interceptIndex < VtHzIntercepts.Count; interceptIndex++)
       {
+        InterceptRec intercept = VtHzIntercepts.Items[interceptIndex];
+
         if (!Index.CalculateIndexOfCellContainingPosition(intercept.MidPointX, intercept.MidPointY, out uint cellX, out uint cellY))
         {
           Log.LogWarning($"No cell address computable for location {intercept.MidPointX}:{intercept.MidPointY}");
@@ -93,7 +78,18 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
         if (subGrid == null)
         {
           // No triangles are present in this 'node' subgrid
-          // Todo: Mark this as a gap in the profile if there are points added to it
+          // Mark this as a gap in the profile if there are points added to it, but not if there is already
+          // a gap marker in the intercept list
+          if (intercepts.Count > 0 && intercepts[intercepts.Count - 1].Z == Common.Consts.NullDouble)
+          {
+            intercepts.Add(new XYZS(intercepts[intercepts.Count - 1])
+            { 
+              Z = Common.Consts.NullDouble,
+              Station = intercepts[intercepts.Count - 1].Station + 0.0000001
+            });
+          }
+
+          continue;
         }
 
         if (!(subGrid is TriangleArrayReferenceSubGrid referenceSubGrid))
@@ -116,9 +112,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
         var endIndex = referenceList.TriangleArrayIndex + referenceList.Count;
         for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
         {
-          double intersectX, intersectY;
-          bool linesAreColinear;
-
           Triangle tri = TTM.Triangles.Items[i];
 
           // Does this triangle intersect the line?
@@ -129,7 +122,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
           int interceptCount = 0;
 
           if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y,
-             v0.X, v0.Y, v1.X, v1.Y, out intersectX, out intersectY, true, out linesAreColinear))
+             v0.X, v0.Y, v1.X, v1.Y, out double intersectX, out double intersectY, true, out bool linesAreColinear))
           {
             // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
             if (linesAreColinear)
@@ -192,7 +185,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       }
 
       // Sort the computed intercepts into station order
-      intercepts.Sort((a, b) => a.Station.CompareTo(b.Station)); //x => x.Station);
+      intercepts.Sort((a, b) => a.Station.CompareTo(b.Station)); 
 
       // remove any duplicates. todo: Determine is this is more efficient to do once all subgrids of triangle intercept are aggregated
       intercepts = intercepts.Where((x, i) => x.Station > intercepts[i].Station).ToList();
