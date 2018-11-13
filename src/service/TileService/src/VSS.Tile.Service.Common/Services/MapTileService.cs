@@ -66,9 +66,15 @@ namespace VSS.Tile.Service.Common.Services
           break;
       }
 
-      //see http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/help/operations/DrawMap
+      var region = alkCache.GetOrCreate(
+        $"BBOX_COORD_KEY_{parameters.bbox.centerLatDegrees:F6}_{parameters.bbox.centerLngDegrees:F6}",
+        entry =>
+        {
+          //see http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/help/operations/DrawMap
+          entry.AbsoluteExpiration = DateTimeOffset.MaxValue;
+          return GetRegion(parameters.bbox.centerLatDegrees, parameters.bbox.centerLngDegrees);
+        });
 
-      var region = GetRegion(parameters.bbox.centerLatDegrees, parameters.bbox.centerLngDegrees);
       var dataset = "PCM_" + region; //"current";
       var mapLayers = "Cities,Labels,Roads,Commercial,Borders,Areas";
       var baseUrl = "http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc/map";

@@ -147,9 +147,9 @@ namespace VSS.MasterData.Proxies
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() T(no method) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))}");
+        $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))}");
 
-      if (payload==null && method=="GET")
+      if (payload==null && method!="GET")
         throw new ArgumentException("Can't have null payload with a non-GET method.");
 
       var policyResult = await Policy
