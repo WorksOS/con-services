@@ -54,15 +54,22 @@ namespace VSS.MasterData.Proxies
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
-        if (streamPayload != null && payload==null)
-          result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+        if (method != "GET")
+        {
+          if (streamPayload != null && payload == null)
+            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+          else
+          {
+            if (payload != null)
+            {
+              streamPayload = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+              result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method);
+            }
+          }
+        }
         else
         {
-          if (payload != null)
-          {
-            streamPayload = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, payload);
-          }
+          result = await request.ExecuteRequest<T>(url, method: "GET");
         }
 
         log.LogDebug("Result of send to master data request: {0}", result);
