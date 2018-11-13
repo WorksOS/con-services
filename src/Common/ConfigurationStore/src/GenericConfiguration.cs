@@ -167,6 +167,7 @@ namespace VSS.ConfigurationStore
 
         if (!UseKubernetes)
         {
+          _log.LogInformation("Kubernetes plugin is not requested - exiting and disabling it permanently.");
           kubernetesInitialized = KubernetesState.NotRequired;
         }
 
