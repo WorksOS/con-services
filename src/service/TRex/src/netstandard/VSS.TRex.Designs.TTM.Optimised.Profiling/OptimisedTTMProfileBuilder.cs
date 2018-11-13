@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
   /// Contains the business logic to construct a vector of subgrids containing the triangles required to compute
   /// a profile along a vector of points
   /// </summary>
-  public class OptimisedTTCellProfileBuilder
+  public class OptimisedTTMCellProfileBuilder
   {
     public const int kMaxHzVtGridInterceptsToCalculate = 8000;
 
@@ -35,7 +35,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="slicerToolUsed"></param>
-    public OptimisedTTCellProfileBuilder(ISiteModel siteModel,
+    public OptimisedTTMCellProfileBuilder(ISiteModel siteModel,
       bool slicerToolUsed)
     {
       SiteModel = siteModel;

@@ -63,7 +63,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // compute cell cross by production data profiling
 
       // ...
-      var cellProfileBuilder = new OptimisedTTCellProfileBuilder(SiteModel, true);
+      var cellProfileBuilder = new OptimisedTTMCellProfileBuilder(SiteModel, true);
       if (!cellProfileBuilder.Build(new [] {startPoint, endPoint}))
         return null;
 
@@ -194,7 +194,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // Sort the computed intercepts into station order
       intercepts.Sort((a, b) => a.Station.CompareTo(b.Station)); //x => x.Station);
 
-      // remove any duplicates
+      // remove any duplicates. todo: Determine is this is more efficient to do once all subgrids of triangle intercept are aggregated
       intercepts = intercepts.Where((x, i) => x.Station > intercepts[i].Station).ToList();
 
       return intercepts;
