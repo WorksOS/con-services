@@ -41,6 +41,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     {
       HttpContent result = null;
       var method = jobRequest.Method ?? "GET";
+      log.LogDebug($"Job request is {jobRequest}");
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
