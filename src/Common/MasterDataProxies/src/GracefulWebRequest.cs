@@ -44,17 +44,27 @@ namespace VSS.MasterData.Proxies
       var client = new HttpClient();
       if (timeout.HasValue)
         client.Timeout = TimeSpan.FromSeconds(timeout.Value);
+      if (requestStream==null&&method!="GET")
+        throw new ArgumentException($"Empty body for non-GET request {nameof(requestStream)}");
 
       if (customHeaders != null)
       {
         foreach (var customHeader in customHeaders)
-          if (!client.DefaultRequestHeaders.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
-            log.LogWarning($"Can't add header {customHeader.Key}");
-        if (!customHeaders.ContainsKey("Content-Type"))
-          client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+            if (!client.DefaultRequestHeaders.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
+              log.LogWarning($"Can't add header {customHeader.Key}");
       }
-      else
-        client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+
+      HttpContent content=null;
+      if (requestStream != null)
+      {
+        if ((customHeaders == null) || (customHeaders.ContainsKey("Content-Type") &&
+                                        customHeaders["Content-Type"] == "application/json"))
+          content = new StringContent(new StreamReader(requestStream).ReadToEnd(), Encoding.UTF8, "application/json");
+        else
+        {
+          content = new StreamContent(requestStream);
+        }
+      }
 
       //Default to JSON content type
 
@@ -70,17 +80,17 @@ namespace VSS.MasterData.Proxies
         }
         case "POST":
         {
-          response = await client.PostAsync(endpoint, new StreamContent(requestStream));
+          response = await client.PostAsync(endpoint, content);
           break;
         }
         case "PUT":
         {
-          response = await client.PutAsync(endpoint, new StreamContent(requestStream));
+          response = await client.PutAsync(endpoint, content);
           break;
         }
         default:
         {
-          throw new ArgumentException("Unknown HTTP method");
+          throw new ArgumentException($"Unknown HTTP method {nameof(method)}");
         }
       }
 
