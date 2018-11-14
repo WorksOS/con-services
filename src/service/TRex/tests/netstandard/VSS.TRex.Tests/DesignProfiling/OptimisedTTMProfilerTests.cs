@@ -132,7 +132,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     [InlineData(0.0)]
     [InlineData(123.456)]
     [Theory]
-    public void Test_OptimisedTTMProfiler_SingleTriangleAtOrigin_YAxisProfileLine(double atElevation)
+    public void Test_OptimisedTTMProfiler_SingleTriangleAtOrigin_YAxisColinearProfileLine(double atElevation)
     {
       var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(atElevation);
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
@@ -154,18 +154,41 @@ namespace VSS.TRex.Tests.DesignProfiling
     [InlineData(0.0)]
     [InlineData(123.456)]
     [Theory]
-    public void Test_OptimisedTTMProfiler_SingleTriangleAtOrigin_XAxisProfileLine(double atElevation)
+    public void Test_OptimisedTTMProfiler_SingleTriangleAtOrigin_XAxisColinearProfileLine(double atElevation)
     {
       var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(atElevation);
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
-      // Build a profile line from (-100, 0) to (100, 0) to be co-linear with vertical edge of triangle
+      // Build a profile line from (-100, 0) to (100, 0) to be co-linear with horizontal edge of triangle
       var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index);
       var profilePoints = profiler.Compute(new XYZ(-100, 0), new XYZ(100, 0));
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
       Assert.True(Math.Abs(profilePoints[0].X) < epsilon &&
                   Math.Abs(profilePoints[0].Y) < epsilon &&
+                  Math.Abs(profilePoints[0].Z - atElevation) < epsilon, $"First profile point not at (0, 0, {atElevation}), but is at {profilePoints[0]}");
+
+      Assert.True(Math.Abs(profilePoints[1].X - 1.0) < epsilon &&
+                  Math.Abs(profilePoints[1].Y) < epsilon &&
+                  Math.Abs(profilePoints[1].Z - atElevation) < epsilon, $"Second profile point not at (1.0, 0, {atElevation}), but is at {profilePoints[1]}");
+    }
+
+
+    [InlineData(0.0)]
+    [InlineData(123.456)]
+    [Theory]
+    public void Test_OptimisedTTMProfiler_SingleTriangleAtOrigin_DiagonalColinearProfileLine(double atElevation)
+    {
+      var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(atElevation);
+      Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
+
+      // Build a profile line from (-1, 2) to (2, -1) to be co-linear with diagonal edge of triangle
+      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index);
+      var profilePoints = profiler.Compute(new XYZ(-1, 2), new XYZ(2, -1));
+
+      Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
+      Assert.True(Math.Abs(profilePoints[0].X) < epsilon &&
+                  Math.Abs(profilePoints[0].Y - 1.0) < epsilon &&
                   Math.Abs(profilePoints[0].Z - atElevation) < epsilon, $"First profile point not at (0, 0, {atElevation}), but is at {profilePoints[0]}");
 
       Assert.True(Math.Abs(profilePoints[1].X - 1.0) < epsilon &&
