@@ -42,6 +42,9 @@ namespace VSS.MasterData.Proxies
       IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
     {
       var client = new HttpClient();
+      if (timeout.HasValue)
+        client.Timeout = TimeSpan.FromSeconds(timeout.Value);
+
       if (customHeaders != null)
       {
         foreach (var customHeader in customHeaders)
@@ -54,6 +57,8 @@ namespace VSS.MasterData.Proxies
         client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
 
       //Default to JSON content type
+
+      log.LogDebug($"Headers to be attached to the request {JsonConvert.SerializeObject(client.DefaultRequestHeaders)}");
 
       HttpResponseMessage response;
       switch (method)
