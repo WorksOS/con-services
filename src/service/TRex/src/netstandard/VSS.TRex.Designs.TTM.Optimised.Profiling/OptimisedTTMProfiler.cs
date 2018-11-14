@@ -41,6 +41,47 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       Index = index;
     }
 
+    private void AddEndIntercept(XYZ point, List<XYZS> intercepts, double station)
+    {
+      if (!Index.CalculateIndexOfCellContainingPosition(point.X, point.Y, out uint cellX, out uint cellY))
+      {
+        Log.LogWarning($"No cell address computable for end point location {point.X}:{point.Y}");
+        return;
+      }
+
+      var subGrid = Index.LocateSubGridContaining(cellX, cellY);
+
+      if (subGrid == null) // No triangles in this 'node' subgrid
+        return;
+
+      if (!(subGrid is TriangleArrayReferenceSubGrid referenceSubGrid))
+      {
+        Log.LogCritical($"Subgrid is not a TriangleArrayReferenceSubGrid, is is a {subGrid?.GetType()}");
+        return;
+      }
+
+      // Get the cell representing a leaf subgrid and determine if there is a triangle at the point location
+      subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
+
+      TriangleArrayReference referenceList = referenceSubGrid.Items[subGridX, subGridY];
+
+      int endIndex = referenceList.TriangleArrayIndex + referenceList.Count;
+
+      for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
+      {
+        double height = XYZ.GetTriangleHeight
+         (TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex0],
+          TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex1],
+          TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex2], point.X, point.Y);
+
+        if (height != Common.Consts.NullDouble)
+        {
+          intercepts.Add(new XYZS(point.X, point.Y, height, station));
+          return;
+        }
+      }
+    }
+
     public List<XYZS> Compute(XYZ startPoint, XYZ endPoint)
     {
       // 1. Determine the set of subgrids the profile line cross using the same logic used to
@@ -62,6 +103,9 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // spatial index that contains triangles
 
       var intercepts = new List<XYZS>();
+
+      // Add an initial intercept if the start point is located within a triangle
+      AddEndIntercept(startPoint, intercepts, 0);
 
       for (int interceptIndex = 0; interceptIndex < VtHzIntercepts.Count; interceptIndex++)
       {
@@ -119,10 +163,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
           XYZ v1 = TTM.Vertices.Items[tri.Vertex1];
           XYZ v2 = TTM.Vertices.Items[tri.Vertex2];
 
-          int interceptCount = 0;
-
-          if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y,
-             v0.X, v0.Y, v1.X, v1.Y, out double intersectX, out double intersectY, true, out bool linesAreColinear))
+          if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, v0.X, v0.Y, v1.X, v1.Y, out double intersectX, out double intersectY, true, out bool linesAreColinear))
           {
             // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
             if (linesAreColinear)
@@ -133,15 +174,10 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
             }
 
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZS(intersectX, intersectY, 
-              XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), 
-              MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
-
-            interceptCount++;
+            intercepts.Add(new XYZS(intersectX, intersectY, XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
           }
 
-          if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y,
-            v0.X, v0.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
+          if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, v0.X, v0.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
           {
             // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
             if (linesAreColinear)
@@ -152,21 +188,10 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
             }
 
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZS(intersectX, intersectY,
-              XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), 
-              MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
-
-            interceptCount++;
+            intercepts.Add(new XYZS(intersectX, intersectY, XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
           }
 
-          if (interceptCount == 2)
-          {
-            // No need to check the third edge
-            continue;
-          }
-
-          if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y,
-            v1.X, v1.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
+          if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, v1.X, v1.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
           {
             // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
             if (linesAreColinear)
@@ -184,11 +209,14 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
         }
       }
 
+      // Add an initial intercept if the start point is located within a triangle
+      AddEndIntercept(endPoint, intercepts, MathUtilities.Hypot(startPoint.X - endPoint.X, startPoint.Y - endPoint.Y));
+
       // Sort the computed intercepts into station order
       intercepts.Sort((a, b) => a.Station.CompareTo(b.Station)); 
 
       // remove any duplicates. todo: Determine is this is more efficient to do once all subgrids of triangle intercept are aggregated
-      intercepts = intercepts.Where((x, i) => x.Station > intercepts[i].Station).ToList();
+      intercepts = intercepts.Where((x, i) => (i == 0) || x.Station > intercepts[i - 1].Station).ToList();
 
       return intercepts;
     }

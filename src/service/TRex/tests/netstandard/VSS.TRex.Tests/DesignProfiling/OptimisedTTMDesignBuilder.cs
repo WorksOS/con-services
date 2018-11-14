@@ -10,17 +10,17 @@ namespace VSS.TRex.Tests.DesignProfiling
   /// </summary>
   public static class OptimisedTTMDesignBuilder
   {
-    public static TrimbleTINModel CreateOptimisedTTM_WithOneTriangleAtOrigin()
+    public static TrimbleTINModel CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin()
     {
       var TTM = new TrimbleTINModel
       {
         Vertices =
         {
-          Items = new XYZ[] {new XYZ(0, 0, 0), new XYZ(1, 0, 0), new XYZ(0, 1, 0)}
+          Items = new [] {new XYZ(0, 0, 0), new XYZ(1, 0, 0), new XYZ(0, 1, 0)}
         },
         Triangles =
         {
-          Items = new Triangle[] {new Triangle(0, 1, 2)}
+          Items = new [] {new Triangle(0, 1, 2)}
         }
       };
 
@@ -32,6 +32,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       out int[] triangleIndices)
     {
       const double CellSize = 1.0;
+
       tree = null;
       triangleIndices = null;
 

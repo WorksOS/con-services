@@ -14,6 +14,7 @@ namespace VSS.TRex.Utilities
     /// <param name="dx"></param>
     /// <param name="dy"></param>
     /// <returns></returns>
+    // ReSharper disable once IdentifierTypo
     public static double Hypot(double dx, double dy) => Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
 
     /// <summary>

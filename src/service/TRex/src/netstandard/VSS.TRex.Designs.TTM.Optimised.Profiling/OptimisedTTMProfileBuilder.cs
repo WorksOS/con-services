@@ -1,7 +1,6 @@
 ﻿using System;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Utilities;
 
@@ -146,10 +145,11 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
         EndY = nEECoords[I + 1].Y;
         EndStation = nEECoords[I + 1].Z;
 
-        if (I == 0) // Add start point of profile line to intercept list
+        if (I == 0) 
         {
           CurrStationPos = SlicerToolUsed ? 0 : nEECoords[I].Z; // alignment profiles pass in chainage for more accuracy
-          VtHzIntercepts.AddPoint(StartX, StartY, CurrStationPos);
+          // Add start point of profile line to intercept list
+          //VtHzIntercepts.AddPoint(StartX, StartY, CurrStationPos);
         }
 
         Distance = SlicerToolUsed
@@ -170,7 +170,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       VtHzIntercepts.MergeInterceptLists(VtIntercepts, HzIntercepts);
 
       // Add end point of profile line to intercept list
-      VtHzIntercepts.AddPoint(EndX, EndY, CurrStationPos);
+      // VtHzIntercepts.AddPoint(EndX, EndY, CurrStationPos);
 
       // Update each intercept with it's midpoint and intercept length
       // i.e. the midpoint on the line between one intercept and the next one
