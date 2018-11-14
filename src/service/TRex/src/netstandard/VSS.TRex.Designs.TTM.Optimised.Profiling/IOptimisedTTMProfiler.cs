@@ -5,6 +5,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 {
   public interface IOptimisedTTMProfiler
   {
-    List<XYZS> Compute(XYZ startPt, XYZ endPoint);
+    List<XYZS> Compute(XYZ[] points);
   }
 }

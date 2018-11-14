@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
@@ -81,7 +80,13 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       }
     }
 
-    public List<XYZS> Compute(XYZ startPoint, XYZ endPoint)
+    /// <summary>
+    /// Computes a profile line across the TIN surface between two points
+    /// </summary>
+    /// <param name="startPoint"></param>
+    /// <param name="endPoint"></param>
+    /// <returns></returns>
+    private List<XYZS> Compute(XYZ startPoint, XYZ endPoint)
     {
       // 1. Determine the set of subgrids the profile line cross using the same logic used to
       // compute cell cross by production data profiling
@@ -229,7 +234,30 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // Sort the computed intercepts into station order
       intercepts.Sort((a, b) => a.Station.CompareTo(b.Station)); 
 
-      // remove any duplicates. todo: Determine is this is more efficient to do once all subgrids of triangle intercept are aggregated
+      return intercepts;
+    }
+
+    /// <summary>
+    /// Computes a profile across a surface along a series of line segments
+    /// </summary>
+    /// <param name="points"></param>
+    /// <returns></returns>
+    public List<XYZS> Compute(XYZ[] points)
+    {
+      if (points == null || points.Length < 2)
+        throw new ArgumentException("Points list cannot be null or contain less than 2 points");
+
+      var intercepts = new List<XYZS>();
+
+      for (int i = 0; i < points.Length - 1; i++)
+      {
+        var subIntercepts = Compute(points[i], points[i + 1]);
+
+        if (subIntercepts.Count > 0)
+          intercepts.AddRange(subIntercepts);
+      }
+
+      // remove any duplicates.
       intercepts = intercepts.Where((x, i) => (i == 0) || x.Station > intercepts[i - 1].Station).ToList();
 
       return intercepts;
