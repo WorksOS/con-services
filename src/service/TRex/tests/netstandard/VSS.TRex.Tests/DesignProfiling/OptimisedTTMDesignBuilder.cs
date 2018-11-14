@@ -10,17 +10,35 @@ namespace VSS.TRex.Tests.DesignProfiling
   /// </summary>
   public static class OptimisedTTMDesignBuilder
   {
-    public static TrimbleTINModel CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin()
+    public static TrimbleTINModel CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(double withElevation)
     {
       var TTM = new TrimbleTINModel
       {
         Vertices =
         {
-          Items = new [] {new XYZ(0, 0, 0), new XYZ(1, 0, 0), new XYZ(0, 1, 0)}
+          Items = new [] {new XYZ(0, 0, withElevation), new XYZ(1, 0, withElevation), new XYZ(0, 1, withElevation) }
         },
         Triangles =
         {
           Items = new [] {new Triangle(0, 1, 2)}
+        }
+      };
+
+      return TTM;
+    }
+
+    public static TrimbleTINModel CreateOptimisedTTM_WithTwoFlatUnitTrianglesAtOrigin(double withElevation)
+    {
+      var TTM = new TrimbleTINModel
+      {
+        Vertices =
+        {
+          Items = new [] {new XYZ(0, 0, withElevation), new XYZ(1, 0, withElevation), new XYZ(0, 1, withElevation), new XYZ(1, 1, withElevation) }
+        },
+
+        Triangles =
+        {
+          Items = new [] {new Triangle(0, 1, 2), new Triangle(1, 2, 3)}
         }
       };
 

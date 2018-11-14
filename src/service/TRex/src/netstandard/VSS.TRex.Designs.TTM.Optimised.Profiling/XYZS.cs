@@ -22,5 +22,7 @@
       Z = xyzs.Z;
       Station = xyzs.Station;
     }
+
+    public override string ToString() => $"X:{X:F3}, Y:{Y:F3}, Z:{Z:F3} Station:{Station:F3}";
   }
 }

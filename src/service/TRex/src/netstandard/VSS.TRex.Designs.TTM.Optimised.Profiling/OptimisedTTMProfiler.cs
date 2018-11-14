@@ -66,13 +66,14 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       TriangleArrayReference referenceList = referenceSubGrid.Items[subGridX, subGridY];
 
       int endIndex = referenceList.TriangleArrayIndex + referenceList.Count;
+      var plane = new Plane();
 
       for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
       {
-        double height = XYZ.GetTriangleHeight
-         (TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex0],
-          TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex1],
-          TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex2], point.X, point.Y);
+        double height = XYZ.GetTriangleHeightEx
+         (ref TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex0],
+          ref TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex1],
+          ref TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex2], point.X, point.Y);
 
         if (height != Common.Consts.NullDouble)
         {
@@ -103,7 +104,8 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // spatial index that contains triangles
 
       var intercepts = new List<XYZS>();
-
+      var plane = new Plane();
+        
       // Add an initial intercept if the start point is located within a triangle
       AddEndIntercept(startPoint, intercepts, 0);
 
@@ -163,6 +165,8 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
           XYZ v1 = TTM.Vertices.Items[tri.Vertex1];
           XYZ v2 = TTM.Vertices.Items[tri.Vertex2];
 
+          bool planeInited = false;
+
           if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, v0.X, v0.Y, v1.X, v1.Y, out double intersectX, out double intersectY, true, out bool linesAreColinear))
           {
             // If the lines are co-linear there is nothing more to do. The two vertices need to be added and no more checking is required
@@ -173,8 +177,11 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
               continue;
             }
 
+            planeInited = true;
+            plane.Init(v0, v1, v2);
+
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZS(intersectX, intersectY, XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
+            intercepts.Add(new XYZS(intersectX, intersectY, plane.Evaluate(intersectX, intersectY), MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
           }
 
           if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, v0.X, v0.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
@@ -187,8 +194,14 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
               continue;
             }
 
+            if (!planeInited)
+            {
+              planeInited = true;
+              plane.Init(v0, v1, v2);
+            }
+
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZS(intersectX, intersectY, XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY), MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
+            intercepts.Add(new XYZS(intersectX, intersectY, plane.Evaluate(intersectX, intersectY), MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
           }
 
           if (LineIntersection.LinesIntersect(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, v1.X, v1.Y, v2.X, v2.Y, out intersectX, out intersectY, true, out linesAreColinear))
@@ -201,10 +214,13 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
               continue;
             }
 
+            if (!planeInited)
+            {
+              plane.Init(v0, v1, v2);
+            }
+
             // Otherwise, add the intercept location to the list
-            intercepts.Add(new XYZS(intersectX, intersectY,
-              XYZ.GetTriangleHeight(v0, v1, v2, intersectX, intersectY),
-              MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
+            intercepts.Add(new XYZS(intersectX, intersectY, plane.Evaluate(intersectX, intersectY), MathUtilities.Hypot(startPoint.X - intersectX, startPoint.Y - intersectY)));
           }
         }
       }

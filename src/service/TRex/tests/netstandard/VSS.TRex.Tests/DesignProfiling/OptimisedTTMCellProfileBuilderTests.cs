@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     [Fact]
     public void Test_OptimisedTTMDesignBuilder_OneTriangle()
     {
-      var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin();
+      var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(0.0);
 
       Assert.True(oneTriangleModel.Vertices.Items.Length == 3, "Invalid number of vertices for single triangle model");
       Assert.True(oneTriangleModel.Triangles.Items.Length == 1, "Invalid number of triangles for single triangle model");
@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     public void Test_ProfilerBuilder_OneTriangle()
     {
       // Create a model with a single triangle at (0, ), (0, 10), (10, 0)
-      var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin();
+      var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(0.0);
       OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var tree, out var indices);
 
       var builder = new OptimisedTTMCellProfileBuilder(1.0, false);
