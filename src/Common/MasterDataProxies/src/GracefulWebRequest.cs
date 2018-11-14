@@ -45,13 +45,15 @@ namespace VSS.MasterData.Proxies
       if (customHeaders != null)
       {
         foreach (var customHeader in customHeaders)
-            if (!client.DefaultRequestHeaders.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
-              log.LogWarning($"Can't add header {customHeader.Key}");
+          if (!client.DefaultRequestHeaders.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
+            log.LogWarning($"Can't add header {customHeader.Key}");
+        if (!customHeaders.ContainsKey("Content-Type"))
+          client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
       }
+      else
+        client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
 
       //Default to JSON content type
-      if (!customHeaders.ContainsKey("Content-Type"))
-        client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
 
       HttpResponseMessage response;
       switch (method)
