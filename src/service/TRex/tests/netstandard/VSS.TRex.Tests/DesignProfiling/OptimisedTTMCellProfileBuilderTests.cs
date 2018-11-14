@@ -10,7 +10,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     [Fact]
     public void Test_OptimisedTTMCellProfileBuilder_Creation()
     {
-      var builder = new OptimisedTTMCellProfileBuilder(1.0, false);
+      var builder = new OptimisedTTMCellProfileBuilder(1.0, true);
     }
 
     /// <summary>
@@ -35,18 +35,18 @@ namespace VSS.TRex.Tests.DesignProfiling
     [Fact]
     public void Test_ProfilerBuilder_OneTriangle()
     {
-      // Create a model with a single triangle at (0, ), (0, 10), (10, 0)
+      // Create a model with a single triangle at (0, 0), (0, 1), (1, 0)
       var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(0.0);
       OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var tree, out var indices);
 
-      var builder = new OptimisedTTMCellProfileBuilder(1.0, false);
+      var builder = new OptimisedTTMCellProfileBuilder(1.0, true);
 
       // Build a profile line from (-100, -100) to (100, 100) to bisect the single triangle 
       var result = builder.Build(new XYZ[] {new XYZ(-100, -100), new XYZ(100, 100)});
 
       Assert.True(result, "Build() failed");
 
-      Assert.True(builder.VtHzIntercepts.Count == 1, $"Intercept count [{builder.VtHzIntercepts.Count}] wrong, expected 1");
+      Assert.True(builder.VtHzIntercepts.Count == 6, $"Intercept count [{builder.VtHzIntercepts.Count}] wrong, expected 1");
     }
   }
 }

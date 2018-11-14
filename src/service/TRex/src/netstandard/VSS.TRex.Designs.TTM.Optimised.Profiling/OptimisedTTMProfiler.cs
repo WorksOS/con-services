@@ -20,25 +20,23 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
     public ISiteModel SiteModel { get; private set; }
 
-//    private readonly IDesign Design;
     private readonly TrimbleTINModel TTM;
 
     private readonly OptimisedSpatialIndexSubGridTree Index;
+    private readonly int[] Indices;
 
     /// <summary>
     /// Creates an empty profiler context
     /// </summary>
     public OptimisedTTMProfiler(ISiteModel siteModel,
-                                TrimbleTINModel ttm, // IDesign design,
-                                OptimisedSpatialIndexSubGridTree index)
+                                TrimbleTINModel ttm,
+                                OptimisedSpatialIndexSubGridTree index,
+                                int [] indices)
     {
-//      if (!(design is VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel))
-//        throw new ArgumentException("Design must be a VSS.TRex.Designs.TTM.Optimised.TrimbleTINModel instance");
-
       SiteModel = siteModel;
-   //   Design = design;
       TTM = ttm;
       Index = index;
+      Indices = indices;
     }
 
     private void AddEndIntercept(XYZ point, List<XYZS> intercepts, double station)
@@ -71,9 +69,9 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
       {
         double height = XYZ.GetTriangleHeightEx
-         (ref TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex0],
-          ref TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex1],
-          ref TTM.Vertices.Items[TTM.Triangles.Items[i].Vertex2], point.X, point.Y);
+         (ref TTM.Vertices.Items[TTM.Triangles.Items[Indices[i]].Vertex0],
+          ref TTM.Vertices.Items[TTM.Triangles.Items[Indices[i]].Vertex1],
+          ref TTM.Vertices.Items[TTM.Triangles.Items[Indices[i]].Vertex2], point.X, point.Y);
 
         if (height != Common.Consts.NullDouble)
         {
@@ -158,7 +156,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
         var endIndex = referenceList.TriangleArrayIndex + referenceList.Count;
         for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
         {
-          Triangle tri = TTM.Triangles.Items[i];
+          Triangle tri = TTM.Triangles.Items[Indices[i]];
 
           // Does this triangle intersect the line?
           XYZ v0 = TTM.Vertices.Items[tri.Vertex0];

@@ -14,12 +14,12 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
   {
     public const int kMaxHzVtGridInterceptsToCalculate = 8000;
 
-    private double CellSize;
+    private readonly double CellSize;
     public bool Aborted { get; set; }
 
     private readonly InterceptList VtIntercepts = new InterceptList();
     private readonly InterceptList HzIntercepts = new InterceptList();
-    public InterceptList VtHzIntercepts = new InterceptList();
+    public readonly InterceptList VtHzIntercepts = new InterceptList();
 
     private readonly bool SlicerToolUsed;
 
