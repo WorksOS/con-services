@@ -57,9 +57,12 @@ namespace VSS.MasterData.Proxies
       HttpContent content=null;
       if (requestStream != null)
       {
-        if ((customHeaders == null) || (customHeaders.ContainsKey("Content-Type") &&
+        if ((customHeaders == null) || !customHeaders.ContainsKey("Content-Type") || (customHeaders.ContainsKey("Content-Type") &&
                                         customHeaders["Content-Type"] == "application/json"))
+        {
+          log.LogDebug("Using application/json media type");
           content = new StringContent(new StreamReader(requestStream).ReadToEnd(), Encoding.UTF8, "application/json");
+        }
         else
         {
           content = new StreamContent(requestStream);
