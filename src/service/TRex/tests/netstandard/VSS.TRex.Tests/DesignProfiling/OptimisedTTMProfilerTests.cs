@@ -3,6 +3,7 @@ using VSS.TRex.Designs.TTM.Optimised.Profiling;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -216,6 +217,31 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(Math.Abs(profilePoints[1].X - 1.0) < epsilon &&
                   Math.Abs(profilePoints[1].Y) < epsilon &&
                   Math.Abs(profilePoints[1].Z - atElevation) < epsilon, $"Second profile point not at (1.0, 0, {atElevation}), but is at {profilePoints[1]}");
+    }
+
+    [InlineData(0.0, -100, -100, 100, 100, 63)]
+    [InlineData(123.456, -100, -100, 100, 100, 63)]
+    [InlineData(0, -100, 0.5, 100, 0.5, 63)]
+    [InlineData(123.456, -100, 0.5, 100, 0.5, 63)]
+    [InlineData(0, 0.5, -100, 0.5, 100, 63)]
+    [InlineData(123.456, 0.5, -100, 0.5, 100, 63)]
+    [Theory]
+    public void Test_OptimisedTTMProfiler_1024TrianglesAtOrigin(double atElevation, double startX, double startY, double endX, double endY, int expectedPointCount)
+    {
+      var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_With32x32FlatTrianglesAtOrigin(atElevation);
+      Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
+
+      // Build a profile line from (startX, startX) to (endX, endY) to cross the patch of triangles 
+      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profilePoints = profiler.Compute(new XYZ(startX, startY), new XYZ(endX, endY));
+
+      Assert.True(profilePoints.Count == expectedPointCount, $"Profile operation returned {profilePoints.Count} intercepts instead of {expectedPointCount}");
+
+      foreach (var pt in profilePoints)
+      {
+        Assert.True(Math.Abs(pt.Z - atElevation) < epsilon, $"Elevation {pt.Z} incorrect, should be {atElevation}");
+        Assert.True(Math.Abs(pt.Station - MathUtilities.Hypot(startX - pt.X, startY - pt.Y)) < epsilon, $"Station {pt.Station} incorrect, should be {MathUtilities.Hypot(startX - pt.X, startY - pt.Y)}");
+      }
     }
   }
 }

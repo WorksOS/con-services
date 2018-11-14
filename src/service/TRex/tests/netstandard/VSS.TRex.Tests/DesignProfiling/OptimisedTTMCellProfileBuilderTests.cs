@@ -35,6 +35,8 @@ namespace VSS.TRex.Tests.DesignProfiling
     [Fact]
     public void Test_ProfilerBuilder_OneTriangle()
     {
+      const int expectedInterceptCount = 6;
+
       // Create a model with a single triangle at (0, 0), (0, 1), (1, 0)
       var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(0.0);
       OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var tree, out var indices);
@@ -46,7 +48,7 @@ namespace VSS.TRex.Tests.DesignProfiling
 
       Assert.True(result, "Build() failed");
 
-      Assert.True(builder.VtHzIntercepts.Count == 6, $"Intercept count [{builder.VtHzIntercepts.Count}] wrong, expected 1");
+      Assert.True(builder.VtHzIntercepts.Count == expectedInterceptCount, $"Intercept count [{builder.VtHzIntercepts.Count}] wrong, expected {expectedInterceptCount}");
     }
   }
 }
