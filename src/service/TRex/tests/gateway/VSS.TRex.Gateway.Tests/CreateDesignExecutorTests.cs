@@ -56,7 +56,7 @@ namespace VSS.TRex.Gateway.Tests
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Add(x => x.AddSingleton<ITransferProxy, TransferProxy>())
+        .Add(x => x.AddSingleton<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME")))
         .Complete();
 
       var isWrittenToS3Ok = S3FileTransfer.WriteFile("TestData", projectUid, transferFileName);

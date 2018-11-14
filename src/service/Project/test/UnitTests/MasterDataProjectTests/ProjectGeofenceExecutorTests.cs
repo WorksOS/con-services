@@ -84,7 +84,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
         producer.Object, KafkaTopicName,
-        null, null, projectRepo.Object);
+        null, null, null, 
+        projectRepo.Object);
       await executor.ProcessAsync(request);
     }
 
@@ -133,7 +134,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
         producer.Object, KafkaTopicName,
-        null, null, projectRepo.Object);
+        null, null, null, 
+        projectRepo.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 
@@ -182,7 +184,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
         producer.Object, KafkaTopicName,
-        null, null, projectRepo.Object);
+        null, null, null, 
+        projectRepo.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 
@@ -231,7 +234,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
         producer.Object, KafkaTopicName,
-        null, null, projectRepo.Object);
+        null, null, null, 
+        projectRepo.Object);
       await executor.ProcessAsync(request);
     }
 
@@ -273,7 +277,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
         producer.Object, KafkaTopicName,
-        null, null, projectRepo.Object);
+        null, null, null, 
+        projectRepo.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 
@@ -322,7 +327,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
         producer.Object, KafkaTopicName,
-        null, null, projectRepo.Object);
+        null, null, null, 
+        projectRepo.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 

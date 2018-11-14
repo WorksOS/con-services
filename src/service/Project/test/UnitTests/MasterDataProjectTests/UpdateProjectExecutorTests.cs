@@ -113,7 +113,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -168,7 +168,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -227,7 +227,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -306,7 +306,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, subscriptionProxy.Object,
+          raptorProxy.Object, subscriptionProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -388,7 +388,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, subscriptionProxy.Object,
+          raptorProxy.Object, subscriptionProxy.Object, null,
           projectRepo.Object, subscriptionRepo.Object, fileRepo.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -442,7 +442,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -500,7 +500,7 @@ namespace VSS.MasterData.ProjectTests
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName,
-          raptorProxy.Object, null,
+          raptorProxy.Object, null, null,
           projectRepo.Object, subscriptionRepo.Object, null, null, null);
         var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
           await updateExecutor.ProcessAsync(updateProjectEvent));
@@ -574,7 +574,7 @@ namespace VSS.MasterData.ProjectTests
       (_logger, _configStore, _serviceExceptionHandler,
         _customerUid, _userId, null, _customHeaders,
         _producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object,
+        raptorProxy.Object, subscriptionProxy.Object, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await createExecutor.ProcessAsync(createProjectEvent);
 

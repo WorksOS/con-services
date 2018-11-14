@@ -51,7 +51,7 @@ spec:
             value: "true"
           - name: DEPLOYED_ENV
             value: {{ .Values.environment }}
-          - name: AWS_BUCKET_NAME
+          - name: AWS_DESIGNIMPORT_BUCKET_NAME
             value: "vss-project3dp-stg"
           - name: AWS_ACCESS_KEY
             value: "AKIAIBGOEETXHMANDX7A"           

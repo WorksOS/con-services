@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using DotNetCore.CAP;
+﻿using System;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,11 +37,14 @@ namespace VSS.MasterData.Project.WebAPI
     /// The name of this service for swagger etc.
     /// </summary>
     private const string SERVICE_TITLE = "Project Service API";
+
     /// <summary>
     /// The logger repository name
     /// </summary>
     public const string LoggerRepoName = "WebApi";
+
     private IServiceCollection serviceCollection;
+    public static IServiceProvider serviceProvider;
 
 
     /// <summary>
@@ -98,7 +99,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<ISchedulerProxy, SchedulerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
-      services.AddTransient<ITransferProxy, TransferProxy>();
+      services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
 
       services.AddOpenTracing(builder =>
       {
@@ -115,7 +116,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddMemoryCache();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      var serviceProvider = services.BuildServiceProvider();
+      serviceProvider = services.BuildServiceProvider();
       var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       //Note: The injection of CAP subscriber service needed before 'services.AddCap()'
       services.AddTransient<ISubscriberService, SubscriberService>();
@@ -160,13 +161,36 @@ namespace VSS.MasterData.Project.WebAPI
       {
         app.UseMiddleware<NewRelicMiddleware>();
       }
+
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseStaticFiles();
       // Because we use Flow Files, and Background tasks we sometimes need to reread the body of the request
       // Without this, the Request Body Stream cannot set it's read position to 0.
       // See https://stackoverflow.com/questions/31389781/read-request-body-twice
-      app.Use(next => context => { context.Request.EnableRewind(); return next(context); });
+      app.Use(next => context =>
+      {
+        context.Request.EnableRewind();
+        return next(context);
+      });
       app.UseMvc();
     }
+
+    private static ITransferProxy TransferProxyMethod(TransferProxyType type)
+    {
+      switch (type)
+      {
+        case TransferProxyType.DesignImport:
+          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
+            "AWS_DESIGNIMPORT_BUCKET_NAME");
+        default:
+          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME");
+      }
+    }
+  }
+
+  public enum TransferProxyType
+  {
+    Default,
+    DesignImport
   }
 }

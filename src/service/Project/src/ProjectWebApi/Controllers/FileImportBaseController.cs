@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -31,7 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// The fileSpaceId.
     /// </summary>
-    protected string fileSpaceId;
+    protected string FileSpaceId;
 
     /// <summary>
     /// Logger factory for use by executor
@@ -41,6 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// The request factory
     /// </summary>
     private readonly IRequestFactory requestFactory;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -65,7 +67,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       this.logger = logger;
       this.requestFactory = requestFactory;
-    }
+
+      FileSpaceId = configStore.GetValueString("TCCFILESPACEID");
+      if (string.IsNullOrEmpty(FileSpaceId))
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+      }
+     }
 
     /// <summary>
     /// Validates a project identifier.
@@ -225,7 +233,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       log.LogDebug($"SetFileActivatedState: projectUid={projectUid}, {fileUids.Keys.Count} files with changed state");
 
-      var deactivatedFileList = await ImportedFileRequestHelper.GetImportedFileProjectSettings(projectUid, userId, projectRepo).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
+      var deactivatedFileList = await ImportedFileRequestDatabaseHelper.GetImportedFileProjectSettings(projectUid, userId, projectRepo).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
       log.LogDebug($"SetFileActivatedState: originally {deactivatedFileList.Count} deactivated files");
 
       var missingUids = new List<Guid>();
@@ -265,7 +273,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, null,
+            raptorProxy, null, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;

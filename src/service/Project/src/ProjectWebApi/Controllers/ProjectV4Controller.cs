@@ -160,7 +160,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy,
+            raptorProxy, subscriptionProxy, null,
             projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
           .ProcessAsync(createProjectEvent)
       );
@@ -239,7 +239,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpdateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy,
+            raptorProxy, subscriptionProxy, null,
             projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
           .ProcessAsync(project)
       );
@@ -431,7 +431,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpdateProjectGeofenceExecutor>(_logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy,
+            raptorProxy, subscriptionProxy, null,
             projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor)
           .ProcessAsync(updateProjectGeofenceRequest)
       );

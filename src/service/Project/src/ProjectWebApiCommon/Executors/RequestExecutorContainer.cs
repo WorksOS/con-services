@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
@@ -62,6 +63,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// 
     /// </summary>
     protected ISubscriptionProxy subscriptionProxy;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected ITransferProxy persistantTransferProxy;
 
     /// <summary>
     /// Repository factory used extensively for project DB
@@ -186,7 +192,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
-      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null, ITransferProxy persistantTransferProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null,
       IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null)
     {
@@ -201,6 +207,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.kafkaTopicName = kafkaTopicName;
       this.raptorProxy = raptorProxy;
       this.subscriptionProxy = subscriptionProxy;
+      this.persistantTransferProxy = persistantTransferProxy;
       this.projectRepo = projectRepo;
       this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;

@@ -18,6 +18,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -55,8 +56,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         projectRepo, subscriptionRepo, fileRepo, requestFactory)
     {
       this.logger = logger;
-      fileSpaceId = store.GetValueString("TCCFILESPACEID");
-      if (string.IsNullOrEmpty(fileSpaceId))
+      FileSpaceId = store.GetValueString("TCCFILESPACEID");
+      if (string.IsNullOrEmpty(FileSpaceId))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
       }
@@ -105,16 +106,34 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // this also validates that this customer has access to the projectUid
       var project = await GetProject(projectId);
 
-      var fileEntry = await ImportedFileRequestHelper.GetFileInfoFromTccRepository(importedFileTbc,
-        fileSpaceId, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+      var fileEntry = await TccHelper.GetFileInfoFromTccRepository(importedFileTbc,
+        FileSpaceId, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
-      var fileDescriptor = await ImportedFileRequestHelper.CopyFileWithinTccRepository(importedFileTbc,
-        customerUid, project.ProjectUID, fileSpaceId,
+      var fileDescriptor = await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
+        customerUid, project.ProjectUID, FileSpaceId,
         log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
-      var importedFileUpsertEvent = ImportedFileUpsertEvent.CreateImportedFileUpsertEvent
+      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(project.ProjectUID, log, projectRepo).ConfigureAwait(false);
+      ImportedFile existing = null;
+      if (importedFiles.Count > 0)
+      {
+        // surveyed surface not supported via this api
+        existing = importedFiles.FirstOrDefault(
+          f => string.Equals(f.Name, importedFileTbc.Name, StringComparison.OrdinalIgnoreCase)
+               && f.ImportedFileType == importedFileTbc.ImportedFileTypeId
+              );
+      }
+      bool creating = existing == null;
+      log.LogInformation(
+        creating
+          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
+          : $"UpdateImportedFileExecutor. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
+
+      // todoJeannie handle update + create
+
+      var importedFileUpsertEvent = UpdateImportedFile.CreateImportedFileUpsertEvent
       (
-        project, importedFileTbc.ImportedFileTypeId,
+        Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
         importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
           ? importedFileTbc.SurfaceFile.SurveyedUtc
           : (DateTime?) null,
@@ -122,15 +141,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ? importedFileTbc.LineworkFile.DxfUnitsTypeId
           : DxfUnitsType.Meters,
         fileEntry.createTime, fileEntry.modifyTime,
-        fileDescriptor
+        // todoJeannie from TCC we won't have the filestream, will need to read it from TCC
+        string.Empty, importedFileTbc.Name,
+        Guid.Parse(existing?.ImportedFileUid), (existing == null ? -999 : existing.ImportedFileId)
       );
 
       var importedFile = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpsertImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
+          .Build<UpdateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, null,
+            raptorProxy, null, null,
             projectRepo, null, fileRepo)
           .ProcessAsync(importedFileUpsertEvent)
       ) as ImportedFileDescriptorSingleResult;
@@ -159,7 +180,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var project = await GetProject(projectId);
 
-      var files = await ImportedFileRequestHelper.GetImportedFileList(project.ProjectUID, log, userId, projectRepo)
+      var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(project.ProjectUID, log, userId, projectRepo)
         .ConfigureAwait(false);
 
       var selected = id.HasValue ? files.Where(x => x.LegacyFileId == id.Value) : files;
