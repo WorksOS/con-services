@@ -24,6 +24,9 @@ namespace VSS.MasterData.Proxies
     private readonly ILogger log;
     private readonly int logMaxChar;
 
+    ///TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
+    private static readonly HttpClient httpClient = new HttpClient();
+
     public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
       log = logger.CreateLogger<GracefulWebRequest>();
@@ -38,66 +41,46 @@ namespace VSS.MasterData.Proxies
     }
 
 
-    private async Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, string method,
+    private Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, string method,
       IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
     {
-      var client = new HttpClient();
-      if (timeout.HasValue)
-        client.Timeout = TimeSpan.FromSeconds(timeout.Value);
-      if (requestStream==null&&method!="GET")
+      void ApplyHeaders(IDictionary<string, string> dictionary, HttpRequestMessage x)
+      {
+        if (dictionary != null)
+        {
+          foreach (var customHeader in dictionary)
+            if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
+              log.LogWarning($"Can't add header {customHeader.Key}");
+        }
+      }
+
+      if (requestStream == null && method != "GET")
         throw new ArgumentException($"Empty body for non-GET request {nameof(requestStream)}");
 
-      if (customHeaders != null)
-      {
-        foreach (var customHeader in customHeaders)
-            if (!client.DefaultRequestHeaders.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
-              log.LogWarning($"Can't add header {customHeader.Key}");
-      }
+      //We need to disable this due to concurrency issues as it is not supported within a single httpclient instance
+      /*if (timeout.HasValue)
+        httpClient.Timeout = TimeSpan.FromSeconds(timeout.Value);*/
 
-      HttpContent content=null;
-      if (requestStream != null)
-      {
-        if ((customHeaders == null) || !customHeaders.ContainsKey("Content-Type") || (customHeaders.ContainsKey("Content-Type") &&
-                                        customHeaders["Content-Type"] == "application/json"))
-        {
-          log.LogDebug("Using application/json media type");
-          content = new StringContent(new StreamReader(requestStream).ReadToEnd(), Encoding.UTF8, "application/json");
-        }
-        else
-        {
-          content = new StreamContent(requestStream);
-        }
-      }
+      log.LogDebug(
+        $"Headers to be attached to the request {JsonConvert.SerializeObject(httpClient.DefaultRequestHeaders)}");
 
-      //Default to JSON content type
-
-      log.LogDebug($"Headers to be attached to the request {JsonConvert.SerializeObject(client.DefaultRequestHeaders)}");
-
-      HttpResponseMessage response;
       switch (method)
       {
         case "GET":
         {
-          response = await client.GetAsync(new Uri(endpoint), HttpCompletionOption.ResponseContentRead);
-          break;
+          return httpClient.GetAsync(endpoint, x => { ApplyHeaders(customHeaders, x); });
         }
         case "POST":
-        {
-          response = await client.PostAsync(endpoint, content);
-          break;
-        }
         case "PUT":
         {
-          response = await client.PutAsync(endpoint, content);
-          break;
+          return httpClient.PostAsync(endpoint, requestStream, method, customHeaders,
+            x => { ApplyHeaders(customHeaders, x); });
         }
         default:
         {
           throw new ArgumentException($"Unknown HTTP method {nameof(method)}");
         }
       }
-
-      return response;
     }
 
 
@@ -122,7 +105,7 @@ namespace VSS.MasterData.Proxies
         $"ExecuteRequest() Stream: endpoint {endpoint} " +
         $"method {method}, " +
         $"customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} " +
-        $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}" );
+        $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -152,12 +135,15 @@ namespace VSS.MasterData.Proxies
           log.LogDebug(
             $"ExecuteRequest() Stream: exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} method: {method}");
         }
+
         throw policyResult.FinalException;
       }
+
       if (policyResult.Outcome == OutcomeType.Successful)
       {
         return policyResult.Result;
       }
+
       return null;
     }
 
@@ -180,7 +166,7 @@ namespace VSS.MasterData.Proxies
       log.LogDebug(
         $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))}");
 
-      if (payload==null && method!="GET")
+      if (payload == null && method != "GET")
         throw new ArgumentException("Can't have null payload with a non-GET method.");
 
       var policyResult = await Policy
@@ -197,8 +183,9 @@ namespace VSS.MasterData.Proxies
             log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
             throw new HttpRequestException($"{result.StatusCode} {contents}");
           }
+
           log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.StatusCode}");
-          if (typeof(T) == typeof(string)) return (T)Convert.ChangeType(contents,typeof(T));
+          if (typeof(T) == typeof(string)) return (T) Convert.ChangeType(contents, typeof(T));
           return JsonConvert.DeserializeObject<T>(contents);
         });
 
@@ -210,14 +197,63 @@ namespace VSS.MasterData.Proxies
             "ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
             policyResult.FinalException.ToString(), endpoint, customHeaders);
         }
+
         throw policyResult.FinalException;
       }
+
       if (policyResult.Outcome == OutcomeType.Successful)
       {
         return policyResult.Result;
       }
+
       return default(T);
     }
 
+  }
+
+  internal static class HttpClientExtensions
+  {
+    public static Task<HttpResponseMessage> GetAsync
+      (this HttpClient httpClient, string uri, Action<HttpRequestMessage> preAction)
+    {
+      var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+
+      preAction(httpRequestMessage);
+
+      return httpClient.SendAsync(httpRequestMessage);
+    }
+
+    public static Task<HttpResponseMessage> PostAsync
+    (this HttpClient httpClient, string uri, Stream requestStream, string method,
+      IDictionary<string, string> customHeaders, Action<HttpRequestMessage> preAction)
+    {
+      //Default to JSON content type
+      HttpContent content = null;
+      if (requestStream != null)
+      {
+        if ((customHeaders == null) || !customHeaders.ContainsKey("Content-Type") ||
+            (customHeaders.ContainsKey("Content-Type") &&
+             customHeaders["Content-Type"] == "application/json"))
+        {
+          content = new StringContent(new StreamReader(requestStream).ReadToEnd(), Encoding.UTF8, "application/json");
+        }
+        else
+        {
+          content = new StreamContent(requestStream);
+        }
+      }
+
+      //Default to POST, nothing else is supported so far
+      var httpMethod = HttpMethod.Post;
+      if (method == "PUT")
+        httpMethod = HttpMethod.Put;
+      var httpRequestMessage = new HttpRequestMessage(httpMethod, uri)
+      {
+        Content = content
+      };
+      preAction(httpRequestMessage);
+
+      return httpClient.SendAsync(httpRequestMessage);
+    }
   }
 }
