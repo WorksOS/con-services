@@ -70,8 +70,12 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         }
         else
         {
-          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders,
-            new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload)), jobRequest.Timeout, 0);
+          // We may have a null or empty payload, if that's the case we don't want a stream to be passed in.
+          var stream = string.IsNullOrEmpty(jobRequest.Payload)
+            ? null
+            : new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload));
+
+          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, stream, jobRequest.Timeout, 0);
         }
 
         log.LogDebug("Result of send request: Stream Content={0}", result);
