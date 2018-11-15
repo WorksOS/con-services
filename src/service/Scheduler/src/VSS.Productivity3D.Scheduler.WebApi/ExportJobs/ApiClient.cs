@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     {
       HttpContent result = null;
       var method = jobRequest.Method ?? "GET";
-      log.LogDebug($"Job request is {jobRequest}");
+      log.LogDebug($"Job request is {JsonConvert.SerializeObject(jobRequest)}");
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
