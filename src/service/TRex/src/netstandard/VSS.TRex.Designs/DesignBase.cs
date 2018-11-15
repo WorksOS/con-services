@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -78,5 +79,7 @@ namespace VSS.TRex.Designs
 
     public void AcquireExclusiveInterlock() => Monitor.Enter(this);
     public void ReleaseExclusiveInterlock() => Monitor.Exit(this);
+
+    public abstract XYZS[] ComputeProfile(XYZ[] profilePath, double cellSize);
   }
 }

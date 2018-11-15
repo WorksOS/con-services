@@ -1,6 +1,4 @@
-﻿using VSS.TRex.SubGridTrees.Server.Iterators;
-
-namespace VSS.TRex.Designs.TTM.Optimised.Profiling
+﻿namespace VSS.TRex.Designs.Models
 {
   /// <summary>
   /// Contains a 3D location and a station (distance from start point) for design profile results

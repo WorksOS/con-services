@@ -10,7 +10,6 @@ using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities;
 using Consts = VSS.TRex.Designs.TTM.Optimised.Consts;
 using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 
@@ -896,5 +895,17 @@ namespace VSS.TRex.Designs
     /// </summary>
     /// <returns></returns>
     public override ISubGridTreeBitMask SubgridOverlayIndex() => FSubgridIndex;
+
+    /// <summary>
+    /// Computes the requested geometric profile over the design and returns the result
+    /// as a vector of X, Y, Z, Station & TriangleIndex records
+    /// </summary>
+    /// <param name="profilePath"></param>
+    /// <param name="cellSize"></param>
+    /// <returns></returns>
+    public override XYZS[] ComputeProfile(XYZ[] profilePath, double cellSize)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

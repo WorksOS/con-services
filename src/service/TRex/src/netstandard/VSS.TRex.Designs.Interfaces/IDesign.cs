@@ -29,7 +29,7 @@ namespace VSS.TRex.Designs.Interfaces
     void Read(BinaryReader reader);
 
     /// <summary>
-    /// The intenal identifier of the design
+    /// The internal identifier of the design
     /// </summary>
     Guid ID { get; }
 
@@ -73,5 +73,7 @@ namespace VSS.TRex.Designs.Interfaces
       out DesignProfilerRequestResult errorCode);
 
     DesignDescriptor Get_DesignDescriptor();
+
+    XYZS[] ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode);
   }
 }

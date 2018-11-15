@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
