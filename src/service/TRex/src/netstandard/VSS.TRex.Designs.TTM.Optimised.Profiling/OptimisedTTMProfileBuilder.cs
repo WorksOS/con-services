@@ -12,10 +12,9 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
   /// </summary>
   public class OptimisedTTMCellProfileBuilder
   {
-    public const int kMaxHzVtGridInterceptsToCalculate = 8000;
+    private const int kMaxHzVtGridInterceptsToCalculate = 8000;
 
     private readonly double CellSize;
-    public bool Aborted { get; set; }
 
     private readonly InterceptList VtIntercepts = new InterceptList();
     private readonly InterceptList HzIntercepts = new InterceptList();
@@ -68,7 +67,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
       int IntersectionCount = Math.Abs(VGridLineEndIndex - VGridLineStartIndex) + 1;
 
-      while (IntersectionCount > 0 && HzIntercepts.Count < kMaxHzVtGridInterceptsToCalculate && !Aborted)
+      while (IntersectionCount > 0 && HzIntercepts.Count < kMaxHzVtGridInterceptsToCalculate)
       {
         if (LineIntersection.LinesIntersect(StartX, StartY, EndX, EndY,
           HGridStartX, VGridLineStartIndex * CellSize,
@@ -110,7 +109,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       VGridEndX += CellSize;
 
       int IntersectionCount = Math.Abs(HGridLineEndIndex - HGridLineStartIndex) + 1;
-      while (IntersectionCount > 0 && VtIntercepts.Count < kMaxHzVtGridInterceptsToCalculate && !Aborted)
+      while (IntersectionCount > 0 && VtIntercepts.Count < kMaxHzVtGridInterceptsToCalculate)
       {
         if (LineIntersection.LinesIntersect(StartX, StartY, EndX, EndY,
           HGridLineStartIndex * CellSize, VGridStartX,
@@ -130,6 +129,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// Constructs a vector of cells in profileCells along the path of the profile geometry containing in nEECoords
     /// </summary>
     /// <param name="nEECoords"></param>
+    /// <param name="originStation"></param>
     /// <returns></returns>
     public bool Build(XYZ[] nEECoords, double originStation)
     {

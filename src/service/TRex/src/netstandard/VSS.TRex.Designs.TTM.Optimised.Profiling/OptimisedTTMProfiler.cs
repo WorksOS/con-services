@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Transactions;
-using Amazon.Runtime.Internal;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
@@ -55,7 +52,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
       if (!(subGrid is TriangleArrayReferenceSubGrid referenceSubGrid))
       {
-        Log.LogCritical($"Subgrid is not a TriangleArrayReferenceSubGrid, is is a {subGrid?.GetType()}");
+        Log.LogCritical($"Subgrid is not a TriangleArrayReferenceSubGrid, is is a {subGrid.GetType()}");
         return;
       }
 
@@ -65,7 +62,6 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       TriangleArrayReference referenceList = referenceSubGrid.Items[subGridX, subGridY];
 
       int endIndex = referenceList.TriangleArrayIndex + referenceList.Count;
-      var plane = new Plane();
 
       for (int i = referenceList.TriangleArrayIndex; i < endIndex; i++)
       {
@@ -87,6 +83,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// </summary>
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
+    /// <param name="startStation"></param>
     /// <returns></returns>
     private List<XYZS> Compute(XYZ startPoint, XYZ endPoint, double startStation)
     {
@@ -147,7 +144,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
         if (!(subGrid is TriangleArrayReferenceSubGrid referenceSubGrid))
         {
-          Log.LogCritical($"Subgrid is not a TriangleArrayReferenceSubGrid, is is a {subGrid?.GetType()}");
+          Log.LogCritical($"Subgrid is not a TriangleArrayReferenceSubGrid, is is a {subGrid.GetType()}");
           continue;
         }
 
@@ -279,8 +276,10 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       int[] thisTriIndices = new int[1000];
       int[] nextTriIndices = new int[1000];
 
-      var curatedIntercepts = new List<XYZS>();
-      curatedIntercepts.Add(intercepts[0]);
+      var curatedIntercepts = new List<XYZS>
+      {
+        intercepts[0] // THe first element is always a member of the resulting profile
+      };
 
       // Seed duplicates with the first triangle index
       int thisDuplicateCount = 0;
@@ -354,34 +353,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
         thisDuplicateCount = nextDuplicateCount;
       }
 
-      /*
-            for (int i = 1; i < intercepts.Count; i++)
-            {
-              if (intercepts[i - 1].TriIndex != intercepts[i].TriIndex)
-              {
-                // Possibly a gap
-                if (Math.Abs(intercepts[i - 1].Station - intercepts[i].Station) > double.Epsilon)
-                {
-                  // Yes, it is a gap! Insert a marker point with the same location as the start of the gap
-                  // and a slightly larger station value with a null elevation to mark it as a gap
-                  curatedIntercepts.Add(new XYZS(intercepts[i - 1])
-                  {
-                    Z = Common.Consts.NullDouble,
-                    Station = intercepts[i - 1].Station + 0.000000001
-                  });
-                }
-              }
-
-              // Not a gap, check if it is a duplicate of the reference element
-              if (Math.Abs(intercepts[i].Station - intercepts[i - 1].Station) > double.Epsilon)
-              {
-                // It's not a duplicate...
-                curatedIntercepts.Add(intercepts[i]);
-              }
-            }
-      */
       return curatedIntercepts;
-      //curatedIntercepts.Where((x, i) => (i == 0) || x.Station > intercepts[i - 1].Station).ToList();
     }
   }
 }
