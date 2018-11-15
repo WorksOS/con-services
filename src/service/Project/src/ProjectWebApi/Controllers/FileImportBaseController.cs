@@ -29,10 +29,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportBaseController : BaseController
   {
-    /// <summary>
-    /// The fileSpaceId.
-    /// </summary>
+    protected ITransferProxy PersistantTransferProxy;
     protected string FileSpaceId;
+    protected bool UseTrexGatewayDesignImport;
+    protected bool UseRaptorGatewayDesignImport;
 
     /// <summary>
     /// Logger factory for use by executor
@@ -48,6 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
     /// <param name="producer">The producer.</param>
+    /// <param name="persistantTransferProxy"></param>
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="configStore">The configStore.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
@@ -59,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="log"></param>
     public FileImportBaseController(IKafka producer,
       IConfigurationStore configStore, ILoggerFactory logger, ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy,
+      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory )
       : base(log, configStore, serviceExceptionHandler, producer,
@@ -68,12 +69,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.logger = logger;
       this.requestFactory = requestFactory;
 
+      PersistantTransferProxy = persistantTransferProxy(TransferProxyType.DesignImport);
       FileSpaceId = configStore.GetValueString("TCCFILESPACEID");
-      if (string.IsNullOrEmpty(FileSpaceId))
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
-      }
-     }
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT", "FALSE"),
+        out UseTrexGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT", "TRUE"),
+        out UseRaptorGatewayDesignImport);
+    }
 
     /// <summary>
     /// Validates a project identifier.
@@ -281,6 +283,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var changedUids = fileUids.Keys.Except(missingUids);
       log.LogDebug($"SetFileActivatedState: {changedUids.Count()} changedUids");
       return changedUids;
+    }
+
+    protected bool IsDesignFileType(ImportedFileType importedFileType)
+    {
+      return importedFileType == ImportedFileType.DesignSurface ||
+             importedFileType == ImportedFileType.SurveyedSurface;
     }
 
   }

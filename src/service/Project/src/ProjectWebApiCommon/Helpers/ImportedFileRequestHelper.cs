@@ -18,7 +18,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// </summary>
   public class ImportedFileRequestHelper
   {
-
     #region raptor
 
     /// <summary>
@@ -45,7 +44,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         log.LogError(
           $"FileImport AddFile in RaptorServices failed with exception. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. isCreate: {isCreate}. Exception Thrown: {e.Message}. ");
         if (isCreate)
-          await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
+          await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid,
+              serviceExceptionHandler, projectRepo, true)
             .ConfigureAwait(false);
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile",
           e.Message);
@@ -59,7 +59,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         log.LogError(
           $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"} isCreate: {isCreate}. ");
         if (isCreate)
-          await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
+          await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid,
+              serviceExceptionHandler, projectRepo, true)
             .ConfigureAwait(false);
 
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67,
@@ -81,11 +82,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler
       // IRaptorProxy raptorProxy, IProjectRepository projectRepo
-       )
+    )
     {
       var notificationResult = new ContractExecutionResult();
 
-      // todoJeannie
+      //  todoJeannie
       //try
       //{
       //  notificationResult = await raptorProxy
@@ -120,6 +121,63 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       //}
 
       return notificationResult;
+    }
+
+    /// <summary>
+    /// Notify raptor of an updated import file.
+    /// </summary>
+    public static async Task NotifyTRexUpdateFile(Guid projectUid,
+      ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
+      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler
+      // IRaptorProxy raptorProxy, IProjectRepository projectRepo
+    )
+    {
+      // todoJeannie
+      var notificationResult = new ContractExecutionResult();
+      //log.LogDebug(
+      //  $"FileImport UpdateFiles in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+
+      //if (notificationResult != null && notificationResult.Code != 0)
+      //{
+      //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 108, notificationResult.Code.ToString(), notificationResult.Message);
+      //}
+    }
+
+    /// <summary>
+    /// Notify trex of delete file
+    /// </summary>
+    /// <returns></returns>
+    public static async Task NotifyTRexDeleteFile(Guid projectUid, 
+      ImportedFileType importedFileType, Guid importedFileUid, string fileName,
+      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler
+      )
+    {
+      // todoJeannie
+      //BaseDataResult notificationResult = null;
+      //try
+      //{
+      //  notificationResult = await raptorProxy
+      //    .DeleteFile(projectUid, importedFileType, importedFileUid, fileDescriptor, importedFileId, legacyImportedFileId, Request.Headers.GetCustomHeaders())
+      //    .ConfigureAwait(false);
+      //}
+      //catch (Exception e)
+      //{
+      //  log.LogError(
+      //    $"FileImport DeleteFile in RaptorServices failed with exception. projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.");
+
+      //  await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+      //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.DeleteFile", e.Message);
+      //}
+
+      //log.LogDebug(
+      //  $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+      //if (notificationResult != null && notificationResult.Code != 0)
+      //{
+      //  log.LogError($"FileImport DeleteFile in RaptorServices failed. projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}");
+
+      //  await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+      //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 108, notificationResult.Code.ToString(), notificationResult.Message);
+      //}
     }
 
     #endregion TRex

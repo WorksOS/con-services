@@ -183,7 +183,8 @@ namespace VSS.MasterData.Project.WebAPI
           return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
             "AWS_DESIGNIMPORT_BUCKET_NAME");
         default:
-          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME");
+          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), 
+            "AWS_BUCKET_NAME");
       }
     }
   }

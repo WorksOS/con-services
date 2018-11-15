@@ -32,7 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (importedFileUpsertEvent == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult();
+        return new ContractExecutionResult(); // keeps compiler happy
       }
 
       string fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
@@ -72,10 +72,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
         // todoJeannie
-        //var result = await ImportedFileRequestHelper.NotifyTRexUpdateFile(importedFileUpsertEvent.ProjectUid,
-        //  importedFileUpsertEvent.ImportedFileType, importedFileUpsertEvent.FileName, importedFileUpsertEvent.ImportedFileUid,
-        //  importedFileUpsertEvent.SurveyedUtc,
-        //  log, customHeaders, serviceExceptionHandler).ConfigureAwait(false);
+        await ImportedFileRequestHelper.NotifyTRexUpdateFile(importedFileUpsertEvent.ProjectUid,
+          importedFileUpsertEvent.ImportedFileType, importedFileUpsertEvent.FileName, importedFileUpsertEvent.ImportedFileUid,
+          importedFileUpsertEvent.SurveyedUtc,
+          log, customHeaders, serviceExceptionHandler).ConfigureAwait(false);
       }
 
       if (useRaptorGatewayDesignImport)
@@ -92,9 +92,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         existing.MaxZoomLevel = addFileResult.MaxZoomLevel;
       }
 
-
-      // todoJeannie do we need to update FileDescriptor for TRex?
-      //Need to update fileDescriptor, zoom levels in Db 
+      // if all succeeds, update Db and  put update to kafka que
       var updateImportedFileEvent = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
           JsonConvert.SerializeObject(fileDescriptor),
           importedFileUpsertEvent.SurveyedUtc, existing.MinZoomLevel, existing.MaxZoomLevel,
@@ -102,14 +100,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           log, serviceExceptionHandler, projectRepo)
         .ConfigureAwait(false);
 
-      // if all succeeds, update Db (if not Create) and send create/update to kafka que
       var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
         producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>
           {
             new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
           });
-
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestDatabaseHelper.GetImportedFileList(importedFileUpsertEvent.ProjectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false))

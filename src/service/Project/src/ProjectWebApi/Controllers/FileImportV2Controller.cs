@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -7,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -38,6 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     /// <param name="producer"></param>
+    /// <param name="persistantTransferProxy"></param>
     /// <param name="projectRepo"></param>
     /// <param name="store"></param>
     /// <param name="raptorProxy"></param>
@@ -48,19 +49,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="requestFactory"></param>
     public FileImportV2Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy,
+      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory)
       : base(producer, store, logger, logger.CreateLogger<FileImportV2Controller>(), serviceExceptionHandler,
-        raptorProxy,
+        raptorProxy, persistantTransferProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory)
     {
       this.logger = logger;
-      FileSpaceId = store.GetValueString("TCCFILESPACEID");
-      if (string.IsNullOrEmpty(FileSpaceId))
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
-      }
     }
 
     // PUT: api/v2/projects/{id}/importedfiles
@@ -68,7 +64,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// TBC Upsert imported file
     ///   1) TBC will already have uploaded to TCC, so read it from there
     ///   2) creates/updates database 
-    ///   3) possibly creates/updates file in TCC?
+    ///   3) copies file in TCC from VSS area to project 
     ///   4) notify RaptorWebAPI.
     ///   5) Note that MobileLinework imports are ignored, i.e. just return HttpStatusCode.OK 
     /// Footprint must remain the same as CGen:
@@ -113,7 +109,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         customerUid, project.ProjectUID, FileSpaceId,
         log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
-      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(project.ProjectUID, log, projectRepo).ConfigureAwait(false);
+      // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
+      if (UseRaptorGatewayDesignImport && IsDesignFileType(importedFileTbc.ImportedFileTypeId))
+      {
+        var memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
+        
+        fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
+          memStream, project.ProjectUID, importedFileTbc.Name, /* todo BaseName? */
+          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface,
+          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
+            ? importedFileTbc.SurfaceFile.SurveyedUtc
+            : (DateTime?)null,
+          log, serviceExceptionHandler, PersistantTransferProxy);
+        memStream?.Dispose();
+      }
+
+      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(project.ProjectUID, log, projectRepo)
+        .ConfigureAwait(false);
       ImportedFile existing = null;
       if (importedFiles.Count > 0)
       {
@@ -121,40 +133,71 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         existing = importedFiles.FirstOrDefault(
           f => string.Equals(f.Name, importedFileTbc.Name, StringComparison.OrdinalIgnoreCase)
                && f.ImportedFileType == importedFileTbc.ImportedFileTypeId
-              );
+        );
       }
+
       bool creating = existing == null;
       log.LogInformation(
         creating
-          ? $"UpdateImportedFileExecutor. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
-          : $"UpdateImportedFileExecutor. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
+          ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
+          : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
-      // todoJeannie handle update + create
 
-      var importedFileUpsertEvent = UpdateImportedFile.CreateImportedFileUpsertEvent
-      (
-        Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
-        importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
-          ? importedFileTbc.SurfaceFile.SurveyedUtc
-          : (DateTime?) null,
-        importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
-          ? importedFileTbc.LineworkFile.DxfUnitsTypeId
-          : DxfUnitsType.Meters,
-        fileEntry.createTime, fileEntry.modifyTime,
-        // todoJeannie from TCC we won't have the filestream, will need to read it from TCC
-        string.Empty, importedFileTbc.Name,
-        Guid.Parse(existing?.ImportedFileUid), (existing == null ? -999 : existing.ImportedFileId)
-      );
+      ImportedFileDescriptorSingleResult importedFile;
 
-      var importedFile = await WithServiceExceptionTryExecuteAsync(() =>
-        RequestExecutorContainerFactory
-          .Build<UpdateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
-            customerUid, userId, userEmailAddress, customHeaders,
-            producer, kafkaTopicName,
-            raptorProxy, null, null,
-            projectRepo, null, fileRepo)
-          .ProcessAsync(importedFileUpsertEvent)
-      ) as ImportedFileDescriptorSingleResult;
+      if (creating)
+      {
+        var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
+          fileDescriptor,
+          importedFileTbc.ImportedFileTypeId,
+          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
+            ? importedFileTbc.SurfaceFile.SurveyedUtc
+            : (DateTime?)null,
+          importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
+            ? importedFileTbc.LineworkFile.DxfUnitsTypeId
+            : DxfUnitsType.Meters,
+          fileEntry.createTime, fileEntry.modifyTime);
+
+        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<CreateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
+              customerUid, userId, userEmailAddress, customHeaders,
+              producer, kafkaTopicName,
+              raptorProxy, null, PersistantTransferProxy,
+              projectRepo, null, fileRepo)
+            .ProcessAsync(createImportedFile)
+        ) as ImportedFileDescriptorSingleResult;
+
+        log.LogInformation(
+          $"UpsertImportedFileV2. Create completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+      }
+      else
+      {
+        var importedFileUpsertEvent = UpdateImportedFile.CreateImportedFileUpsertEvent
+        (
+          Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
+          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
+            ? importedFileTbc.SurfaceFile.SurveyedUtc
+            : (DateTime?) null,
+          importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
+            ? importedFileTbc.LineworkFile.DxfUnitsTypeId
+            : DxfUnitsType.Meters,
+          fileEntry.createTime, fileEntry.modifyTime,
+          fileDescriptor.path, importedFileTbc.Name,
+          Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId
+        );
+
+        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<UpdateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
+              customerUid, userId, userEmailAddress, customHeaders,
+              producer, kafkaTopicName,
+              raptorProxy, null, null,
+              projectRepo, null, fileRepo)
+            .ProcessAsync(importedFileUpsertEvent)
+        ) as ImportedFileDescriptorSingleResult;
+      }
+
 
       // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
       var response = importedFile?.ImportedFileDescriptor != null 
@@ -166,6 +209,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       
       return response;
     }
+
 
     // GET: api/v2/importedfiles
     /// <summary>

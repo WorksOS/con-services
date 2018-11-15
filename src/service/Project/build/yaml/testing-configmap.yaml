@@ -40,5 +40,6 @@ data:
   WEBAPI_DEBUG_URI: http://localhost:80/
   WEBAPI_URI: http://localhost:80/
   AWS_BUCKET_NAME: vss-exports-stg
+  AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
   AWS_ACCESS_KEY: AKIAIBGOEETXHMANDX7A
   AWS_SECRET_KEY: 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

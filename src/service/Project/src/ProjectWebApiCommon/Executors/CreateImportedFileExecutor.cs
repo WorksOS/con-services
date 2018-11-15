@@ -45,45 +45,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var createimportedfile = item as CreateImportedFile;
       if (createimportedfile == null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86 /* todoJeannie */);
-        return null; // gets rid of null warnings in following code
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
+        return new ContractExecutionResult(); // keeps compiler happy
       }
 
-      string fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT", "FALSE"),
         out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT", "TRUE"),
         out var useRaptorGatewayDesignImport);
-
-      /*** now making changes, potentially needing rollback ***/
-      FileDescriptor fileDescriptor = null;
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
                              createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface;
-
-      if (useRaptorGatewayDesignImport && isDesignFileType)
-      {
-        fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-          createimportedfile.Stream, createimportedfile.ProjectUid.ToString(), createimportedfile.FileName,
-          createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface, createimportedfile.SurveyedUtc,
-          log, serviceExceptionHandler, persistantTransferProxy);
-      }
-
-      if (useRaptorGatewayDesignImport)
-      {
-        fileDescriptor = await TccHelper.WriteFileToTCCRepository(
-            createimportedfile.Stream, customerUid, createimportedfile.ProjectUid.ToString(),
-            createimportedfile.FileName,
-            createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface,
-            createimportedfile.SurveyedUtc, fileSpaceId, log, serviceExceptionHandler, fileRepo)
-          .ConfigureAwait(false);
-      }
 
       // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
       var createImportedFileEvent = await ImportedFileRequestDatabaseHelper.CreateImportedFileinDb(
           Guid.Parse(customerUid),
           createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileName,
-          createimportedfile.SurveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
+          createimportedfile.SurveyedUtc, JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
           createimportedfile.FileCreatedUtc, createimportedfile.FileUpdatedUtc, userEmailAddress,
           log, serviceExceptionHandler, projectRepo)
         .ConfigureAwait(false);
@@ -106,25 +84,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         var addFileResult = await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID,
           createimportedfile.ProjectUid,
-          createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, fileDescriptor,
+          createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, createimportedfile.FileDescriptor,
           createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
           log, customHeaders, serviceExceptionHandler, raptorProxy, projectRepo).ConfigureAwait(false);
         createImportedFileEvent.MinZoomLevel = addFileResult.MinZoomLevel;
         createImportedFileEvent.MaxZoomLevel = addFileResult.MaxZoomLevel;
+
+        var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
+          .ConfigureAwait(false);
+
+        //Need to update zoom levels in Db (Raptor - todo is this still needed?)  
+        _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
+            JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
+            createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,
+            createimportedfile.FileCreatedUtc, createimportedfile.FileUpdatedUtc, userEmailAddress,
+            log, serviceExceptionHandler, projectRepo)
+          .ConfigureAwait(false);
       }
-
-      var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
-        .ConfigureAwait(false);
-
-      // todoJeannie do we need to update FileDescriptor for TRex?
-      //Need to update fileDescriptor, zoom levels in Db 
-      _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
-          JsonConvert.SerializeObject(fileDescriptor),
-          createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,
-          createimportedfile.FileCreatedUtc, createimportedfile.FileUpdatedUtc, userEmailAddress,
-          log, serviceExceptionHandler, projectRepo)
-        .ConfigureAwait(false);
-
 
       var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
       producer.Send(kafkaTopicName,

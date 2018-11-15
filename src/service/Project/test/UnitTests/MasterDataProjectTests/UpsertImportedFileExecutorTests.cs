@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

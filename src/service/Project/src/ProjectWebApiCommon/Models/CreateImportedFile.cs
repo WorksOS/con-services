@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.MasterData.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
@@ -13,9 +14,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 
     public string FileName { get; set; }
 
-    public ImportedFileType ImportedFileType { get; set; }
+    public FileDescriptor FileDescriptor { get; set; }
 
-    public Stream Stream { get; set; }
+    public ImportedFileType ImportedFileType { get; set; }
 
     public DateTime? SurveyedUtc { get; set; }
 
@@ -35,15 +36,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// Create instance of CreateImportedFile
     /// </summary>
     public static CreateImportedFile CreateACreateImportedFile(Guid projectUid,
-      string fileName, ImportedFileType importedFileType, Stream stream,
+      string fileName, FileDescriptor fileDescriptor, ImportedFileType importedFileType, 
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc )
     {
       return new CreateImportedFile
       {
         ProjectUid = projectUid,
         FileName = fileName,
+        FileDescriptor = fileDescriptor,
         ImportedFileType = importedFileType,
-        Stream = stream,
         SurveyedUtc = surveyedUtc,
         DxfUnitsType = dxfUnitsType,
         FileCreatedUtc = fileCreatedUtc,

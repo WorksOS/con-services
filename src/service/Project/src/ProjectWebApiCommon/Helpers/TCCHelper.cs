@@ -68,6 +68,39 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
+    /// get file content from TCC
+    ///     note that is is intended to be used for small, DC files only.
+    ///     If/when it is needed for large files, 
+    ///           e.g. surfaces, you should use a smaller buffer and loop to read.
+    /// </summary>
+    public static async Task<Stream> GetFileStreamFromTcc(BusinessCenterFile businessCentreFile,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
+    {
+      Stream memStream = null;
+      var tccPath = $"{businessCentreFile.Path}/{businessCentreFile.Name}";
+
+      try
+      {
+        log.LogInformation(
+          $"GetFileStreamFromTcc: getBusinessCentreFile fielspaceID: {businessCentreFile.FileSpaceId} tccPath: {tccPath}");
+        memStream = await fileRepo.GetFile(businessCentreFile.FileSpaceId, tccPath).ConfigureAwait(false);
+
+        if (memStream == null || !memStream.CanRead || memStream.Length < 1)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+            80, $" isAbleToRead: {memStream != null && memStream.CanRead} bytesReturned: {memStream?.Length ?? 0}");
+        }
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 79, e.Message);
+      }
+
+      log.LogInformation($"GetFileStreamFromTcc: Successfully read memstream. bytesReturned: {memStream?.Length ?? 0}");
+      return memStream;
+    }
+
+    /// <summary>
     /// Writes the importedFile to TCC
     ///   returns filespaceID; path and filename which identifies it uniquely in TCC
     ///   this may be a create or update, so ok if it already exists already
@@ -216,7 +249,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         $"CopyFileWithinTccRepository: fileDescriptorTarget {JsonConvert.SerializeObject(fileDescriptorTarget)}");
       return fileDescriptorTarget;
     }
-
-
   }
 }
