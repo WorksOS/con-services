@@ -46,6 +46,25 @@ namespace VSS.TRex.Tests.DesignProfiling
       return TTM;
     }
 
+    public static TrimbleTINModel CreateOptimisedTTM_WithTwoFlatUnitTrianglesWithGapAtOrigin(double withElevation)
+    {
+      var TTM = new TrimbleTINModel
+      {
+        Vertices =
+        {
+          Items = new [] {new XYZ(0, 0, withElevation), new XYZ(1, 0, withElevation), new XYZ(0, 1, withElevation),
+                         new XYZ(1, 1, withElevation), new XYZ(2, 1, withElevation), new XYZ(1, 2, withElevation) }
+        },
+
+        Triangles =
+        {
+          Items = new [] {new Triangle(0, 1, 2), new Triangle(3, 4, 5)}
+        }
+      };
+
+      return TTM;
+    }
+
     public static TrimbleTINModel CreateOptimisedTTM_With32x32FlatTrianglesAtOrigin(double withElevation)
     {
       // Create a mesh of triangles (32 x 32) with it's bottom-left corner on the origin

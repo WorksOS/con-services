@@ -46,10 +46,12 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(Math.Abs(profilePoints[0].X) < epsilon &&
                   Math.Abs(profilePoints[0].Y) < epsilon &&
                   Math.Abs(profilePoints[0].Z - atElevation) < epsilon, $"First profile point not at origin (0, 0, {atElevation}), but is at {profilePoints[0]}");
+      Assert.True(profilePoints[0].TriIndex == 0, "Triangle index not set");
 
       Assert.True(Math.Abs(profilePoints[1].X - 0.5) < epsilon &&
                   Math.Abs(profilePoints[1].Y - 0.5) < epsilon &&
                   Math.Abs(profilePoints[1].Z - atElevation) < epsilon, $"Second profile point not at origin (0.5, 0.5, {atElevation}), but is at {profilePoints[1]}");
+      Assert.True(profilePoints[1].TriIndex == 0, "Triangle index not set");
     }
 
     [InlineData(0.0)]
@@ -162,15 +164,18 @@ namespace VSS.TRex.Tests.DesignProfiling
 
       Assert.True(Math.Abs(profilePoints[0].X) < epsilon &&
                   Math.Abs(profilePoints[0].Y) < epsilon &&
-                  Math.Abs(profilePoints[0].Z - atElevation) < epsilon, $"First profile point not at origin (0, 0, {atElevation}), but is at {profilePoints[0]}");
+                  Math.Abs(profilePoints[0].Z - atElevation) < epsilon, $"First profile point not at (0, 0, {atElevation}), but is at {profilePoints[0]}");
+      Assert.True(profilePoints[0].TriIndex == 0, "Triangle index not set");
 
       Assert.True(Math.Abs(profilePoints[1].X - 0.5) < epsilon &&
                   Math.Abs(profilePoints[1].Y - 0.5) < epsilon &&
-                  Math.Abs(profilePoints[1].Z - atElevation) < epsilon, $"Second profile point not at origin (0.5, 0.5, {atElevation}), but is at {profilePoints[1]}");
+                  Math.Abs(profilePoints[1].Z - atElevation) < epsilon, $"Second profile point not at (0.5, 0.5, {atElevation}), but is at {profilePoints[1]}");
+      Assert.True(profilePoints[1].TriIndex == 0, "Triangle index not set");
 
       Assert.True(Math.Abs(profilePoints[2].X - 1.0) < epsilon &&
                   Math.Abs(profilePoints[2].Y - 1.0) < epsilon &&
-                  Math.Abs(profilePoints[2].Z - atElevation) < epsilon, $"Second profile point not at unit point (1.0, 1.0, {atElevation}), but is at {profilePoints[2]}");
+                  Math.Abs(profilePoints[2].Z - atElevation) < epsilon, $"Second profile point not at (1.0, 1.0, {atElevation}), but is at {profilePoints[2]}");
+      Assert.True(profilePoints[2].TriIndex == 1, "Triangle index not set");
     }
 
     [InlineData(1)]
@@ -287,6 +292,40 @@ namespace VSS.TRex.Tests.DesignProfiling
                   Math.Abs(profilePoints[1].Z - atElevation) < epsilon, $"Second profile point not at (1.0, 0, {atElevation}), but is at {profilePoints[1]}");
     }
 
+    [InlineData(0.0)]
+    [Theory]
+    public void Test_OptimisedTTMProfiler_TwoTrianglesWitGapAtOrigin_DiagonalProfileLine(double atElevation)
+    {
+      var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithTwoFlatUnitTrianglesWithGapAtOrigin(atElevation);
+      Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
+
+      // Build a profile line from (-100, -100) to (100, 100) to bisect the two triangles with a gap
+      // between (0.5, 0.5) and (1.0, 1.0)
+      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profilePoints = profiler.Compute(new[] { new XYZ(-100, -100), new XYZ(100, 100) });
+
+      Assert.True(profilePoints.Count == 5, $"Profile operation returned {profilePoints.Count} intercepts instead of 5");
+      Assert.True(Math.Abs(profilePoints[0].X) < epsilon &&
+                  Math.Abs(profilePoints[0].Y) < epsilon &&
+                  Math.Abs(profilePoints[0].Z - atElevation) < epsilon, $"First profile point not at (0, 0, {atElevation}), but is at {profilePoints[0]}");
+
+      Assert.True(Math.Abs(profilePoints[1].X - 0.5) < epsilon &&
+                  Math.Abs(profilePoints[1].Y - 0.5) < epsilon &&
+                  Math.Abs(profilePoints[1].Z - atElevation) < epsilon, $"Second profile point not at (0.5, 0.5, {atElevation}), but is at {profilePoints[1]}");
+
+      Assert.True(Math.Abs(profilePoints[2].X - 1.0) < epsilon &&
+                  Math.Abs(profilePoints[2].Y - 1.0) < epsilon &&
+                  profilePoints[2].Z == Common.Consts.NullDouble, $"Gap profile point not at (1.0, 1.0, {atElevation}), but is at {profilePoints[2]}");
+
+      Assert.True(Math.Abs(profilePoints[3].X - 1.0) < epsilon &&
+                  Math.Abs(profilePoints[3].Y - 1.0) < epsilon &&
+                  Math.Abs(profilePoints[3].Z - atElevation) < epsilon, $"Third profile point not at (1.0, 1.0, {atElevation}), but is at {profilePoints[3]}");
+
+      Assert.True(Math.Abs(profilePoints[4].X - 1.5) < epsilon &&
+                  Math.Abs(profilePoints[4].Y - 1.5) < epsilon &&
+                  Math.Abs(profilePoints[4].Z - atElevation) < epsilon, $"Fourth profile point not at (1.5, 1.5, {atElevation}), but is at {profilePoints[4]}");
+    }
+
     [InlineData(0.0, -100, -100, 100, 100, 63)]
     [InlineData(123.456, -100, -100, 100, 100, 63)]
     [InlineData(0, -100, 0.5, 100, 0.5, 63)]
@@ -296,12 +335,16 @@ namespace VSS.TRex.Tests.DesignProfiling
     [Theory]
     public void Test_OptimisedTTMProfiler_1024TrianglesAtOrigin(double atElevation, double startX, double startY, double endX, double endY, int expectedPointCount)
     {
+      var startTime = DateTime.Now;
+
       var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_With32x32FlatTrianglesAtOrigin(atElevation);
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (startX, startX) to (endX, endY) to cross the patch of triangles 
       var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(startX, startY), new XYZ(endX, endY)});
+
+      output.WriteLine($"Total time to perform profile: {DateTime.Now - startTime}");
 
       Assert.True(profilePoints.Count == expectedPointCount, $"Profile operation returned {profilePoints.Count} intercepts instead of {expectedPointCount}");
 

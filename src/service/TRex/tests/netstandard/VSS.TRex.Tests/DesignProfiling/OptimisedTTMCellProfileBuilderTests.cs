@@ -35,7 +35,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     [Fact]
     public void Test_ProfilerBuilder_OneTriangle()
     {
-      const int expectedInterceptCount = 6;
+      const int expectedInterceptCount = 8;
 
       // Create a model with a single triangle at (0, 0), (0, 1), (1, 0)
       var oneTriangleModel = OptimisedTTMDesignBuilder.CreateOptimisedTTM_WithFlatUnitTriangleAtOrigin(0.0);
@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       var builder = new OptimisedTTMCellProfileBuilder(1.0, true);
 
       // Build a profile line from (-100, -100) to (100, 100) to bisect the single triangle 
-      var result = builder.Build(new XYZ[] {new XYZ(-100, -100), new XYZ(100, 100)});
+      var result = builder.Build(new XYZ[] {new XYZ(-100, -100), new XYZ(100, 100)}, 0);
 
       Assert.True(result, "Build() failed");
 

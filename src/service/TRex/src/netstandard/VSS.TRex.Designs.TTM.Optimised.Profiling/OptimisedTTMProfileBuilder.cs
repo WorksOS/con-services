@@ -131,7 +131,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// </summary>
     /// <param name="nEECoords"></param>
     /// <returns></returns>
-    public bool Build(XYZ[] nEECoords)
+    public bool Build(XYZ[] nEECoords, double originStation)
     {
       CurrStationPos = 0;
 
@@ -147,14 +147,15 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
         if (I == 0) 
         {
-          CurrStationPos = SlicerToolUsed ? 0 : nEECoords[I].Z; // alignment profiles pass in chainage for more accuracy
+          CurrStationPos = SlicerToolUsed ? originStation : nEECoords[I].Z; // alignment profiles pass in station for more accuracy
+
           // Add start point of profile line to intercept list
-          //VtHzIntercepts.AddPoint(StartX, StartY, CurrStationPos);
+          VtHzIntercepts.AddPoint(StartX, StartY, CurrStationPos);
         }
 
         Distance = SlicerToolUsed
-          ? MathUtilities.Hypot(EndX - StartX, EndY - StartY) // chainage is not passed so compute
-          : EndStation - StartStation; // use precise chainage passed
+          ? MathUtilities.Hypot(EndX - StartX, EndY - StartY) // station is not passed so compute
+          : EndStation - StartStation; // use precise station passed
 
         if (Distance == 0) // if we have two points the same
           continue;
@@ -170,15 +171,17 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       VtHzIntercepts.MergeInterceptLists(VtIntercepts, HzIntercepts);
 
       // Add end point of profile line to intercept list
-      // VtHzIntercepts.AddPoint(EndX, EndY, CurrStationPos);
+       VtHzIntercepts.AddPoint(EndX, EndY, CurrStationPos);
 
       // Update each intercept with it's midpoint and intercept length
       // i.e. the midpoint on the line between one intercept and the next one
       // and the length between those intercepts
       VtHzIntercepts.UpdateMergedListInterceptMidPoints();
 
+      // Sort the intercept list to make life easier for the profiling code later on
+      Array.Sort(VtHzIntercepts.Items, 0, VtHzIntercepts.Count); 
+
       return true;
     }
   }
 }
-

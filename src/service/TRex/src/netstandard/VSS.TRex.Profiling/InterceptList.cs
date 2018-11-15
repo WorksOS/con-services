@@ -90,36 +90,19 @@ namespace VSS.TRex.Profiling
       if (Count == 0)
         return;
 
-      double FirstOriginX = 0; // X-axis offset of first intercept in pair from start point of requested profile
-      double IntLength = 0;
-
-      for (int i = 0; i < Count - 2; i++)
+      for (int i = 0; i < Count - 1; i++)
       {
         // Grab a pair of adjacent intercepts
         InterceptRec InterceptA = Items[i];
         InterceptRec InterceptB = Items[i + 1];
 
-        // If this is the first pair, then the X-axis offset of the intercept line is 0
-        // else the X-axis offset of the intercept line is the previous offset plus
-        // the length of the previous intercept line
-        FirstOriginX = i == 0 ? 0 : FirstOriginX + IntLength;
-
-        IntLength = MathUtilities.Hypot(InterceptB.OriginX - InterceptA.OriginX, InterceptB.OriginY - InterceptA.OriginY);
-
-        double MPX, MPY; // Mid-point of line between a pair of intercepts
+        double IntLength = MathUtilities.Hypot(InterceptB.OriginX - InterceptA.OriginX, InterceptB.OriginY - InterceptA.OriginY);
 
         // Calculate the midpoint of the line between the pair of intercepts
-        if (InterceptA.OriginX < InterceptB.OriginX)
-          MPX = InterceptA.OriginX + (InterceptB.OriginX - InterceptA.OriginX) / 2;
-        else
-          MPX = InterceptA.OriginX - (InterceptA.OriginX - InterceptB.OriginX) / 2;
+        double MPX = (InterceptA.OriginX + InterceptB.OriginX) / 2;
+        double MPY = (InterceptA.OriginY + InterceptB.OriginY) / 2;
 
-        if (InterceptA.OriginY < InterceptB.OriginY)
-          MPY = InterceptA.OriginY + (InterceptB.OriginY - InterceptA.OriginY) / 2;
-        else
-          MPY = InterceptA.OriginY - (InterceptA.OriginY - InterceptB.OriginY) / 2;
-
-        Items[i] = new InterceptRec(FirstOriginX, Items[i].OriginY, MPX, MPY, Items[i].ProfileItemIndex, IntLength);
+        Items[i] = new InterceptRec(Items[i].OriginX, Items[i].OriginY, MPX, MPY, Items[i].ProfileItemIndex, IntLength);
       }
 
       // Discard the last intercept as it's already been used as the end point of the previous pair of intercepts

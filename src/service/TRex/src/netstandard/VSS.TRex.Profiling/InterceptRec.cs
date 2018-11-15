@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace VSS.TRex.Profiling
 {
     /// <summary>
     /// Records the attributes of an intercept between a profile line and a cell
     /// </summary>
-    public struct InterceptRec : IEquatable<InterceptRec>
-    {
+    public struct InterceptRec : IEquatable<InterceptRec>, IComparable<InterceptRec>, IComparer<InterceptRec>
+  {
       public double OriginX;
       public double OriginY;
       public double MidPointX;
@@ -57,5 +59,15 @@ namespace VSS.TRex.Profiling
       {
         return  Equals(other.OriginX, other.OriginY, other.ProfileItemIndex);
       }
+
+      /// <summary>
+      /// Implementation of IComparer that sorts the elements based on the ProfileItemIndex field
+      /// </summary>
+      /// <param name="x"></param>
+      /// <param name="y"></param>
+      /// <returns></returns>
+      public int Compare(InterceptRec x, InterceptRec y) => x.ProfileItemIndex.CompareTo(y.ProfileItemIndex);
+
+      public int CompareTo(InterceptRec other) => ProfileItemIndex.CompareTo(other.ProfileItemIndex);
     }
 }
