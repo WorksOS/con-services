@@ -38,7 +38,7 @@ namespace VSS.MasterData.Proxies
     }
 
 
-    private async Task<(HttpStatusCode, HttpContent)> ExecuteRequestInternal(string endpoint, string method,
+    private async Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, string method,
       IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
     {
       var client = new HttpClient();
@@ -78,7 +78,7 @@ namespace VSS.MasterData.Proxies
       {
         case "GET":
         {
-          response = await client.GetAsync(endpoint);
+          response = await client.GetAsync(new Uri(endpoint), HttpCompletionOption.ResponseContentRead);
           break;
         }
         case "POST":
@@ -97,7 +97,7 @@ namespace VSS.MasterData.Proxies
         }
       }
 
-      return (response.StatusCode, response.Content);
+      return response;
     }
 
 
@@ -134,13 +134,15 @@ namespace VSS.MasterData.Proxies
           log.LogDebug($"Trying to execute request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
 
-          if (result.Item1 != HttpStatusCode.OK)
+          if (result.StatusCode != HttpStatusCode.OK)
           {
-            var contents = result.Item2;
-            throw new HttpRequestException($"Request returned non-ok code {result.Item1} with response {contents}");
+            var contents = await result.Content.ReadAsStringAsync();
+
+            // The contents will contain a message from the end point s
+            throw new HttpRequestException($"{result.StatusCode} {contents}");
           }
 
-          return result.Item2;
+          return result.Content;
         });
 
       if (policyResult.FinalException != null)
@@ -189,13 +191,13 @@ namespace VSS.MasterData.Proxies
           log.LogDebug($"Trying to execute request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
 
-          var contents = await result.Item2.ReadAsStringAsync();
-          if (result.Item1 != HttpStatusCode.OK)
+          var contents = await result.Content.ReadAsStringAsync();
+          if (result.StatusCode != HttpStatusCode.OK)
           {
-            log.LogDebug($"Request returned non-ok code {result.Item1} with response {contents}");
-            throw new HttpRequestException($"Request returned non-ok code {result.Item1} with response {contents}");
+            log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
+            throw new HttpRequestException($"{result.StatusCode} {contents}");
           }
-          log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.Item1}");
+          log.LogDebug($"Request returned {contents.Truncate(logMaxChar)} with status {result.StatusCode}");
           if (typeof(T) == typeof(string)) return (T)Convert.ChangeType(contents,typeof(T));
           return JsonConvert.DeserializeObject<T>(contents);
         });
