@@ -901,10 +901,12 @@ namespace VSS.TRex.Designs
     /// as a vector of X, Y, Z, Station & TriangleIndex records
     /// </summary>
     /// <param name="profilePath"></param>
-    /// <param name="cellSize"></param>
+    /// <param name="cellSize"></par
+    /// am>
     /// <returns></returns>
     public override XYZS[] ComputeProfile(XYZ[] profilePath, double cellSize)
     {
+ //     var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       throw new NotImplementedException();
     }
   }

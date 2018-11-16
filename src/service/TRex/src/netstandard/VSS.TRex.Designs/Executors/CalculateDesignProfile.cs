@@ -22,8 +22,7 @@ namespace VSS.TRex.Designs.Executors
     /// <param name="arg"></param>
     /// <param name="calcResult"></param>
     /// <returns></returns>
-    private XYZS[] Calc(CalculateDesignProfileArgument arg,
-      out DesignProfilerRequestResult calcResult)
+    private XYZS[] Calc(CalculateDesignProfileArgument arg, out DesignProfilerRequestResult calcResult)
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
@@ -38,17 +37,8 @@ namespace VSS.TRex.Designs.Executors
 
       try
       {
-// Exclusive serialisation of the Design is not required in the Ignite POC
-//     Design.AcquireExclusiveInterlock();
-//     try
-//     {
-          XYZS[] result = Design.ComputeProfile(arg.ProfilePath, arg.CellSize);
-          calcResult = DesignProfilerRequestResult.OK;
-//     }
-//     finally
-//     {
-//         Design.ReleaseExclusiveInterlock();
-//     }
+        XYZS[] result = Design.ComputeProfile(arg.ProfilePath, arg.CellSize);
+        calcResult = DesignProfilerRequestResult.OK;
 
         return result;
       }
@@ -67,29 +57,14 @@ namespace VSS.TRex.Designs.Executors
       try
       {
         // Perform the design profile calculation
-        try
+        var result = Calc(args, out DesignProfilerRequestResult CalcResult);
+
+        if (result == null)
         {
-          /* Test code to force all subgrids to have 0 elevations from a design
-          ClientHeightLeafSubGrid test = new ClientHeightLeafSubGrid(null, null, 6, 0.34, SubGridTreeConsts.DefaultIndexOriginOffset);
-          test.SetToZeroHeight();
-          return test;
-          */
-
-          // Calculate the patch of elevations and return it
-          var result = Calc(args, out DesignProfilerRequestResult CalcResult);
-
-          if (result == null)
-          {
-            // TODO: Handle failure to calculate a design profile result
-          }
-
-          return result;
+          // TODO: Handle failure to calculate a design profile result
         }
-        finally
-        {
-          //if VLPDSvcLocations.Debug_PerformDPServiceRequestHighRateLogging then
-          //Log.LogInformation($"#Out# {nameof(CalculateDesignElevationPatch)}.Execute #Result# {CaleResult}");
-        }
+
+        return result;
       }
       catch (Exception E)
       {

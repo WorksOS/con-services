@@ -24,9 +24,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     public void Test_OptimisedTTMProfiler_Creation()
     {
       var siteModel = new SiteModel(Guid.Empty, 1.0);
-      var profiler = new OptimisedTTMProfiler(siteModel, null, null, null);
-
-      Assert.True(profiler.SiteModel == siteModel, "SiteModel not set in profiler");
+      var profiler = new OptimisedTTMProfiler(null, null, null);
     }
 
     [InlineData(0.0)]
@@ -39,7 +37,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-100, -100) to (100, 100) to bisect the single triangle 
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new [] {new XYZ(-100, -100), new XYZ(100, 100)});
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
@@ -62,7 +60,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-100, -100) to (0.25, 0.25) to enter the single triangle at a corner and terminate within it
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(-100, -100), new XYZ(0.25, 0.25)});
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
@@ -84,7 +82,7 @@ namespace VSS.TRex.Tests.DesignProfiling
 
       // Build a profile line from (-100, -100) to (0.25, 0.25) to (100, 100) to enter the single triangle at a corner
       // stop within it then exit via the diagonal face
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(-100, -100), new XYZ(0.25, 0.25), new XYZ(100, 100)});
 
       Assert.True(profilePoints.Count == 3, $"Profile operation returned {profilePoints.Count} intercepts instead of 3");
@@ -109,7 +107,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (0.25, 0.25) to (-100, -100) to exit the single triangle at a corner and terminate outside it
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(0.25, 0.25), new XYZ(-100, -100)});
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
@@ -133,7 +131,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-100, -100) to (100, 100) to bisect the single triangle 
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
 
       DateTime startTime = DateTime.Now;
       for (int i = 0; i < runCount; i++)
@@ -157,7 +155,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-100, -100) to (100, 100) to bisect the triangles
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(-100, -100), new XYZ(100, 100)});
 
       Assert.True(profilePoints.Count == 3, $"Profile operation returned {profilePoints.Count} intercepts instead of 3");
@@ -189,7 +187,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-100, -100) to (100, 100) to bisect the single triangle 
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
 
       DateTime startTime = DateTime.Now;
       for (int i = 0; i < runCount; i++)
@@ -212,7 +210,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (0, -100) to (0, 100) to be co-linear with vertical edge of triangle
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(0, -100), new XYZ(0, 100)});
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
@@ -234,7 +232,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-100, 0) to (100, 0) to be co-linear with horizontal edge of triangle
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(-100, 0), new XYZ(100, 0)});
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
@@ -257,7 +255,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-1, 2) to (2, -1) to be co-linear with diagonal edge of triangle
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(-1, 2), new XYZ(2, -1)});
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
@@ -279,7 +277,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (-1, 2) to (2, -1) to be co-linear with diagonal edge of triangle
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(-1, 2), new XYZ(2, -1)});
 
       Assert.True(profilePoints.Count == 2, $"Profile operation returned {profilePoints.Count} intercepts instead of 2");
@@ -301,7 +299,7 @@ namespace VSS.TRex.Tests.DesignProfiling
 
       // Build a profile line from (-100, -100) to (100, 100) to bisect the two triangles with a gap
       // between (0.5, 0.5) and (1.0, 1.0)
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(-100, -100), new XYZ(100, 100) });
 
       Assert.True(profilePoints.Count == 5, $"Profile operation returned {profilePoints.Count} intercepts instead of 5");
@@ -341,7 +339,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.True(OptimisedTTMDesignBuilder.CreateOptimisedIndexForModel(oneTriangleModel, out var index, out var indices));
 
       // Build a profile line from (startX, startX) to (endX, endY) to cross the patch of triangles 
-      var profiler = new OptimisedTTMProfiler(new SiteModel(Guid.Empty, 1.0), oneTriangleModel, index, indices);
+      var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       var profilePoints = profiler.Compute(new[] { new XYZ(startX, startY), new XYZ(endX, endY)});
 
       output.WriteLine($"Total time to perform profile: {DateTime.Now - startTime}");

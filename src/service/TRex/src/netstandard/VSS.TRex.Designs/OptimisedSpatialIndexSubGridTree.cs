@@ -1,8 +1,9 @@
-﻿using VSS.TRex.SubGridTrees;
+﻿using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.Designs
 {
-  public class OptimisedSpatialIndexSubGridTree : GenericSubGridTree<TriangleArrayReference, TriangleArrayReferenceSubGrid>
+  public class OptimisedSpatialIndexSubGridTree : GenericSubGridTree<TriangleArrayReference, TriangleArrayReferenceSubGrid>, IOptimisedSpatialIndexSubGridTree
   {
     /// <summary>
     /// The header string to be written into a serialized subgrid tree

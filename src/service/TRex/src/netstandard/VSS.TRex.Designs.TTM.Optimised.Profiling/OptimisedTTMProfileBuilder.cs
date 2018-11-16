@@ -36,7 +36,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     {
       // Modify the cell size to represent the node subgrid above the leaf subgrid as these are the size of the
       // cells in the spatial TIN index
-      CellSize = cellSize * SubGridTreeConsts.SubGridTreeDimension;
+      CellSize = cellSize;
 
       SlicerToolUsed = slicerToolUsed;
     }

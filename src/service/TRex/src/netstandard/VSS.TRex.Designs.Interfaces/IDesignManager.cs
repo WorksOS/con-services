@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 

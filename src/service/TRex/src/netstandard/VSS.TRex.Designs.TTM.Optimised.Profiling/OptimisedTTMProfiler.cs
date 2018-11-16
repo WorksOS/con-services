@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Designs.TTM.Optimised.Profiling
@@ -17,22 +18,18 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<OptimisedTTMProfiler>();
 
-    public ISiteModel SiteModel { get; private set; }
-
     private readonly TrimbleTINModel TTM;
 
-    private readonly OptimisedSpatialIndexSubGridTree Index;
+    private readonly IOptimisedSpatialIndexSubGridTree Index;
     private readonly int[] Indices;
 
     /// <summary>
     /// Creates an empty profiler context
     /// </summary>
-    public OptimisedTTMProfiler(ISiteModel siteModel,
-                                TrimbleTINModel ttm,
-                                OptimisedSpatialIndexSubGridTree index,
+    public OptimisedTTMProfiler(TrimbleTINModel ttm,
+                                IOptimisedSpatialIndexSubGridTree index,
                                 int [] indices)
     {
-      SiteModel = siteModel;
       TTM = ttm;
       Index = index;
       Indices = indices;
@@ -92,7 +89,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
       // compute cell cross by production data profiling
 
       // ...
-      var cellProfileBuilder = new OptimisedTTMCellProfileBuilder(SiteModel.Grid.CellSize, true);
+      var cellProfileBuilder = new OptimisedTTMCellProfileBuilder(Index.CellSize, true);
       if (!cellProfileBuilder.Build(new [] {startPoint, endPoint}, startStation))
         return null;
 
