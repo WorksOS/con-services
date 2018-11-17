@@ -1,7 +1,6 @@
 ﻿using System;
 using VSS.TRex.Geometry;
-using VSS.TRex.Profiling;
-using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Designs.TTM.Optimised.Profiling

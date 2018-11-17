@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
-namespace VSS.TRex.Profiling
+namespace VSS.TRex.Profiling.Models
 {
     /// <summary>
     /// Records the attributes of an intercept between a profile line and a cell

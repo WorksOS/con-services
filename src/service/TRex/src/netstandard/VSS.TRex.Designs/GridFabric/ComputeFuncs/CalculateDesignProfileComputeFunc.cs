@@ -17,21 +17,33 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
     public CalculateDesignProfileResponse Invoke(CalculateDesignProfileArgument arg)
     {
+      var startDate = DateTime.Now;
       try
       {
-        // Log.LogInformation($"CalculateDesignProfileComputeFunc: Arg = {arg}");
-
-        CalculateDesignProfile Executor = new CalculateDesignProfile();
-
-        return new CalculateDesignProfileResponse()
+        Log.LogInformation($"In: CalculateDesignProfileComputeFunc: Arg = {arg}");
+        try
         {
-          Profile = Executor.Execute(arg)
-        };
+          CalculateDesignProfile Executor = new CalculateDesignProfile();
+
+
+          var result = new CalculateDesignProfileResponse
+          {
+            Profile = Executor.Execute(arg),  
+          };
+
+          Log.LogInformation($"Profile result: {result.Profile?.Length ?? -1} vertices");
+
+          return result;
+        }
+        catch (Exception E)
+        {
+          Log.LogError($"Exception: {E}");
+          return null;
+        }
       }
-      catch (Exception E)
+      finally
       {
-        Log.LogError($"Exception: {E}");
-        return null;
+        Log.LogInformation($"Out: CalculateDesignProfileComputeFunc in {DateTime.Now - startDate}, Arg = {arg}");
       }
     }
   }

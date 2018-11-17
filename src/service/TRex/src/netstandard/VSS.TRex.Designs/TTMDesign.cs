@@ -7,6 +7,8 @@ using System.Threading;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM.Optimised;
+using VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -901,12 +903,11 @@ namespace VSS.TRex.Designs
     /// as a vector of X, Y, Z, Station & TriangleIndex records
     /// </summary>
     /// <param name="profilePath"></param>
-    /// <param name="cellSize"></par
-    /// am>
+    /// <param name="cellSize"></param>
     /// <returns></returns>
     public override XYZS[] ComputeProfile(XYZ[] profilePath, double cellSize)
     {
- //     var profiler = new OptimisedTTMProfiler(oneTriangleModel, index, indices);
+      var profiler = DIContext.Obtain<IOptimisedTTMProfilerFactory>();//NewInstance( new OptimisedTTMProfiler(oneTriangleModel, index, indices);
       throw new NotImplementedException();
     }
   }

@@ -1,13 +1,19 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Designs.Executors
 {
   public class CalculateDesignProfile
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignProfile>();
+
+    private static IDesignFiles designs = null;
+
+    private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
 
     /// <summary>
     /// Default no-args constructor
@@ -26,7 +32,7 @@ namespace VSS.TRex.Designs.Executors
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
-      DesignBase Design = DesignFiles.Designs.Lock(arg.DesignDescriptor, arg.ProjectID, arg.CellSize, out DesignLoadResult LockResult);
+      IDesignBase Design = Designs.Lock(arg.DesignDescriptor, arg.ProjectID, arg.CellSize, out DesignLoadResult LockResult);
 
       if (Design == null)
       {
@@ -44,7 +50,7 @@ namespace VSS.TRex.Designs.Executors
       }
       finally
       {
-        DesignFiles.Designs.UnLock(arg.DesignDescriptor, Design);
+        Designs.UnLock(arg.DesignDescriptor, Design);
       }
     }
 

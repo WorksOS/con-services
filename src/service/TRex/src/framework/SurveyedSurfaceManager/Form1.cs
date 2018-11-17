@@ -45,7 +45,7 @@ namespace SurveyedSurfaceManager
             {
                 // Load the file and extract its extents
                 TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-                string fileName = Path.Combine(new string[] { txtFilePath.Text, txtFileName.Text });
+                string fileName = Path.Combine(new [] { txtFilePath.Text, txtFileName.Text });
                 DesignLoadResult result = TTM.LoadFromFile(fileName);
                 if (result != DesignLoadResult.Success)
                 {

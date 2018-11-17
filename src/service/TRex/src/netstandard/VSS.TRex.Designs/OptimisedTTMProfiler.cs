@@ -5,7 +5,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Designs.TTM.Optimised.Profiling

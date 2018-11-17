@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Designs
+﻿namespace VSS.TRex.Designs.Models
 {
   public enum DesignLoadResult
   {

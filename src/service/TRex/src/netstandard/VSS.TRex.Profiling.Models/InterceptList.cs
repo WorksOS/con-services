@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Utilities;
 
-namespace VSS.TRex.Profiling
+namespace VSS.TRex.Profiling.Models
 {
   /// <summary>
   /// Contains a vector of InterceptRec instances that describe all the cells a profile line has crossed

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -7,7 +8,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs
 {
-  public abstract class DesignBase
+  public abstract class DesignBase : IDesignBase
   {
     private int FLockCount;
 

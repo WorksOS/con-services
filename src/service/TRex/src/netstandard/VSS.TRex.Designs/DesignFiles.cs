@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs
@@ -47,24 +48,20 @@ namespace VSS.TRex.Designs
                                   const DeleteTTMFile   :Boolean);
   end;
   */
-    public class DesignFiles
-    {
-        /// <summary>
-        /// A static instance of the designs currently in use
-        /// </summary>
-        public static DesignFiles Designs = new DesignFiles();
 
-        private Dictionary<DesignDescriptor, DesignBase> designs = new Dictionary<DesignDescriptor, DesignBase>();
+  public class DesignFiles : IDesignFiles
+  {
+        private Dictionary<DesignDescriptor, IDesignBase> designs = new Dictionary<DesignDescriptor, IDesignBase>();
 
-        public bool RemoveDesignFromCache(DesignDescriptor designDescriptor, DesignBase design, bool deleteFile)
+        public bool RemoveDesignFromCache(DesignDescriptor designDescriptor, IDesignBase design, bool deleteFile)
         {
             if (deleteFile)
             {
-                Debug.Assert(false, "Deletefile not implemented");
+                Debug.Assert(false, "Delete file not implemented");
                 return false;
             }
 
-            if (designs.TryGetValue(designDescriptor, out DesignBase _))
+            if (designs.TryGetValue(designDescriptor, out _))
             {
                 return designs.Remove(designDescriptor);
             }
@@ -72,11 +69,11 @@ namespace VSS.TRex.Designs
             return false;
         }
 
-        public void AddDesignToCache(DesignDescriptor designDescriptor, DesignBase design)
+        public void AddDesignToCache(DesignDescriptor designDescriptor, IDesignBase design)
         {
             lock (designs)
             {
-                if (designs.TryGetValue(designDescriptor, out DesignBase _))
+                if (designs.TryGetValue(designDescriptor, out _))
                 {
                     // The design is already there...
                     Debug.Assert(false, $"Error adding design {designDescriptor} to designs, already present.");
@@ -95,10 +92,10 @@ namespace VSS.TRex.Designs
         /// <param name="ACellSize"></param>
         /// <param name="LoadResult"></param>
         /// <returns></returns>
-        public DesignBase Lock(DesignDescriptor designDescriptor,
+        public IDesignBase Lock(DesignDescriptor designDescriptor,
                                Guid DataModelID, double ACellSize, out DesignLoadResult LoadResult)
         {
-            DesignBase design;
+            IDesignBase design;
 
             // Very simple lock function...
             lock (designs)
@@ -130,9 +127,9 @@ namespace VSS.TRex.Designs
         /// <param name="designDescriptor"></param>
         /// <param name="design"></param>
         /// <returns></returns>
-        public bool UnLock(DesignDescriptor designDescriptor, DesignBase design)
+        public bool UnLock(DesignDescriptor designDescriptor, IDesignBase design)
         {
-            lock (Designs)
+            lock (designs)
             {
                 // Very simple unlock function...
                 return true;
