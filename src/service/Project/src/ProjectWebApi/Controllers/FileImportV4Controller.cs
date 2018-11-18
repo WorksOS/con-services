@@ -428,7 +428,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       /*** now making changes, potentially needing rollback ***/
       FileDescriptor fileDescriptor = null;
-      if (UseRaptorGatewayDesignImport && IsDesignFileType(importedFileType))
+      if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
       {
         fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
           fileStream, projectUid.ToString(), filename,
@@ -530,8 +530,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (creating)
       {
         var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(projectUid), fileName,
-          fileDescriptor,
-          importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc);
+          fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -548,12 +547,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
-        var importedFileUpsertEvent = UpdateImportedFile.CreateImportedFileUpsertEvent(
+        var importedFileUpsertEvent = UpdateImportedFile.CreateUpdateImportedFile(
           Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileType,
           importedFileType == ImportedFileType.SurveyedSurface
             ? surveyedUtc
             : null,
-          dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, filePath, Path.GetFileName(filePath),
+          dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
           Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId
         );
 

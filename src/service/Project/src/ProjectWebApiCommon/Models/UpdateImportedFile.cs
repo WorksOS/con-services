@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.MasterData.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
@@ -20,9 +21,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 
     public DateTime FileUpdatedUtc { get; set; }
 
-    public string FilePathAndFileName { get; set; }
-
-    public string FileName { get; set; }
+    public FileDescriptor FileDescriptor { get; set; }
 
     public Guid ImportedFileUid { get; set; }
 
@@ -35,10 +34,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     {
     }
 
-    public static UpdateImportedFile CreateImportedFileUpsertEvent(Guid projectUid, long legacyProjectId,
-      ImportedFileType importedFileTypeId,
-      DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId, DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      string filePathAndFileName, string fileName, Guid importedFileUid, long importedFileId
+    public static UpdateImportedFile CreateUpdateImportedFile(
+      Guid projectUid, long legacyProjectId, ImportedFileType importedFileTypeId,
+      DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId, 
+      DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
+      FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId
     )
     {
       return new UpdateImportedFile()
@@ -50,8 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
         DxfUnitsTypeId = dxfUnitsTypeId,
         FileCreatedUtc = fileCreatedUtc,
         FileUpdatedUtc = fileUpdatedUtc,
-        FilePathAndFileName = filePathAndFileName,
-        FileName = fileName,
+        FileDescriptor = fileDescriptor,
         ImportedFileUid = importedFileUid,
         ImportedFileId = importedFileId
       };

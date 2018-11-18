@@ -6,7 +6,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -15,7 +14,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
-  /// Do the import of a file uploaded directly, or via scheduler 
+  /// Do the import (creation) of a file uploaded directly, or via scheduler 
   /// This can be called by the background upload
   ///      (file stored in TEMPRORAY vs-exports- bucket in AWS, then re downloaded with scheduler request),
   ///      or Synchronise upload (file stored locally)
@@ -49,10 +48,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         return new ContractExecutionResult(); // keeps compiler happy
       }
 
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT", "FALSE"),
-        out var useTrexGatewayDesignImport);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT", "TRUE"),
-        out var useRaptorGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),  out var useRaptorGatewayDesignImport);
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
                              createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface;
 
@@ -108,6 +105,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
+
+      var temp = (await ImportedFileRequestDatabaseHelper
+          .GetImportedFileList(createimportedfile.ProjectUid.ToString(), log, userId, projectRepo)
+          .ConfigureAwait(false));
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestDatabaseHelper

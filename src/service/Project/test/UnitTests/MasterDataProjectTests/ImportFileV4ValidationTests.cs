@@ -9,7 +9,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
-  public class ImportFileTests
+  public class ImportFileV4ValidationTests
   {
     private const string IMPORTED_BY = "JoeSmoe";
 
@@ -19,7 +19,7 @@ namespace VSS.MasterData.ProjectTests
     private static readonly DateTime fileCreatedUtc = DateTime.UtcNow;
     private static readonly DateTime fileUpdatedUtc = DateTime.UtcNow;
 
-    static ImportFileTests()
+    static ImportFileV4ValidationTests()
     {
       projectErrorCodesProvider = new ProjectErrorCodesProvider();
     }

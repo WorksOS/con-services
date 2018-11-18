@@ -122,7 +122,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
         .ConfigureAwait(false);
       if (existing != null && existing.ImportedFileId > 0)
+      {
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
+        createImportedFileEvent.ImportedFileUID = Guid.Parse(existing.ImportedFileUid); // for unit tests
+      }
       else
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 50);

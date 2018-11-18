@@ -110,7 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
       // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
-      if (UseRaptorGatewayDesignImport && IsDesignFileType(importedFileTbc.ImportedFileTypeId))
+      if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileTbc.ImportedFileTypeId))
       {
         var memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
         
@@ -173,7 +173,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
-        var importedFileUpsertEvent = UpdateImportedFile.CreateImportedFileUpsertEvent
+        var importedFileUpsertEvent = UpdateImportedFile.CreateUpdateImportedFile
         (
           Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
@@ -183,8 +183,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId
             : DxfUnitsType.Meters,
           fileEntry.createTime, fileEntry.modifyTime,
-          fileDescriptor.path, importedFileTbc.Name,
-          Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId
+          fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
