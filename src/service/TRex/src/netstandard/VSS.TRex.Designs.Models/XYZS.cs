@@ -1,9 +1,11 @@
-﻿namespace VSS.TRex.Designs.Models
+﻿using System;
+
+namespace VSS.TRex.Designs.Models
 {
   /// <summary>
   /// Contains a 3D location and a station (distance from start point) for design profile results
   /// </summary>
-  public struct XYZS
+  public struct XYZS : IEquatable<XYZS>
   {
     /// <summary>
     /// 3D location plus distance from the start of the overall profile line
@@ -43,5 +45,29 @@
     }
 
     public override string ToString() => $"X:{X:F3}, Y:{Y:F3}, Z:{Z:F3} Station:{Station:F3}, TriIndex:{TriIndex}";
+
+    public bool Equals(XYZS other)
+    {
+      return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && Station.Equals(other.Station) && TriIndex == other.TriIndex;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      return obj is XYZS other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = X.GetHashCode();
+        hashCode = (hashCode * 397) ^ Y.GetHashCode();
+        hashCode = (hashCode * 397) ^ Z.GetHashCode();
+        hashCode = (hashCode * 397) ^ Station.GetHashCode();
+        hashCode = (hashCode * 397) ^ TriIndex;
+        return hashCode;
+      }
+    }
   }
 }

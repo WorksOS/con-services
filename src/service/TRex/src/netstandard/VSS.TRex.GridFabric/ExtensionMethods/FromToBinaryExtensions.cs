@@ -141,5 +141,27 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
 
       return item;
     }
+
+    /// <summary>
+    /// An extension method providing a ToBinary() semantic to XYZ
+    /// </summary>
+    public static void ToBinaryUnversioned(this XYZ item, IBinaryRawWriter writer)
+    {
+      writer.WriteDouble(item.X);
+      writer.WriteDouble(item.Y);
+      writer.WriteDouble(item.Z);
+    }
+
+    /// <summary>
+    /// An extension method providing a FromBinary() semantic to XYZ
+    /// </summary>
+    public static XYZ FromBinaryUnversioned(this XYZ item, IBinaryRawReader reader)
+    {
+      item.X = reader.ReadDouble();
+      item.Y = reader.ReadDouble();
+      item.Z = reader.ReadDouble();
+
+      return item;
+    }
   }
 }

@@ -273,11 +273,11 @@ namespace VSS.TRex.Designs
       SubGridTreeBitmapSubGridBits Patch,
       double OriginX, double OriginY,
       double CellSize,
-      DesignDescriptor DesignDescriptor)
+      double Offset)
     {
       float[,] Heights = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
-      if (InterpolateHeights(Heights, OriginX, OriginY, CellSize, DesignDescriptor.Offset))
+      if (InterpolateHeights(Heights, OriginX, OriginY, CellSize, Offset))
       {
         Mask.ForEachSetBit((x, y) =>
         {

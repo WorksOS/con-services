@@ -33,7 +33,7 @@ namespace VSS.TRex.Designs.Interfaces
       SubGridTreeBitmapSubGridBits Patch,
       double OriginX, double OriginY,
       double CellSize,
-      DesignDescriptor DesignDescriptor);
+      double Offset);
 
     void WindLock();
     void UnWindLock();

@@ -85,7 +85,7 @@ namespace VSS.TRex.Designs.Storage
 
       try
       {
-        var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor, profilePath));
+        var profile = profileRequest.Execute(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, profilePath));
 
         return profile.Profile;
       }
@@ -202,7 +202,7 @@ namespace VSS.TRex.Designs.Storage
         designHeights = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument()
         {
           CellSize = cellSize,
-          DesignDescriptor = DesignDescriptor,
+          DesignUid = DesignDescriptor.DesignID,
           OriginX = originCellAddress.X,
           OriginY = originCellAddress.Y,
           // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),

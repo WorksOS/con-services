@@ -1,11 +1,10 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
-  public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument, IEquatable<CalculateDesignElevationPatchArgument>
   {
     /// <summary>
     /// The X origin location for the patch of elevations to be computed from
@@ -23,9 +22,14 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     public double CellSize { get; set; }
 
     /// <summary>
-    /// The descriptor of the design file the elevations are to be interpolated from
+    /// The ID of the design file the elevations are to be interpolated from
     /// </summary>
-    public DesignDescriptor DesignDescriptor { get; set; }
+    public Guid DesignUid { get; set; }
+
+    /// <summary>
+    /// The offset to be applied to computed elevations
+    /// </summary>
+    public double Offset { get; set; }
 
     /// <summary>
     /// A map of the cells within the subgrid patch to be computed
@@ -46,20 +50,23 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="originX"></param>
     /// <param name="originY"></param>
     /// <param name="cellSize"></param>
-    /// <param name="designDescriptor"></param>
+    /// <param name="designUid"></param>
+    /// <param name="offset"></param>
     // /// <param name="processingMap"></param>
     public CalculateDesignElevationPatchArgument(Guid siteModelID,
                                      uint originX,
                                      uint originY,
                                      double cellSize,
-                                     DesignDescriptor designDescriptor/*,
-                                         SubGridTreeBitmapSubGridBits processingMap*/) : this()
+                                     Guid designUid,
+                                     double offset
+                                        /*SubGridTreeBitmapSubGridBits processingMap*/) : this()
     {
       ProjectID = siteModelID;
       OriginX = originX;
       OriginY = originY;
       CellSize = cellSize;
-      DesignDescriptor = designDescriptor;
+      DesignUid = designUid;
+      Offset = offset;
       //            ProcessingMap = processingMap;
     }
 
@@ -69,11 +76,11 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> SiteModel:{ProjectID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{DesignDescriptor}";
+      return base.ToString() + $" -> SiteModel:{ProjectID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{DesignUid}";
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -84,11 +91,11 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       writer.WriteInt((int)OriginY);
       writer.WriteDouble(CellSize);
 
-      DesignDescriptor.ToBinary(writer);
+      writer.WriteGuid(DesignUid);
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
@@ -99,21 +106,21 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       OriginY = (uint)reader.ReadInt();
       CellSize = reader.ReadDouble();
 
-      DesignDescriptor.FromBinary(reader);
+      DesignUid = reader.ReadGuid() ?? Guid.Empty;
     }
 
-    protected bool Equals(CalculateDesignElevationPatchArgument other)
+
+    public bool Equals(CalculateDesignElevationPatchArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+
       return base.Equals(other) && 
              OriginX == other.OriginX && 
              OriginY == other.OriginY && 
              CellSize.Equals(other.CellSize) && 
-             DesignDescriptor.Equals(other.DesignDescriptor);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as CalculateDesignElevationPatchArgument);
+             DesignUid.Equals(other.DesignUid) && 
+             Offset.Equals(other.Offset);
     }
 
     public override bool Equals(object obj)
@@ -132,7 +139,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
         hashCode = (hashCode * 397) ^ (int) OriginX;
         hashCode = (hashCode * 397) ^ (int) OriginY;
         hashCode = (hashCode * 397) ^ CellSize.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
+        hashCode = (hashCode * 397) ^ DesignUid.GetHashCode();
+        hashCode = (hashCode * 397) ^ Offset.GetHashCode();
         return hashCode;
       }
     }

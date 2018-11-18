@@ -58,7 +58,7 @@ namespace VSS.TRex.Designs
       SubGridTreeBitmapSubGridBits Patch,
       double OriginX, double OriginY,
       double CellSize,
-      DesignDescriptor DesignDescriptor);
+      double Offset);
 
     public void WindLock() => Interlocked.Increment(ref FLockCount);
 

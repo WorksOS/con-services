@@ -9,9 +9,9 @@ using VSS.TRex.Gateway.Common.Executors;
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
-  /// Controller for getting production data for volumes statistics requests.
+  /// Controller for getting geometric profile line results across design surfaces.
   /// </summary>
-  public class VolumesDataController : BaseController
+  public class DesignProfileController : BaseController
   {
     /// <summary>
     /// Default constructor.
@@ -19,28 +19,28 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="loggerFactory"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
-    public VolumesDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
-      : base(loggerFactory, loggerFactory.CreateLogger<VolumesDataController>(), serviceExceptionHandler, configStore)
+    public DesignProfileController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
+      : base(loggerFactory, loggerFactory.CreateLogger<DesignProfileController>(), serviceExceptionHandler, configStore)
     {
     }
 
     /// <summary>
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
-    /// <param name="summaryVolumesRequest"></param>
+    /// <param name="designProfileRequest"></param>
     /// <returns></returns>
-    [Route("api/v1/volumes/summary")]
+    [Route("api/v1/profile/design")]
     [HttpPost]
-    public SummaryVolumesResult PostSummaryVolumes([FromBody] SummaryVolumesDataRequest summaryVolumesRequest)
+    public DesignProfileResult PostSummaryVolumes([FromBody] DesignProfileRequest designProfileRequest)
     {
       Log.LogInformation($"{nameof(PostSummaryVolumes)}: {Request.QueryString}");
 
-      summaryVolumesRequest.Validate();
+      designProfileRequest.Validate();
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<SummaryVolumesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(summaryVolumesRequest) as SummaryVolumesResult);
+          .Build<DesignProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(designProfileRequest) as DesignProfileResult);
     }
   }
 }

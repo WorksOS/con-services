@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Linq;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.ExtensionMethods;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
   public class CalculateDesignProfileArgument : BaseApplicationServiceRequestArgument, IEquatable<CalculateDesignProfileArgument>
   {
+    private const byte versionNumber = 1;
+
     /// <summary>
     /// The path along which the profile will be calculated
     /// </summary>
-    public XYZ[] ProfilePath { get; }
+    public XYZ[] ProfilePath { get; set; } = new XYZ[0];
 
     /// <summary>
     /// The cell stepping size to move between points in the patch being interpolated
@@ -19,9 +22,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     public double CellSize { get; set; }
 
     /// <summary>
-    /// The descriptor of the design file the elevations are to be interpolated from
+    /// The guid identifying the design to compute the profile over
     /// </summary>
-    public DesignDescriptor DesignDescriptor { get; set; }
+    public Guid DesignUid { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -33,19 +36,19 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Constructor taking the full state of the elevation patch computation operation
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="projectUid"></param>
     /// <param name="cellSize"></param>
-    /// <param name="designDescriptor"></param>
+    /// <param name="designUid"></param>
     /// <param name="profilePath"></param>
     // /// <param name="processingMap"></param>
-    public CalculateDesignProfileArgument(Guid siteModelID,
+    public CalculateDesignProfileArgument(Guid projectUid,
                                           double cellSize,
-                                          DesignDescriptor designDescriptor,
+                                          Guid designUid,
                                           XYZ[] profilePath) : this()
     {
-      ProjectID = siteModelID;
+      ProjectID = projectUid;
       CellSize = cellSize;
-      DesignDescriptor = designDescriptor;
+      DesignUid = designUid;
       ProfilePath = profilePath;
     }
 
@@ -55,7 +58,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{DesignDescriptor}";
+      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{DesignUid}";
     }
 
     /// <summary>
@@ -66,11 +69,17 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      writer.WriteByte(versionNumber);
+
       writer.WriteDouble(CellSize);
 
-      DesignDescriptor.ToBinary(writer);
+      writer.WriteGuid(DesignUid);
 
-      // todo: Add profile path
+      writer.WriteInt(ProfilePath.Length);
+      foreach (var pt in ProfilePath)
+      {
+        pt.ToBinaryUnversioned(writer);
+      }
     }
 
     /// <summary>
@@ -81,39 +90,52 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
+      byte version = reader.ReadByte();
+
+      if (version != versionNumber)
+        throw new ArgumentException($"Version {version} not valid for deserializing {nameof(CalculateDesignProfileArgument)}");
+
       CellSize = reader.ReadDouble();
+      DesignUid = reader.ReadGuid() ?? Guid.Empty;
 
-      DesignDescriptor.FromBinary(reader);
+      var count = reader.ReadInt();
 
-      // todo: Add profile path
+      ProfilePath = new XYZ[count];
+      for (int i = 0; i < count; i++)
+      {       
+        ProfilePath[i] = ProfilePath[i].FromBinaryUnversioned(reader);
+      }
     }
 
     public bool Equals(CalculateDesignProfileArgument other)
     {
-      // todo: Add profile path
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+
+      if (ProfilePath.Length != other.ProfilePath.Length) return false;
 
       return base.Equals(other) && 
+             !ProfilePath.Where((pt, i) => !pt.Equals(other.ProfilePath[i])).Any() &&
              CellSize.Equals(other.CellSize) && 
-             DesignDescriptor.Equals(other.DesignDescriptor);
+             DesignUid.Equals(other.DesignUid);
     }
 
     public override bool Equals(object obj)
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
+      if (obj.GetType() != GetType()) return false;
       return Equals((CalculateDesignProfileArgument) obj);
     }
 
     public override int GetHashCode()
     {
-      // todo: Add profile path
-
       unchecked
       {
         int hashCode = base.GetHashCode();
+        hashCode = (hashCode * 397) ^ (ProfilePath != null ? ProfilePath.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ CellSize.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
+        hashCode = (hashCode * 397) ^ DesignUid.GetHashCode();
         return hashCode;
       }
     }

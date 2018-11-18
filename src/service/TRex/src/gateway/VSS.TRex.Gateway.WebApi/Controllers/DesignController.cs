@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -15,8 +12,6 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Requests;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -35,7 +30,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// Returns surface and surveyedsurface designs
+    /// Returns surface and surveyed surface designs
     ///    which is registered for a sitemodel.
     /// If there are no designs the result will be an empty list.
     /// </summary>

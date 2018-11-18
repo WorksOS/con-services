@@ -111,7 +111,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
             ISurveyedSurface ThisSurveyedSurface = siteModel.SurveyedSurfaces.Locate(Args.IncludedSurveyedSurfaces[i]);
 
             // Lock & load the design
-            Design = Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor(), Args.SiteModelID, Args.CellSize, out _);
+            Design = Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor().DesignID, Args.SiteModelID, Args.CellSize, out _);
 
             if (Design == null)
             {
@@ -209,7 +209,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
             }
             finally
             {
-              Designs.UnLock(ThisSurveyedSurface.Get_DesignDescriptor(), Design);
+              Designs.UnLock(ThisSurveyedSurface.Get_DesignDescriptor().DesignID, Design);
             }
           }
 

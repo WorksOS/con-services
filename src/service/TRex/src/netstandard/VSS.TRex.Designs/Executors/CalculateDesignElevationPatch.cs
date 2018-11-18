@@ -36,11 +36,11 @@ namespace VSS.TRex.Designs.Executors
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
 
-            IDesignBase Design = Designs.Lock(Args.DesignDescriptor, Args.ProjectID, Args.CellSize, out DesignLoadResult LockResult);
+            IDesignBase Design = Designs.Lock(Args.DesignUid, Args.ProjectID, Args.CellSize, out DesignLoadResult LockResult);
 
             if (Design == null)
             {
-                Log.LogWarning($"Failed to read design file {Args.DesignDescriptor.FullPath}");
+                Log.LogWarning($"Failed to read design file for design {Args.DesignUid}");
                 CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
                 return null;
             }
@@ -66,7 +66,7 @@ namespace VSS.TRex.Designs.Executors
 //                Design.AcquireExclusiveInterlock();
 //                try
 //                {
-                    if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.DesignDescriptor.Offset))
+                    if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.Offset))
                     {
                         CalcResult = DesignProfilerRequestResult.OK;
                     }
@@ -84,7 +84,7 @@ namespace VSS.TRex.Designs.Executors
             }
             finally
             {
-                Designs.UnLock(Args.DesignDescriptor, Design);
+                Designs.UnLock(Args.DesignUid, Design);
             }
         }
 

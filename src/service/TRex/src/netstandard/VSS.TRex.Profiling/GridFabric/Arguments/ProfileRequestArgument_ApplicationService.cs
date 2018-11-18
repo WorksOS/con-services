@@ -26,14 +26,14 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public bool ReturnAllPassesAndLayers { get; set; } = false;
 
     /// <summary>
-    /// Constgructs a default profile request argumnent
+    /// Constructs a default profile request argument
     /// </summary>
     public ProfileRequestArgument_ApplicationService()
     {
     }
 
     /// <summary>
-    /// Creates a new profile reuest argument initialised with the supplied parameters
+    /// Creates a new profile request argument initialized with the supplied parameters
     /// </summary>
     /// <param name="profileTypeRequired"></param>
     /// <param name="startPoint"></param>
@@ -52,7 +52,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -75,7 +75,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
