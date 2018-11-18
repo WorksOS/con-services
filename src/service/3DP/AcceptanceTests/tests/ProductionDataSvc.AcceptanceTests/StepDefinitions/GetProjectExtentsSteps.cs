@@ -1,8 +1,6 @@
 ﻿using System.Linq;
-using Newtonsoft.Json;
 using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
-using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -41,15 +39,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       }
 
       AssertObjectsAreEqual(expectedResult);
-    //  var actualResult = JsonConvert.DeserializeObject<GetMachinesResult>(PostRequestHandler.CurrentResponse.ToString());
-    ////  expectedResult.ProjectExtents = expectedMachineList.ToArray();
-
-    //  ObjectComparer.RoundAllArrayElementsProperties(actualResult.MachineStatuses, roundingPrecision: 12);
-
-    //  ObjectComparer.AssertAreEqual(
-    //    actualResultObj: actualResult,
-    //    expectedResultJson: JsonConvert.SerializeObject(expectedResult),
-    //    ignoreCase: true);
     }
   }
 }

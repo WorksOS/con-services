@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
@@ -17,7 +16,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the Map3d service URI ""(.*)""")]
     public void GivenTheCompactionServiceURI(string url)
     {
-      this._url = RestClient.CompactionSvcBaseUri + url;
+      this._url = RestClient.Productivity3DServiceBaseUrl + url;
     }
 
     [Given(@"the result file ""(.*)""")]
