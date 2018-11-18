@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Reflection;
 using Gherkin.Ast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
@@ -18,20 +20,20 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the service URI ""(.*)""")]
     public void GivenTheServiceUri(string uri)
     {
-      uri = RestClient.ProdSvcBaseUri + uri;
+      uri = RestClient.Productivity3DServiceBaseUrl + uri;
       PostRequestHandler = new Poster<TRequest, TResponse>(uri);
     }
 
     [Given(@"the service route ""(.*)"" and request repo ""(.*)""")]
     public void GivenTheServiceRouteAndRequestRepo(string route, string requestFile)
     {
-      PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.ProdSvcBaseUri + route, requestFile);
+      PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.Productivity3DServiceBaseUrl + route, requestFile);
     }
 
     [Given(@"the service route ""(.*)"" request repo ""(.*)"" and result repo ""(.*)""")]
     public void GivenTheServiceRouteRequestRepoAndResultRepo(string route, string requestFile, string resultFile)
     {
-      PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.ProdSvcBaseUri + route, requestFile, resultFile);
+      PostRequestHandler = new Poster<TRequest, TResponse>(RestClient.Productivity3DServiceBaseUrl + route, requestFile, resultFile);
     }
 
     [And(@"request body property ""(.*)"" with value ""(.*)""")]
@@ -59,9 +61,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var actualResultJson = JsonConvert.SerializeObject(PostRequestHandler.CurrentResponse, Formatting.Indented);
 
       ObjectComparer.AssertAreEqual(
-        actualResultJson: actualResultJson, 
-        expectedResultJson: expectedResultJson, 
-        ignoreCase: true, 
+        actualResultJson: actualResultJson,
+        expectedResultJson: expectedResultJson,
+        ignoreCase: true,
         resultName: resultName);
     }
 
@@ -93,8 +95,16 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       ObjectComparer.RoundAllDoubleProperties(actualJObject, roundingPrecision: 8);
       ObjectComparer.RoundAllDoubleProperties(expectedJObject, roundingPrecision: 8);
-      
+
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject);
+    }
+
+    [Then(@"Delete surveyed surface file (.*)")]
+    public void ThenDeleteSurveyedSurfaceFile(int fileId)
+    {
+      var result = BeforeAndAfter.DeleteSurveyedSurfaceFile(fileId);
+
+      Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
     private static void TrySetProperty(object obj, string property, object value)

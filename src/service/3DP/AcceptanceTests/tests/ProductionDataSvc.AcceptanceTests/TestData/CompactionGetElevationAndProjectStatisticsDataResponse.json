@@ -19,17 +19,17 @@
     "Message": "success"
   },
   "NoDesignFilter_ER": {
-    "boundingExtents": {
-      "maxX": 2989.16625977,
-      "maxY": 1325.90722656,
-      "maxZ": 631.98522949,
-      "minX": 2184.32177734,
-      "minY": 1088.31726074,
-      "minZ": 591.95385742
+    "BoundingExtents": {
+      "maxX": 2913.2900000000004,
+      "maxY": 1250.69,
+      "maxZ": 624.1365966796875,
+      "minX": 2306.05,
+      "minY": 1125.2300000000003,
+      "minZ": 591.953857421875
     },
-    "minElevation": 591.95385742,
-    "maxElevation": 631.98522949,
-    "totalCoverageArea": 0.0,
+    "MinElevation": 591.953857421875,
+    "MaxElevation": 624.1365966796875,
+    "TotalCoverageArea": 0.0,
     "Code": 0,
     "Message": "success"
   },
@@ -58,25 +58,25 @@
   },
   "GoodRequest_PRS": {
     "startTime": "2012-10-30T00:12:09.109",
-    "endTime": "2015-03-15T18:13:09.265",
+    "endTime": "2012-11-08T01:00:08.756",
     "cellSize": 0.34,
     "indexOriginOffset": 536870912,
     "extents": {
-      "maxX": 2989.1663015263803,
-      "maxY": 1325.9072715855209,
-      "maxZ": 631.9852294921875,
-      "minX": 2184.3218844638031,
-      "minY": 1088.3172778947385,
+      "maxX": 2913.2900000000004,
+      "maxY": 1250.69,
+      "maxZ": 624.1365966796875,
+      "minX": 2306.05,
+      "minY": 1125.2300000000002,
       "minZ": 591.953857421875
     },
     "Code": 0,
     "Message": "success"
   },
   "GoodReq_Extents": {
-    "minLat": 36.20545959,
-    "minLng": -115.02628326,
-    "maxLat": 36.21020508,
-    "maxLng": -115.0177002,
+    "minLat": 36.206604688828079,
+    "minLng": -115.02502164741648,
+    "maxLat": 36.207735146259026,
+    "maxLng": -115.01826973325758,
     "Code": 0,
     "Message": "success"
   },

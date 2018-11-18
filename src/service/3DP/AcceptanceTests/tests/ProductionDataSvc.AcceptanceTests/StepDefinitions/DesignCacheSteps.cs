@@ -16,7 +16,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenTheDeleteDesignCacheFileServiceURIAProjectAndAFileNamed(string uri, long projectID, string designName)
     {
       designCacheDeleter = new Poster<DesignNameRequest, DummyRequestResult>(
-          RestClient.ProdSvcBaseUri + uri,
+          RestClient.Productivity3DServiceBaseUrl + uri,
           new DesignNameRequest { ProjectId = projectID, DesignFilename = designName });
     }
 
@@ -32,7 +32,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         try
         {
           RestClient.SendHttpClientRequest(
-            RestClient.ReportSvcBaseUri,
+            RestClient.Productivity3DServiceBaseUrl,
             sVuri,
             HttpMethod.Post,
             MediaTypes.JSON,
@@ -88,7 +88,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       try
       {
         RestClient.SendHttpClientRequest(
-          RestClient.ReportSvcBaseUri,
+          RestClient.Productivity3DServiceBaseUrl,
           sVuri,
           HttpMethod.Post,
           MediaTypes.JSON,

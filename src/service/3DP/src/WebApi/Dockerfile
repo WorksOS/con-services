@@ -1,7 +1,6 @@
 FROM microsoft/windowsservercore:10.0.14393.2068
-RUN powershell Invoke-WebRequest -Uri "https://download.microsoft.com/download/9/E/6/9E63300C-0941-4B45-A0EC-0008F96DD480/NDP471-KB4033342-x86-x64-AllOS-ENU.exe" -OutFile dotnet-framework-installer.exe 
-RUN .\dotnet-framework-installer.exe /q 
-#RUN del .\dotnet-framework-installer.exe 
+RUN powershell Invoke-WebRequest -Uri "http://go.microsoft.com/fwlink/?linkid=863265" -OutFile dotnet-472-framework-installer.exe 
+RUN .\dotnet-472-framework-installer.exe /q 
 ENV COMPLUS_NGenProtectedProcess_FeatureEnabled=0 
 RUN \Windows\Microsoft.NET\Framework64\v4.0.30319\ngen update 
 RUN \Windows\Microsoft.NET\Framework\v4.0.30319\ngen update
