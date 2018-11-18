@@ -11,19 +11,28 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
   /// </summary>
   public class OptimisedTTMCellProfileBuilder
   {
-    private const int kMaxHzVtGridInterceptsToCalculate = 8000;
+    /// <summary>
+    /// The maximum number of subgrids permitted to be in the profile intercept list.
+    /// At a cell size of 0.34 meters, this is roughly 20 kilometers in length
+    /// </summary>
+    private const int kMaxHzVtGridInterceptsToCalculate = 2000;
 
     private readonly double CellSize;
 
     private readonly InterceptList VtIntercepts = new InterceptList();
     private readonly InterceptList HzIntercepts = new InterceptList();
-    public readonly InterceptList VtHzIntercepts = new InterceptList();
+
+    /// <summary>
+    /// The combined set of grid boundary intercepts representing the path taken by the profile line
+    /// across the subgrids in the project.
+    /// </summary>
+    public InterceptList VtHzIntercepts { get; private set; } = new InterceptList();
 
     private readonly bool SlicerToolUsed;
 
     private double StartX, StartY, StartStation;
     private double EndX, EndY, EndStation;
-    private double CurrStationPos;
+    private double CurrentStationPos;
     private double Distance;
 
     /// <summary>
@@ -132,7 +141,7 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
     /// <returns></returns>
     public bool Build(XYZ[] nEECoords, double originStation)
     {
-      CurrStationPos = 0;
+      CurrentStationPos = 0;
 
       for (int loopBound = nEECoords.Length - 1, I = 0; I < loopBound; I++)
       {
@@ -146,10 +155,10 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
 
         if (I == 0) 
         {
-          CurrStationPos = SlicerToolUsed ? originStation : nEECoords[I].Z; // alignment profiles pass in station for more accuracy
+          CurrentStationPos = SlicerToolUsed ? originStation : nEECoords[I].Z; // alignment profiles pass in station for more accuracy
 
           // Add start point of profile line to intercept list
-          VtHzIntercepts.AddPoint(StartX, StartY, CurrStationPos);
+          VtHzIntercepts.AddPoint(StartX, StartY, CurrentStationPos);
         }
 
         Distance = SlicerToolUsed
@@ -160,17 +169,17 @@ namespace VSS.TRex.Designs.TTM.Optimised.Profiling
           continue;
 
         // Get all intercepts between profile line and cell boundaries for this segment
-        CalculateHorizontalIntercepts(CurrStationPos); // pass the distance down alignment this segment starts
-        CalculateVerticalIntercepts(CurrStationPos);
+        CalculateHorizontalIntercepts(CurrentStationPos); // pass the distance down alignment this segment starts
+        CalculateVerticalIntercepts(CurrentStationPos);
 
-        CurrStationPos += Distance; // add distance to current station
+        CurrentStationPos += Distance; // add distance to current station
       }
 
       // Merge vertical and horizontal cell boundary/profile line intercepts
       VtHzIntercepts.MergeInterceptLists(VtIntercepts, HzIntercepts);
 
       // Add end point of profile line to intercept list
-       VtHzIntercepts.AddPoint(EndX, EndY, CurrStationPos);
+       VtHzIntercepts.AddPoint(EndX, EndY, CurrentStationPos);
 
       // Update each intercept with it's midpoint and intercept length
       // i.e. the midpoint on the line between one intercept and the next one

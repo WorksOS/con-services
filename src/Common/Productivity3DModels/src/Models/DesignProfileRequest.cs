@@ -82,13 +82,5 @@ namespace VSS.Productivity3D.Models.Models
       EndX = endX;
       EndY = endY;
     }
-
-    /// <summary>
-    /// Validates all properties.
-    /// </summary>
-    public override void Validate()
-    {
-      base.Validate();
-    }
   }
 }

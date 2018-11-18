@@ -67,7 +67,8 @@ namespace VSS.TRex.Designs.Executors
 
         if (result == null)
         {
-          // TODO: Handle failure to calculate a design profile result
+          Log.LogInformation($"Unable to calculate a design profiler result for {args}");
+          result = new XYZS[0];
         }
 
         return result;
