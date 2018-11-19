@@ -1,13 +1,13 @@
 ﻿using System;
-using Draw = System.Drawing;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Executors;
-using VSS.TRex.Types;
 using Xunit;
+using Draw = System.Drawing;
 
 namespace VSS.TRex.Tests
 {
-        public class RenderOverlayTileTests
+  public class RenderOverlayTileTests
     {
         [Fact()]
         public void Test_RenderOverlayTile_Creation()

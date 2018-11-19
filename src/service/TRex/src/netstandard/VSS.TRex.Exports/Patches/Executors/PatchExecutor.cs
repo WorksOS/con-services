@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Patches.GridFabric;
 using VSS.TRex.Exports.Patches.Executors.Tasks;

@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using VSS.ConfigurationStore;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces;

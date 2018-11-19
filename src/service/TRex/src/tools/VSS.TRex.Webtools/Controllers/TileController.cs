@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Filters;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Webtools.Controllers
 {
