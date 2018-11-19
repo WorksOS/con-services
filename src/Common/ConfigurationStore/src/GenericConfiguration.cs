@@ -8,23 +8,14 @@ using Microsoft.Extensions.Logging;
 
 namespace VSS.ConfigurationStore
 {
-
-  internal enum KubernetesState
-  {
-    Initialized,
-    Requested,
-    NotInitialized,
-    NotRequired,
-    Disabled
-  };
-
   /// <summary>
-  /// Settings come from 2 sources:
+  /// Settings come from 3 sources:
   /// environment variables and 'internal' (appsettings.json)
   /// Kubernetes configuration has the lowest priority
   /// environment vars will override k8s
   /// Appsettings will override any environment setting
   /// if neither present then we'll use some def=aults
+  /// Also kubernetes is supported as one of the sources with the lowest priority
   /// </summary>
   public class GenericConfiguration : IConfigurationStore
   {
@@ -106,11 +97,11 @@ namespace VSS.ConfigurationStore
       if (!configListed)
       {
         configListed = true;
-        _log.LogInformation("*************CONFIGURATION DETAILS*******************");
+        log.LogInformation("*************CONFIGURATION DETAILS*******************");
         //Log current configuration 
-        foreach (var keyValuePair in _configuration.AsEnumerable())
+        foreach (var keyValuePair in configuration.AsEnumerable())
         {
-          _log.LogInformation($"{keyValuePair.Key}={keyValuePair.Value}");
+          log.LogInformation($"{keyValuePair.Key}={keyValuePair.Value}");
 
         }
       }
@@ -166,7 +157,7 @@ namespace VSS.ConfigurationStore
 
         if (!UseKubernetes)
         {
-          _log.LogInformation("Kubernetes plugin is not requested - exiting and disabling it permanently.");
+          log.LogInformation("Kubernetes plugin is not requested - exiting and disabling it permanently.");
           kubernetesInitialized = KubernetesState.NotRequired;
         }
 
