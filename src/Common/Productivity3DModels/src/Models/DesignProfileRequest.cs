@@ -51,15 +51,6 @@ namespace VSS.Productivity3D.Models.Models
     public double? EndY { get; private set; }
 
     /// <summary>
-    /// Sets the fill tolerance to calculate Summary Volumes in meters
-    /// </summary>
-    /// <value>
-    /// The cut tolerance.
-    /// </value>
-    [JsonProperty(Required = Required.Default)]
-    public double? FillTolerance { get; private set; }
-
-    /// <summary>
     /// Prevents a default instance of the <see cref="DesignProfileRequest"/> class from being created.
     /// </summary>
     private DesignProfileRequest()
