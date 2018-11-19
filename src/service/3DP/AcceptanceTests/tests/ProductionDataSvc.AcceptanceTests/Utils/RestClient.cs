@@ -36,13 +36,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
       return result;
     }
 
-    public static readonly string CompactionSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI"));
-    public static readonly string NotificationSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI"));
-    public static readonly string ReportSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("REPORT_SVC_BASE_URI"));
-    public static readonly string TagSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("TAG_SVC_BASE_URI"));
-    public static readonly string CoordSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI"));
-    public static readonly string ProdSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("PROD_SVC_BASE_URI"));
-    public static readonly string FileAccessSvcBaseUri = ConstructUri(Environment.GetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI"));
+    public static readonly string Productivity3DServiceBaseUrl = ConstructUri(Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI"));
 
     private static string ConstructUri(string subDir)
     {

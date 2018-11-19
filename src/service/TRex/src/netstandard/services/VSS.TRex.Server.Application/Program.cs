@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -143,6 +144,8 @@ namespace VSS.TRex.Server.Application
 
     static async Task<int> Main()
     {
+      Log4NetAspExtensions.ConfigureLog4Net("TRex");
+
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 

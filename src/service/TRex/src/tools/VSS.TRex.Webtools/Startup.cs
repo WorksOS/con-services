@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.TRex.Designs;
@@ -12,6 +14,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels;
@@ -96,7 +99,9 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
-
+      services.AddTransient<ITransferProxy, TransferProxy>();
+      services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
+      
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
 
@@ -109,7 +114,7 @@ namespace VSS.TRex.Webtools
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
     }
-
+    
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {

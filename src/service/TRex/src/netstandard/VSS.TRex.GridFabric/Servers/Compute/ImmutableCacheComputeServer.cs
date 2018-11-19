@@ -10,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -103,7 +105,10 @@ namespace VSS.TRex.Servers.Compute
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
 
-      //cfg.BinaryConfiguration = new BinaryConfiguration(typeof(TestQueueItem));
+      cfg.BinaryConfiguration = new BinaryConfiguration
+      {
+        Serializer = new BinarizableSerializer()
+      };
     }
 
 
@@ -139,7 +144,7 @@ namespace VSS.TRex.Servers.Compute
 
         IpFinder = new TcpDiscoveryStaticIpFinder()
         {
-          Endpoints = new[] { "127.0.0.1:47500..47509" }
+          Endpoints = new[] { "127.0.0.1:47500..47502" }
         }
       };
 

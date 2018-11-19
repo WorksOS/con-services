@@ -6,9 +6,13 @@ using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.TTM.Optimised.Profiling;
+using VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -41,6 +45,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+        .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Complete();
     }
 
@@ -78,8 +83,9 @@ namespace VSS.TRex.Server.DesignElevation
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
+      Log4NetAspExtensions.ConfigureLog4Net("TRex");
 
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
       var cancelTokenSource = new CancellationTokenSource();

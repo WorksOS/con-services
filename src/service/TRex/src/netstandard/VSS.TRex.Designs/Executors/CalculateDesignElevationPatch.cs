@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -11,6 +13,10 @@ namespace VSS.TRex.Designs.Executors
     public class CalculateDesignElevationPatch
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatch>();
+
+        private static IDesignFiles designs = null;
+
+        private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
 
         /// <summary>
         /// Default no-args constructor
@@ -30,11 +36,11 @@ namespace VSS.TRex.Designs.Executors
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
 
-            DesignBase Design = DesignFiles.Designs.Lock(Args.DesignDescriptor, Args.ProjectID, Args.CellSize, out DesignLoadResult LockResult);
+            IDesignBase Design = Designs.Lock(Args.DesignUid, Args.ProjectID, Args.CellSize, out DesignLoadResult LockResult);
 
             if (Design == null)
             {
-                Log.LogWarning($"Failed to read design file {Args.DesignDescriptor.FullPath}");
+                Log.LogWarning($"Failed to read design file for design {Args.DesignUid}");
                 CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
                 return null;
             }
@@ -60,7 +66,7 @@ namespace VSS.TRex.Designs.Executors
 //                Design.AcquireExclusiveInterlock();
 //                try
 //                {
-                    if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.DesignDescriptor.Offset))
+                    if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.Offset))
                     {
                         CalcResult = DesignProfilerRequestResult.OK;
                     }
@@ -78,7 +84,7 @@ namespace VSS.TRex.Designs.Executors
             }
             finally
             {
-                DesignFiles.Designs.UnLock(Args.DesignDescriptor, Design);
+                Designs.UnLock(Args.DesignUid, Design);
             }
         }
 
@@ -104,7 +110,7 @@ namespace VSS.TRex.Designs.Executors
 
                     if (result == null)
                     {
-                        // TODO: Handle faulre to calculate a design elevation patch result
+                        // TODO: Handle failure to calculate a design elevation patch result
                     }
 
                     return result;

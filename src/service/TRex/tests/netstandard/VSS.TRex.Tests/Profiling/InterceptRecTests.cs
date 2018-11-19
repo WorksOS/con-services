@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VSS.TRex.Profiling;
+﻿using VSS.TRex.Profiling.Models;
 using Xunit;
 
 namespace VSS.TRex.Tests.Profiling

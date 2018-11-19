@@ -78,7 +78,7 @@ namespace VSS.TRex.Webtools.Controllers
 
       return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Add
         (Guid.Parse(siteModelID), 
-        new DesignDescriptor(Guid.NewGuid(), "", "", "", fileName, offset),  
+        new DesignDescriptor(Guid.NewGuid(), "", fileName, offset),  
         DateTime.Parse(asAtDate), 
         new BoundingWorldExtent3D(minX, minY, maxX, maxY)));
     }

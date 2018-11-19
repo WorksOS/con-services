@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Filters.Interfaces;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 

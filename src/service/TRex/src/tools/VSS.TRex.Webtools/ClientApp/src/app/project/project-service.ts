@@ -117,6 +117,11 @@ export class ProjectService {
       ('addDesign', `designs/${projectUid}?fileName=${descriptor.fileName}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}`, null);
   }
 
+  public addDesignFromS3(projectUid: string, descriptor: DesignDescriptor, extents: ProjectExtents): Observable<DesignDescriptor> {
+    return this.executePostRequest<DesignDescriptor>
+    ('addDesign', `designs/${projectUid}/${descriptor.designId}?fileName=${descriptor.fileName}`, null);
+  }
+
   public getDesigns(projectUid: string): Observable<Design[]> {
     return this.executeRequest<Design[]>('getDesigns', `designs/${projectUid}`);
   }

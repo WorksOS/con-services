@@ -34,14 +34,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the Tag service URI ""(.*)"", Tag request repo file ""(.*)""")]
     public void GivenTheTagServiceURITagRequestRepoFile(string uri, string requestFile)
     {
-      uri = RestClient.TagSvcBaseUri + uri;
+      uri = RestClient.Productivity3DServiceBaseUrl + uri;
       tagFilePoster = new Poster<JObject, ResponseBase>(uri, requestFile, null);
     }
 
     [And(@"the Machine service URI ""(.*)"", Machine result repo file ""(.*)""")]
     public void GivenTheMachineServiceURIMachineResultRepoFile(string uri, string resultFile)
     {
-      uri = RestClient.ProdSvcBaseUri + uri + _legacyAssetId;
+      uri = RestClient.Productivity3DServiceBaseUrl + uri + _legacyAssetId;
       machineStatusGetter = new Getter<GetMachinesResult>(uri, resultFile);
     }
 

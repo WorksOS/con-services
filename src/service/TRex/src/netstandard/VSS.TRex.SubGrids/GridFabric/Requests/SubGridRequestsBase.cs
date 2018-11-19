@@ -134,7 +134,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             arg = new TSubGridsRequestArgument()
             {
-                SiteModelID = SiteModelID,
+                ProjectID = SiteModelID,
                 RequestID = RequestID,
                 GridDataType = RequestedGridDataType,
                 IncludeSurveyedSurfaceInformation = IncludeSurveyedSurfaceInformation,

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -29,19 +28,18 @@ namespace VSS.ConfigurationStore
   /// </summary>
   public class GenericConfiguration : IConfigurationStore
   {
-    private readonly IConfigurationRoot _configuration;
-    private readonly ILogger _log;
+    private const string APP_SETTINGS_FILENAME = "appsettings.json";
+    private readonly IConfigurationRoot configuration;
+    private readonly ILogger log;
 
-
-    private static Dictionary<string, string> kubernetesConfig=null;
-    private static bool useKubernetes = false;
-    private static string kubernetesConfigMapName = null;
-    private static string kubernetesNamespace = null;
-    private static string kubernetesContext = null;
+    private static Dictionary<string, string> kubernetesConfig;
+    private static bool useKubernetes;
+    private static string kubernetesConfigMapName;
+    private static string kubernetesNamespace;
+    private static string kubernetesContext;
     private static KubernetesState kubernetesInitialized = KubernetesState.NotInitialized;
-    private object kubernetesInitLock = new object();
+    private readonly object kubernetesInitLock = new object();
     private static bool configListed = false;
-      
 
     public bool UseKubernetes
     {
@@ -74,12 +72,12 @@ namespace VSS.ConfigurationStore
     public GenericConfiguration(ILoggerFactory logger)
     {
       IConfigurationBuilder configBuilder;
-      _log = logger.CreateLogger<GenericConfiguration>();
-      _log.LogTrace("GenericConfig constructing");
+      log = logger.CreateLogger<GenericConfiguration>();
+      log.LogTrace("GenericConfig constructing");
 
       if (kubernetesInitialized == KubernetesState.NotInitialized)
       {
-        _log.LogDebug("Initializing Kubernetes plugin");
+        log.LogDebug("Initializing Kubernetes plugin");
         InitKubernetes();
       }
 
@@ -92,16 +90,16 @@ namespace VSS.ConfigurationStore
       {
         var pathToConfigFile = PathToConfigFile();
 
-        _log.LogTrace($"Using configuration file: {pathToConfigFile}");
+        log.LogTrace($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
-          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: true);
 
-        _configuration = configBuilder.Build();
+        configuration = configBuilder.Build();
       }
       catch (Exception ex)
       {
-        _log.LogCritical($"GenericConfiguration exception: {ex.Message}, {ex.Source}, {ex.StackTrace}");
+        log.LogCritical($"GenericConfiguration exception: {ex.Message}, {ex.Source}, {ex.StackTrace}");
         throw;
       }
 
@@ -120,20 +118,20 @@ namespace VSS.ConfigurationStore
 
     private string PathToConfigFile()
     {
-      _log.LogTrace("Base:" + AppContext.BaseDirectory);
+      log.LogTrace("Base:" + AppContext.BaseDirectory);
       var dirToAppsettings = Directory.GetCurrentDirectory();
-      _log.LogTrace("Current:" + dirToAppsettings);
+      log.LogTrace("Current:" + dirToAppsettings);
       string pathToConfigFile;
 
-      _log.LogDebug(
+      log.LogDebug(
         $"Testing default path for the config file {Directory.GetCurrentDirectory()} and {AppContext.BaseDirectory}");
 
       //Test if appsettings exists in the default folder for the console application
-      if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")))
+      if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), APP_SETTINGS_FILENAME)))
       {
         pathToConfigFile = Directory.GetCurrentDirectory();
       }
-      else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json")))
+      else if (File.Exists(Path.Combine(AppContext.BaseDirectory, APP_SETTINGS_FILENAME)))
       {
         pathToConfigFile = AppContext.BaseDirectory;
       }
@@ -142,7 +140,7 @@ namespace VSS.ConfigurationStore
         var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
         pathToConfigFile = Path.GetDirectoryName(pathToExe);
 
-        _log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
+        log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
       }
 
       return pathToConfigFile;
@@ -153,13 +151,14 @@ namespace VSS.ConfigurationStore
       lock (kubernetesInitLock)
       {
         var localConfig = new ConfigurationBuilder().AddEnvironmentVariables().SetBasePath(PathToConfigFile())
-          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+          .AddJsonFile(APP_SETTINGS_FILENAME, optional: false, reloadOnChange: true).Build();
 
-        if (localConfig["UseKubernetes"] =="true" && kubernetesInitialized == KubernetesState.NotInitialized)
+        bool.TryParse(localConfig["UseKubernetes"], out var result);
+        if (result && kubernetesInitialized == KubernetesState.NotInitialized)
         {
           kubernetesInitialized = KubernetesState.Requested;
           UseKubernetes = true;
-          _log.LogTrace("Setting variables for kubernetes");
+          log.LogTrace("Setting variables for kubernetes");
           KubernetesConfigMapName = localConfig["KubernetesConfigMapName"];
           KubernetesNamespace = localConfig["KubernetesNamespace"];
           KubernetesContext = localConfig["KubernetesContext"];
@@ -176,7 +175,7 @@ namespace VSS.ConfigurationStore
         {
           try
           {
-            _log.LogTrace("Connecting to kubernetes cluster");
+            log.LogTrace("Connecting to kubernetes cluster");
             var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(currentContext: KubernetesContext);
             var client = new Kubernetes(config);
 
@@ -184,11 +183,11 @@ namespace VSS.ConfigurationStore
               .ReadNamespacedConfigMapWithHttpMessagesAsync(KubernetesConfigMapName, KubernetesNamespace).Result.Body
               .Data);
             kubernetesInitialized = KubernetesState.Initialized;
-            _log.LogTrace("Successfully retrieved configuration from Kubernetes");
+            log.LogTrace("Successfully retrieved configuration from Kubernetes");
           }
           catch (Exception ex)
           {
-            _log.LogWarning(
+            log.LogWarning(
               $"Can not connect to Kubernetes cluster with error {ex.Message}. Kubernetes is disabled for this process.");
             kubernetesInitialized = KubernetesState.Disabled;
             UseKubernetes = false;
@@ -225,8 +224,8 @@ namespace VSS.ConfigurationStore
           serverPassword == null)
       {
         var errorString =
-          $"Your application is attempting to use the {connectionType} connectionType but is missing an environment variable. serverName {serverName} serverPort {serverPort} serverDatabaseName {serverDatabaseName} serverUserName {serverUserName} serverPassword {serverPassword}";
-        _log.LogError(errorString);
+          $"Your application is attempting to use the {connectionType} connectionType but is missing an environment variable. serverName: '{serverName}', serverPort: '{serverPort}', serverDatabaseName: '{serverDatabaseName}', serverUserName: '{serverUserName}', serverPassword: '{serverPassword}'";
+        log.LogError(errorString);
 
         throw new InvalidOperationException(errorString);
       }
@@ -238,121 +237,121 @@ namespace VSS.ConfigurationStore
         ";userid=" + serverUserName +
         ";password=" + serverPassword +
         ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
-      _log.LogTrace($"Served connection string {connString}");
+      log.LogTrace($"Served connection string {connString}");
 
       return connString;
     }
 
     public string GetValueString(string key)
     {
-      _log.LogTrace($"Served configuration value {key}:{_configuration[key]}");
-      return _configuration[key];
+      log.LogTrace($"Served configuration value {key}:{configuration[key]}");
+      return configuration[key];
     }
 
     public string GetValueString(string key, string defaultValue)
     {
-      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<string>(key, defaultValue)}");
-      return _configuration.GetValue<string>(key, defaultValue);
+      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
+      return configuration.GetValue(key, defaultValue);
     }
 
     public int GetValueInt(string key)
     {
       // zero is valid. Returns int.MinValue on error
-      if (!int.TryParse(_configuration[key], out int valueInt))
+      if (!int.TryParse(configuration[key], out var valueInt))
       {
         valueInt = int.MinValue;
       }
 
-      _log.LogTrace($"Served configuration value {key}:{valueInt}");
+      log.LogTrace($"Served configuration value {key}:{valueInt}");
 
       return valueInt;
     }
 
     public int GetValueInt(string key, int defaultValue)
     {
-      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<int>(key, defaultValue)}");
-      return _configuration.GetValue<int>(key, defaultValue);
+      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
+      return configuration.GetValue(key, defaultValue);
     }
 
     public long GetValueLong(string key)
     {
       // zero is valid. Returns long.MinValue on error
-      if (!long.TryParse(_configuration[key], out long valueLong))
+      if (!long.TryParse(configuration[key], out var valueLong))
       {
         valueLong = long.MinValue;
       }
 
-      _log.LogTrace($"Served configuration value {key}:{valueLong}");
+      log.LogTrace($"Served configuration value {key}:{valueLong}");
 
       return valueLong;
     }
 
     public long GetValueLong(string key, long defaultValue)
     {
-      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<long>(key, defaultValue)}");
-      return _configuration.GetValue<long>(key, defaultValue);
+      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
+      return configuration.GetValue(key, defaultValue);
     }
 
     public double GetValueDouble(string key)
     {
       // zero is valid. Returns double.MinValue on error
-      if (!double.TryParse(_configuration[key], out double valueDouble))
+      if (!double.TryParse(configuration[key], out var valueDouble))
       {
-        valueDouble = Double.MinValue;
+        valueDouble = double.MinValue;
       }
 
-      _log.LogTrace($"Served configuration value {key}:{valueDouble}");
+      log.LogTrace($"Served configuration value {key}:{valueDouble}");
 
       return valueDouble;
     }
 
     public double GetValueDouble(string key, double defaultValue)
     {
-      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<double>(key, defaultValue)}");
-      return _configuration.GetValue<double>(key, defaultValue);
+      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
+      return configuration.GetValue(key, defaultValue);
     }
 
     public bool? GetValueBool(string key)
     {
       bool? theBoolToReturn = null;
-      if (bool.TryParse(_configuration[key], out bool theBool))
+      if (bool.TryParse(configuration[key], out var theBool))
       {
         theBoolToReturn = theBool;
       }
 
-      _log.LogTrace($"Served configuration value {key}:{theBoolToReturn}");
+      log.LogTrace($"Served configuration value {key}:{theBoolToReturn}");
 
       return theBoolToReturn;
     }
 
     public bool GetValueBool(string key, bool defaultValue)
     {
-      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<bool>(key, defaultValue)}");
-      return _configuration.GetValue<bool>(key, defaultValue);
+      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
+      return configuration.GetValue(key, defaultValue);
     }
 
     public TimeSpan? GetValueTimeSpan(string key)
     {
       TimeSpan? theTimeSpanToReturn = null;
-      if (TimeSpan.TryParse(_configuration[key], out TimeSpan theTimeSpan))
+      if (TimeSpan.TryParse(configuration[key], out var theTimeSpan))
       {
         theTimeSpanToReturn = theTimeSpan;
       }
 
-      _log.LogTrace($"Served configuration value {key}:{theTimeSpanToReturn}");
+      log.LogTrace($"Served configuration value {key}:{theTimeSpanToReturn}");
 
       return theTimeSpanToReturn;
     }
 
     public TimeSpan GetValueTimeSpan(string key, TimeSpan defaultValue)
     {
-      _log.LogTrace($"Served configuration value {key}:{_configuration.GetValue<TimeSpan>(key, defaultValue)}");
-      return _configuration.GetValue<TimeSpan>(key, defaultValue);
+      log.LogTrace($"Served configuration value {key}:{configuration.GetValue(key, defaultValue)}");
+      return configuration.GetValue(key, defaultValue);
     }
 
     public IConfigurationSection GetSection(string key)
     {
-      return _configuration.GetSection(key);
+      return configuration.GetSection(key);
     }
 
     public IConfigurationSection GetLoggingConfig()
