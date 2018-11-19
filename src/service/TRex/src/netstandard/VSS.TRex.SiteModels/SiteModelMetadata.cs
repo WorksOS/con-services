@@ -8,7 +8,7 @@ using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  public class SiteModelMetadata : BaseRequestBinarizableArgument, ISiteModelMetadata, IEquatable<BaseRequestBinarizableArgument>
+  public class SiteModelMetadata : BaseRequestBinarizableArgument, ISiteModelMetadata, IEquatable<SiteModelMetadata>
   {
     private const byte versionNumber = 1;
 
@@ -61,8 +61,10 @@ namespace VSS.TRex.SiteModels
       SurveyedSurfaceCount = reader.ReadInt();
     }
 
-    protected bool Equals(SiteModelMetadata other)
+    public bool Equals(SiteModelMetadata other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return ID.Equals(other.ID) && 
              string.Equals(Name, other.Name) && 
              string.Equals(Description, other.Description) && 
@@ -71,11 +73,6 @@ namespace VSS.TRex.SiteModels
              MachineCount == other.MachineCount && 
              DesignCount == other.DesignCount && 
              SurveyedSurfaceCount == other.SurveyedSurfaceCount;
-    }
-
-    public bool Equals(BaseRequestBinarizableArgument other)
-    {
-      return Equals(other as SiteModelMetadata);
     }
 
     public override bool Equals(object obj)

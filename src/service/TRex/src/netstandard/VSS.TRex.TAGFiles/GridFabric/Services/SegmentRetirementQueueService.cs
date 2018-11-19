@@ -116,13 +116,13 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
               Log.LogError($"Failed to retire {retireesCount} spatial streams from mutable and immutable contexts");
             }
           }
-
-          waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
         }
         catch (Exception e)
         {
           Log.LogError($"Exception reported while obtaining new group of retirees to process: {e}"); 
         }
+
+        waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
       } while (!aborted);
 
       Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} completed executing");

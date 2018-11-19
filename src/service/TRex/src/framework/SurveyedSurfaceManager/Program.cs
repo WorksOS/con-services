@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
@@ -46,6 +47,7 @@ namespace SurveyedSurfaceManager
     [STAThread]
     static void Main()
     {
+      Log4NetAspExtensions.ConfigureLog4Net("TRex");
       DependencyInjection();
 
       // Make sure all our assemblies are loaded...
