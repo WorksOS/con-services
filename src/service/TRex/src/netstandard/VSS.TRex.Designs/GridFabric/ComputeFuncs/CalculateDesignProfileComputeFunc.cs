@@ -20,11 +20,10 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       var startDate = DateTime.Now;
       try
       {
-        Log.LogInformation($"In: CalculateDesignProfileComputeFunc: Arg = {arg}");
+        Log.LogInformation($"In: {nameof(CalculateDesignProfileComputeFunc)}: Arg = {arg}");
         try
         {
           CalculateDesignProfile Executor = new CalculateDesignProfile();
-
 
           var result = new CalculateDesignProfileResponse
           {
