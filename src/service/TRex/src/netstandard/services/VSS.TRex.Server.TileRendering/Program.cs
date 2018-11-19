@@ -157,8 +157,6 @@ namespace VSS.TRex.Server.TileRendering
 
     static async Task<int> Main(string[] args)
     {
-      Log4NetAspExtensions.ConfigureLog4Net("TRex");
-
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
