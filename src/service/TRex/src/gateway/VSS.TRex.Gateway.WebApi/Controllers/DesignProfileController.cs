@@ -25,15 +25,15 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
+    /// Get the design profile between a pair of points across a design surface
     /// </summary>
     /// <param name="designProfileRequest"></param>
     /// <returns></returns>
     [Route("api/v1/profile/design")]
     [HttpPost]
-    public DesignProfileResult PostSummaryVolumes([FromBody] DesignProfileRequest designProfileRequest)
+    public DesignProfileResult PostDesignProfile([FromBody] DesignProfileRequest designProfileRequest)
     {
-      Log.LogInformation($"{nameof(PostSummaryVolumes)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostDesignProfile)}: {Request.QueryString}");
 
       designProfileRequest.Validate();
 
