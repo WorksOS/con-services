@@ -78,7 +78,7 @@ namespace VSS.TRex.DI
       // LoggerFactory.AddDebug();
       loggerFactory.AddProvider(new Log4NetProvider());
 
-      // Insert this immediately into the TRex.Logging namesapce to get logging available as early as possible
+      // Insert this immediately into the TRex.Logging namespace to get logging available as early as possible
       Logging.Logger.Inject(loggerFactory);
 
       // ### Add the logging related services to the collection
