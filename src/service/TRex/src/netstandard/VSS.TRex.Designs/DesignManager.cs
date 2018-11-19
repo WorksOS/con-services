@@ -10,14 +10,13 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs
 {
   /// <summary>
-  /// Service metaphor providing access andmanagement control over designs stored for site models
+  /// Service metaphor providing access and management control over designs stored for site models
   /// </summary>
   public class DesignManager : IDesignManager
   {

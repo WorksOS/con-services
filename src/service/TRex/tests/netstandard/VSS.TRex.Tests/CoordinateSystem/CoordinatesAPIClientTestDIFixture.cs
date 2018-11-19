@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Trex.HTTPClients.Clients;
-using VSS.Trex.HTTPClients.RequestHandlers;
+using VSS.TRex.HttpClients.Clients;
+using VSS.TRex.HttpClients.RequestHandlers;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
-using VSS.TRex.HTTPClients.RequestHandlers;
+using VSS.TRex.HttpClients.RequestHandlers;
 
 namespace VSS.TRex.Tests.CoordinateSystem
 {

@@ -191,7 +191,8 @@ namespace VSS.TRex.Tests.CoordinateSystem
 
       File.WriteAllBytes(filepath, Resources.BootCamp_2012);
 
-      Assert.True(DIMENSIONS_2012_DC_CSIB == ConvertCoordinates.DCFileToCSIB(filepath));
+      string result = ConvertCoordinates.DCFileToCSIB(filepath);
+      Assert.True(DIMENSIONS_2012_DC_CSIB == result);
     }
 
     [Fact]

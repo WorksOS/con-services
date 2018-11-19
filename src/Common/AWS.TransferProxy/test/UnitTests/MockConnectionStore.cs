@@ -36,6 +36,26 @@ namespace VSS.AWS.TransferProxy.UnitTests
       return defaultValue;
     }
 
+    public long GetValueLong(string v)
+    {
+      throw new NotImplementedException();
+    }
+
+    public long GetValueLong(string v, long defaultValue)
+    {
+      return defaultValue;
+    }
+
+    public double GetValueDouble(string v)
+    {
+      throw new NotImplementedException();
+    }
+
+    public double GetValueDouble(string v, double defaultValue)
+    {
+      return defaultValue;
+    }
+
     public TimeSpan? GetValueTimeSpan(string v)
     {
       return new TimeSpan();
@@ -65,5 +85,9 @@ namespace VSS.AWS.TransferProxy.UnitTests
     {
       throw new NotImplementedException();
     }
+
+    public bool UseKubernetes => false;
+    public string KubernetesConfigMapName => string.Empty;
+    public string KubernetesNamespace => string.Empty;
   }
 }

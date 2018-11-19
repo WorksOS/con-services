@@ -19,14 +19,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"only the service route ""(.*)""")]
     public void GivenOnlyTheServiceRoute(string url)
     {
-      Url = RestClient.CompactionSvcBaseUri + url;
+      Url = RestClient.Productivity3DServiceBaseUrl + url;
       GetResponseHandler = new Getter<JObject>(url);
     }
 
     [Given(@"the service route ""(.*)"" and result repo ""(.*)""")]
     public void GivenTheServiceRouteAndResultRepo(string url, string resultFileName)
     {
-      Url = RestClient.CompactionSvcBaseUri + url;
+      Url = RestClient.Productivity3DServiceBaseUrl + url;
       GetResponseHandler = new Getter<JObject>(url, resultFileName);
     }
 

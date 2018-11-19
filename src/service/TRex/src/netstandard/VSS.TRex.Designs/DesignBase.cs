@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs
 {
-  public abstract class DesignBase
+  public abstract class DesignBase : IDesignBase
   {
     private int FLockCount;
 
@@ -56,7 +59,7 @@ namespace VSS.TRex.Designs
       SubGridTreeBitmapSubGridBits Patch,
       double OriginX, double OriginY,
       double CellSize,
-      DesignDescriptor DesignDescriptor);
+      double Offset);
 
     public void WindLock() => Interlocked.Increment(ref FLockCount);
 
@@ -78,5 +81,7 @@ namespace VSS.TRex.Designs
 
     public void AcquireExclusiveInterlock() => Monitor.Enter(this);
     public void ReleaseExclusiveInterlock() => Monitor.Exit(this);
+
+    public abstract List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
   }
 }

@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 

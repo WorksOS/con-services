@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using Newtonsoft.Json;
-using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
 using Xunit;
@@ -36,14 +33,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenTheEditDataServiceURI(string editDataUri)
     {
       editDataRequester =
-          new Poster<EditDataRequest, EditDataResult>(RestClient.ProdSvcBaseUri + editDataUri);
+          new Poster<EditDataRequest, EditDataResult>(RestClient.Productivity3DServiceBaseUrl + editDataUri);
     }
 
     [And(@"the get edit data service URI ""(.*)""")]
     public void AndTheGetEditDataServiceURI(string getEditDataUri)
     {
       getEditDataRequester =
-          new Poster<GetEditDataRequest, GetEditDataResult>(RestClient.ProdSvcBaseUri + getEditDataUri);
+          new Poster<GetEditDataRequest, GetEditDataResult>(RestClient.Productivity3DServiceBaseUrl + getEditDataUri);
     }
 
     [And(@"all data edits are cleared for project (.*)")]
@@ -69,7 +66,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [And(@"GetLifts service ""(.*)"" only returns (.*) real lifts for project (.*)")]
     public void AndGetLiftsServiceOnlyReturnsRealLiftsForProject(string getLiftsUri, int numLifts, long pId)
     {
-      var fullGetLiftsUri = RestClient.ProdSvcBaseUri + string.Format(getLiftsUri, pId);
+      var fullGetLiftsUri = RestClient.Productivity3DServiceBaseUrl + string.Format(getLiftsUri, pId);
       var getLiftRequester =
           new Getter<LayerIdsExecutionResult>(fullGetLiftsUri);
 
@@ -79,7 +76,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [And(@"GetMachineDesign service ""(.*)"" only returns (.*) real designs for project (.*)")]
     public void AndGetMachineDesignServiceOnlyReturnsRealDesignsForProject(string getMachDesignUri, int numMachDesign, int pId)
     {
-      var fullGetMachDesignUri = RestClient.ProdSvcBaseUri + string.Format(getMachDesignUri, pId);
+      var fullGetMachDesignUri = RestClient.Productivity3DServiceBaseUrl + string.Format(getMachDesignUri, pId);
       var getMachDesignRequester =
           new Getter<GetMachineDesignResult>(fullGetMachDesignUri);
 
@@ -196,7 +193,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void WhenIRequestFromResourceAtGridPointForProjectFilteredByEditId(
          string datumTypeStr, string datumUri, double gridPtX, double gridPtY, long pId, int editId)
     {
-      var fullCellDatumUri = RestClient.ProdSvcBaseUri + datumUri;
+      var fullCellDatumUri = RestClient.Productivity3DServiceBaseUrl + datumUri;
       var datumType = (DisplayMode)Enum.Parse(typeof(DisplayMode), datumTypeStr);
       var gridPoint = new Point { x = gridPtX, y = gridPtY };
 
@@ -261,7 +258,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [And(@"I read back all machine designs from ""(.*)""")]
     public void WhenIReadBackAllMachineDesignsFrom(string getDesignUri)
     {
-      var designGetter = new Getter<GetMachineDesignResult>(string.Format(RestClient.ProdSvcBaseUri + getDesignUri));
+      var designGetter = new Getter<GetMachineDesignResult>(string.Format(RestClient.Productivity3DServiceBaseUrl + getDesignUri));
 
       getMachineDesignResult = designGetter.SendRequest(designGetter.Uri);
     }
@@ -269,7 +266,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [And(@"I read back all lifts from ""(.*)""")]
     public void AndIReadBackAllLiftsFrom(string getLiftUri)
     {
-      var liftGetter = new Getter<LayerIdsExecutionResult>(string.Format(RestClient.ProdSvcBaseUri + getLiftUri));
+      var liftGetter = new Getter<LayerIdsExecutionResult>(string.Format(RestClient.Productivity3DServiceBaseUrl + getLiftUri));
 
       layerIdsExecutionResult = liftGetter.SendRequest(liftGetter.Uri);
     }

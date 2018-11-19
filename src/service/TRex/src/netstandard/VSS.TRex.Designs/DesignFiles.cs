@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs
@@ -9,33 +10,16 @@ namespace VSS.TRex.Designs
     /*
   TDesignFiles = class(TObject)
     private
-      FDesigns : TObjectList;
       FDesignCacheSizeInKB : Integer;
       FCurrentCacheSizeInKB : Integer;
       FDesignUnlockedEvent : TSimpleEvent;
       function EnsureSufficientSpaceToLoadDesign(SpaceRequiredInKB: Integer): Boolean;
       function SpaceAvailableInKB: Integer;
-      function RemoveDesignFromCache(Design :TDesignBase; DeleteTTMFile : Boolean) : Boolean;
-      procedure AddDesignToCache(const Design: TDesignBase);
       function ImportFileFromTCC(const DesignDescriptor : TVLPDDesignDescriptor; const DataModelID : Int64) : Boolean;
 
       procedure DeleteLocallyCachedFile(const FileToDelete: TFileName);
 
-      function GetDesignInCache(const DataModelID     :Int64;
-                                const DesignFileName  :String;
-                                out   Design          :TDesignBase) :Boolean;
-    protected
-      Function Locate(const AFileName : TFileName;
-                      const ADataModelID : Int64) : TDesignBase;
-
     public
-      constructor Create(ADesignCacheSizeInKB : Integer);
-      Destructor Destroy; Override;
-
-      Function Lock(const DesignDescriptor : TVLPDDesignDescriptor;
-                    const DataModelID : Int64; const ACellSize: Double; out LoadResult: TDesignLoadResult) : TDesignBase;
-      Function UnLock(ADesign : TDesignBase) : Boolean;
-
       Function AnyLocks(out LockCount : integer) : Boolean;
 
       function GetCombinedSubgridIndexStream(const Surfaces: TICGroundSurfaceDetailsList;
@@ -47,77 +31,73 @@ namespace VSS.TRex.Designs
                                   const DeleteTTMFile   :Boolean);
   end;
   */
-    public class DesignFiles
-    {
-        /// <summary>
-        /// A static instance of the designs currently in use
-        /// </summary>
-        public static DesignFiles Designs = new DesignFiles();
 
-        private Dictionary<DesignDescriptor, DesignBase> designs = new Dictionary<DesignDescriptor, DesignBase>();
+  public class DesignFiles : IDesignFiles
+  {
+        private readonly Dictionary<Guid, IDesignBase> designs = new Dictionary<Guid, IDesignBase>();
 
-        public bool RemoveDesignFromCache(DesignDescriptor designDescriptor, DesignBase design, bool deleteFile)
+        public bool RemoveDesignFromCache(Guid designUid, IDesignBase design, bool deleteFile)
         {
             if (deleteFile)
             {
-                Debug.Assert(false, "Deletefile not implemented");
+                Debug.Assert(false, "Delete file not implemented");
                 return false;
             }
 
-            if (designs.TryGetValue(designDescriptor, out DesignBase _))
+            if (designs.TryGetValue(designUid, out _))
             {
-                return designs.Remove(designDescriptor);
+                return designs.Remove(designUid);
             }
 
             return false;
         }
 
-        public void AddDesignToCache(DesignDescriptor designDescriptor, DesignBase design)
+        public void AddDesignToCache(Guid designUid, IDesignBase design)
         {
             lock (designs)
             {
-                if (designs.TryGetValue(designDescriptor, out DesignBase _))
+                if (designs.TryGetValue(designUid, out _))
                 {
                     // The design is already there...
-                    Debug.Assert(false, $"Error adding design {designDescriptor} to designs, already present.");
+                    Debug.Assert(false, $"Error adding design {designUid} to designs, already present.");
                     return;
                 }
 
-                designs.Add(designDescriptor, design);
+                designs.Add(designUid, design);
             }
         }
 
         /// <summary>
-        /// Acquire a lock and referance to the design referenced by the given design descriptor
+        /// Acquire a lock and reference to the design referenced by the given design descriptor
         /// </summary>
-        /// <param name="designDescriptor"></param>
+        /// <param name="designUid"></param>
         /// <param name="DataModelID"></param>
         /// <param name="ACellSize"></param>
         /// <param name="LoadResult"></param>
         /// <returns></returns>
-        public DesignBase Lock(DesignDescriptor designDescriptor,
+        public IDesignBase Lock(Guid designUid,
                                Guid DataModelID, double ACellSize, out DesignLoadResult LoadResult)
         {
-            DesignBase design;
+            IDesignBase design;
 
             // Very simple lock function...
             lock (designs)
             {
-                designs.TryGetValue(designDescriptor, out design);
+                designs.TryGetValue(designUid, out design);
             }
 
             if (design == null)
             {
               // Load the design into the cache (in this case just TTM files)
               design = new TTMDesign(ACellSize);
-              if (!File.Exists(designDescriptor.FullPath))
+              if (!File.Exists(design.FileName))
               {
-                design.LoadFromStorage(DataModelID, designDescriptor.Folder, designDescriptor.FileName, true);
+                design.LoadFromStorage(DataModelID, Path.GetFileName(design.FileName), design.FileName, true);
               }
 
-              design.LoadFromFile(designDescriptor.FullPath);
+                design.LoadFromFile(design.FileName);
 
-                AddDesignToCache(designDescriptor, design);
+                AddDesignToCache(designUid, design);
             }
 
             LoadResult = DesignLoadResult.Success;
@@ -127,12 +107,12 @@ namespace VSS.TRex.Designs
         /// <summary>
         /// Release a lock to the design referenced by the given design descriptor
         /// </summary>
-        /// <param name="designDescriptor"></param>
+        /// <param name="designUid"></param>
         /// <param name="design"></param>
         /// <returns></returns>
-        public bool UnLock(DesignDescriptor designDescriptor, DesignBase design)
+        public bool UnLock(Guid designUid, IDesignBase design)
         {
-            lock (Designs)
+            lock (designs)
             {
                 // Very simple unlock function...
                 return true;

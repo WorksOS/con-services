@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Trex.HTTPClients.Constants;
+using VSS.TRex.HttpClients.Constants;
 
 namespace VSS.TRex.CoordinateSystems
 {

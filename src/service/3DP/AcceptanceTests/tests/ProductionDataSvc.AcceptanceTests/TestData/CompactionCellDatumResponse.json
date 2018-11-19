@@ -1,10 +1,10 @@
 {
   "Height": {
-    "northing": 1165.2625185962156,
+    "northing": 1165.2625185966872,
     "easting": 2738.7511710978069,
     "displayMode": 0,
     "returnCode": 0,
-    "value": 596.65301513671875,
+    "value": 594.656005859375,
     "timestamp": "2012-10-31T21:56:24.807",
     "Code": 0,
     "Message": "success"
@@ -14,7 +14,7 @@
     "easting": 2738.7511710978069,
     "displayMode": 0,
     "returnCode": 0,
-    "value": 596.65301513671875,
+    "value": 594.81597900390625,
     "timestamp": "2012-10-31T21:53:28.807",
     "Code": 0,
     "Message": "success"
