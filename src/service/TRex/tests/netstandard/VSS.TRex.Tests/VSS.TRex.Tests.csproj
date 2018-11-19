@@ -23,8 +23,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Moq" Version="4.10.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -43,6 +43,9 @@
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Caching\VSS.TRex.Caching.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Compression\VSS.TRex.Compression.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.Interfaces\VSS.TRex.Designs.Interfaces.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs.Models\VSS.TRex.Designs.Models.csproj" />
+    <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events.Interfaces\VSS.TRex.Events.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events.Models\VSS.TRex.Events.Models.csproj" />
     <ProjectReference Include="..\..\..\src\netstandard\VSS.TRex.Events\VSS.TRex.Events.csproj" />

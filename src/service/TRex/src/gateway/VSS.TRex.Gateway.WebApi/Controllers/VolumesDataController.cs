@@ -5,7 +5,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Gateway.Common.Requests;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -18,7 +17,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Default constructor.
     /// </summary>
     /// <param name="loggerFactory"></param>
-    /// <param name="log"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="configStore"></param>
     public VolumesDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)

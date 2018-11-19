@@ -34,7 +34,7 @@ namespace VSS.TRex.Designs.TTM
     }
 
     /// <summary>
-    /// Constructor accepting the X, Y and Z coorindate location for the vertex
+    /// Constructor accepting the X, Y and Z coordinate location for the vertex
     /// </summary>
     /// <param name="aX"></param>
     /// <param name="aY"></param>
@@ -46,6 +46,19 @@ namespace VSS.TRex.Designs.TTM
       X = aX;
       Y = aY;
       Z = aZ;
+    }
+
+    /// <summary>
+    /// Constructor accepting the X, Y and Z coordinate location for the vertex
+    /// </summary>
+    /// <param name="vertex"></param>
+    public TriVertex(XYZ vertex)
+    {
+      Tag = 0;
+
+      X = vertex.X;
+      Y = vertex.Y;
+      Z = vertex.Z;
     }
 
     /// <summary>

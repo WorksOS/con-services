@@ -1,7 +1,7 @@
 ﻿namespace VSS.TRex.Designs
 {
   /// <summary>
-  /// Contains a reference into a TIN/triangle sptatial index that is defined as a single list of triangle references for the entire design
+  /// Contains a reference into a TIN/triangle spatial index that is defined as a single list of triangle references for the entire design
   /// </summary>
   public struct TriangleArrayReference
   {
