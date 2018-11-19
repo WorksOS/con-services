@@ -9,6 +9,7 @@ using VSS.TRex.Machines;
 using VSS.TRex.TAGFiles.Servers.Client;
 using Microsoft.Extensions.Logging;
 using Tests.Common;
+using VSS.Log4Net.Extensions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Grids;
 
@@ -166,12 +167,12 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     static void Main(string[] args)
     {
+      Log4NetAspExtensions.ConfigureLog4Net("TRex");
+
       DependencyInjection();
 
       // Make sure all our assemblies are loaded...
       AssembliesHelper.LoadAllAssembliesForExecutingContext();
-
-      Log = Logging.Logger.CreateLogger<Program>();
 
       Log.LogInformation("Initialising TAG file processor");
 
