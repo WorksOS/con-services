@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using ASNodeDecls;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
 using VSS.Common.Exceptions;
@@ -36,45 +37,78 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (request == null)
           ThrowRequestTypeCastException<PatchRequest>();
 
-        var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
-        var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
-        var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PATCHES"), out var useTrexGateway);
 
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        if (useTrexGateway)
         {
-          RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
+          var patchDataRequest = new PatchDataRequest(
+            request.ProjectUid, 
+            request.Filter1, 
+            request.Filter2, 
+            request.Mode, 
+            request.PatchNumber, 
+            request.PatchSize); 
+
+          var fileResult = trexCompactionDataProxy.SendProductionDataPatchRequest(patchDataRequest, customHeaders).Result as FileStreamResult;
+          
+          using (var ms = new MemoryStream())
+          {
+            fileResult?.FileStream.CopyTo(ms);
+            return ms.Length > 0
+              ? ConvertPatchResult(ms, true)
+              : CreateNullPatchReturnedResult();
+          }
         }
 
-        RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
-
-        var raptorResult = raptorClient.RequestDataPatchPageWithTime(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
-            TASNodeCancellationDescriptorType.cdtDataPatches),
-          RaptorConverters.convertDisplayMode(request.Mode),
-          filter1,
-          filter2,
-          RaptorConverters.DesignDescriptor(request.DesignDescriptor),
-          volType,
-          RaptorConverters.convertOptions(null, request.LiftBuildSettings,
-            request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
-          request.PatchNumber,
-          request.PatchSize,
-          out var patch,
-          out _);
-
-        if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          return patch != null
-            ? ConvertPatchResult(patch, request.IncludeTimeOffsets)
-            : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
-        }
-
-        throw CreateServiceException<CompactionPatchV2Executor>((int)raptorResult);
+        return ProcessWithRaptor(request);
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
+    }
+
+    private ContractExecutionResult CreateNullPatchReturnedResult()
+    {
+      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
+    }
+
+    private ContractExecutionResult ProcessWithRaptor(PatchRequest request)
+    {
+      var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
+      var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
+      var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
+
+      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+      {
+        RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
+      }
+
+      RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
+
+      var raptorResult = raptorClient.RequestDataPatchPageWithTime(request.ProjectId ?? -1,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
+          TASNodeCancellationDescriptorType.cdtDataPatches),
+        RaptorConverters.convertDisplayMode(request.Mode),
+        filter1,
+        filter2,
+        RaptorConverters.DesignDescriptor(request.DesignDescriptor),
+        volType,
+        RaptorConverters.convertOptions(null, request.LiftBuildSettings,
+          request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
+        request.PatchNumber,
+        request.PatchSize,
+        out var patch,
+        out _);
+
+      if (raptorResult == TASNodeErrorStatus.asneOK)
+      {
+        return patch != null
+          ? ConvertPatchResult(patch, request.IncludeTimeOffsets)
+          : CreateNullPatchReturnedResult();
+      }
+
+      throw CreateServiceException<CompactionPatchV2Executor>((int)raptorResult);
     }
 
     protected sealed override void ProcessErrorCodes()

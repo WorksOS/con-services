@@ -32,7 +32,7 @@ namespace VSS.TRex.Exports.Patches
     /// <summary>
     /// The time, which elevation of the lowest cell elevation in the elevation subgrid result was reported at, expressed in seconds
     /// </summary>
-    public long TimeOrigin { get; set; }
+    public uint TimeOrigin { get; set; }
     /// <summary>
     /// Contains the elevation and time values for cells in the grid. This array is the same dimensions as a subgrid
     /// (currently 32x32) and contains positive elevation offsets from the ElevationOrigin member, expressed in integer millimeters as well
@@ -87,9 +87,6 @@ namespace VSS.TRex.Exports.Patches
       uint minTime = TIME_MAXIMUM_VALUE;
       uint maxTime = TIME_MINIMUM_VALUE;
 
-      //float MinElevation = CellPassConsts.NullHeight;
-      //long MinTime = TIME_MINIMUM_VALUE;
-
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         float valueHeight = elevations[x, y];
@@ -132,16 +129,16 @@ namespace VSS.TRex.Exports.Patches
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
         float valueHeight = elevations[x, y];
-        long valueTime = times[x, y];
+        uint valueTime = (uint)times[x, y];
 
         if (Math.Abs(valueHeight - CellPassConsts.NullHeight) < Consts.TOLERANCE_DIMENSION)
         {
           Data[x, y].ElevationOffset = uint.MaxValue;
-          Data[x, y].TimeOffset = long.MaxValue;
+          Data[x, y].TimeOffset = uint.MaxValue;
         }
         else
         {
-          Data[x, y].ElevationOffset = (long) Math.Floor((valueHeight - minElevation) * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE);
+          Data[x, y].ElevationOffset = (uint) Math.Floor((valueHeight - minElevation) * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE);
           Data[x, y].TimeOffset = valueTime - minTime;
         }
       });

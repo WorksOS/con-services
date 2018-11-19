@@ -33,12 +33,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionCellController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+    public CompactionCellController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy trexCompactionDataProxy)
       : base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -119,8 +126,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       patchRequest.Validate();
 
-      var v2PatchRequestResponse = RequestExecutorContainerFactory.Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient)
-                                                                  .Process(patchRequest);
+      var v2PatchRequestResponse = RequestExecutorContainerFactory
+        .Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(patchRequest);
 
       return Ok(v2PatchRequestResponse);
     }

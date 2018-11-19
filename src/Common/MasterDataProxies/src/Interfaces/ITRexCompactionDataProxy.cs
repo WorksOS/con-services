@@ -137,5 +137,14 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <returns></returns>
     Task<ContractExecutionResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
       IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get production data patches from the TRex database.
+    /// </summary>
+    /// <param name="tileRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<ActionResult> SendProductionDataPatchRequest(PatchDataRequest patchDataRequest,
+      IDictionary<string, string> customHeaders = null);
   }
 }

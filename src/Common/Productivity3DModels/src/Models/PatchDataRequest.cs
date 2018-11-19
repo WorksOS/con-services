@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Utilities;
@@ -42,6 +43,38 @@ namespace VSS.Productivity3D.Models.Models
     [Required]
     public int PatchSize { get; private set; }
 
+    /// <summary>
+    /// Default private constructor
+    /// </summary>
+    private PatchDataRequest()
+    { }
 
+    /// <summary>
+    /// Overload constructor with parameters.
+    /// </summary>
+    public PatchDataRequest(
+      Guid? projectUid,
+      FilterResult filter1,
+      FilterResult filter2,
+      DisplayMode mode,
+      int patchNumber,
+      int patchSize
+    )
+    {
+      ProjectUid = projectUid;
+      Filter1 = filter1;
+      Filter2 = filter2;
+      Mode = mode;
+      PatchNumber = patchNumber;
+      PatchSize = patchSize;
+    }
+
+    public override void Validate()
+    {
+      base.Validate();
+
+      Filter1?.Validate();
+      Filter2?.Validate();
+    }
   }
 }

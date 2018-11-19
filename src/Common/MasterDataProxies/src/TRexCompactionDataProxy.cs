@@ -181,7 +181,7 @@ namespace VSS.MasterData.Proxies
     {
       var request = JsonConvert.SerializeObject(tileRequest);
 
-      log.LogDebug($"{nameof(SendSpeedSummaryRequest)}: Sending the request: {request}");
+      log.LogDebug($"{nameof(SendProductionDataTileRequest)}: Sending the request: {request}");
 
       return await SendRequestPostEx<FileResult>(request, customHeaders, "/tile");
     }
@@ -209,7 +209,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<BoundingBox3DGrid> SendProjectExtentsRequest(string siteModelID, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the get project extents request for site model ID: {siteModelID}");
+      log.LogDebug($"{nameof(SendProjectExtentsRequest)}: Sending the get project extents request for site model ID: {siteModelID}");
 
       return await SendRequestGet<BoundingBox3DGrid>(customHeaders, $"/sitemodels/{siteModelID}/extents");
     }
@@ -225,10 +225,28 @@ namespace VSS.MasterData.Proxies
     {
       var request = JsonConvert.SerializeObject(compactionExportRequest);
 
-      log.LogDebug($"{nameof(SendSummaryVolumesRequest)}: Sending the request: {request}");
+      log.LogDebug($"{nameof(SendSurfaceExportRequest)}: Sending the request: {request}");
 
       return await SendRequestPost<CompactionExportResult>(request, customHeaders, "/export/surface/ttm");
     }
+
+    /// <summary>
+    /// Sends a request to get production data patches from the TRex database.
+    /// </summary>
+    /// <param name="patchDataRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public async Task<ActionResult> SendProductionDataPatchRequest(PatchDataRequest patchDataRequest, IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(patchDataRequest);
+
+      log.LogDebug($"{nameof(SendProductionDataPatchRequest)}: Sending the request: {request}");
+
+      return await SendRequestPostEx<FileResult>(request, customHeaders, "/patches");
+    }
+
+
+
 
     /// <summary>
     /// Executes a POST request against the TRex Gateway service.
@@ -257,7 +275,7 @@ namespace VSS.MasterData.Proxies
     {
       var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, "POST", string.Empty);
 
-      log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
+      log.LogDebug($"{nameof(SendRequestPostEx)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
       return response;
     }

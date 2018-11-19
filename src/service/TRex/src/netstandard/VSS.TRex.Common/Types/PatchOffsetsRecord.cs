@@ -7,12 +7,12 @@ namespace VSS.TRex.Common.Types
     /// <summary>
     /// Elevatin offset in millimeters.
     /// </summary>
-    public long ElevationOffset { get; set; }
+    public uint ElevationOffset { get; set; }
 
     /// <summary>
     /// Time offset in seconds.
     /// </summary>
-    public long TimeOffset { get; set; }
+    public uint TimeOffset { get; set; }
 
     /// <summary>
     /// Constructor with arguments.
@@ -50,8 +50,8 @@ namespace VSS.TRex.Common.Types
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      ElevationOffset = reader.ReadUInt16();
-      TimeOffset = reader.ReadUInt16();
+      ElevationOffset = reader.ReadUInt32();
+      TimeOffset = reader.ReadUInt32();
     }
 
   }
