@@ -1,4 +1,5 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System.Collections.Generic;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
@@ -16,14 +17,14 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Resulting geometry from a design profile line computation
     /// </summary>
-    public XYZS[] ProfileLine { get; private set; }
+    public List<XYZS> ProfileLine { get; private set; }
 
-    public bool HasData() => true;
+    public bool HasData() => (ProfileLine?.Count ?? 0) > 0;
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static DesignProfileResult Create(XYZS[] profileLine)
+    public static DesignProfileResult Create(List<XYZS> profileLine)
     {
       return new DesignProfileResult
       {

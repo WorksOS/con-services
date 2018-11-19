@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -905,10 +906,10 @@ namespace VSS.TRex.Designs
     /// <param name="profilePath"></param>
     /// <param name="cellSize"></param>
     /// <returns></returns>
-    public override XYZS[] ComputeProfile(XYZ[] profilePath, double cellSize)
+    public override List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize)
     {
-      var profiler = DIContext.Obtain<IOptimisedTTMProfilerFactory>();//NewInstance( new OptimisedTTMProfiler(oneTriangleModel, index, indices);
-      throw new NotImplementedException();
+      var profiler = DIContext.Obtain<IOptimisedTTMProfilerFactory>().NewInstance(Data, SpatialIndexOptimised, SpatialIndexOptimisedTriangles);
+      return profiler.Compute(profilePath);
     }
   }
 }

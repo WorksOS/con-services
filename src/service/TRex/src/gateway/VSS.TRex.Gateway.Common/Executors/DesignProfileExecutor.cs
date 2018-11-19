@@ -10,7 +10,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 
 
@@ -70,7 +69,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       return DesignProfileResult.Create(result.Profile.Select(x => new Productivity3D.Models.ResultHandling.XYZS
       {
         X = x.X, Y = x.Y, Z = x.Z, Station = x.Station
-      }).ToArray());
+      }).ToList());
     }
   }
 }

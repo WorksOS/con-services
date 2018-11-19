@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -78,7 +79,7 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="cellSize"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    public XYZS[] ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode)
+    public List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode)
     {
       // Query the DesignProfiler service to get the patch of elevations calculated
       errorCode = DesignProfilerRequestResult.OK;

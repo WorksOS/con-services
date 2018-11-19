@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.Interfaces;
@@ -28,7 +29,7 @@ namespace VSS.TRex.Designs.Executors
     /// <param name="arg"></param>
     /// <param name="calcResult"></param>
     /// <returns></returns>
-    private XYZS[] Calc(CalculateDesignProfileArgument arg, out DesignProfilerRequestResult calcResult)
+    private List<XYZS> Calc(CalculateDesignProfileArgument arg, out DesignProfilerRequestResult calcResult)
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
@@ -43,7 +44,7 @@ namespace VSS.TRex.Designs.Executors
 
       try
       {
-        XYZS[] result = Design.ComputeProfile(arg.ProfilePath, arg.CellSize);
+        var result = Design.ComputeProfile(arg.ProfilePath, arg.CellSize);
         calcResult = DesignProfilerRequestResult.OK;
 
         return result;
@@ -58,7 +59,7 @@ namespace VSS.TRex.Designs.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public XYZS[] Execute(CalculateDesignProfileArgument args)
+    public List<XYZS> Execute(CalculateDesignProfileArgument args)
     {
       try
       {
@@ -68,7 +69,7 @@ namespace VSS.TRex.Designs.Executors
         if (result == null)
         {
           Log.LogInformation($"Unable to calculate a design profiler result for {args}");
-          result = new XYZS[0];
+          result = new List<XYZS>();
         }
 
         return result;

@@ -31,7 +31,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
             Profile = Executor.Execute(arg),  
           };
 
-          Log.LogInformation($"Profile result: {result.Profile?.Length ?? -1} vertices");
+          Log.LogInformation($"Profile result: {result.Profile?.Count ?? -1} vertices");
 
           return result;
         }

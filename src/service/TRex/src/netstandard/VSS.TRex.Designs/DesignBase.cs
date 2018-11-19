@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -81,6 +82,6 @@ namespace VSS.TRex.Designs
     public void AcquireExclusiveInterlock() => Monitor.Enter(this);
     public void ReleaseExclusiveInterlock() => Monitor.Exit(this);
 
-    public abstract XYZS[] ComputeProfile(XYZ[] profilePath, double cellSize);
+    public abstract List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
   }
 }

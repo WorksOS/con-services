@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -44,6 +45,6 @@ namespace VSS.TRex.Designs.Interfaces
     ISubGridTreeBitMask SubgridOverlayIndex();
     void AcquireExclusiveInterlock();
     void ReleaseExclusiveInterlock();
-    XYZS[] ComputeProfile(XYZ[] profilePath, double cellSize);
+    List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -74,6 +75,6 @@ namespace VSS.TRex.Designs.Interfaces
 
     DesignDescriptor Get_DesignDescriptor();
 
-    XYZS[] ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode);
+    List<XYZS> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, out DesignProfilerRequestResult errorCode);
   }
 }
