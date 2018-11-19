@@ -21,24 +21,21 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       try
       {
         Log.LogInformation($"In: {nameof(CalculateDesignProfileComputeFunc)}: Arg = {arg}");
-        try
+
+        CalculateDesignProfile Executor = new CalculateDesignProfile();
+
+        var result = new CalculateDesignProfileResponse
         {
-          CalculateDesignProfile Executor = new CalculateDesignProfile();
+          Profile = Executor.Execute(arg),  
+        };
 
-          var result = new CalculateDesignProfileResponse
-          {
-            Profile = Executor.Execute(arg),  
-          };
-
-          Log.LogInformation($"Profile result: {result.Profile?.Count ?? -1} vertices");
-
-          return result;
-        }
-        catch (Exception E)
-        {
-          Log.LogError($"Exception: {E}");
-          return null;
-        }
+        Log.LogInformation($"Profile result: {result.Profile?.Count ?? -1} vertices");
+        return result;
+      }
+      catch (Exception E)
+      {
+        Log.LogError($"Exception: {E}");
+        return null;
       }
       finally
       {

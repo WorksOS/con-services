@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Factories;
+using VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Utilities;
 
 namespace VSS.TRex.Sandbox.TTMPerformanceTest
 {
@@ -87,16 +92,50 @@ namespace VSS.TRex.Sandbox.TTMPerformanceTest
         }     
     }
 
+      public static void ProfileAcrossTheGiantDesign()
+      {
+          TimeSpan bestTime = TimeSpan.MaxValue;
+
+          Designs.TTM.Optimised.TrimbleTINModel readonly_tin = new Designs.TTM.Optimised.TrimbleTINModel();
+          readonly_tin.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+
+          TTMDesign design = new TTMDesign(0.34);
+          design.LoadFromFile(@"C:\Users\rwilson\Downloads\5644616_oba9c0bd14_FRL.ttm");
+
+          for (int i = 0; i < 10; i++)
+          { 
+            DateTime _start = DateTime.Now;
+
+            var profile = design.ComputeProfile(new[]
+            {
+              new XYZ(design.Data.Header.MinimumEasting, design.Data.Header.MinimumNorthing, 0),
+              new XYZ(design.Data.Header.MaximumEasting, design.Data.Header.MaximumNorthing, 0)
+            }, 0.34);
+
+            var profileDistance = MathUtilities.Hypot(profile.First().X - profile.Last().X, profile.First().Y - profile.Last().Y);
+            DateTime _end = DateTime.Now;
+      
+            if (_end - _start < bestTime)
+            {
+              bestTime = _end - _start;
+              Console.WriteLine($"TIN profile (#{i}) with an {profileDistance:F3} meter line with {profile.Count} vertices in best time of {bestTime}");
+          }
+        }
+    }
+
     static void Main(string[] args)
     {
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Complete();
 
-      LoadTheGiantDesignALotOfTimes();
+      //LoadTheGiantDesignALotOfTimes();
       //ScanAllElevationsOverGiantDesign();
+      ProfileAcrossTheGiantDesign();
 
+      Console.WriteLine("Completed operations - press a key");
       Console.ReadKey();
     }
   }
