@@ -11,8 +11,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.Designs.TTM.Optimised.Profiling;
-using VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -83,8 +81,6 @@ namespace VSS.TRex.Server.DesignElevation
 
     static async Task<int> Main(string[] args)
     {
-      Log4NetAspExtensions.ConfigureLog4Net("TRex");
-
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
