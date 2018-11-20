@@ -39,6 +39,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <param name="producer"></param>
     /// <param name="persistantTransferProxy"></param>
+    /// <param name="filterServiceProxy"></param>
+    /// <param name="tRexImportFileProxy"></param>
     /// <param name="projectRepo"></param>
     /// <param name="store"></param>
     /// <param name="raptorProxy"></param>
@@ -49,11 +51,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="requestFactory"></param>
     public FileImportV2Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
+      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory)
       : base(producer, store, logger, logger.CreateLogger<FileImportV2Controller>(), serviceExceptionHandler,
-        raptorProxy, persistantTransferProxy,
+        raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory)
     {
       this.logger = logger;
@@ -115,26 +118,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         var memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
         
         fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-          memStream, project.ProjectUID, importedFileTbc.Name, /* todo BaseName? */
+          memStream, project.ProjectUID, importedFileTbc.Name, /* todoJeannie should this be BaseName? */
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
             ? importedFileTbc.SurfaceFile.SurveyedUtc
             : (DateTime?)null,
-          log, serviceExceptionHandler, PersistantTransferProxy);
+          log, serviceExceptionHandler, persistantTransferProxy);
         memStream?.Dispose();
       }
 
-      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(project.ProjectUID, log, projectRepo)
+      var existing = await ImportedFileRequestDatabaseHelper
+        .GetImportedFileForProject
+        (project.ProjectUID, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
+        log, projectRepo)
         .ConfigureAwait(false);
-      ImportedFile existing = null;
-      if (importedFiles.Count > 0)
-      {
-        // surveyed surface not supported via this api
-        existing = importedFiles.FirstOrDefault(
-          f => string.Equals(f.Name, importedFileTbc.Name, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileTbc.ImportedFileTypeId
-        );
-      }
 
       bool creating = existing == null;
       log.LogInformation(
@@ -163,7 +160,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<CreateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              raptorProxy, null, PersistantTransferProxy,
+              raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
               projectRepo, null, fileRepo)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
@@ -191,7 +188,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<UpdateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              raptorProxy, null, null,
+              raptorProxy, null, null, null, tRexImportFileProxy,
               projectRepo, null, fileRepo)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;

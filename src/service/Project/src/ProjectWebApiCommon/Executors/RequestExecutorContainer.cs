@@ -70,6 +70,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected ITransferProxy persistantTransferProxy;
 
     /// <summary>
+    /// Interface to filter service for importFile validation
+    /// </summary>
+    protected IFilterServiceProxy filterServiceProxy;
+
+    /// <summary>
+    ///  Trex Import files interface
+    /// </summary>
+    protected ITRexImportFileProxy tRexImportFileProxy;
+
+    /// <summary>
     /// Repository factory used extensively for project DB
     /// </summary>
     protected IProjectRepository projectRepo;
@@ -192,7 +202,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
-      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null, ITransferProxy persistantTransferProxy = null,
+      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null,
       IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null)
     {
@@ -208,6 +219,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.raptorProxy = raptorProxy;
       this.subscriptionProxy = subscriptionProxy;
       this.persistantTransferProxy = persistantTransferProxy;
+      this.filterServiceProxy = filterServiceProxy;
+      this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
       this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;

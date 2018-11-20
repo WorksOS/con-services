@@ -49,7 +49,7 @@ namespace ExecutorTests
         (logger, configStore, serviceExceptionHandler,
           customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
           null, null, 
-          null, null, null, 
+          null, null, null, null, null,
           projectRepo);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -77,7 +77,7 @@ namespace ExecutorTests
           ( logger, configStore, serviceExceptionHandler,
             customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
             null, null, 
-            null, null, null,
+            null, null, null, null, null,
            projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       
@@ -111,7 +111,7 @@ namespace ExecutorTests
         (logger, configStore, serviceExceptionHandler,
           customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
           null, null, 
-          null, null, null,
+          null, null, null, null, null,
           projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
@@ -178,7 +178,7 @@ namespace ExecutorTests
       (logger, configStore, serviceExceptionHandler,
         customerUidSomeOther, userId, userEmailAddress, CustomHeaders(customerUidOfProject),
         producer, kafkaTopicName,
-        raptorProxy, null, null,
+        raptorProxy, null, null, null, null,
         projectRepo);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -205,7 +205,7 @@ namespace ExecutorTests
         (logger, configStore, serviceExceptionHandler,
         customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
         producer, kafkaTopicName,
-        raptorProxy, null, null,
+        raptorProxy, null, null, null, null,
         projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
@@ -260,7 +260,7 @@ namespace ExecutorTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
         producer, kafkaTopicName,
-        raptorProxy, null, null,
+        raptorProxy, null, null, null, null,
         projectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");

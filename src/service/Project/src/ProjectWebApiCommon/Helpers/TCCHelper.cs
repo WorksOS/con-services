@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -248,6 +249,60 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation(
         $"CopyFileWithinTccRepository: fileDescriptorTarget {JsonConvert.SerializeObject(fileDescriptorTarget)}");
       return fileDescriptorTarget;
+    }
+
+    /// <summary>
+    /// Deletes the importedFile from TCC
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<ImportedFileInternalResult> DeleteFileFromTCCRepository(FileDescriptor fileDescriptor, Guid projectUid, Guid importedFileUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo, IProjectRepository projectRepo)
+    {
+      log.LogInformation($"DeleteFileFromTCCRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
+
+      bool ccFileExistsResult = false;
+      try
+      {
+        ccFileExistsResult = await fileRepo
+          .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
+          .ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        log.LogError(
+          $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.FileExists", e.Message);
+      }
+
+      if (ccFileExistsResult == true)
+      {
+        bool ccDeleteFileResult = false;
+        try
+        {
+          ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
+              fileDescriptor.path + '/' + fileDescriptor.fileName)
+            .ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+          log.LogError(
+            $"DeleteFileFromTCCRepository DeleteFile failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+          return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.DeleteFile", e.Message);
+        }
+
+        if (ccDeleteFileResult == false)
+        {
+          log.LogError(
+            $"DeleteFileFromTCCRepository DeleteFile failed to delete importedFileUid:{importedFileUid}.");
+          return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 54);
+        }
+      }
+      else
+      {
+        log.LogInformation(
+          $"DeleteFileFromTCCRepository File doesn't exist in TCC {JsonConvert.SerializeObject(fileDescriptor)}");
+      }
+      return null;
     }
   }
 }

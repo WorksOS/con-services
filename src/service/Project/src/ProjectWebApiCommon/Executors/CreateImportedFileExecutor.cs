@@ -45,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (createimportedfile == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult(); // keeps compiler happy
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
@@ -53,7 +53,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var isDesignFileType = createimportedfile.ImportedFileType == ImportedFileType.DesignSurface ||
                              createimportedfile.ImportedFileType == ImportedFileType.SurveyedSurface;
 
-      // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
+      // need to write to Db prior to 
+      //      notifying raptor, as raptor needs the legacyImportedFileID 
+      //      notifying TRex as Trex needs the ImportedFileUid
       var createImportedFileEvent = await ImportedFileRequestDatabaseHelper.CreateImportedFileinDb(
           Guid.Parse(customerUid),
           createimportedfile.ProjectUid,
@@ -65,11 +67,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
-        // todoJeannie
         var result = await ImportedFileRequestHelper.NotifyTRexAddFile(createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
-          createimportedfile.SurveyedUtc,
-          log, customHeaders, serviceExceptionHandler).ConfigureAwait(false);
+          createimportedfile.SurveyedUtc, // todoJeannie
+          log, customHeaders, serviceExceptionHandler,
+          tRexImportFileProxy, projectRepo).ConfigureAwait(false);
       }
 
       if (useRaptorGatewayDesignImport)
@@ -105,10 +107,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
-
-      var temp = (await ImportedFileRequestDatabaseHelper
-          .GetImportedFileList(createimportedfile.ProjectUid.ToString(), log, userId, projectRepo)
-          .ConfigureAwait(false));
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestDatabaseHelper

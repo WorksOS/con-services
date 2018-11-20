@@ -9,8 +9,10 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
@@ -68,7 +70,27 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return importedFileList.ToImmutableList();
     }
 
-    public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid,
+    public static async Task<ImportedFile> GetImportedFileForProject
+      (string projectUid, string fileName, ImportedFileType importedFileType, DateTime? surveyedUtc,
+      ILogger log, IProjectRepository projectRepo)
+    {
+      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
+      ImportedFile existing = null;
+      if (importedFiles.Count > 0)
+      {
+        existing = importedFiles.FirstOrDefault(
+          f => string.Equals(f.Name, fileName, StringComparison.OrdinalIgnoreCase)
+               && f.ImportedFileType == importedFileType
+               && (
+                 importedFileType == ImportedFileType.SurveyedSurface &&
+                 f.SurveyedUtc == surveyedUtc ||
+                 importedFileType != ImportedFileType.SurveyedSurface
+               ));
+      }
+      return existing;
+    }
+
+  public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid,
       string userId, IProjectRepository projectRepo)
     {
       List<ActivatedFileDescriptor> deactivatedFileList = null;
@@ -203,5 +225,43 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return updateImportedFileEvent;
     }
 
+    /// <summary>
+    /// un-deletes imported file from the Db using the Respositories library.
+    /// Used solely for rollback and is never inserted in the kafka que.
+    /// </summary>
+    /// <returns />
+    public static async Task UndeleteImportedFile(Guid projectUid, Guid importedFileUid,
+      IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var nowUtc = DateTime.UtcNow;
+      var undeleteImportedFileEvent = new UndeleteImportedFileEvent
+      {
+        ProjectUID = projectUid,
+        ImportedFileUID = importedFileUid,
+        ActionUTC = nowUtc,
+        ReceivedUTC = nowUtc
+      };
+
+      if (await projectRepo.StoreEvent(undeleteImportedFileEvent).ConfigureAwait(false) == 1)
+        return;
+
+      serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 51);
+    }
+
+
+    /// <summary>
+    /// Get the list of filters for the project
+    /// </summary>
+    public static async Task<List<VSS.MasterData.Models.Models.Filter>> GetFilters(Guid projectUid, 
+      IDictionary<string, string> customHeaders, IFilterServiceProxy filterServiceProxy)
+    {
+      var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
+      if (filterDescriptors == null || filterDescriptors.Count == 0)
+      {
+        return null;
+      }
+
+      return filterDescriptors.Select(f => JsonConvert.DeserializeObject<VSS.MasterData.Models.Models.Filter>(f.FilterJson)).ToList();
+    }
   }
 }

@@ -22,7 +22,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
-      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null, ITransferProxy persistantTransferProxy = null,
+      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null
       ) 
@@ -40,7 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log, configStore, serviceExceptionHandler,
         customerUid, userId, userEmailAddress, headers,
         producer, kafkaTopicName,
-        raptorProxy, subscriptionProxy, persistantTransferProxy,
+        raptorProxy, subscriptionProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, customerRepo, httpContextAccessor
         );
 

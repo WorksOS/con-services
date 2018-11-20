@@ -141,7 +141,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null,
+        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);
     }
@@ -212,7 +212,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null,
+        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);
     }
@@ -283,7 +283,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null,
+        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
@@ -360,7 +360,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null,
+        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
@@ -436,7 +436,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null,
+        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
         projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
       await executor.ProcessAsync(createProjectEvent);
     }

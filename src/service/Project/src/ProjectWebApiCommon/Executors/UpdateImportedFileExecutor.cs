@@ -37,13 +37,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (updateImportedFile == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68);
-        return new ContractExecutionResult(); // keeps compiler happy
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
 
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT", "FALSE"),
-        out var useTrexGatewayDesignImport);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT", "TRUE"),
-        out var useRaptorGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
       var isDesignFileType = updateImportedFile.ImportedFileType == ImportedFileType.DesignSurface ||
                              updateImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface;
 
@@ -52,11 +50,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useTrexGatewayDesignImport && isDesignFileType)
       {
-        // todoJeannie
         await ImportedFileRequestHelper.NotifyTRexUpdateFile(updateImportedFile.ProjectUid,
           updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.fileName, updateImportedFile.ImportedFileUid,
-          updateImportedFile.SurveyedUtc,
-          log, customHeaders, serviceExceptionHandler).ConfigureAwait(false);
+          updateImportedFile.SurveyedUtc,  // todoJeannie
+          log, customHeaders, serviceExceptionHandler,
+          tRexImportFileProxy, projectRepo).ConfigureAwait(false);
       }
 
       if (useRaptorGatewayDesignImport)

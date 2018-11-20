@@ -16,6 +16,7 @@ using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
@@ -100,6 +101,8 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<ISchedulerProxy, SchedulerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
+      services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
+      services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
 
       services.AddOpenTracing(builder =>
       {
@@ -187,11 +190,5 @@ namespace VSS.MasterData.Project.WebAPI
             "AWS_BUCKET_NAME");
       }
     }
-  }
-
-  public enum TransferProxyType
-  {
-    Default,
-    DesignImport
   }
 }

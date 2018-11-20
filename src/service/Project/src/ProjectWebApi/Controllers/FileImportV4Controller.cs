@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
@@ -54,17 +52,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="persistantTransferProxy"></param>
+    /// <param name="filterServiceProxy"></param>
+    /// <param name="tRexImportFileProxy"></param>
     /// <param name="projectRepo"></param>
     /// <param name="requestFactory"></param>
     /// <param name="subscriptionRepo"></param>
     /// <param name="fileRepo"></param>
     public FileImportV4Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+      IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
+      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, IRequestFactory requestFactory)
       : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
-        raptorProxy, persistantTransferProxy,
+        raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, requestFactory)
     {
       this.logger = logger;
@@ -351,46 +352,33 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await ValidateProjectId(projectUid.ToString());
 
       var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid.ToString(), log, projectRepo).ConfigureAwait(false);
-      ImportedFile importedFile = null;
+      ImportedFile existing = null;
       if (importedFiles.Count > 0)
-        importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
-      if (importedFile == null)
+        existing = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
+      
+      if (existing == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
-        return null; // to keep compiler happy
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
 
-      // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
-      var deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid, serviceExceptionHandler, projectRepo, false).ConfigureAwait(false);
+      var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(projectUid, existing.ImportedFileType,
+        JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor), 
+        Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId);
 
-      if (UseTrexGatewayDesignImport && IsDesignFileType(importedFile.ImportedFileType))
-      {
-        // todoJeannie
-        await ImportedFileRequestHelper.NotifyTRexDeleteFile(projectUid,
-          importedFile.ImportedFileType, importedFileUid, importedFile.Name,
-          log, customHeaders, serviceExceptionHandler).ConfigureAwait(false);
-      }
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<DeleteImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
+            customerUid, userId, userEmailAddress, customHeaders,
+            producer, kafkaTopicName,
+            raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
+            projectRepo, null, fileRepo)
+          .ProcessAsync(deleteImportedFile)
+      );
 
-      if (UseRaptorGatewayDesignImport)
-      {
-        await NotifyRaptorDeleteFile(projectUid, importedFile.ImportedFileType,
-            Guid.Parse(importedFile.ImportedFileUid), importedFile.FileDescriptor, importedFile.ImportedFileId,
-            importedFile.LegacyImportedFileId)
-          .ConfigureAwait(false);
-
-        await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor), projectUid, importedFileUid)
-          .ConfigureAwait(false);
-      }
-
-      var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
-        {
-          new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
       log.LogInformation(
         $"DeleteImportedFileV4. Completed succesfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
-      return new ContractExecutionResult();
+      return result;
     }
 
     /// <summary>
@@ -409,17 +397,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task<ImportedFileDescriptorSingleResult> CreateFile(string filename, Stream fileStream,
       Guid projectUid, ImportedFileType importedFileType,
       DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DateTime? surveyedUtc)
-    {
-      var importedFileList = await ImportedFileRequestDatabaseHelper
-        .GetImportedFileList(projectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false);
-      ImportedFileDescriptor importedFileDescriptor = null;
-      if (importedFileList.Count > 0)
-        importedFileDescriptor = importedFileList.FirstOrDefault(
-          f => string.Equals(f.Name, filename, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileType
-               && (importedFileType != ImportedFileType.SurveyedSurface || f.SurveyedUtc == surveyedUtc));
+    {      
+      var existing = await ImportedFileRequestDatabaseHelper
+        .GetImportedFileForProject
+          (projectUid.ToString(), filename, importedFileType, surveyedUtc,
+           log, projectRepo)
+        .ConfigureAwait(false);
 
-      if (importedFileDescriptor != null)
+      if (existing != null)
       {
         var message = $"CreateImportedFileV4. File: {filename} has already been imported.";
         log.LogError(message);
@@ -433,7 +418,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
           fileStream, projectUid.ToString(), filename,
           importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-          log, serviceExceptionHandler, PersistantTransferProxy);
+          log, serviceExceptionHandler, persistantTransferProxy);
       }
 
       if (UseRaptorGatewayDesignImport)
@@ -454,7 +439,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<CreateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              raptorProxy, null, PersistantTransferProxy,
+              raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
               projectRepo, null, fileRepo)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
@@ -485,19 +470,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // this also validates that this customer has access to the projectUid
       var project = await ProjectRequestHelper.GetProject(projectUid, customerUid, log, serviceExceptionHandler, projectRepo);
 
-      var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
-      ImportedFile existing = null;
-      if (importedFiles.Count > 0)
-      {
-        existing = importedFiles.FirstOrDefault(
-          f => string.Equals(f.Name, fileName, StringComparison.OrdinalIgnoreCase)
-               && f.ImportedFileType == importedFileType
-               && (
-                 importedFileType == ImportedFileType.SurveyedSurface &&
-                 f.SurveyedUtc == surveyedUtc ||
-                 importedFileType != ImportedFileType.SurveyedSurface
-               ));
-      }
+      var existing = await ImportedFileRequestDatabaseHelper
+        .GetImportedFileForProject
+          (project.ProjectUID, fileName, importedFileType, surveyedUtc,
+           log, projectRepo)
+        .ConfigureAwait(false);
+
       bool creating = existing == null;
       log.LogInformation(
         creating
@@ -514,7 +492,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
             fileStream, projectUid, fileName,
             importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-            log, serviceExceptionHandler, PersistantTransferProxy);
+            log, serviceExceptionHandler, persistantTransferProxy);
         }
 
         if (UseRaptorGatewayDesignImport)
@@ -537,7 +515,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<CreateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              raptorProxy, null, PersistantTransferProxy,
+              raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
               projectRepo, null, fileRepo)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
@@ -561,7 +539,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<UpdateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
-              raptorProxy, null, null,
+              raptorProxy, null, null, null, tRexImportFileProxy,
               projectRepo, null, fileRepo)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
