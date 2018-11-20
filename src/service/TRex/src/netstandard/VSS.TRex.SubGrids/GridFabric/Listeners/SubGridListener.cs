@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Text;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.DI;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -14,20 +15,18 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// to the local context for further processing when using a progressive style of subgrid requesting. 
     /// Subgrids are sent in groups as serialized streams held in memory streams to minimize serialization/deserialization overhead
     /// </summary>
-    public class SubGridListener : IMessageListener<byte[]>
+    public class SubGridListener : IMessageListener<byte[]>, IBinarizable
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridListener>();
 
         /// <summary>
         /// Count of the number of responses received by this listener
         /// </summary>
-        [NonSerialized]
         private int responseCounter;
 
         /// <summary>
         /// Local reference to the client subgrid factory
         /// </summary>
-        [NonSerialized]
         private static IClientLeafSubgridFactory clientLeafSubGridFactory;
    
         private IClientLeafSubgridFactory ClientLeafSubGridFactory
@@ -36,13 +35,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
         /// <summary>
         /// The reference to the task responsible for handling the returned subgrid information from the processing cluster
         /// </summary>
-        [NonSerialized]
         public ITask Task;
 
         /// <summary>
         /// The memory stream to be used for deserializing message packets when they arrive
         /// </summary>
-        [NonSerialized]
         [ThreadStatic]
         private static MemoryStream MS;
 
@@ -155,5 +152,21 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
         {
             Task = task;
        }
-    }
+
+      /// <summary>
+      /// The subgrid response listener has no serializable state
+      /// </summary>
+      /// <param name="writer"></param>
+      public void WriteBinary(IBinaryWriter writer)
+      {
+      }
+
+      /// <summary>
+      /// The subgrid response listener has no serializable state
+      /// </summary>
+      /// <param name="reader"></param>
+      public void ReadBinary(IBinaryReader reader)
+      {
+      }
+  }
 }

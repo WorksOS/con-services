@@ -15,7 +15,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// </summary>
   public class TAGFileBufferQueueServiceProxy
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueServiceProxy>();
 
         /// <summary>
