@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = RequestExecutorContainerFactory
-        .Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .Process(patchRequest);
 
       return Ok(v2PatchRequestResponse);
