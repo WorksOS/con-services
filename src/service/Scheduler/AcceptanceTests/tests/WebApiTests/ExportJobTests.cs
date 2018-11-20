@@ -108,7 +108,7 @@ namespace WebApiTests
 
       //Schedule the export job...
       var filterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d";
-      var jobId = GetScheduledJobId(filterUid, TIMEOUT_JOB_ID, 100000);
+      var jobId = GetScheduledJobId(filterUid, TIMEOUT_JOB_ID, TimeSpan.FromSeconds(100).Milliseconds);
 
       //Get the job status...
       var statusResult = WaitForExpectedStatus(jobId, "FAILED", 150);

@@ -69,13 +69,13 @@ namespace VSS.MasterData.Proxies
       {
         case "GET":
         {
-          return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); });
+          return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
         }
         case "POST":
         case "PUT":
         {
           return httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
-            x => { ApplyHeaders(customHeaders, x); });
+            x => { ApplyHeaders(customHeaders, x); }, log);
         }
         default:
         {
@@ -109,14 +109,18 @@ namespace VSS.MasterData.Proxies
         $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}");
 
       var policyResult = await Policy
-        .Handle<Exception>()
+        .Handle<Exception>(exception =>
+        {
+          log.LogWarning(exception,"Polly failed to execute the request");
+          return true;
+        })
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          log.LogDebug($"Trying to execute request {endpoint}");
-
+     
           log.LogDebug($"Trying to execute request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
+          log.LogDebug($"Request to {endpoint} completed");
 
           if (result.StatusCode != HttpStatusCode.OK)
           {
@@ -177,6 +181,7 @@ namespace VSS.MasterData.Proxies
         {
           log.LogDebug($"Trying to execute request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
+          log.LogDebug($"Request to {endpoint} completed");
 
           var contents = await result.Content.ReadAsStringAsync();
           if (result.StatusCode != HttpStatusCode.OK)
@@ -215,20 +220,21 @@ namespace VSS.MasterData.Proxies
   internal static class HttpClientExtensions
   {
     public static Task<HttpResponseMessage> GetAsync
-      (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction)
+      (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
     {
       var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
       preAction(httpRequestMessage);
 
-      var cts = new CancellationTokenSource(timeout.HasValue?timeout.Value:60000);
-
+      var cancellationTime = timeout.HasValue ? timeout.Value : 60000;
+      var cts = new CancellationTokenSource(cancellationTime);
+      log?.LogDebug($"Starting the request with timeout {cancellationTime}");
       return httpClient.SendAsync(httpRequestMessage,cts.Token);
     }
 
     public static Task<HttpResponseMessage> PostAsync
     (this HttpClient httpClient, string uri, Stream requestStream, string method,
-      IDictionary<string, string> customHeaders, int? timeout, Action<HttpRequestMessage> preAction)
+      IDictionary<string, string> customHeaders, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
     {
       //Default to JSON content type
       HttpContent content = null;
@@ -255,9 +261,9 @@ namespace VSS.MasterData.Proxies
         Content = content
       };
       preAction(httpRequestMessage);
-
-      var cts = new CancellationTokenSource(timeout.HasValue ? timeout.Value : 60000);
-
+      var cancellationTime = timeout.HasValue ? timeout.Value : 60000;
+      var cts = new CancellationTokenSource(cancellationTime);
+      log?.LogDebug($"Starting the request with timeout {cancellationTime} ");
       return httpClient.SendAsync(httpRequestMessage,cts.Token);
     }
   }
