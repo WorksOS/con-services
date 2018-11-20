@@ -85,7 +85,6 @@ namespace VSS.TRex.GridFabric
     public BaseIgniteClass()
     {
       Log.LogInformation("No-arg constructor BaseIgniteClass() called");
-      // throw new ArgumentException("No-arg constructor invalid for BaseIgniteClass, use two-arg constructor");
     }
 
     public void AcquireIgniteGridReference()
