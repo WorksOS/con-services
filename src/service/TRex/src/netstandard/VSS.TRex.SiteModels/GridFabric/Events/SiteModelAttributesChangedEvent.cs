@@ -11,7 +11,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   /// other information either directly contained within a site model (eg: project extents, cell size etc) or referenced by it
   /// (eg: machines, target event lists, designs, sitemodels etc)
   /// </summary>
-  public class SiteModelAttributesChangedEvent : BaseRequestBinarizableResponse, ISiteModelAttributesChangedEvent, IEquatable<BaseRequestBinarizableResponse>
+  public class SiteModelAttributesChangedEvent : BaseRequestResponse, ISiteModelAttributesChangedEvent, IEquatable<BaseRequestResponse>
   {
     public Guid SiteModelID { get; set; } = Guid.Empty;
     public bool ExistenceMapModified { get; set; }
@@ -68,7 +68,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
              (ExistenceMapChangeMask != null && other.ExistenceMapChangeMask != null && ExistenceMapChangeMask.SequenceEqual(other.ExistenceMapChangeMask)));
     }
 
-    public bool Equals(BaseRequestBinarizableResponse other)
+    public bool Equals(BaseRequestResponse other)
     {
       return Equals(other as SiteModelAttributesChangedEvent);
     }

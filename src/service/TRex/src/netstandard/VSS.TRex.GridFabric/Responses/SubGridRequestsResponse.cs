@@ -11,7 +11,7 @@ namespace VSS.TRex.GridFabric.Responses
   /// code covering the request plus additional statistical data such as the number of subgrids processed by 
   /// that cluster node from the overall pool of subgrid requested
   /// </summary>
-  public class SubGridRequestsResponse : BaseRequestBinarizableResponse, IEquatable<BaseRequestBinarizableResponse>
+  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<BaseRequestResponse>
   {
     /// <summary>
     /// The general subgrids request response code returned for the request
@@ -92,7 +92,7 @@ namespace VSS.TRex.GridFabric.Responses
              NumSurveyedSurfaceSubGridsExamined == other.NumSurveyedSurfaceSubGridsExamined;
     }
 
-    public bool Equals(BaseRequestBinarizableResponse other)
+    public bool Equals(BaseRequestResponse other)
     {
       return Equals(other as SubGridRequestsResponse);
     }

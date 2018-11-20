@@ -5,7 +5,7 @@ using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
-  public class SubmitTAGFileRequestArgument : BaseRequestBinarizableArgument
+  public class SubmitTAGFileRequestArgument : BaseRequestArgument
   {
     private const byte versionNumber = 1;
 

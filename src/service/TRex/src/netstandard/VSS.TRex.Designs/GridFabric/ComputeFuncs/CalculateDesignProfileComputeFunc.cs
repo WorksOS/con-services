@@ -5,13 +5,14 @@ using System.Reflection;
 using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.GridFabric.ComputeFuncs;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
   /// <summary>
   /// Ignite ComputeFunc responsible for executing the design profile calculator
   /// </summary>
-  public class CalculateDesignProfileComputeFunc : IComputeFunc<CalculateDesignProfileArgument, CalculateDesignProfileResponse>
+  public class CalculateDesignProfileComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignProfileArgument, CalculateDesignProfileResponse>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
