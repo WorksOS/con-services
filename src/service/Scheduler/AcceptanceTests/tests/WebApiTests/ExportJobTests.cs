@@ -116,7 +116,7 @@ namespace WebApiTests
       Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
       Assert.AreEqual(HttpStatusCode.InternalServerError, statusResult.FailureDetails.Code, "Wrong http status code");
       Assert.AreEqual(-3, statusResult.FailureDetails.Result.Code, "Wrong failure code");
-      Assert.AreEqual("The operation has timed out.", statusResult.FailureDetails.Result.Message, "Wrong failure message");
+      Assert.AreEqual("A task was canceled.", statusResult.FailureDetails.Result.Message, "Wrong failure message");
 
     }
 
