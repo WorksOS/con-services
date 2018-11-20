@@ -15,7 +15,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// </summary>
   public class SegmentRetirementQueueServiceProxyBase
   {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueServiceProxyBase>();
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <summary>
         /// The node filter to be used to control deployment of the segment retirement service
         /// </summary>
-        public RoleBasedServerNodeFilter NodeFilter;
+        private RoleBasedServerNodeFilter NodeFilter;
 
         public SegmentRetirementQueueServiceProxyBase(StorageMutability mutability, RoleBasedServerNodeFilter nodeFilter)
         {

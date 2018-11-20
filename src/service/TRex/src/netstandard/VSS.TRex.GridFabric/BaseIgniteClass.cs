@@ -15,7 +15,6 @@ namespace VSS.TRex.GridFabric
         /// Ignite instance.
         /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
         /// </summary>
-        [NonSerialized]
         private IIgnite _ignite;
 
       protected IIgnite _Ignite
@@ -35,7 +34,6 @@ namespace VSS.TRex.GridFabric
       /// <summary>
         /// The cluster group of nodes in the grid that are available for responding to design/profile requests
         /// </summary>
-        [NonSerialized]
         private IClusterGroup _group;
 
         protected IClusterGroup _Group { get { return _group; } }
@@ -43,7 +41,6 @@ namespace VSS.TRex.GridFabric
         /// <summary>
         /// The compute interface from the cluster group projection
         /// </summary>
-        [NonSerialized]
         private ICompute _compute;
 
         protected ICompute _Compute { get { return _compute; } }

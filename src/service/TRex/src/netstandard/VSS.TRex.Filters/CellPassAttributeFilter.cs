@@ -55,7 +55,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilter : CellPassAttributeFilterModel, ICellPassAttributeFilter
   {
-    [NonSerialized] private ISiteModel siteModel;
+    private ISiteModel siteModel;
 
     /// <summary>
     /// Owner is the SiteModel instance to which this filter relates and is used in cases where machine related
@@ -71,7 +71,7 @@ namespace VSS.TRex.Filters
     /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
     /// an elevation range filter.
     /// </summary>
-    [NonSerialized] public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
+    public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
 
     /// <summary>
     /// The machines present in the filter represented as an array of internal machine IDs specific to the site model the filter is being applied to

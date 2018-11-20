@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -12,21 +13,18 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <summary>
     /// The listener that responds to site model change notifications emitted by actors such as TAG file processing
     /// </summary>
-    public class SiteModelAttributesChangedEventListener : IMessageListener<ISiteModelAttributesChangedEvent>, IDisposable, ISiteModelAttributesChangedEventListener
+    public class SiteModelAttributesChangedEventListener : IMessageListener<ISiteModelAttributesChangedEvent>, IDisposable, ISiteModelAttributesChangedEventListener, IBinarizable
     {
-        [NonSerialized]
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
         ///  Message group the listener has been added to
         /// </summary>
-        [NonSerialized]
         private IMessaging MsgGroup;
 
-        [NonSerialized]
         private string MessageTopicName = "SiteModelAttributesChangedEvents";
 
-        [NonSerialized] private string GridName;
+        private string GridName;
 
         public bool Invoke(Guid nodeId, ISiteModelAttributesChangedEvent message)
         {
@@ -121,5 +119,20 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
             // GC.SuppressFinalize(this);
         }
         #endregion
+
+      /// <summary>
+      /// Listener has no serializable content
+      /// </summary>
+      /// <param name="writer"></param>
+      public void WriteBinary(IBinaryWriter writer)
+      {
+      }
+
+      /// <summary>
+      /// Listener has no serializable content
+      /// </summary>
+      public void ReadBinary(IBinaryReader reader)
+      {
+      }
     }
 }
