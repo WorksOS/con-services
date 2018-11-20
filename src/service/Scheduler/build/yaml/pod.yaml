@@ -58,9 +58,10 @@ spec:
         port: 80
     readinessProbe:
       initialDelaySeconds: 50
-        httpGet:
-          path: /ping
-          port: 80
+      httpGet:
+        scheme: HTTP
+        path: /ping
+        port: 80
     tty: true
     envFrom:
     - configMapRef:
