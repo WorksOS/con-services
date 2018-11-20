@@ -144,8 +144,6 @@ namespace VSS.TRex.Server.Application
 
     static async Task<int> Main()
     {
-      Log4NetAspExtensions.ConfigureLog4Net("TRex");
-
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 

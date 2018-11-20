@@ -1,2 +1,1 @@
-start ..\..\TRex\src\framework\TRexTAGFileSubmittor\bin\debug\TRexTAGFileSubmittor.exe "{00000000-0000-0000-0000-000000000011}" "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\DimensionSmallControlSet\ACOM" "{00000000-0000-0000-0000-000000000001}"
-
+start /D "..\src\tools\VSS.TRex.Tools.TAGfileSubmitter\bin\debug\netcoreapp2.1" "TAGFileSubmittor" cmd.exe /K "dotnet VSS.TRex.Tools.TAGFileSubmittor.dll \"{00000000-0000-0000-0000-000000000011}\" \"tests\TestData\Dimensions7Cells2Subgrids\1551J025SW--ACOM--121031164609.tag\" \"{00000000-0000-0000-0000-000000000001}\""

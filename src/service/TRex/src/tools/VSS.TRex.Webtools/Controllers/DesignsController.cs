@@ -98,7 +98,7 @@ namespace VSS.TRex.Webtools.Controllers
 
       var s3Path = $"{siteModelID}";
       string downloadLocalPath = Path.GetTempPath(); 
-      var downladedok = await DownloadFileFromS3Async(s3Path, downloadLocalPath, fileName).ConfigureAwait(false);
+      var downloadedok = await DownloadFileFromS3Async(s3Path, downloadLocalPath, fileName).ConfigureAwait(false);
       var loadedDesign = AddTheDesignToSiteModel(siteModelUID, designUID, downloadLocalPath, fileName);
 
       var spatialUploadedOk = UploadFileToS3(downloadLocalPath, fileName + ".$DesignSpatialIndex$", s3Path);
