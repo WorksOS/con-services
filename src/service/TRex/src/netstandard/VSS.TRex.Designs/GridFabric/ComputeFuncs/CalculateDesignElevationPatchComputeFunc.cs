@@ -4,13 +4,14 @@ using System;
 using System.Reflection;
 using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.GridFabric.ComputeFuncs;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// Ignite ComputeFunc responsible for executing the elevation patch calculator
     /// </summary>
-    public class CalculateDesignElevationPatchComputeFunc : IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
+    public class CalculateDesignElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignElevationPatchArgument, byte [] /* ClientHeightLeafSubGrid */>
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 

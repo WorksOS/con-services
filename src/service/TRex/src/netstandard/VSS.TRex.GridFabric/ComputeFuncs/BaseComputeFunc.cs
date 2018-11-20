@@ -1,20 +1,14 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {
   /// <summary>
   /// The base class for compute functions. This provides common aspects such as the injected Ignite instance
   /// </summary>
-  public class BaseComputeFunc : BaseIgniteClass, IBinarizable
+  public class BaseComputeFunc : IBinarizable, IFromToBinary
   {
     public BaseComputeFunc()
-    {
-    }
-
-    /// <summary>
-    /// Constructor accepting a role for the compute func that can identity a cluster group in the grid to perform the operation
-    /// </summary>
-    public BaseComputeFunc(string gridName, string role) : base(gridName, role)
     {
     }
 
@@ -26,9 +20,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// null function.
     /// </summary>
     /// <param name="writer"></param>
-    public void WriteBinary(IBinaryWriter writer)
-    {
-    }
+    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
 
     /// <summary>
     /// By convention in TRex, compute functions derive their state from the supplied argument to
@@ -38,7 +30,13 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// null function.
     /// </summary>
     /// <param name="reader"></param>
-    public void ReadBinary(IBinaryReader reader)
+    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
+
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+    }
+
+    public void FromBinary(IBinaryRawReader reader)
     {
     }
   }

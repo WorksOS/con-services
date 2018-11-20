@@ -1,8 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Profiling.Executors;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Responses;
@@ -12,12 +10,11 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
   /// <summary>
   /// The logic Ignite executes on application service node for profile requests
   /// </summary>
-  public class ProfileRequestComputeFunc_ApplicationService : BaseComputeFunc,
-    IComputeFunc<ProfileRequestArgument_ApplicationService, ProfileRequestResponse>
+  public class ProfileRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<ProfileRequestArgument_ApplicationService, ProfileRequestResponse>
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileRequestComputeFunc_ApplicationService>();
 
-    public ProfileRequestComputeFunc_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE_PROFILER)
+    public ProfileRequestComputeFunc_ApplicationService()
     {
     }
 

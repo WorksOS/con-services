@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using Apache.Ignite.Core.Binary;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
@@ -20,6 +19,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     /// <summary>
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
-    public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IBinarizable, IDisposable
+    public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : BaseComputeFunc, IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
@@ -595,29 +595,5 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         {
             DoDispose();
         }
-
-      /// <summary>
-      /// By convention in TRex, compute functions derive their state from the supplied argument to
-      /// their Invoke() method. State derived from BaseIgniteClass is intended to allow the representation
-      /// of the compute function on the invoking side the ability to target appropriate grid resources
-      /// for execution of the function. Thus, IBinarizable serialization for base compute func in TRex is a
-      /// null function.
-      /// </summary>
-      /// <param name="writer"></param>
-      public virtual void WriteBinary(IBinaryWriter writer)
-      {
-      }
-
-      /// <summary>
-      /// By convention in TRex, compute functions derive their state from the supplied argument to
-      /// their Invoke() method. State derived from BaseIgniteClass is intended to allow the representation
-      /// of the compute function on the invoking side the ability to target appropriate grid resources
-      /// for execution of the function. Thus, IBinarizable serialization for base compute func in TRex is a
-      /// null function.
-      /// </summary>
-      /// <param name="reader"></param>
-      public virtual void ReadBinary(IBinaryReader reader)
-      {
-      }
   }
 }

@@ -8,7 +8,7 @@ namespace VSS.TRex.GridFabric.Arguments
   /// set of methods from IFromToBinary based on the Ignite raw read/write serialisation as the preferred performant serialisation
   /// approach
   /// </summary>
-  public abstract class BaseRequestBinarizableArgument : IBinarizable, IFromToBinary
+  public abstract class BaseRequestArgument : IBinarizable, IFromToBinary
   {
     public abstract void ToBinary(IBinaryRawWriter writer);
 
