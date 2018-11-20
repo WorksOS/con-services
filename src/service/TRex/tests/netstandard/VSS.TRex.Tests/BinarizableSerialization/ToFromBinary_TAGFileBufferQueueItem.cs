@@ -4,7 +4,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
-  public class ToFomBinary_TAGFileBufferQueueItem
+  public class ToFromBinary_TAGFileBufferQueueItem
   {
     [Fact]
     public void Test_TAGFileBufferQueueItem_Simple()
