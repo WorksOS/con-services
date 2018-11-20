@@ -2,7 +2,7 @@
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 
-namespace VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces
+namespace VSS.TRex.Designs.Interfaces
 {
   public interface IOptimisedTTMProfiler
   {
