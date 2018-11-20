@@ -14,10 +14,6 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileRequestComputeFunc_ClusterCompute>();
 
-    public ProfileRequestComputeFunc_ClusterCompute()
-    {
-    }
-
     public ProfileRequestResponse Invoke(ProfileRequestArgument_ClusterCompute arg)
     {
       Log.LogInformation("In ProfileRequestComputeFunc.Invoke()");

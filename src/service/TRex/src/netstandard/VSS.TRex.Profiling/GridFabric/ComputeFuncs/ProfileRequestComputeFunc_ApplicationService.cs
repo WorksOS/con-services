@@ -14,10 +14,6 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileRequestComputeFunc_ApplicationService>();
 
-    public ProfileRequestComputeFunc_ApplicationService()
-    {
-    }
-
     /// <summary>
     /// Delegates processing of the profile like to the cluster compute layer, then aggregates together the fractional responses
     /// received from each participating node in the query

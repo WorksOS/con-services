@@ -6,7 +6,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
   /// <summary>
   /// The base class for compute functions. This provides common aspects such as the injected Ignite instance
   /// </summary>
-  public class BaseComputeFunc : IBinarizable, IFromToBinary
+  public abstract class BaseComputeFunc : IBinarizable, IFromToBinary
   {
     public BaseComputeFunc()
     {
