@@ -26,7 +26,7 @@ namespace VSS.MasterData.Proxies
     private readonly int logMaxChar;
 
     ///TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
-    private static readonly HttpClient httpClient = new HttpClient();
+    private static readonly HttpClient httpClient = new HttpClient() {Timeout = TimeSpan.FromMinutes(30)};
 
     public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
@@ -57,10 +57,6 @@ namespace VSS.MasterData.Proxies
 
       if (requestStream == null && method != "GET")
         throw new ArgumentException($"Empty body for non-GET request {nameof(requestStream)}");
-
-      //We need to disable this due to concurrency issues as it is not supported within a single httpclient instance
-      /*if (timeout.HasValue)
-        httpClient.Timeout = TimeSpan.FromSeconds(timeout.Value);*/
 
       log.LogDebug(
         $"Headers to be attached to the request {JsonConvert.SerializeObject(httpClient.DefaultRequestHeaders)}");
