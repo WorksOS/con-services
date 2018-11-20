@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -161,5 +161,9 @@ export class ProjectService {
 
   public switchToImmutable(): Observable<string> {
     return this.executePutRequest<string>('switchToImmutable', 'switchablegrid/immutable');
+  }
+
+  public drawProfileLine(projectUid: string, designUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+    return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
 }
