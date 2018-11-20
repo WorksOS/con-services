@@ -3,8 +3,8 @@ echo "Scheduler AcceptanceTests are starting .... "
 rm -rf testresults
 mkdir testresults
 
-echo "Wait for 120 seconds"
-sleep 120s
+echo "Wait for 210 seconds"
+sleep 210s
 #echo "Check the database to see if port is available"
 # Polling the database and kafka status before test
 #/bin/bash wait-for-it.sh localhost:3306 -t 0
