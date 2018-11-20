@@ -10,12 +10,12 @@ services:
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_SECRET_KEY=qQAEmtYOcn0PCzSfpqIgmNFpyMclrZllnOnY1Ecx
      - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives
-     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.k8s.services.myvisionlink.com/api/position
+     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.alpha.k8s.vspengg.com/api/position
      - CUSTOMERSERVICE_API_URL=https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
      - CUSTOMERSERVICE_CACHE_LIFE=00:15:00
      - DEFAULT_CONNECTION_LIMIT=64
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
-     - ENABLE_CONNECTED_SITE_GATEWAY=false
+     - ENABLE_CONNECTED_SITE_GATEWAY=true
      - ENABLE_RAPTOR_GATEWAY=true
      - ENABLE_TREX_GATEWAY=false
      - FILTER_API_URL=http://filter.prod.k8s.services.myvisionlink.com/api/v1
