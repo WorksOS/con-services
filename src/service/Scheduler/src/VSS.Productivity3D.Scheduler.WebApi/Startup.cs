@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       var serviceProvider = services.BuildServiceProvider();
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       var configStore = new GenericConfiguration(logger);
-/*      if (!int.TryParse(configStore.GetValueString("SCHEDULER_WEBAPI_STARTUP_WAIT_MS"), out var startupWaitMs))
+      if (!int.TryParse(configStore.GetValueString("SCHEDULER_WEBAPI_STARTUP_WAIT_MS"), out var startupWaitMs))
         startupWaitMs = 0;
       if (startupWaitMs > 0)
       {
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       else
       {
         Console.WriteLine("Scheduler: Startup: not waiting");
-      }*/
+      }
 
       ConfigureHangfire(services);
       Console.WriteLine("Scheduler: after ConfigureHangfire");

@@ -51,11 +51,13 @@ spec:
     ports:
     - containerPort: 80
     livenessProbe:
+      initialDelaySeconds: 50
       httpGet:
         scheme: HTTP
         path: /ping
         port: 80
-      readinessProbe:
+    readinessProbe:
+      initialDelaySeconds: 50
         httpGet:
           path: /ping
           port: 80
