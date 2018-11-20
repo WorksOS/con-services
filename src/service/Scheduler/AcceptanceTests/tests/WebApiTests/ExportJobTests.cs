@@ -88,6 +88,7 @@ namespace WebApiTests
     }
 
     [TestMethod]
+    [Timeout(300000)]
     public void CanDoLongRunningExport()
     {
       Msg.Title("Scheduler web test 4", "Schedule long running export job");
