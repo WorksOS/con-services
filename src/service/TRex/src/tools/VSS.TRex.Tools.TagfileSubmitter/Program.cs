@@ -242,6 +242,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       finally
       {
         Console.WriteLine("TAG file submission complete. Press a key...");
+
         Console.ReadKey();
       }
     }

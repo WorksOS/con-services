@@ -126,3 +126,10 @@ export class MachineEventType {
   item1: number;
   item2: string;
 }
+
+export class XYZS {
+  x: number;
+  y: number;
+  z: number;
+  station: number;
+}

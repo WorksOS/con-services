@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.Executors
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignProfile>();
 
-    private static IDesignFiles designs = null;
+    private static IDesignFiles designs;
 
     private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
 

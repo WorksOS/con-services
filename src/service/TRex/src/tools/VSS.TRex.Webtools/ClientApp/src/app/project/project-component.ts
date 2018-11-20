@@ -106,6 +106,8 @@ export class ProjectComponent {
   public machineEventsEndDate: Date = new Date(2100, 1, 1, 0, 0, 0, 0);
   public maxMachineEventsToReturn: number = 100;
 
+  public profilePath: string = "M0 0 L100 500 L200 0 L300 500 L400 0 L500 500";
+
 constructor(
     private projectService: ProjectService
   ) { }
@@ -511,6 +513,40 @@ constructor(
   public switchToImmutable(): void {
     this.projectService.switchToImmutable().subscribe();
     this.currentGridName = "Immutable";
+  }
+
+  public drawProfileLine(startX: number, startY: number, endX: number, endY: number) {
+    var result: string = "";
+    var first: boolean = true;
+    return this.projectService.drawProfileLine(this.projectUid, this.designUID, startX, startY, endX, endY)
+      .subscribe(points => {
+        var stationRange = points[points.length - 1].station - points[0].station;
+        var stationRatio = 500 / stationRange;
+
+        var minZ = 100000;
+        var maxZ = -100000;
+        points.forEach(pt => { if (pt.z < minZ) minZ = pt.z});
+        points.forEach(pt => { if (pt.z > maxZ) maxZ = pt.z });
+
+        var zRange = maxZ - minZ;
+        var zRatio = 500 / zRange;
+
+        points.forEach(point => {
+          result += (first ? "M" : "L") + point.station * stationRatio + " " + (point.z - minZ) * zRatio;
+          first = false;
+        });
+        this.profilePath = result;
+      });
+  }
+
+  //Draw profile line from bottom left to top right of project 
+  public drawProfileBLToTR(): void {
+    this.drawProfileLine(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
+  }
+
+  //Draw profile line from top left to bottom right of project 
+  public drawProfileTLToBR(): void {
+    this.drawProfileLine(this.tileExtents.minX, this.tileExtents.maxY, this.tileExtents.maxX, this.tileExtents.minY);
   }
 }
 
