@@ -1,6 +1,6 @@
-﻿using VSS.TRex.Designs.Interfaces;
+﻿using VSS.TRex.Designs.TTM.Optimised;
 
-namespace VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces
+namespace VSS.TRex.Designs.Interfaces
 {
   public interface IOptimisedTTMProfilerFactory
   {

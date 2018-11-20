@@ -122,9 +122,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// then exercises the IFromToBinary TRex interface on that class.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static void TestClass<T>(T testMember, string failureMsg = "") where T : class, IFromToBinary, new()
+    public static TestBinarizable_Class<T> TestClass<T>(T testMember, string failureMsg = "") where T : class, IFromToBinary, new()
     {
-      TestAClassBinarizableSerialization<TestBinarizable_Class<T>, T>(new TestBinarizable_Class<T> { member = testMember }, failureMsg);
+      return TestAClassBinarizableSerialization<TestBinarizable_Class<T>, T>(new TestBinarizable_Class<T> { member = testMember }, failureMsg);
     }
 
 
