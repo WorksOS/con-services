@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -68,12 +69,12 @@ namespace VSS.MasterData.Proxies
       {
         case "GET":
         {
-          return httpClient.GetAsync(endpoint, x => { ApplyHeaders(customHeaders, x); });
+          return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); });
         }
         case "POST":
         case "PUT":
         {
-          return httpClient.PostAsync(endpoint, requestStream, method, customHeaders,
+          return httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
             x => { ApplyHeaders(customHeaders, x); });
         }
         default:
@@ -214,18 +215,20 @@ namespace VSS.MasterData.Proxies
   internal static class HttpClientExtensions
   {
     public static Task<HttpResponseMessage> GetAsync
-      (this HttpClient httpClient, string uri, Action<HttpRequestMessage> preAction)
+      (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction)
     {
       var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
 
       preAction(httpRequestMessage);
 
-      return httpClient.SendAsync(httpRequestMessage);
+      var cts = new CancellationTokenSource(timeout.HasValue?timeout.Value:60000);
+
+      return httpClient.SendAsync(httpRequestMessage,cts.Token);
     }
 
     public static Task<HttpResponseMessage> PostAsync
     (this HttpClient httpClient, string uri, Stream requestStream, string method,
-      IDictionary<string, string> customHeaders, Action<HttpRequestMessage> preAction)
+      IDictionary<string, string> customHeaders, int? timeout, Action<HttpRequestMessage> preAction)
     {
       //Default to JSON content type
       HttpContent content = null;
@@ -253,7 +256,9 @@ namespace VSS.MasterData.Proxies
       };
       preAction(httpRequestMessage);
 
-      return httpClient.SendAsync(httpRequestMessage);
+      var cts = new CancellationTokenSource(timeout.HasValue ? timeout.Value : 60000);
+
+      return httpClient.SendAsync(httpRequestMessage,cts.Token);
     }
   }
 }
