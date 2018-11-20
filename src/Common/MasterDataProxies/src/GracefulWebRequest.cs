@@ -111,7 +111,7 @@ namespace VSS.MasterData.Proxies
       var policyResult = await Policy
         .Handle<Exception>(exception =>
         {
-          log.LogWarning(exception,"Polly failed to execute the request");
+          log.LogWarning($"Polly failed to execute the request {endpoint} with exception {exception.Message}");
           return true;
         })
         .RetryAsync(retries)
@@ -120,7 +120,7 @@ namespace VSS.MasterData.Proxies
      
           log.LogDebug($"Trying to execute request {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
-          log.LogDebug($"Request to {endpoint} completed");
+          log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
           if (result.StatusCode != HttpStatusCode.OK)
           {
