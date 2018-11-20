@@ -22,16 +22,12 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
-        [NonSerialized]
         private IMessaging rmtMsg;
 
-        [NonSerialized]
         private string tRexNodeIDAsString = string.Empty;
 
-        [NonSerialized]
         private MemoryStream MS;
 
-        [NonSerialized]
         private byte[] buffer;
 
         /// <summary>

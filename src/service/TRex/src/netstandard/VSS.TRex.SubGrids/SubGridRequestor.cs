@@ -29,7 +29,6 @@ namespace VSS.TRex.SubGrids
         /// <summary>
         /// Local reference to the client subgrid factory
         /// </summary>
-        [NonSerialized]
         private IClientLeafSubgridFactory clientLeafSubGridFactory;
 
         private IClientLeafSubgridFactory ClientLeafSubGridFactory

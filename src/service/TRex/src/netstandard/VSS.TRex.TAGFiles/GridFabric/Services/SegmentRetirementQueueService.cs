@@ -32,13 +32,14 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Flag set then Cancel() is called to instruct the service to finish operations
     /// </summary>
-    [NonSerialized] private bool aborted;
+    private bool aborted;
 
     /// <summary>
     /// The event wait handle used to mediate sleep periods between operation epochs of the service
     /// </summary>
-    [NonSerialized] private EventWaitHandle waitHandle;
+    private EventWaitHandle waitHandle;
 
+    // Todo: Set the retirement age from the environment/configuration
     public TimeSpan retirementAge = new TimeSpan(0, 10, 0); // Set to 10 minutes as a maximum consistency window
 
     /// <summary>
