@@ -26,8 +26,6 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      // This is a direct implementation rather than delegating the request to an application service context
-      // through a grid request
       Guid siteModelUid = Guid.Parse(siteModelID);
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
       var design = siteModel?.Designs?.Locate(Guid.Parse(designID));

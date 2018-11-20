@@ -515,25 +515,39 @@ constructor(
     this.currentGridName = "Immutable";
   }
 
+  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
+  // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
+  // between all others
   public drawProfileLine(startX: number, startY: number, endX: number, endY: number) {
+    var profileCanvasHeight:number = 500.0;
+    var profileCanvasWidth: number = 500.0;
+
     var result: string = "";
     var first: boolean = true;
-    return this.projectService.drawProfileLine(this.projectUid, this.designUID, startX, startY, endX, endY)
-      .subscribe(points => {
-        var stationRange = points[points.length - 1].station - points[0].station;
-        var stationRatio = 500 / stationRange;
 
-        var minZ = 100000;
-        var maxZ = -100000;
-        points.forEach(pt => { if (pt.z < minZ) minZ = pt.z});
-        points.forEach(pt => { if (pt.z > maxZ) maxZ = pt.z });
+    return this.projectService.drawProfileLine(this.projectUid, this.designUID, startX, startY, endX, endY)
+      .subscribe(points =>
+      {
+        var stationRange:number = points[points.length - 1].station - points[0].station;
+        var stationRatio:number = profileCanvasWidth / stationRange;
+
+        var minZ:number = 100000.0;
+        var maxZ:number = -100000.0;
+        points.forEach(pt => {if (pt.z < minZ) minZ = pt.z});
+        points.forEach(pt => {if (pt.z > maxZ) maxZ = pt.z});
 
         var zRange = maxZ - minZ;
-        var zRatio = 500 / zRange;
+        var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          result += (first ? "M" : "L") + point.station * stationRatio + " " + (point.z - minZ) * zRatio;
-          first = false;
+          if (point.z > 100000) {
+            // It's a gap...
+            first = true;
+          }
+          else {
+            result += (first ? "M" : "L") + point.station * stationRatio + " " + (profileCanvasHeight - (point.z - minZ) * zRatio);
+            first = false;
+            }
         });
         this.profilePath = result;
       });
