@@ -13,9 +13,10 @@ namespace VSS.TRex.Common.Serialisation
       if (obj is IBinarizable bin)
       {
         bin.WriteBinary(writer);
+        return;
       }
 
-      throw new Exception($"Not IBinarizable on ReadBinar: {obj.GetType()}");
+      throw new Exception($"Not IBinarizable on WriteBinary: {obj.GetType()}");
     }
 
     public void ReadBinary(object obj, IBinaryReader reader)
@@ -23,6 +24,7 @@ namespace VSS.TRex.Common.Serialisation
       if (obj is IBinarizable bin)
       {
         bin.ReadBinary(reader);
+        return;
       }
 
       throw new Exception($"Not IBinarizable on ReadBinary: {obj.GetType()}");

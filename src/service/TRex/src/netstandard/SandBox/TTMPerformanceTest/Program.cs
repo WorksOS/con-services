@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
-using VSS.TRex.Designs.TTM.Optimised.Profiling.Interfaces;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;

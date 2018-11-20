@@ -171,8 +171,6 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     static void Main(string[] args)
     {
-      Log4NetAspExtensions.ConfigureLog4Net("TRex");
-
       DependencyInjection();
 
       // Make sure all our assemblies are loaded...
@@ -220,7 +218,14 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           return;
         }
 
-        ProcessTAGFilesInFolder(projectID, folderPath);
+        try
+        {
+          ProcessTAGFilesInFolder(projectID, folderPath);
+        }
+        catch (Exception e)
+        {
+          Console.WriteLine($"Exception: {e}");
+        }
 
         // ProcessMachine10101TAGFiles(projectID);
         // ProcessMachine333TAGFiles(projectID);
@@ -236,6 +241,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       }
       finally
       {
+        Console.WriteLine("TAG file submission complete. Press a key...");
+        Console.ReadKey();
       }
     }
   }
