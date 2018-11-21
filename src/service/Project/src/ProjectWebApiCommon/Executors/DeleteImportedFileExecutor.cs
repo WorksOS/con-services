@@ -57,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid,
           deleteImportedFile.ImportedFileType, deleteImportedFile.FileDescriptor.fileName,
           deleteImportedFile.ImportedFileUid,
-          deleteImportedFile.SurveyedUtc, // todoJeannie
+          deleteImportedFile.SurveyedUtc, 
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);
 
@@ -120,8 +120,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       //Cannot delete a design that is used in a filter
       //TODO: When scheduled reports are implemented, extend this check to them as well.
-      var t1 = configStore.GetValueString("FILTER_API_URL");  //todoJeannie
-      var t2 = configStore.GetValueString("FILTER_CACHE_LIFE"); //todoJeannie
       if (deleteImportedFile.ImportedFileType == ImportedFileType.DesignSurface || deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
       {
         var filters = await ImportedFileRequestDatabaseHelper.GetFilters

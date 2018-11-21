@@ -82,9 +82,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.tRexImportFileProxy = tRexImportFileProxy;
 
       FileSpaceId = configStore.GetValueString("TCCFILESPACEID");
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT", "FALSE"),
+    UseTrexGatewayDesignImport = false;
+    UseRaptorGatewayDesignImport = true;
+    bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),
         out UseTrexGatewayDesignImport);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT", "TRUE"),
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out UseRaptorGatewayDesignImport);
     }
 

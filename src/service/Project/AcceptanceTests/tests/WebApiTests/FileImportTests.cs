@@ -566,7 +566,7 @@ namespace WebApiTests
 
 
     [TestMethod]
-    //[DataRow("api/v4/importedfile")]
+    // todoJeannie [DataRow("api/v4/importedfile")]
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportANewFileThenDeleteTheAlignmentFile(string uriRoot)
     {
@@ -608,6 +608,9 @@ namespace WebApiTests
       // todoJeannie ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
       importFile.ImportedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
 
+      // todoJeannie
+      Environment.SetEnvironmentVariable("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT", "false", EnvironmentVariableTarget.Machine);
+      Environment.SetEnvironmentVariable("ENABLE_TREX_GATEWAY_DESIGNIMPORT", "true", EnvironmentVariableTarget.Machine);
       _ = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete));
       _ = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApiV4(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);

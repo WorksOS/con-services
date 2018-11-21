@@ -8,6 +8,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Models.Models;
@@ -120,7 +121,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     )
     {
       var result = new ContractExecutionResult();
-      var request = new DesignRequest(projectUid, importedFileType, filename, importedFileUid, surveyedUtc);
+
+      string fullFileName = filename;
+      if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
+        fullFileName =
+          ImportedFileUtils.IncludeSurveyedUtcInName(fullFileName, surveyedUtc.Value);
+      var request = new DesignRequest(projectUid, importedFileType, fullFileName, importedFileUid, surveyedUtc);
       try
       {
         result = await tRexImportFileProxy
@@ -130,12 +136,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       catch (Exception e)
       {
         log.LogError(
-          $"NotifyTRexAddFile AddFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} exception: {e.Message}. ");
+          $"NotifyTRexAddFile AddFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName} exception: {e.Message}. ");
 
         await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
           (projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
             .ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImporFileProxy.AddFile",
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImportFile.AddFile",
           e.Message);
       }    
 
@@ -143,7 +149,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Notify raptor of an updated import file.
+    /// Notify TRex of updated DESIGN file
     /// </summary>
     public static async Task<ContractExecutionResult> NotifyTRexUpdateFile(Guid projectUid,
       ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
@@ -152,7 +158,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     )
     {
       var result = new ContractExecutionResult();
-      var request = new DesignRequest(projectUid, importedFileType, filename, importedFileUid, surveyedUtc);
+      string fullFileName = filename;
+      if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
+        fullFileName =
+          ImportedFileUtils.IncludeSurveyedUtcInName(fullFileName, surveyedUtc.Value);
+      var request = new DesignRequest(projectUid, importedFileType, fullFileName, importedFileUid, surveyedUtc);
       try
       {
         result = await tRexImportFileProxy
@@ -162,12 +172,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       catch (Exception e)
       {
         log.LogError(
-          $"NotifyTRexAddFile UpdateFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} exception: {e.Message}. ");
+          $"NotifyTRexAddFile UpdateFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName} exception: {e.Message}. ");
 
-        await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
-          (projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
-            .ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImporFileProxy.AddFile",
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImportFile.UpdateFile",
           e.Message);
       }
 
@@ -175,7 +182,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Notify trex of delete file
+    /// Notify trex of delete of a design file
     /// </summary>
     /// <returns></returns>
     public static async Task<ContractExecutionResult> NotifyTRexDeleteFile(Guid projectUid,
@@ -185,7 +192,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     )
     {
       var result = new ContractExecutionResult();
-      var request = new DesignRequest(projectUid, importedFileType, filename, importedFileUid, surveyedUtc);
+      string fullFileName = filename;
+      if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
+        fullFileName =
+          ImportedFileUtils.IncludeSurveyedUtcInName(fullFileName, surveyedUtc.Value);
+      var request = new DesignRequest(projectUid, importedFileType, fullFileName, importedFileUid, surveyedUtc);
       try
       {
         result = await tRexImportFileProxy
@@ -195,12 +206,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       catch (Exception e)
       {
         log.LogError(
-          $"NotifyTRexAddFile DeleteFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} exception: {e.Message}. ");
-
-        await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
-          (projectUid, importedFileUid, serviceExceptionHandler, projectRepo, true)
-            .ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImporFileProxy.AddFile",
+          $"NotifyTRexAddFile DeleteFile in Trex gateway failed with exception. request:{JsonConvert.SerializeObject(request)} filename: {fullFileName} exception: {e.Message}. ");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImporFile.DeleteFile",
           e.Message);
       }
 

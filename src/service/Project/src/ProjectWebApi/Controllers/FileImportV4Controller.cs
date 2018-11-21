@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -132,7 +131,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         dxfUnitsType,
         fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
-
+      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
       log.LogInformation(
         $"SyncUploadV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
@@ -219,7 +218,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="surveyedUtc"></param>
-    /// <param name="transferProxy"></param>
+    /// <param name="transferProxyFunc"></param>
     /// <remarks>Import a design file for a project, once the file has been uploaded to AWS</remarks>
     [Route("internal/v4/importedfile")]
     [HttpGet]
@@ -234,6 +233,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime? surveyedUtc,
       [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc)
     {
+      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
       var transferProxy = transferProxyFunc(TransferProxyType.Default);
       log.LogInformation(
         $"CreateImportedFileV4. filename: {filename} awspath {awsFilePath} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
@@ -290,6 +290,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
+      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
       log.LogInformation(
         $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
@@ -318,7 +319,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc, filename);
-
+      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, configStore, serviceExceptionHandler);
       log.LogInformation(
         $"{nameof(CreateImportedFileDirectV4)}: ProjectUid: `{projectUid}`, Filename: `{filename}` ImportedFileType: `{importedFileType}`, DxfUnitsType: `{dxfUnitsType}`, SurveyedUTC: `{(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}`");
 
@@ -361,6 +362,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
         return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
+      ImportedFileUtils.ValidateEnvironmentVariables(existing.ImportedFileType, configStore, serviceExceptionHandler);
 
       var deleteImportedFile = DeleteImportedFile.CreateDeleteImportedFile(projectUid, existing.ImportedFileType,
         JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor), 

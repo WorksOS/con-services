@@ -69,7 +69,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         var result = await ImportedFileRequestHelper.NotifyTRexAddFile(createimportedfile.ProjectUid,
           createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
-          createimportedfile.SurveyedUtc, // todoJeannie
+          createimportedfile.SurveyedUtc, 
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);
       }

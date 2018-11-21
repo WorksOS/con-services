@@ -52,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         await ImportedFileRequestHelper.NotifyTRexUpdateFile(updateImportedFile.ProjectUid,
           updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.fileName, updateImportedFile.ImportedFileUid,
-          updateImportedFile.SurveyedUtc,  // todoJeannie
+          updateImportedFile.SurveyedUtc,  
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);
       }

@@ -102,6 +102,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogInformation(
         $"UpsertImportedFileV2. projectId {projectId} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
 
+      ImportedFileUtils.ValidateEnvironmentVariables(importedFileTbc.ImportedFileTypeId, configStore, serviceExceptionHandler);
+
       // this also validates that this customer has access to the projectUid
       var project = await GetProject(projectId);
 
@@ -118,7 +120,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         var memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
         
         fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-          memStream, project.ProjectUID, importedFileTbc.Name, /* todoJeannie should this be BaseName? */
+          memStream, project.ProjectUID, importedFileTbc.Name, 
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
             ? importedFileTbc.SurfaceFile.SurveyedUtc
@@ -132,16 +134,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         (project.ProjectUID, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
         log, projectRepo)
         .ConfigureAwait(false);
-
       bool creating = existing == null;
       log.LogInformation(
         creating
           ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
           : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
-
       ImportedFileDescriptorSingleResult importedFile;
-
       if (creating)
       {
         var createImportedFile = CreateImportedFile.CreateACreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
