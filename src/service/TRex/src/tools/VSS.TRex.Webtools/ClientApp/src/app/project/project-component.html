@@ -50,7 +50,10 @@
   Second point: <input type="checkbox" [(ngModel)]="updateSecondPointLocation" /> X:<input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
 </p>
 
-<p><button (click)="drawProfileLineFromStartToEndPoints()">Draw Profile</button></p>
+<p>
+  <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Draw Design Profile</button>
+  <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Draw Prod Data Profile</button>
+</p>
 
 <svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1" fill="none" />

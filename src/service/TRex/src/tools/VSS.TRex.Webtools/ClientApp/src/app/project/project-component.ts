@@ -528,14 +528,14 @@ constructor(
   // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
   // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
   // between all others
-  public drawProfileLine(startX: number, startY: number, endX: number, endY: number) {
+  public drawProfileLineForDesign(startX: number, startY: number, endX: number, endY: number) {
     var profileCanvasHeight:number = 500.0;
     var profileCanvasWidth: number = 1000.0;
 
     var result: string = "";
     var first: boolean = true;
 
-    return this.projectService.drawProfileLine(this.projectUid, this.designUID, startX, startY, endX, endY)
+    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUID, startX, startY, endX, endY)
       .subscribe(points =>
       {
         var stationRange:number = points[points.length - 1].station - points[0].station;
@@ -565,12 +565,12 @@ constructor(
 
   //Draw profile line from bottom left to top right of project 
   public drawProfileBLToTR(): void {
-    this.drawProfileLine(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
+    this.drawProfileLineForDesign(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
   }
 
   //Draw profile line from top left to bottom right of project 
   public drawProfileTLToBR(): void {
-    this.drawProfileLine(this.tileExtents.minX, this.tileExtents.maxY, this.tileExtents.maxX, this.tileExtents.minY);
+    this.drawProfileLineForDesign(this.tileExtents.minX, this.tileExtents.maxY, this.tileExtents.maxX, this.tileExtents.minY);
   }
 
   public onMapMouseClick(): void {
@@ -585,8 +585,49 @@ constructor(
     }
   }
 
-  public drawProfileLineFromStartToEndPoints(): void {
-    this.drawProfileLine(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
+  public drawProfileLineFromStartToEndPointsForDesign(): void {
+    this.drawProfileLineForDesign(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
+  }
+
+  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
+  // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
+  // between all others
+  public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number) {
+    var profileCanvasHeight: number = 500.0;
+    var profileCanvasWidth: number = 1000.0;
+
+    var result: string = "";
+    var first: boolean = true;
+
+    return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
+      .subscribe(points => {
+        var stationRange: number = points[points.length - 1].station - points[0].station;
+        var stationRatio: number = profileCanvasWidth / stationRange;
+
+        var minZ: number = 100000.0;
+        var maxZ: number = -100000.0;
+        points.forEach(pt => { if (pt.z < minZ) minZ = pt.z });
+        points.forEach(pt => { if (pt.z > maxZ) maxZ = pt.z });
+
+        var zRange = maxZ - minZ;
+        var zRatio = profileCanvasHeight / zRange;
+
+        points.forEach(point => {
+          if (point.z > 100000) {
+            // It's a gap...
+            first = true;
+          }
+          else {
+            result += (first ? "M" : "L") + point.station * stationRatio + " " + (profileCanvasHeight - (point.z - minZ) * zRatio);
+            first = false;
+          }
+        });
+        this.profilePath = result;
+      });
+  }
+
+  public drawProfileLineFromStartToEndPointsForProdData(): void {
+    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
 }
 
