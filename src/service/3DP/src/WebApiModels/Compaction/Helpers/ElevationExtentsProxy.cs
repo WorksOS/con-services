@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -9,7 +8,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
@@ -100,9 +98,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
       var opts = new MemoryCacheEntryOptions().GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
 
-      return elevationExtentsCache.GetOrAdd(cacheKey, opts, () =>
+      return elevationExtentsCache.GetOrCreate(cacheKey, entry =>
       {
         ElevationStatisticsResult result;
+        entry.SetOptions(opts);
         if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
         {
           log.LogDebug(

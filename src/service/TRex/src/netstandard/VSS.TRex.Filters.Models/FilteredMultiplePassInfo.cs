@@ -458,7 +458,6 @@ end;
         foreach (var pass in FilteredPassData)
           pass.ToBinary(writer);
       }
-
     }
 
     /// <summary>
@@ -475,6 +474,10 @@ end;
         FilteredPassData = new FilteredPassData[count];
         foreach (var pass in FilteredPassData)
           pass.FromBinary(reader);
+      }
+      else
+      {
+        FilteredPassData = new FilteredPassData[0];
       }
     }
 

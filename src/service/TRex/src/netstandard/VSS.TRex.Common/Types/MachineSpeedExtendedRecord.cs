@@ -97,12 +97,12 @@ namespace VSS.TRex.Types
 	  }
 
     /// <summary>
-    /// Defines a publically accessible null value for this cell value type
+    /// Defines a publicly accessible null value for this cell value type
     /// </summary>
     public static MachineSpeedExtendedRecord NullValue = MachineSpeedExtendedRecord.Null();
 
 	  /// <summary>
-	  /// Implements the business logic to create the null value for this cell valuye type
+	  /// Implements the business logic to create the null value for this cell value type
 	  /// </summary>
 	  /// <returns></returns>
 	  public static MachineSpeedExtendedRecord Null()

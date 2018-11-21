@@ -37,19 +37,29 @@
 <button (click)="panRight()">Right</button>
 <button (click)="panUp()">Up</button>
 <button (click)="panDown()">Down</button>
+
 <br />
-<img style="border:1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" />
+<img style="border:1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}"
+     (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" (click)="onMapMouseClick()" />
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
 <p>Mouse: Screen: {{mousePixelLocation}}, World: {{mouseWorldLocation}} </p>
-<H3>Machines [{{machines.length}} in total]</H3>
-<!--Display the machines in a list
-<p *ngFor="let machine of machines">
-  Machine: {{ machine.id }} Internal Index: {{ machine.internalSiteModelMachineIndex }}, Name:{{machine.name}}, Type:{{machine.machineType}},
-  Hardware ID: {{machine.machineHardwareID}}, Device Type: {{machine.deviceType}} IsJohnDoe: {{machine.isJohnDoeMachine}},
-  Last known location: [{{machine.lastKnownX}}, {{machine.lastKnownY}} at {{machine.lastKnownPositionDateStamp}}],
-  Last known design: {{machine.lastKnownDesignName}}, Last known layer: {{machine.lastKnownLayerId}}
+
+<H3>Profiling points</H3>
+<p>
+  First point: <input type="checkbox" [(ngModel)]="updateFirstPointLocation" /> X:<input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
+  Second point: <input type="checkbox" [(ngModel)]="updateSecondPointLocation" /> X:<input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
 </p>
--->
+
+<p>
+  <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Draw Design Profile</button>
+  <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Draw Prod Data Profile</button>
+</p>
+
+<svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1" fill="none" />
+</svg>
+
+<H3>Machines [{{machines.length}} in total]</H3>
 <!--Display the machines in a table-->
 <table>
   <tr>
@@ -64,6 +74,7 @@
     </td>
   </tr>
 </table>
+
 <br />
 <H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
 <p>Design File Name: <input [(ngModel)]="surveyedSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value="" /> Offset: <input [(ngModel)]="surveyedSurfaceOffset" type="number" value="" /></p>
@@ -126,11 +137,5 @@
   machine design: {{machinedesign.id}}  {{machinedesign.name}}
 </p>
 
-<br/>
-<H3>Profile</H3>
-<p><button (click)="drawProfileBLToTR()">Draw BL->TR</button><button (click)="drawProfileTLToBR()">Draw TL->BR</button></p>
 
-<svg height="500" width="500" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1" fill="none"/>
-</svg>
 

@@ -5,31 +5,36 @@ using VSS.TRex.Common;
 namespace VSS.TRex.Types
 {
   /// <summary>
-  /// A two dimensional point defining Lattitude and Longitude in the WGS84 datum
+  /// A two dimensional point defining Latitude and Longitude in the WGS84 datum
   /// </summary>
-  public class WGS84Point
+  public class WGS84Point : IEquatable<WGS84Point>
   {
     // Note: Lat and Lon expressed as radians, Height as meters
     public double Lat;
     public double Lon;
     public double Height = Consts.NullDouble;
 
+    public WGS84Point() {  }
     public WGS84Point(double lon, double lat) { Lat = lat; Lon = lon; }
     public WGS84Point(double lon, double lat, double height) { Lat = lat; Lon = lon; Height = height; }
 
+    public bool Equals(WGS84Point other)
+    {
+      if (other == null) return false;
+      return Math.Abs(other.Lat - Lat) < Consts.TOLERANCE_DECIMAL_DEGREE &&
+             Math.Abs(other.Lon - Lon) < Consts.TOLERANCE_DECIMAL_DEGREE &&
+             Math.Abs(other.Height - Height) < Consts.TOLERANCE_DIMENSION;
+    }
+
     public override bool Equals(object obj)
     {
-      var otherPoint = obj as WGS84Point;
-      if (otherPoint == null) return false;
-      return Math.Abs(otherPoint.Lat - Lat) < Consts.TOLERANCE_DECIMAL_DEGREE && 
-             Math.Abs(otherPoint.Lon - Lon) < Consts.TOLERANCE_DECIMAL_DEGREE && 
-             Math.Abs(otherPoint.Height - Height) < Consts.TOLERANCE_DIMENSION;
+      return Equals(obj as WGS84Point);
     }
 
     public override int GetHashCode() => 0;
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -40,7 +45,7 @@ namespace VSS.TRex.Types
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

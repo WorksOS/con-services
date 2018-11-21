@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Models;
 
 namespace VSS.TRex.GridFabric.Responses
@@ -13,6 +14,8 @@ namespace VSS.TRex.GridFabric.Responses
   /// </summary>
   public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<BaseRequestResponse>
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The general subgrids request response code returned for the request
     /// </summary>
@@ -58,6 +61,7 @@ namespace VSS.TRex.GridFabric.Responses
 
   public override void ToBinary(IBinaryRawWriter writer)
   {
+    writer.WriteByte(VERSION_NUMBER);
     writer.WriteInt((int)ResponseCode);
     writer.WriteString(ClusterNode);
     writer.WriteLong(NumSubgridsProcessed);
@@ -70,6 +74,11 @@ namespace VSS.TRex.GridFabric.Responses
 
     public override void FromBinary(IBinaryRawReader reader)
     {
+      var version = reader.ReadByte();
+
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+
       ResponseCode = (SubGridRequestsResponseResult)reader.ReadInt();
       ClusterNode = reader.ReadString();
       NumSubgridsProcessed = reader.ReadLong();

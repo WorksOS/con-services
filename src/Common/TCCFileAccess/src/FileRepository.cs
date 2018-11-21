@@ -272,7 +272,7 @@ namespace VSS.TCCFileAccess
       {
         if (!cacheable)
         {
-          using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers, retries: 0))
+          using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers, retries: 0)).ReadAsStreamAsync())
           {
             responseStream.Position = 0;
             file = new byte[responseStream.Length];
@@ -281,7 +281,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers))
+        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers)).ReadAsStreamAsync())
         {
           Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
           responseStream.Position = 0;
@@ -713,7 +713,7 @@ namespace VSS.TCCFileAccess
       var result = default(T);
       try
       {
-        result = await gracefulClient.ExecuteRequest<T>(requestString, "GET", headers);
+        result = await gracefulClient.ExecuteRequest<T>(requestString, method: "GET", customHeaders: headers);
       }
       catch (WebException webException)
       {
@@ -746,7 +746,7 @@ namespace VSS.TCCFileAccess
       T result = default(T);
       try
       {
-        result = await gracefulClient.ExecuteRequest<T>(requestString, "GET", headers, null, null, 0, true);
+        result = await gracefulClient.ExecuteRequest<T>(requestString, method: "GET", customHeaders:headers, retries: 0, suppressExceptionLogging: true);
       }
       catch (WebException webException)
       {

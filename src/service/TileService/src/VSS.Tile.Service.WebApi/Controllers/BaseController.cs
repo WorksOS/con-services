@@ -22,6 +22,7 @@ using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
 {
@@ -217,7 +218,6 @@ namespace VSS.Tile.Service.WebApi.Controllers
         language = string.IsNullOrEmpty(language) ? (await GetShortCachedUserPreferences()).Language : language;
 
         var geofences = new List<GeofenceData> { geofence };
-
         var mapParameters = tileGenerator.GetMapParameters(bbox, width, height, overlayTypes.Contains(TileOverlayType.GeofenceBoundary), adjustBoundingBox);
 
         var request = TileGenerationRequest.CreateTileGenerationRequest(null, null, null, null, null, geofences,
@@ -225,6 +225,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
         request.Validate();
 
+        Log.LogDebug("The tile doesn't exist in cache - generating it");
         return await WithServiceExceptionTryExecuteAsync(async () =>
           await tileGenerator.GetMapData(request));
       });
@@ -247,20 +248,26 @@ namespace VSS.Tile.Service.WebApi.Controllers
       return result;
     }
 
+
+    private static AsyncDuplicateLock _lock = new AsyncDuplicateLock();
     /// <summary>
     /// Get user preferences
     /// </summary>
     private async Task<UserPreferenceData> GetShortCachedUserPreferences()
     {
-      var userPreferences = await prefProxy.GetShortCachedUserPreferences(((TilePrincipal)User).UserEmail, TimeSpan.FromSeconds(10), CustomHeaders);
-      if (userPreferences == null)
+      using (await _lock.LockAsync(((TilePrincipal) User).UserEmail))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to retrieve preferences for current user"));
-      }
+        var userPreferences = await prefProxy.GetShortCachedUserPreferences(((TilePrincipal) User).UserEmail,
+          TimeSpan.FromSeconds(10), CustomHeaders);
+        if (userPreferences == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to retrieve preferences for current user"));
+        }
 
-      return userPreferences;
+        return userPreferences;
+      }
     }
 
     /// <summary>

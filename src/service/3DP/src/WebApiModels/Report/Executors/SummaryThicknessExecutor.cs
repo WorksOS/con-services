@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Net;
 using ASNode.ThicknessSummary.RPC;
 using ASNodeDecls;
 using BoundingExtents;
 using SVOICOptionsDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;

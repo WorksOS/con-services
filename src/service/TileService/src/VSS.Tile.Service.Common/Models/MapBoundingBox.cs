@@ -19,5 +19,10 @@ namespace VSS.Tile.Service.Common.Models
     public double minLngDegrees => minLng.LonRadiansToDegrees();
     public double maxLatDegrees => maxLat.LatRadiansToDegrees();
     public double maxLngDegrees => maxLng.LonRadiansToDegrees();
+
+    public override string ToString()
+    {
+      return $"minLat:{minLat}/minLong:{minLng}/maxLat:{maxLat}/maxLong:{maxLng}";
+    }
   }
 }

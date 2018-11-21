@@ -50,13 +50,6 @@ namespace VSS.Tile.Service.WebApi
       //Check how many requests we can execute
       ServicePointManager.DefaultConnectionLimit = 128;
 
-      var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-      log.LogInformation("Tile service starting");
-      log.LogInformation("*************CONFIGURATION DETAILS*******************");
-      foreach (DictionaryEntry entry in System.Environment.GetEnvironmentVariables())
-      {
-        log.LogInformation(entry.Key + ":" + entry.Value);
-      }
 
       return host;
     }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -122,9 +123,9 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteBoolean(Fence != null);
       Fence?.ToBinary(writer);
@@ -172,16 +173,17 @@ namespace VSS.TRex.Filters
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       if (reader.ReadBoolean())
-        (Fence ?? new Fence()).FromBinary(reader);
+        (Fence ?? (Fence = new Fence())).FromBinary(reader);
 
       if (reader.ReadBoolean())
-        (AlignmentFence ?? new Fence()).FromBinary(reader);
+        (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
 
       PositionX = reader.ReadDouble();
       PositionY = reader.ReadDouble();

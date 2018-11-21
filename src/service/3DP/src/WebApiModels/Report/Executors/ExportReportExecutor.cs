@@ -1,9 +1,7 @@
-﻿using ASNodeDecls;
-using SVOICFilterSettings;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
-using VLPDDecls;
+using ASNodeDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -30,9 +28,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the summary pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a PassCountSummaryResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       var request = item as ExportReport;
@@ -52,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         request.Tolerance, request.IncludeSurveydSurface,
         request.Precheckonly, request.Filename, request.MachineList, (int)request.CoordType, (int)request.OutputType,
         request.DateFromUTC, request.DateToUTC,
-        request.Translations, request.ProjectExtents, out TDataExport dataexport);
+        request.Translations, request.ProjectExtents, out var dataexport);
 
       if (success)
       {

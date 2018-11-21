@@ -67,7 +67,7 @@ namespace VSS.TRex.Types
     }
 
     /// <summary>
-    /// Serialises comtent of the cell from the writer
+    /// Serialises content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

@@ -13,17 +13,17 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   {
     public GridDataType ProfileTypeRequired { get; set; }
 
-    public WGS84Point StartPoint = new WGS84Point(0, 0);
-    public WGS84Point EndPoint = new WGS84Point(0, 0);
+    public WGS84Point StartPoint { get; set; } = new WGS84Point();
+    public WGS84Point EndPoint { get; set; } = new WGS84Point();
 
-    public bool PositionsAreGrid { get; set; } = false;
+    public bool PositionsAreGrid { get; set; }
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     public DesignDescriptor DesignDescriptor;
 
-    public bool ReturnAllPassesAndLayers { get; set; } = false;
+    public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -84,9 +84,11 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
+      StartPoint = new WGS84Point();
       if (reader.ReadBoolean())
         StartPoint.FromBinary(reader);
 
+      EndPoint = new WGS84Point();
       if (reader.ReadBoolean())
         EndPoint.FromBinary(reader);
 

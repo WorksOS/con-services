@@ -66,6 +66,5 @@ namespace VSS.TRex.Filters.Models
       TargetValues.FromBinary(reader);
       EventValues.FromBinary(reader);
     }
-
   }
 }

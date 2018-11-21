@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
@@ -35,10 +38,11 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="jobRequest">Details of the job request</param>
     /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
     /// <returns>The result of the HTTP request as a stream</returns>
-    public async Task<StreamContent> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
+    public async Task<HttpContent> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
     {
-      StreamContent result = null;
+      HttpContent result = null;
       var method = jobRequest.Method ?? "GET";
+      log.LogDebug($"Job request is {JsonConvert.SerializeObject(jobRequest)}");
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
@@ -61,12 +65,22 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         {
           using (var ms = new MemoryStream(jobRequest.PayloadBytes))
           {
-            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, ms, jobRequest.Timeout, 0);
+            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms,
+              jobRequest.Timeout, 0);
+          }
+        }
+        else if(!string.IsNullOrEmpty(jobRequest.Payload))
+        {
+          using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload)))
+          {
+            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders,
+              ms, jobRequest.Timeout, 0);
           }
         }
         else
         {
-          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, jobRequest.Payload, null, jobRequest.Timeout, 0);
+          // Null payload (which is ok), so we don't need a stream
+          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, jobRequest.Timeout, 0);
         }
 
         log.LogDebug("Result of send request: Stream Content={0}", result);

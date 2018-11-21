@@ -5,7 +5,6 @@ using VSS.Productivity3D.Models.Extensions;
 using Draw = System.Drawing;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Responses;
-using VSS.TRex.Common;
 
 namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 {

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 
@@ -12,7 +13,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class FilterSet : IFilterSet, IEquatable<IFilterSet>
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The list of combined attribute and spatial filters to be used
@@ -80,7 +81,7 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteInt(Filters.Length);
       foreach (var filter in Filters)
@@ -95,7 +96,8 @@ namespace VSS.TRex.Filters
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       Filters = new ICombinedFilter[reader.ReadInt()];
       for(int i = 0; i < Filters.Length; i++)

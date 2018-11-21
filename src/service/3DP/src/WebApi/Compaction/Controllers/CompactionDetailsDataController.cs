@@ -254,7 +254,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           .ProjectSettings(projectSettings)
           .Filter(filter)
           .DesignDescriptor(cutFillDesign))
-        .CreateCutFillDetailsRequest();
+        .Create();
 
       cutFillRequest.Validate();
 
