@@ -26,14 +26,14 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public bool ReturnAllPassesAndLayers { get; set; } = false;
 
     /// <summary>
-    /// Constgructs a default profile request argumnent
+    /// Constructs a default profile request argument
     /// </summary>
     public ProfileRequestArgument_ClusterCompute()
     {
     }
 
     /// <summary>
-    /// Creates a new profile reuest argument initialised with the supplied parameters
+    /// Creates a new profile request argument initialized with the supplied parameters
     /// </summary>
     /// <param name="profileTypeRequired"></param>
     /// <param name="nEECoords"></param>
@@ -49,7 +49,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -73,7 +73,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
@@ -86,8 +86,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       {
         var count = reader.ReadInt();
         NEECoords = new XYZ[count];
-        foreach (var xyz in NEECoords)
-          xyz.FromBinary(reader);
+        for (int i = 0; i < count; i++)
+          NEECoords[i] = NEECoords[i].FromBinary(reader);
       }
 
       DesignDescriptor.FromBinary(reader);
@@ -114,7 +114,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
+      if (obj.GetType() != GetType()) return false;
       return Equals((ProfileRequestArgument_ClusterCompute) obj);
     }
 

@@ -19,6 +19,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
@@ -31,7 +32,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     /// <summary>
     /// The closure/function that implements subgrid request processing on compute nodes
     /// </summary>
-    public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
+    public abstract class SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse> : BaseComputeFunc, IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
     {
@@ -45,7 +46,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         /// <summary>
         /// Local reference to the client subgrid factory
         /// </summary>
-        [NonSerialized]
         private IClientLeafSubgridFactory clientLeafSubGridFactory;
 
         private IClientLeafSubgridFactory ClientLeafSubGridFactory
@@ -59,7 +59,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         /// It is marked as non serialized so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
-        [NonSerialized]
         private ISubGridTreeBitMask ProdDataMask;
 
         /// <summary>
@@ -68,53 +67,43 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         /// It is marked as non serialized so the Ignite GridCompute Broadcast method does not attempt 
         /// to serialise this member as an aspect of the compute func.
         /// </summary>
-        [NonSerialized]
         private ISubGridTreeBitMask SurveyedSurfaceOnlyMask;
 
-        [NonSerialized]
         protected SubGridsRequestArgument localArg;
 
-        [NonSerialized]
         private ISiteModel siteModel;
 
-        [NonSerialized]
         private ISiteModels siteModels;
 
-        [NonSerialized]
         private IClientLeafSubGrid[][] clientGrids;
 
         /// <summary>
         /// The list of address being constructed prior to submission to the processing engine
         /// </summary>
-        [NonSerialized]
         private ISubGridCellAddress[] addresses;
 
         /// <summary>
         /// The number of subgrids currently present in the process pending list
         /// </summary>
-        [NonSerialized]
         private int listCount;
 
-        [NonSerialized]
         private SubGridRequestor[] Requestors;
 
-        [NonSerialized]
         private AreaControlSet AreaControlSet = AreaControlSet.Null();
 
         /// <summary>
         /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
         /// </summary>
-        [NonSerialized]
         private IDesign ReferenceDesign;
 
-        [NonSerialized] private IDesignManager designManager;
+        private IDesignManager designManager;
 
         /// <summary>
         /// DI injected context for designs service
         /// </summary>
         private IDesignManager DesignManager => designManager ?? (designManager = DIContext.Obtain<IDesignManager>());
 
-        [NonSerialized] private ITRexSpatialMemoryCache subGridCache;
+        private ITRexSpatialMemoryCache subGridCache;
 
         /// <summary>
         /// The DI injected TRex spatial memory cache for general subgrid results
@@ -606,5 +595,5 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         {
             DoDispose();
         }
-    }
+  }
 }

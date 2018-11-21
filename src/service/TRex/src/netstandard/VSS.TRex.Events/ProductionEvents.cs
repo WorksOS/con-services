@@ -77,7 +77,6 @@ namespace VSS.TRex.Events
     /// </summary>
     public long MachineID { get; set; }
 
-//        [NonSerialized]
 //        private DateTime lastUpdateTimeUTC = DateTime.MinValue;
 
     /// <summary>
@@ -85,7 +84,7 @@ namespace VSS.TRex.Events
     /// </summary>
 //        public DateTime LastUpdateTimeUTC { get => lastUpdateTimeUTC; set => lastUpdateTimeUTC = value; }
 
-    [NonSerialized] private Action<BinaryWriter, V> serialiseStateOut;
+    private Action<BinaryWriter, V> serialiseStateOut;
 
     public Action<BinaryWriter, V> SerialiseStateOut
     {
@@ -93,7 +92,7 @@ namespace VSS.TRex.Events
       set => serialiseStateOut = value;
     }
 
-    [NonSerialized] private Func<BinaryReader, V> serialiseStateIn;
+    private Func<BinaryReader, V> serialiseStateIn;
 
     public Func<BinaryReader, V> SerialiseStateIn
     {
@@ -106,7 +105,6 @@ namespace VSS.TRex.Events
     /// </summary>
     public ProductionEventType EventListType { get; } = ProductionEventType.Unknown;
 
-    // [NonSerialized]
     // private bool eventsListIsOutOfDate;
 
     // The list containing all the time ordered instances of this event type

@@ -6,7 +6,7 @@ using VSS.TRex.GridFabric.Responses;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
-  public class ProcessTAGFileResponse : BaseRequestBinarizableResponse
+  public class ProcessTAGFileResponse : BaseRequestResponse
   {
     public const byte versionNumber = 1;
 

@@ -25,7 +25,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"the Surveyd surface service URI ""(.*)""")]
     public void GivenTheSurveydSurfaceServiceURI(string uri)
     {
-      this.uriProd = uri = RestClient.ProdSvcBaseUri + uri;
+      this.uriProd = uri = RestClient.Productivity3DServiceBaseUrl + uri;
       this.surfacesValidator = new Getter<GetSurveydSurfacesResult>(uri);
       surfacesDeleteValidator = new Getter<DummyRequestResult>(uri + "/1234/delete");
     }
@@ -39,8 +39,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [And(@"the Surveyd surface service POST URI ""(.*)""")]
     public void GivenTheSurveydSurfaceServicePOSTURI(string p0)
     {
-      postAddress = RestClient.ProdSvcBaseUri + p0;
-      surfaceToPost.Uri = RestClient.ProdSvcBaseUri + p0;
+      postAddress = RestClient.Productivity3DServiceBaseUrl + p0;
+      surfaceToPost.Uri = RestClient.Productivity3DServiceBaseUrl + p0;
     }
 
     [And(@"a project Id (.*)")]

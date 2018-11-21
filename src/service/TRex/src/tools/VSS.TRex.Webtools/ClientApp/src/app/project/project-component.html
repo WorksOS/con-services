@@ -125,3 +125,12 @@
 <p *ngFor="let machinedesign of machineDesigns">
   machine design: {{machinedesign.id}}  {{machinedesign.name}}
 </p>
+
+<br/>
+<H3>Profile</H3>
+<p><button (click)="drawProfileBLToTR()">Draw BL->TR</button><button (click)="drawProfileTLToBR()">Draw TL->BR</button></p>
+
+<svg height="500" width="500" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1" fill="none"/>
+</svg>
+

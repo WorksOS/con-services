@@ -5,9 +5,7 @@ using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
 {
@@ -19,11 +17,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
         // ReSharper disable once StaticMemberInGenericType
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-        public AnalyticsComputeFunc_ClusterCompute(string gridName, string role) : base(gridName, role)
-        {
-        }
-
-        public AnalyticsComputeFunc_ClusterCompute() : this(TRexGrids.ImmutableGridName(), ServerRoles.PSNODE)
+        public AnalyticsComputeFunc_ClusterCompute()
         {
         }
 

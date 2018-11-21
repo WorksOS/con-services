@@ -163,11 +163,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
         }
 
-        /// <summary>
-        /// Executes a request for a number of subgrids to be processed according to filters and other
-        /// parameters
-        /// </summary>
-        /// <returns></returns>
-        public abstract ICollection<TSubGridRequestsResponse> Execute();
+      /// <summary>
+      /// Executes a request for a number of subgrids to be processed according to filters and other
+      /// parameters
+      /// </summary>
+      /// <returns></returns>
+      public abstract ICollection<TSubGridRequestsResponse> Execute();
     }
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Common.Serialisation
 {
@@ -13,9 +13,10 @@ namespace VSS.TRex.Common.Serialisation
       if (obj is IBinarizable bin)
       {
         bin.WriteBinary(writer);
+        return;
       }
 
-      throw new Exception($"Not IBinarizable on ReadBinar: {obj.GetType()}");
+      throw new TRexNonBinarizableException($"Not IBinarizable on WriteBinary: {obj.GetType()}");
     }
 
     public void ReadBinary(object obj, IBinaryReader reader)
@@ -23,9 +24,10 @@ namespace VSS.TRex.Common.Serialisation
       if (obj is IBinarizable bin)
       {
         bin.ReadBinary(reader);
+        return;
       }
 
-      throw new Exception($"Not IBinarizable on ReadBinary: {obj.GetType()}");
+      throw new TRexNonBinarizableException($"Not IBinarizable on ReadBinary: {obj.GetType()}");
     }
   }
 }

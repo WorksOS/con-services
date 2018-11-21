@@ -41,6 +41,9 @@ namespace VSS.WebApi.Common
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc(version, new Info { Title = serviceTitle, Description = serviceDescription, Version = version });
+        // Allows swagger to index models on it's full name, rather than class name - which causes conflicts if a class name is used more than once in the swagger documentation
+        // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
+        c.CustomSchemaIds(x => x.FullName);
       });
 
       services.ConfigureSwaggerGen(options =>

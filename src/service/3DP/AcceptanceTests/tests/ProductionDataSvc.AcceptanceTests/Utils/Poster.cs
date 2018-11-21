@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -39,7 +40,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     public Poster(string uri, string requestFile = null, string responseFile = null)
     {
       Uri = uri;
-      CurrentRequest = new TRequest();// default(TRequest);
+      CurrentRequest = new TRequest();
       CurrentResponse = default(TResponse);
       HttpResponseMessage = null;
 
@@ -116,12 +117,12 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
         MediaTypes.JSON,
         (int)expectedHttpCode,
         content: requestBodyString);
-
-      Assert.Equal((int)expectedHttpCode, (int)HttpResponseMessage.StatusCode);
-
+      
       var receiveStream = HttpResponseMessage.Content.ReadAsStreamAsync().Result;
       var readStream = new StreamReader (receiveStream, Encoding.UTF8);
       var responseBody = readStream.ReadToEnd();
+
+      Assert.True((int)expectedHttpCode == (int)HttpResponseMessage.StatusCode, responseBody);
 
       if (!HttpResponseMessage.IsSuccessStatusCode)
       {

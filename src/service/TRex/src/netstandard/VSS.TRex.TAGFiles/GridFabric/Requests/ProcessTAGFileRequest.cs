@@ -10,7 +10,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
     /// <summary>
     /// Provides a request to process one or more TAG files into a project
     /// </summary>
-    public class ProcessTAGFileRequest : TAGFileProcessingPoolBinarizableRequest<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
+    public class ProcessTAGFileRequest : TAGFileProcessingPoolRequest<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
     {
         /// <summary>
         /// Local reference to the compute func used to execute the processing request on the grid.

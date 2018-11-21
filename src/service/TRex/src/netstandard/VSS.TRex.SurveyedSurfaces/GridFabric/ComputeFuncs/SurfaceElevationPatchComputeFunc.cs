@@ -3,13 +3,14 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Executors;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 {
-  public class SurfaceElevationPatchComputeFunc : IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
+  public class SurfaceElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<SurfaceElevationPatchArgument, byte[] /*ClientHeightAndTimeLeafSubGrid*/>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 

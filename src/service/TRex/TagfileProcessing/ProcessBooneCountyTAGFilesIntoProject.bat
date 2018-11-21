@@ -1,3 +1,1 @@
-start ..\..\TRex\src\framework\TRexTAGFileSubmittor\bin\debug\TRexTAGFileSubmittor.exe "{e64a27ea-f66c-4528-a5fd-00c83322c4eb}" "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Boone County Expo"
-
-REM start ..\..\TRex\src\framework\TRexTAGFileSubmittor\bin\debug\TRexTAGFileSubmittor.exe "{e64a27ea-f66c-4528-a5fd-00c83322c4eb}" "C:\Temp\Boone"
+start /D "..\src\tools\VSS.TRex.Tools.TAGfileSubmitter\bin\debug\netcoreapp2.1" "TAGFileSubmittor" cmd.exe /K "dotnet VSS.TRex.Tools.TAGFileSubmittor.dll \"{e64a27ea-f66c-4528-a5fd-00c83322c4eb}\" \"J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Boone County Expo\""

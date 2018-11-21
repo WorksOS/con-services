@@ -120,7 +120,7 @@ namespace VSS.TRex.Servers.Compute
       cfg.BinaryConfiguration = new BinaryConfiguration
       {
         Serializer = new BinarizableSerializer()
-      };
+      }; 
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);

@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Exports.Patches.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 
@@ -19,9 +17,9 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// Default no-arg constructor that orients the request to the available ASNODE servers on the immutable grid projection
+    /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
     /// </summary>
-    public PatchRequestComputeFunc() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    public PatchRequestComputeFunc()
     {
     }
 

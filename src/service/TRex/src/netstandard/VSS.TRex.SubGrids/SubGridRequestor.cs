@@ -29,7 +29,6 @@ namespace VSS.TRex.SubGrids
         /// <summary>
         /// Local reference to the client subgrid factory
         /// </summary>
-        [NonSerialized]
         private IClientLeafSubgridFactory clientLeafSubGridFactory;
 
         private IClientLeafSubgridFactory ClientLeafSubGridFactory
@@ -142,7 +141,7 @@ namespace VSS.TRex.SubGrids
         }
 
         /// <summary>
-        // InitialiseFilterContext performs any required filter initialisation and configuration
+        /// InitialiseFilterContext performs any required filter initialization and configuration
         /// that is external to the filter prior to engaging in cell by cell processing of
         /// this subgrid
         /// </summary>

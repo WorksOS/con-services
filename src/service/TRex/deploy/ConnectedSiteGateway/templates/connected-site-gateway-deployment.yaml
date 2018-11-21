@@ -1,0 +1,47 @@
+# An example of a Kubernetes configuration for Ignite pods deployment.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "trex.deployname" . }}-csg
+  labels:
+    app: {{ template "trex.deployname" . }}
+    chart: {{ template "trex.chart" . }}
+spec:
+  # A number of Ignite pods to be started by Kubernetes initially.
+  replicas: {{ .Values.connectedSiteGateway.replicaCount }}
+  template:
+    metadata:
+      labels:
+        # This label has to be added to the selector's section of 
+        # ignite-service.yaml so that the Kubernetes Ignite lookup service
+        # can easily track all Ignite pods available deployed so far.
+        app: {{ template "trex.deployname" . }}
+        component: {{ template "trex.deployname" . }}-csg
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+
+      containers:
+        # Custom Ignite pod name.
+      - name: webapi
+        # Ignite Docker image. Kubernetes IP finder is supported starting from
+        # Apache Ignite 2.3.0
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.ConnectedSiteGateway
+        
+        resources:
+{{ toYaml .Values.connectedSiteGateway.resources | indent 10 }}        
+
+        command: ["dotnet"]
+        args: ["VSS.TRex.ConnectedSite.Gateway.WebApi.dll"]
+
+        ports:
+        - containerPort: 80
+
+        env:
+          - name: DEPLOYED_ENV
+            value: {{ .Values.environment }}
+          - name: TPAAS_APP_TOKEN
+            value: {{ .Values.connectedSiteGateway.environment.tpaasAppToken }}
+          - name: TPAAS_AUTH_URL
+            value: {{ .Values.connectedSiteGateway.environment.tpaasAuthUrl }}
+          - name: CONNECTED_SITE_URL
+            value: {{ .Values.connectedSiteGateway.environment.connectedSiteUrl }}

@@ -1,10 +1,11 @@
 ﻿using System.IO;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 
 namespace VSS.TRex.Designs
 {
-  public class TriangleArrayReferenceSubGrid : GenericLeafSubGrid<TriangleArrayReference>
+  public class TriangleArrayReferenceSubGrid : GenericLeafSubGrid<TriangleArrayReference>, ITriangleArrayReferenceSubGrid
   {
     /// <summary>
     /// Write the contents of the Items array using the supplied writer

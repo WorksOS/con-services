@@ -3,8 +3,6 @@ using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {
@@ -13,7 +11,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         /// <summary>
         /// Default no-arg constructor that orients the request to the available TAG processing server nodes on the mutable grid projection
         /// </summary>
-        public SubmitTAGFileComputeFunc() : base(TRexGrids.MutableGridName(), ServerRoles.TAG_PROCESSING_NODE)
+        public SubmitTAGFileComputeFunc()
         {
         }
 

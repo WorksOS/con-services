@@ -7,19 +7,19 @@ using Xunit;
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
   /// <summary>
-  /// Abstract away the details of serialising and deserialising an object implementing IFromToBinary...
+  /// Abstract away the details of serializing and deserializing an object implementing IFromToBinary...
   /// </summary>
   public static class SimpleBinarizableInstanceTester
   {
     /// <summary>
-    /// Given an instance of a class to test serialise it to an Ignite IBinaryObject, then deserialise it to
+    /// Given an instance of a class to test serialise it to an Ignite IBinaryObject, then deserialize it to
     /// the source type, comparing the before and after versions for equality
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="U"></typeparam>
     /// <param name="instance"></param>
     /// <param name="failureMsg"></param>
-    public static void TestAClassBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, IFromToBinary, new() where T : TestBinarizable_Class<U>
+    public static T TestAClassBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, IFromToBinary, new() where T : TestBinarizable_Class<U>
     {
       var binObj = TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(instance);
       var result = binObj.Deserialize<T>();
@@ -28,17 +28,19 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         Assert.True(instance.member.Equals(result.member), $"{typeof(T).FullName}: {failureMsg}");
       else
         Assert.True(instance.member.Equals(result.member), $"{typeof(T).FullName} not the same after round trip serialisation");
+
+      return result;
     }
 
     /// <summary>
-    /// Given an instance of a class to test serialise it to an Ignite IBinaryObject, then deserialise it to
+    /// Given an instance of a class to test serialise it to an Ignite IBinaryObject, then deserialize it to
     /// the source type, comparing the before and after versions for equality
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="U"></typeparam>
     /// <param name="instance"></param>
     /// <param name="failureMsg"></param>
-    public static void TestAnExtensionBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, new() where T : TestBinarizable_Extension<U>
+    public static T TestAnExtensionBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : class, new() where T : TestBinarizable_Extension<U>
     {
       var binObj = TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(instance);
       var result = binObj.Deserialize<T>();
@@ -47,17 +49,19 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName}: {failureMsg}");
       else
         Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
+
+      return result;
     }
 
     /// <summary>
-    /// Given an instance of a class to test serialise it to an Ignite IBinaryObject, then deserialise it to
+    /// Given an instance of a class to test serialise it to an Ignite IBinaryObject, then deserialize it to
     /// the source type, comparing the before and after versions for equality
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="U"></typeparam>
     /// <param name="instance"></param>
     /// <param name="failureMsg"></param>
-    public static void TestAStructBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : struct, IFromToBinary where T : TestBinarizable_Struct<U>
+    public static T TestAStructBinarizableSerialization<T, U>(T instance, string failureMsg = "") where U : struct, IFromToBinary where T : TestBinarizable_Struct<U>
     {
       var binObj = TestBinarizable_DefaultIgniteNode.GetIgnite().GetBinary().ToBinary<IBinaryObject>(instance);
       var result = binObj.Deserialize<T>();
@@ -66,6 +70,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName}: {failureMsg}");
       else
         Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
+
+      return result;
     }
 
     /// <summary>
@@ -73,9 +79,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// then exercises the IFromToBinary TRex interface on that class.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static void TestExtension<T>(string failureMsg = "") where T: class, new()
+    public static TestBinarizable_Extension<T> TestExtension<T>(string failureMsg = "") where T: class, new()
     {
-      TestAnExtensionBinarizableSerialization<TestBinarizable_Extension<T>, T>(new TestBinarizable_Extension<T>(), failureMsg);
+      return TestAnExtensionBinarizableSerialization<TestBinarizable_Extension<T>, T>(new TestBinarizable_Extension<T>(), failureMsg);
     }
 
     /// <summary>
@@ -85,9 +91,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// <typeparam name="T"></typeparam>
     /// <param name="testMember"></param>
     /// <param name="failureMsg"></param>
-    public static void TestExtension<T>(T testMember, string failureMsg = "") where T : class, new()
+    public static TestBinarizable_Extension<T> TestExtension<T>(T testMember, string failureMsg = "") where T : class, new()
     {
-      TestAnExtensionBinarizableSerialization<TestBinarizable_Extension<T>, T>(new TestBinarizable_Extension<T> {member = testMember}, failureMsg);
+      return TestAnExtensionBinarizableSerialization<TestBinarizable_Extension<T>, T>(new TestBinarizable_Extension<T> {member = testMember}, failureMsg);
     }
 
     /// <summary>
@@ -95,9 +101,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// then exercises the IFromToBinary TRex interface on that class.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static void TestClass<T>(string failureMsg = "") where T : class, IFromToBinary, new()
+    public static TestBinarizable_Class<T> TestClass<T>(string failureMsg = "") where T : class, IFromToBinary, new()
     {
-      TestAClassBinarizableSerialization<TestBinarizable_Class<T>, T>(new TestBinarizable_Class<T>(), failureMsg);
+      return TestAClassBinarizableSerialization<TestBinarizable_Class<T>, T>(new TestBinarizable_Class<T>(), failureMsg);
     }
 
     /// <summary>
@@ -116,9 +122,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     /// then exercises the IFromToBinary TRex interface on that class.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static void TestClass<T>(T testMember, string failureMsg = "") where T : class, IFromToBinary, new()
+    public static TestBinarizable_Class<T> TestClass<T>(T testMember, string failureMsg = "") where T : class, IFromToBinary, new()
     {
-      TestAClassBinarizableSerialization<TestBinarizable_Class<T>, T>(new TestBinarizable_Class<T> { member = testMember }, failureMsg);
+      return TestAClassBinarizableSerialization<TestBinarizable_Class<T>, T>(new TestBinarizable_Class<T> { member = testMember }, failureMsg);
     }
 
 

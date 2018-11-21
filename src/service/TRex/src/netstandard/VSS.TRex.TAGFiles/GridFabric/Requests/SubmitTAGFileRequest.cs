@@ -10,7 +10,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
     /// <summary>
     /// Supports submitting a single TAG file to be considered for processing depending on TAG File Authorization checks.
     /// </summary>
-    public class SubmitTAGFileRequest : TAGFileProcessingPoolBinarizableRequest<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>
+    public class SubmitTAGFileRequest : TAGFileProcessingPoolRequest<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>
     {
         /// <summary>
         /// Local reference to the compute func used to execute the submission request on the grid.

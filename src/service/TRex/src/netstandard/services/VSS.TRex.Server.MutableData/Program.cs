@@ -55,6 +55,9 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
 
+        // Add the central registry of loaded designs
+        .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
+
         // Register the sender for the sie model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
 
@@ -128,8 +131,6 @@ namespace VSS.TRex.Server.MutableData
 
     static async Task<int> Main(string[] args)
     {
-      Log4NetAspExtensions.ConfigureLog4Net("TRex");
-
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 

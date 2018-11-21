@@ -25,8 +25,8 @@ namespace VSS.TRex.GridFabric.Requests
 
         public virtual TResponse Execute(TArgument arg)
         {
-          // No implementation in base class - complain if we are called
-          throw new TRexException("BaseRequest.Execute invalid to call.");
+           // No implementation in base class - complain if we are called
+           throw new TRexException("BaseRequest.Execute invalid to call.");
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
@@ -60,7 +60,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     {
       CalcResult = DesignProfilerRequestResult.UnknownError;
 
-      DesignBase Design;
+      IDesignBase Design;
       int Hint = -1;
 
       try
@@ -100,6 +100,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
 
           ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Args.SiteModelID);
+          IDesignFiles Designs = DIContext.Obtain<IDesignFiles>();
 
           // Work down through the list of surfaces in the time ordering provided by the caller
           for (int i = 0; i < Args.IncludedSurveyedSurfaces.Length; i++)
@@ -110,7 +111,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
             ISurveyedSurface ThisSurveyedSurface = siteModel.SurveyedSurfaces.Locate(Args.IncludedSurveyedSurfaces[i]);
 
             // Lock & load the design
-            Design = DesignFiles.Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor(), Args.SiteModelID, Args.CellSize, out _);
+            Design = Designs.Lock(ThisSurveyedSurface.Get_DesignDescriptor().DesignID, Args.SiteModelID, Args.CellSize, out _);
 
             if (Design == null)
             {
@@ -208,7 +209,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
             }
             finally
             {
-              DesignFiles.Designs.UnLock(ThisSurveyedSurface.Get_DesignDescriptor(), Design);
+              Designs.UnLock(ThisSurveyedSurface.Get_DesignDescriptor().DesignID, Design);
             }
           }
 

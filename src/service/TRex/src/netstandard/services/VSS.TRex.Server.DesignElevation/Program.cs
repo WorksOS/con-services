@@ -9,6 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -42,6 +43,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+        .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Complete();
     }
 
@@ -79,8 +81,6 @@ namespace VSS.TRex.Server.DesignElevation
 
     static async Task<int> Main(string[] args)
     {
-      Log4NetAspExtensions.ConfigureLog4Net("TRex");
-
       EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 

@@ -5,11 +5,10 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
 {
   public static class BeforeAndAfter
   {
-   // [BeforeScenario("requireSurveyedSurfaceLargerThanProductionData")]
     public static void CreateSurveyedSurfaceLargerThanProductionData()
     {
       RestClient.SendHttpClientRequest(
-        RestClient.ProdSvcBaseUri,
+        RestClient.Productivity3DServiceBaseUrl,
         "/api/v1/surveyedsurfaces",
         HttpMethod.Post,
         MediaTypes.JSON,
@@ -29,11 +28,10 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                 }").ConfigureAwait(false);
     }
 
-   // [BeforeScenario("requireSurveyedSurface")]
     public static void CreateSurveyedSurface()
     {
       RestClient.SendHttpClientRequest(
-        RestClient.ProdSvcBaseUri,
+        RestClient.Productivity3DServiceBaseUrl,
         "/api/v1/surveyedsurfaces",
         HttpMethod.Post,
         MediaTypes.JSON,
@@ -53,42 +51,15 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
             }").ConfigureAwait(false);
     }
 
-   // [BeforeScenario("requireOldSurveyedSurface")]
-    public static void CreateOldSurveyedSurface()
+    public static HttpResponseMessage DeleteSurveyedSurfaceFile(int fileId = 111)
     {
-      RestClient.SendHttpClientRequest(
-        RestClient.ProdSvcBaseUri,
-        "/api/v1/surveyedsurfaces",
-        HttpMethod.Post,
-        MediaTypes.JSON,
-        MediaTypes.JSON,
-          @"{
-                    ""ProjectId"": 1001158,
-                    ""SurveyedSurface"": {
-                    ""id"": 111,
-                    ""file"": {
-                        ""filespaceId"": ""u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"",
-                        ""path"": ""/SurveyedSurfaceAcceptanceTests/1001158"",
-                        ""fileName"": ""Milling - Milling.ttm""
-                    },
-                    ""offset"": 0.0
-                    },
-                    ""SurveyedUtc"": ""2010-03-15T18:13:09.265Z""
-            }").ConfigureAwait(false);
-    }
-
-  // [AfterScenario("requireSurveyedSurface")]
-  // [AfterScenario("requireOldSurveyedSurface")]
-  // [AfterScenario("requireSurveyedSurfaceLargerThanProductionData")]
-    private static void DeleteSurveyedSurfaceFile()
-    {
-      RestClient.SendHttpClientRequest(
-        RestClient.ProdSvcBaseUri,
-        "/api/v1/projects/1001158/surveyedsurfaces/111/delete",
+      return RestClient.SendHttpClientRequest(
+        RestClient.Productivity3DServiceBaseUrl,
+        $"/api/v1/projects/1001158/surveyedsurfaces/{fileId}/delete",
         HttpMethod.Get,
         MediaTypes.JSON,
         MediaTypes.JSON,
-        null).ConfigureAwait(false);
+        null).ConfigureAwait(false).GetAwaiter().GetResult();
     }
   }
 }

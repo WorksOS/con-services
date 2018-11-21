@@ -4,6 +4,8 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Apache.Ignite.Core;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
@@ -18,7 +20,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// <summary>
   /// Service metaphor providing access and management control over designs stored for site models
   /// </summary>
-  public class SegmentRetirementQueueService : IService, ISegmentRetirementQueueService
+  public class SegmentRetirementQueueService : IService, ISegmentRetirementQueueService, IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
 
@@ -30,13 +32,14 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Flag set then Cancel() is called to instruct the service to finish operations
     /// </summary>
-    [NonSerialized] private bool aborted;
+    private bool aborted;
 
     /// <summary>
     /// The event wait handle used to mediate sleep periods between operation epochs of the service
     /// </summary>
-    [NonSerialized] private EventWaitHandle waitHandle;
+    private EventWaitHandle waitHandle;
 
+    // Todo: Set the retirement age from the environment/configuration
     public TimeSpan retirementAge = new TimeSpan(0, 10, 0); // Set to 10 minutes as a maximum consistency window
 
     /// <summary>
@@ -116,13 +119,13 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
               Log.LogError($"Failed to retire {retireesCount} spatial streams from mutable and immutable contexts");
             }
           }
-
-          waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
         }
         catch (Exception e)
         {
-          Log.LogError($"Exception reported while obtaining new group of retirees to process: {e}"); 
+          Log.LogError($"Exception reported while obtaining new group of retirees to process: {e}");
         }
+
+        waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
       } while (!aborted);
 
       Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} completed executing");
@@ -138,6 +141,26 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       aborted = true;
       waitHandle?.Set();
+    }
+
+    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
+
+    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
+
+    /// <summary>
+    /// The service has no serialization requirements
+    /// </summary>
+    /// <param name="writer"></param>
+    public void ToBinary(IBinaryRawWriter writer)
+    {
+    }
+
+    /// <summary>
+    /// The service has no serialization requirements
+    /// </summary>
+    /// <param name="reader"></param>
+    public void FromBinary(IBinaryRawReader reader)
+    {
     }
   }
 }

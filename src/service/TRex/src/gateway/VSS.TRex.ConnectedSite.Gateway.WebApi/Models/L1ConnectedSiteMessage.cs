@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
 using VSS.TRex.TAGFiles.Executors;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
 {
-  public class L1ConnectedSiteMessage : IConnectedSiteMessage
+  /// <summary>
+  /// Concrete Implementation of a L1 Connected Site message aka position message
+  /// </summary>
+  public class L1ConnectedSiteMessage : AbstractConnectedSiteMessage, IL1ConnectedSiteMessage
   {
     private const string API_ROUTE = "positions/in/v1/GCS900";
+    public override string Route { get => $"{API_ROUTE}-{HardwareID}"; }
+    public override DateTime? Timestamp { get; set; }
 
-    public DateTime? Timestamp { get ; set; }
-    public double? Lattitude { get; set; }
-    public double? Longitude { get; set; }
-    public double? Height { get; set; }
-    public string Route { get; private set; }
+    public L1ConnectedSiteMessage() { }
 
     public L1ConnectedSiteMessage(TAGFilePreScan tagFilePrescan)
     {
@@ -23,11 +21,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi.Models
       Lattitude = tagFilePrescan.SeedLatitude;
       Longitude = tagFilePrescan.SeedLongitude;
       Height = tagFilePrescan.SeedHeight;
-      Route = $"{API_ROUTE}-{tagFilePrescan.HardwareID}";
-    }
-
-    public L1ConnectedSiteMessage()
-    {
+      HardwareID = tagFilePrescan.HardwareID;
     }
   }
 }
