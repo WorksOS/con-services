@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 
@@ -95,7 +96,8 @@ namespace VSS.TRex.Filters
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       Filters = new ICombinedFilter[reader.ReadInt()];
       for(int i = 0; i < Filters.Length; i++)

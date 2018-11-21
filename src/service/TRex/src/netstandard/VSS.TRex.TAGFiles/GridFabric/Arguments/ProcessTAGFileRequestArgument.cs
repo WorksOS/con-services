@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
@@ -48,7 +48,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       for (int i = 0; i < reader.ReadInt(); i++)
       {

@@ -2,13 +2,13 @@
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
   public class ProcessTAGFileResponse : BaseRequestResponse
   {
-    public const byte versionNumber = 1;
+    private const byte versionNumber = 1;
 
     public List<ProcessTAGFileResponseItem> Results { get; set; } = new List<ProcessTAGFileResponseItem>();
 
@@ -30,7 +30,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       for (int i = 0; i < reader.ReadInt(); i++)
       {

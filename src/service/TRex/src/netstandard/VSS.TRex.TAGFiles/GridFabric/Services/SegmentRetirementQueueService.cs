@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
@@ -23,6 +24,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   public class SegmentRetirementQueueService : IService, ISegmentRetirementQueueService, IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
+
+    private const byte kVersionNumber = 1;
 
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do. Set to 30 seconds.
@@ -153,6 +156,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
+      writer.WriteByte(kVersionNumber);
     }
 
     /// <summary>
@@ -161,6 +165,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
+      byte readVersionNumber = reader.ReadByte();
+
+      if (readVersionNumber != kVersionNumber)
+        throw new TRexSerializationVersionException(kVersionNumber, readVersionNumber);
     }
   }
 }

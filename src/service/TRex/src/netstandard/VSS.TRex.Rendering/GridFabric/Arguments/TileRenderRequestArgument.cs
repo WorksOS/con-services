@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -11,6 +12,8 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
   public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
   {
+    private const byte kVersionNumber = 1;
+
     public DisplayMode Mode { get; set; } = DisplayMode.Height;
 
     public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted();
@@ -55,6 +58,8 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      writer.WriteByte(kVersionNumber);
+
       writer.WriteInt((int)Mode);
 
       writer.WriteBoolean(Extents != null);
@@ -78,6 +83,11 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      var version = reader.ReadByte();
+
+      if (version != kVersionNumber)
+        throw new TRexSerializationVersionException(kVersionNumber, version);
 
       Mode = (DisplayMode)reader.ReadInt();
 

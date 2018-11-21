@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.GridFabric.ExtensionMethods
@@ -36,7 +36,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       const byte versionNumber = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       item.Points = new List<FencePoint>(reader.ReadInt());
       for (int i = 0; i < item.Points.Capacity; i++)
@@ -68,7 +69,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       const byte versionNumber = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       item.MinX = reader.ReadDouble();
       item.MinY = reader.ReadDouble();
@@ -101,7 +103,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       const byte versionNumber = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       item.MinX = reader.ReadInt();
       item.MinY = reader.ReadInt();
@@ -133,7 +136,8 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
       const byte versionNumber = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       item.X = reader.ReadDouble();
       item.Y = reader.ReadDouble();

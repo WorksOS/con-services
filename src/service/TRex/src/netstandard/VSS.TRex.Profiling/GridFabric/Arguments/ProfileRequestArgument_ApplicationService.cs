@@ -84,9 +84,11 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
+      StartPoint = new WGS84Point();
       if (reader.ReadBoolean())
         StartPoint.FromBinary(reader);
 
+      EndPoint = new WGS84Point();
       if (reader.ReadBoolean())
         EndPoint.FromBinary(reader);
 

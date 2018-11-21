@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using Tests.Common;
-using VSS.Log4Net.Extensions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;

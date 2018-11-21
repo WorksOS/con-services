@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -93,7 +94,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       byte version = reader.ReadByte();
 
       if (version != versionNumber)
-        throw new ArgumentException($"Version {version} not valid for deserializing {nameof(CalculateDesignProfileArgument)}");
+        throw new TRexSerializationVersionException(versionNumber, version);
 
       CellSize = reader.ReadDouble();
       DesignUid = reader.ReadGuid() ?? Guid.Empty;

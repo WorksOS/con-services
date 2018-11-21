@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Cluster;
 using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 
@@ -61,7 +62,7 @@ namespace VSS.TRex.GridFabric.NodeFilters
       var version = reader.ReadByte();
 
       if (version != versionNumber)
-        throw new ArgumentException($"Invalid version number. Expected {versionNumber}, got {version}");
+        throw new TRexSerializationVersionException(versionNumber, version);
 
       Role = reader.ReadString();
     }

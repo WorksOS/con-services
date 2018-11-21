@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
@@ -37,7 +38,7 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       byte version = reader.ReadByte();
 
       if (version != versionNumber)
-        throw new ArgumentException($"Version {version} not valid for deserializing {nameof(CalculateDesignProfileResponse)}");
+        throw new TRexSerializationVersionException(versionNumber, version);
 
       var count = reader.ReadInt();
       Profile = new List<XYZS>(count);

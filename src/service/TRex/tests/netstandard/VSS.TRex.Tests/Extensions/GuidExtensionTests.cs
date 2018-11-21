@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.Extensions
       Guid[] thisArray = new Guid[0];
       Guid[] otherArray = null;
 
-      Assert.False(thisArray.GuidsEqual(otherArray));
+      Assert.True(thisArray.GuidsEqual(otherArray));
     }
 
     [Fact]
@@ -54,8 +54,8 @@ namespace VSS.TRex.Tests.Extensions
     [Fact]
     public void Test_UnevenListSize_WitNonNullDifferentContents()
     {
-      Guid[] thisArray = new [] {Guid.NewGuid(), Guid.NewGuid()};
-      Guid[] otherArray = new [] {Guid.NewGuid(), Guid.NewGuid()};
+      Guid[] thisArray = {Guid.NewGuid(), Guid.NewGuid()};
+      Guid[] otherArray = {Guid.NewGuid(), Guid.NewGuid()};
 
       Assert.False(thisArray.GuidsEqual(otherArray));
     }
@@ -66,8 +66,8 @@ namespace VSS.TRex.Tests.Extensions
       Guid guid1 = Guid.NewGuid();
       Guid guid2 = Guid.NewGuid();
 
-      Guid[] thisArray = new[] { guid1, guid2 };
-      Guid[] otherArray = new[] { guid1, guid2 };
+      Guid[] thisArray = { guid1, guid2 };
+      Guid[] otherArray = { guid1, guid2 };
 
       Assert.True(thisArray.GuidsEqual(otherArray));
     }

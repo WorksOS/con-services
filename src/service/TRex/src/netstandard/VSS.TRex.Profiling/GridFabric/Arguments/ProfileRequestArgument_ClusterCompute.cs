@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -14,6 +15,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// </summary>
   public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
   {
+    private const byte kVersionNumber = 1;
+
     public GridDataType ProfileTypeRequired { get; set; }
 
     public XYZ[] NEECoords { get; set; }
@@ -23,7 +26,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public DesignDescriptor DesignDescriptor;
 
-    public bool ReturnAllPassesAndLayers { get; set; } = false;
+    public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -56,6 +59,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      writer.WriteByte(kVersionNumber);
+
       writer.WriteInt((int)ProfileTypeRequired);
 
       writer.WriteBoolean(NEECoords != null);
@@ -79,6 +84,10 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      var version = reader.ReadByte();
+      if (version != kVersionNumber)
+        throw new TRexSerializationVersionException(kVersionNumber, version);
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 

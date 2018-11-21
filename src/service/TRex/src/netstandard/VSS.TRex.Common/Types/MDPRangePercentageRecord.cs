@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 
@@ -70,7 +67,7 @@ namespace VSS.TRex.Types
     }
 
     /// <summary>
-    /// Serialises comtent of the cell from the writer
+    /// Serialises content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

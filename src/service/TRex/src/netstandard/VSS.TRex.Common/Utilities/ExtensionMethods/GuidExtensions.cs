@@ -12,14 +12,14 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <returns></returns>
     public static bool GuidsEqual(this Guid[] guidArray, Guid[] otherGuidArray)
     {
-      if (guidArray == otherGuidArray)
-        return true;
+      if (guidArray == otherGuidArray) return true;
 
-      if (guidArray == null || otherGuidArray == null)
-        return false;
+      if (guidArray == null && (otherGuidArray?.Length ?? 0) == 0) return true;
+      if (otherGuidArray == null && (guidArray?.Length ?? 0) == 0) return true;
 
-      if (guidArray.Length != otherGuidArray.Length)
-        return false;
+      if (guidArray == null || otherGuidArray == null) return false;
+
+      if (guidArray.Length != otherGuidArray.Length) return false;
 
       for (int i = 0; i < guidArray.Length - 1; i++)
         if (!guidArray[i].Equals(otherGuidArray[i]))

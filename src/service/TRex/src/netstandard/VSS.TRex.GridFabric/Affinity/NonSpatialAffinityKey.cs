@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
@@ -59,7 +60,7 @@ namespace VSS.TRex.GridFabric.Affinity
       int version = reader.ReadByte();
 
       if (version != versionNumber)
-        throw new TRexException($"Invalid version number ({version}) in {nameof(NonSpatialAffinityKey)}, expected {versionNumber}");
+        throw new TRexSerializationVersionException(versionNumber, version);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       KeyName = reader.ReadString();

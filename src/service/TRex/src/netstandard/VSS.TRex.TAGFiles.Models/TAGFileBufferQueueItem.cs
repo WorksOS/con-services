@@ -2,6 +2,7 @@
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using k8s;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Models
@@ -69,7 +70,7 @@ namespace VSS.TRex.TAGFiles.Models
         var version = reader.ReadByte();
 
         if (version != kVersionNumber)
-          throw new ArgumentException($"Invalid version number {version}, expected {kVersionNumber}");
+          throw new TRexSerializationVersionException(kVersionNumber, version);
 
         InsertUTC = new DateTime(reader.ReadLong());
         FileName = reader.ReadString();

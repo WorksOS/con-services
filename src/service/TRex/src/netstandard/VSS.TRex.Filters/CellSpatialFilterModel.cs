@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -175,13 +176,14 @@ namespace VSS.TRex.Filters
       const byte versionNumber = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != versionNumber)
+        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
 
       if (reader.ReadBoolean())
-        (Fence ?? new Fence()).FromBinary(reader);
+        (Fence ?? (Fence = new Fence())).FromBinary(reader);
 
       if (reader.ReadBoolean())
-        (AlignmentFence ?? new Fence()).FromBinary(reader);
+        (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
 
       PositionX = reader.ReadDouble();
       PositionY = reader.ReadDouble();
