@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -12,18 +13,20 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// <summary>
   /// Defines the parameters required for a production data profile request argument on cluster compute nodes
   /// </summary>
-  public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument, IEquatable<ProfileRequestArgument_ClusterCompute>
   {
+    private const byte VERSION_NUMBER = 1;
+
     public GridDataType ProfileTypeRequired { get; set; }
 
-    public XYZ[] NEECoords { get; set; }
+    public XYZ[] NEECoords { get; set; } = new XYZ[0];
     
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     public DesignDescriptor DesignDescriptor;
 
-    public bool ReturnAllPassesAndLayers { get; set; } = false;
+    public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -56,16 +59,14 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      writer.WriteByte(VERSION_NUMBER);
+
       writer.WriteInt((int)ProfileTypeRequired);
 
-      writer.WriteBoolean(NEECoords != null);
-
-      if (NEECoords != null)
-      {
-        writer.WriteInt(NEECoords.Length);
-        foreach (var xyz in NEECoords)
-          xyz.ToBinary(writer);
-      }
+      var count = NEECoords?.Length ?? 0;
+      writer.WriteInt(count);
+      for (int i = 0; i < count; i++)
+        NEECoords[i].ToBinary(writer);
 
       DesignDescriptor.ToBinary(writer);
 
@@ -80,22 +81,23 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
+      var version = reader.ReadByte();
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
-      if (reader.ReadBoolean())
-      {
-        var count = reader.ReadInt();
-        NEECoords = new XYZ[count];
-        for (int i = 0; i < count; i++)
-          NEECoords[i] = NEECoords[i].FromBinary(reader);
-      }
+      var count = reader.ReadInt();
+      NEECoords = new XYZ[count];
+      for (int i = 0; i < count; i++)
+        NEECoords[i] = NEECoords[i].FromBinary(reader);
 
       DesignDescriptor.FromBinary(reader);
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
     }
 
-    protected bool Equals(ProfileRequestArgument_ClusterCompute other)
+    public bool Equals(ProfileRequestArgument_ClusterCompute other)
     {
       return base.Equals(other) && 
              ProfileTypeRequired == other.ProfileTypeRequired && 
@@ -103,11 +105,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
               (NEECoords != null && other.NEECoords != null && NEECoords.SequenceEqual(other.NEECoords))) &&
              DesignDescriptor.Equals(other.DesignDescriptor) && 
              ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as ProfileRequestArgument_ClusterCompute);
     }
 
     public override bool Equals(object obj)

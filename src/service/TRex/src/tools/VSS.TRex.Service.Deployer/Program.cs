@@ -54,7 +54,7 @@ namespace VSS.TRex.Service.Deployer
                 Log.LogError($"Exception occurred deploying service: {e}");
             }
 
-            Log.LogInformation($"Complected service deployment for TAG file buffer queue service");
+            Log.LogInformation("Completed service deployment for TAG file buffer queue service");
 
             var segmentRetirementProxyMutable = new SegmentRetirementQueueServiceProxyMutable();
             try
@@ -67,7 +67,7 @@ namespace VSS.TRex.Service.Deployer
               Log.LogError($"Exception occurred deploying service: {e}");
             }
 
-            Log.LogInformation("Complected service deployment for mutable segment retirement queue service");
+            Log.LogInformation("Completed service deployment for mutable segment retirement queue service");
 
           /* Currently the segment retirement service is only deployed to the mutable grid
             var segmentRetirementProxyImmutable = new SegmentRetirementQueueServiceProxyImmutable();
@@ -81,7 +81,7 @@ namespace VSS.TRex.Service.Deployer
               Log.LogError($"Exception occurred deploying service: {e}");
             }
          
-            Log.LogInformation("Complected service deployment for immutable segment retirement queue service");
+            Log.LogInformation("Completed service deployment for immutable segment retirement queue service");
 */
           }
     }

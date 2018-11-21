@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 
@@ -20,7 +17,7 @@ namespace VSS.TRex.Types
     public double Max { get; set; }
 
     /// <summary>
-    /// Constractor with arguments.
+    /// Constructor with arguments.
     /// </summary>
     /// <param name="min"></param>
     /// <param name="max"></param>

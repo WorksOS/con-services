@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -9,7 +10,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 {
   public class CalculateDesignProfileArgument : BaseApplicationServiceRequestArgument, IEquatable<CalculateDesignProfileArgument>
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The path along which the profile will be calculated
@@ -69,7 +70,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteDouble(CellSize);
 
@@ -92,8 +93,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       byte version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new ArgumentException($"Version {version} not valid for deserializing {nameof(CalculateDesignProfileArgument)}");
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       CellSize = reader.ReadDouble();
       DesignUid = reader.ReadGuid() ?? Guid.Empty;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.Filters
@@ -58,9 +59,9 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteBoolean(AttributeFilter != null);
       AttributeFilter?.ToBinary(writer);
@@ -71,10 +72,11 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       if (reader.ReadBoolean())
         (AttributeFilter ?? (AttributeFilter = new CellPassAttributeFilter())).FromBinary(reader);

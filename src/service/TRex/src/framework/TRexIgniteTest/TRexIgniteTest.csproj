@@ -322,10 +322,6 @@
       <Project>{40db7cf3-5817-45a5-9f90-29baa80e2c7a}</Project>
       <Name>VSS.TRex</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.TRex.Rendering.Abstractions\VSS.TRex.Rendering.Abstractions.csproj">
-      <Project>{F1D135BE-638E-4E1C-9D8B-06F2A618C2F9}</Project>
-      <Name>VSS.TRex.Rendering.Abstractions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj">
       <Project>{bac0b22f-b4fd-406a-9196-2e864416ef4e}</Project>
       <Name>VSS.TRex.Geometry</Name>
