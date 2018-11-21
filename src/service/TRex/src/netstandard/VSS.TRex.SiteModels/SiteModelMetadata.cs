@@ -8,7 +8,7 @@ using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  public class SiteModelMetadata : BaseRequestBinarizableArgument, ISiteModelMetadata, IEquatable<SiteModelMetadata>
+  public class SiteModelMetadata : BaseRequestArgument, ISiteModelMetadata, IEquatable<SiteModelMetadata>
   {
     private const byte versionNumber = 1;
 

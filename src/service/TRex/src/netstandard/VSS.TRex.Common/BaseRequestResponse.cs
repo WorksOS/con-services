@@ -1,11 +1,10 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Interfaces;
 
-namespace VSS.TRex.GridFabric.Services
+namespace VSS.TRex.Common
 {
-  public abstract class BaseBinarizableService : IBinarizable, IFromToBinary
+  public abstract class BaseRequestResponse : IBinarizable, IFromToBinary
   {
-
     public abstract void ToBinary(IBinaryRawWriter writer);
 
     public abstract void FromBinary(IBinaryRawReader reader);

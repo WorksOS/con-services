@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Volumes.Executors;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Responses;
@@ -19,9 +17,9 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
         /// <summary>
-        /// Default no-arg constructor that orients the request to the available PSNODE servers on the immutable grid projection
+        /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
         /// </summary>
-        public SimpleVolumesRequestComputeFunc_ClusterCompute() : base(TRexGrids.ImmutableGridName(), ServerRoles.PSNODE)
+        public SimpleVolumesRequestComputeFunc_ClusterCompute()
         {
         }
 

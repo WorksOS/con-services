@@ -8,7 +8,7 @@ namespace VSS.TRex.Common
   /// <summary>
   /// A base class representing the generic result of requesting subgrids
   /// </summary>
-  public class SubGridsPipelinedReponseBase : BaseRequestBinarizableResponse, ISubGridsPipelinedReponseBase, IEquatable<BaseRequestBinarizableResponse>
+  public class SubGridsPipelinedReponseBase : BaseRequestResponse, ISubGridsPipelinedReponseBase, IEquatable<BaseRequestResponse>
   {
     /// <summary>
     /// The error status result from the pipeline execution
@@ -30,7 +30,7 @@ namespace VSS.TRex.Common
       return ResultStatus == other.ResultStatus;
     }
 
-    public bool Equals(BaseRequestBinarizableResponse other)
+    public bool Equals(BaseRequestResponse other)
     {
       return Equals(other as SubGridsPipelinedReponseBase);
     }

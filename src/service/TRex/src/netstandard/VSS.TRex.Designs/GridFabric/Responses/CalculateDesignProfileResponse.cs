@@ -7,7 +7,7 @@ using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
 {
-  public class CalculateDesignProfileResponse : BaseRequestBinarizableResponse, IEquatable<CalculateDesignProfileResponse>
+  public class CalculateDesignProfileResponse : BaseRequestResponse, IEquatable<CalculateDesignProfileResponse>
   {
     private const byte versionNumber = 1;
 
