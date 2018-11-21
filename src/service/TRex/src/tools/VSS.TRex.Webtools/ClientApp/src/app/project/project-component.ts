@@ -106,7 +106,17 @@ export class ProjectComponent {
   public machineEventsEndDate: Date = new Date(2100, 1, 1, 0, 0, 0, 0);
   public maxMachineEventsToReturn: number = 100;
 
-  public profilePath: string = "M0 0 L100 500 L200 0 L300 500 L400 0 L500 500";
+  public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
+
+  public updateFirstPointLocation: boolean = false;
+  public updateSecondPointLocation: boolean = false;
+
+  public firstPointX: number = 0.0;
+  public firstPointY: number = 0.0;
+
+  public secondPointX: number = 0.0;
+  public secondPointY: number = 0.0;
+
 
 constructor(
     private projectService: ProjectService
@@ -520,7 +530,7 @@ constructor(
   // between all others
   public drawProfileLine(startX: number, startY: number, endX: number, endY: number) {
     var profileCanvasHeight:number = 500.0;
-    var profileCanvasWidth: number = 500.0;
+    var profileCanvasWidth: number = 1000.0;
 
     var result: string = "";
     var first: boolean = true;
@@ -561,6 +571,22 @@ constructor(
   //Draw profile line from top left to bottom right of project 
   public drawProfileTLToBR(): void {
     this.drawProfileLine(this.tileExtents.minX, this.tileExtents.maxY, this.tileExtents.maxX, this.tileExtents.minY);
+  }
+
+  public onMapMouseClick(): void {
+    if (this.updateFirstPointLocation) {
+      this.firstPointX = this.mouseWorldX;
+      this.firstPointY = this.mouseWorldY;
+    }
+
+    if (this.updateSecondPointLocation) {
+      this.secondPointX = this.mouseWorldX;
+      this.secondPointY = this.mouseWorldY;
+    }
+  }
+
+  public drawProfileLineFromStartToEndPoints(): void {
+    this.drawProfileLine(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
 }
 
