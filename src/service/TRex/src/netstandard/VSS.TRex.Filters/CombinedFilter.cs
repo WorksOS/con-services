@@ -59,9 +59,9 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteBoolean(AttributeFilter != null);
       AttributeFilter?.ToBinary(writer);
@@ -72,11 +72,11 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       if (reader.ReadBoolean())
         (AttributeFilter ?? (AttributeFilter = new CellPassAttributeFilter())).FromBinary(reader);

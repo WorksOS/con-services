@@ -10,7 +10,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 {
   public class CalculateDesignProfileArgument : BaseApplicationServiceRequestArgument, IEquatable<CalculateDesignProfileArgument>
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The path along which the profile will be calculated
@@ -70,7 +70,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteDouble(CellSize);
 
@@ -93,8 +93,8 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       byte version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, version);
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       CellSize = reader.ReadDouble();
       DesignUid = reader.ReadGuid() ?? Guid.Empty;

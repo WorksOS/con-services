@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
   public class ProcessTAGFileResponse : BaseRequestResponse
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public List<ProcessTAGFileResponseItem> Results { get; set; } = new List<ProcessTAGFileResponseItem>();
 
@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteInt(Results.Count);
       Results.ForEach(result => result.ToBinary(writer));
     }
@@ -30,8 +30,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     {
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       for (int i = 0; i < reader.ReadInt(); i++)
       {

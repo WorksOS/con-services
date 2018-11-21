@@ -13,7 +13,7 @@ namespace VSS.TRex.GridFabric.Affinity
   /// </summary>
   public struct TAGFileBufferQueueKey : ITAGFileBufferQueueKey, IBinarizable, IFromToBinary, IEquatable<TAGFileBufferQueueKey>
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The name of the TAG file being processed
@@ -53,7 +53,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteGuid(ProjectUID);
       writer.WriteGuid(AssetUID);
       writer.WriteString(FileName);
@@ -63,8 +63,8 @@ namespace VSS.TRex.GridFabric.Affinity
     {
       int version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, version);
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       AssetUID = reader.ReadGuid() ?? Guid.Empty;

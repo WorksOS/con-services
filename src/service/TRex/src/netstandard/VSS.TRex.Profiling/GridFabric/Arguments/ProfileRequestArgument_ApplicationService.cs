@@ -13,8 +13,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   {
     public GridDataType ProfileTypeRequired { get; set; }
 
-    public WGS84Point StartPoint = new WGS84Point();
-    public WGS84Point EndPoint = new WGS84Point();
+    public WGS84Point StartPoint { get; set; } = new WGS84Point();
+    public WGS84Point EndPoint { get; set; } = new WGS84Point();
 
     public bool PositionsAreGrid { get; set; }
 

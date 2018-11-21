@@ -14,7 +14,7 @@ namespace VSS.TRex.GridFabric.Affinity
   /// </summary>
   public struct SubGridSpatialAffinityKey : ISubGridSpatialAffinityKey, IBinarizable, IFromToBinary, IEquatable<SubGridSpatialAffinityKey>
     {
-        private const byte versionNumber = 1;
+        private const byte VERSION_NUMBER = 1;
        
         /// <summary>
         /// The GUID for the project the subgrid data belongs to.
@@ -108,7 +108,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteGuid(ProjectUID);
       writer.WriteInt((int)SubGridX);
       writer.WriteInt((int)SubGridY);
@@ -119,8 +119,8 @@ namespace VSS.TRex.GridFabric.Affinity
     {
       int version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, version);
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       SubGridX = (uint)reader.ReadInt();

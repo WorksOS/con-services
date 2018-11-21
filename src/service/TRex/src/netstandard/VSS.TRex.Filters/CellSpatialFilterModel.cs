@@ -123,9 +123,9 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteBoolean(Fence != null);
       Fence?.ToBinary(writer);
@@ -173,11 +173,11 @@ namespace VSS.TRex.Filters
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       if (reader.ReadBoolean())
         (Fence ?? (Fence = new Fence())).FromBinary(reader);

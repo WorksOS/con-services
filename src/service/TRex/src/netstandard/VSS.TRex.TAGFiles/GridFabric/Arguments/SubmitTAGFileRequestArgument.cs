@@ -8,7 +8,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
   public class SubmitTAGFileRequestArgument : BaseRequestArgument
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// Overridden ID of the project to process the TAG files into
@@ -45,7 +45,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteGuid(ProjectID);
       writer.WriteGuid(AssetID);
       writer.WriteString(TAGFileName);
@@ -57,8 +57,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     {
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       ProjectID = reader.ReadGuid();
       AssetID = reader.ReadGuid();

@@ -191,8 +191,8 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
-      writer.WriteByte(versionNumber);
+      const byte VERSION_NUMBER = 1;
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteInt((int) RequestedGridDataType);
       writer.WriteBoolean(HasTimeFilter);
@@ -271,12 +271,12 @@ namespace VSS.TRex.Filters
     /// </summary>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       RequestedGridDataType = (GridDataType)reader.ReadInt();
       HasTimeFilter = reader.ReadBoolean();

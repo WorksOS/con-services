@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
   /// </summary>
   public class SubmitTAGFileResponse : BaseRequestResponse
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public string FileName { get; set; }
 
@@ -28,7 +28,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteString(FileName);
       writer.WriteBoolean(Success);
       writer.WriteInt(Code);
@@ -39,8 +39,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     { 
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       FileName = reader.ReadString();
       Success = reader.ReadBoolean();

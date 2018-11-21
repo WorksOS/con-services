@@ -13,7 +13,7 @@ namespace VSS.TRex.GridFabric.NodeFilters
   /// </summary>
   public abstract class RoleBasedNodeFilter : IClusterNodeFilter, IBinarizable, IFromToBinary, IEquatable<RoleBasedNodeFilter>
   {
-    private const int versionNumber = 1;
+    private const int VERSION_NUMBER = 1;
 
     /// <summary>
     /// The node role
@@ -53,7 +53,7 @@ namespace VSS.TRex.GridFabric.NodeFilters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteString(Role);
     }
 
@@ -61,8 +61,8 @@ namespace VSS.TRex.GridFabric.NodeFilters
     {
       var version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new TRexSerializationVersionException(versionNumber, version);
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       Role = reader.ReadString();
     }
