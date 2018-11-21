@@ -424,7 +424,7 @@ namespace VSS.TRex.Volumes
           response: new SimpleVolumesResponse(), // todo or any predefined response object
           filters: new FilterSet(BaseFilter, TopFilter),
           cutFillDesignID: ReferenceDesignID,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignID != Guid.Empty,

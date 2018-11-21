@@ -3,7 +3,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Interfaces.Tasks
 {
-    public interface ITask  
+    public interface ITRexTask  
     {
         void Cancel();
 

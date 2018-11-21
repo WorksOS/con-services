@@ -127,14 +127,14 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           response: SurfaceSubGridsResponse,
           filters: Filters,
           cutFillDesignID: Guid.Empty,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.SurfaceExport),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SurfaceExport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
           requestRequiresAccessToDesignFileExistenceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(DisplayMode.Height),
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
 
-        // Set the surface task parameters for progressive processing
+        // Set the surface rexTask parameters for progressive processing
         processor.Task.RequestDescriptor = RequestDescriptor;
         processor.Task.TRexNodeID = RequestingTRexNodeID;
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);
