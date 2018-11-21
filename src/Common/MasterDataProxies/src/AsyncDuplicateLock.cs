@@ -48,7 +48,7 @@ namespace VSS.MasterData.Proxies
 
     public async Task<IDisposable> LockAsync(string key)
     {
-      await GetOrCreate(key).WaitAsync().ConfigureAwait(false);
+      await GetOrCreate(key).WaitAsync();
       return new Releaser { Key = key };
     }
 

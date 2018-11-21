@@ -5,8 +5,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -42,7 +40,7 @@ namespace VSS.MasterData.Proxies
     }
 
 
-    private Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, string method,
+    private Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, HttpMethod method,
       IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
     {
       void ApplyHeaders(IDictionary<string, string> dictionary, HttpRequestMessage x)
@@ -55,29 +53,20 @@ namespace VSS.MasterData.Proxies
         }
       }
 
-      if (requestStream == null && method != "GET")
+      if (requestStream == null && method != HttpMethod.Get)
         throw new ArgumentException($"Empty body for non-GET request {nameof(requestStream)}");
 
       log.LogDebug(
         $"Headers to be attached to the request {JsonConvert.SerializeObject(httpClient.DefaultRequestHeaders)}");
 
-      switch (method)
-      {
-        case "GET":
-        {
-          return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
-        }
-        case "POST":
-        case "PUT":
-        {
-          return httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
-            x => { ApplyHeaders(customHeaders, x); }, log);
-        }
-        default:
-        {
-          throw new ArgumentException($"Unknown HTTP method {nameof(method)}");
-        }
-      }
+      if (method == HttpMethod.Get)
+        return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
+
+      if (method == HttpMethod.Post || method == HttpMethod.Put)
+        return httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
+          x => { ApplyHeaders(customHeaders, x); }, log);
+
+      throw new ArgumentException($"Unknown HTTP method {method}");
     }
 
 
@@ -115,7 +104,7 @@ namespace VSS.MasterData.Proxies
         {
      
           log.LogDebug($"Trying to execute request {endpoint}");
-          var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
+          var result = await ExecuteRequestInternal(endpoint, new HttpMethod(method), customHeaders, payloadStream, timeout);
           log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
           if (result.StatusCode != HttpStatusCode.OK)
@@ -176,7 +165,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
+          var result = await ExecuteRequestInternal(endpoint, new HttpMethod(method), customHeaders, payload, timeout);
           log.LogDebug($"Request to {endpoint} completed");
 
           var contents = await result.Content.ReadAsStringAsync();
@@ -211,56 +200,5 @@ namespace VSS.MasterData.Proxies
       return default(T);
     }
 
-  }
-
-  internal static class HttpClientExtensions
-  {
-    public static Task<HttpResponseMessage> GetAsync
-      (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
-    {
-      var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-
-      preAction(httpRequestMessage);
-
-      var cancellationTime = timeout.HasValue ? timeout.Value : 60000;
-      var cts = new CancellationTokenSource(cancellationTime);
-      log?.LogDebug($"Starting the request with timeout {cancellationTime}");
-      return httpClient.SendAsync(httpRequestMessage,cts.Token);
-    }
-
-    public static Task<HttpResponseMessage> PostAsync
-    (this HttpClient httpClient, string uri, Stream requestStream, string method,
-      IDictionary<string, string> customHeaders, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
-    {
-      //Default to JSON content type
-      HttpContent content = null;
-      if (requestStream != null)
-      {
-        if ((customHeaders == null) || !customHeaders.ContainsKey("Content-Type") ||
-            (customHeaders.ContainsKey("Content-Type") &&
-             customHeaders["Content-Type"] == "application/json"))
-        {
-          content = new StringContent(new StreamReader(requestStream).ReadToEnd(), Encoding.UTF8, "application/json");
-        }
-        else
-        {
-          content = new StreamContent(requestStream);
-        }
-      }
-
-      //Default to POST, nothing else is supported so far
-      var httpMethod = HttpMethod.Post;
-      if (method == "PUT")
-        httpMethod = HttpMethod.Put;
-      var httpRequestMessage = new HttpRequestMessage(httpMethod, uri)
-      {
-        Content = content
-      };
-      preAction(httpRequestMessage);
-      var cancellationTime = timeout.HasValue ? timeout.Value : 60000;
-      var cts = new CancellationTokenSource(cancellationTime);
-      log?.LogDebug($"Starting the request with timeout {cancellationTime} ");
-      return httpClient.SendAsync(httpRequestMessage,cts.Token);
-    }
   }
 }

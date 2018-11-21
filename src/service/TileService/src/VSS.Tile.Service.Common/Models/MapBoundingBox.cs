@@ -22,7 +22,7 @@ namespace VSS.Tile.Service.Common.Models
 
     public override string ToString()
     {
-      return $"{minLat}/${minLng}/${maxLat}/${maxLng}";
+      return $"minLat:{minLat}/minLong:{minLng}/maxLat:{maxLat}/maxLong:{maxLng}";
     }
   }
 }

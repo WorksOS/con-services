@@ -14,7 +14,7 @@ namespace VSS.ConfigurationStore
   /// Kubernetes configuration has the lowest priority
   /// environment vars will override k8s
   /// Appsettings will override any environment setting
-  /// if neither present then we'll use some def=aults
+  /// if neither present then we'll use some defaults
   /// Also kubernetes is supported as one of the sources with the lowest priority
   /// </summary>
   public class GenericConfiguration : IConfigurationStore
