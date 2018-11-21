@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
@@ -116,12 +117,12 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       // Refetch the Request Model from S3
       var request = await DownloadRequest(requestId);
 
-      using (var data = await apiClient.SendRequest(request, customHeaders))
+      var data = await apiClient.SendRequest(request, customHeaders);
       {
         //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
         //where app name and userId (appId or userUid) from JWT
         var stream = await data.ReadAsStreamAsync();
-        var contentType = data.Headers.ContentType == null ? string.Empty : data.Headers.ContentType.MediaType;
+        var contentType = data.Headers.ContentType.MediaType;
         var path = GetS3Key(context.BackgroundJob.Id, request.Filename);
 
         if (string.IsNullOrEmpty(contentType))

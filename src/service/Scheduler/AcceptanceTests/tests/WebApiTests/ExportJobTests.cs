@@ -88,6 +88,7 @@ namespace WebApiTests
     }
 
     [TestMethod]
+    [Timeout(800000)]
     public void CanDoLongRunningExport()
     {
       Msg.Title("Scheduler web test 4", "Schedule long running export job");
@@ -108,14 +109,14 @@ namespace WebApiTests
 
       //Schedule the export job...
       var filterUid = "81422acc-9b0c-401c-9987-0aedbf153f1d";
-      var jobId = GetScheduledJobId(filterUid, TIMEOUT_JOB_ID, 100000);
+      var jobId = GetScheduledJobId(filterUid, TIMEOUT_JOB_ID, TimeSpan.FromSeconds(100).Milliseconds);
 
       //Get the job status...
       var statusResult = WaitForExpectedStatus(jobId, "FAILED", 150);
       Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
       Assert.AreEqual(HttpStatusCode.InternalServerError, statusResult.FailureDetails.Code, "Wrong http status code");
       Assert.AreEqual(-3, statusResult.FailureDetails.Result.Code, "Wrong failure code");
-      Assert.AreEqual("The operation has timed out.", statusResult.FailureDetails.Result.Message, "Wrong failure message");
+      Assert.AreEqual("A task was canceled.", statusResult.FailureDetails.Result.Message, "Wrong failure message");
 
     }
 
@@ -123,8 +124,10 @@ namespace WebApiTests
     {
       var url = $"{ts.tsCfg.vetaExportUrl}?projectUid={GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1}&fileName={filename}&filterUid={filterUid}";
       var request = new ScheduleJobRequest { Url = url, Filename = filename, Timeout= timeoutMillisecs };
+      Console.WriteLine($"Uri is {url}");
       var requestJson = JsonConvert.SerializeObject(request);
       var responseJson = ts.CallSchedulerWebApi("internal/v1/export", "POST", requestJson);
+      Console.WriteLine($"Response from the mockApi is {responseJson}");
       var scheduleResult = JsonConvert.DeserializeObject<ScheduleJobResult>(responseJson,
         new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.IsNotNull(scheduleResult, "Should get a schedule job response");
