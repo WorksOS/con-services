@@ -23,17 +23,17 @@ namespace VSS.WebApi.Common
     /// <param name="context">The current <see cref="HttpContext"/> object.</param>
     public async Task Invoke(HttpContext context)
     {
-      if (context.Request.Headers.ContainsKey("X-Request-ID"))
-        context.Items["RequestID"] = context.Request.Headers["X-Request-ID"];
+      if (context.Request.Headers.ContainsKey("X-VSS-Request-ID"))
+        context.Items["RequestID"] = context.Request.Headers["X-VSS-Request-ID"];
       else
       {
         context.Items["RequestID"] = Guid.NewGuid();
-        context.Request.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
+        context.Request.Headers["X-VSS-Request-ID"] = context.Items["RequestID"].ToString();
       }
       context.Response.OnStarting(() =>
       {
         if (!context.Response.Headers.ContainsKey("X-Request-ID"))
-          context.Response.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
+          context.Response.Headers["X-VSS-Request-ID"] = context.Items["RequestID"].ToString();
         return Task.FromResult(0);
       });
 

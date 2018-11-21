@@ -8,7 +8,7 @@ docker rmi vssproductivity3dscheduler_webapi
 docker rmi vssproductivity3dscheduler_accepttest
 
 Write-Host "Logging in to image host" -ForegroundColor "darkgray"
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile vss-grant)
 
 Write-Host "Executing local testing script..." -ForegroundColor "darkgray"
 & .\RunLocalTesting.bat

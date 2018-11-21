@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Authentication;
@@ -16,6 +18,7 @@ using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.ResultHandling;
 using VSS.Tile.Service.Common.Services;
+using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
 {
@@ -193,12 +196,21 @@ namespace VSS.Tile.Service.WebApi.Controllers
     public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsBase64([FromQuery] Guid[] geofenceUids)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailsBase64)}: {Request.QueryString}");
+      List<GeofenceData> geofences;
 
-      var geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
-      var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0 ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID)) : geofences;
-      var thumbnailsTasks = selectedGeofences.Select(GeofenceThumbnailPng);
+      geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+      if (geofenceUids.Any(g => !geofences.Select(k => k.GeofenceUID).Contains(g)))
+      {
+        geofenceProxy.ClearCacheItem(GetCustomerUid);
+        geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
+      }
 
-      var thumbnails = await Task.WhenAll(thumbnailsTasks);
+
+      var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0
+        ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID))
+        : geofences;
+
+      var thumbnails = await Task.WhenAll(selectedGeofences.Select(GeofenceThumbnailPng));
 
       return new MultipleThumbnailsResult
       {
@@ -218,11 +230,14 @@ namespace VSS.Tile.Service.WebApi.Controllers
       //We don't need to do it twice as the very first caching request should be enough
       //var geofence = await geofenceProxy.GetGeofenceForCustomer(GetCustomerUid, geofenceUid.ToString(), CustomHeaders);
 
+
       if (geofence == null)
       {
         return (geofence.GeofenceUID, new FileStreamResult(
           new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), "image/png"));
       }
+
+      Log.LogDebug($"Generating geofence tile for {geofence.GeofenceUID}");
 
       var bbox = GetBoundingBoxFromWKT(geofence.GeometryWKT);
 

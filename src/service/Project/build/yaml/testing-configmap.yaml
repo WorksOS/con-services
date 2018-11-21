@@ -34,7 +34,7 @@ data:
   RAPTOR_PROJECT_SETTINGS_API_URL: http://localhost:5001/api/v2
   TREX_IMPORTFILE_API_URL: http://localhost:5001/api/v1/design
   FILTER_API_URL: http://localhost:5001/api/v1/mock
-  TCCBASEURL: http://mockprojectwebapi:5001
+  TCCBASEURL: http://localhost:5001
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
   TCCORG: vldev
   TCCUSERNAME: vldev

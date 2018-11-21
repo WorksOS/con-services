@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -20,7 +21,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     public TResponse CurrentResponse { get; private set; }
     public byte[] ByteContent { get; private set; }
 
-    private readonly string TestDatapath = DirectoryAgent.TraverseParentDirectories("testdata");
+    private readonly string testDatapath = DirectoryAgent.TraverseParentDirectories("testdata");
 
     public Getter(string uri, string responseFile = null)
     {
@@ -36,7 +37,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
         return;
       }
 
-      using (var file = File.OpenText(Path.Combine(TestDatapath, responseFile)))
+      using (var file = File.OpenText(Path.Combine(testDatapath, responseFile)))
       {
         var serializer = new JsonSerializer();
         ResponseRepo = (Dictionary<string, TResponse>)serializer.Deserialize(file, typeof(Dictionary<string, TResponse>));

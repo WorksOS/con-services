@@ -142,13 +142,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       if (Math.Abs(Math.Round(expectedDouble) - Math.Round(actualDouble)) > precision)
       {
-        Console.WriteLine("RowCount:" + rowCount + " " + field + " actual: " + actualDouble + " expected: " +
-                          expectedDouble);
-        Assert.True(false, "Expected: " + expectedDouble + " Actual: " + actualDouble + " at row index " + rowCount +
-                    " for field " + field);
+        Console.WriteLine($"RowCount:{rowCount} {field} actual: {actualDouble} expected: {expectedDouble}");
+        Assert.True(false, $"Expected: {expectedDouble} Actual: {actualDouble} at row index {rowCount} for field {field}");
       }
+
       return true;
     }
-
   }
 }

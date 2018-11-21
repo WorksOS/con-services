@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
@@ -37,7 +38,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="jobId">Job ID</param>
     /// <param name="customHeaders">Any custom headers to be passed with the request</param>
     /// <returns>Stream Content matching the Result of the original job call</returns>
-    Task<StreamContent> GetBackgroundJobResults(string jobId, IDictionary<string, string> customHeaders);
+    Task<Stream> GetBackgroundJobResults(string jobId, IDictionary<string, string> customHeaders);
 
   }
 }
