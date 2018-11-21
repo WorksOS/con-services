@@ -5,6 +5,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   public interface ICutFillRequestHelper
   {
-    CutFillDetailsRequest CreateCutFillDetailsRequest();
+    CutFillDetailsRequest Create();
   }
 }

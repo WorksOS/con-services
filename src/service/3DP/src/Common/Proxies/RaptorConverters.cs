@@ -332,7 +332,6 @@ namespace VSS.Productivity3D.Common.Proxies
     public static BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(
-
               extents.MinX,
               extents.MinY,
               extents.MinZ,

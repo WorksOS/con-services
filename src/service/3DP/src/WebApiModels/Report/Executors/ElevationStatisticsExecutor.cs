@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Net;
 using ASNode.ElevationStatistics.RPC;
 using ASNodeDecls;
 using BoundingExtents;
-using SVOICFilterSettings;
 using SVOICOptionsDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -28,7 +25,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     private BoundingBox3DGrid ConvertExtents(T3DBoundingWorldExtent extents)
     {
       return BoundingBox3DGrid.CreatBoundingBox3DGrid(
-
               extents.MinX,
               extents.MinY,
               extents.MinZ,
