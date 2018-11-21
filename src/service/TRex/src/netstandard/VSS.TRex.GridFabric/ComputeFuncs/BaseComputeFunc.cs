@@ -9,7 +9,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
   /// </summary>
   public abstract class BaseComputeFunc : IBinarizable, IFromToBinary
   {
-    private const byte kVersionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public BaseComputeFunc()
     {
@@ -38,7 +38,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     public void ToBinary(IBinaryRawWriter writer)
     {
       // Version the serialization, even if nothing additional is serialized
-      writer.WriteByte(kVersionNumber);
+      writer.WriteByte(VERSION_NUMBER);
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -46,8 +46,8 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
       // Version the serialization, even if nothing additional is serialized
       var version = reader.ReadByte();
 
-      if (version != kVersionNumber)
-        throw new TRexSerializationVersionException(kVersionNumber, version);
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
     }
   }
 }

@@ -15,7 +15,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// </summary>
   public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument, IEquatable<ProfileRequestArgument_ClusterCompute>
   {
-    private const byte kVersionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public GridDataType ProfileTypeRequired { get; set; }
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteByte(kVersionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteInt((int)ProfileTypeRequired);
 
@@ -82,8 +82,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       base.FromBinary(reader);
 
       var version = reader.ReadByte();
-      if (version != kVersionNumber)
-        throw new TRexSerializationVersionException(kVersionNumber, version);
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 

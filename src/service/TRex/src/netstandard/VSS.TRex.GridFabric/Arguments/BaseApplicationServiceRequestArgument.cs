@@ -12,7 +12,7 @@ namespace VSS.TRex.GridFabric.Arguments
   /// </summary>
   public class BaseApplicationServiceRequestArgument : BaseRequestArgument, IEquatable<BaseRequestArgument>
   {
-    private const byte kVersionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor
 
@@ -41,7 +41,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(kVersionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteString(TRexNodeID);
       writer.WriteGuid(ProjectID);
@@ -56,8 +56,8 @@ namespace VSS.TRex.GridFabric.Arguments
     {
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != kVersionNumber)
-        throw new TRexSerializationVersionException(kVersionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       TRexNodeID = reader.ReadString();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;

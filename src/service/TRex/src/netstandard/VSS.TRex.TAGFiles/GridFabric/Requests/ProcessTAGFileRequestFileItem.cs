@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// </summary>
     public class ProcessTAGFileRequestFileItem
     {
-      private const byte kVersionNumber = 1;
+      private const byte VERSION_NUMBER = 1;
 
         public string FileName { get; set; }
 
@@ -34,7 +34,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 
       public void ToBinary(IBinaryRawWriter writer)
       {
-        writer.WriteByte(kVersionNumber);
+        writer.WriteByte(VERSION_NUMBER);
         writer.WriteString(FileName);
         writer.WriteBoolean(IsJohnDoe);
         writer.WriteByteArray(TagFileContent);
@@ -44,8 +44,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       {
         byte readVersionNumber = reader.ReadByte();
 
-        if (readVersionNumber != kVersionNumber)
-          throw new TRexSerializationVersionException(kVersionNumber, readVersionNumber);
+        if (readVersionNumber != VERSION_NUMBER)
+          throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
         FileName = reader.ReadString();
         IsJohnDoe = reader.ReadBoolean();

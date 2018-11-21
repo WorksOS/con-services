@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
 
-    private const byte kVersionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do. Set to 30 seconds.
@@ -156,7 +156,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(kVersionNumber);
+      writer.WriteByte(VERSION_NUMBER);
     }
 
     /// <summary>
@@ -167,8 +167,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     {
       byte readVersionNumber = reader.ReadByte();
 
-      if (readVersionNumber != kVersionNumber)
-        throw new TRexSerializationVersionException(kVersionNumber, readVersionNumber);
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
     }
   }
 }

@@ -10,7 +10,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
   public class SegmentRetirementQueueQueryFilter : ICacheEntryFilter<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>, IBinarizable, IFromToBinary, IEquatable<SegmentRetirementQueueQueryFilter>
   {
-    private const byte kVersionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public long retirementDateAsLong;
 
@@ -33,7 +33,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(kVersionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteLong(retirementDateAsLong);
     }
 
@@ -41,8 +41,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     {
       var version = reader.ReadByte();
 
-      if (version != kVersionNumber)
-        throw new TRexSerializationVersionException(kVersionNumber, version);
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       retirementDateAsLong = reader.ReadLong();
     }

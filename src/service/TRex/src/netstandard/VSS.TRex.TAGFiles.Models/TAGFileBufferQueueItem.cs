@@ -12,7 +12,7 @@ namespace VSS.TRex.TAGFiles.Models
     /// </summary>
     public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary, IEquatable<TAGFileBufferQueueItem>
     {
-        private const byte kVersionNumber = 1;
+        private const byte VERSION_NUMBER = 1;
 
         /// <summary>
         /// The date at which the TAG file was inserted into the buffer queue. This field is indexed to permit
@@ -55,7 +55,7 @@ namespace VSS.TRex.TAGFiles.Models
 
       public void ToBinary(IBinaryRawWriter writer)
       {
-        writer.WriteByte(kVersionNumber);
+        writer.WriteByte(VERSION_NUMBER);
 
         writer.WriteLong(InsertUTC.Ticks);
         writer.WriteString(FileName);
@@ -69,8 +69,8 @@ namespace VSS.TRex.TAGFiles.Models
       {
         var version = reader.ReadByte();
 
-        if (version != kVersionNumber)
-          throw new TRexSerializationVersionException(kVersionNumber, version);
+        if (version != VERSION_NUMBER)
+          throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
         InsertUTC = new DateTime(reader.ReadLong());
         FileName = reader.ReadString();
