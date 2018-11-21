@@ -95,7 +95,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       ObjectComparer.RoundAllDoubleProperties(GetResponseHandler.CurrentResponse, roundingPrecision: 8);
       ObjectComparer.RoundAllDoubleProperties(expectedJObject, roundingPrecision: 8);
-      
+
       ObjectComparer.AssertAreEqual(actualResultObj: GetResponseHandler.CurrentResponse, expectedResultObj: expectedJObject, ignoreCase: true);
     }
 
@@ -116,7 +116,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       ObjectComparer.RoundAllDoubleProperties(actualJObject, roundingPrecision: precision);
       ObjectComparer.RoundAllDoubleProperties(expectedJObject, roundingPrecision: precision);
-      
+
       ObjectComparer.AssertAreEqual(actualResultObj: actualJObject, expectedResultObj: expectedJObject, resultName: resultName);
     }
 

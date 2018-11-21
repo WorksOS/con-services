@@ -83,7 +83,7 @@ $localhostEnvironmentVariables = @(
 # NOTE: Some of these services point to Alpha collaborators because the Dev versions do not exist or function incorrectly.
 $devCollaboratorsEnvironmentVariables = @(
   @{key = "CUSTOMERSERVICE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me"}, # Use Alpha service here
-  @{key = "FILTER_API_URL"; value = "http://10.97.96.103:3010/api/v1"},
+  @{key = "FILTER_API_URL"; value = "http://filter.dev.k8s.vspengg.com/api/v1"},
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"}, # Use Alpha service here
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"}, # Use Alpha service here

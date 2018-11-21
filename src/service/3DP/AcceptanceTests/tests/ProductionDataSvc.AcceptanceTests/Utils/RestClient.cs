@@ -15,8 +15,6 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
 
     public static async Task<HttpResponseMessage> SendHttpClientRequest(Uri uri, HttpMethod method, string acceptHeader, string contentType, string payloadData)
     {
-      Console.WriteLine($"resourceURL ({method.Method}): {uri.AbsoluteUri}");
-
       var client = new HttpClient { BaseAddress = uri };
       client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
       client.DefaultRequestHeaders.Add("X-VisionLink-CustomerUid", "87bdf851-44c5-e311-aa77-00505688274d");
