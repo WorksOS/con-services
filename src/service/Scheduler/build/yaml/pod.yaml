@@ -51,14 +51,17 @@ spec:
     ports:
     - containerPort: 80
     livenessProbe:
+      initialDelaySeconds: 50
       httpGet:
         scheme: HTTP
         path: /ping
         port: 80
-      readinessProbe:
-        httpGet:
-          path: /ping
-          port: 80
+    readinessProbe:
+      initialDelaySeconds: 50
+      httpGet:
+        scheme: HTTP
+        path: /ping
+        port: 80
     tty: true
     envFrom:
     - configMapRef:

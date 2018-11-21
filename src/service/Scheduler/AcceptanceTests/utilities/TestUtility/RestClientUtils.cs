@@ -45,8 +45,10 @@ namespace TestUtility
       try
       {
         string responseString;
+        Console.WriteLine($"Sending the request");
         using (var response = (HttpWebResponse)request.GetResponseAsync().Result)
         {
+          Console.WriteLine($"Recieved the response to the request");
           if (response.ContentType == "application/zip")
           {
             using (MemoryStream ms = GetMemoryStreamFromResponseStream(response))
