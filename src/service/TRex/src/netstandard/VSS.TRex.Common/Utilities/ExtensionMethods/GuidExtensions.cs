@@ -14,8 +14,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     {
       if (guidArray == otherGuidArray) return true;
 
-      if (guidArray == null && (otherGuidArray?.Length ?? 0) == 0) return true;
-      if (otherGuidArray == null && (guidArray?.Length ?? 0) == 0) return true;
+      if ((guidArray?.Length ?? 0) == 0 && (otherGuidArray?.Length ?? 0) == 0) return true;
 
       if (guidArray == null || otherGuidArray == null) return false;
 
