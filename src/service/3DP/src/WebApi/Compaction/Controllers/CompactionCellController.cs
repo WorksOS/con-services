@@ -11,6 +11,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -126,9 +127,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       patchRequest.Validate();
 
-      var v2PatchRequestResponse = RequestExecutorContainerFactory
+      var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
         .Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-        .Process(patchRequest);
+        .Process(patchRequest) as CompactionExportResult);
 
       return Ok(v2PatchRequestResponse);
     }

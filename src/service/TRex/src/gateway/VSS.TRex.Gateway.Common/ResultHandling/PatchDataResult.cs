@@ -5,12 +5,12 @@ namespace VSS.TRex.Gateway.Common.ResultHandling
 {
   public class PatchDataResult : ContractExecutionResult
   {
-    public MemoryStream PatchData { get; private set; }
+    public byte[] PatchData { get; private set; }
 
     /// <summary>
     /// Constructor with a parameter.
     /// </summary>
-    public PatchDataResult(MemoryStream patchData)
+    public PatchDataResult(byte[] patchData)
     {
       PatchData = patchData;
     }

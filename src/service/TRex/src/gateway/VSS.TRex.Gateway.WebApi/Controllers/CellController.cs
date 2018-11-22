@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
@@ -25,9 +28,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="patchRequest"></param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
     [HttpPost("patches")]
-    public FileResult GetSubGridPatches([FromBody] PatchDataRequest patchRequest)
+    public FileResult PostSubGridPatches([FromBody] PatchDataRequest patchRequest)
+    //[HttpGet("patches")]
+    //public FileResult GetSubGridPatches(
+    //  [FromQuery] Guid projectUid,
+    //  [FromQuery] int patchId,
+    //  [FromQuery] int patchSize)
     {
-      Log.LogInformation($"{nameof(GetSubGridPatches)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostSubGridPatches)}: {Request.QueryString}");
+      //Log.LogInformation($"{nameof(GetSubGridPatches)}: {Request.QueryString}");
+
+      //var patchRequest = new PatchDataRequest(projectUid, null, null, DisplayMode.Height, patchId, patchSize);
 
       patchRequest.Validate();
 
@@ -36,7 +47,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<PatchRequestExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(patchRequest)) as PatchDataResult;
 
-      return new FileStreamResult(patchResult?.PatchData, "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(patchResult?.PatchData), "application/octet-stream");
     }
   }
 }
