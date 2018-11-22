@@ -50,7 +50,7 @@ namespace VSS.MasterData.Proxies
       string method = "POST", string payload = null, Stream streamPayload = null)
     {
       var result = default(T);
-      log.LogDebug($"Preparing {url} ({method})");
+      log.LogDebug($"Preparing {url} ({method}) headers {customHeaders.LogHeaders()}");
       try
       {
         var request = new GracefulWebRequest(logger, configurationStore);
@@ -69,7 +69,7 @@ namespace VSS.MasterData.Proxies
         }
         else
         {
-          result = await request.ExecuteRequest<T>(url, method: "GET");
+          result = await request.ExecuteRequest<T>(url, method: "GET",customHeaders: customHeaders);
         }
 
         log.LogDebug("Result of send to master data request: {0}", result);
@@ -113,6 +113,7 @@ namespace VSS.MasterData.Proxies
     protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, string method = "POST", IDictionary<string, string> queryParameters = null)
     {
+      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
       return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
