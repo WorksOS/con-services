@@ -8,6 +8,8 @@ namespace VSS.WebApi.Common
   {
     private readonly RequestDelegate NextRequestDelegate;
 
+    public const string RequestIDHeaderName = "X-VSS-Request-ID";
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -23,17 +25,17 @@ namespace VSS.WebApi.Common
     /// <param name="context">The current <see cref="HttpContext"/> object.</param>
     public async Task Invoke(HttpContext context)
     {
-      if (context.Request.Headers.ContainsKey("X-VSS-Request-ID"))
-        context.Items["RequestID"] = context.Request.Headers["X-VSS-Request-ID"];
+      if (context.Request.Headers.ContainsKey(RequestIDHeaderName))
+        context.Items["RequestID"] = context.Request.Headers[RequestIDHeaderName];
       else
       {
         context.Items["RequestID"] = Guid.NewGuid();
-        context.Request.Headers["X-VSS-Request-ID"] = context.Items["RequestID"].ToString();
+        context.Request.Headers[RequestIDHeaderName] = context.Items["RequestID"].ToString();
       }
       context.Response.OnStarting(() =>
       {
-        if (!context.Response.Headers.ContainsKey("X-Request-ID"))
-          context.Response.Headers["X-VSS-Request-ID"] = context.Items["RequestID"].ToString();
+        if (!context.Response.Headers.ContainsKey(RequestIDHeaderName))
+          context.Response.Headers[RequestIDHeaderName] = context.Items["RequestID"].ToString();
         return Task.FromResult(0);
       });
 
