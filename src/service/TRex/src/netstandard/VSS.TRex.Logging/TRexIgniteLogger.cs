@@ -66,7 +66,7 @@ namespace VSS.TRex.Logging
     /// </returns>
     public bool IsEnabled(Apache.Ignite.Core.Log.LogLevel level)
     {
-      return _logger?.IsEnabled(ConvertLogLevel2(level)) ?? false;
+      return level >= Apache.Ignite.Core.Log.LogLevel.Info; //_logger?.IsEnabled(ConvertLogLevel2(level)) ?? false;
     }
 
     /// <summary>
