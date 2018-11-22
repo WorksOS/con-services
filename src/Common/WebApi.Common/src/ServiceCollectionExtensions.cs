@@ -50,7 +50,7 @@ namespace VSS.WebApi.Common
       {
         string pathToXml;
 
-        var moduleName = typeof(T).GetTypeInfo().Assembly.ManifestModule.Name;
+        var moduleName = Assembly.GetEntryAssembly().ManifestModule.Name;
         var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
 
         if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
