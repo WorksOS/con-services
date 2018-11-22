@@ -134,7 +134,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           requestRequiresAccessToDesignFileExistenceMap: false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(DisplayMode.Height),
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted());
 
-        // Set the surface rexTask parameters for progressive processing
+        // Set the surface TRexTask parameters for progressive processing
         processor.Task.RequestDescriptor = RequestDescriptor;
         processor.Task.TRexNodeID = RequestingTRexNodeID;
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);

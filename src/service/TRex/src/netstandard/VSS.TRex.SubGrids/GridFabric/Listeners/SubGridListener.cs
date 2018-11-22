@@ -39,7 +39,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
 
     /// <summary>
-    /// The reference to the rexTask responsible for handling the returned subgrid information from the processing cluster
+    /// The reference to the TRexTask responsible for handling the returned subgrid information from the processing cluster
     /// </summary>
     private readonly ITRexTask TRexTask;
 
@@ -87,8 +87,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 
             // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
 
-            // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialized into the rexTask
-            // (no assumption of thread safety within the rexTask itself)
+            // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialized into the TRexTask
+            // (no assumption of thread safety within the TRexTask itself)
             try
             {
               lock (TRexTask)
