@@ -96,7 +96,7 @@ namespace VSS.MasterData.Proxies
     protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
       string route = null, string method = "POST", string queryParameters = null)
     {
-      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} ");
+      log.LogDebug($"Executing {urlKey} ({method}) {route} {queryParameters} {payload} {customHeaders.LogHeaders()}");
       return await SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload);
     }
 
