@@ -12,14 +12,14 @@ namespace VSS.TRex.Pipelines.Interfaces
     public interface ISubGridPipelineBase
     {
         /// <summary>
-        /// The type of grid data to be seleted from the data model
+        /// The type of grid data to be selected from the data model
         /// </summary>
         GridDataType GridDataType { get; set; }
 
-        ITask PipelineTask { get; set; }
+        ITRexTask PipelineTask { get; set; }
 
         /// <summary>
-        /// Notes if the underlyinf query needs to include surveyed surface information in its results
+        /// Notes if the underlying query needs to include surveyed surface information in its results
         /// </summary>
         bool IncludeSurveyedSurfaceInformation { get; set; }
 
@@ -29,7 +29,7 @@ namespace VSS.TRex.Pipelines.Interfaces
         Guid RequestDescriptor { get; set; }
 
         /// <summary>
-        /// A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria
+        /// A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria
         /// </summary>
         // BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
 
@@ -71,12 +71,12 @@ namespace VSS.TRex.Pipelines.Interfaces
         void SubgridsProcessed(long numProcessed);
 
         /// <summary>
-        /// The set of filter the pipeline requestas are operating under
+        /// The set of filter the pipeline requests are operating under
         /// </summary>
         IFilterSet FilterSet { get; set; }
 
         /// <summary>
-        /// Map of all subgrids requiring infromation be requested from them
+        /// Map of all subgrids requiring information be requested from them
         /// </summary>
         ISubGridTreeBitMask OverallExistenceMap { get; set; }
       

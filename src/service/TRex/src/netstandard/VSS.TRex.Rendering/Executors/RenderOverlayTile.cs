@@ -521,7 +521,7 @@ namespace VSS.TRex.Rendering.Executors
           response: new SubGridsPipelinedReponseBase(),
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.PVMRendering),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
@@ -530,7 +530,7 @@ namespace VSS.TRex.Rendering.Executors
           overrideSpatialCellRestriction: CellExtents
         );
 
-        // Set the PVM rendering task parameters for progressive processing
+        // Set the PVM rendering rexTask parameters for progressive processing
         processor.Task.RequestDescriptor = RequestDescriptor;
         processor.Task.TRexNodeID = RequestingTRexNodeID;
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
