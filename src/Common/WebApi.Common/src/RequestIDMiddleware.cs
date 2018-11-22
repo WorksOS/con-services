@@ -9,6 +9,7 @@ namespace VSS.WebApi.Common
     private readonly RequestDelegate NextRequestDelegate;
 
     public const string RequestIDHeaderName = "X-VSS-Request-ID";
+    public const string RequestIDAttributeName = "RequestID";
 
     /// <summary>
     /// Default constructor.
@@ -26,16 +27,16 @@ namespace VSS.WebApi.Common
     public async Task Invoke(HttpContext context)
     {
       if (context.Request.Headers.ContainsKey(RequestIDHeaderName))
-        context.Items["RequestID"] = context.Request.Headers[RequestIDHeaderName];
+        context.Items[RequestIDAttributeName] = context.Request.Headers[RequestIDHeaderName];
       else
       {
-        context.Items["RequestID"] = Guid.NewGuid();
-        context.Request.Headers[RequestIDHeaderName] = context.Items["RequestID"].ToString();
+        context.Items[RequestIDAttributeName] = Guid.NewGuid();
+        context.Request.Headers[RequestIDHeaderName] = context.Items[RequestIDAttributeName].ToString();
       }
       context.Response.OnStarting(() =>
       {
         if (!context.Response.Headers.ContainsKey(RequestIDHeaderName))
-          context.Response.Headers[RequestIDHeaderName] = context.Items["RequestID"].ToString();
+          context.Response.Headers[RequestIDHeaderName] = context.Items[RequestIDAttributeName].ToString();
         return Task.FromResult(0);
       });
 
