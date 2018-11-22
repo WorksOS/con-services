@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models;
 
 namespace VSS.TRex.GridFabric.Responses
@@ -12,7 +13,7 @@ namespace VSS.TRex.GridFabric.Responses
   /// code covering the request plus additional statistical data such as the number of subgrids processed by 
   /// that cluster node from the overall pool of subgrid requested
   /// </summary>
-  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<BaseRequestResponse>
+  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<BaseRequestResponse>, IAggregateWith<SubGridRequestsResponse>
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -104,6 +105,24 @@ namespace VSS.TRex.GridFabric.Responses
     public bool Equals(BaseRequestResponse other)
     {
       return Equals(other as SubGridRequestsResponse);
+    }
+
+    public SubGridRequestsResponse AggregateWith(SubGridRequestsResponse other)
+    {
+      // No explicit 'accumulation' logic for response codes apart from prioritizing failure over success results
+      ResponseCode = ResponseCode == SubGridRequestsResponseResult.Unknown ? other.ResponseCode :
+        ResponseCode == SubGridRequestsResponseResult.OK & other.ResponseCode != SubGridRequestsResponseResult.OK ? other.ResponseCode : ResponseCode;
+
+      ClusterNode = other.ClusterNode; // No explicit 'aggregation' logic for response codes
+
+      NumSubgridsProcessed += other.NumSubgridsProcessed;
+      NumSubgridsExamined += other.NumSubgridsExamined;
+      NumProdDataSubGridsProcessed += other.NumProdDataSubGridsProcessed;
+      NumProdDataSubGridsExamined += other.NumProdDataSubGridsExamined;
+      NumSurveyedSurfaceSubGridsProcessed += other.NumSurveyedSurfaceSubGridsProcessed;
+      NumSurveyedSurfaceSubGridsExamined += other.NumSurveyedSurfaceSubGridsExamined;
+
+      return this;
     }
 
     public override bool Equals(object obj)

@@ -4,8 +4,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
@@ -18,7 +21,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// </summary>
     public class SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse> : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
-        where TSubGridRequestsResponse : SubGridRequestsResponse, new()
+        where TSubGridRequestsResponse : SubGridRequestsResponse, IAggregateWith<TSubGridRequestsResponse>, new()
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
@@ -47,7 +50,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             // Create any required listener for periodic responses directly sent from the processing context to this context
             if (!string.IsNullOrEmpty(arg.MessageTopic))
             {
-                Listener = new SubGridListener(Task);
+                Listener = new SubGridListener(TRexTask);
 
                 StartListening();
             }
@@ -76,7 +79,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// from the processing engine.
         /// </summary>
         /// <returns></returns>
-        public override ICollection<TSubGridRequestsResponse> Execute()
+        public override TSubGridRequestsResponse Execute()
         {
             CheckArguments();
 
@@ -98,25 +101,45 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 // Construct the function to be used
                 IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
-                // Note: Broadcast will block until all compute nodes receiving the request have responded, or
-                // until the internal Ignite timeout expires
-                //result = _compute.Broadcast(func, arg);
-
                 taskResult = _Compute.BroadcastAsync(func, arg);
                 taskResult.Wait(30000);
             }
             finally
             {
                 sw.Stop();
-                Log.LogInformation($"TaskResult {taskResult?.Status}: SubgridRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
+                Log.LogInformation($"TaskResult {taskResult?.Status}: SubgridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
-            // Notify the pipeline that all processing has been completed for it
-            //Task.PipeLine.PipelineCompleted = true;
+         // Send the appropriate response to the caller
+         return taskResult.Result?.Count > 0 
+           ? taskResult.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)) 
+           : null;
+        }
 
-            // Send the appropriate response to the caller
-            //return result;
-            return taskResult.Result;
+        /// <summary>
+        /// Overrides the base ExecuteAsync() semantics to add a listener available for in-progress updates of information
+        /// from the processing engine.
+        /// </summary>
+        /// <returns></returns>
+        public override Task<TSubGridRequestsResponse> ExecuteAsync()
+        {
+            CheckArguments();
+         
+            // Construct the argument to be supplied to the compute cluster
+            PrepareArgument();
+         
+            Log.LogInformation($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
+            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
+            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
+                 
+            CreateSubGridListener();
+         
+            // Construct the function to be used
+            IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
+
+            Log.LogInformation("Returning async Task() for request");
+
+            return _Compute.BroadcastAsync(func, arg).ContinueWith(result => result.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)));
         }
 
         #region IDisposable Support

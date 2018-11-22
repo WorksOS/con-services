@@ -226,12 +226,12 @@ namespace VSS.TRex.Pipelines
 
             SubgridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubgridsToRequest;
 
-            Log.LogInformation($"Request analyser counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existence map");
+            Log.LogInformation($"Request analyzer counts {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids to be requested, compared to {OverallExistenceMap.CountBits()} subgrids in production existence map");
 
             if (RequestAnalyser.TotalNumberOfSubgridsToRequest == 0)
             {
                 // There are no subgrids to be requested, leave quietly
-                Log.LogInformation("No subgrids analysed from request to be submitted to processing engine");
+                Log.LogInformation("No subgrids analyzed from request to be submitted to processing engine");
 
                 return false;
             }
@@ -239,9 +239,9 @@ namespace VSS.TRex.Pipelines
             Log.LogInformation($"START: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest} subgrids");
 
             // Send the subgrid request mask to the grid fabric layer for processing
-            TSubGridRequestor gridFabricRequest = new TSubGridRequestor()
+            TSubGridRequestor gridFabricRequest = new TSubGridRequestor
             {
-                Task = PipelineTask,
+                TRexTask = PipelineTask,
                 SiteModelID = DataModelID,
                 RequestID = RequestDescriptor,
                 TRexNodeId = PipelineTask.TRexNodeID,
@@ -253,11 +253,11 @@ namespace VSS.TRex.Pipelines
                 ReferenceDesignID = ReferenceDesignID
             };
 
-            ICollection<TSubGridRequestsResponse> Responses = gridFabricRequest.Execute();
+            TSubGridRequestsResponse Response = gridFabricRequest.Execute();
 
             Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubgridsToRequest } subgrids");
 
-            return Responses.All(x => x.ResponseCode == SubGridRequestsResponseResult.OK);
+            return Response.ResponseCode == SubGridRequestsResponseResult.OK;
         }
 
         /// <summary>
