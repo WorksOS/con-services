@@ -29,7 +29,7 @@ namespace VSS.MasterData.Proxies
       // e.g. https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/customers/me
       const string urlKey = "CUSTOMERSERVICE_API_URL";
       string url = configurationStore.GetValueString(urlKey);
-      log.LogDebug($"CustomerProxy.GetCustomersForMe: userUid:{userUid} urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+      log.LogDebug($"CustomerProxy.GetCustomersForMe: userUid:{userUid} urlKey: {urlKey}  url: {url} customHeaders: {customHeaders.LogHeaders()}");
 
       var response = await GetContainedMasterDataList<CustomerDataResult>(userUid, null, "CUSTOMER_CACHE_LIFE", urlKey, customHeaders);
       var message = string.Format("CustomerProxy.GetCustomersForMe: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));

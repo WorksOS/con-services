@@ -338,7 +338,7 @@ namespace VSS.MasterData.Proxies
     public async Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid, 
       Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetBoundingBox: projectUid={projectUid}, overlays={overlays}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
+      log.LogDebug($"RaptorProxy.GetBoundingBox: projectUid={projectUid}, overlays={overlays}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}, headers {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
 
       string filterParam = filterUid.HasValue ? $"&filterUid={filterUid}" : string.Empty;
       string cutFillDesignParam = cutFillDesignUid.HasValue ? $"&cutFillDesignUid={cutFillDesignUid}" : string.Empty;

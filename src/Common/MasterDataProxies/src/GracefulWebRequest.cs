@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -56,9 +57,6 @@ namespace VSS.MasterData.Proxies
       if (requestStream == null && method != HttpMethod.Get)
         throw new ArgumentException($"Empty body for non-GET request {nameof(requestStream)}");
 
-      log.LogDebug(
-        $"Headers to be attached to the request {JsonConvert.SerializeObject(httpClient.DefaultRequestHeaders)}");
-
       if (method == HttpMethod.Get)
         return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, log);
 
@@ -90,7 +88,7 @@ namespace VSS.MasterData.Proxies
       log.LogDebug(
         $"ExecuteRequest() Stream: endpoint {endpoint} " +
         $"method {method}, " +
-        $"customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))} " +
+        $"customHeaders {customHeaders.LogHeaders()} " +
         $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}");
 
       var policyResult = await Policy
@@ -154,7 +152,7 @@ namespace VSS.MasterData.Proxies
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug(
-        $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders).Truncate(logMaxChar))}");
+        $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
       if (payload == null && method != "GET")
         throw new ArgumentException("Can't have null payload with a non-GET method.");
