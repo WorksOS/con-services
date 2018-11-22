@@ -270,79 +270,71 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       ISubGridCellAddress address,
       out IClientLeafSubGrid clientGrid)
     {
-      try
+      // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+
+      if (localArg.GridDataType == GridDataType.DesignHeight)
       {
-        // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+        bool designResult = ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
+          out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 
-        if (localArg.GridDataType == GridDataType.DesignHeight)
+        clientGrid = DesignElevations;
+        if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+          return ServerRequestResult.NoError;
+
+        Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");
+        return ServerRequestResult.FailedToComputeDesignElevationPatch;
+      }
+
+      clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
+
+      clientGrid.CellSize = siteModel.Grid.CellSize;
+      clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
+      clientGrid.SetAbsoluteOriginPosition((uint) (address.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
+        (uint) (address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
+
+      // Reach into the subgrid request layer and retrieve an appropriate subgrid
+      requester.CellOverrideMask.Fill();
+
+      ServerRequestResult result = requester.RequestSubGridInternal((SubGridCellAddress) address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
+
+      if (result != ServerRequestResult.NoError)
+        Log.LogInformation($"Request for subgrid {address} request failed with code {result}");
+
+      // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
+      // Convert the computed intermediary grids into the client grid form expected by the caller
+      if (clientGrid?.GridDataType != localArg.GridDataType)
+      {
+        // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
+        IClientLeafSubGrid[] ClientArray = {clientGrid};
+        ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
+
+        // If the requested data is cut fill derived from elevation data previously calculated, 
+        // then perform the conversion here
+        if (localArg.GridDataType == GridDataType.CutFill)
         {
-          bool designResult = ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
-            out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
-
-          clientGrid = DesignElevations;
-          if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-            return ServerRequestResult.NoError;
-
-          Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");
-          return ServerRequestResult.FailedToComputeDesignElevationPatch;
-        }
-
-        clientGrid = ClientLeafSubGridFactory.GetSubGrid(SubGridTrees.Client.Utilities.IntermediaryICGridDataTypeForDataType(localArg.GridDataType, address.SurveyedSurfaceDataRequested));
-
-        clientGrid.CellSize = siteModel.Grid.CellSize;
-        clientGrid.SetAbsoluteLevel(SubGridTreeConsts.SubGridTreeLevels);
-        clientGrid.SetAbsoluteOriginPosition((uint) (address.X & ~SubGridTreeConsts.SubGridLocalKeyMask),
-          (uint) (address.Y & ~SubGridTreeConsts.SubGridLocalKeyMask));
-
-        // Reach into the subgrid request layer and retrieve an appropriate subgrid
-        requester.CellOverrideMask.Fill();
-
-        ServerRequestResult result = requester.RequestSubGridInternal((SubGridCellAddress) address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested, clientGrid);
-
-        if (result != ServerRequestResult.NoError)
-          Log.LogInformation($"Request for subgrid {address} request failed with code {result}");
-
-        // Some request types require additional processing of the subgrid results prior to repatriating the answers back to the caller
-        // Convert the computed intermediary grids into the client grid form expected by the caller
-        if (clientGrid?.GridDataType != localArg.GridDataType)
-        {
-          // Convert to an array to preserve the multiple filter semantic giving a list of subgrids to be converted (eg: volumes)
-          IClientLeafSubGrid[] ClientArray = {clientGrid};
-          ConvertIntermediarySubgridsToResult(localArg.GridDataType, ref ClientArray);
-
-          // If the requested data is cut fill derived from elevation data previously calculated, 
-          // then perform the conversion here
-          if (localArg.GridDataType == GridDataType.CutFill)
+          if (ClientArray.Length == 2)
           {
-            if (ClientArray.Length == 2)
-            {
-              // The cut fill is defined between two production data derived height subgrids
-              // depending on volume type work out height difference
-              CutFillUtilities.ComputeCutFillSubgrid((IClientHeightLeafSubGrid) ClientArray[0], // 'base'
-                (IClientHeightLeafSubGrid) ClientArray[1]); // 'top'
-            }
-            else
-            {
-              // The cut fill is defined between one production data derived height subgrid and a
-              // height subgrid to be calculated from a designated design
-              if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
-                ReferenceDesign, // 'top'
-                localArg.ProjectID,
-                out _ /*ProfilerRequestResult*/))
-                result = ServerRequestResult.FailedToComputeDesignElevationPatch;
-            }
+            // The cut fill is defined between two production data derived height subgrids
+            // depending on volume type work out height difference
+            CutFillUtilities.ComputeCutFillSubgrid((IClientHeightLeafSubGrid) ClientArray[0], // 'base'
+              (IClientHeightLeafSubGrid) ClientArray[1]); // 'top'
           }
-
-          clientGrid = ClientArray[0];
+          else
+          {
+            // The cut fill is defined between one production data derived height subgrid and a
+            // height subgrid to be calculated from a designated design
+            if (!CutFillUtilities.ComputeCutFillSubgrid(ClientArray[0], // base
+              ReferenceDesign, // 'top'
+              localArg.ProjectID,
+              out _ /*ProfilerRequestResult*/))
+              result = ServerRequestResult.FailedToComputeDesignElevationPatch;
+          }
         }
 
-        return result;
+        clientGrid = ClientArray[0];
       }
-      catch (Exception E)
-      {
-        Log.LogError("Exception in PerformSubgridRequest", E);
-        throw;
-      }
+
+      return result;
     }
 
     /// <summary>
