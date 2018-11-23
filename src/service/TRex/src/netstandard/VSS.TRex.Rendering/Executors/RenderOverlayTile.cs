@@ -5,7 +5,6 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -415,7 +414,7 @@ namespace VSS.TRex.Rendering.Executors
       */
 
       // Determine the grid (NEE) coordinates of the bottom/left, top/right WGS-84 positions
-      // given the projet's coordinate system. If there is no coordinate system then exit.
+      // given the project's coordinate system. If there is no coordinate system then exit.
 
       ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
