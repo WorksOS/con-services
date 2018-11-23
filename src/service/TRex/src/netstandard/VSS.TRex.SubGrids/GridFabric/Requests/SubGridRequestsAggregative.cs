@@ -48,10 +48,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             try
             {
                 // Construct the function to be used
-                IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>
-                {
-                    Task = Task
-                };
+                IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(Task);
                 
                 // Invoke it
                 taskResult = func.Invoke(arg);

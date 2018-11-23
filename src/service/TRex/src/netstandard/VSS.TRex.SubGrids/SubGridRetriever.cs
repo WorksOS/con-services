@@ -45,7 +45,7 @@ namespace VSS.TRex.SubGrids
     private int MaxNumberOfPassesToReturn;
     private AreaControlSet AreaControlSet;
 
-    // Local state populated for the purpose of access from variosu local methods
+    // Local state populated for the purpose of access from various local methods
     private IClientLeafSubGrid ClientGrid;
     private ClientLeafSubGrid ClientGridAsLeaf;
     private GridDataType _GridDataType = GridDataType.All;

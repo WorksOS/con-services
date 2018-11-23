@@ -90,7 +90,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The task to be fitted to the pipelien to mediate subgrid retrieval and procesing
     /// </summary>
-    public ITask Task { get; set; }
+    public ITRexTask Task { get; set; }
 
     /// <summary>
     /// The pipe lien used to retrive subgrids from the cluster compute layer
@@ -153,7 +153,7 @@ namespace VSS.TRex.Pipelines
                              ISubGridsPipelinedReponseBase response,
                              IFilterSet filters,
                              Guid cutFillDesignID,
-                             ITask task,
+                             ITRexTask task,
                              ISubGridPipelineBase pipeline,
                              IRequestAnalyser requestAnalyser,
                              bool requireSurveyedSurfaceInformation,

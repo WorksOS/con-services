@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.Pipelines.Interfaces.Tasks
 {
-  public interface IAggregatedPipelinedSubGridTask : ITask
+  public interface IAggregatedPipelinedSubGridTask : ITRexTask
   {
     ISubGridRequestsAggregator Aggregator { get; set; }
   }
