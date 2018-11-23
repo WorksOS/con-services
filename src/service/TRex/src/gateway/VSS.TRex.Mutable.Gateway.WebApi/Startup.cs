@@ -20,6 +20,15 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.SiteModels;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
@@ -51,6 +60,12 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
+      services.AddSingleton<IDesignManager>(factory => new DesignManager());
+      services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
+      services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
+      services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
+      services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
 
       services.AddOpenTracing(builder =>
       {
@@ -73,6 +88,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       DIContext.Inject(serviceProvider);
 
       services.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT));
+      services.AddSingleton<ImmutableClientServer>(new ImmutableClientServer("WEBAPI-CLIENT"));
+
       serviceProvider = services.BuildServiceProvider();
       DIContext.Inject(serviceProvider);
     }

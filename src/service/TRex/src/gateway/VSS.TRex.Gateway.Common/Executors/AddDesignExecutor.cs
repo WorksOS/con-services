@@ -13,6 +13,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -63,8 +64,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         log.LogInformation($"#In# AddDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        // add or update, load core file from s3 to local
-        var localPath = Path.Combine(new[] {TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid.ToString()});
+        // load core file from s3 to local
+        var localPath = DesignControllerHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
         var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName});
         TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
         var designLoadResult = TTM.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
@@ -99,8 +100,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required
-        S3FileTransfer.WriteFile(TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
-        S3FileTransfer.WriteFile(TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
+        S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
+        S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + VSS.TRex.Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
 
         log.LogInformation($"#Out# AddDesignExecutor. Process add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
       }
