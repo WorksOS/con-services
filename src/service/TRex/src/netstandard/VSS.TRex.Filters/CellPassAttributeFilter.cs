@@ -563,7 +563,9 @@ namespace VSS.TRex.Filters
       // Machine based filtering members
       if (Source.MachinesList != null)
       {
-        Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
+        MachinesList = new Guid[Source.MachinesList.Length];
+        if (Source.MachinesList.Length > 0)
+          Array.Copy(Source.MachinesList, MachinesList, Source.MachinesList.Length);
         // all set types below HasMachineFilter = Source.HasMachineFilter;
       }
       else
@@ -625,7 +627,9 @@ namespace VSS.TRex.Filters
       PasscountRangeMin = Source.PasscountRangeMin;
       PasscountRangeMax = Source.PasscountRangeMax;
 
-      Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
+      SurveyedSurfaceExclusionList = new Guid[Source.SurveyedSurfaceExclusionList.Length];
+      if (Source.SurveyedSurfaceExclusionList.Length > 0)
+        Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
 
       // This assignment method consciously does not "clone" or otherwise assign Elevation Range related filter state;
       // i.e. FElevationRangeIsInitialised, FElevationRangeIsLevelAndThicknessOnly, FElevationRangeTopElevationForCell,
