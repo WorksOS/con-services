@@ -24,7 +24,7 @@
     <PackageReference Include="DotNetCore.CAP.Kafka" Version="2.3.0" />
     <PackageReference Include="DotNetCore.CAP.MySql" Version="2.3.0" />
     <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageReference Include="AutoMapper" Version="6.2.2" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
