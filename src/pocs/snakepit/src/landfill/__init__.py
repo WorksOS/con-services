@@ -1,0 +1,1 @@
+from src.landfill.lookAtCompaction import LandfillAlgorithm
