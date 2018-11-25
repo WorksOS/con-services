@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Designs.Interfaces;
@@ -149,7 +150,10 @@ namespace VSS.TRex.Profiling
         ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
       };
 
-      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
+      var _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
+      var _context = _cache?.LocateOrCreateContext(SiteModel?.ID ?? Guid.Empty, SurfaceElevationPatchArg.CacheFingerprint());
+
+      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(_cache, _context);
     }
 
     /// <summary>
