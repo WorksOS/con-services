@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -98,8 +99,10 @@ namespace VSS.TRex.Pipelines.Interfaces
         /// <summary>
         /// Wait for the pipeline to completes operations, or abort at expiration of time to live timeout
         /// </summary>
-        void WaitForCompletion();
+        Task<bool> WaitForCompletion();
 
         IRequestAnalyser RequestAnalyser { get; set; }
+
+        long SubgridsRemainingToProcess { get; }
     }
 }
