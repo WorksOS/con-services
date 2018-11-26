@@ -298,7 +298,7 @@ class LandfillAlgorithm():
                         if current_elevation is None:
                             previous_elevation = cell_pass['elevation']
                         current_elevation = cell_pass['elevation']
-                        delta_elevation = float(current_elevation) - float(previous_elevation)
+                        delta_elevation = current_elevation - previous_elevation
                         previous_elevation = current_elevation  # this is used to get the bottom of an elevation event
                         cell_pass['delta_from_last_pass'] = delta_elevation
                         layer = delta_elevation
@@ -319,12 +319,10 @@ class LandfillAlgorithm():
                         ##################
                         # Compaction state is set to complete with movement down less than MCZ value
                         if layer <= 0.0:  # evaluate compaction layers
-                            if layer >= -(
-                            self.machine_compaction_zone):  # this is the on only condition that sets compaction state to 1
+                            if layer >= -self.machine_compaction_zone:  # this is the on only condition that sets compaction state to 1
                                 if (compaction_state == 1):  # Fully compacted material was compacted more
                                     if layer < -self.filter_elevation_uncertainty:
-                                        vol['cnt_over_compaction'] = vol[
-                                                                         'cnt_over_compaction'] + 1  # keep track of overcompaction effort
+                                        cell_summaries[cell]['cnt_over_compaction'] += 1  # keep track of overcompaction effort
                                 compaction_state = 1  # set as compacted
                                 active_material = 0  # compaction is complete, no active material
                                 # print("reset compaction zone down")
@@ -334,62 +332,50 @@ class LandfillAlgorithm():
                                 active_material = active_material + layer  # Active material reduces because layer is negative
 
                                 # CHECK if movement down mitigated an under compaction event
-                                if (
-                                        active_material < 0.0):  # movement down is larger than the lift, material may have been removed
+                                if active_material < 0.0:  # movement down is larger than the lift, material may have been removed
                                     # Compare the current elevation to the list of "bottom" of events.  If the current elevation is lower than a bottom,
                                     # find the active material associated with that event and add it to the mitigation tally.
                                     # Also pop the elevation of the event of the list and remove it from teh dictionaty
                                     if len(event_elevation_bottom) > 0:
                                         reverse_elevent_elevation_bottom = list(
-                                            reversed(event_elevation_bottom))
+                                            reversed(event_elevation_bottom)) #TODO this variable is not used
 
-                                    for bottom in (event_elevation_bottom):
-                                        if float(current_elevation) < float(
-                                                bottom):  ## I don't think this works ???
+                                    for bottom in event_elevation_bottom:
+                                        if current_elevation < bottom:  ## I don't think this works ??? #TODO DO we need to do something about that?
                                             # print(current_elevation, " current elevation < bottom", bottom)
                                             # if bottom in event_elevation_bottom:
                                             # thing = event_elevation_bottom[str(bottom)]
                                             # print("found it", thing)
 
                                             remediation = event_elevation_bottom_active_material[bottom]
-                                            cell_pass[
-                                                'EventMagnitude'] = -remediation  # Assign magnitude of event to pass of machine
+                                            cell_pass['EventMagnitude'] = -remediation  # Assign magnitude of event to pass of machine
                                             # if remediation > 1.0:
                                             # print(remediation)
                                             # print(event_elevation_bottom)
-                                            popped = event_elevation_bottom.pop()
+                                            popped = event_elevation_bottom.pop() #TODO not used
                                             # print(" current elev, popped", current_elevation,popped)
                                             remediation_under_compaction_events = remediation_under_compaction_events + remediation
                                             # remove remediated event from event magnitude distribution
                                             # figure out which machine removed the event???
                                             active_cnt = active_cnt - 1
                                             if remediation <= self.machine_compaction_zone:
-                                                active_1 = active_1 - 1
-                                                active_volume_1 = active_volume_1 - remediation
-                                            elif remediation > (
-                                            self.machine_compaction_zone) and remediation <= (
-                                                    self.machine_compaction_zone * 2):
-                                                active_2 = active_2 - 1
+                                                active_1 -= 1
+                                                active_volume_1 -=  remediation
+                                            elif self.machine_compaction_zone < remediation <= self.machine_compaction_zone * 2:
+                                                active_2 -= 1
                                                 active_volume_2 = active_volume_2 - remediation
-                                            elif remediation > (
-                                                    self.machine_compaction_zone * 2) and remediation <= (
-                                                    self.machine_compaction_zone * 3):
-                                                active_3 = active_3 - 1
-                                                active_volume_3 = active_volume_3 - remediation
-                                            elif remediation > (
-                                                    self.machine_compaction_zone * 3) and remediation <= (
-                                                    self.machine_compaction_zone * 4):
-                                                active_4 = active_4 - 1
-                                                active_volume_4 = active_volume_4 - remediation
-                                            elif remediation > (
-                                                    self.machine_compaction_zone * 4) and remediation <= (
-                                                    self.machine_compaction_zone * 5):
-                                                active_5 = active_5 - 1
-                                                active_volume_5 = active_volume_5 - remediation
-                                            elif remediation >= (self.machine_compaction_zone * 5):
-                                                active_6 = active_6 - 1
-                                                active_volume_6 = active_volume_6 - remediation
-
+                                            elif self.machine_compaction_zone * 2 < remediation <= self.machine_compaction_zone * 3:
+                                                active_3 -= 1
+                                                active_volume_3 -= remediation
+                                            elif self.machine_compaction_zone * 3 < remediation <= self.machine_compaction_zone * 4:
+                                                active_4 -= 1
+                                                active_volume_4 -= remediation
+                                            elif self.machine_compaction_zone * 4 < remediation <= self.machine_compaction_zone * 5:
+                                                active_5 -= 1
+                                                active_volume_5 -= remediation
+                                            else:
+                                                active_6 -= 1
+                                                active_volume_6 -= remediation
                                     active_material = 0.0
                                     # print("____________________________")
                                     # print("reset active material < 0")
@@ -402,116 +388,88 @@ class LandfillAlgorithm():
                             if layer <= self.machine_compaction_zone:  # Material added within MCZ
                                 if compaction_state == 1:  # compaction was complete, no under compaction event
                                     active_material = 0
-                            elif layer > (self.machine_compaction_zone) and layer < (self.thick_lift):  # Material added more than MCZ but less than TL
+                            elif self.machine_compaction_zone < layer < self.thick_lift:  # Material added more than MCZ but less than TL
                                 if compaction_state == 1:  # compaction was complete, no under compaction event
                                     active_material = layer
                                     # print(active_material)
                                     compaction_state = 0  # movement was up greater than MCZ so reset compaction state
                                 else:  # UNDER COMPACTION EVENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                                    vol['cnt_under_compaction'] = vol[
-                                                                      'cnt_under_compaction'] + 1  # put under compaction event information into summary dictionary
-                                    vol['volume_event'] = vol[
-                                                              'volume_event'] + active_material  # add up total volume of all evants for cell
-                                    cell_pass[
-                                        'EventMagnitude'] = active_material  # Assign magnitude of event to pass of machine
-                                    event_adjusted_for_active = float(
-                                        previous_elevation) - active_material  # this gets us to the bottom of the previous lift
+                                    cell_summaries[cell]['cnt_under_compaction'] += 1 # put under compaction event information into summary dictionary
+                                    cell_summaries[cell]['volume_event'] += active_material  # add up total volume of all evants for cell
+                                    cell_pass['EventMagnitude'] = active_material  # Assign magnitude of event to pass of machine
+                                    event_adjusted_for_active = previous_elevation - active_material  # this gets us to the bottom of the previous lift
                                     event_elevation_bottom.append(event_adjusted_for_active)
-                                    event_elevation_counter = event_elevation_counter + 1
+                                    event_elevation_counter += 1
                                     # add event bottom and active material to a dictionary so that if mitigated, the active material contribution to under
                                     # compacted volume can be added to the undercompacted event mitigation tally
-                                    event_elevation_bottom_active_material[
-                                        event_adjusted_for_active] = active_material
+                                    event_elevation_bottom_active_material[event_adjusted_for_active] = active_material
                                     # print (event_elevation_bottom_active_material)
 
                                     #  END of UNDER COMPATION EVENT  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-                                    active_cnt = active_cnt + 1  # ???
+                                    active_cnt += 1  # ???
                                     if active_material <= self.machine_compaction_zone:
-                                        active_1 = active_1 + 1
-                                        active_volume_1 = active_volume_1 + active_material
-                                    elif active_material > (
-                                    self.machine_compaction_zone) and active_material <= (
-                                            self.machine_compaction_zone * 2):
-                                        active_2 = active_2 + 1
-                                        active_volume_2 = active_volume_2 + active_material
-                                    elif active_material > (
-                                            self.machine_compaction_zone * 2) and active_material <= (
-                                            self.machine_compaction_zone * 3):
-                                        active_3 = active_3 + 1
-                                        active_volume_3 = active_volume_3 + active_material
-                                    elif active_material > (
-                                            self.machine_compaction_zone * 3) and active_material <= (
-                                            self.machine_compaction_zone * 4):
-                                        active_4 = active_4 + 1
-                                        active_volume_4 = active_volume_4 + active_material
-                                    elif active_material > (
-                                            self.machine_compaction_zone * 4) and active_material <= (
-                                            self.machine_compaction_zone * 5):
-                                        active_5 = active_5 + 1
-                                        active_volume_5 = active_volume_5 + active_material
-                                    elif active_material >= (self.machine_compaction_zone * 5):
+                                        active_1 += 1
+                                        active_volume_1 += active_material
+                                    elif self.machine_compaction_zone < active_material <= self.machine_compaction_zone * 2:
+                                        active_2 += 1
+                                        active_volume_2 += active_material
+                                    elif self.machine_compaction_zone * 2 < active_material <= self.machine_compaction_zone * 3:
+                                        active_3 += 1
+                                        active_volume_3 += active_material
+                                    elif self.machine_compaction_zone * 3 < active_material <= self.machine_compaction_zone * 4:
+                                        active_4 += active_4 + 1
+                                        active_volume_4 += active_material
+                                    elif self.machine_compaction_zone * 4 < active_material <= self.machine_compaction_zone * 5:
+                                        active_5 += 1
+                                        active_volume_5 += active_material
+                                    else:
                                         active_6 = active_6 + 1
                                         active_volume_6 = active_volume_6 + active_material
 
                                     active_material = layer  # + active_material ???  Only layer becasue active material has been recorded as under compacted event
-
 
                             else:  # A thick lift occured
                                 if compaction_state == 1:  # compaction was complete, no under compaction event
                                     active_material = layer
                                     compaction_state = 0  # movement was up greater than MCZ so reset compaction state
                                 else:  # UNDER COMPACTION EVENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                                    vol['cnt_under_compaction'] = vol[
-                                                                      'cnt_under_compaction'] + 1  # put under compaction event information into summary dictionary
-                                    vol['volume_event'] = vol[
-                                                              'volume_event'] + active_material  # put under compaction event information into summary dictionary
-                                    cell_pass[
-                                        'EventMagnitude'] = active_material  # Assign magnitude of event to pass of machine
-                                    event_adjusted_for_active = float(
-                                        previous_elevation) - active_material  # this gets us to the bottom of the previous lift
+                                    cell_summaries[cell]['cnt_under_compaction'] += 1  # put under compaction event information into summary dictionary
+                                    cell_summaries[cell]['volume_event'] += active_material  # put under compaction event information into summary dictionary
+                                    cell_pass['EventMagnitude'] = active_material  # Assign magnitude of event to pass of machine
+                                    event_adjusted_for_active = previous_elevation - active_material  # this gets us to the bottom of the previous lift
                                     event_elevation_bottom.append(event_adjusted_for_active)
                                     event_elevation_counter = event_elevation_counter + 1
                                     # add event bottom and active material to a dictionary so that if mitigated, the active material contribution to under
                                     # compacted volume can be added to the undercompacted event mitigation tally
-                                    event_elevation_bottom_active_material[
-                                        event_adjusted_for_active] = active_material
+                                    event_elevation_bottom_active_material[event_adjusted_for_active] = active_material
                                     # print ("thick",event_elevation_bottom_active_material)
                                     #  END of UNDER COMPATION EVENT  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                                     # print("before",active_material)
                                     active_cnt = active_cnt + 1
                                     if active_material <= self.machine_compaction_zone:
-                                        active_1 = active_1 + 1
-                                        active_volume_1 = active_volume_1 + active_material
-                                    elif active_material > (
-                                    self.machine_compaction_zone) and active_material <= (
-                                            self.machine_compaction_zone * 2):
-                                        active_2 = active_2 + 1
-                                        active_volume_2 = active_volume_2 + active_material
-                                    elif active_material > (
-                                            self.machine_compaction_zone * 2) and active_material <= (
-                                            self.machine_compaction_zone * 3):
+                                        active_1 += 1
+                                        active_volume_1 += active_material
+                                    elif self.machine_compaction_zone < active_material <= self.machine_compaction_zone * 2:
+                                        active_2 += 1
+                                        active_volume_2 += active_material
+                                    elif self.machine_compaction_zone * 2 < active_material <= self.machine_compaction_zone * 3:
                                         active_3 = active_3 + 1
                                         active_volume_3 = active_volume_3 + active_material
-                                    elif active_material > (
-                                            self.machine_compaction_zone * 3) and active_material <= (
-                                            self.machine_compaction_zone * 4):
-                                        active_4 = active_4 + 1
-                                        active_volume_4 = active_volume_4 + active_material
-                                    elif active_material > (
-                                            self.machine_compaction_zone * 4) and active_material <= (
-                                            self.machine_compaction_zone * 5):
-                                        active_5 = active_5 + 1
-                                        active_volume_5 = active_volume_5 + active_material
-                                    elif active_material >= (self.machine_compaction_zone * 5):
+                                    elif self.machine_compaction_zone * 3 < active_material <= self.machine_compaction_zone * 4:
+                                        active_4 += 1
+                                        active_volume_4 += active_material
+                                    elif self.machine_compaction_zone * 4 < active_material <= self.machine_compaction_zone * 5:
+                                        active_5 += 1
+                                        active_volume_5 += active_material
+                                    else:
                                         active_6 = active_6 + 1
                                         active_volume_6 = active_volume_6 + active_material
 
                                     active_material = layer  # + active_material ???  Only layer becasue active material has been recorded as under compacted event
                                     # print(active_material)
 
-                                vol['cnt_self.thick_lift'] = vol[
-                                                                 'cnt_self.thick_lift'] + 1  # put thick lift information into summary dictionary
+                                cell_summaries[cell]['cnt_self.thick_lift'] += 1  # put thick lift information into summary dictionary
                         # end of up movement evaluation
                         ################
                         # #Layer summary
