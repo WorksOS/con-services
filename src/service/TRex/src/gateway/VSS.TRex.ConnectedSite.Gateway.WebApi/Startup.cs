@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,12 +9,13 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
+using VSS.TRex.DI;
 using VSS.TRex.HttpClients.Clients;
 using VSS.TRex.HttpClients.RequestHandlers;
-using VSS.TRex.DI;
-using VSS.WebApi.Common;
 using VSS.TRrex.HttpClients.Abstractions;
-using VSS.TRex.ConnectedSite.Gateway.WebApi.Abstractions;
+using VSS.WebApi.Common;
 
 namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 {
@@ -25,12 +25,12 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
     /// The name of this service for swagger etc.
     /// </summary>
     private const string SERVICE_TITLE = "TRex Connected Site Gateway API";
+
     /// <summary>
     /// The logger repository name
     /// </summary>
     public const string LOGGER_REPO_NAME = "WebApi";
-
-
+    
     private const string CONNECTED_SITE_URL_ENV_KEY = "CONNECTED_SITE_URL";
 
     /// <summary>
@@ -45,17 +45,17 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<TPaaSAuthenticatedRequestHandler>();
       services.AddHttpClient<ITPaaSClient, TPaaSClient>(client =>
-        client.BaseAddress = new Uri(GetRequiredEnvironmentVariable(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY))
+        client.BaseAddress = new Uri(EnvironmentHelper.GetEnvironmentVariable(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY))
       ).ConfigurePrimaryHttpMessageHandler(() =>
       {
-        return new TPaaSApplicationCredentialsRequestHandler()
+        return new TPaaSApplicationCredentialsRequestHandler
         {
-          TPaaSToken = GetRequiredEnvironmentVariable(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN__ENV_KEY),
+          TPaaSToken = EnvironmentHelper.GetEnvironmentVariable(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN_ENV_KEY),
           InnerHandler = new HttpClientHandler()
         };
       });
       services.AddHttpClient<IConnectedSiteClient, ConnectedSiteClient>(client =>
-          client.BaseAddress = new Uri(GetRequiredEnvironmentVariable(CONNECTED_SITE_URL_ENV_KEY))
+          client.BaseAddress = new Uri(EnvironmentHelper.GetEnvironmentVariable(CONNECTED_SITE_URL_ENV_KEY))
       ).AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>();
 
       services.AddOpenTracing(builder =>
@@ -92,17 +92,6 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 
       app.UseCommon(SERVICE_TITLE);
       app.UseMvc();
-    }
-
-    private string GetRequiredEnvironmentVariable(string key)
-    {
-      string value = string.Empty;
-      value = Environment.GetEnvironmentVariable(key);
-      if (string.IsNullOrEmpty(value))
-      {
-        throw new ConfigurationErrorsException($"Missing Envar {key}");
-      }
-      return value;
     }
   }
 }

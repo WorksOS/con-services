@@ -10,13 +10,9 @@ namespace VSS.TRex.HttpClients.Models
 
     private static readonly Lazy<TPaaSClientState> _instance = new Lazy<TPaaSClientState>(() => new TPaaSClientState());
 
-    public static TPaaSClientState Instance { get { return _instance.Value; } }
+    public static TPaaSClientState Instance => _instance.Value;
 
     private TPaaSClientState()
-    {
-
-    }
-
-
+    { }
   }
 }
