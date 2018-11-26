@@ -143,7 +143,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             .ConfigureAwait(false);
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "tRexImportFile.AddFile",
           e.Message);
-      }    
+      }
+
+      log.LogDebug(
+        $"NotifyTRexAddFile: projectUid: {projectUid}, filename: {filename} importedFileUid {importedFileUid}. TRex returned code: {result?.Code ?? -1}.");
+
+      if (result != null && result.Code != 0)
+      {
+        log.LogError(
+          $"NotifyTRexAddFile AddFile in Trex failed. projectUid: {projectUid}, filename: {filename} importedFileUid {importedFileUid}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}.");
+        
+        await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid,
+              serviceExceptionHandler, projectRepo, true)
+            .ConfigureAwait(false);
+
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 114,
+          result.Code.ToString(), result.Message);
+      }
 
       return result;
     }

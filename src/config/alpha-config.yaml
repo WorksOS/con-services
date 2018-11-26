@@ -50,7 +50,7 @@ data:
   SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.alpha.k8s.vspengg.com/internal/v1/export
   VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0/export/veta
   TREX_TAGFILE_API_URL: http://trex.mutable.alpha.k8s.vspengg.com/api/v2/tagfiles
-  TREX_IMPORTFILE_API_URL: http://trex.mutable.alpha.k8s.vspengg.com/api/v1/design
+  TREX_IMPORTFILE_CUD_API_URL: http://trex.mutable.alpha.k8s.vspengg.com/api/v1/design
 #CAP configuration  
   MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Alpha
   MYSQL_CAP_TABLE_PREFIX: Project

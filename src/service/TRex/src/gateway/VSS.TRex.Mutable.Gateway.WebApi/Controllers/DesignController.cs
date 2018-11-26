@@ -19,7 +19,8 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 {
   /// <summary>
-  /// Controller for getting site model statistics.
+  /// Controller to create/update/delete a design for a project.
+  ///     Get endpoints use the immutable endpoint (at present VSS.TRex.Gateway.WebApi)
   /// </summary>
   [Route("api/v1/design")]
   public class DesignController : BaseController
@@ -33,8 +34,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
     /// <summary>
     /// Adds a new design to a sitemodel.
-    ///   Also adds the index files to S3.
-    ///   temporarily using s3
+    ///   Also adds the index files to, for now, S3.
     ///    Bucket:   vss-project3dp-stg ( ProjectSvc writes)
     ///    Path:     projectUid
     ///    Filename: bowlfill 1290 6-5-18.ttm 

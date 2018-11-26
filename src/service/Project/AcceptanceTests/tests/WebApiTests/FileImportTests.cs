@@ -55,7 +55,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportSvlFile(string uriRoot)
     {
-      const string testName = "File Import 4";
+      const string testName = "File Import 2";
       msg.Title(testName, "Create standard project and customer then upload svl file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -236,7 +236,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportSurveyedSurfaceFile(string uriRoot)
     {
-      const string testName = "File Import 4";
+      const string testName = "File Import 6";
       msg.Title(testName, "Create standard project and customer then upload surveyed surface file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -275,7 +275,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImport2SurveyedSurfaceFiles(string uriRoot)
     {
-      const string testName = "File Import 5";
+      const string testName = "File Import 7";
       msg.Title(testName, "Create standard project and customer then upload two Surveryed surface files");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -327,7 +327,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportTheSameFileTwice(string uriRoot)
     {
-      const string testName = "File Import 6";
+      const string testName = "File Import 8";
       msg.Title(testName, "Create standard project then upload two alignment files that are the same name and content");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -377,7 +377,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportANewFileThenUpdateTheAlignmentFile(string uriRoot)
     {
-      const string testName = "File Import 7";
+      const string testName = "File Import 9";
       msg.Title(testName, "Create standard project then upload a new alignment file. Then update alignment file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -426,7 +426,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile")]
     public void TestImportANewFileThenUpdateTheDesignSurfaceFile(string uriRoot)
     {
-      const string testName = "File Import 7";
+      const string testName = "File Import 10";
       msg.Title(testName, "Create standard project then upload a new design surface file. Then update design surface file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -473,10 +473,55 @@ namespace WebApiTests
     }
 
     [TestMethod]
+    [Ignore] // the reason this is ignored, is that currently there is no TRex endpoint to create a project (aka Site Model)
+    [DataRow("api/v4/importedfile")]
+    public void ManualTRexTest_CreateImportedFile(string uriRoot)
+    {
+      // TestDesignSurface1 file format not supported in TRex
+      // projectUid is hardcoded for my test
+      const string testName = "File Import 11";
+      msg.Title(testName, "Create standard project then upload a new design surface file.");
+      var ts = new TestSupport();
+      var importFile = new ImportFile(uriRoot);
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = "f13f2458-6666-424f-a995-4426a00771ae"; // Guid.NewGuid().ToString();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      var startDate = startDateTime.ToString("yyyy-MM-dd");
+      var endDate = endDateTime.ToString("yyyy-MM-dd");
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var eventsArray = new[] {
+        "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+       $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
+       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
+       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+        "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
+       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
+      ts.PublishEventCollection(projectEventArray);
+
+      var importFileArray = new[] {
+       "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |", 
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface3_GoodContent.FullPath()} | 1                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |"};
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { "filename=TestDesignSurfaceTestDesignSurface3_GoodContent.TTM" }));
+      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
+    }
+
+
+    [TestMethod]
     [DataRow("api/v4/importedfile")]
     public void TestImportANewFileThenUpdateTheDesignSurfaceFile_SameFileDates(string uriRoot)
     {
-      const string testName = "File Import 7";
+      const string testName = "File Import 12";
       msg.Title(testName, "Create standard project then upload a new design surface file. Then update design surface file however leave same FileDates");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -520,7 +565,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile")]
     public void TestImportANewFileThenUpdateTheSurveyedSurfaceFile(string uriRoot)
     {
-      const string testName = "File Import 7";
+      const string testName = "File Import 13";
       msg.Title(testName, "Create standard project then upload a new surveyed surface file. Then update surveyed surface file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -570,7 +615,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportANewFileThenDeleteTheAlignmentFile(string uriRoot)
     {
-      const string testName = "File Import 7";
+      const string testName = "File Import 14";
       msg.Title(testName, "Create standard project then upload a new alignment file. Then delete alignment file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -620,7 +665,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void KafkaConsumeTestImportANewAlignmentFile(string uriRoot)
     {
-      const string testName = "File Import 8";
+      const string testName = "File Import 15";
       msg.Title(testName, "Kafka Consume Test Create standard project then upload a new alignment file.");
       var ts = new TestSupport();
       var projectConsumerMysql = new MySqlHelper();
@@ -668,7 +713,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void KafkaConsumeTestTestImportANewFileThenUpdateTheSurveyedSurfaceFile(string uriRoot)
     {
-      const string testName = "File Import 9";
+      const string testName = "File Import 16";
       msg.Title(testName, "Kafka Consume Test Create standard project then upload a new surveyed surface file. ");
       var ts = new TestSupport();
       var projectConsumerMysql = new MySqlHelper();
@@ -714,7 +759,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportdxfFileUsSurveyFeet(string uriRoot)
     {
-      const string testName = "File Import 10";
+      const string testName = "File Import 17";
       msg.Title(testName, "Create standard project and customer then upload dxf file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -753,7 +798,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportdxfFileImperial(string uriRoot)
     {
-      const string testName = "File Import 11";
+      const string testName = "File Import 18";
       msg.Title(testName, "Create standard project and customer then upload dxf file in imperial");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
@@ -792,7 +837,7 @@ namespace WebApiTests
     [DataRow("api/v4/importedfile/direct")]
     public void TestImportdxfFileMetric(string uriRoot)
     {
-      const string testName = "File Import 12";
+      const string testName = "File Import 19";
       msg.Title(testName, "Create standard project and customer then upload dxf file in metric");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);

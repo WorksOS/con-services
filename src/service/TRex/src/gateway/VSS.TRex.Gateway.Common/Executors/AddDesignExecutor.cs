@@ -14,7 +14,6 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Gateway.Common.Helpers;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -66,15 +65,22 @@ namespace VSS.TRex.Gateway.Common.Executors
 
         // load core file from s3 to local
         var localPath = DesignControllerHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
-        var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName});
+        var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
         TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
         var designLoadResult = TTM.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int) RequestErrorStatus.DesignImportUnableToRetrieveFromS3);
+          log.LogError($"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
+          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
-        // This generates the 2 index files below
-        TTM.LoadFromFile(localPathAndFileName);
+
+        // This generates the 2 index files 
+        designLoadResult = TTM.LoadFromFile(localPathAndFileName);
+        if (designLoadResult != DesignLoadResult.Success)
+        {
+          log.LogError($"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
+          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToCreateDesign, designLoadResult.ToString());
+        }
 
         BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
         TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
@@ -84,7 +90,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           // Create the new designSurface in our site model
           var designSurface = DIContext.Obtain<IDesignManager>().Add(request.ProjectUid,
-            new VSS.TRex.Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
+            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             extents);
           DIContext.Obtain<IExistenceMaps>().SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, TTM.SubgridOverlayIndex());
         }
@@ -93,7 +99,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           // Create the new SurveyedSurface in our site model
           var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(request.ProjectUid,
-            new VSS.TRex.Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
+            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             request.SurveyedUtc ?? DateTime.MinValue, // validation will have ensured this exists
             extents);
           DIContext.Obtain<IExistenceMaps>().SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, TTM.SubgridOverlayIndex());

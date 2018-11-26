@@ -18,7 +18,8 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
-  /// Controller for getting site model statistics.
+  /// Controller to get designs for a project.
+  ///     Create/Update/Delete endpoints use the mutable endpoint (at present VSS.TRex.Mutable.Gateway.WebApi)
   /// </summary>
   [Route("api/v1/design/get")]
   public class DesignController : BaseController

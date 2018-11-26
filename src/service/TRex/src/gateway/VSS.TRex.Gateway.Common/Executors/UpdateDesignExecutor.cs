@@ -14,7 +14,6 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Gateway.Common.Helpers;
-using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -64,13 +63,18 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         log.LogInformation($"#In# UpdateDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        if (request.FileType == ImportedFileType.DesignSurface)
+        var removedOk = false;
+        if (request.FileType == ImportedFileType.SurveyedSurface)
         {
-          DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
+          removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
         }
         else
         {
-          DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
+          removedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
+        }
+        if (!removedOk)
+        {
+          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
         }
 
         // load core file from s3 to local
@@ -80,10 +84,17 @@ namespace VSS.TRex.Gateway.Common.Executors
         var designLoadResult = TTM.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3);
+          log.LogError($"#Out# UpdateDesignExecutor. Loading of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
+          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
-        // This generates the 2 index files below
-        TTM.LoadFromFile(localPathAndFileName);
+
+        // This generates the 2 index files 
+        designLoadResult = TTM.LoadFromFile(localPathAndFileName);
+        if (designLoadResult != DesignLoadResult.Success)
+        {
+          log.LogError($"#Out# UpdateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
+          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToCreateDesign, designLoadResult.ToString());
+        }
 
         BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
         TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);

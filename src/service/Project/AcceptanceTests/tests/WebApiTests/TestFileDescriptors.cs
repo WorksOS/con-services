@@ -8,6 +8,7 @@ namespace WebApiTests
     public static string TestAlignment2 = "TestAlignment2.SVL";
     public static string TestDesignSurface1 = "TestDesignSurface1.ttm";
     public static string TestDesignSurface2 = "TestDesignSurface2.TTM";
+    public static string TestDesignSurface3_GoodContent = "TestDesignSurface3_GoodContent.TTM";
     public static string TestDxFfile = "MillingDesignMap.dxf";
   }
 

@@ -71,7 +71,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createimportedfile.ImportedFileType, createimportedfile.FileName, createImportedFileEvent.ImportedFileUID,
           createimportedfile.SurveyedUtc, 
           log, customHeaders, serviceExceptionHandler,
-          tRexImportFileProxy, projectRepo).ConfigureAwait(false);
+          tRexImportFileProxy, projectRepo)
+          .ConfigureAwait(false);
       }
 
       if (useRaptorGatewayDesignImport)

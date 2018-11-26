@@ -668,9 +668,9 @@ namespace VSS.TRex.Designs
 
         return DesignLoadResult.Success;
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError($"Exception {E} in LoadFromFile");
+        Log.LogError($"Exception {e} in LoadFromFile");
         return DesignLoadResult.UnknownFailure;
       }
     }
