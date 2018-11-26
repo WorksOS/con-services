@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     where TSubGridsRequestArgument : SubGridsRequestArgument
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {
-    protected override SubGridsRequestComputeFuncBase_Executor<TSubGridsRequestArgument, TSubGridRequestsResponse> GetExecutor()
+    protected override SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse> GetExecutor()
     {
       return new SubGridsRequestComputeFuncBase_Executor_Progressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
     }

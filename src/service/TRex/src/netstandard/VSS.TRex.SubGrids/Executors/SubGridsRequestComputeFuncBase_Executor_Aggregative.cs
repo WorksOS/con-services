@@ -11,7 +11,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
   /// The closure/function that implements subgrid request processing on compute nodes
   /// </summary>
   public class SubGridsRequestComputeFuncBase_Executor_Aggregative<TSubGridsRequestArgument, TSubGridRequestsResponse> :
-                  SubGridsRequestComputeFuncBase_Executor<TSubGridsRequestArgument, TSubGridRequestsResponse>
+                  SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>
     where TSubGridsRequestArgument : SubGridsRequestArgument
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {

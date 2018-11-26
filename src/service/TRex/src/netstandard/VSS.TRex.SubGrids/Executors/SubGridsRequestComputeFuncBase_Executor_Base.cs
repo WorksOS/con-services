@@ -19,12 +19,15 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
+using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
@@ -32,14 +35,14 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
   /// <summary>
   /// The closure/function that implements subgrid request processing on compute nodes
   /// </summary>
-  public abstract class SubGridsRequestComputeFuncBase_Executor<TSubGridsRequestArgument, TSubGridRequestsResponse>
+  public abstract class SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>
     where TSubGridsRequestArgument : SubGridsRequestArgument
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {
     private const int AddressBucketSize = 20;
 
     // ReSharper disable once StaticMemberInGenericType
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.kEnableGeneralSubgridResultCaching);
 
@@ -105,13 +108,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     /// The DI injected TRex spatial memory cache for general subgrid results
     /// </summary>
     private ITRexSpatialMemoryCache SubGridCache => subGridCache ?? (subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
-
-    /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    protected SubGridsRequestComputeFuncBase_Executor()
-    {
-    }
 
     /// <summary>
     /// Cleans an array of client leaf subgrids by repatriating them to the client leaf subgrid factory
@@ -361,8 +357,6 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     /// </summary>
     private void PerformSubgridRequestList(ISubGridCellAddress[] addressList, int addressCount)
     {
-      int resultCount = 0;
-
       if (addressCount == 0)
         return;
 
@@ -372,29 +366,22 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       //Log.LogInformation("Sending {0} subgrids to caller for processing", count);
       //Log.LogInformation($"Requester list contains {Requestors.Length} items");
 
-     IClientLeafSubGrid[][] clientGrids = new IClientLeafSubGrid[addressCount][];
+      IClientLeafSubGrid[][] clientGrids = new IClientLeafSubGrid[addressCount][];
 
+      // Execute a client grid request for each requester and create an array of the results
       for (int i = 0; i < addressCount; i++)
       {
-        // Execute a client grid request for each requester and create an array of the results
-        clientGrids[resultCount++] = Requestors.Select(x =>
-        {
-          ServerRequestResult result = PerformSubgridRequest(x, addressList[i], out IClientLeafSubGrid clientGrid);
-          return result == ServerRequestResult.NoError ? clientGrid : null;
-        }).ToArray();
+        clientGrids[i] = Requestors.Select(x => PerformSubgridRequest(x, addressList[i], out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError ? clientGrid : null).ToArray();
       }
 
-      if (resultCount > 0)
+      try
       {
-        try
-        {
-          ProcessSubgridRequestResult(clientGrids, resultCount);
-        }
-        finally
-        {
-          // Return the client grid to the factory for recycling now its role is complete here...
-          ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, resultCount);
-        }
+        ProcessSubgridRequestResult(clientGrids, addressCount);
+      }
+      finally
+      {
+        // Return the client grid to the factory for recycling now its role is complete here...
+        ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, addressCount);
       }
     }
 
@@ -412,7 +399,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     /// Adds a new address to the list of addresses being built and triggers processing of the list if it hits the critical size
     /// </summary>
     /// <param name="address"></param>
-    private void AddSubgridToAddressList(ISubGridCellAddress address)
+    private void AddSubgridToAddressList( ISubGridCellAddress address)
     {
       addresses[listCount++] = address;
 
@@ -424,10 +411,31 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       }
     }
 
-    private SubGridRequestor[] ConstructRequestors()
+    /// <summary>
+    /// The collection of requestor intermediaries that are derived from to create requestor delegates
+    /// </summary>
+    private (ICombinedFilter Filter, 
+      ISurveyedSurfaces FilteredSurveyedSurfaces, 
+      Guid[] FilteredSurveyedSurfacesAsArray, 
+      SurfaceElevationPatchRequest Request,
+      ITRexSpatialMemoryCacheContext CacheContext)[] RequestorIntermediaries;
+
+    /// <summary>
+    /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches precalculated
+    /// ready to be used to create per-Task requestor delegates
+    /// </summary>
+    /// <returns></returns>
+    private (ICombinedFilter Filter, 
+      ISurveyedSurfaces FilteredSurveyedSurfaces, 
+      Guid[] FilteredSurveyedSurfacesAsArray, 
+      SurfaceElevationPatchRequest Request, 
+      ITRexSpatialMemoryCacheContext CacheContext)[] ConstructRequestorIntermediaries()
     {
-      return localArg.Filters.Filters.Select
-      (x =>
+      (ICombinedFilter Filter, 
+      ISurveyedSurfaces FilteredSurveyedSurfaces, 
+      Guid[] FilteredSurveyedSurfacesAsArray, 
+      SurfaceElevationPatchRequest Request, 
+      ITRexSpatialMemoryCacheContext CacheContext) getIntermediary(ICombinedFilter filter)
       {
         // Construct the appropriate list of surveyed surfaces
         // Obtain local reference to surveyed surface list. If it is replaced while processing the
@@ -440,13 +448,13 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
           FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
           // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-          SurveyedSurfaceList.FilterSurveyedSurfaceDetails(x.AttributeFilter.HasTimeFilter,
-            x.AttributeFilter.StartTime, x.AttributeFilter.EndTime,
-            x.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
-            x.AttributeFilter.SurveyedSurfaceExclusionList);
+          SurveyedSurfaceList.FilterSurveyedSurfaceDetails(filter.AttributeFilter.HasTimeFilter,
+            filter.AttributeFilter.StartTime, filter.AttributeFilter.EndTime,
+            filter.AttributeFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
+            filter.AttributeFilter.SurveyedSurfaceExclusionList);
 
           // Ensure that the filtered surveyed surfaces are in a known ordered state
-          FilteredSurveyedSurfaces.SortChronologically(x.AttributeFilter.ReturnEarliestFilteredCellPass);
+          FilteredSurveyedSurfaces.SortChronologically(filter.AttributeFilter.ReturnEarliestFilteredCellPass);
         }
 
         Guid[] FilteredSurveyedSurfacesAsArray = FilteredSurveyedSurfaces?.Count > 0 ? FilteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0];
@@ -457,12 +465,39 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         if (_enableGeneralSubgridResultCaching &&
             ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubgrid[(int)localArg.GridDataType])
         {
-          SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, localArg.GridDataType, x, FilteredSurveyedSurfacesAsArray));
+          SubGridCacheContext = SubGridCache.LocateOrCreateContext(localArg.ProjectID, SpatialCacheFingerprint.ConstructFingerprint(localArg.ProjectID, localArg.GridDataType, filter, FilteredSurveyedSurfacesAsArray));
         }
+
+        return (filter, FilteredSurveyedSurfaces, FilteredSurveyedSurfacesAsArray, 
+          new SurfaceElevationPatchRequest(SubGridCache, SubGridCache.LocateOrCreateContext(localArg.ProjectID, SpatialCacheFingerprint.ConstructFingerprint(localArg.ProjectID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
+            SubGridCacheContext);
+      }
+
+      // Construct the intermediary requestor state
+      return localArg.Filters.Filters.Select(getIntermediary).ToArray();
+    }
+
+    /// <summary>
+    /// Constructs the set of requestors, one per filter, required to query the data stacks
+    /// </summary>
+    /// <returns></returns>
+    private SubGridRequestor[] ConstructRequestors()
+    {
+      // Construct the resulting requestors
+      return RequestorIntermediaries.Select(x =>
+      {
+        var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
+        {
+          SiteModelID = localArg.ProjectID,
+          CellSize = siteModel.Grid.CellSize,
+          IncludedSurveyedSurfaces = x.FilteredSurveyedSurfacesAsArray,
+          SurveyedSurfacePatchType = x.Filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
+          ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
+        };
 
         return new SubGridRequestor(siteModel,
           siteModels.StorageProxy,
-          x,
+          x.Filter,
           false, // Override cell restriction
           BoundingIntegerExtent2D.Inverted(),
           SubGridTreeConsts.SubGridTreeLevels,
@@ -471,9 +506,11 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
           new FilteredValuePopulationControl(),
           ProdDataMask,
           SubGridCache,
-          SubGridCacheContext,
-          FilteredSurveyedSurfaces,
-          FilteredSurveyedSurfacesAsArray);
+          x.CacheContext,
+          x.FilteredSurveyedSurfaces,
+          x.FilteredSurveyedSurfacesAsArray,
+          x.Request,
+          surfaceElevationPatchArg);
       }).ToArray();
     }
 
@@ -527,18 +564,12 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
       // Wait for all the sub-tasks to complete
       var summaryTask = Task.WhenAll(tasks);
-      try
-      {
-        await summaryTask;
-      }
-      catch
-      {
-      }
+      await summaryTask;
 
       if (summaryTask.Status == TaskStatus.RanToCompletion)
         return AcquireComputationResult();
 
-      Log.LogError($"Failed to process all subgrids");
+      Log.LogError("Failed to process all subgrids");
       return null;
     }
 
@@ -553,7 +584,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       AreaControlSet = AreaControlSet.Null();
     }
 
-    public TSubGridRequestsResponse Execute()
+  public TSubGridRequestsResponse Execute()
     {
       long NumSubgridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
 
@@ -561,6 +592,8 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
       if (!EstablishRequiredIgniteContext(out SubGridRequestsResponseResult contextEstablishmentResponse))
         return new TSubGridRequestsResponse {ResponseCode = contextEstablishmentResponse};
+
+      RequestorIntermediaries = ConstructRequestorIntermediaries();
 
       TSubGridRequestsResponse result = PerformSubgridRequests().Result;
       result.NumSubgridsExamined = NumSubgridsToBeExamined;

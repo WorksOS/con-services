@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     {
     }
 
-    protected abstract SubGridsRequestComputeFuncBase_Executor<TSubGridsRequestArgument, TSubGridRequestsResponse> GetExecutor();
+    protected abstract SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse> GetExecutor();
 
     /// <summary>
     /// Invoke function called in the context of the cluster compute node
