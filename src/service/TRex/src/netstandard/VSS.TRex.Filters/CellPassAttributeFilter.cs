@@ -573,15 +573,7 @@ namespace VSS.TRex.Filters
         ClearMachines();
       }
 
-
-      if (Source.MachineIDSet != null)
-      {
-        MachineIDSet = new BitArray(Source.MachineIDSet);
-      }
-      else
-      {
-        MachineIDSet = null;
-      }
+      MachineIDSet = Source.MachineIDSet != null ? new BitArray(Source.MachineIDSet) : null;
 
       // Design based filtering member
       DesignNameID = Source.DesignNameID;
@@ -627,9 +619,13 @@ namespace VSS.TRex.Filters
       PasscountRangeMin = Source.PasscountRangeMin;
       PasscountRangeMax = Source.PasscountRangeMax;
 
-      SurveyedSurfaceExclusionList = new Guid[Source.SurveyedSurfaceExclusionList.Length];
-      if (Source.SurveyedSurfaceExclusionList.Length > 0)
+      if (Source.SurveyedSurfaceExclusionList != null)
+      {
+        SurveyedSurfaceExclusionList = new Guid[Source.SurveyedSurfaceExclusionList.Length];
         Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, Source.SurveyedSurfaceExclusionList.Length);
+      }
+      else
+        SurveyedSurfaceExclusionList = new Guid[0];
 
       // This assignment method consciously does not "clone" or otherwise assign Elevation Range related filter state;
       // i.e. FElevationRangeIsInitialised, FElevationRangeIsLevelAndThicknessOnly, FElevationRangeTopElevationForCell,
