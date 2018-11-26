@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
@@ -30,7 +32,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// Overrides the base Execute() semantics to add a listener available for aggregated processing of subgrids in the request engine.
         /// </summary>
         /// <returns></returns>
-        public override ICollection<TSubGridRequestsResponse> Execute()
+        public override TSubGridRequestsResponse Execute()
         {
             CheckArguments();
 
@@ -48,7 +50,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             try
             {
                 // Construct the function to be used
-                IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(Task);
+                IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(TRexTask);
                 
                 // Invoke it
                 taskResult = func.Invoke(arg);
@@ -56,17 +58,48 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             finally
             {
                 sw.Stop();
-                Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubgridRequests.Execute() for DM:{Task.PipeLine.DataModelID} from node {Task.TRexNodeID} for data type {Task.GridDataType} took {sw.ElapsedMilliseconds}ms");
+                Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubgridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
             // Advise the pipeline of all the subgrids that were examined in the aggregated processing
-            Task.PipeLine.SubgridsProcessed(taskResult?.NumSubgridsExamined ?? 0);
+            TRexTask.PipeLine.SubgridsProcessed(taskResult?.NumSubgridsExamined ?? 0);
 
             // Notify the pipeline that all processing has been completed for it
-            Task.PipeLine.PipelineCompleted = true;
+            TRexTask.PipeLine.PipelineCompleted = true;
 
             // Send the appropriate response to the caller
-            return new List<TSubGridRequestsResponse> { taskResult };
+            return taskResult;
         }
-    }
+
+        /// <summary>
+        /// Overrides the base Execute() semantics to add a listener available for aggregated processing of subgrids in the request engine.
+        /// </summary>
+        /// <returns></returns>
+        public override Task<TSubGridRequestsResponse> ExecuteAsync()
+        {
+            CheckArguments();
+         
+            // Construct the argument to be supplied to the compute cluster
+            PrepareArgument();
+         
+            Log.LogInformation($"Prepared argument has TRexNodeId = {arg.TRexNodeID}");
+            Log.LogInformation($"Production Data mask in argument to renderer contains {ProdDataMask.CountBits()} subgrids");
+            Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} subgrids");
+                
+            // Construct the function to be used
+            IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(TRexTask);
+
+            // Invoke it
+            return Task.Run(() => func.Invoke(arg)).ContinueWith(result =>
+            {        
+                // Advise the pipeline of all the subgrids that were examined in the aggregated processing
+                TRexTask.PipeLine.SubgridsProcessed(result.Result?.NumSubgridsExamined ?? 0);
+           
+               // Notify the pipeline that all processing has been completed for it
+               TRexTask.PipeLine.PipelineCompleted = true;
+           
+               return result.Result;
+            });
+        }
+  }
 }

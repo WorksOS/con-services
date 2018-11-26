@@ -19,6 +19,8 @@ namespace VSS.TRex.CoordinateSystems
   /// </summary>
   public class CoordinatesServiceClient
   {
+    public const string COORDINATE_SERVICE_URL_ENV_KEY = "COORDINATE_SERVICE_URL";
+
     private static readonly ILogger log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
     private readonly CoordinateServiceHttpClient serviceHttpClient;
 
