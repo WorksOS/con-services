@@ -232,7 +232,7 @@ class LandfillAlgorithm():
         return bin_pass_counts, cell_summaries
 
 
-    def analyse_ne_dict(self, ne_dict, cell_summaries):
+    def evaulate_compaction(self, ne_dict, cell_summaries):
         #######################################
         # Start of determining Machines and operating time #
         #######################################
@@ -525,11 +525,13 @@ class LandfillAlgorithm():
         # End Evaluate compaction  #
         ############################
 
+    def create_excel_report(self, contributing_machines, ne_dict, cell_summaries):
+
         ############################
         ##Determine what time events took place and what machines were involved for Excel outputs
         ############################
 
-        blah_index = 0
+        #blah_index = 0
         # events per hour by machine
         machine_volume_eventDict = {"mitigated_volume": {}, }
         machine_volume_eventDict_positive = {"unmitigated_volume": {}, }
@@ -542,9 +544,9 @@ class LandfillAlgorithm():
         machine_lift_Dict = {"lifts": {}, }
 
         for current_machine in contributing_machines:
-            blah = list(contributing_machines)
-            check_machine = blah[blah_index]
-            blah_index = blah_index + 1
+            #blah = list(contributing_machines)
+            #check_machine = blah[blah_index]
+            #blah_index = blah_index + 1
             machine_volume_events_all = {}
             machine_volume_events_positive = {}
             machine_volume_events_negative = {}
@@ -555,71 +557,69 @@ class LandfillAlgorithm():
             eventMagnitude = 0.0
 
             # seperate events by machine, for each machine tally unmitigated volume, mitigated volume and remediation volume
-            for cell, passes in northEastDict.items():
-                for data_point in passes:
-                    if "machine" in data_point:
-                        if check_machine == (data_point['machine']):
-                            if "EventMagnitude" in data_point:
-                                current_time = (data_point['dateTime'])
+            for cell, passes in ne_dict.items():
+                for cell_pass in passes:
+                    if cell_pass['machine'] == current_machine:
+                        current_time = (cell_pass['dateTime'])
+                        # this takes (+) and (-) to determine the mitigated volume
+                        if current_time.hour not in machine_volume_events_all:
+                            machine_area_events_all[current_time.hour] = 1
+                            machine_volume_events_all[current_time.hour] = cell_pass['EventMagnitude']
+                        else:
+                            machine_volume_events_all[current_time.hour] = machine_volume_events_all[
+                                                                               current_time.hour] + cell_pass[
+                                                                               'EventMagnitude']
 
-                                # this takes (+) and (-) to determine the mitigated volume
-                                if current_time.hour not in machine_volume_events_all:
-                                    machine_area_events_all[current_time.hour] = 1
-                                    machine_volume_events_all[current_time.hour] = data_point['EventMagnitude']
-                                else:
-                                    machine_volume_events_all[current_time.hour] = machine_volume_events_all[
-                                                                                       current_time.hour] + data_point[
-                                                                                       'EventMagnitude']
+                        # this records all positive volume events for a total of all volume events
+                        if cell_pass['EventMagnitude'] > 0.0:
+                            if current_time.hour not in machine_volume_events_positive:
+                                machine_volume_events_positive[current_time.hour] = cell_pass['EventMagnitude']
+                                machine_area_events_positive[current_time.hour] = 1
+                                machine_area_events_all[current_time.hour] = 1
+                            else:
+                                machine_volume_events_positive[current_time.hour] = \
+                                machine_volume_events_positive[current_time.hour] + cell_pass['EventMagnitude']
+                                machine_area_events_positive[current_time.hour] += 1
+                                machine_area_events_all[current_time.hour] += 1
 
-                                # this records all positive volume events for a total of all volume events
-                                if data_point['EventMagnitude'] > 0.0:
-                                    if current_time.hour not in machine_volume_events_positive:
-                                        machine_volume_events_positive[current_time.hour] = data_point['EventMagnitude']
-                                        machine_area_events_positive[current_time.hour] = 1
-                                        machine_area_events_all[current_time.hour] = 1
-                                    else:
-                                        machine_volume_events_positive[current_time.hour] = \
-                                        machine_volume_events_positive[current_time.hour] + data_point['EventMagnitude']
-                                        machine_area_events_positive[current_time.hour] += 1
-                                        machine_area_events_all[current_time.hour] += 1
+                        #TODO What about 0.0?
+                        # this records all remediation volume events
+                        if cell_pass['EventMagnitude'] < 0.0:
+                            if current_time.hour not in machine_volume_events_negative:
+                                machine_volume_events_negative[current_time.hour] = cell_pass['EventMagnitude']
+                                machine_area_events_negative[current_time.hour] = 1
+                                machine_area_events_all[current_time.hour] = 1
+                            else:
+                                machine_volume_events_negative[current_time.hour] = \
+                                    machine_volume_events_negative[current_time.hour] + cell_pass['EventMagnitude']
+                                machine_area_events_negative[current_time.hour] += 1
+                                machine_area_events_all[current_time.hour] -= 1
 
-                                # this records all remediation volume events
-                                if data_point['EventMagnitude'] < 0.0:
-                                    if current_time.hour not in machine_volume_events_negative:
-                                        machine_volume_events_negative[current_time.hour] = data_point['EventMagnitude']
-                                        machine_area_events_negative[current_time.hour] = 1
-                                        machine_area_events_all[current_time.hour] = 1
-                                    else:
-                                        machine_volume_events_negative[current_time.hour] = \
-                                        machine_volume_events_negative[current_time.hour] + data_point['EventMagnitude']
-                                        machine_area_events_negative[current_time.hour] += 1
-                                        machine_area_events_all[current_time.hour] -= 1
+                        # get data for lift graph
+                        lift_magnitude = cell_pass['delta_from_last_pass']
+                        if lift_magnitude > 0.0:
 
-                            # get data for lift graph
-                            lift_magnitude = data_point['delta_from_last_pass']
-                            if lift_magnitude > 0.0:
+                            if self.filter_elevation_uncertainty < lift_magnitude <= self.machine_compaction_zone:
+                                lift_summary['0 to 0.5'] += 1
 
-                                if self.filter_elevation_uncertainty < lift_magnitude <= self.machine_compaction_zone:
-                                    lift_summary['0 to 0.5'] += 1
+                            elif lift_magnitude > (self.machine_compaction_zone) and lift_magnitude <= (
+                                    self.machine_compaction_zone * 2):
+                                lift_summary['B'] += 1
 
-                                elif lift_magnitude > (self.machine_compaction_zone) and lift_magnitude <= (
-                                        self.machine_compaction_zone * 2):
-                                    lift_summary['B'] += 1
+                            elif lift_magnitude > (self.machine_compaction_zone * 2) and lift_magnitude <= (
+                                    self.machine_compaction_zone * 3):
+                                lift_summary['C'] += 1
 
-                                elif lift_magnitude > (self.machine_compaction_zone * 2) and lift_magnitude <= (
-                                        self.machine_compaction_zone * 3):
-                                    lift_summary['C'] += 1
+                            elif lift_magnitude > (self.machine_compaction_zone * 3) and lift_magnitude <= (
+                                    self.machine_compaction_zone * 4):
+                                lift_summary['D'] += 1
 
-                                elif lift_magnitude > (self.machine_compaction_zone * 3) and lift_magnitude <= (
-                                        self.machine_compaction_zone * 4):
-                                    lift_summary['D'] += 1
+                            elif lift_magnitude > (self.machine_compaction_zone * 4) and lift_magnitude <= (
+                                    self.machine_compaction_zone * 5):
+                                lift_summary['E'] += 1
 
-                                elif lift_magnitude > (self.machine_compaction_zone * 4) and lift_magnitude <= (
-                                        self.machine_compaction_zone * 5):
-                                    lift_summary['E'] += 1
-
-                                elif lift_magnitude >= (self.machine_compaction_zone * 5):
-                                    lift_summary['F'] += 1
+                            elif lift_magnitude >= (self.machine_compaction_zone * 5):
+                                lift_summary['F'] += 1
 
             # this is machine breakout data
             # lift
@@ -627,16 +627,12 @@ class LandfillAlgorithm():
             # print(machine_lift_Dict)
             # volume
             machine_volume_eventDict.setdefault(current_machine, []).append(machine_volume_events_all)  # mitigated
-            machine_volume_eventDict_positive.setdefault(current_machine, []).append(
-                machine_volume_events_positive)  # unmitigated
-            machine_volume_eventDict_negative.setdefault(current_machine, []).append(
-                machine_volume_events_negative)  # remediation
+            machine_volume_eventDict_positive.setdefault(current_machine, []).append(machine_volume_events_positive)  # unmitigated
+            machine_volume_eventDict_negative.setdefault(current_machine, []).append(machine_volume_events_negative)  # remediation
             # area
             machine_area_eventDict.setdefault(current_machine, []).append(machine_area_events_all)  # mitigated
-            machine_area_eventDict_positive.setdefault(current_machine, []).append(
-                machine_area_events_positive)  # unmitigated
-            machine_area_eventDict_negative.setdefault(current_machine, []).append(
-                machine_area_events_negative)  # remediation
+            machine_area_eventDict_positive.setdefault(current_machine, []).append(machine_area_events_positive)  # unmitigated
+            machine_area_eventDict_negative.setdefault(current_machine, []).append(machine_area_events_negative)  # remediation
 
         # total events per hour
         # total event volume per
@@ -653,38 +649,37 @@ class LandfillAlgorithm():
         # tally events unmitigated TBD
         # tally events remediation TBD
 
-        for cell, passes in northEastDict.items():
-            for data_point in passes:
-                if "EventMagnitude" in data_point:
-                    current_time = (data_point['dateTime'])
+        for cell, passes in ne_dict.items():
+            for cell_pass in passes:
+                current_time = (cell_pass['dateTime'])
 
-                    # All
-                    if current_time.hour not in hour_volume_events_all:
-                        # hour_area_events_all[current_time.hour] = 1
-                        hour_volume_events_all[current_time.hour] = data_point['EventMagnitude']
-                    else:
-                        hour_volume_events_all[current_time.hour] = hour_volume_events_all[current_time.hour] + \
-                                                                    data_point['EventMagnitude']
+                # All
+                if current_time.hour not in hour_volume_events_all:
+                    # hour_area_events_all[current_time.hour] = 1
+                    hour_volume_events_all[current_time.hour] = cell_pass['EventMagnitude']
+                else:
+                    hour_volume_events_all[current_time.hour] = hour_volume_events_all[current_time.hour] + \
+                                                                cell_pass['EventMagnitude']
 
-                    # Negative
-                    if current_time.hour not in hour_volume_events_negative:
-                        # hour_area_events_negative[current_time.hour] = 1
-                        hour_volume_events_negative[current_time.hour] = data_point['EventMagnitude']
-                    else:
-                        if data_point['EventMagnitude'] <= 0.0:
-                            hour_volume_events_negative[current_time.hour] = hour_volume_events_negative[
-                                                                                 current_time.hour] + data_point[
-                                                                                 'EventMagnitude']
+                # Negative
+                if current_time.hour not in hour_volume_events_negative:
+                    # hour_area_events_negative[current_time.hour] = 1
+                    hour_volume_events_negative[current_time.hour] = cell_pass['EventMagnitude']
+                else:
+                    if cell_pass['EventMagnitude'] <= 0.0:
+                        hour_volume_events_negative[current_time.hour] = hour_volume_events_negative[
+                                                                             current_time.hour] + cell_pass[
+                                                                             'EventMagnitude']
 
-                    # Positive
-                    if current_time.hour not in hour_volume_events_positive:
-                        # hour_area_events_positive[current_time.hour] = 1
-                        hour_volume_events_positive[current_time.hour] = data_point['EventMagnitude']
-                    else:
-                        if data_point['EventMagnitude'] >= 0.0:
-                            hour_volume_events_positive[current_time.hour] = hour_volume_events_positive[
-                                                                                 current_time.hour] + data_point[
-                                                                                 'EventMagnitude']
+                # Positive
+                if current_time.hour not in hour_volume_events_positive:
+                    # hour_area_events_positive[current_time.hour] = 1
+                    hour_volume_events_positive[current_time.hour] = cell_pass['EventMagnitude']
+                else:
+                    if cell_pass['EventMagnitude'] >= 0.0:
+                        hour_volume_events_positive[current_time.hour] = hour_volume_events_positive[
+                                                                             current_time.hour] + cell_pass[
+                                                                             'EventMagnitude']
 
         machine_volume_eventDict['mitigated_volume'] = [hour_volume_events_all]
         machine_volume_eventDict_positive['unmitigated_volume'] = [hour_volume_events_positive]
@@ -702,6 +697,8 @@ class LandfillAlgorithm():
         # Begin summary  # pull information and get sums for whole dataset from individual cell summary dictionarys
         #####################################################################################################################################
         # passcount occurances - put into a list to sort
+
+        #TODO What are we up to here?
         lst = list()
         for cell, v in (sorted(bin_pass_counts.items())):
             # print (k , "Passes " ,v, " occurances ")
