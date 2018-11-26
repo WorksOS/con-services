@@ -12,7 +12,7 @@ namespace VSS.TRex.CoordinateSystems
   /// conversion of coordinate system files into CSIB (Coordinate System Information Block) strings.
   /// </summary>
   /// <remarks>
-  /// While these methods can be called directly, it's recommened to utlize the static ConvertCoordinates helper.
+  /// While these methods can be called directly, it's recommended to utilize the static ConvertCoordinates helper.
   /// </remarks>
   public static class ConvertCoordinates
   {
@@ -20,8 +20,8 @@ namespace VSS.TRex.CoordinateSystems
 
     /// <summary>
     /// Provides a null conversion between the 2D coordinates in a WGS84 LL point and a XYZ NEE point.
-    /// Only the 2D coordiantes are used, and directly copied from the LL point to the XY point, maintaining the
-    /// X == Longitude and Y == Latitude sense of the relative coordiantes
+    /// Only the 2D coordinates are used, and directly copied from the LL point to the XY point, maintaining the
+    /// X == Longitude and Y == Latitude sense of the relative coordinates
     /// </summary>
     public static XYZ NullWGSLLToXY(WGS84Point WGSLL) => new XYZ(WGSLL.Lon, WGSLL.Lat, Consts.NullDouble);
 
@@ -130,7 +130,7 @@ namespace VSS.TRex.CoordinateSystems
     public static (RequestErrorStatus ErrorCode, LLH[] LLHCoordinates) NEEToLLH(string id, NEE[] NEE) => serviceClient.GetLLHFromNEEAsync(id, NEE.ToRequestArray()).Result;
 
     /// <summary>
-    /// Uses the Coordinate Service to convert WGS84 coorindates into the site calibration used by the project.
+    /// Uses the Coordinate Service to convert WGS84 coordinates into the site calibration used by the project.
     /// </summary>
     public static XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point)
     {
@@ -150,7 +150,7 @@ namespace VSS.TRex.CoordinateSystems
     }
 
     /// <summary>
-    /// Uses the Coordinate Service to convert an array of WGS84 coorindates into the site calibration used by the project.
+    /// Uses the Coordinate Service to convert an array of WGS84 coordinates into the site calibration used by the project.
     /// </summary>
     public static XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points)
     {
@@ -177,7 +177,7 @@ namespace VSS.TRex.CoordinateSystems
     }
 
     /// <summary>
-    /// Takes the full path and name of a DC file, reads it and uses the Trimble Coordiante service to convert it into a
+    /// Takes the full path and name of a DC file, reads it and uses the Trimble Coordinate service to convert it into a
     /// csib string
     /// </summary>
     public static string DCFileToCSIB(string filePath) => serviceClient.ImportFromDCAsync(filePath).Result;

@@ -5,6 +5,11 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Log.txt" />
     <None Remove="packages.config" />
@@ -14,7 +19,6 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.74" />
     <PackageReference Include="XnaFan.ImageComparison.netcore" Version="2.0.5" />
     <PackageReference Include="Xunit.Gherkin.Quick" Version="3.3.0" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />

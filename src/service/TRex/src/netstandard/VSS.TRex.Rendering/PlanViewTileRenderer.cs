@@ -124,7 +124,7 @@ namespace VSS.TRex.Rendering
     //      property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
 
     /// <summary>
-    /// Peform rendering activites to produce a bitmap tile
+    /// Perform rendering activities to produce a bitmap tile
     /// </summary>
     /// <param name="mode"></param>
     /// <param name="processor"></param>
@@ -133,7 +133,7 @@ namespace VSS.TRex.Rendering
     {
       try
       {
-        // Obtain the display responsible for rendering the themtic information for this mode
+        // Obtain the display responsible for rendering the thematic information for this mode
         Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
 
         if (Displayer == null)
@@ -145,7 +145,7 @@ namespace VSS.TRex.Rendering
           SquareAspect = IsWhollyInTermsOfGridProjection
         };
 
-        // Create and assign the colour pallete logic for this mode to the displayer`
+        // Create and assign the colour pallete logic for this mode to the displayer
         IPlanViewPalette Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
         Displayer.Palette = Palette;
 

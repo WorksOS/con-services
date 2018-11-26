@@ -74,7 +74,7 @@ namespace VSS.TRex.HttpClients.Tests
 
       var tpaasClient = new TPaaSClient(httpClient, new Mock<ILogger<TPaaSClient>>().Object);
       var clientState = new Mock<ITPaaSClientState>().SetupAllProperties();
-      await tpaasClient.setState(clientState.Object);
+      await tpaasClient.SetState(clientState.Object);
 
       var bearerToken = await tpaasClient.GetBearerTokenAsync();
       var bearerToken2 = await tpaasClient.GetBearerTokenAsync();
@@ -170,7 +170,7 @@ namespace VSS.TRex.HttpClients.Tests
 
       var tpaasClient = new TPaaSClient(httpClient, new Mock<ILogger<TPaaSClient>>().Object);
       var clientState = new Mock<ITPaaSClientState>().SetupAllProperties();
-      await tpaasClient.setState(clientState.Object);
+      await tpaasClient.SetState(clientState.Object);
 
 
       var bearerToken = await tpaasClient.GetBearerTokenAsync();
@@ -237,7 +237,7 @@ namespace VSS.TRex.HttpClients.Tests
       clientState.Object.TPaaSTokenExpiry = DateTime.MinValue;
       clientState.Object.TPaaSToken = accessToken;
 
-      await tpaasClient.setState(clientState.Object);
+      await tpaasClient.SetState(clientState.Object);
 
 
       Func<Task> act = async () => { await tpaasClient.GetBearerTokenAsync(); };
@@ -320,7 +320,7 @@ namespace VSS.TRex.HttpClients.Tests
       clientState.Object.TPaaSTokenExpiry = DateTime.MinValue;
       clientState.Object.TPaaSToken = accessToken;
 
-      await tpaasClient.setState(clientState.Object);
+      await tpaasClient.SetState(clientState.Object);
 
 
       Func<Task> act = async () => { await tpaasClient.GetBearerTokenAsync(); };
@@ -404,7 +404,7 @@ namespace VSS.TRex.HttpClients.Tests
       clientState.Object.TPaaSTokenExpiry = DateTime.MinValue;
       clientState.Object.TPaaSToken = accessToken;
 
-      await tpaasClient.setState(clientState.Object);
+      await tpaasClient.SetState(clientState.Object);
 
 
       Func<Task> act = async () => { await tpaasClient.GetBearerTokenAsync(); };

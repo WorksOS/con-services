@@ -415,7 +415,7 @@ namespace VSS.TRex.Rendering.Executors
       */
 
       // Determine the grid (NEE) coordinates of the bottom/left, top/right WGS-84 positions
-      // given the projet's coordinate system. If there is no coordinate system then exit.
+      // given the project's coordinate system. If there is no coordinate system then exit.
 
       ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 

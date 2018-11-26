@@ -25,10 +25,14 @@ namespace VSS.TRex.HttpClients.RequestHandlers
   /// </summary>
   public class TPaaSAuthenticatedRequestHandler : DelegatingHandler
   {
-
-    public TPaaSAuthenticatedRequestHandler() : base() { }
-
     public TPaaSAuthenticatedRequestHandler(HttpMessageHandler innerHandler) : base(innerHandler) { }
+
+    /// <summary>
+    /// Default constructor; required for dependency injection.
+    /// </summary>
+    public TPaaSAuthenticatedRequestHandler()
+      : base()
+    { }
 
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(

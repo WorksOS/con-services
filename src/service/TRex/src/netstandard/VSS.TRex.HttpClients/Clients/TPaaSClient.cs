@@ -75,8 +75,11 @@ namespace VSS.TRex.HttpClients.Clients
     private async Task Authenticate()
     {
       _logger.LogInformation("Authenticating with TPaaS");
-      var grantMessage = new Dictionary<string, string>();
-      grantMessage.Add("grant_type", "client_credentials");
+      var grantMessage = new Dictionary<string, string>
+      {
+        {"grant_type", "client_credentials"}
+      };
+
       var result = await _client.PostAsync(GET_TOKEN_URI, new FormUrlEncodedContent(grantMessage)).ConfigureAwait(false);
 
       if (result.Content == null)
@@ -105,8 +108,10 @@ namespace VSS.TRex.HttpClients.Clients
         try
         {
           _logger.LogInformation("Constructing Revoke token request");
-          var revokeMessage = new Dictionary<string, string>();
-          revokeMessage.Add("token", _state.TPaaSToken);
+          var revokeMessage = new Dictionary<string, string>
+          {
+            {"token", _state.TPaaSToken}
+          };
 
           var revokeBody = new FormUrlEncodedContent(revokeMessage);
           _logger.LogInformation("Sending Revoke token request");
@@ -126,7 +131,7 @@ namespace VSS.TRex.HttpClients.Clients
       }
     }
 
-    public async Task setState(ITPaaSClientState state)
+    public async Task SetState(ITPaaSClientState state)
     {
       //Don't change the state while setting it elsewhere
       await semaphore.WaitAsync();
