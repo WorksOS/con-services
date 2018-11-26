@@ -8,7 +8,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a Cut/Fill statistics request
   /// </summary>    
-  public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<CutFillStatisticsArgument>
   {
     /// <summary>
     /// The set of cut/fill offsets
@@ -46,17 +46,16 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
       DesignID = reader.ReadGuid() ?? Guid.Empty;
     }
 
-    protected bool Equals(CutFillStatisticsArgument other)
+    public bool Equals(CutFillStatisticsArgument other)
     {
-      return base.Equals(other) && 
-             DesignID.Equals(other.DesignID) && 
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return base.Equals(other) &&
+             DesignID.Equals(other.DesignID) &&
              (Equals(Offsets, other.Offsets) ||
-             (Offsets != null && other.Offsets != null && Offsets.SequenceEqual(other.Offsets)));
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as CutFillStatisticsArgument);
+              Offsets != null && other.Offsets != null &&
+              Offsets.Length == other.Offsets.Length &&
+              Offsets.SequenceEqual(other.Offsets));
     }
 
     public override bool Equals(object obj)

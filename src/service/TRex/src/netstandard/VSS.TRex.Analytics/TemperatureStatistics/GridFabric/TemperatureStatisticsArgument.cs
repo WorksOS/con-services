@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// <summary>
 	/// Argument containing the parameters required for a Temperature statistics request
 	/// </summary>    
-	public class TemperatureStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+	public class TemperatureStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<TemperatureStatisticsArgument>
   {
 		/// <summary>
 		/// The flag is to indicate whether or not the temperature warning levels to be user overrides.
@@ -56,18 +56,32 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
       TemperatureDetailValues = reader.ReadIntArray();
     }
 
-    protected bool Equals(TemperatureStatisticsArgument other)
+    //protected bool Equals(TemperatureStatisticsArgument other)
+    //{
+    //  return base.Equals(other) && 
+    //         OverridingTemperatureWarningLevels.Equals(other.OverridingTemperatureWarningLevels) && 
+    //         OverrideTemperatureWarningLevels == other.OverrideTemperatureWarningLevels && 
+    //         (Equals(TemperatureDetailValues, other.TemperatureDetailValues) ||
+    //         (TemperatureDetailValues != null && other.TemperatureDetailValues != null && TemperatureDetailValues.SequenceEqual(other.TemperatureDetailValues)));
+    //}
+
+    //public bool Equals(BaseApplicationServiceRequestArgument other)
+    //{
+    //  return Equals(other as TemperatureStatisticsArgument);
+    //}
+
+    public bool Equals(TemperatureStatisticsArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              OverridingTemperatureWarningLevels.Equals(other.OverridingTemperatureWarningLevels) && 
-             OverrideTemperatureWarningLevels == other.OverrideTemperatureWarningLevels && 
-             (Equals(TemperatureDetailValues, other.TemperatureDetailValues) ||
-             (TemperatureDetailValues != null && other.TemperatureDetailValues != null && TemperatureDetailValues.SequenceEqual(other.TemperatureDetailValues)));
-    }
+             OverrideTemperatureWarningLevels == other.OverrideTemperatureWarningLevels &&
 
-    public bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as TemperatureStatisticsArgument);
+    (Equals(TemperatureDetailValues, other.TemperatureDetailValues) ||
+     TemperatureDetailValues != null && other.TemperatureDetailValues != null &&
+     TemperatureDetailValues.Length == other.TemperatureDetailValues.Length &&
+     TemperatureDetailValues.SequenceEqual(other.TemperatureDetailValues));
     }
 
     public override bool Equals(object obj)

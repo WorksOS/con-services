@@ -12,7 +12,7 @@ namespace VSS.TRex.GridFabric.Responses
   /// code covering the request plus additional statistical data such as the number of subgrids processed by 
   /// that cluster node from the overall pool of subgrid requested
   /// </summary>
-  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<BaseRequestResponse>
+  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<SubGridRequestsResponse>
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -89,8 +89,10 @@ namespace VSS.TRex.GridFabric.Responses
       NumSurveyedSurfaceSubGridsExamined = reader.ReadLong();
     }
 
-    protected bool Equals(SubGridRequestsResponse other)
+    public bool Equals(SubGridRequestsResponse other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return ResponseCode == other.ResponseCode && 
              string.Equals(ClusterNode, other.ClusterNode) && 
              NumSubgridsProcessed == other.NumSubgridsProcessed && 
@@ -99,11 +101,6 @@ namespace VSS.TRex.GridFabric.Responses
              NumProdDataSubGridsExamined == other.NumProdDataSubGridsExamined && 
              NumSurveyedSurfaceSubGridsProcessed == other.NumSurveyedSurfaceSubGridsProcessed && 
              NumSurveyedSurfaceSubGridsExamined == other.NumSurveyedSurfaceSubGridsExamined;
-    }
-
-    public bool Equals(BaseRequestResponse other)
-    {
-      return Equals(other as SubGridRequestsResponse);
     }
 
     public override bool Equals(object obj)

@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a Pass Count statistics request
   /// </summary>    
-  public class PassCountStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class PassCountStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<PassCountStatisticsArgument>
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine Pass Count target range to be user overrides.
@@ -56,18 +56,17 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
       PassCountDetailValues = reader.ReadIntArray();
     }
 
-    protected bool Equals(PassCountStatisticsArgument other)
+    public bool Equals(PassCountStatisticsArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              OverridingTargetPassCountRange.Equals(other.OverridingTargetPassCountRange) && 
-             OverrideTargetPassCount == other.OverrideTargetPassCount && 
+             OverrideTargetPassCount == other.OverrideTargetPassCount &&
              (Equals(PassCountDetailValues, other.PassCountDetailValues) ||
-             (PassCountDetailValues != null && other.PassCountDetailValues != null && PassCountDetailValues.SequenceEqual(other.PassCountDetailValues)));
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as PassCountStatisticsArgument);
+              PassCountDetailValues != null && other.PassCountDetailValues != null &&
+              PassCountDetailValues.Length == other.PassCountDetailValues.Length &&
+              PassCountDetailValues.SequenceEqual(other.PassCountDetailValues));
     }
 
     public override bool Equals(object obj)

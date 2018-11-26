@@ -11,7 +11,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// The response state returned from a MDP statistics request
   /// </summary>
   public class MDPStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<MDPStatisticsResponse>, 
-    IAnalyticsOperationResponseResultConversion<MDPStatisticsResult>, IEquatable<StatisticsAnalyticsResponse>
+    IAnalyticsOperationResponseResultConversion<MDPStatisticsResult>, IEquatable<MDPStatisticsResponse>
   {
     /// <summary>
     /// Holds last known good target MDP value.
@@ -77,14 +77,11 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
       };
     }
 
-    protected bool Equals(MDPStatisticsResponse other)
+    public bool Equals(MDPStatisticsResponse other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && LastTargetMDP == other.LastTargetMDP;
-    }
-
-    public new bool Equals(StatisticsAnalyticsResponse other)
-    {
-      return Equals(other as MDPStatisticsResponse);
     }
 
     public override bool Equals(object obj)

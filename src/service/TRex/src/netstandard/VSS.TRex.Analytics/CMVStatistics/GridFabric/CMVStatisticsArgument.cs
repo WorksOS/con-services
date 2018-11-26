@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a CMV statistics request
   /// </summary>    
-  public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class CMVStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<CMVStatisticsArgument>
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine CMV target to be user overrides.
@@ -63,19 +63,19 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
       CMVDetailValues = reader.ReadIntArray();
     }
 
-    protected bool Equals(CMVStatisticsArgument other)
+    public bool Equals(CMVStatisticsArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+
       return base.Equals(other) && 
              CMVPercentageRange.Equals(other.CMVPercentageRange) && 
              OverrideMachineCMV == other.OverrideMachineCMV && 
-             OverridingMachineCMV == other.OverridingMachineCMV && 
+             OverridingMachineCMV == other.OverridingMachineCMV &&
              (Equals(CMVDetailValues, other.CMVDetailValues) ||
-             (CMVDetailValues != null && other.CMVDetailValues != null && CMVDetailValues.SequenceEqual(other.CMVDetailValues)));
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as CMVStatisticsArgument);
+              CMVDetailValues != null && other.CMVDetailValues != null &&
+              CMVDetailValues.Length == other.CMVDetailValues.Length &&
+              CMVDetailValues.SequenceEqual(other.CMVDetailValues));
     }
 
     public override bool Equals(object obj)

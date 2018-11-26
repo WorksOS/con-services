@@ -12,7 +12,7 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   /// The response state returned from a Pass Count summary request
   /// </summary>
   public class PassCountStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<PassCountStatisticsResponse>, 
-    IAnalyticsOperationResponseResultConversion<PassCountStatisticsResult>, IEquatable<StatisticsAnalyticsResponse>
+    IAnalyticsOperationResponseResultConversion<PassCountStatisticsResult>, IEquatable<PassCountStatisticsResponse>
   {
     /// <summary>
     /// Holds last known good target Pass Count range values.
@@ -78,14 +78,11 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
       };
     }
 
-    protected bool Equals(PassCountStatisticsResponse other)
+    public bool Equals(PassCountStatisticsResponse other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && LastPassCountTargetRange.Equals(other.LastPassCountTargetRange);
-    }
-
-    public new bool Equals(StatisticsAnalyticsResponse other)
-    {
-      return Equals(other as PassCountStatisticsResponse);
     }
 
     public override bool Equals(object obj)

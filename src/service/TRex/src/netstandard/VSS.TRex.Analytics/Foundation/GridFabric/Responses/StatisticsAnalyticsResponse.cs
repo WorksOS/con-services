@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
   /// <summary>
   /// Base class for statistic analytics response.
   /// </summary>
-  public class StatisticsAnalyticsResponse : BaseAnalyticsResponse, IAggregateWith<StatisticsAnalyticsResponse>, IEquatable<BaseAnalyticsResponse>
+  public class StatisticsAnalyticsResponse : BaseAnalyticsResponse, IAggregateWith<StatisticsAnalyticsResponse>, IEquatable<StatisticsAnalyticsResponse>
   {
     /// <summary>
     /// An array values representing the counts of cells within each of the details bands defined in the request.
@@ -140,23 +140,21 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
       }
     }
 
-    protected bool Equals(StatisticsAnalyticsResponse other)
+    public bool Equals(StatisticsAnalyticsResponse other)
     {
-      return base.Equals(other) &&
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return base.Equals(other) && 
              (Equals(Counts, other.Counts) ||
-             (Counts != null && other.Counts != null && Counts.SequenceEqual(other.Counts))) && 
-             CellSize.Equals(other.CellSize) && 
+              Counts != null && other.Counts != null &&
+              Counts.Length == other.Counts.Length &&
+              Counts.SequenceEqual(other.Counts)) &&
              SummaryCellsScanned == other.SummaryCellsScanned && 
              CellsScannedAtTarget == other.CellsScannedAtTarget && 
              CellsScannedOverTarget == other.CellsScannedOverTarget && 
              CellsScannedUnderTarget == other.CellsScannedUnderTarget && 
              IsTargetValueConstant == other.IsTargetValueConstant && 
              MissingTargetValue == other.MissingTargetValue;
-    }
-
-    public bool Equals(BaseAnalyticsResponse other)
-    {
-      return Equals(other as StatisticsAnalyticsResponse);
     }
 
     public override bool Equals(object obj)
@@ -171,7 +169,8 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     {
       unchecked
       {
-        var hashCode = (Counts != null ? Counts.GetHashCode() : 0);
+        int hashCode = base.GetHashCode();
+        hashCode = (hashCode * 397) ^ (Counts != null ? Counts.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ CellSize.GetHashCode();
         hashCode = (hashCode * 397) ^ SummaryCellsScanned;
         hashCode = (hashCode * 397) ^ CellsScannedAtTarget;

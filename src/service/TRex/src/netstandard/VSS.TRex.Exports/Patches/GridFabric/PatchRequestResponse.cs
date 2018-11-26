@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -12,7 +13,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
   /// The response returned from the Patches request executor that contains the response code and the set of
   /// subgrids extracted for the patch in question
   /// </summary>
-  public class PatchRequestResponse : SubGridsPipelinedReponseBase, IEquatable<SubGridsPipelinedReponseBase>
+  public class PatchRequestResponse : SubGridsPipelinedReponseBase, IEquatable<PatchRequestResponse>
   {
     /// <summary>
     /// The total number of pages of subgrids required to contain the maximum number of subgrids'
@@ -80,29 +81,17 @@ namespace VSS.TRex.Exports.Patches.GridFabric
       }
     }
 
-    protected bool Equals(PatchRequestResponse other)
+    public bool Equals(PatchRequestResponse other)
     {
-      if (!(base.Equals(other) &&
-            TotalNumberOfPagesToCoverFilteredData == other.TotalNumberOfPagesToCoverFilteredData &&
-            (Equals(SubGrids, other.SubGrids) ||
-             (SubGrids != null && other.SubGrids != null && SubGrids.Count == other.SubGrids.Count))))
-        return false;
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
 
-      if (SubGrids != null && other.SubGrids != null)
-      {
-        for (var i = 0; i < SubGrids.Count; i++)
-        {
-          if (!SubGrids[i].LeafContentEquals(other.SubGrids[i]))
-            return false;
-        }
-      }
-
-      return true;
-    }
-
-    public new bool Equals(SubGridsPipelinedReponseBase other)
-    {
-      return Equals(other as PatchRequestResponse);
+      return base.Equals(other) &&
+             TotalNumberOfPagesToCoverFilteredData == other.TotalNumberOfPagesToCoverFilteredData &&
+             (Equals(SubGrids, other.SubGrids) ||
+              (SubGrids != null && other.SubGrids != null && 
+               SubGrids.Count == other.SubGrids.Count) &&
+              !SubGrids.Where((s, i) => !s.LeafContentEquals(other.SubGrids[i])).Any());
     }
 
     public override bool Equals(object obj)

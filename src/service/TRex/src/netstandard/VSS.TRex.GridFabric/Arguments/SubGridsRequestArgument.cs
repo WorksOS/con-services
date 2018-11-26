@@ -8,7 +8,7 @@ namespace VSS.TRex.GridFabric.Arguments
   /// <summary>
   /// Contains all the parameters necessary to be sent for a generic subgrids request made to the compute cluster
   /// </summary>
-  public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<SubGridsRequestArgument>
   {
     /// <summary>
     /// The request ID for the subgrid request
@@ -83,22 +83,24 @@ namespace VSS.TRex.GridFabric.Arguments
       IncludeSurveyedSurfaceInformation = reader.ReadBoolean();
     }
 
-    protected bool Equals(SubGridsRequestArgument other)
+    public bool Equals(SubGridsRequestArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+
       return base.Equals(other) && 
              RequestID.Equals(other.RequestID) && 
-             GridDataType == other.GridDataType && 
+             GridDataType == other.GridDataType &&
              (Equals(ProdDataMaskBytes, other.ProdDataMaskBytes) ||
-              (ProdDataMaskBytes != null && other.ProdDataMaskBytes != null && ProdDataMaskBytes.SequenceEqual(other.ProdDataMaskBytes))) && 
+              ProdDataMaskBytes != null && other.ProdDataMaskBytes != null &&
+              ProdDataMaskBytes.Length == other.ProdDataMaskBytes.Length && 
+              ProdDataMaskBytes.SequenceEqual(other.ProdDataMaskBytes)) &&
              (Equals(SurveyedSurfaceOnlyMaskBytes, other.SurveyedSurfaceOnlyMaskBytes) ||
-              (SurveyedSurfaceOnlyMaskBytes != null && other.SurveyedSurfaceOnlyMaskBytes != null && SurveyedSurfaceOnlyMaskBytes.SequenceEqual(other.SurveyedSurfaceOnlyMaskBytes))) && 
+              SurveyedSurfaceOnlyMaskBytes != null && other.SurveyedSurfaceOnlyMaskBytes != null &&
+              SurveyedSurfaceOnlyMaskBytes.Length == other.SurveyedSurfaceOnlyMaskBytes.Length &&
+              SurveyedSurfaceOnlyMaskBytes.SequenceEqual(other.SurveyedSurfaceOnlyMaskBytes)) &&
              string.Equals(MessageTopic, other.MessageTopic) && 
              IncludeSurveyedSurfaceInformation == other.IncludeSurveyedSurfaceInformation;
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as SubGridsRequestArgument);
     }
 
     public override bool Equals(object obj)

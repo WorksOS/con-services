@@ -9,7 +9,7 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
   /// <summary>
   /// The argument passed to simple volumes requests
   /// </summary>
-  public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class SimpleVolumesRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<SimpleVolumesRequestArgument>
   {
     //ExternalDescriptor : TASNodeRequestDescriptor;
 
@@ -123,10 +123,11 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
       FillTolerance = reader.ReadDouble();
     }
 
-    protected bool Equals(SimpleVolumesRequestArgument other)
+    public bool Equals(SimpleVolumesRequestArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
-             ProjectID.Equals(other.ProjectID) && 
              VolumeType == other.VolumeType && 
              Equals(BaseFilter, other.BaseFilter) && 
              Equals(TopFilter, other.TopFilter) && 
@@ -135,11 +136,6 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
              Equals(AdditionalSpatialFilter, other.AdditionalSpatialFilter) && 
              CutTolerance.Equals(other.CutTolerance) && 
              FillTolerance.Equals(other.FillTolerance);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as SimpleVolumesRequestArgument);
     }
 
     public override bool Equals(object obj)
@@ -155,7 +151,6 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
       unchecked
       {
         int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ ProjectID.GetHashCode();
         hashCode = (hashCode * 397) ^ (int) VolumeType;
         hashCode = (hashCode * 397) ^ (BaseFilter != null ? BaseFilter.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ (TopFilter != null ? TopFilter.GetHashCode() : 0);

@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
   /// Argument containing the parameters required for a CMV change statistics request.
   /// The CMV change is exposed on the client as CMV % change.
   /// </summary>    
-  public class CMVChangeStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class CMVChangeStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<CMVChangeStatisticsArgument>
   {
     /// <summary>
     /// CMV change details values.
@@ -38,16 +38,15 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
       CMVChangeDetailsDatalValues = reader.ReadDoubleArray();
     }
 
-    protected bool Equals(CMVChangeStatisticsArgument other)
+    public bool Equals(CMVChangeStatisticsArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              (Equals(CMVChangeDetailsDatalValues, other.CMVChangeDetailsDatalValues) ||
-             (CMVChangeDetailsDatalValues != null && other.CMVChangeDetailsDatalValues != null && CMVChangeDetailsDatalValues.SequenceEqual(other.CMVChangeDetailsDatalValues)));
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as CMVChangeStatisticsArgument);
+              CMVChangeDetailsDatalValues != null && other.CMVChangeDetailsDatalValues != null &&
+              CMVChangeDetailsDatalValues.Length == other.CMVChangeDetailsDatalValues.Length &&
+              CMVChangeDetailsDatalValues.SequenceEqual(other.CMVChangeDetailsDatalValues));
     }
 
     public override bool Equals(object obj)
@@ -55,12 +54,15 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
       if (obj.GetType() != this.GetType()) return false;
-      return Equals((CMVChangeStatisticsArgument)obj);
+      return Equals((CMVChangeStatisticsArgument) obj);
     }
 
     public override int GetHashCode()
     {
-      return (CMVChangeDetailsDatalValues != null ? CMVChangeDetailsDatalValues.GetHashCode() : 0);
+      unchecked
+      {
+        return (base.GetHashCode() * 397) ^ (CMVChangeDetailsDatalValues != null ? CMVChangeDetailsDatalValues.GetHashCode() : 0);
+      }
     }
   }
 }
