@@ -11,7 +11,7 @@ namespace VSS.TRex.DI
   /// </summary>
   public class DIBuilder
   {
-    public static DIBuilder Instance = null;
+    public static DIBuilder Instance;
 
     public IServiceProvider ServiceProvider { get; internal set; }
     public IServiceCollection ServiceCollection = new ServiceCollection();
@@ -43,16 +43,16 @@ namespace VSS.TRex.DI
     {
       if (ServiceCollection == null)
       {
-        throw new ArgumentNullException(nameof (ServiceCollection));
+        throw new ArgumentNullException(nameof(ServiceCollection));
       }
       if (configureClient == null)
       {
-        throw new ArgumentNullException(nameof (configureClient));
+        throw new ArgumentNullException(nameof(configureClient));
       }
 
       ServiceCollection.AddHttpClient();
 
-      DefaultHttpClientBuilder builder = new DefaultHttpClientBuilder(ServiceCollection, typeof (TClient).Name, Instance);
+      DefaultHttpClientBuilder builder = new DefaultHttpClientBuilder(ServiceCollection, typeof(TClient).Name, Instance);
       builder.ConfigureHttpClient(configureClient);
       builder.AddTypedClient<TClient>();
 
@@ -110,7 +110,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// A handly shorthand version of .Build().Inject()
     /// </summary>
-    public DIBuilder Complete() => Build(); //.Inject();
+    public DIBuilder Complete() => Build();
 
     /// <summary>
     /// Allow continuation of building the DI context
