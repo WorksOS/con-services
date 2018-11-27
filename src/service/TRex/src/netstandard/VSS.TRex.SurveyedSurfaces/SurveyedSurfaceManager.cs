@@ -22,7 +22,8 @@ namespace VSS.TRex.SurveyedSurfaces
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SurveyedSurfaceManager>();
 
-    private readonly IStorageProxy StorageProxy;
+    private readonly IStorageProxy WriteStorageProxy;
+    private readonly IStorageProxy ReadStorageProxy;
 
     private const string SURVEYED_SURFACE_STREAM_NAME = "SurveyedSurfaces";
 
@@ -31,7 +32,8 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public SurveyedSurfaceManager()
     {
-      StorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+      WriteStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+      ReadStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
     }
 
     /// <summary>
@@ -43,7 +45,7 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       try
       {
-        StorageProxy.ReadStreamFromPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
+        ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
 
         ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
 
@@ -78,8 +80,8 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream(), this);
-        StorageProxy.Commit();
+        WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream(), this);
+        WriteStorageProxy.Commit();
 
         // Notify the  grid listeners that attributes of this sitemodel have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();

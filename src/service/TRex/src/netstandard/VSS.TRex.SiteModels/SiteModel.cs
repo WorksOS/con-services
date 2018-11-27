@@ -503,6 +503,7 @@ namespace VSS.TRex.SiteModels
     {
       if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) == FileSystemErrorStatus.OK)
       {
+        storageProxy.Commit();
         return true;
       }
 
@@ -521,6 +522,12 @@ namespace VSS.TRex.SiteModels
 
       lock (this)
       {
+        if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) != FileSystemErrorStatus.OK)
+        {
+          Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
+          return false;
+        }
+
         Result = SaveMetadataToPersistentStore(storageProxy);
 
         if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)

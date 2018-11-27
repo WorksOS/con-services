@@ -22,7 +22,8 @@ namespace VSS.TRex.Designs
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignManager>();
 
-    private readonly IStorageProxy StorageProxy;
+    private readonly IStorageProxy WriteStorageProxy;
+    private readonly IStorageProxy ReadStorageProxy;
 
     private const string DESIGNS_STREAM_NAME = "Designs";
 
@@ -31,7 +32,8 @@ namespace VSS.TRex.Designs
     /// </summary>
     public DesignManager() 
     {
-      StorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+       WriteStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+       ReadStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
     }
 
     /// <summary>
@@ -43,7 +45,7 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        StorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
+        ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
 
         IDesigns designs = DIContext.Obtain<IDesigns>();
 
@@ -78,8 +80,8 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream(), designs);
-        StorageProxy.Commit();
+        WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, designs.ToStream(), designs);
+        WriteStorageProxy.Commit();
 
         // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
