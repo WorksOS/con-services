@@ -48,6 +48,7 @@
 <p>
   <label><input type="checkbox" [(ngModel)]="updateFirstPointLocation">First point X:</label><input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
   <label><input type="checkbox" [(ngModel)]="updateSecondPointLocation">Second point X:</label><input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
+  Points in profile: {{numPointInProfile}}
 </p>
 
 <p>
@@ -55,9 +56,12 @@
   <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Draw Prod Data Profile</button>
 </p>
 
-<svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     (mouseover)="onMouseOverProfile($event)" (mousemove)="onMouseMoveProfile($event)">
   <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1" fill="none" />
 </svg>
+<p>Profile extents: Start station: {{profileExtents.minX}}, End station: {{profileExtents.minX}}, Min Z: {{profileExtents.minY}}, Max Z: {{profileExtents.maxY}}</p>
+<p>Mouse: Screen: {{mouseProfilePixelLocation}}, World: {{mouseProfileWorldLocation}} </p>
 
 <H3>Machines [{{machines.length}} in total]</H3>
 <!--Display the machines in a table-->
