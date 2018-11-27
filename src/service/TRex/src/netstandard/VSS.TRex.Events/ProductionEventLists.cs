@@ -203,7 +203,7 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Retrieves the requested event list for this meachine in this sitemodel
+    /// Retrieves the requested event list for this machine in this sitemodel
     /// Event lists are lazy loaded at the point they are requested.
     /// </summary>
     /// <param name="eventType"></param>
@@ -296,7 +296,7 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
-    /// Provides a refernece to the TAG file processing start/end events list
+    /// Provides a reference to the TAG file processing start/end events list
     /// </summary>
     /// <returns></returns>
     public IProductionEventPairs GetStartEndRecordedDataEvents() => StartEndRecordedDataEvents;
