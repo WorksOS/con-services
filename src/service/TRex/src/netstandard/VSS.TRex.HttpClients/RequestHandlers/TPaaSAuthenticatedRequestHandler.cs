@@ -41,14 +41,14 @@ namespace VSS.TRex.HttpClients.RequestHandlers
     {
       try
       {
-        string bearerToken = await DIContext.Obtain<ITPaaSClient>().GetBearerTokenAsync().ConfigureAwait(false);
-
         if (!request.Headers.Contains("Authorization"))
         {
+          string bearerToken = await DIContext.Obtain<ITPaaSClient>().GetBearerTokenAsync();
+
           request.Headers.Add("Authorization", bearerToken);
         }
 
-        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        return await base.SendAsync(request, cancellationToken);
       }
       catch (ArgumentNullException ex)
       {

@@ -108,14 +108,13 @@ namespace VSS.TRex.DI
     }
 
     /// <summary>
-    /// A handly shorthand version of .Build().Inject()
+    /// A handly shorthand version of .Build()
     /// </summary>
     public DIBuilder Complete() => Build();
 
     /// <summary>
     /// Allow continuation of building the DI context
     /// </summary>
-    /// <returns></returns>
-    public static DIBuilder Continue() => Instance;
+    public static DIBuilder Continue() => Instance ?? New();
   }
 }
