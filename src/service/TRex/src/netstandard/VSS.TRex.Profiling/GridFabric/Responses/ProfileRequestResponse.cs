@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
@@ -74,34 +75,20 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
 
     public bool Equals(ProfileRequestResponse other)
     {
-      //===========================================================
-      bool AreProfileCellsEqual()
-      {
-        if (ProfileCells == null || other.ProfileCells == null)
-          return false;
-
-        if (ProfileCells.Count != other.ProfileCells.Count)
-          return false;
-
-        for (var i = 0; i < ProfileCells.Count; i++)
-        {
-          if (!Equals(ProfileCells[i], other.ProfileCells[i]))
-            return false;
-        }
-
-        return true;
-      }
-      //===========================================================
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
 
       return base.Equals(other) &&
-          (Equals(ProfileCells, other.ProfileCells) || AreProfileCellsEqual());
+  
+             (Equals(ProfileCells, other.ProfileCells) ||
+              (ProfileCells != null && other.ProfileCells != null && ProfileCells.Count == other.ProfileCells.Count && !ProfileCells.Where((p, i) => !p.Equals(other.ProfileCells[i])).Any()));
     }
 
     public override bool Equals(object obj)
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != GetType()) return false;
+      if (obj.GetType() != this.GetType()) return false;
       return Equals((ProfileRequestResponse) obj);
     }
 
@@ -114,3 +101,4 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
     }
   }
 }
+

@@ -2,13 +2,13 @@
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Extensions;
-using Draw = System.Drawing;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Responses;
+using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 {
-  public class TileRenderResponse_Core2 : TileRenderResponse, IEquatable<TileRenderResponse>
+  public class TileRenderResponse_Core2 : TileRenderResponse, IEquatable<TileRenderResponse_Core2>
   {
     public byte[] TileBitmapData { get; set; }
 
@@ -50,16 +50,15 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
         TileBitmapData = reader.ReadByteArray();
     }
 
-    protected bool Equals(TileRenderResponse_Core2 other)
+    public bool Equals(TileRenderResponse_Core2 other)
     {
-      return base.Equals(other) && 
-             (Equals(TileBitmapData, other.TileBitmapData) ||
-              (TileBitmapData != null && other.TileBitmapData != null && TileBitmapData.SequenceEqual(other.TileBitmapData)));
-    }
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
 
-    public bool Equals(TileRenderResponse other)
-    {
-      return Equals(other as TileRenderResponse_Core2);
+      return base.Equals(other) &&
+
+             (Equals(TileBitmapData, other.TileBitmapData) ||
+              (TileBitmapData != null && other.TileBitmapData != null && TileBitmapData.Length == other.TileBitmapData.Length && TileBitmapData.SequenceEqual(other.TileBitmapData)));
     }
 
     public override bool Equals(object obj)

@@ -130,7 +130,10 @@ namespace VSS.TRex.GridFabric.Affinity
 
       public bool Equals(SubGridSpatialAffinityKey other)
       {
-        return ProjectUID.Equals(other.ProjectUID) && SubGridX == other.SubGridX && SubGridY == other.SubGridY && string.Equals(SegmentIdentifier, other.SegmentIdentifier);
+        return ProjectUID.Equals(other.ProjectUID) && 
+               SubGridX == other.SubGridX && 
+               SubGridY == other.SubGridY && 
+               string.Equals(SegmentIdentifier, other.SegmentIdentifier);
       }
 
       public override bool Equals(object obj)

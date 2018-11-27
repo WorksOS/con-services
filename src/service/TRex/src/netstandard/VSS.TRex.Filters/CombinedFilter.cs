@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
@@ -9,7 +8,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Combined filter represents both spatial and attribute based filtering considerations
   /// </summary>
-  public class CombinedFilter : ICombinedFilter, IEquatable<ICombinedFilter>
+  public class CombinedFilter : ICombinedFilter, IEquatable<CombinedFilter>
   {
 /// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
@@ -85,20 +84,20 @@ namespace VSS.TRex.Filters
         (SpatialFilter ?? (SpatialFilter = new CellSpatialFilter())).FromBinary(reader);
     }
 
-    public bool Equals(ICombinedFilter other)
+    public bool Equals(CombinedFilter other)
     {
-      if (other == null)
-        return false;
-
-      return AttributeFilter.Equals(other.AttributeFilter) && SpatialFilter.Equals(other.SpatialFilter);
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return Equals(AttributeFilter, other.AttributeFilter) && 
+             Equals(SpatialFilter, other.SpatialFilter);
     }
 
     public override bool Equals(object obj)
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != GetType()) return false;
-      return Equals((ICombinedFilter) obj);
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((CombinedFilter) obj);
     }
 
     public override int GetHashCode()

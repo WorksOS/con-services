@@ -8,7 +8,7 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	/// <summary>
 	/// Argument containing the parameters required for a Speed statistics request
 	/// </summary>    
-  public class SpeedStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class SpeedStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<SpeedStatisticsArgument>
   {
 	  /// <summary>
 	  /// Machine speed target record. It contains min/max machine speed target value.
@@ -37,15 +37,12 @@ namespace VSS.TRex.Analytics.SpeedStatistics.GridFabric
 	    TargetMachineSpeed.FromBinary(reader);
 	  }
 
-    protected bool Equals(SpeedStatisticsArgument other)
+    public bool Equals(SpeedStatisticsArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              TargetMachineSpeed.Equals(other.TargetMachineSpeed);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as SpeedStatisticsArgument);
     }
 
     public override bool Equals(object obj)

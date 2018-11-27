@@ -11,7 +11,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// The response state returned from a Temperature statistics request
 	/// </summary>
 	public class TemperatureStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>, 
-	  IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>, IEquatable<StatisticsAnalyticsResponse>
+	  IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>, IEquatable<TemperatureStatisticsResponse>
   {
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
@@ -84,14 +84,13 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
       return base.AggregateWith(other) as TemperatureStatisticsResponse;
     }
 
-    protected bool Equals(TemperatureStatisticsResponse other)
+    public bool Equals(TemperatureStatisticsResponse other)
     {
-      return base.Equals(other) && LastTempRangeMin == other.LastTempRangeMin && LastTempRangeMax == other.LastTempRangeMax;
-    }
-
-    public bool Equals(StatisticsAnalyticsResponse other)
-    {
-      return Equals(other as TemperatureStatisticsResponse);
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return base.Equals(other) && 
+             LastTempRangeMin == other.LastTempRangeMin && 
+             LastTempRangeMax == other.LastTempRangeMax;
     }
 
     public override bool Equals(object obj)

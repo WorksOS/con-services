@@ -10,7 +10,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
-  public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<TileRenderRequestArgument>
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -114,8 +114,10 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       }
     }
 
-    protected bool Equals(TileRenderRequestArgument other)
+    public bool Equals(TileRenderRequestArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              Equals(Extents, other.Extents) && 
              Mode == other.Mode && 
@@ -124,11 +126,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
              PixelsY == other.PixelsY && 
              Equals(Filter1, other.Filter1) && 
              Equals(Filter2, other.Filter2);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as TileRenderRequestArgument);
     }
 
     public override bool Equals(object obj)

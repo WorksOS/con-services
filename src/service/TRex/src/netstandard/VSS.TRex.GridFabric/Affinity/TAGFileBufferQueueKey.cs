@@ -73,7 +73,9 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public bool Equals(TAGFileBufferQueueKey other)
     {
-      return string.Equals(FileName, other.FileName) && ProjectUID.Equals(other.ProjectUID) && AssetUID.Equals(other.AssetUID);
+      return string.Equals(FileName, other.FileName) && 
+             ProjectUID.Equals(other.ProjectUID) && 
+             AssetUID.Equals(other.AssetUID);
     }
 
     public override bool Equals(object obj)

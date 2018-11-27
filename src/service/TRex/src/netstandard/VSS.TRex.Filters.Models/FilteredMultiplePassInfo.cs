@@ -485,7 +485,9 @@ end;
     {
       return PassCount == other.PassCount && 
              (Equals(FilteredPassData, other.FilteredPassData) ||
-              (FilteredPassData != null && other.FilteredPassData != null && FilteredPassData.SequenceEqual(other.FilteredPassData)));
+              FilteredPassData != null && other.FilteredPassData != null &&
+              FilteredPassData.Length == other.FilteredPassData.Length &&
+              FilteredPassData.SequenceEqual(other.FilteredPassData));
     }
 
     public override bool Equals(object obj)
