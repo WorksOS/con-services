@@ -494,17 +494,34 @@ namespace VSS.TRex.SiteModels
       LastModifiedDate = DateTime.FromBinary(reader.ReadInt64());
     }
 
-    public bool SaveToPersistentStore(IStorageProxy storageProxy)
+    /// <summary>
+    /// Saves only the core metadata about the site model to the persistent store
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy)
     {
-      bool Result = true;
+      if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) == FileSystemErrorStatus.OK)
+      {
+        return true;
+      }
+
+      Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
+      return false;
+    }
+
+    /// <summary>
+    /// Save the sitemodel metadata and core mutated state driven by TAG file ingest
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
+    {
+      bool Result;
 
       lock (this)
       {
-        if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) != FileSystemErrorStatus.OK)
-        {
-          Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
-          Result = false;
-        }
+        Result = SaveMetadataToPersistentStore(storageProxy);
 
         if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
         {

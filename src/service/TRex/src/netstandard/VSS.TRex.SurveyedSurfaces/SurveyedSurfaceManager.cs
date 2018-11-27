@@ -9,7 +9,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
@@ -23,7 +22,7 @@ namespace VSS.TRex.SurveyedSurfaces
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SurveyedSurfaceManager>();
 
-    private IStorageProxy StorageProxy;
+    private readonly IStorageProxy StorageProxy;
 
     private const string SURVEYED_SURFACE_STREAM_NAME = "SurveyedSurfaces";
 
@@ -64,7 +63,7 @@ namespace VSS.TRex.SurveyedSurfaces
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception reading surveyed surfaces cache element from Ignite", e);
+        throw new TRexException("Exception reading surveyed surfaces cache element from Ignite", e);
       }
 
       return null;
@@ -84,12 +83,11 @@ namespace VSS.TRex.SurveyedSurfaces
 
         // Notify the  grid listeners that attributes of this sitemodel have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, 
-          surveyedSurfacesChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, surveyedSurfacesChanged: true);
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing updated surveyed surfaces cache element to Ignite", e);
+        throw new TRexException("Exception writing updated surveyed surfaces cache element to Ignite", e);
       }
     }
     

@@ -22,7 +22,7 @@ namespace VSS.TRex.Designs
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignManager>();
 
-    private IStorageProxy StorageProxy;
+    private readonly IStorageProxy StorageProxy;
 
     private const string DESIGNS_STREAM_NAME = "Designs";
 
@@ -63,7 +63,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception reading designs cache element from Ignite", e);
+        throw new TRexException("Exception reading designs cache element from Ignite", e);
       }
 
       return null;
@@ -83,12 +83,11 @@ namespace VSS.TRex.Designs
 
         // Notify the mutable and immutable grid listeners that attributes of this sitemodel have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, 
-          designsChanged: true, machineTargetValuesChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, designsChanged: true);
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing updated designs cache element to Ignite", e);
+        throw new TRexException("Exception writing updated designs cache element to Ignite", e);
       }
     }
 
