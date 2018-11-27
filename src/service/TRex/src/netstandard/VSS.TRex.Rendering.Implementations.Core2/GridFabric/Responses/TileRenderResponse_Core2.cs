@@ -56,10 +56,9 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
       if (ReferenceEquals(this, other)) return true;
 
       return base.Equals(other) &&
+
              (Equals(TileBitmapData, other.TileBitmapData) ||
-              TileBitmapData != null && other.TileBitmapData != null &&
-              TileBitmapData.Length == other.TileBitmapData.Length &&
-              TileBitmapData.SequenceEqual(other.TileBitmapData));
+              (TileBitmapData != null && other.TileBitmapData != null && TileBitmapData.Length == other.TileBitmapData.Length && TileBitmapData.SequenceEqual(other.TileBitmapData)));
     }
 
     public override bool Equals(object obj)

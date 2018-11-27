@@ -63,10 +63,9 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
       return base.Equals(other) && 
              OverridingTargetPassCountRange.Equals(other.OverridingTargetPassCountRange) && 
              OverrideTargetPassCount == other.OverrideTargetPassCount &&
+
              (Equals(PassCountDetailValues, other.PassCountDetailValues) ||
-              PassCountDetailValues != null && other.PassCountDetailValues != null &&
-              PassCountDetailValues.Length == other.PassCountDetailValues.Length &&
-              PassCountDetailValues.SequenceEqual(other.PassCountDetailValues));
+              (PassCountDetailValues != null && other.PassCountDetailValues != null && PassCountDetailValues.Length == other.PassCountDetailValues.Length && PassCountDetailValues.SequenceEqual(other.PassCountDetailValues)));
     }
 
     public override bool Equals(object obj)

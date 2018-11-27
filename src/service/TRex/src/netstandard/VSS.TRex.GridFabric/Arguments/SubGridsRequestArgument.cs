@@ -91,14 +91,18 @@ namespace VSS.TRex.GridFabric.Arguments
       return base.Equals(other) && 
              RequestID.Equals(other.RequestID) && 
              GridDataType == other.GridDataType &&
+             
              (Equals(ProdDataMaskBytes, other.ProdDataMaskBytes) ||
-              ProdDataMaskBytes != null && other.ProdDataMaskBytes != null &&
-              ProdDataMaskBytes.Length == other.ProdDataMaskBytes.Length && 
-              ProdDataMaskBytes.SequenceEqual(other.ProdDataMaskBytes)) &&
+              (ProdDataMaskBytes != null && other.ProdDataMaskBytes != null && 
+               ProdDataMaskBytes.Length == other.ProdDataMaskBytes.Length && 
+               ProdDataMaskBytes.SequenceEqual(other.ProdDataMaskBytes))) &&
+
              (Equals(SurveyedSurfaceOnlyMaskBytes, other.SurveyedSurfaceOnlyMaskBytes) ||
-              SurveyedSurfaceOnlyMaskBytes != null && other.SurveyedSurfaceOnlyMaskBytes != null &&
-              SurveyedSurfaceOnlyMaskBytes.Length == other.SurveyedSurfaceOnlyMaskBytes.Length &&
-              SurveyedSurfaceOnlyMaskBytes.SequenceEqual(other.SurveyedSurfaceOnlyMaskBytes)) &&
+              (SurveyedSurfaceOnlyMaskBytes != null && 
+               other.SurveyedSurfaceOnlyMaskBytes != null && 
+               SurveyedSurfaceOnlyMaskBytes.Length == other.SurveyedSurfaceOnlyMaskBytes.Length && 
+               SurveyedSurfaceOnlyMaskBytes.SequenceEqual(other.SurveyedSurfaceOnlyMaskBytes))) &&
+
              string.Equals(MessageTopic, other.MessageTopic) && 
              IncludeSurveyedSurfaceInformation == other.IncludeSurveyedSurfaceInformation;
     }

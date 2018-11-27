@@ -105,10 +105,10 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       return base.Equals(other) && 
              DesignDescriptor.Equals(other.DesignDescriptor) && 
              ProfileTypeRequired == other.ProfileTypeRequired &&
+
              (Equals(NEECoords, other.NEECoords) ||
-              NEECoords != null && other.NEECoords != null &&
-              NEECoords.Length == other.NEECoords.Length &&
-              NEECoords.SequenceEqual(other.NEECoords)) &&
+              (NEECoords != null && other.NEECoords != null && NEECoords.Length == other.NEECoords.Length && NEECoords.SequenceEqual(other.NEECoords))) && 
+             
              ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
     }
 

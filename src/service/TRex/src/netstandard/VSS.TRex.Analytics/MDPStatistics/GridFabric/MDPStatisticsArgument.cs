@@ -71,11 +71,9 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
              MDPPercentageRange.Equals(other.MDPPercentageRange) && 
              OverrideMachineMDP == other.OverrideMachineMDP && 
              OverridingMachineMDP == other.OverridingMachineMDP &&
+             
              (Equals(MDPDetailValues, other.MDPDetailValues) ||
-              MDPDetailValues != null && other.MDPDetailValues != null &&
-              MDPDetailValues.Length == other.MDPDetailValues.Length &&
-              MDPDetailValues.SequenceEqual(other.MDPDetailValues));
-
+              (MDPDetailValues != null && other.MDPDetailValues != null && MDPDetailValues.Length == other.MDPDetailValues.Length && MDPDetailValues.SequenceEqual(other.MDPDetailValues)));
     }
 
     public override bool Equals(object obj)

@@ -114,9 +114,10 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       if (ReferenceEquals(this, other)) return true;
 
       return base.Equals(other) &&
-             (ProfilePath != null && other.ProfilePath != null && 
-              ProfilePath.Length == other.ProfilePath.Length &&
-              !ProfilePath.Where((pt, i) => !pt.Equals(other.ProfilePath[i])).Any()) &&
+             
+             (Equals(ProfilePath, other.ProfilePath) || 
+              (ProfilePath != null && other.ProfilePath != null && ProfilePath.Length == other.ProfilePath.Length && !ProfilePath.Where((pt, i) => !pt.Equals(other.ProfilePath[i])).Any())) &&
+
              CellSize.Equals(other.CellSize) && 
              DesignUid.Equals(other.DesignUid);
     }

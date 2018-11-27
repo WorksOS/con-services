@@ -144,11 +144,11 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && 
+      return base.Equals(other) &&
+        
              (Equals(Counts, other.Counts) ||
-              Counts != null && other.Counts != null &&
-              Counts.Length == other.Counts.Length &&
-              Counts.SequenceEqual(other.Counts)) &&
+              (Counts != null && other.Counts != null && Counts.Length == other.Counts.Length && Counts.SequenceEqual(other.Counts))) &&
+
              SummaryCellsScanned == other.SummaryCellsScanned && 
              CellsScannedAtTarget == other.CellsScannedAtTarget && 
              CellsScannedOverTarget == other.CellsScannedOverTarget && 

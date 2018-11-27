@@ -42,11 +42,12 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics.GridFabric
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && 
+      return base.Equals(other) &&
+        
              (Equals(CMVChangeDetailsDatalValues, other.CMVChangeDetailsDatalValues) ||
-              CMVChangeDetailsDatalValues != null && other.CMVChangeDetailsDatalValues != null &&
+              (CMVChangeDetailsDatalValues != null && other.CMVChangeDetailsDatalValues != null &&
               CMVChangeDetailsDatalValues.Length == other.CMVChangeDetailsDatalValues.Length &&
-              CMVChangeDetailsDatalValues.SequenceEqual(other.CMVChangeDetailsDatalValues));
+              CMVChangeDetailsDatalValues.SequenceEqual(other.CMVChangeDetailsDatalValues)));
     }
 
     public override bool Equals(object obj)

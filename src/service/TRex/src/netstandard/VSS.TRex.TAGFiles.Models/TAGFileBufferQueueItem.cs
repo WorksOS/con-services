@@ -86,10 +86,10 @@ namespace VSS.TRex.TAGFiles.Models
 
       return InsertUTC.Equals(other.InsertUTC) &&
              string.Equals(FileName, other.FileName) &&
+
              (Equals(Content, other.Content) ||
-              Content != null && other.Content != null &&
-               Content.Length == other.Content.Length &&
-              Content.SequenceEqual(other.Content)) &&
+              (Content != null && other.Content != null && Content.Length == other.Content.Length && Content.SequenceEqual(other.Content))) &&
+
              ProjectID.Equals(other.ProjectID) &&
              AssetID.Equals(other.AssetID) &&
              IsJohnDoe == other.IsJohnDoe;

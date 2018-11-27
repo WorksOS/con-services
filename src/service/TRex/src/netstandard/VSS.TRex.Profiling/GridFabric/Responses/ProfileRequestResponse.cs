@@ -79,10 +79,9 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
       if (ReferenceEquals(this, other)) return true;
 
       return base.Equals(other) &&
+  
              (Equals(ProfileCells, other.ProfileCells) ||
-              (ProfileCells != null && other.ProfileCells != null &&
-               ProfileCells.Count == other.ProfileCells.Count &&
-               !ProfileCells.Where((p, i) => !p.Equals(other.ProfileCells[i])).Any()));
+              (ProfileCells != null && other.ProfileCells != null && ProfileCells.Count == other.ProfileCells.Count && !ProfileCells.Where((p, i) => !p.Equals(other.ProfileCells[i])).Any()));
     }
 
     public override bool Equals(object obj)

@@ -72,10 +72,9 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
              CMVPercentageRange.Equals(other.CMVPercentageRange) && 
              OverrideMachineCMV == other.OverrideMachineCMV && 
              OverridingMachineCMV == other.OverridingMachineCMV &&
+
              (Equals(CMVDetailValues, other.CMVDetailValues) ||
-              CMVDetailValues != null && other.CMVDetailValues != null &&
-              CMVDetailValues.Length == other.CMVDetailValues.Length &&
-              CMVDetailValues.SequenceEqual(other.CMVDetailValues));
+              (CMVDetailValues != null && other.CMVDetailValues != null && CMVDetailValues.Length == other.CMVDetailValues.Length && CMVDetailValues.SequenceEqual(other.CMVDetailValues)));
     }
 
     public override bool Equals(object obj)

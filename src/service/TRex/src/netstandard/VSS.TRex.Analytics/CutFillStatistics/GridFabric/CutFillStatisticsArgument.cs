@@ -52,10 +52,9 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
       if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) &&
              DesignID.Equals(other.DesignID) &&
+
              (Equals(Offsets, other.Offsets) ||
-              Offsets != null && other.Offsets != null &&
-              Offsets.Length == other.Offsets.Length &&
-              Offsets.SequenceEqual(other.Offsets));
+              (Offsets != null && other.Offsets != null && Offsets.Length == other.Offsets.Length && Offsets.SequenceEqual(other.Offsets)));
     }
 
     public override bool Equals(object obj)

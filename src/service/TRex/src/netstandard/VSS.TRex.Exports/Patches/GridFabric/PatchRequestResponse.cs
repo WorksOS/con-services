@@ -88,10 +88,9 @@ namespace VSS.TRex.Exports.Patches.GridFabric
 
       return base.Equals(other) &&
              TotalNumberOfPagesToCoverFilteredData == other.TotalNumberOfPagesToCoverFilteredData &&
+             
              (Equals(SubGrids, other.SubGrids) ||
-              (SubGrids != null && other.SubGrids != null && 
-               SubGrids.Count == other.SubGrids.Count) &&
-              !SubGrids.Where((s, i) => !s.LeafContentEquals(other.SubGrids[i])).Any());
+              (SubGrids != null && other.SubGrids != null && SubGrids.Count == other.SubGrids.Count && !SubGrids.Where((s, i) => !s.LeafContentEquals(other.SubGrids[i])).Any()));
     }
 
     public override bool Equals(object obj)
