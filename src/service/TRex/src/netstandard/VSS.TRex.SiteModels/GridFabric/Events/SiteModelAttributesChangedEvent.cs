@@ -11,7 +11,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   /// other information either directly contained within a site model (eg: project extents, cell size etc) or referenced by it
   /// (eg: machines, target event lists, designs, sitemodels etc)
   /// </summary>
-  public class SiteModelAttributesChangedEvent : BaseRequestResponse, ISiteModelAttributesChangedEvent, IEquatable<BaseRequestResponse>
+  public class SiteModelAttributesChangedEvent : BaseRequestResponse, ISiteModelAttributesChangedEvent, IEquatable<SiteModelAttributesChangedEvent>
   {
     public Guid SiteModelID { get; set; } = Guid.Empty;
     public bool ExistenceMapModified { get; set; }
@@ -54,8 +54,11 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       ExistenceMapChangeMask = reader.ReadByteArray();
     }
 
-    protected bool Equals(SiteModelAttributesChangedEvent other)
+    public bool Equals(SiteModelAttributesChangedEvent other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+
       return SiteModelID.Equals(other.SiteModelID) && 
              ExistenceMapModified == other.ExistenceMapModified && 
              DesignsModified == other.DesignsModified && 
@@ -63,14 +66,11 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
              CsibModified == other.CsibModified && 
              MachinesModified == other.MachinesModified && 
              MachineTargetValuesModified == other.MachineTargetValuesModified && 
-             MachineDesignsModified == other.MachineDesignsModified && 
+             MachineDesignsModified == other.MachineDesignsModified &&
              (Equals(ExistenceMapChangeMask, other.ExistenceMapChangeMask) ||
-             (ExistenceMapChangeMask != null && other.ExistenceMapChangeMask != null && ExistenceMapChangeMask.SequenceEqual(other.ExistenceMapChangeMask)));
-    }
-
-    public bool Equals(BaseRequestResponse other)
-    {
-      return Equals(other as SiteModelAttributesChangedEvent);
+              ExistenceMapChangeMask != null && other.ExistenceMapChangeMask != null &&
+              ExistenceMapChangeMask.Length == other.ExistenceMapChangeMask.Length &&
+              ExistenceMapChangeMask.SequenceEqual(other.ExistenceMapChangeMask));
     }
 
     public override bool Equals(object obj)

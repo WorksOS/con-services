@@ -47,11 +47,11 @@ namespace VSS.TRex.Rendering.Executors.Tasks
                 return false;
             }
 
-          if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
-            {
-              Log.LogWarning("No subgrid responses returned");
-              return false;
-            }
+            if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
+              {
+                Log.LogWarning("No subgrid responses returned");
+                return false;
+              }
 
             foreach (var subGrid in subGridResponses)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Designs.Interfaces;
@@ -123,7 +124,7 @@ namespace VSS.TRex.Profiling
       CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
       CellLiftBuilder = cellLiftBuilder;
 
-      if (SiteModel?.SurveyedSurfaces?.Count > 0)
+      if (SiteModel.SurveyedSurfaces?.Count > 0)
       {
         // Filter out any surveyed surfaces which don't match current filter (if any)
         // - realistically, this is time filters we're thinking of here
@@ -142,14 +143,17 @@ namespace VSS.TRex.Profiling
       // elevation subgrids and populate it with the common elements for this set of subgrids being requested.
       SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
       {
-        SiteModelID = SiteModel?.ID ?? Guid.Empty,
-        CellSize = SiteModel?.Grid.CellSize ?? 0,
+        SiteModelID = SiteModel.ID,
+        CellSize = SiteModel.Grid.CellSize,
         IncludedSurveyedSurfaces = FilteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0],
         SurveyedSurfacePatchType = SurveyedSurfacePatchType.CompositeElevations,
         ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
       };
 
-      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
+      var _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
+      var _context = _cache?.LocateOrCreateContext(SiteModel.ID, SurfaceElevationPatchArg.CacheFingerprint());
+
+      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(_cache, _context);
     }
 
     /// <summary>

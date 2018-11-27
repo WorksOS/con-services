@@ -7,7 +7,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// <summary>
   /// The argument to be supplied to the Patches request
   /// </summary>
-  public class TINSurfaceRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class TINSurfaceRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<TINSurfaceRequestArgument>
   {
     /// <summary>
     /// The tolerance to use (in meters) when decimating the elevation surface into a TIN
@@ -36,14 +36,11 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
       Tolerance = reader.ReadDouble();
     }
 
-    protected bool Equals(TINSurfaceRequestArgument other)
+    public bool Equals(TINSurfaceRequestArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && Tolerance.Equals(other.Tolerance);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as TINSurfaceRequestArgument);
     }
 
     public override bool Equals(object obj)

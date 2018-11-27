@@ -10,7 +10,7 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
   /// <summary>
   /// Describes the result of a simple volumes computation in terms of cut, fill and total volumes plus coverage areas
   /// </summary>
-  public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>, IEquatable<SubGridRequestsResponse>
+  public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>, IEquatable<SimpleVolumesResponse>
   {
     private double DEFAULT_DOUBLE_VALUE = 0.0;
 
@@ -151,9 +151,12 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     /// </summary>
     public override string ToString() => $"Cut:{Cut}, Fill:{Fill}, Cut Area:{CutArea}, FillArea: {FillArea}, Total Area:{TotalCoverageArea}, BoundingGrid:{BoundingExtentGrid}, BoundingLLH:{BoundingExtentLLH}";
 
-    protected bool Equals(SimpleVolumesResponse other)
+    public bool Equals(SimpleVolumesResponse other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
+             DEFAULT_DOUBLE_VALUE.Equals(other.DEFAULT_DOUBLE_VALUE) && 
              Cut.Equals(other.Cut) && 
              Fill.Equals(other.Fill) && 
              TotalCoverageArea.Equals(other.TotalCoverageArea) && 
@@ -161,11 +164,6 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
              FillArea.Equals(other.FillArea) && 
              Equals(BoundingExtentGrid, other.BoundingExtentGrid) && 
              Equals(BoundingExtentLLH, other.BoundingExtentLLH);
-    }
-
-    public new bool Equals(SubGridRequestsResponse other)
-    {
-      return Equals(other as SimpleVolumesResponse);
     }
 
     public override bool Equals(object obj)

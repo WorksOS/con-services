@@ -8,7 +8,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
   /// <summary>
   /// The argument to be supplied to the Patches request
   /// </summary>
-  public class PatchRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class PatchRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<PatchRequestArgument>
   {
     /// <summary>
     /// The type of data requested for the patch. Single attribute only, expressed as the
@@ -56,17 +56,14 @@ namespace VSS.TRex.Exports.Patches.GridFabric
       DataPatchSize = reader.ReadInt();
     }
 
-    protected bool Equals(PatchRequestArgument other)
+    public bool Equals(PatchRequestArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              Mode == other.Mode && 
              DataPatchNumber == other.DataPatchNumber && 
              DataPatchSize == other.DataPatchSize;
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as PatchRequestArgument);
     }
 
     public override bool Equals(object obj)

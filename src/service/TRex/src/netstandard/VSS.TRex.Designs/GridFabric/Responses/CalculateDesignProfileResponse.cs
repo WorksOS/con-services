@@ -60,9 +60,8 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
 
-      if (Profile.Count != other.Profile.Count) return false;
-
-      return !Profile.Where((pt, i) => !pt.Equals(other.Profile[i])).Any();
+      return Equals(Profile, other.Profile) ||
+             (Profile != null && other.Profile != null && Profile.Count == other.Profile.Count && !Profile.Where((pt, i) => !pt.Equals(other.Profile[i])).Any());
     }
 
     public override bool Equals(object obj)

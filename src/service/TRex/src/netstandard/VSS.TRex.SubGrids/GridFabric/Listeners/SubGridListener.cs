@@ -144,10 +144,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <summary>
     /// Constructor accepting a rexTask to pass subgrids into
     /// </summary>
-    /// <param name="rexTask"></param>
-    public SubGridListener(ITRexTask rexTask)
+    /// <param name="tRexTask"></param>
+    public SubGridListener(ITRexTask tRexTask)
     {
-      TRexTask = rexTask;
+      TRexTask = tRexTask;
     }
 
     /// <summary>

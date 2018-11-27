@@ -707,7 +707,9 @@ namespace VSS.TRex.Profiling
              TopLayerPassCountTargetRangeMax == other.TopLayerPassCountTargetRangeMax &&
              Passes.Equals(other.Passes) &&
              (Equals(FilteredPassFlags, other.FilteredPassFlags) ||
-              (FilteredPassFlags != null && other.FilteredPassFlags != null && FilteredPassFlags.SequenceEqual(other.FilteredPassFlags))) &&
+              FilteredPassFlags != null && other.FilteredPassFlags != null &&
+              FilteredPassFlags.Length == other.FilteredPassFlags.Length &&
+              FilteredPassFlags.SequenceEqual(other.FilteredPassFlags)) &&
              FilteredPassCount == other.FilteredPassCount &&
              FilteredHalfPassCount == other.FilteredHalfPassCount &&
              AttributeExistenceFlags == other.AttributeExistenceFlags &&

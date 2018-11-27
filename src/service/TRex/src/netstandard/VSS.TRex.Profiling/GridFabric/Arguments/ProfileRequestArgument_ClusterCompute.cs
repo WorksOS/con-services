@@ -99,11 +99,16 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public bool Equals(ProfileRequestArgument_ClusterCompute other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+
       return base.Equals(other) && 
-             ProfileTypeRequired == other.ProfileTypeRequired && 
-             (Equals(NEECoords, other.NEECoords) ||
-              (NEECoords != null && other.NEECoords != null && NEECoords.SequenceEqual(other.NEECoords))) &&
              DesignDescriptor.Equals(other.DesignDescriptor) && 
+             ProfileTypeRequired == other.ProfileTypeRequired &&
+
+             (Equals(NEECoords, other.NEECoords) ||
+              (NEECoords != null && other.NEECoords != null && NEECoords.Length == other.NEECoords.Length && NEECoords.SequenceEqual(other.NEECoords))) && 
+             
              ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
     }
 
@@ -111,7 +116,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != GetType()) return false;
+      if (obj.GetType() != this.GetType()) return false;
       return Equals((ProfileRequestArgument_ClusterCompute) obj);
     }
 
@@ -120,9 +125,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       unchecked
       {
         int hashCode = base.GetHashCode();
+        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
         hashCode = (hashCode * 397) ^ (int) ProfileTypeRequired;
         hashCode = (hashCode * 397) ^ (NEECoords != null ? NEECoords.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
         hashCode = (hashCode * 397) ^ ReturnAllPassesAndLayers.GetHashCode();
         return hashCode;
       }

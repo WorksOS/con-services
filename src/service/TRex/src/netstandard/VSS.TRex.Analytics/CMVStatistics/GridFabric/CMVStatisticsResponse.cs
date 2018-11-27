@@ -11,7 +11,7 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
   /// The response state returned from a CMV statistics request
   /// </summary>
   public class CMVStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<CMVStatisticsResponse>, 
-    IAnalyticsOperationResponseResultConversion<CMVStatisticsResult>, IEquatable<StatisticsAnalyticsResponse>
+    IAnalyticsOperationResponseResultConversion<CMVStatisticsResult>, IEquatable<CMVStatisticsResponse>
   {
     /// <summary>
     /// Holds last known good target CMV value.
@@ -75,14 +75,11 @@ namespace VSS.TRex.Analytics.CMVStatistics.GridFabric
       };
     }
 
-    protected bool Equals(CMVStatisticsResponse other)
+    public bool Equals(CMVStatisticsResponse other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && LastTargetCMV == other.LastTargetCMV;
-    }
-
-    public new bool Equals(StatisticsAnalyticsResponse other)
-    {
-      return Equals(other as CMVStatisticsResponse);
     }
 
     public override bool Equals(object obj)
