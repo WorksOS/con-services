@@ -8,9 +8,15 @@
   <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>VSS 3D Map Demo</title>
+  <!-- script for debugging -->
   <script src="../Build/CesiumUnminified/Cesium.js"></script>
-<!-- <script src="../Build/Cesium/Cesium.js"></script> -->
- <!-- <script src="https://cesiumjs.org/releases//Build/Cesium/Cesium.js"></script> -->
+  <script src="js/script3D.js"></script>
+  <script src="js/script2D.js"></script>
+  <script src="js/contouring.js"></script>
+  <script src="js/profile.js"></script>
+
+  <!-- <script src="../Build/Cesium/Cesium.js"></script> -->
+  <!-- <script src="https://cesiumjs.org/releases//Build/Cesium/Cesium.js"></script> -->
   <style>
       @import url(../Build/Cesium/Widgets/widgets.css);
       html, body, #cesiumContainer {
@@ -94,6 +100,15 @@
         opacity: 0.5;
 	}    
 
+	.toolbar-compass {
+        display: block;
+		position: absolute;
+		top: 260px;
+		left: 5px;
+        width: 50px;
+        height: 50px;
+        opacity: 0.6;
+	}       
 
   </style>
 </head>
@@ -132,141 +147,17 @@
         <label id="myLabel">Lat Lon Position</text>
     </div> 
 
+    <img src="../../../../VSSApps/SampleData/compass.png" id="myCompass" class="toolbar-compass">
+    <img src="../../../../VSSApps/SampleData/compassNeedle.png" id="myNeedle" class="toolbar-compass">    
+
   <script>
 
-    // Alan Rose token for Cesium ion
-  	Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MDkwZTUyNy01MGIyLTRlODctOThiOS04NTkwYWZlOTMxNDYiLCJpZCI6MTc5MiwiaWF0IjoxNTMwMTU0NDgyfQ.y2U2Z71HfyDdn2OtSfN7awaBCuPsQIWsgNxE7-4rsWY';
-	
-    function shomInspector() {
-//     alert('You clicked Yes!')
-      viewer.extend(Cesium.viewerCesiumInspectorMixin);  
+  // Alan Rose token for Cesium ion
+  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MDkwZTUyNy01MGIyLTRlODctOThiOS04NTkwYWZlOTMxNDYiLCJpZCI6MTc5MiwiaWF0IjoxNTMwMTU0NDgyfQ.y2U2Z71HfyDdn2OtSfN7awaBCuPsQIWsgNxE7-4rsWY';
 
-	  }
+  // Start with a viewer
 
-    function zoomToDimensions() {
-
-        viewer.scene.camera.flyTo({
-            destination : Cesium.Cartesian3.fromDegrees(-115.020839, 36.204504,700),
-            orientation : {
-                heading : Cesium.Math.toRadians(30),
-                pitch : Cesium.Math.toRadians(-15),
-                roll : 0.0
-            }
-         });
-
-
-		}		
-
-		function doPosition() {
-            viewModel.showLatLonPosition = !viewModel.showLatLonPosition;
-        }	
-        
-		function doShading() {
-			if (	viewModel.selectedShading == 'elevation')
-			  viewModel.selectedShading = '';
-			else
-			  viewModel.selectedShading = 'elevation';
-			updateMaterial();
-		}		
-
-
-		function doProfile() {
-            terminateShape();
-            if (viewModel.selectedPicker == '')
-            {
-              viewModel.selectedPicker = 'line';
-              drawingMode = 'line';
-              
-            }
-            else if (viewModel.selectedPicker == 'line')
-            {
-              viewModel.selectedPicker = 'area';
-              drawingMode = 'polygon';
-            }
-            else
-			  viewModel.selectedPicker = '';
-		//	updateMaterial();
-		}		
-
-
-    function drawCorridor() {
-        var e = viewer.entities.add({
-            corridor : {
-                positions : Cesium.Cartesian3.fromDegreesArray([
-                    -122.19, 46.1914,
-                    -122.21, 46.21,
-                    -122.23, 46.21
-                ]),
-                width : 200.0,
-                material : Cesium.Color.GREEN.withAlpha(0.5)
-            }
-        });
-
-        viewer.zoomTo(e);
-		}
-		
-
-
-    function drawTexturedPolygon() {
-        if (!Cesium.Entity.supportsMaterialsforEntitiesOnTerrain(viewer.scene)) {
-            window.alert('Terrain Entity materials are not supported on this platform');
-            return;
-        }
-
-        var e = viewer.entities.add({
-            polygon : {
-                hierarchy : {
-                    positions : [new Cesium.Cartesian3(-2358138.847340281, -3744072.459541374, 4581158.5714175375),
-                                 new Cesium.Cartesian3(-2357231.4925370603, -3745103.7886602185, 4580702.9757762635),
-                                 new Cesium.Cartesian3(-2355912.902205431, -3744249.029778454, 4582402.154378103),
-                                 new Cesium.Cartesian3(-2357208.0209552636, -3743553.4420488174, 4581961.863286629)]
-                },
-                material : '../../../../Apps/SampleData/vss/Cesium_Logo_Color.jpg',
-                classificationType : Cesium.ClassificationType.TERRAIN,
-                stRotation : Cesium.Math.toRadians(05)
-            }
-        });
-
-        viewer.zoomTo(e);
-    }
-
-
-
-
-
-	function showBillboard() {
-
-        var e = viewer.entities.add({
-            position : Cesium.Cartesian3.fromDegrees(-122.1958, 46.1915),
-            billboard : {
-//							image : '../../../../Apps/SampleData/vss/facility.gif',
-							image : '../../../../Apps/SampleData/vss/ylw-pushpin.png',
-                heightReference : Cesium.HeightReference.CLAMP_TO_GROUND
-            }
-        });
-
-        viewer.trackedEntity = e;
-
-	}
-			
-	
-	function gotoDimensions() {
-		updateMaterial();
-  };
-
-	function showContour() {
-		viewModel.enableContour = !viewModel.enableContour;
-		updateMaterial();
-  };
-
-
-
- // Start with a viewer
-
-	var viewer = new Cesium.Viewer('cesiumContainer', {
-	//	  sceneMode : Cesium.SceneMode.SCENE2D,
-	//	sceneMode : Cesium.SceneMode.COLUMBUS_VIEW,
-//		baseLayerPicker : true, // must be false for lat long display strange
+  var viewer = new Cesium.Viewer('cesiumContainer', {
 		fullscreenButton : false,
 		homeButton : false,
 		infoBox : false,
@@ -276,22 +167,19 @@
         navigationHelpButton : false,
         terrainExaggeration : 1.0,
 	  	terrainProvider: Cesium.createWorldTerrain({
-			requestVertexNormals: true //Needed to visualize slope
+		requestVertexNormals: true //Needed to visualize slope
 		})
-	}
+  	  }
 	);	
 
 
-
-
 // 	viewer.scene.globe.enableLighting = true;
-	
 viewer.animation.container.style.visibility = 'hidden';
 
 // Contouring code
 var minHeight = -414.0; // approximate dead sea elevation
 var maxHeight = 8777.0; // approximate everest elevation
-var contourColor = Cesium.Color.RED.clone();
+var contourColor = Cesium.Color.BLACK.clone();
 var contourUniforms = {};
 var shadingUniforms = {};
 
@@ -311,125 +199,21 @@ var viewModel = {
 // Convert the viewModel members into knockout observables.
 Cesium.knockout.track(viewModel);
 
-function getSlopeContourMaterial() {
-    // Creates a composite material with both slope shading and contour lines
-    return new Cesium.Material({
-        fabric: {
-            type: 'SlopeColorContour',
-            materials: {
-                contourMaterial: {
-                    type: 'ElevationContour'
-                },
-                slopeRampMaterial: {
-                    type: 'SlopeRamp'
-                }
-            },
-            components: {
-                diffuse: 'contourMaterial.alpha == 0.0 ? slopeRampMaterial.diffuse : contourMaterial.diffuse',
-                alpha: 'max(contourMaterial.alpha, slopeRampMaterial.alpha)'
-            }
-        },
-        translucent: false
-    });
-}
-
-
 var elevationRamp = [0.0, 0.045, 0.1, 0.15, 0.37, 0.54, 1.0];
 var slopeRamp = [0.0, 0.29, 0.5, Math.sqrt(2)/2, 0.87, 0.91, 1.0];
-function getColorRamp(selectedShading) {
-    var ramp = document.createElement('canvas');
-    ramp.width = 100;
-    ramp.height = 1;
-    var ctx = ramp.getContext('2d');
-
-    var values = selectedShading === 'elevation' ? elevationRamp : slopeRamp;
-
-    var grd = ctx.createLinearGradient(0, 0, 100, 0);
-    grd.addColorStop(values[0], '#000000'); //black
-    grd.addColorStop(values[1], '#2747E0'); //blue
-    grd.addColorStop(values[2], '#D33B7D'); //pink
-    grd.addColorStop(values[3], '#D33038'); //red
-    grd.addColorStop(values[4], '#FF9742'); //orange
-    grd.addColorStop(values[5], '#ffd700'); //yellow
-    grd.addColorStop(values[6], '#ffffff'); //white
-
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, 100, 1);
-
-    return ramp;
-}
-
-
-function getElevationContourMaterial() {
-    // Creates a composite material with both elevation shading and contour lines
-    return new Cesium.Material({
-        fabric: {
-            type: 'ElevationColorContour',
-            materials: {
-                contourMaterial: {
-                    type: 'ElevationContour'
-                },
-                elevationRampMaterial: {
-                    type: 'ElevationRamp'
-                }
-            },
-            components: {
-                diffuse: 'contourMaterial.alpha == 0.0 ? elevationRampMaterial.diffuse : contourMaterial.diffuse',
-                alpha: 'max(contourMaterial.alpha, elevationRampMaterial.alpha)'
-            }
-        },
-        translucent: false
-    });
-}
-
-
-function updateMaterial() {
-    var hasContour = viewModel.enableContour;
-    var selectedShading = viewModel.selectedShading;
-    var globe = viewer.scene.globe;
-    var material;
-    if (hasContour) {
-        if (selectedShading === 'elevation') {
-            material = getElevationContourMaterial();
-            shadingUniforms = material.materials.elevationRampMaterial.uniforms;
-            shadingUniforms.minHeight = minHeight;
-            shadingUniforms.maxHeight = maxHeight;
-            contourUniforms = material.materials.contourMaterial.uniforms;
-        } else if (selectedShading === 'slope') {
-            material = getSlopeContourMaterial();
-            shadingUniforms = material.materials.slopeRampMaterial.uniforms;
-            contourUniforms = material.materials.contourMaterial.uniforms;
-        } else {
-            material = Cesium.Material.fromType('ElevationContour');
-            contourUniforms = material.uniforms;
-        }
-        contourUniforms.width = viewModel.contourWidth;
-        contourUniforms.spacing = viewModel.contourSpacing;
-        contourUniforms.color = contourColor;
-    } else if (selectedShading === 'elevation') {
-        material = Cesium.Material.fromType('ElevationRamp');
-        shadingUniforms = material.uniforms;
-        shadingUniforms.minHeight = minHeight;
-        shadingUniforms.maxHeight = maxHeight;
-    } else if (selectedShading === 'slope') {
-        material = Cesium.Material.fromType('SlopeRamp');
-        shadingUniforms = material.uniforms;
-    }
-    if (selectedShading !== 'none') {
-        shadingUniforms.image = getColorRamp(selectedShading);
-    }
-
-    globe.material = material;
-}
 
 updateMaterial();
+// contouring end
+
+
 
 // different map types	
 //	var ALK_BASE = "https://pcmiler.alk.com/apis/rest/v1.0/Service.svc/maptile?DATASET=Current&STYLE=default&DRAWERGROUPS=55&SRS=EPSG%3A900913&INIT=false&x={TileCol}&y={TileRow}&z={TileMatrix}&authtoken=97CC5BD1CA28934796791B229AE9C3FA";
 	var ALK_BASE = "https://pcmiler.alk.com/apis/rest/v1.0/Service.svc/maptile?DATASET=Current&STYLE=Satellite&DRAWERGROUPS=55&SRS=EPSG%3A900913&INIT=false&x={TileCol}&y={TileRow}&z={TileMatrix}&authtoken=97CC5BD1CA28934796791B229AE9C3FA";
 	
 	
-	var alkMaps = new Cesium.WebMapTileServiceImageryProvider({
+// define our ALK Maps provider
+var alkMaps = new Cesium.WebMapTileServiceImageryProvider({
 		url : ALK_BASE,
 		layer : 'USGSShadedReliefOnly',
 	    style : 'default',
@@ -440,8 +224,8 @@ updateMaterial();
 	});	
 	
 	
-	
-//	var vssTMSRelief = new Cesium.WebMapTileServiceImageryProvider({
+// Our TMS server	
+//	var vssTiles = new Cesium.WebMapTileServiceImageryProvider({
 //		url : 'http://localhost:5001/api/terrain/1.0.0/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png',
 //		layer : 'USGSShadedReliefOnly',
 //	    style : 'default',
@@ -452,12 +236,13 @@ updateMaterial();
 //	});
 	
 	
-   // viewer.imageryLayers.addImageryProvider(vssTMSRelief);	
-   viewer.imageryLayers.addImageryProvider(alkMaps);	
+  // viewer.imageryLayers.addImageryProvider(vssTiles);	
+  // Add ALKMaps
+  viewer.imageryLayers.addImageryProvider(alkMaps);	
 	
 		
 
-// My tms server	
+// Our tms terrain server	
 /*
 	var terrainProvider = new Cesium.CesiumTerrainProvider({
 	    //tileMatrixSetID : 'terrain',
@@ -506,160 +291,95 @@ updateMaterial();
 
   // Add large sites road design
   var dataSource = Cesium.GeoJsonDataSource.load('../../../../Apps/SampleData/vss/LargeSitesRoad.geojson');
-  //var dataSource = Cesium.GeoJsonDataSource.load('../../../../Apps/SampleData/vss/LargeSitesRoadFlat.geojson');
- // dataSource.CLAMP_TO_GROUND = true; // force to be on ground
   viewer.dataSources.add(dataSource);
 
- // viewer.zoomTo(dataSource);  
-  
- 
 
-   // code around drawing profile lines
- //  if (viewModel.selectedPicker != '')
-  // {
-    viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-        function createPoint(worldPosition) {
-            var point = viewer.entities.add({
-                position : worldPosition,
-                point : {
-                    color : Cesium.Color.WHITE,
-                    pixelSize : 5,
-                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
-                }
-            });
-            return point;
-        }
-        var drawingMode = 'line';
-        function drawShape(positionData) {
-            var shape;
-            if (drawingMode === 'line') {
-                shape = viewer.entities.add({
-                    polyline : {
-                        positions : positionData,
-                        clampToGround : true,
-                        width : 3
-                    }
-                });
-            }
-            else if (drawingMode === 'polygon') {
-                shape = viewer.entities.add({
-                    polygon: {
-                        hierarchy: positionData,
-                        material: new Cesium.ColorMaterialProperty(Cesium.Color.WHITE.withAlpha(0.5))
-                    }
-                });
-            }
-            return shape;
-        }
+  // code around drawing profile lines
+  viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+  var drawingMode = 'line';
+  var activeShapePoints = [];
+  var activeShape;
+  var floatingPoint;
+  var handler2 = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+  handler2.setInputAction(function(event) {
+        // more reliable method of picking
+        var ray = viewer.camera.getPickRay(event.position);
+        var earthPosition = viewer.scene.globe.pick(ray, viewer.scene);  
 
-        var activeShapePoints = [];
-        var activeShape;
-        var floatingPoint;
-        var handler2 = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
-        handler2.setInputAction(function(event) {
-
-                // more reliable method of picking
-            var ray = viewer.camera.getPickRay(event.position);
-            var earthPosition = viewer.scene.globe.pick(ray, viewer.scene);    
-            // `earthPosition` will be undefined if our mouse is not over the globe.
-            if (Cesium.defined(earthPosition) && (viewModel.selectedPicker != '')) {
-                if (activeShapePoints.length === 0) {
-                    floatingPoint = createPoint(earthPosition);
-                    activeShapePoints.push(earthPosition);
-                    var dynamicPositions = new Cesium.CallbackProperty(function () {
-                        return activeShapePoints;
-                    }, false);
-                    activeShape = drawShape(dynamicPositions);
-                }
+        // `earthPosition` will be undefined if our mouse is not over the globe.
+        if (Cesium.defined(earthPosition) & (viewModel.selectedPicker != '')) {
+            if (activeShapePoints.length === 0) {
+                floatingPoint = createPoint(earthPosition);
                 activeShapePoints.push(earthPosition);
-                createPoint(earthPosition);
+                var dynamicPositions = new Cesium.CallbackProperty(function () {
+                    return activeShapePoints;
+                }, false);
+                activeShape = drawShape(dynamicPositions);
             }
-        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+            activeShapePoints.push(earthPosition);
+            createPoint(earthPosition);
+        }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-        handler2.setInputAction(function(event) {
-            if (Cesium.defined(floatingPoint)) {
-                // more reliable method of picking
-                var ray2 = viewer.camera.getPickRay(event.endPosition);
-                var newPosition = viewer.scene.globe.pick(ray2, viewer.scene);    
-                if (Cesium.defined(newPosition)) {
-                    floatingPoint.position.setValue(newPosition);
-                    activeShapePoints.pop();
-                    activeShapePoints.push(newPosition);
-                }
-            }
-        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  handler2.setInputAction(function(event) {
+    if (Cesium.defined(floatingPoint)) {
 
-        // Redraw the shape so it's not dynamic and remove the dynamic shape.
-        function terminateShape() {
+        // more reliable method of picking
+        var ray2 = viewer.camera.getPickRay(event.endPosition);
+        var newPosition = viewer.scene.globe.pick(ray2, viewer.scene);  
+
+        if (Cesium.defined(newPosition)) {
+            floatingPoint.position.setValue(newPosition);
             activeShapePoints.pop();
-            drawShape(activeShapePoints);
-            viewer.entities.remove(floatingPoint);
-            viewer.entities.remove(activeShape);
-            floatingPoint = undefined;
-            activeShape = undefined;
-            activeShapePoints = [];
+            activeShapePoints.push(newPosition);
         }
-        handler2.setInputAction(function(event) {
+    }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+  handler2.setInputAction(function(event) {
             terminateShape();
-        }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-    // end code drawing lines
-    //}
+  }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+  // end code drawing lines
 
 
+  // Show Lat Long and Compass Update
+  var scene = viewer.scene;
+  // Mouse over the globe to see the cartographic position
+  handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+  handler.setInputAction(function(movement) {
+
+    var newHeading =  Cesium.Math.toDegrees(viewer.camera.heading).toFixed(6); // Cesium.Math.toDegrees(viewer.camera.heading);
+    // document.getElementById('myLabel').innerHTML =  'Heading: ' + ('   ' + newHeading).slice(-11) + '\u00B0';
+    var deg = 360 - newHeading;//The rotation angle, in degrees
+    var needle = document.getElementById('myNeedle');
+    if (needle)
+      needle.setAttribute("style", "transform: rotate(" + deg + "deg)");
 
 
-var scene = viewer.scene;
-/*
-var labelEntity = viewer.entities.add({
-        label : {
-            show : false,
-            showBackground : true,
-            font : '14px monospace',
-            horizontalOrigin : Cesium.HorizontalOrigin.LEFT,
-            verticalOrigin : Cesium.VerticalOrigin.TOP,
-            pixelOffset : new Cesium.Cartesian2(15, 0)
-        }
-});
-*/
-
-// Mouse over the globe to see the cartographic position
-handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-handler.setInputAction(function(movement) {
     var cartesian = viewer.camera.pickEllipsoid(movement.endPosition, scene.globe.ellipsoid);
-  //  var ray = viewer.camera.getPickRay(movement.endPosition);
-   // var cartesian = viewer.scene.globe.pick(ray, viewer.scene);    
     if (cartesian && viewModel.showLatLonPosition) {
         var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         var longitudeString = Cesium.Math.toDegrees(cartographic.longitude).toFixed(6);
         var latitudeString = Cesium.Math.toDegrees(cartographic.latitude).toFixed(6);
-        
-  //      labelEntity.position = cartesian;
-   //     labelEntity.label.show = true;
-    //    labelEntity.label.text =
-     //       'Lon: ' + ('   ' + longitudeString).slice(-11) + '\u00B0' +
-      //      '\nLat: ' + ('   ' + latitudeString).slice(-11) + '\u00B0';
-
-            document.getElementById('myLabel').innerHTML = 
+         document.getElementById('myLabel').innerHTML = 
               'Lon: ' + ('   ' + longitudeString).slice(-11) + '\u00B0' +
               '\nLat: ' + ('   ' + latitudeString).slice(-11) + '\u00B0';
 
-
-    } else {
+     }
+     else {
         document.getElementById('myLabel').innerHTML = 'Lat Lon';
+     }
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-       // labelEntity.label.show = false;
-    }
-}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 // end show latlon position code
 
 
 
 
- // Cheap way to get somewhere
-// viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(-122.2058, 46.1955, 1000.0), new Cesium.Cartesian3(5000.0, 5000.0, 5000.0));
-  viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(-85.72594, 39.68314,  1000.0), new Cesium.Cartesian3(5000.0, 5000.0, 5000.0));
-  viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
-
+  // Cheap way to get somewhere
+  // Dimensions
+//  viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(-115.019156, 36.207068, 700), new Cesium.Cartesian3(5000.0, 5000.0, 5000.0));
+ // viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
 
   
   </script>
