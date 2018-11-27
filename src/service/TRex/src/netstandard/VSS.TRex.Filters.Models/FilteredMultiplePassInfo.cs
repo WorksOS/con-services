@@ -458,7 +458,6 @@ end;
         foreach (var pass in FilteredPassData)
           pass.ToBinary(writer);
       }
-
     }
 
     /// <summary>
@@ -476,13 +475,19 @@ end;
         foreach (var pass in FilteredPassData)
           pass.FromBinary(reader);
       }
+      else
+      {
+        FilteredPassData = new FilteredPassData[0];
+      }
     }
 
     public bool Equals(FilteredMultiplePassInfo other)
     {
       return PassCount == other.PassCount && 
              (Equals(FilteredPassData, other.FilteredPassData) ||
-              (FilteredPassData != null && other.FilteredPassData != null && FilteredPassData.SequenceEqual(other.FilteredPassData)));
+              FilteredPassData != null && other.FilteredPassData != null &&
+              FilteredPassData.Length == other.FilteredPassData.Length &&
+              FilteredPassData.SequenceEqual(other.FilteredPassData));
     }
 
     public override bool Equals(object obj)

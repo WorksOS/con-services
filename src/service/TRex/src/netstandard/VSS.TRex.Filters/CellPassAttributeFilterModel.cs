@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
@@ -190,8 +191,8 @@ namespace VSS.TRex.Filters
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
-      writer.WriteByte(versionNumber);
+      const byte VERSION_NUMBER = 1;
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteInt((int) RequestedGridDataType);
       writer.WriteBoolean(HasTimeFilter);
@@ -217,13 +218,9 @@ namespace VSS.TRex.Filters
       writer.WriteLong(StartTime.Ticks);
       writer.WriteLong(EndTime.Ticks);
 
-      writer.WriteBoolean(MachinesList != null);
-      if (MachinesList != null)
-      { 
-        writer.WriteInt(MachinesList.Length);
-        for (var i = 0; i < (MachinesList.Length); i++)
-          writer.WriteGuid(MachinesList[i]);
-      }
+      writer.WriteInt(MachinesList?.Length ?? 0);
+      for (int i = 0; i < (MachinesList?.Length ?? 0); i++)
+        writer.WriteGuid(MachinesList?[i]);
       
       writer.WriteInt(DesignNameID);
       writer.WriteInt((int)VibeState);
@@ -274,11 +271,12 @@ namespace VSS.TRex.Filters
     /// </summary>
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       RequestedGridDataType = (GridDataType)reader.ReadInt();
       HasTimeFilter = reader.ReadBoolean();
@@ -304,16 +302,10 @@ namespace VSS.TRex.Filters
       StartTime = new DateTime(reader.ReadLong());
       EndTime = new DateTime(reader.ReadLong());
 
-      if (reader.ReadBoolean())
-      {
-        var machineCount = reader.ReadInt();
-        if (machineCount > 0)
-        {
-          MachinesList = new Guid[machineCount];
-          for (var i = 0; i < MachinesList.Length; i++)
-            MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
-        }
-      }
+      int machineCount = reader.ReadInt();
+      MachinesList = new Guid[machineCount];
+      for (int i = 0; i < machineCount; i++)
+        MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
 
       DesignNameID = reader.ReadInt();
       VibeState = (VibrationState)reader.ReadInt();
@@ -350,12 +342,9 @@ namespace VSS.TRex.Filters
       RestrictFilteredDataToCompactorsOnly = reader.ReadBoolean();
 
       int surveyedSurfaceCount = reader.ReadInt();
-      if (surveyedSurfaceCount > 0)
-      {
-        SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
-        for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
+      SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
+      for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
           SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
-      }
 
       MaterialTemperatureMin = (ushort)reader.ReadInt();
       MaterialTemperatureMax = (ushort)reader.ReadInt();
@@ -393,7 +382,7 @@ namespace VSS.TRex.Filters
              StartTime.Equals(other.StartTime) &&
              EndTime.Equals(other.EndTime) &&
 
-             GuidExtensions.GuidsEqual(MachinesList, other.MachinesList) &&
+             MachinesList.GuidsEqual(other.MachinesList) &&
 
              DesignNameID == other.DesignNameID &&
              VibeState == other.VibeState &&

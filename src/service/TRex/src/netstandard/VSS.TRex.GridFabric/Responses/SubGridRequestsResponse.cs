@@ -1,6 +1,8 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models;
 
 namespace VSS.TRex.GridFabric.Responses
@@ -11,8 +13,10 @@ namespace VSS.TRex.GridFabric.Responses
   /// code covering the request plus additional statistical data such as the number of subgrids processed by 
   /// that cluster node from the overall pool of subgrid requested
   /// </summary>
-  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<BaseRequestResponse>
+  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<SubGridRequestsResponse>, IAggregateWith<SubGridRequestsResponse>
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The general subgrids request response code returned for the request
     /// </summary>
@@ -58,6 +62,7 @@ namespace VSS.TRex.GridFabric.Responses
 
   public override void ToBinary(IBinaryRawWriter writer)
   {
+    writer.WriteByte(VERSION_NUMBER);
     writer.WriteInt((int)ResponseCode);
     writer.WriteString(ClusterNode);
     writer.WriteLong(NumSubgridsProcessed);
@@ -70,6 +75,11 @@ namespace VSS.TRex.GridFabric.Responses
 
     public override void FromBinary(IBinaryRawReader reader)
     {
+      var version = reader.ReadByte();
+
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
+
       ResponseCode = (SubGridRequestsResponseResult)reader.ReadInt();
       ClusterNode = reader.ReadString();
       NumSubgridsProcessed = reader.ReadLong();
@@ -80,8 +90,10 @@ namespace VSS.TRex.GridFabric.Responses
       NumSurveyedSurfaceSubGridsExamined = reader.ReadLong();
     }
 
-    protected bool Equals(SubGridRequestsResponse other)
+    public bool Equals(SubGridRequestsResponse other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return ResponseCode == other.ResponseCode && 
              string.Equals(ClusterNode, other.ClusterNode) && 
              NumSubgridsProcessed == other.NumSubgridsProcessed && 
@@ -92,9 +104,22 @@ namespace VSS.TRex.GridFabric.Responses
              NumSurveyedSurfaceSubGridsExamined == other.NumSurveyedSurfaceSubGridsExamined;
     }
 
-    public bool Equals(BaseRequestResponse other)
+    public SubGridRequestsResponse AggregateWith(SubGridRequestsResponse other)
     {
-      return Equals(other as SubGridRequestsResponse);
+      // No explicit 'accumulation' logic for response codes apart from prioritizing failure over success results
+      ResponseCode = ResponseCode == SubGridRequestsResponseResult.Unknown ? other.ResponseCode :
+        ResponseCode == SubGridRequestsResponseResult.OK & other.ResponseCode != SubGridRequestsResponseResult.OK ? other.ResponseCode : ResponseCode;
+
+      ClusterNode = other.ClusterNode; // No explicit 'aggregation' logic for response codes
+
+      NumSubgridsProcessed += other.NumSubgridsProcessed;
+      NumSubgridsExamined += other.NumSubgridsExamined;
+      NumProdDataSubGridsProcessed += other.NumProdDataSubGridsProcessed;
+      NumProdDataSubGridsExamined += other.NumProdDataSubGridsExamined;
+      NumSurveyedSurfaceSubGridsProcessed += other.NumSurveyedSurfaceSubGridsProcessed;
+      NumSurveyedSurfaceSubGridsExamined += other.NumSurveyedSurfaceSubGridsExamined;
+
+      return this;
     }
 
     public override bool Equals(object obj)

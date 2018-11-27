@@ -40,9 +40,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <param name="fileType"></param>
     /// <returns></returns>
     [HttpGet]
-    public DesignListResult GetDesignsForSiteModel([FromQuery] Guid projectUid, [FromQuery] ImportedFileType? fileType)
+    public DesignListResult GetDesignsForProject([FromQuery] Guid projectUid, [FromQuery] ImportedFileType? fileType)
     {
-      Log.LogInformation($"{nameof(GetDesignsForSiteModel)}: projectUid{projectUid} fileType: {fileType}");
+      Log.LogInformation($"{nameof(GetDesignsForProject)}: projectUid{projectUid} fileType: {fileType}");
 
       var designFileDescriptorList = new List<DesignFileDescriptor>();
       if (fileType != null && !(fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.SurveyedSurface))

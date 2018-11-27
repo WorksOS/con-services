@@ -85,10 +85,25 @@ namespace VSS.TRex.SubGrids
                                 ITRexSpatialMemoryCache subGridCache,
                                 ITRexSpatialMemoryCacheContext subGridCacheContext,                                
                                 ISurveyedSurfaces filteredSurveyedSurfaces,
-                                Guid[] filteredSurveyedSurfacesAsArray)
+                                Guid[] filteredSurveyedSurfacesAsArray,
+                                SurfaceElevationPatchRequest surfaceElevationPatchRequest,
+                                SurfaceElevationPatchArgument surfaceElevationPatchArgument)
         {
             SiteModel = sitemodel;
-            Filter = filter;
+
+            if (filter.AttributeFilter.HasElevationRangeFilter)
+            {
+              // Make a clone of the filter to be specific to the subgrids that will be iterated over by this requestor
+              // and assign the clone to the local Filter property
+          
+              Filter = new CombinedFilter(filter.SpatialFilter);
+              Filter.AttributeFilter.Assign(filter.AttributeFilter);
+            }
+            else
+            {
+              Filter = filter;
+            }
+
             TreeLevel = treeLevel;
             HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
             OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
@@ -96,7 +111,7 @@ namespace VSS.TRex.SubGrids
 
             retriever = new SubGridRetriever(sitemodel,
                                              storageProxy,
-                                             filter,
+                                             Filter,
                                              hasOverrideSpatialCellRestriction,
                                              overrideSpatialCellRestriction,
                                              subGridCacheContext != null,
@@ -116,16 +131,22 @@ namespace VSS.TRex.SubGrids
             // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
             // the common elements for this set of subgrids being requested. We always want to request all surface elevations to 
             // promote cacheability.
-            SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
+
+          //Todo Move this into the pipeline context to provide the surface elevation request and per requestor/filter argument
+          //  rather than creating many of them here
+
+          SurfaceElevationPatchArg = surfaceElevationPatchArgument;
+          this.surfaceElevationPatchRequest = surfaceElevationPatchRequest;
+       /*     SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
             {
                 SiteModelID = SiteModel.ID,
                 CellSize = SiteModel.Grid.CellSize,
                 IncludedSurveyedSurfaces = filteredSurveyedSurfacesAsArray,
                 SurveyedSurfacePatchType = ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
                 ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
-            };
+            };*/
 
-            surfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
+         //   surfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
         
             SubGridCache = subGridCache;
             SubGridCacheContext = subGridCacheContext;
@@ -153,9 +174,7 @@ namespace VSS.TRex.SubGrids
 
             if (Filter.AttributeFilter.HasElevationRangeFilter)
             {
-                var ClonedFilter = new CombinedFilter(Filter.SpatialFilter);                
-                ClonedFilter.AttributeFilter.Assign(Filter.AttributeFilter);
-                ClonedFilter.AttributeFilter.ClearElevationRangeFilterInitialisation();
+                Filter.AttributeFilter.ClearElevationRangeFilterInitialisation();
 
                 // If the elevation range filter uses a design then the design elevations
                 // for the subgrid need to be calculated and supplied to the filter
@@ -171,7 +190,7 @@ namespace VSS.TRex.SubGrids
                   if (ProfilerRequestResult != DesignProfilerRequestResult.OK || DesignElevations == null)
                     return false;
 
-                  ClonedFilter.AttributeFilter.InitialiseElevationRangeFilter(DesignElevations);
+                  Filter.AttributeFilter.InitialiseElevationRangeFilter(DesignElevations);
                 }
             }
 

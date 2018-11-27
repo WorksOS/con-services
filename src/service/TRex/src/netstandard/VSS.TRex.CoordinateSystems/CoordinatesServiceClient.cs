@@ -19,6 +19,8 @@ namespace VSS.TRex.CoordinateSystems
   /// </summary>
   public class CoordinatesServiceClient
   {
+    public const string COORDINATE_SERVICE_URL_ENV_KEY = "COORDINATE_SERVICE_URL";
+
     private static readonly ILogger log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
     private readonly CoordinateServiceHttpClient serviceHttpClient;
 
@@ -47,7 +49,7 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var neeStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var neeStr = await response.Content.ReadAsStringAsync();
 
           return JsonConvert.DeserializeObject<NEE>(neeStr);
         }
@@ -79,7 +81,7 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var neeStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var neeStr = await response.Content.ReadAsStringAsync();
           var resultArray = JsonConvert.DeserializeObject<double[,]>(neeStr);
 
           return (RequestErrorStatus.OK, resultArray.ToNEEArray());
@@ -108,7 +110,7 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var llhStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var llhStr = await response.Content.ReadAsStringAsync();
 
           return JsonConvert.DeserializeObject<LLH>(llhStr);
         }
@@ -140,7 +142,7 @@ namespace VSS.TRex.CoordinateSystems
 
         if (response.IsSuccessStatusCode)
         {
-          var llhStr = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var llhStr = await response.Content.ReadAsStringAsync();
           var resultArray = JsonConvert.DeserializeObject<double[,]>(llhStr);
 
           return (RequestErrorStatus.OK, resultArray.ToLLHArray());
@@ -190,7 +192,7 @@ namespace VSS.TRex.CoordinateSystems
             throw new Exception(response.ToString());
           }
 
-          var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          var json = await response.Content.ReadAsStringAsync();
           var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystemResponse>>(json);
 
           imported = csList?.FirstOrDefault().CoordinateSystem.Id;

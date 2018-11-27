@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.Filters
@@ -8,7 +8,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Combined filter represents both spatial and attribute based filtering considerations
   /// </summary>
-  public class CombinedFilter : ICombinedFilter, IEquatable<ICombinedFilter>
+  public class CombinedFilter : ICombinedFilter, IEquatable<CombinedFilter>
   {
 /// <summary>
     /// The filter responsible for selection of cell passes based on attribute filtering criteria related to cell passes
@@ -58,9 +58,9 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
 
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteBoolean(AttributeFilter != null);
       AttributeFilter?.ToBinary(writer);
@@ -71,10 +71,11 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      const byte versionNumber = 1;
+      const byte VERSION_NUMBER = 1;
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       if (reader.ReadBoolean())
         (AttributeFilter ?? (AttributeFilter = new CellPassAttributeFilter())).FromBinary(reader);
@@ -83,20 +84,20 @@ namespace VSS.TRex.Filters
         (SpatialFilter ?? (SpatialFilter = new CellSpatialFilter())).FromBinary(reader);
     }
 
-    public bool Equals(ICombinedFilter other)
+    public bool Equals(CombinedFilter other)
     {
-      if (other == null)
-        return false;
-
-      return AttributeFilter.Equals(other.AttributeFilter) && SpatialFilter.Equals(other.SpatialFilter);
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
+      return Equals(AttributeFilter, other.AttributeFilter) && 
+             Equals(SpatialFilter, other.SpatialFilter);
     }
 
     public override bool Equals(object obj)
     {
       if (ReferenceEquals(null, obj)) return false;
       if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != GetType()) return false;
-      return Equals((ICombinedFilter) obj);
+      if (obj.GetType() != this.GetType()) return false;
+      return Equals((CombinedFilter) obj);
     }
 
     public override int GetHashCode()

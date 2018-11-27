@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
 
 namespace VSS.TRex.GridFabric.Arguments
@@ -9,9 +10,9 @@ namespace VSS.TRex.GridFabric.Arguments
   ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include
   ///  containing the identifier of a TRex Application Service Node that originated the request
   /// </summary>
-  public class BaseApplicationServiceRequestArgument : BaseRequestArgument, IEquatable<BaseRequestArgument>
+  public class BaseApplicationServiceRequestArgument : BaseRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     // TODO If desired: ExternalDescriptor :TASNodeRequestDescriptor
 
@@ -40,7 +41,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteString(TRexNodeID);
       writer.WriteGuid(ProjectID);
@@ -55,7 +56,8 @@ namespace VSS.TRex.GridFabric.Arguments
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       TRexNodeID = reader.ReadString();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
@@ -68,17 +70,14 @@ namespace VSS.TRex.GridFabric.Arguments
       }
     }
 
-    protected bool Equals(BaseApplicationServiceRequestArgument other)
+    public bool Equals(BaseApplicationServiceRequestArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return string.Equals(TRexNodeID, other.TRexNodeID) && 
              ProjectID.Equals(other.ProjectID) && 
              Equals(Filters, other.Filters) && 
              ReferenceDesignID.Equals(other.ReferenceDesignID);
-    }
-
-    public bool Equals(BaseRequestArgument other)
-    {
-      return Equals(other as BaseApplicationServiceRequestArgument);
     }
 
     public override bool Equals(object obj)

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 
@@ -25,7 +23,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       loggerFactory.AddDebug();
 
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IMemoryCache, MemoryCache>();
       serviceProvider = serviceCollection.BuildServiceProvider();
@@ -77,7 +75,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       {
         try
         {
-          cache.GetOrAdd(cacheKey, opts, () => mockedCacheFactory.Invoke()).Wait();
+          _ = cache.GetOrCreate(cacheKey, entry => mockedCacheFactory.Invoke().Result);
         }
         catch (Exception)
         {
@@ -109,10 +107,10 @@ namespace VSS.MasterData.Proxies.UnitTests
 
       for (var cnt = 1; cnt <= 10; cnt++)
       {
-        var result = cache.GetOrAdd(cacheKey, opts, () => mockedCacheFactory.Invoke()).Result;
+        var cacheEntry = cache.GetOrCreate(cacheKey, entry => mockedCacheFactory.Invoke().Result);
         
         // We should get the same result each time, but we should never execute the method more than once
-        Assert.IsTrue(string.Compare(result, "Passed", StringComparison.Ordinal) == 0);
+        Assert.IsTrue(string.Compare(cacheEntry, "Passed", StringComparison.Ordinal) == 0);
         Assert.IsTrue(taskExecutionCounter == 1);
       }
     }

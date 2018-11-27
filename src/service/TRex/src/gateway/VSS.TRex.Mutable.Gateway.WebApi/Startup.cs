@@ -56,6 +56,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<IStorageProxyFactory>(storageProxyFactory);
       services.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => storageProxyFactory.MutableGridStorage()));
       services.AddSingleton<ISiteModelFactory>(new SiteModelFactory());
+      services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager());
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required

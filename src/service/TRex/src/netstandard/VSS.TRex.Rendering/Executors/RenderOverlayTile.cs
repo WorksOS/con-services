@@ -5,7 +5,6 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -415,7 +414,7 @@ namespace VSS.TRex.Rendering.Executors
       */
 
       // Determine the grid (NEE) coordinates of the bottom/left, top/right WGS-84 positions
-      // given the projet's coordinate system. If there is no coordinate system then exit.
+      // given the project's coordinate system. If there is no coordinate system then exit.
 
       ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
@@ -521,7 +520,7 @@ namespace VSS.TRex.Rendering.Executors
           response: new SubGridsPipelinedReponseBase(),
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITask>>()(PipelineProcessorTaskStyle.PVMRendering),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
@@ -530,7 +529,7 @@ namespace VSS.TRex.Rendering.Executors
           overrideSpatialCellRestriction: CellExtents
         );
 
-        // Set the PVM rendering task parameters for progressive processing
+        // Set the PVM rendering rexTask parameters for progressive processing
         processor.Task.RequestDescriptor = RequestDescriptor;
         processor.Task.TRexNodeID = RequestingTRexNodeID;
         processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);

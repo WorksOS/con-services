@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -9,8 +10,10 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
-  public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<TileRenderRequestArgument>
   {
+    private const byte VERSION_NUMBER = 1;
+
     public DisplayMode Mode { get; set; } = DisplayMode.Height;
 
     public BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted();
@@ -55,6 +58,8 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
+      writer.WriteByte(VERSION_NUMBER);
+
       writer.WriteInt((int)Mode);
 
       writer.WriteBoolean(Extents != null);
@@ -78,6 +83,11 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
+
+      var version = reader.ReadByte();
+
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       Mode = (DisplayMode)reader.ReadInt();
 
@@ -104,8 +114,10 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       }
     }
 
-    protected bool Equals(TileRenderRequestArgument other)
+    public bool Equals(TileRenderRequestArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              Equals(Extents, other.Extents) && 
              Mode == other.Mode && 
@@ -114,11 +126,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
              PixelsY == other.PixelsY && 
              Equals(Filter1, other.Filter1) && 
              Equals(Filter2, other.Filter2);
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as TileRenderRequestArgument);
     }
 
     public override bool Equals(object obj)

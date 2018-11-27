@@ -478,14 +478,10 @@ namespace VSS.TRex.Profiling
       writer.WriteDouble(Station);
       writer.WriteDouble(InterceptLength);
 
-      writer.WriteBoolean(Layers != null);
-      if (Layers != null)
-      {
-        writer.WriteInt(Layers.Count());
-
-        foreach (var layer in Layers)
-          layer.ToBinary(writer);
-      }
+      int count = Layers?.Count() ?? 0;
+      writer.WriteInt(count);
+      for (int i = 0; i < count; i++)
+        Layers[i].ToBinary(writer);
 
       writer.WriteInt((int)OTGCellX);
       writer.WriteInt((int)OTGCellY);
@@ -548,20 +544,15 @@ namespace VSS.TRex.Profiling
       Station = reader.ReadDouble();
       InterceptLength = reader.ReadDouble();
 
-      if (reader.ReadBoolean())
+      Layers = new ProfileLayers();      
+      var numberOfLayers = reader.ReadInt();
+
+      for (var i = 1; i <= numberOfLayers; i++)
       {
-        var numberOfLayers = reader.ReadInt();
+        var layer = new ProfileLayer(this);
+        layer.FromBinary(reader);
 
-        if (numberOfLayers > 0)
-        {
-          for (var i = 1; i <= numberOfLayers; i++)
-          {
-            var layer = new ProfileLayer(this);
-            layer.FromBinary(reader);
-
-            Layers.Add(layer, -1);
-          }
-        }
+        Layers.Add(layer, -1);
       }
 
       OTGCellX = (uint)reader.ReadInt();
@@ -716,7 +707,9 @@ namespace VSS.TRex.Profiling
              TopLayerPassCountTargetRangeMax == other.TopLayerPassCountTargetRangeMax &&
              Passes.Equals(other.Passes) &&
              (Equals(FilteredPassFlags, other.FilteredPassFlags) ||
-              (FilteredPassFlags != null && other.FilteredPassFlags != null && FilteredPassFlags.SequenceEqual(other.FilteredPassFlags))) &&
+              FilteredPassFlags != null && other.FilteredPassFlags != null &&
+              FilteredPassFlags.Length == other.FilteredPassFlags.Length &&
+              FilteredPassFlags.SequenceEqual(other.FilteredPassFlags)) &&
              FilteredPassCount == other.FilteredPassCount &&
              FilteredHalfPassCount == other.FilteredHalfPassCount &&
              AttributeExistenceFlags == other.AttributeExistenceFlags &&

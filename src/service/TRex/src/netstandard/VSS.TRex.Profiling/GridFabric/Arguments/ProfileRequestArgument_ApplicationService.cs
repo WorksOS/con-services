@@ -9,21 +9,21 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// <summary>
   /// Defines the parameters required for a production data profile request argument on the application service node
   /// </summary>
-  public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument, IEquatable<ProfileRequestArgument_ApplicationService>
   {
     public GridDataType ProfileTypeRequired { get; set; }
 
-    public WGS84Point StartPoint = new WGS84Point(0, 0);
-    public WGS84Point EndPoint = new WGS84Point(0, 0);
+    public WGS84Point StartPoint { get; set; } = new WGS84Point();
+    public WGS84Point EndPoint { get; set; } = new WGS84Point();
 
-    public bool PositionsAreGrid { get; set; } = false;
+    public bool PositionsAreGrid { get; set; }
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     public DesignDescriptor DesignDescriptor;
 
-    public bool ReturnAllPassesAndLayers { get; set; } = false;
+    public bool ReturnAllPassesAndLayers { get; set; }
 
     /// <summary>
     /// Constructs a default profile request argument
@@ -84,9 +84,11 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
       ProfileTypeRequired = (GridDataType)reader.ReadInt();
 
+      StartPoint = new WGS84Point();
       if (reader.ReadBoolean())
         StartPoint.FromBinary(reader);
 
+      EndPoint = new WGS84Point();
       if (reader.ReadBoolean())
         EndPoint.FromBinary(reader);
 
@@ -97,20 +99,17 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       ReturnAllPassesAndLayers = reader.ReadBoolean();
     }
 
-    protected bool Equals(ProfileRequestArgument_ApplicationService other)
+    public bool Equals(ProfileRequestArgument_ApplicationService other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
+             DesignDescriptor.Equals(other.DesignDescriptor) && 
+             ProfileTypeRequired == other.ProfileTypeRequired && 
              Equals(StartPoint, other.StartPoint) && 
              Equals(EndPoint, other.EndPoint) && 
-             ProfileTypeRequired == other.ProfileTypeRequired && 
              PositionsAreGrid == other.PositionsAreGrid && 
-             DesignDescriptor.Equals(other.DesignDescriptor) && 
              ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as ProfileRequestArgument_ApplicationService);
     }
 
     public override bool Equals(object obj)
@@ -126,11 +125,11 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       unchecked
       {
         int hashCode = base.GetHashCode();
+        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
+        hashCode = (hashCode * 397) ^ (int) ProfileTypeRequired;
         hashCode = (hashCode * 397) ^ (StartPoint != null ? StartPoint.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ (EndPoint != null ? EndPoint.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (int) ProfileTypeRequired;
         hashCode = (hashCode * 397) ^ PositionsAreGrid.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
         hashCode = (hashCode * 397) ^ ReturnAllPassesAndLayers.GetHashCode();
         return hashCode;
       }

@@ -9,7 +9,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a MDP statistics request
   /// </summary>    
-  public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<MDPStatisticsArgument>
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine MDP target to be user overrides.
@@ -63,19 +63,17 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
       MDPDetailValues = reader.ReadIntArray();
     }
 
-    protected bool Equals(MDPStatisticsArgument other)
+    public bool Equals(MDPStatisticsArgument other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return base.Equals(other) && 
              MDPPercentageRange.Equals(other.MDPPercentageRange) && 
              OverrideMachineMDP == other.OverrideMachineMDP && 
-             OverridingMachineMDP == other.OverridingMachineMDP && 
+             OverridingMachineMDP == other.OverridingMachineMDP &&
+             
              (Equals(MDPDetailValues, other.MDPDetailValues) ||
-             (MDPDetailValues != null && other.MDPDetailValues != null && MDPDetailValues.SequenceEqual(other.MDPDetailValues)));
-    }
-
-    public new bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      return Equals(other as MDPStatisticsArgument);
+              (MDPDetailValues != null && other.MDPDetailValues != null && MDPDetailValues.Length == other.MDPDetailValues.Length && MDPDetailValues.SequenceEqual(other.MDPDetailValues)));
     }
 
     public override bool Equals(object obj)

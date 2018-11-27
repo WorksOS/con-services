@@ -137,7 +137,9 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
     private bool EnsureSiteModelExists(Guid projectUid)
     {
-      return (DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, true)) != null;
+      var ttt = DIContext.Obtain<ISiteModelMetadataManager>();
+      var sm = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, true);
+      return  sm != null;
     }
 
     private DesignListResult GetDesignsForSiteModel(Guid projectUid, ImportedFileType fileType)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -10,7 +11,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteModelMetadata : BaseRequestArgument, ISiteModelMetadata, IEquatable<SiteModelMetadata>
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public Guid ID { get; set; }
     public string Name { get; set; }
@@ -24,7 +25,7 @@ namespace VSS.TRex.SiteModels
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
 
       writer.WriteGuid(ID);
       writer.WriteString(Name);
@@ -43,7 +44,8 @@ namespace VSS.TRex.SiteModels
     {
       byte readVersionNumber = reader.ReadByte();
 
-      Debug.Assert(readVersionNumber == versionNumber, $"Invalid version number: {readVersionNumber}, expecting {versionNumber}");
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       ID = reader.ReadGuid() ?? Guid.Empty;
       Name = reader.ReadString();
@@ -51,7 +53,7 @@ namespace VSS.TRex.SiteModels
       LastModifiedDate = new DateTime(reader.ReadLong());
 
       if (reader.ReadBoolean())
-      { 
+      {
         SiteModelExtent = new BoundingWorldExtent3D();
         SiteModelExtent.FromBinary(reader);
       }

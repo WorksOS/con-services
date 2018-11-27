@@ -8,7 +8,7 @@ namespace VSS.TRex.Common
   /// <summary>
   /// A base class representing the generic result of requesting subgrids
   /// </summary>
-  public class SubGridsPipelinedReponseBase : BaseRequestResponse, ISubGridsPipelinedReponseBase, IEquatable<BaseRequestResponse>
+  public class SubGridsPipelinedReponseBase : BaseRequestResponse, ISubGridsPipelinedReponseBase, IEquatable<SubGridsPipelinedReponseBase>
   {
     /// <summary>
     /// The error status result from the pipeline execution
@@ -25,14 +25,11 @@ namespace VSS.TRex.Common
       ResultStatus = (RequestErrorStatus)reader.ReadInt();
     }
 
-    protected bool Equals(SubGridsPipelinedReponseBase other)
+    public bool Equals(SubGridsPipelinedReponseBase other)
     {
+      if (ReferenceEquals(null, other)) return false;
+      if (ReferenceEquals(this, other)) return true;
       return ResultStatus == other.ResultStatus;
-    }
-
-    public bool Equals(BaseRequestResponse other)
-    {
-      return Equals(other as SubGridsPipelinedReponseBase);
     }
 
     public override bool Equals(object obj)

@@ -13,7 +13,7 @@ namespace VSS.TRex.Logging
     public static ILoggerFactory Factory { get; private set; }
 
     /// <summary>
-    /// Creates a logger based on the parameterised type from the creation context.
+    /// Creates a logger based on the parameterized type from the creation context.
     /// If there is no factory instantiated this will return a null logger.
     /// </summary>
     /// <typeparam name="TState"></typeparam>

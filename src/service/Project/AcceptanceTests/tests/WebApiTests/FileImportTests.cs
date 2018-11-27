@@ -473,18 +473,19 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore] // the reason this is ignored, is that currently there is no TRex endpoint to create a project (aka Site Model)
+    [Ignore] 
+    // the reason this is ignored, is that it requires a Trex system be stood up.
+    //       Belongs in under-construction (Aaron) system-wide tests.
     [DataRow("api/v4/importedfile")]
     public void ManualTRexTest_CreateImportedFile(string uriRoot)
     {
-      // TestDesignSurface1 file format not supported in TRex
-      // projectUid is hardcoded for my test
       const string testName = "File Import 11";
       msg.Title(testName, "Create standard project then upload a new design surface file.");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
+      var trexService = new TRex();
       var legacyProjectId = ts.SetLegacyProjectId();
-      var projectUid = "f13f2458-6666-424f-a995-4426a00771ae"; // Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -492,28 +493,42 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
-      var eventsArray = new[] {
+      const string geometryWkt =
+        "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var eventsArray = new[]
+      {
         "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
-       $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
-       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-       $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+        $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
+        $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+        $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
+        $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"
+      };
       ts.PublishEventCollection(eventsArray);
 
       ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
+      var projectEventArray = new[]
+      {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
-       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"
+      };
       ts.PublishEventCollection(projectEventArray);
 
-      var importFileArray = new[] {
-       "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |", 
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface3_GoodContent.FullPath()} | 1                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { "filename=TestDesignSurfaceTestDesignSurface3_GoodContent.TTM" }));
-      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-      Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count, "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
+      var importFileArray = new[]
+      {
+        "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
+        $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface3_GoodContent.FullPath()} | 1                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | true        | 15           | 19           |"
+      };
+      var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1,
+        new ImportOptions(HttpMethod.Post, new[] {"filename=TestDesignSurfaceTestDesignSurface3_GoodContent.TTM"}));
+      //var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
+      //ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
+      //Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count,
+      //  "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
+
+      var designsResult = trexService.GetDesignsFromTrex(projectUid);
+      Assert.AreEqual(0, designsResult.Code);
+      Assert.AreEqual(1, designsResult.DesignFileDescriptors.Count, "should be 1 design");
+      Assert.AreEqual("TestDesignSurfaceTestDesignSurface3_GoodContent.TTM", designsResult.DesignFileDescriptors[0].Name, $"expected name: TestDesignSurfaceTestDesignSurface3_GoodContent.TTM received: {designsResult.DesignFileDescriptors[0].Name}");
     }
 
 

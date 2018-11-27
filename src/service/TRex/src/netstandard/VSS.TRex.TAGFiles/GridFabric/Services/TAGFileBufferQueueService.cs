@@ -6,6 +6,7 @@ using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
@@ -21,6 +22,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   public class TAGFileBufferQueueService : IService, ITAGFileBufferQueueService, IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueService>();
+
+    private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do
@@ -125,6 +128,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
+      writer.WriteByte(VERSION_NUMBER);
     }
 
     /// <summary>
@@ -133,6 +137,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
+      byte readVersionNumber = reader.ReadByte();
+
+      if (readVersionNumber != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
     }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache.Configuration;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
@@ -9,7 +10,7 @@ namespace VSS.TRex.GridFabric.Affinity
 {
   public class SegmentRetirementQueueKey : ISegmentRetirementQueueKey, IBinarizable, IFromToBinary, IEquatable<SegmentRetirementQueueKey>
   {
-    private const byte versionNumber = 1;
+    private const byte VERSION_NUMBER = 1;
 
     public Guid ProjectUID { get; set; }
 
@@ -24,7 +25,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteByte(versionNumber);
+      writer.WriteByte(VERSION_NUMBER);
       writer.WriteGuid(ProjectUID);
       writer.WriteLong(InsertUTCAsLong);
     }
@@ -33,8 +34,8 @@ namespace VSS.TRex.GridFabric.Affinity
     {
       int version = reader.ReadByte();
 
-      if (version != versionNumber)
-        throw new TRexException($"Invalid version number ({version}) in {nameof(SegmentRetirementQueueKey)}, expected {versionNumber}");
+      if (version != VERSION_NUMBER)
+        throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       InsertUTCAsLong = reader.ReadLong();

@@ -13,6 +13,9 @@ namespace VSS.MasterData.Models.FIlters
   {
     private readonly RequestDelegate NextRequestDelegate;
 
+    public const string RequestIDHeaderName = "X-VSS-Request-ID";
+    public const string RequestIDAttributeName = "RequestID";
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -28,23 +31,21 @@ namespace VSS.MasterData.Models.FIlters
     /// <param name="context">The current <see cref="HttpContext"/> object.</param>
     public async Task Invoke(HttpContext context)
     {
-      if (context.Request.Headers.ContainsKey("X-Request-ID"))
-        context.Items["RequestID"] = context.Request.Headers["X-Request-ID"];
+      if (context.Request.Headers.ContainsKey(RequestIDHeaderName))
+        context.Items[RequestIDAttributeName] = context.Request.Headers[RequestIDHeaderName];
       else
       {
-        context.Items["RequestID"] = Guid.NewGuid();
-        context.Request.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
+        context.Items[RequestIDAttributeName] = Guid.NewGuid();
+        context.Request.Headers[RequestIDHeaderName] = context.Items[RequestIDAttributeName].ToString();
       }
       context.Response.OnStarting(() =>
       {
-        if (!context.Response.Headers.ContainsKey("X-Request-ID"))
-          context.Response.Headers["X-Request-ID"] = context.Items["RequestID"].ToString();
+        if (!context.Response.Headers.ContainsKey(RequestIDHeaderName))
+          context.Response.Headers[RequestIDHeaderName] = context.Items[RequestIDAttributeName].ToString();
         return Task.FromResult(0);
       });
 
       await this.NextRequestDelegate.Invoke(context);
-
-
     }
   }
 }

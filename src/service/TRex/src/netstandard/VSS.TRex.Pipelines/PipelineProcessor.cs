@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.DI;
@@ -73,12 +72,12 @@ namespace VSS.TRex.Pipelines
     public ISubGridTreeBitMask DesignSubgridOverlayMap { get; set; }
 
     /// <summary>
-    /// Flag indicating if all surveyed surface have been excluded from the request due to time fitlering constraints
+    /// Flag indicating if all surveyed surface have been excluded from the request due to time filtering constraints
     /// </summary>
     public bool SurveyedSurfacesExludedViaTimeFiltering;
 
     /// <summary>
-    /// The identifier for any cut/fill design refefence being supplied to the request
+    /// The identifier for any cut/fill design reference being supplied to the request
     /// </summary>
     public Guid CutFillDesignID;
 
@@ -88,22 +87,22 @@ namespace VSS.TRex.Pipelines
     public bool PipelineAborted { get; set; }
 
     /// <summary>
-    /// The task to be fitted to the pipelien to mediate subgrid retrieval and procesing
+    /// The task to be fitted to the pipeline to mediate subgrid retrieval and processing
     /// </summary>
-    public ITask Task { get; set; }
+    public ITRexTask Task { get; set; }
 
     /// <summary>
-    /// The pipe lien used to retrive subgrids from the cluster compute layer
+    /// The pipe lien used to retrieve subgrids from the cluster compute layer
     /// </summary>
     public ISubGridPipelineBase Pipeline { get; set; }
 
     /// <summary>
-    /// The request analyser used to determine the subgrids to be sent to the cluster compute layer
+    /// The request analyzer used to determine the subgrids to be sent to the cluster compute layer
     /// </summary>
     public IRequestAnalyser RequestAnalyser { get; set; }
 
     /// <summary>
-    /// Reference to the site model incolved in the request
+    /// Reference to the site model involved in the request
     /// </summary>
     public ISiteModel SiteModel { get; set; }
 
@@ -153,7 +152,7 @@ namespace VSS.TRex.Pipelines
                              ISubGridsPipelinedReponseBase response,
                              IFilterSet filters,
                              Guid cutFillDesignID,
-                             ITask task,
+                             ITRexTask task,
                              ISubGridPipelineBase pipeline,
                              IRequestAnalyser requestAnalyser,
                              bool requireSurveyedSurfaceInformation,
@@ -340,7 +339,7 @@ namespace VSS.TRex.Pipelines
 
       // If summaries of compaction information (both CMV and MDP) are being displayed,
       // and the lift build settings requires all layers to be examined (so the
-      // apropriate summarize top layer only flag is false), then instruct the layer
+      // appropriate summarize top layer only flag is false), then instruct the layer
       // analysis engine to apply to restriction to the number of cell passes to use
       // to perform layer analysis (ie: all cell passes will be used).
 
@@ -384,7 +383,15 @@ namespace VSS.TRex.Pipelines
       try
       {
         if (Pipeline.Initiate())
-          Pipeline.WaitForCompletion();
+        {
+          Pipeline.WaitForCompletion().ContinueWith(x =>
+          {
+            if (x.Result)
+              Log.LogInformation("WaitForCompletion successful");
+            else // No signal was received, the wait timed out...            
+              Log.LogInformation($"WaitForCompletion timed out with {Pipeline.SubgridsRemainingToProcess} subgrids remaining to be processed");
+          });
+        }
 
         PipelineAborted = Pipeline.Aborted;
 

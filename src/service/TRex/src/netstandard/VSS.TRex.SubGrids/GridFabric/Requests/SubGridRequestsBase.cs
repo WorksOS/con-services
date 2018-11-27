@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Requests;
@@ -26,7 +27,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <summary>
         /// Task is the business logic that will handle the response to the subgrids request
         /// </summary>
-        public ITask Task;
+        public ITRexTask TRexTask;
 
         /// <summary>
         /// The request argument to be passed to target of the request
@@ -101,7 +102,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <param name="surveyedSurfaceOnlyMask"></param>
         /// <param name="filters"></param>
         /// <param name="referenceDesignId"></param>
-        public SubGridRequestsBase(ITask task,
+        public SubGridRequestsBase(ITRexTask tRexTask,
                                    Guid siteModelID, 
                                    Guid requestID, 
                                    string trexNodeId, 
@@ -112,7 +113,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                                    IFilterSet filters,
                                    Guid referenceDesignId) : this()
         {
-            Task = task;
+            TRexTask = tRexTask;
             SiteModelID = siteModelID;
             RequestID = requestID;
             TRexNodeId = trexNodeId;
@@ -168,6 +169,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
       /// parameters
       /// </summary>
       /// <returns></returns>
-      public abstract ICollection<TSubGridRequestsResponse> Execute();
-    }
+      public abstract TSubGridRequestsResponse Execute();
+
+      /// <summary>
+      /// Executes a request for a number of subgrids to be processed according to filters and other
+      /// parameters
+      /// </summary>
+      /// <returns></returns>
+      public abstract Task<TSubGridRequestsResponse> ExecuteAsync();
+  }
 }
