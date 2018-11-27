@@ -29,7 +29,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> AddFile(DesignRequest designRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"TRexImportFileProxy.AddFile: designRequest: {JsonConvert.SerializeObject(designRequest)}");
+      log.LogDebug($"TRexImportFileProxy.{nameof(AddFile)}: designRequest: {JsonConvert.SerializeObject(designRequest)}");
       return await SendImportFileRequest(TREX_IMPORTFILE_CUD_API_URL_KEY, JsonConvert.SerializeObject(designRequest), customHeaders, "POST");
     }
 
@@ -39,7 +39,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> UpdateFile(DesignRequest designRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"TRexImportFileProxy.UpdateFile: designRequest: {JsonConvert.SerializeObject(designRequest)}");
+      log.LogDebug($"TRexImportFileProxy.{nameof(UpdateFile)}: designRequest: {JsonConvert.SerializeObject(designRequest)}");
       return await SendImportFileRequest(TREX_IMPORTFILE_CUD_API_URL_KEY, JsonConvert.SerializeObject(designRequest), customHeaders, "PUT");
     }
 
@@ -49,27 +49,22 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task<ContractExecutionResult> DeleteFile(DesignRequest designRequest, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"TRexImportFileProxy.DeleteFile: designRequest: {JsonConvert.SerializeObject(designRequest)}");
+      log.LogDebug($"TRexImportFileProxy.{nameof(DeleteFile)}: designRequest: {JsonConvert.SerializeObject(designRequest)}");
       return await SendImportFileRequest(TREX_IMPORTFILE_CUD_API_URL_KEY, JsonConvert.SerializeObject(designRequest), customHeaders, "DELETE");
     }
 
-    public async Task<DesignListResult> GetDesignsForProject(Guid projectUid, IDictionary<string, string> customHeaders = null)
-    {
-      var queryParams = new Dictionary<string, string>();
-      queryParams.Add("projectUid", projectUid.ToString());
-      return await SendImportFileRequest(TREX_IMPORTFILE_R_API_URL_KEY, string.Empty, customHeaders, "/get", "GET", queryParams);
-    }
-    public async Task<DesignListResult> GetDesignsOfTypeForProject(Guid projectUid, ImportedFileType importedFileType, IDictionary<string, string> customHeaders = null)
+    public async Task<DesignListResult> GetDesignsOfTypeForProject(Guid projectUid, ImportedFileType? importedFileType, IDictionary<string, string> customHeaders = null)
     {
       var queryParams = new Dictionary<string, string>();
       queryParams.Add("projectUid", projectUid.ToString());
       queryParams.Add("importedFileType", importedFileType.ToString());
       return await SendImportFileRequest(TREX_IMPORTFILE_R_API_URL_KEY, string.Empty, customHeaders, "/get", "GET", queryParams);
     }
+
     private async Task<ContractExecutionResult> SendImportFileRequest(string urlKey, string payload, IDictionary<string, string> customHeaders, string method)
     {
       var response = await SendRequest<ContractExecutionResult>(urlKey, payload, customHeaders, null, method, String.Empty);
-      log.LogDebug("TRexImportFileProxy.SendImportFileRequest: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"TRexImportFileProxy.{nameof(SendImportFileRequest)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
       return response;
     }
@@ -77,7 +72,7 @@ namespace VSS.MasterData.Proxies
     private async Task<DesignListResult> SendImportFileRequest(string urlKey, string payload, IDictionary<string, string> customHeaders, string route, string method, IDictionary<string, string> queryParameters)
     {
       var response = await SendRequest<DesignListResult>(urlKey, payload, customHeaders, route, method, queryParameters);
-      log.LogDebug("TRexImportFileProxy.SendImportFileRequest: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug($"TRexImportFileProxy.{nameof(SendImportFileRequest)} Reader: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
       return response;
     }

@@ -52,7 +52,7 @@ spec:
           - name: DEPLOYED_ENV
             value: {{ .Values.environment }}
           - name: AWS_DESIGNIMPORT_BUCKET_NAME
-            value: "vss-project3dp-stg"
+            value: "vss-project3dp-stg" # for production this should be vss-project3dp-prod
           - name: AWS_ACCESS_KEY
             value: "AKIAIBGOEETXHMANDX7A"           
           - name: AWS_SECRET_KEY

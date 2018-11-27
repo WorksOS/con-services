@@ -12,6 +12,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -41,10 +42,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpGet]
     public DesignListResult GetDesignsForSiteModel([FromQuery] Guid projectUid, [FromQuery] ImportedFileType? fileType)
     {
+      Log.LogInformation($"{nameof(GetDesignsForSiteModel)}: projectUid{projectUid} fileType: {fileType}");
+
       var designFileDescriptorList = new List<DesignFileDescriptor>();
       if (fileType != null && !(fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.SurveyedSurface))
       { 
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface or SurveyedSurface"));
+      }
+
+      if ((DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid)) == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid is not known to tRex"));
       }
 
       if (fileType == null || fileType == ImportedFileType.DesignSurface)

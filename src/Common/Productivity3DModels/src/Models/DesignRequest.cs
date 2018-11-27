@@ -60,9 +60,9 @@ namespace VSS.Productivity3D.Models.Models
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File name must be provided"));
       }
 
-      var extention = Path.GetExtension(FileName).ToLower();
+      var extention = Path.GetExtension(FileName);
       if (string.IsNullOrEmpty(extention) 
-          || String.Compare(extention, ".ttm", StringComparison.OrdinalIgnoreCase) != 0)
+          || string.Compare(extention, ".ttm", StringComparison.OrdinalIgnoreCase) != 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File name extension must be ttm"));
       }

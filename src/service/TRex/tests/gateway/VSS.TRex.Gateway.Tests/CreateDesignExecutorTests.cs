@@ -11,8 +11,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.Gateway.Common.Requests;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
