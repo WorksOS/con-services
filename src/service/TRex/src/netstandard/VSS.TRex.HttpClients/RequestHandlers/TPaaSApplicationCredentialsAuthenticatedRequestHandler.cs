@@ -26,14 +26,14 @@ namespace VSS.TRex.HttpClients.RequestHandlers
     }      
 
     /// <inheritdoc />
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
       if (!request.Headers.Contains("Authorization"))
       {
         request.Headers.Add("Authorization", $"{TOKEN_TYPE} {TPaaSToken}");
       }
 
-      return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+      return base.SendAsync(request, cancellationToken);
     }
   }
 }
