@@ -90,14 +90,14 @@ namespace VSS.TRex.Profiling.Executors
     /// </summary>
     public ProfileRequestResponse Execute()
     {
-//      SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
+      //      SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
 
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
 
+      ProfileRequestResponse Response = null;
       try
       {
-        ProfileRequestResponse Response = new ProfileRequestResponse();
         List<IProfileCell> ProfileCells = new List<IProfileCell>(1000);
 
         try
@@ -156,14 +156,18 @@ namespace VSS.TRex.Profiling.Executors
             {
               Log.LogInformation("Lift profile building succeeded");
 
-              return new ProfileRequestResponse
+              Response = new ProfileRequestResponse
               {
                 ProfileCells = ProfileCells,
                 ResultStatus = RequestErrorStatus.OK
               };
-            }
 
-            Log.LogInformation("Lift profile building failed");
+              return Response;
+            }
+            else
+            {
+              Log.LogInformation("Lift profile building failed");
+            }
           }
         }
         finally

@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -91,6 +92,7 @@ namespace VSS.TRex.Webtools.Controllers
       if (Response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
+      var nonNulls = Response.ProfileCells.Where(x => ((ProfileCell) x).CellLastElev != Consts.NullHeight).ToArray();
       return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.Station, ((ProfileCell)x).CellLastElev, -1) ));
     }
   }
