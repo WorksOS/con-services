@@ -387,8 +387,8 @@ constructor(
   public getSurveyedSurfaces(): void {
     var result: SurveyedSurface[] = [];
     this.projectService.getSurveyedSurfaces(this.projectUid).subscribe(
-      surveyedsurfaces => {
-        surveyedsurfaces.forEach(ss => result.push(ss));
+      surveyedSurfaces => {
+        surveyedSurfaces.forEach(ss => result.push(ss));
         this.surveyedSurfaces = result;
       });  
   }
@@ -562,7 +562,7 @@ constructor(
             first = true;
           }
           else {
-            result += (first ? "M" : "L") + point.station * stationRatio + " " + (profileCanvasHeight - (point.z - minZ) * zRatio);
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
             first = false;
             }
         });
@@ -631,7 +631,7 @@ constructor(
             first = true;
           }
           else {
-            result += (first ? "M" : "L") + point.station * stationRatio + " " + (profileCanvasHeight - (point.z - minZ) * zRatio);
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
             first = false;
           }
         });
