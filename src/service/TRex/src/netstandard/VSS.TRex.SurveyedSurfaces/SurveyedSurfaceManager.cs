@@ -9,7 +9,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
@@ -23,7 +22,8 @@ namespace VSS.TRex.SurveyedSurfaces
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SurveyedSurfaceManager>();
 
-    private IStorageProxy StorageProxy;
+    private readonly IStorageProxy WriteStorageProxy;
+    private readonly IStorageProxy ReadStorageProxy;
 
     private const string SURVEYED_SURFACE_STREAM_NAME = "SurveyedSurfaces";
 
@@ -32,7 +32,8 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public SurveyedSurfaceManager()
     {
-      StorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
+      WriteStorageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+      ReadStorageProxy = DIContext.Obtain<ISiteModels>().StorageProxy;
     }
 
     /// <summary>
@@ -44,7 +45,7 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       try
       {
-        StorageProxy.ReadStreamFromPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
+        ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
 
         ISurveyedSurfaces ss = DIContext.Obtain<ISurveyedSurfaces>();
 
@@ -64,7 +65,7 @@ namespace VSS.TRex.SurveyedSurfaces
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception reading surveyed surfaces cache element from Ignite", e);
+        throw new TRexException("Exception reading surveyed surfaces cache element from Ignite", e);
       }
 
       return null;
@@ -79,17 +80,16 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       try
       {
-        StorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream(), this);
-        StorageProxy.Commit();
+        WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, ss.ToStream(), this);
+        WriteStorageProxy.Commit();
 
         // Notify the  grid listeners that attributes of this sitemodel have changed.
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, 
-          surveyedSurfacesChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyImmutable, siteModelID, surveyedSurfacesChanged: true);
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing updated surveyed surfaces cache element to Ignite", e);
+        throw new TRexException("Exception writing updated surveyed surfaces cache element to Ignite", e);
       }
     }
     

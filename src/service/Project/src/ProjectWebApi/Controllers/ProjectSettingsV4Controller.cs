@@ -109,7 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, null,
+            raptorProxy, null, null, null, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
@@ -143,7 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<UpsertProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, null,
+            raptorProxy, null, null, null, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
@@ -168,7 +168,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<GetProjectSettingsExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, null,
             null, null,
-            null, null, 
+            null, null, null, null, null,
             projectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;

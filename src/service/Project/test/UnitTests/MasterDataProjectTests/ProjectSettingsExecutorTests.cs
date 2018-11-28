@@ -51,7 +51,8 @@ namespace VSS.MasterData.ProjectTests
         (logger, configStore, serviceExceptionHandler,
         customerUid, userId, userEmailAddress, null,
         null, null,
-        null, null, projectRepo.Object );
+        null, null, null, null, null,
+        projectRepo.Object );
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       
       Assert.IsNotNull(result, "executor failed");
@@ -88,7 +89,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
         null, null,
-        null, null, projectRepo.Object );
+        null, null, null, null, null,
+        projectRepo.Object );
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.IsNotNull(result, "executor failed");
@@ -128,7 +130,8 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
         null, null,
-        null, null, projectRepo.Object);
+        null, null, null, null, null,
+        projectRepo.Object);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       var tempSettings = JsonConvert.DeserializeObject<JObject>(settings2);
@@ -164,7 +167,8 @@ namespace VSS.MasterData.ProjectTests
         (logger, configStore, serviceExceptionHandler,
           customerUid, userId, null, null,
           null, null,
-          null, null, projectRepo.Object);
+          null, null, null, null, null,
+          projectRepo.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>( async () =>
         await executor.ProcessAsync(projectSettingsRequest));
 
@@ -206,7 +210,7 @@ namespace VSS.MasterData.ProjectTests
         (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, null,
+        raptorProxy.Object, null, null, null, null,
         projectRepo.Object);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
@@ -275,7 +279,7 @@ namespace VSS.MasterData.ProjectTests
       (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, null,
+        raptorProxy.Object, null, null, null, null,
         projectRepo.Object);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings1, settingsType1);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;

@@ -11,8 +11,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
-using VSS.TRex.Gateway.Common.Requests;
-using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -56,7 +54,7 @@ namespace VSS.TRex.Gateway.Tests
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Add(x => x.AddSingleton<ITransferProxy, TransferProxy>())
+        .Add(x => x.AddSingleton<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME")))
         .Complete();
 
       var isWrittenToS3Ok = S3FileTransfer.WriteFile("TestData", projectUid, transferFileName);
