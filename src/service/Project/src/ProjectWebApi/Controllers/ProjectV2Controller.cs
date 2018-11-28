@@ -113,7 +113,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //      stored in CreateKafkaEvent
       //    Only Filename is stored in the VL database 
       createProjectEvent.CoordinateSystemFileContent = 
-        await ProjectRequestHelper
+        await TccHelper
         .GetFileContentFromTcc(projectRequest.CoordinateSystem,
           log, serviceExceptionHandler, fileRepo).ConfigureAwait(false);
 
@@ -122,7 +122,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders,
             producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy,
+            raptorProxy, subscriptionProxy, null, null, null,
             projectRepo, subscriptionRepo, fileRepo, null, httpContextAccessor)
           .ProcessAsync(createProjectEvent)
       );

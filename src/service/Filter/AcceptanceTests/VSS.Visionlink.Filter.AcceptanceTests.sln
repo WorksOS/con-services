@@ -46,6 +46,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\..\Commo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj", "{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Models", "..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj", "{09887BDF-55E7-4FF2-A4A5-FBF0A0AB20EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B7B5D1D-63B0-4331-89A8-9EF21A4329BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09887BDF-55E7-4FF2-A4A5-FBF0A0AB20EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09887BDF-55E7-4FF2-A4A5-FBF0A0AB20EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09887BDF-55E7-4FF2-A4A5-FBF0A0AB20EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09887BDF-55E7-4FF2-A4A5-FBF0A0AB20EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
