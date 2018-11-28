@@ -74,16 +74,13 @@ namespace VSS.TRex.SiteModels
     public bool IsTransient { get; private set; } = true;
 
     private object machineLoadLockObject = new object();
+    private object siteProofingRunLockObject = new object();
     private object siteModelMachineDesignsLockObject = new object();
 
     /// <summary>
     /// The grid data for this site model
     /// </summary>
     private IServerSubGridTree grid;
-
-    private object machineLoadLockObject = new object();
-    private object siteProofingRunLockObject = new object();
-    private object siteModelMachineDesignsLockObject = new object();
 
     /// <summary>
     /// The grid data for this site model
