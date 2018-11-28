@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList
   {
-    private const string kMachineDesignsListStreamName = "MachineDesigns";
+    private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
 
     /// <summary>
     /// The identifier of the site model owning this list of machine design names
@@ -94,7 +94,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, this.ToStream(), this);
+      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, this.ToStream(), this);
     }
     
     /// <summary>
@@ -103,7 +103,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void LoadFromPersistentStore()
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, kMachineDesignsListStreamName, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
+      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, out MemoryStream MS);
       if (MS == null)
         return;
 

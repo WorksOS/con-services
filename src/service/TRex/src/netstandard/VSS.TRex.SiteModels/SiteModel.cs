@@ -79,6 +79,7 @@ namespace VSS.TRex.SiteModels
     private IServerSubGridTree grid;
 
     private object machineLoadLockObject = new object();
+    private object siteProofingRunLockObject = new object();
     private object siteModelMachineDesignsLockObject = new object();
 
     /// <summary>
@@ -157,8 +158,6 @@ namespace VSS.TRex.SiteModels
       get => csib != null;
     }
 
-    // ProofingRuns is the set of proofing runs that have been collected in this site model
-    // public SiteProofingRuns ProofingRuns;
 
     // MachinesTargetValues stores a list of target values, one list per machine,
     // that record how the configured target CCV and pass count settings on each
@@ -191,10 +190,7 @@ namespace VSS.TRex.SiteModels
     /// Each site model designs records the name of the site model and the extents
     /// of the cell information that have been record for it.
     /// </summary>
-    public ISiteModelDesignList SiteModelDesigns
-    {
-      get { return siteModelDesigns; }
-    }
+    public ISiteModelDesignList SiteModelDesigns => siteModelDesigns;
 
     private ISurveyedSurfaces surveyedSurfaces;
 
@@ -223,6 +219,36 @@ namespace VSS.TRex.SiteModels
     public bool DesignsLoaded
     {
       get => designs != null;
+    }
+
+    // The siteProofingRuns is the set of proofing runs that have been collected in this site model
+    private SiteProofingRunList siteProofingRuns { get; set; }
+
+    /// <summary>
+    /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this sitemodel.
+    /// Each site model proofing run records the name of the site model, machine ID, start/end times and the extents
+    /// of the cell information that have been record for it.
+    /// </summary>
+    public ISiteProofingRunList SiteProofingRuns
+    {
+      get
+      {
+        if (siteProofingRunLockObject == null)
+        {
+          lock (siteModelMachineDesignsLockObject)
+          {
+            if (siteProofingRuns != null)
+              return siteProofingRuns;
+
+            siteProofingRuns = new SiteProofingRunList { DataModelID = ID };
+
+            if (!IsTransient)
+              siteProofingRuns.LoadFromPersistentStore();
+          }
+        }
+
+        return siteProofingRuns;
+      }
     }
 
     /// <summary>
