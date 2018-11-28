@@ -390,7 +390,7 @@ namespace VSS.TRex.Pipelines
               Log.LogInformation("WaitForCompletion successful");
             else // No signal was received, the wait timed out...            
               Log.LogInformation($"WaitForCompletion timed out with {Pipeline.SubgridsRemainingToProcess} subgrids remaining to be processed");
-          });
+          }).Wait();
         }
 
         PipelineAborted = Pipeline.Aborted;
