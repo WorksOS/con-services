@@ -13,6 +13,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -27,7 +28,7 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Profiling
 {
   /// <summary>
-  /// Responsible for orchetraing analysis of identified cells along the path of a profile line
+  /// Responsible for orchestrating analysis of identified cells along the path of a profile line
   /// and deriving the profile related analytics for each cell
   /// </summary>
   public class ProfileLiftBuilder : IProfileLiftBuilder
@@ -38,9 +39,14 @@ namespace VSS.TRex.Profiling
     /// Local reference to the client subgrid factory
     /// </summary>
     private static IClientLeafSubgridFactory clientLeafSubGridFactory;
-
     private IClientLeafSubgridFactory ClientLeafSubGridFactory
       => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
+
+    /// <summary>
+    /// The storage proxy to use when requesting subgrids for profiling operations
+    /// </summary>
+    private IStorageProxy storageProxy;
+    private IStorageProxy StorageProxy => storageProxy ?? (storageProxy = DIContext.Obtain<ISiteModels>().StorageProxy);
 
     /// <summary>
     /// The number of passes identified in the top-most (most recent) layer
@@ -54,7 +60,7 @@ namespace VSS.TRex.Profiling
     public int TopMostLayerCompactionHalfPassCount;
 
     /// <summary>
-    /// The profile cell currently being analysed
+    /// The profile cell currently being analyzed
     /// </summary>
     private ProfileCell ProfileCell;
 
@@ -102,7 +108,7 @@ namespace VSS.TRex.Profiling
     private IDesign CellPassFilter_ElevationRangeDesign;
 
     /// <summary>
-    /// Constructs a profile lift builder that analyses cells in a cell profile vector
+    /// Constructs a profile lift builder that analyzes cells in a cell profile vector
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
@@ -161,7 +167,7 @@ namespace VSS.TRex.Profiling
     /// </summary>
     /// <param name="forMachineID"></param>
     /// <returns></returns>
-    private IProductionEventLists GetTargetValues(short forMachineID) => SiteModel.Machines[forMachineID].TargetValueChanges;
+    private IProductionEventLists GetTargetValues(short forMachineID) => SiteModel.MachinesTargetValues[forMachineID];
 
     /// <summary>
     /// Gets the material temperature warning limits for a machine at a given time
@@ -532,8 +538,10 @@ namespace VSS.TRex.Profiling
 
           // Does the subgrid tree contain this node in it's existence map?
           if (PDExistenceMap[CurrentSubgridOrigin.X, CurrentSubgridOrigin.Y])
-            SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY,
-              SiteModel.Grid.NumLevels);
+            SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
+              (StorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
+
+          // SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels);
 
           _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
           if (_SubGridAsLeaf == null)

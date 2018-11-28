@@ -1,9 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
+using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.HttpClients.Clients;
+using VSS.TRex.HttpClients.RequestHandlers;
 using VSS.TRex.Types;
+using VSS.TRrex.HttpClients.Abstractions;
 
 namespace VSS.TRex.CoordinateSystems
 {
@@ -16,7 +23,32 @@ namespace VSS.TRex.CoordinateSystems
   /// </remarks>
   public static class ConvertCoordinates
   {
-    private static readonly CoordinatesServiceClient serviceClient = DIContext.Obtain<CoordinatesServiceClient>();
+    private static readonly object lockObject = new object();
+
+    static ConvertCoordinates()
+    {
+      var configurationStore = DIContext.Obtain<IConfigurationStore>();
+
+      lock (lockObject)
+      {
+        DIBuilder
+          .Continue()
+          .Add(x => x.AddTransient<TPaaSAuthenticatedRequestHandler>()
+            .AddHttpClient<ITPaaSClient, TPaaSClient>(client => client.BaseAddress = new Uri(configurationStore.GetValueString(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY)))
+            .ConfigurePrimaryHttpMessageHandler(() => new TPaaSApplicationCredentialsRequestHandler
+            {
+              TPaaSToken = configurationStore.GetValueString(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN_ENV_KEY),
+              InnerHandler = new HttpClientHandler()
+            })
+            .Services.AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri(configurationStore.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY)))
+            .AddHttpMessageHandler<TPaaSAuthenticatedRequestHandler>())
+          .Complete();
+      }
+
+      serviceClient = DIContext.Obtain<CoordinatesServiceClient>();
+    }
+
+    private static readonly CoordinatesServiceClient serviceClient;
 
     /// <summary>
     /// Provides a null conversion between the 2D coordinates in a WGS84 LL point and a XYZ NEE point.

@@ -55,7 +55,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       }
       else
       {
-        var updateImportedFileEvent = await ImportedFileRequestHelper.UpdateImportedFileInDb(existing,
+        var updateImportedFileEvent = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
             JsonConvert.SerializeObject(result.FileDescriptor),
             existing.SurveyedUtc, result.MinZoomLevel, result.MaxZoomLevel,
             existing.FileCreatedUtc, existing.FileUpdatedUtc, result.UserEmailAddress,

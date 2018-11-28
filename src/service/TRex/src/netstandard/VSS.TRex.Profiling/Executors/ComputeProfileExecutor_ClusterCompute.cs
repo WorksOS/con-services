@@ -90,25 +90,23 @@ namespace VSS.TRex.Profiling.Executors
     /// </summary>
     public ProfileRequestResponse Execute()
     {
-//        ResponseDataStream    : TMemoryStream;
-//        Packager              : TICProfileCellListPackager;
-//      SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
+      //      SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
 
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
 
+      ProfileRequestResponse Response = null;
       try
       {
-        ProfileRequestResponse Response = new ProfileRequestResponse();
         List<IProfileCell> ProfileCells = new List<IProfileCell>(1000);
 
         try
         {
           // Note: Start/end point lat/lon fields have been converted into grid local coordinate system by this point
-          if (NEECoords.Length > 0)
-            Log.LogInformation($"#In#: DataModel {ProjectID}, Vertices:{NEECoords[0]} -> {NEECoords[0]}");
+          if (NEECoords.Length > 1)
+            Log.LogInformation($"#In#: DataModel {ProjectID}, Vertices:{NEECoords[0]} -> {NEECoords[1]}");
           else
-            Log.LogInformation($"#In#: DataModel {ProjectID}, Note! verticies list is empty");
+            Log.LogInformation($"#In#: DataModel {ProjectID}, Note! vertices list has insufficient vertices (min of 2 required)");
 
           ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(ProjectID);
 
@@ -134,7 +132,7 @@ namespace VSS.TRex.Profiling.Executors
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, PassFilter);
 
           // Raptor profile implementation did not use the overall existence map, so this commented out code
-          // has no effect in Raptor and has been exluced for this reason in TRex.
+          // has no effect in Raptor and has been excluded for this reason in TRex.
           //if (DesignProfilerService.RequestCombinedDesignSubgridIndexMap(ProjectUID, SiteModel.Grid.CellSize, SiteModel.SurveyedSurfaces, OverallExistenceMap) = dppiOK)
           //  OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
           //else
@@ -148,17 +146,9 @@ namespace VSS.TRex.Profiling.Executors
             /* todo design: */null, /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
-          //{$IFDEF DEBUG}
-          //Log.LogInformation($"RequestProfile: BuildCellPassProfile for sitemodel {ProjectUID}");
-          //{$ENDIF}
-
           Log.LogInformation("Building cell profile");
           if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
-            // {$IFDEF DEBUG}
-            // Log.LogInformation($"RequestProfile: BuildLiftProfileFromInitialLayer for sitemodel {ProjectUID}");
-            // {$ENDIF}
-
             SetupForCellPassStackExamination(PassFilter);
 
             Log.LogInformation("Building lift profile");
@@ -166,31 +156,17 @@ namespace VSS.TRex.Profiling.Executors
             {
               Log.LogInformation("Lift profile building succeeded");
 
-              return new ProfileRequestResponse
+              Response = new ProfileRequestResponse
               {
                 ProfileCells = ProfileCells,
                 ResultStatus = RequestErrorStatus.OK
               };
+
+              return Response;
             }
 
             Log.LogInformation("Lift profile building failed");
           }
-
-          // {$IFDEF DEBUG}
-          // Log.LogInformation($"RequestProfile: completed construction for sitemodel {ProjectUID}");
-          // {$ENDIF}
-
-          /*       if ServerResult = icsrrNoError then
-                   begin
-                     Packager := TICProfileCellListPackager.Create;
-                     Packager.CellList := Profiler.Profile;
-                     Packager.GridDistanceBetweenProfilePoints := Profiler.GridDistanceBetweenProfilePoints;
-                     Packager.WriteCellPassesAndLayers := Args.ReturnAllPassesAndLayers;
-
-                     ResponseDataStream := TMemoryStream.Create;
-                     Packager.WriteToStream(ResponseDataStream);
-                   end;
-          */
         }
         finally
         {

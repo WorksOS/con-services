@@ -21,12 +21,12 @@ namespace VSS.TRex.Tests.Events
     public void Test_ProjectImmutableSiteModelTest()
     {
       var sourceSiteModel = new SiteModel(Guid.NewGuid(), false);
-      var result = sourceSiteModel.SaveToPersistentStore(DIContext.Obtain<IStorageProxy>());  
-      Assert.True(result, "unable to save SiteModel to Persistant store");
+      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(DIContext.Obtain<IStorageProxy>());  
+      Assert.True(result, "unable to save SiteModel to Persistent store");
 
       var targetSiteModel = new SiteModel(sourceSiteModel.ID, false);
       var fileStatus = targetSiteModel.LoadFromPersistentStore();
-      Assert.True(FileSystemErrorStatus.OK == fileStatus, "unable to load SiteModel from Persistant store");
+      Assert.True(FileSystemErrorStatus.OK == fileStatus, "unable to load SiteModel from Persistent store");
     }
 
     [Fact]
@@ -61,10 +61,7 @@ namespace VSS.TRex.Tests.Events
       var targetEventList = Deserialize(mutableStream);
       Assert.Equal(2, targetEventList.Count());
 
-      DateTime dateTime;
-      int state;
-
-      events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
+      events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out DateTime dateTime, out int state);
       Assert.Equal(2, targetEventList.Count());
       var evt = ((ProductionEvents<int>)targetEventList).Events[0];
       Assert.Equal(state, evt.State);
@@ -96,10 +93,7 @@ namespace VSS.TRex.Tests.Events
       var targetEventList = Deserialize(mutableStream);
       Assert.Equal(5, targetEventList.Count());
 
-      DateTime dateTime;
-      int state;
-
-      events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
+      events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out DateTime dateTime, out int state);
       var evt = ((ProductionEvents<int>)targetEventList).Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
@@ -142,19 +136,19 @@ namespace VSS.TRex.Tests.Events
     
     private IProductionEvents Deserialize(MemoryStream stream)
     {
-      IProductionEvents events = null;
+      IProductionEvents events;
       using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
       {
         if (stream.Length < 16)
         {
-          return events;
+          return null;
         }
         stream.Position = 8;
 
         var eventType = reader.ReadInt32();
         if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
         {
-          return events;
+          return null;
         }
 
         events = DIContext.Obtain<IProductionEventsFactory>().NewEventList(-1, Guid.Empty, (ProductionEventType)eventType);

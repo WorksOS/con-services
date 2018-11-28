@@ -1,7 +1,12 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using VSS.Common.Exceptions;
+using VSS.ConfigurationStore;
 using VSS.FlowJSHandler;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -9,8 +14,9 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
-  public class ImportFileTests
+  public class ImportFileV4ValidationTests
   {
+    protected IServiceExceptionHandler ServiceExceptionHandler;
     private const string IMPORTED_BY = "JoeSmoe";
 
     private static readonly ProjectErrorCodesProvider projectErrorCodesProvider;
@@ -19,9 +25,20 @@ namespace VSS.MasterData.ProjectTests
     private static readonly DateTime fileCreatedUtc = DateTime.UtcNow;
     private static readonly DateTime fileUpdatedUtc = DateTime.UtcNow;
 
-    static ImportFileTests()
+    static ImportFileV4ValidationTests()
     {
       projectErrorCodesProvider = new ProjectErrorCodesProvider();
+    }
+
+    [TestInitialize]
+    public virtual void InitTest()
+    {
+      var serviceCollection = new ServiceCollection();
+      serviceCollection
+        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>(); 
+      var serviceProvider = serviceCollection.BuildServiceProvider();
+      ServiceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
     }
 
     [TestMethod]
@@ -213,5 +230,33 @@ namespace VSS.MasterData.ProjectTests
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, null));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
+
+    [TestMethod]
+    [DataRow(ImportedFileType.Alignment, "true", "false")]
+    [DataRow(ImportedFileType.DesignSurface, "true", "false")]
+    [DataRow(ImportedFileType.DesignSurface, "true", "true")]
+    [DataRow(ImportedFileType.DesignSurface, "false", "true")]
+    [DataRow(ImportedFileType.SurveyedSurface, "false", "true")]
+    public void ValidateImportFile_EnvironmentVariables_HappyPath(ImportedFileType importedFileType, string raptorEnabled, string tRexEnabled)
+    {
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns(tRexEnabled);
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns(raptorEnabled);
+      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, mockConfigStore.Object, ServiceExceptionHandler);
+    }
+
+    [TestMethod]
+    [DataRow(ImportedFileType.Alignment, "false", "true")]
+    [DataRow(ImportedFileType.DesignSurface, "false", "false")]
+    public void ValidateImportFile_EnvironmentVariables_UnHappyPath(ImportedFileType importedFileType, string raptorEnabled, string tRexEnabled)
+    {
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns(tRexEnabled);
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns(raptorEnabled);
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, mockConfigStore.Object, ServiceExceptionHandler));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(113)));
+    }
+
   }
 }

@@ -1,4 +1,6 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
+using Force.DeepCloner;
 using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Common.Serialisation
@@ -16,6 +18,12 @@ namespace VSS.TRex.Common.Serialisation
         return;
       }
 
+      if (obj is Exception)
+      {
+        writer.WriteObject("Exception", obj);
+        return;
+      }
+
       throw new TRexNonBinarizableException($"Not IBinarizable on WriteBinary: {obj.GetType()}");
     }
 
@@ -24,6 +32,13 @@ namespace VSS.TRex.Common.Serialisation
       if (obj is IBinarizable bin)
       {
         bin.ReadBinary(reader);
+        return;
+      }
+
+      if (obj is Exception)
+      {
+        var res = reader.ReadObject<object>("Exception");
+        res.ShallowCloneTo(obj);
         return;
       }
 

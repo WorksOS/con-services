@@ -8,17 +8,11 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.TRex.Gateway.Common.Requests;
-using VSS.TRex.Geometry;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -54,21 +48,26 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
-
-      ContractExecutionResult result = new ContractExecutionResult();
 
       try
       {
         log.LogInformation($"#In# DeleteDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
+        bool removedOk;
         if (request.FileType == ImportedFileType.SurveyedSurface)
         {
-          DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
+          removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
         }
         else
         {
-          DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
+          removedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
+        }
+        if (!removedOk)
+        {
+          log.LogError($"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+          return new ContractExecutionResult((int)RequestErrorStatus.DesignImportUnableToDeleteDesign, RequestErrorStatus.DesignImportUnableToDeleteDesign.ToString());
         }
 
         var localPathAndFileName = Path.Combine(new[] { TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid.ToString(), request.FileName });
@@ -85,15 +84,15 @@ namespace VSS.TRex.Gateway.Common.Executors
             // ignored
           }
         }
-        log.LogInformation($"#Out# DeleteDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
+        log.LogInformation($"#Out# DeleteDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
       catch (Exception e)
       {
-        log.LogError($"#Out# DeleteDesignExecutor. Deletion failed design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception: {e}");
+        log.LogError($"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception: {e}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
 
-      return result;
+      return new ContractExecutionResult(); 
     }
 
 
