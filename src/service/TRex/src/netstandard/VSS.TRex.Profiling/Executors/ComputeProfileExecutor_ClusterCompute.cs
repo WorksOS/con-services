@@ -164,10 +164,8 @@ namespace VSS.TRex.Profiling.Executors
 
               return Response;
             }
-            else
-            {
-              Log.LogInformation("Lift profile building failed");
-            }
+
+            Log.LogInformation("Lift profile building failed");
           }
         }
         finally
