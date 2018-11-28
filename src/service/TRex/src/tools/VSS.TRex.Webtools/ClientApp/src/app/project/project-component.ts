@@ -208,7 +208,7 @@ constructor(
 
   public getTile() : void {
     // If there is no project bail...
-    if (this.projectUid == undefined)
+    if (this.projectUid === undefined)
       return;
 
     // Make sure the displayed tile extents is updated
@@ -493,12 +493,12 @@ constructor(
     var result: string[] = [];
 
     var startDate: Date = this.machineEventsStartDate;
-    if (startDate == undefined) {
+    if (startDate === undefined) {
       startDate = new Date(1980, 1, 1, 0, 0, 0, 0);
     }
       
     var endDate: Date = this.machineEventsEndDate;
-    if (endDate == undefined) {
+    if (endDate === undefined) {
       endDate = new Date(2100, 1, 1, 0, 0, 0, 0);
     }
 
