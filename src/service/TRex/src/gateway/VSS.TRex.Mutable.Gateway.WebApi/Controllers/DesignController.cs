@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -15,6 +13,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -50,33 +49,17 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(CreateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      if (!EnsureSiteModelExists(designRequest.ProjectUid))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid is not known to tRex"));
-      }
+      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
 
       if (GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
         return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design already exists. Cannot Add.");
       }
 
-      if (designRequest.FileType == ImportedFileType.DesignSurface)
-      {
-        return WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
-            .Build<AddDesignExecutor>(ConfigStore, base.LoggerFactory, ServiceExceptionHandler)
-            .Process(designRequest));
-      }
-
-      if (designRequest.FileType == ImportedFileType.SurveyedSurface)
-      {
-        return WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
-            .Build<AddDesignExecutor>(ConfigStore, base.LoggerFactory, ServiceExceptionHandler) 
-            .Process(designRequest));
-      }
-
-      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Create of Design FileType: {designRequest.FileType.ToString()} is not YET supported by TRex.");
+      return WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<AddDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(designRequest));
     }
 
 
@@ -90,10 +73,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(UpdateDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      if (!EnsureSiteModelExists(designRequest.ProjectUid))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid is not known to tRex"));
-      }
+      GatewayHelper.EnsureSiteModelExists(designRequest.ProjectUid);
 
       if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
       {
@@ -102,7 +82,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<UpdateDesignExecutor>(ConfigStore, base.LoggerFactory, ServiceExceptionHandler)
+          .Build<UpdateDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(designRequest));
     }
 
@@ -119,9 +99,10 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
-      if (!EnsureSiteModelExists(designRequest.ProjectUid))
+      var sm = DIContext.Obtain<ISiteModels>().GetSiteModel(designRequest.ProjectUid, false);
+      if (sm == null)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid is not known to tRex"));
+        return new ContractExecutionResult();
       }
 
       if (!GetDesignsForSiteModel(designRequest.ProjectUid, designRequest.FileType).DesignFileDescriptors.ToList().Exists(x => x.DesignUid == designRequest.DesignUid.ToString()))
@@ -131,15 +112,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
-          .Build<DeleteDesignExecutor>(ConfigStore, base.LoggerFactory, ServiceExceptionHandler)
+          .Build<DeleteDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(designRequest));
-    }
-
-    private bool EnsureSiteModelExists(Guid projectUid)
-    {
-      var ttt = DIContext.Obtain<ISiteModelMetadataManager>();
-      var sm = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, true);
-      return  sm != null;
     }
 
     private DesignListResult GetDesignsForSiteModel(Guid projectUid, ImportedFileType fileType)
@@ -151,19 +125,15 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
         designFileDescriptorList = designList.Select(designSurface =>
             AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
           .ToList();
-        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList };
+        return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
       }
 
-      if (fileType == ImportedFileType.SurveyedSurface)
-      {
-        var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
-        designFileDescriptorList = designSurfaceList.Select(designSurface =>
-            AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
-          .ToList();
-        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList };
-      }
+      var designSurfaceList = DIContext.Obtain<ISurveyedSurfaceManager>().List(projectUid);
+      designFileDescriptorList = designSurfaceList.Select(designSurface =>
+          AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(designSurface))
+        .ToList();
+      return new DesignListResult {DesignFileDescriptors = designFileDescriptorList};
 
-      return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"FileType: {fileType.ToString()} is not supported by TRex.") as DesignListResult;
     }
   }
 }

@@ -55,15 +55,14 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 38);
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
-
-      ContractExecutionResult result = new ContractExecutionResult();
 
       try
       {
-        log.LogInformation($"#In# UpdateDesignExecutor. Add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+        log.LogInformation($"#In# UpdateDesignExecutor. Update design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        var removedOk = false;
+        bool removedOk;
         if (request.FileType == ImportedFileType.SurveyedSurface)
         {
           removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
@@ -78,10 +77,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         // load core file from s3 to local
-        var localPath = DesignControllerHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
+        var localPath = DesignHelper.EstablishLocalDesignFilepath(request.ProjectUid.ToString());
         var localPathAndFileName = Path.Combine(new[] { localPath, request.FileName });
-        TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-        var designLoadResult = TTM.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
+        TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+        var designLoadResult = ttm.LoadFromStorage(request.ProjectUid, request.FileName, localPath, false);
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# UpdateDesignExecutor. Loading of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
@@ -89,7 +88,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         // This generates the 2 index files 
-        designLoadResult = TTM.LoadFromFile(localPathAndFileName);
+        designLoadResult = ttm.LoadFromFile(localPathAndFileName);
         if (designLoadResult != DesignLoadResult.Success)
         {
           log.LogError($"#Out# UpdateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult.ToString()}");
@@ -97,16 +96,17 @@ namespace VSS.TRex.Gateway.Common.Executors
         }
 
         BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
-        TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
-        TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+        ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+        ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
+        var existanceMaps = DIContext.Obtain<IExistenceMaps>();
         if (request.FileType == ImportedFileType.DesignSurface)
         {
           // Create the new designSurface in our site model
           var designSurface = DIContext.Obtain<IDesignManager>().Add(request.ProjectUid,
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             extents);
-          DIContext.Obtain<IExistenceMaps>().SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, TTM.SubgridOverlayIndex());
+          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubgridOverlayIndex());
         }
 
         if (request.FileType == ImportedFileType.SurveyedSurface)
@@ -116,14 +116,14 @@ namespace VSS.TRex.Gateway.Common.Executors
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName, 0),
             request.SurveyedUtc ?? DateTime.MinValue, // validation will have ensured this exists
             extents);
-          DIContext.Obtain<IExistenceMaps>().SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, TTM.SubgridOverlayIndex());
+          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubgridOverlayIndex());
         }
 
         //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required
         S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.kDesignSubgridIndexFileExt);
         S3FileTransfer.WriteFile(localPath, request.ProjectUid, request.FileName + Designs.TTM.Optimised.Consts.kDesignSpatialIndexFileExt);
 
-        log.LogInformation($"#Out# UpdateDesignExecutor. Process update design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Result Code: {result.Code}, Message:{result.Message}");
+        log.LogInformation($"#Out# UpdateDesignExecutor. Processed update design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
       catch (Exception e)
       {
@@ -131,7 +131,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToUpdateDesign, e.Message);
       }
 
-      return result;
+      return new ContractExecutionResult();
     }
 
 

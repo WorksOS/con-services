@@ -520,15 +520,15 @@ namespace WebApiTests
       };
       var filesResult = importFile.SendRequestToFileImportV4(ts, importFileArray, 1,
         new ImportOptions(HttpMethod.Post, new[] {"filename=TestDesignSurfaceTestDesignSurface3_GoodContent.TTM"}));
-      //var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      //ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-      //Assert.AreEqual(1, filesResult.ImportedFileDescriptor.ImportedFileHistory.Count,
-      //  "Expected 1 imported file History but got " + filesResult.ImportedFileDescriptor.ImportedFileHistory.Count);
+      Assert.IsNotNull(filesResult, "no result returned from ProjectSvc");
+      Assert.AreEqual(0, filesResult.Code, "should be success result returned from ProjectSvc");
+      Assert.AreEqual(projectUid, filesResult.ImportedFileDescriptor.ProjectUid, "invalid ProjectUIid returned");
 
-      var designsResult = trexService.GetDesignsFromTrex(projectUid);
+      var designsResult = trexService.GetDesignsFromTrex(customerUid.ToString(), projectUid);
       Assert.AreEqual(0, designsResult.Code);
       Assert.AreEqual(1, designsResult.DesignFileDescriptors.Count, "should be 1 design");
-      Assert.AreEqual("TestDesignSurfaceTestDesignSurface3_GoodContent.TTM", designsResult.DesignFileDescriptors[0].Name, $"expected name: TestDesignSurfaceTestDesignSurface3_GoodContent.TTM received: {designsResult.DesignFileDescriptors[0].Name}");
+      Assert.AreEqual(filesResult.ImportedFileDescriptor.ImportedFileUid, designsResult.DesignFileDescriptors[0].DesignUid, "should be correct designUid");
+      Assert.AreEqual("TestDesignSurface3_GoodContent.TTM", designsResult.DesignFileDescriptors[0].Name, $"expected name: TestDesignSurfaceTestDesignSurface3_GoodContent.TTM received: {designsResult.DesignFileDescriptors[0].Name}");
     }
 
 

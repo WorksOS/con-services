@@ -52,7 +52,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       if ((DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid)) == null)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid is not known to tRex"));
+        return new DesignListResult { DesignFileDescriptors = designFileDescriptorList };
       }
 
       if (fileType == null || fileType == ImportedFileType.DesignSurface)

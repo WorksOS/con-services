@@ -29,6 +29,8 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi
 {
@@ -65,6 +67,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
       services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
       services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
+      services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
       services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
       services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
 
