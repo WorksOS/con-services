@@ -107,6 +107,7 @@ export class ProjectComponent {
   public maxMachineEventsToReturn: number = 100;
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
+  public numPointInProfile: number = 0;
 
   public updateFirstPointLocation: boolean = false;
   public updateSecondPointLocation: boolean = false;
@@ -117,6 +118,12 @@ export class ProjectComponent {
   public secondPointX: number = 0.0;
   public secondPointY: number = 0.0;
 
+  public profileExtents: ProjectExtents = new ProjectExtents(0, 0, 0, 0);
+  public mouseProfileWorldStation: Number = 0.0;
+  public mouseProfileWorldZ: Number = 0.0;
+
+  public mouseProfilePixelLocation:string = '';
+  public mouseProfileWorldLocation: string = '';
 
 constructor(
     private projectService: ProjectService
@@ -543,14 +550,14 @@ constructor(
 
         var minZ:number = 100000.0;
         var maxZ:number = -100000.0;
-        points.forEach(pt => {if (pt.z < minZ) minZ = pt.z});
-        points.forEach(pt => {if (pt.z > maxZ) maxZ = pt.z});
+        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
+        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
 
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z > 100000) {
+          if (point.z < -100000) {
             // It's a gap...
             first = true;
           }
@@ -559,7 +566,10 @@ constructor(
             first = false;
             }
         });
+
         this.profilePath = result;
+        this.numPointInProfile = result.length;
+        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
       });
   }
 
@@ -574,14 +584,17 @@ constructor(
   }
 
   public onMapMouseClick(): void {
-    if (this.updateFirstPointLocation) {
-      this.firstPointX = this.mouseWorldX;
-      this.firstPointY = this.mouseWorldY;
-    }
-
     if (this.updateSecondPointLocation) {
       this.secondPointX = this.mouseWorldX;
       this.secondPointY = this.mouseWorldY;
+      this.updateSecondPointLocation = false; // Uncheck the second check box
+    }
+
+    if (this.updateFirstPointLocation) {
+      this.firstPointX = this.mouseWorldX;
+      this.firstPointY = this.mouseWorldY;
+      this.updateFirstPointLocation = false; // Uncheck the first check box
+      this.updateSecondPointLocation = true; // Check the second check box
     }
   }
 
@@ -606,14 +619,14 @@ constructor(
 
         var minZ: number = 100000.0;
         var maxZ: number = -100000.0;
-        points.forEach(pt => { if (pt.z < minZ) minZ = pt.z });
-        points.forEach(pt => { if (pt.z > maxZ) maxZ = pt.z });
+        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
+        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
 
         var zRange = maxZ - minZ;
         var zRatio = profileCanvasHeight / zRange;
 
         points.forEach(point => {
-          if (point.z > 100000) {
+          if (point.z < -100000) {
             // It's a gap...
             first = true;
           }
@@ -622,12 +635,35 @@ constructor(
             first = false;
           }
         });
+
         this.profilePath = result;
+        this.numPointInProfile = result.length;
+        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
       });
   }
 
   public drawProfileLineFromStartToEndPointsForProdData(): void {
     this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
+  }
+
+
+  private updateMouseProfileLocationDetails(offsetX: number, offsetY: number): void {
+    let localStation = offsetX;
+    let localZ = this.pixelsY - offsetY;
+
+    this.mouseProfileWorldStation = this.profileExtents.minX + offsetX * (this.profileExtents.sizeX() / 1000);
+    this.mouseProfileWorldZ = this.profileExtents.minY + (this.pixelsY - offsetY) * (this.profileExtents.sizeY() / 500);
+
+    this.mouseProfilePixelLocation = `${localStation}, ${localZ}`;
+    this.mouseProfileWorldLocation = `${this.mouseProfileWorldStation.toFixed(3)}, ${this.mouseProfileWorldZ.toFixed(3)}`;
+  }
+
+  public onMouseOverProfile(event: any): void {
+    this.updateMouseProfileLocationDetails(event.offsetX, event.offsetY);
+  }
+
+  public onMouseMoveProfile(event: any): void {
+    this.updateMouseProfileLocationDetails(event.offsetX, event.offsetY);
   }
 }
 

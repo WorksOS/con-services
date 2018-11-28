@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -21,6 +22,8 @@ namespace VSS.TRex.Profiling
   /// </summary>
   public class CellProfileBuilder : ICellProfileBuilder
   {
+    private static ILogger Log = Logging.Logger.CreateLogger<CellProfileBuilder>();
+
     public const int kMaxHzVtGridInterceptsToCalculate = 8000;
 
     private ISiteModel SiteModel;
@@ -292,6 +295,8 @@ namespace VSS.TRex.Profiling
         if (FilterMask.BitSet(OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask))
           AddCellPassesDataToList(OTGCellX, OTGCellY, VtHzIntercepts.Items[i].ProfileItemIndex, VtHzIntercepts.Items[i].InterceptLength);
       }
+
+      Log.LogInformation($"CellProfileBuilder constructed a vector of {VtHzIntercepts.Count} vertices");
 
       return true;
     }
