@@ -20,8 +20,8 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
-using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid? volumeTopUid,
       [FromQuery] VolumeCalcType? volumeCalcType)
     {
-      Log.LogDebug("GetProductionDataTile: " + Request.QueryString);
+      Log.LogDebug("GetBoundariesFromLinework: " + Request.QueryString);
 
       var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);

@@ -39,15 +39,12 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-
       var request = item as CompactionTagFileRequestExtended;
-
       if (request == null)
+      {
         ThrowRequestTypeCastException<CompactionTagFileRequestExtended>();
-
-      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "3dPm Unknown exception.");
-
+      }
+      
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out var useTrexGateway);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY"), out var useRaptorGateway);
 
@@ -56,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         request.Validate();
 
         // gobbles any exception
-        result = await CallTRexEndpoint(request).ConfigureAwait(false);
+        var result = await CallTRexEndpoint(request).ConfigureAwait(false);
 
         if (result.Code == 0)
         {
@@ -72,30 +69,31 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       if (useRaptorGateway)
       {
         // legacyProjectId must have been retrieved by here else GetLegacyProjectId() would have thrown exception
-        var tfRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data,
+        var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data,
           request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
           request.Boundary,
           VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
-        tfRequest.Validate();
 
-        if (tfRequest.ProjectId != VelociraptorConstants.NO_PROJECT_ID && tfRequest.Boundary == null)
+        tagFileRequest.Validate();
+
+        if (tagFileRequest.ProjectId != VelociraptorConstants.NO_PROJECT_ID && tagFileRequest.Boundary == null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Failed to process tagfile with error: Manual tag file submissions must include a boundary fence."));
         }
 
-        if (tfRequest.ProjectId == VelociraptorConstants.NO_PROJECT_ID && tfRequest.Boundary != null)
+        if (tagFileRequest.ProjectId == VelociraptorConstants.NO_PROJECT_ID && tagFileRequest.Boundary != null)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Failed to process tagfile with error: Automatic tag file submissions cannot include boundary fence."));
         }
 
-        result = CallRaptorEndpoint(tfRequest);
+        return CallRaptorEndpoint(tagFileRequest);
       }
 
-      return result;
+      return ContractExecutionResult.ErrorResult();
     }
 
     private async Task<ContractExecutionResult> CallTRexEndpoint(CompactionTagFileRequest request)

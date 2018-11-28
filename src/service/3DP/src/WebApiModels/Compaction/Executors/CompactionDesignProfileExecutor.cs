@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId),
           positionsAreGrid);
 
-        var memoryStream = this.raptorClient.GetDesignProfile(designProfile);
+        var memoryStream = raptorClient.GetDesignProfile(designProfile);
 
         if (memoryStream != null)
         {
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
       finally
       {
-        this.ContractExecutionStates.ClearDynamic();
+        ContractExecutionStates.ClearDynamic();
       }
 
       return result;
@@ -64,11 +64,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as CompactionProfileDesignRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CompactionProfileDesignRequest>();
-
+        var request = CastRequestObjectTo<CompactionProfileDesignRequest>(item);
         var profile = PerformProductionDataProfilePost(request);
 
         if (profile != null)
@@ -78,13 +74,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       }
       finally
       {
-        this.ContractExecutionStates.ClearDynamic();
+        ContractExecutionStates.ClearDynamic();
       }
     }
 
     private CompactionProfileResult<CompactionProfileVertex> ConvertProfileResult(MemoryStream ms)
     {
-      this.log.LogDebug("Converting profile result");
+      log.LogDebug("Converting profile result");
 
       var profileResult = new CompactionProfileResult<CompactionProfileVertex>();
       var pdsiProfile = new DesignProfile();

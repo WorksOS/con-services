@@ -26,10 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as SummaryVolumesRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<SummaryVolumesRequest>();
+        var request = CastRequestObjectTo<SummaryVolumesRequest>(item);
 
         TASNodeSimpleVolumesResult result;
 

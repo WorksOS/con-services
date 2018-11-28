@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
@@ -46,12 +45,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
     {
       try
       {
-        var request = item as ProjectFileDescriptor;
+        var request = CastRequestObjectTo<ProjectFileDescriptor>(item);
+        var fileType = request.FileType;
 
-        if (request == null)
-          ThrowRequestTypeCastException<ProjectFileDescriptor>();
-
-        var fileType = request.FileType;   //FileUtils.GetFileType(request.File.fileName);
         log.LogDebug($"FileType is: {fileType}");
 
         if (fileType == ImportedFileType.DesignSurface ||

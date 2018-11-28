@@ -32,6 +32,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
+    private IASNodeClient raptorClient;
     private ILogger<T> logger;
     private ILoggerFactory loggerFactory;
     private IFilterServiceProxy filterServiceProxy;
@@ -57,6 +58,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the service exception handler.
     /// </summary>
     private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
+
+    protected IASNodeClient RaptorClient => raptorClient ?? (raptorClient = HttpContext.RequestServices.GetService<IASNodeClient>());
 
     /// <summary>
     /// Gets the application logging interface.
@@ -106,9 +109,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Returns the legacy ProjectId (long) for a given ProjectUid (Guid).
     /// </summary>
-    protected async Task<long> GetLegacyProjectId(Guid projectUid)
+    protected Task<long> GetLegacyProjectId(Guid projectUid)
     {
-      return await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      return ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
     }
 
     /// <summary>

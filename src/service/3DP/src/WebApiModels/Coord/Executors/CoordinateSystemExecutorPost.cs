@@ -1,15 +1,14 @@
-﻿using ASNodeDecls;
-using System.IO;
+﻿using System.IO;
+using ASNodeDecls;
 using VLPDDecls;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.Coord.Executors
+namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 {
   /// <summary>
   /// Post coordinate system definition file executor.
   /// </summary>
-  /// 
   public class CoordinateSystemExecutorPost : CoordinateSystemExecutor
   {
     protected override TASNodeErrorStatus SendRequestToPDSClient(object item)
@@ -18,19 +17,19 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Executors
 
       var tempCoordSystemSettings = new TCoordinateSystemSettings();
 
-      if (item is IIsProjectIDApplicable)
+      if (item is IIsProjectIDApplicable file)
       {
-        if ((item as IIsProjectIDApplicable).HasProjectID())
+        if (file.HasProjectID())
         {
-          CoordinateSystemFile request = item as CoordinateSystemFile;
+          var request = file as CoordinateSystemFile;
           code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.csFileContent), request.csFileName, request.ProjectId ?? -1, out tempCoordSystemSettings);
         }
         else
         {
-          CoordinateSystemFileValidationRequest request = item as CoordinateSystemFileValidationRequest;
+          var request = file as CoordinateSystemFileValidationRequest;
           code = raptorClient.PassSelectedCoordinateSystemFile(new MemoryStream(request.csFileContent), request.csFileName, -1, out tempCoordSystemSettings);
-        };
-      };
+        }
+      }
 
       if (code == TASNodeErrorStatus.asneOK)
         coordSystemSettings = tempCoordSystemSettings;

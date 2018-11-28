@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
@@ -10,7 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Models.Models;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -21,6 +20,9 @@ namespace VSS.Productivity3D.Common.Interfaces
   /// </summary>
   public abstract class RequestExecutorContainer
   {
+    protected bool UseTRexGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useTrexGateway) && useTrexGateway;
+    protected bool UseRaptorGateway(string key) => bool.TryParse(configStore.GetValueString(key), out var useRaptorGateway) && useRaptorGateway;
+
     private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
     private const int ERROR_STATUS_OK = 0;
@@ -172,6 +174,21 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
       this.customHeaders = customHeaders;
+    }
+    
+    /// <summary>
+    /// Casts input object to type T for use with child executors.
+    /// </summary>
+    protected T CastRequestObjectTo<T>(object item) where T : ProjectID
+    {
+      var request = item as T;
+
+      if (request == null)
+      {
+        ThrowRequestTypeCastException<T>();
+      }
+
+      return request;
     }
 
     protected void ThrowRequestTypeCastException<T>(string errorMessage = null)

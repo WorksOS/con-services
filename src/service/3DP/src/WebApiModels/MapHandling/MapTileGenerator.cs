@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
             bitmap = mapTileService.GetMapBitmap(parameters, request.MapType.Value, request.Language.Substring(0, 2));
             break;
           case TileOverlayType.ProductionData:
-            log.LogInformation($"GetProductionDataTile: project {request.Project.ProjectUid}");
+            log.LogInformation($"GetBoundariesFromLinework: project {request.Project.ProjectUid}");
 
             Guid.TryParse(request.Project.ProjectUid, out Guid projectUid);
 

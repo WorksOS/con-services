@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Net;
 using ASNodeDecls;
 using ASNodeRPC;
 using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -14,7 +12,6 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
@@ -38,10 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as CMVRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CMVRequest>();
+        var request = CastRequestObjectTo<CMVRequest>(item);
 
         if (!request.IsCustomCMVTargets || !bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CMV"), out var useTrexGateway))
           useTrexGateway = false;

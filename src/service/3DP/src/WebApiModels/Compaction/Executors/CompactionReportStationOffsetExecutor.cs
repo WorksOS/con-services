@@ -1,20 +1,17 @@
-﻿using ASNodeDecls;
+﻿using System;
+using System.Net;
+using ASNodeDecls;
 using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Net;
-using Newtonsoft.Json;
-using SVOICDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -31,11 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as CompactionReportStationOffsetRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CompactionReportStationOffsetRequest>();
-
+        var request = CastRequestObjectTo<CompactionReportStationOffsetRequest>(item);
         var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
         var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
         var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);

@@ -47,12 +47,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as ElevationStatisticsRequest;
+      var request = CastRequestObjectTo<ElevationStatisticsRequest>(item);
 
-      if (request == null)
-        ThrowRequestTypeCastException<ElevationStatisticsRequest>();
-
-      new TASNodeElevationStatisticsResult();
+      //new TASNodeElevationStatisticsResult();
 
       var Filter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
 

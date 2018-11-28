@@ -35,10 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ProjectStatisticsRequest request = item as ProjectStatisticsRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<ProjectStatisticsRequest>();
+      var request = CastRequestObjectTo<ProjectStatisticsRequest>(item);
 
       bool success = raptorClient.GetDataModelStatistics(
         request.ProjectId ?? -1,

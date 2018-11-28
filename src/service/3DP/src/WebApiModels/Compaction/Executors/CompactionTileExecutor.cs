@@ -35,14 +35,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as TileRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<TileRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        var request = CastRequestObjectTo<TileRequest>(item);
+        
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
           var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result as FileStreamResult;
 

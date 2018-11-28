@@ -27,31 +27,22 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the summary pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a PassCountSummaryResult if successful</returns>      
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
-        var request = item as ExportGridCSV;
-
-        if (request == null)
-          ThrowRequestTypeCastException<ExportGridCSV>();
-
+        var request = CastRequestObjectTo<ExportGridCSV>(item);
         var raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.ProjectId);
         MemoryStream outputStream = null;
-
         Stream writerStream = null;
-
         ZipArchive archive = null;
 
         log.LogDebug("About to call GetGriddedOrAlignmentCSVExport");
 
         var Result = raptorClient.GetGriddedOrAlignmentCSVExport
         (request.ProjectId ?? -1,
-          (int) request.reportType,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid) (request.callId ?? Guid.NewGuid()), 0,
+          (int)request.reportType,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
             TASNodeCancellationDescriptorType.cdtProdDataExport),
           RaptorConverters.DesignDescriptor(request.designFile),
           request.interval,
@@ -61,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.reportMDP,
           request.reportPassCount,
           request.reportTemperature,
-          (int) request.reportOption,
+          (int)request.reportOption,
           request.startNorthing,
           request.startEasting,
           request.endNorthing,
@@ -199,7 +190,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
           log.LogDebug("Returning result");
 
-          return ExportResult.Create(outputStream.ToArray(), (short) Result);
+          return ExportResult.Create(outputStream.ToArray(), (short)Result);
         }
         catch
         {

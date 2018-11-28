@@ -1,10 +1,8 @@
-﻿using ASNode.SpeedSummary.RPC;
+﻿using System;
+using System.Collections.Generic;
+using ASNode.SpeedSummary.RPC;
 using ASNodeDecls;
 using SVOICOptionsDecls;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -43,11 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as SummarySpeedRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<SummarySpeedRequest>();
-
+        var request = CastRequestObjectTo<SummarySpeedRequest>(item);
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_SPEED"), out var useTrexGateway);
 
         if (useTrexGateway)

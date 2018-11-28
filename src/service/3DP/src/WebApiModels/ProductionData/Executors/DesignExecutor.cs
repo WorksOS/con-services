@@ -27,12 +27,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         log.LogDebug("Getting GeoJson design boundaries from Raptor");
 
-        var request = item as DesignBoundariesRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<DesignBoundariesRequest>();
-
-        JObject[] geoJsons = null;
+        var request = CastRequestObjectTo<DesignBoundariesRequest>(item);
+        JObject[] geoJsons;
 
         if (fileList != null && fileList.Count > 0)
         {
@@ -42,8 +38,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           {
             log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
 
-            MemoryStream memoryStream;
-            TDesignProfilerRequestResult designProfilerResult;
             string fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(configStore, log);
             FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, fileList[i].Path, fileList[i].Name);
 
@@ -55,8 +49,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
                 request.tolerance,
                 TVLPDDistanceUnits.vduMeters,
                 0),
-              out memoryStream,
-              out designProfilerResult);
+              out var memoryStream,
+              out var designProfilerResult);
 
             if (result)
             {
@@ -84,7 +78,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           geoJsons = new JObject[0];
         }
 
-        return DesignResult.CreateDesignResult(geoJsons); ;
+        return DesignResult.CreateDesignResult(geoJsons);
       }
       finally
       {

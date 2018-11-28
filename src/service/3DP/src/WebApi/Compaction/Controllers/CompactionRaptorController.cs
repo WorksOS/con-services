@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +11,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -26,16 +23,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   public class CompactionRaptorController : BaseTileController<CompactionRaptorController>
   {
-    private readonly IASNodeClient raptorClient;
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionRaptorController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
+    public CompactionRaptorController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager) :
       base(configStore, fileListProxy, settingsManager)
-    {
-      this.raptorClient = raptorClient;
-    }
+    { }
 
     /// <summary>
     /// Gets a "best fit" bounding box for the requested project and given query parameters.

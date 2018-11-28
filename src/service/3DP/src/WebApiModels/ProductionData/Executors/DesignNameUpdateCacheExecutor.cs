@@ -1,6 +1,4 @@
-﻿using System.Net;
-using DesignProfilerDecls;
-using VSS.Common.Exceptions;
+﻿using DesignProfilerDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -20,11 +18,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as DesignNameRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<DesignNameRequest>();
-
+      var request = CastRequestObjectTo<DesignNameRequest>(item);
       var result = raptorClient.UpdateCacheWithDesign(request.ProjectId ?? -1, request.DesignFilename, 0, true);
 
       if (result == TDesignProfilerRequestResult.dppiOK)

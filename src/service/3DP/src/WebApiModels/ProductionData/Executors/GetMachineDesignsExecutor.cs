@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -16,11 +13,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
   {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as ProjectID;
-
-      if (request == null)
-        ThrowRequestTypeCastException<ProjectID>();
-
+      var request = CastRequestObjectTo<ProjectID>(item);
       var raptorDesigns = raptorClient.GetOnMachineDesignEvents(request.ProjectId ?? -1);
 
       if (raptorDesigns != null)

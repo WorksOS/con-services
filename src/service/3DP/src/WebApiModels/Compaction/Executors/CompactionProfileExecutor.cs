@@ -30,13 +30,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as CompactionProfileProductionDataRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<CompactionProfileProductionDataRequest>();
-
+        var request = CastRequestObjectTo<CompactionProfileProductionDataRequest>(item);
         var totalResult = ProcessProductionData(request);
         var summaryVolumesResult = ProcessSummaryVolumes(request, totalResult);
+
         if (summaryVolumesResult != null)
         {
           totalResult.results.Add(summaryVolumesResult);

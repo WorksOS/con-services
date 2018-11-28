@@ -38,24 +38,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
-
 
     /// <summary>
     /// File import controller v4
     /// </summary>
-    /// <param name="producer"></param>
-    /// <param name="store"></param>
-    /// <param name="logger"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="raptorProxy"></param>
-    /// <param name="projectRepo"></param>
-    /// <param name="requestFactory"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <param name="fileRepo"></param>
     public FileImportV4Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy,
@@ -73,11 +60,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
     }
 
-    // GET: api/v4/importedfiles
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    /// <returns>A list of files</returns>
     [Route("api/v4/importedfiles")]
     [HttpGet]
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
@@ -180,15 +165,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Upload a file, and do processing synchronously
     /// </summary>
-    /// <param name="file"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileType"></param>
-    /// <param name="dxfUnitsType"></param>
-    /// <param name="fileCreatedUtc"></param>
-    /// <param name="fileUpdatedUtc"></param>
-    /// <param name="surveyedUtc"></param>
-    /// <param name="transferProxy"></param>
-    /// <returns></returns>
     [Route("api/v4/importedfile")]
     [HttpPost]
     [FlowUpload(Extensions = new[]
@@ -205,9 +181,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromServices] ITransferProxy transferProxy)
     {
       // Validate the file
-      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, 
-        projectUid, 
-        importedFileType, 
+      FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file,
+        projectUid,
+        importedFileType,
         dxfUnitsType,
         fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -226,8 +202,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// POST or PUT Request to upload a file using a background task
     /// </summary>
     /// <returns>Schedule Job Result with a Job ID</returns>
-    /// <response code="200">Ok</response>
-    /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile/background")]
     [HttpPost]
     [HttpPut]
@@ -251,7 +225,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       log.LogInformation(
         $"BackgroundUploadV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-      
+
       var s3Path = $"project/importedfile/{Guid.NewGuid()}.dat";
       var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
       transferProxy.Upload(fileStream, s3Path);
@@ -303,7 +277,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime? surveyedUtc,
       [FromServices] ITransferProxy transferProxy)
     {
-
       log.LogInformation(
         $"CreateImportedFileV4. filename: {filename} awspath {awsFilePath} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
@@ -337,11 +310,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v4/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
-    [FlowUpload(Extensions = new[]
-    {
-      "svl", "dxf", "ttm"
-    }, Size = 1_000_000_000)]
-
+    [FlowUpload(Extensions = new[] { "svl", "dxf", "ttm" }, Size = 1_000_000_000)]
     public async Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
       FlowFile file,
       [FromQuery] Guid projectUid,
@@ -402,10 +371,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Delete imported file
     /// </summary>
-    /// <remarks>Deletes existing imported file</remarks>
     [Route("api/v4/importedfile")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromQuery] Guid projectUid,
+    public async Task<ContractExecutionResult> DeleteImportedFileV4(
+      [FromQuery] Guid projectUid,
       [FromQuery] Guid importedFileUid)
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
@@ -496,20 +465,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return importedFile;
     }
 
-
     /// <summary>
     /// Do the import of a file uploaded directly, or via scheduler 
     /// This can be called by the background upload (file stored in AWS, then re downloaded with scheduler request), or Synchronise upload (file stored locally)
     /// </summary>
-    /// <param name="filename">filename if the file</param>
-    /// <param name="fileStream">Stream containing the contents of the file</param>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileType"></param>
-    /// <param name="dxfUnitsType"></param>
-    /// <param name="fileCreatedUtc"></param>
-    /// <param name="fileUpdatedUtc"></param>
-    /// <param name="surveyedUtc"></param>
-    /// <returns>Details of the upload file</returns>
     private async Task<ImportedFileDescriptorSingleResult> ImportFile(string filename, Stream fileStream, Guid projectUid, ImportedFileType importedFileType,
       DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DateTime? surveyedUtc)
     {
@@ -530,14 +489,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       /*** now making changes, potentially needing rollback ***/
-      FileDescriptor fileDescriptor = null;
-
-
-      fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
-          fileStream, customerUid, projectUid.ToString(), filename, importedFileType == ImportedFileType.SurveyedSurface,
-          surveyedUtc, fileSpaceId, log, serviceExceptionHandler, fileRepo)
-        .ConfigureAwait(false);
-      
+      var fileDescriptor = await ProjectRequestHelper.WriteFileToTCCRepository(
+                                                       fileStream, customerUid, projectUid.ToString(), filename, importedFileType == ImportedFileType.SurveyedSurface,
+                                                       surveyedUtc, fileSpaceId, log, serviceExceptionHandler, fileRepo)
+                                                     .ConfigureAwait(false);
 
       // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
       var createImportedFileEvent = await ImportedFileRequestHelper.CreateImportedFileinDb(Guid.Parse(customerUid),
@@ -566,7 +521,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           log, serviceExceptionHandler, projectRepo)
         .ConfigureAwait(false);
 
-      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {

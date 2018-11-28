@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -18,8 +17,9 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Compaction.Utilities;
 using VSS.Productivity3D.WebApi.Models.Common;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
@@ -66,9 +66,8 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [HttpPost]
     public async Task<IActionResult> PostTagFileNonDirectSubmission([FromBody]CompactionTagFileRequest request)
     {
-      var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
+      var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile: " + serializedRequest);
-
 
       //Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
@@ -136,11 +135,11 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     [HttpPost]
     public async Task<ObjectResult> PostTagFileDirectSubmission([FromBody] CompactionTagFileRequest request)
     {
-      var serializedRequest = SerializeObjectIgnoringProperties(request, "Data");
+      var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       log.LogDebug("PostTagFile (Direct): " + serializedRequest);
 
       var result = await RequestExecutorContainerFactory
-        .Build<TagFileDirectSubmissionExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
+        .Build<LineworkFileExecutor>(logger, raptorClient, tagProcessor, configStore, null, null, null, null, transferProxy, tRexTagFileProxy, null, customHeaders)
         .ProcessAsync(request).ConfigureAwait(false) as TagFileDirectSubmissionResult;
 
       if (result.Code == 0)
@@ -150,18 +149,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 
       return StatusCode((int)HttpStatusCode.BadRequest, result);
     }
-
-    /// <summary>
-    /// Serialize the request ignoring the Data property so not to overwhelm the logs.
-    /// </summary>
-    private static string SerializeObjectIgnoringProperties(CompactionTagFileRequest request, params string[] properties)
-    {
-      return JsonConvert.SerializeObject(
-        request,
-        Formatting.None,
-        new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver(properties) });
-    }
-
 
     private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
       ? VelociraptorConstants.NO_PROJECT_ID
@@ -178,6 +165,5 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         ? null
         : new WGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
-
   }
 }

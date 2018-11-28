@@ -24,6 +24,7 @@ using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using System;
 using System.IO;
+using ASNode.DXF.RequestBoundaries.RPC;
 using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using VLPDDecls;
 
@@ -288,12 +289,16 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// <param name="args">Set of the grid report parameters.</param>
     /// <param name="dataReport">The reports data.</param>
     /// <returns>The Raptor's request result code.</returns>
-    /// 
     int GetReportGrid(TASNodeServiceRPCVerb_GridReport_Args args, out MemoryStream dataReport);
 
     /// <summary>
     /// Gets a station offset report from Raptor.
     /// </summary>
     int GetReportStationOffset(TASNodeServiceRPCVerb_StationOffsetReport_Args args, out MemoryStream dataReport);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    TASNodeErrorStatus GetBoundariesFromLinework(TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args args, out TWGS84LineworkBoundary[] lineworkBoundaries);
   }
 }

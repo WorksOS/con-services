@@ -35,13 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         try
         {
-          //ProjectID projectId = (item as Tuple<ProjectID, DataID>).Item1;
-          //DataID assetId = (item as Tuple<ProjectID, DataID>).Item2;
-
-          var request = item as CCAColorPaletteRequest;
-
-          if (request == null)
-            ThrowRequestTypeCastException<CCAColorPaletteRequest>();
+          var request = CastRequestObjectTo<CCAColorPaletteRequest>(item);
 
           TColourPalettes palettes;
           

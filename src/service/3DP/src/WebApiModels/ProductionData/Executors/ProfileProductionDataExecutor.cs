@@ -80,11 +80,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       try
       {
-        var request = item as ProfileProductionDataRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<ProfileProductionDataRequest>();
-
+        var request = CastRequestObjectTo<ProfileProductionDataRequest>(item);
         var profileResult = PerformProductionDataProfilePost(request);
 
         if (profileResult != null)

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net;
 using ShineOn.Rtl;
 using TAGProcServiceDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -24,10 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       try
       {
-        var request = item as EditDataRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<EditDataRequest>();
+        var request = CastRequestObjectTo<EditDataRequest>(item);
 
         //Note: request.dataEdit should only be null for a global undo. This is checked in request model validation
         //so the following should never happen. But just in case...

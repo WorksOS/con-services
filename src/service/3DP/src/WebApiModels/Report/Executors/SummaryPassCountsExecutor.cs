@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net;
 using ASNodeDecls;
-using SVOICFilterSettings;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -37,11 +34,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as PassCounts;
-
-        if (request == null)
-          ThrowRequestTypeCastException<PassCounts>();
-
+        var request = CastRequestObjectTo<PassCounts>(item);
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway);
 
         if (useTrexGateway)
@@ -58,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds);
 
         var raptorResult = raptorClient.GetPassCountSummary(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtPassCountSummary),
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtPassCountSummary),
           ConvertSettings(),
           raptorFilter,
           RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),

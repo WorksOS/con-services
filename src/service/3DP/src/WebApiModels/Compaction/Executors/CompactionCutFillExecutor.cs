@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Net;
 using ASNodeDecls;
 using SVOICOptionsDecls;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -32,15 +28,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       try
       {
-        var request = item as CutFillDetailsRequest;
+        var request = CastRequestObjectTo<CutFillDetailsRequest>(item);
 
-        if (request == null)
-          ThrowRequestTypeCastException<CutFillDetailsRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_CUTFILL"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_CUTFILL"))
+        {
           return trexCompactionDataProxy.SendCutFillDetailsRequest(request, customHeaders).Result;
+        }
 
         var filter = RaptorConverters.ConvertFilter(null, request.Filter, request.ProjectId);
         var designDescriptor = RaptorConverters.DesignDescriptor(request.DesignDescriptor);

@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApiModels.Notification.Executors;
+using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
 

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net;
 using ASNodeDecls;
-using SVOICFilterSettings;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -31,43 +28,31 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <summary>
     /// Processes the detailed pass counts request by passing the request to Raptor and returning the result.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a PassCountDetailedResult if successful</returns>     
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
-
       try
       {
-        var request = item as PassCounts;
+        var request = CastRequestObjectTo<PassCounts>(item);
 
-        if (request == null)
-          ThrowRequestTypeCastException<PassCounts>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_PASSCOUNT"), out var useTrexGateway);
-
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_PASSCOUNT"))
         {
           var pcDetailsRequest = new PassCountDetailsRequest(request.ProjectUid, request.Filter, request.passCountSettings.passCounts);
           return trexCompactionDataProxy.SendPassCountDetailsRequest(pcDetailsRequest, customHeaders).Result;
         }
 
-        TPassCountDetails passCountDetails;
-
         var raptorFilter = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId,
             request.OverrideStartUTC, request.OverrideEndUTC, request.OverrideAssetIds, log: log);
         var raptorResult = raptorClient.GetPassCountDetails(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
             TASNodeCancellationDescriptorType.cdtPassCountDetailed),
           request.passCountSettings != null ? ConvertSettings(request.passCountSettings) : new TPassCountSettings(),
           raptorFilter,
           RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
-          out passCountDetails);
+          out var passCountDetails);
         //log.LogDebug($"Result from Raptor {success} with {JsonConvert.SerializeObject(passCountDetails)}");
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
-            return ConvertResult(passCountDetails, request.liftBuildSettings);
+          return ConvertResult(passCountDetails, request.liftBuildSettings);
 
         throw CreateServiceException<DetailedPassCountExecutor>((int)raptorResult);
       }
@@ -85,8 +70,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     private PassCountDetailedResult ConvertResult(TPassCountDetails details, LiftBuildSettings liftSettings)
     {
       return new PassCountDetailedResult(
-          ((liftSettings != null) && (liftSettings.OverridingTargetPassCountRange != null)) 
-              ? liftSettings.OverridingTargetPassCountRange 
+          ((liftSettings != null) && (liftSettings.OverridingTargetPassCountRange != null))
+              ? liftSettings.OverridingTargetPassCountRange
               : (!details.IsTargetPassCountConstant ? new TargetPassCountRange(0, 0) : new TargetPassCountRange(details.ConstantTargetPassCountRange.Min, details.ConstantTargetPassCountRange.Max)),
           details.IsTargetPassCountConstant,
           details.Percents, details.TotalAreaCoveredSqMeters);

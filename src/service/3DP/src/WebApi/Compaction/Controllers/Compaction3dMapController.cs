@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -14,9 +13,7 @@ using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -31,7 +28,6 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Designs.TTM.Optimised;
@@ -364,7 +360,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       
       var points = new TWGS84FenceContainer
       {
-        FencePoints = new TWGS84Point[]
+        FencePoints = new[]
         {
           TWGS84Point.Point(minEasting, minNorthing),
           TWGS84Point.Point(maxEasting, maxNorthing),
@@ -481,10 +477,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Converts a collection of TTMs to a single obj model, including UV mapping
     /// </summary>
-    /// <param name="tins"></param>
-    /// <param name="eastingModifier"></param>
-    /// <param name="northingModifier"></param>
-    /// <returns></returns>
     private FileStreamResult ConvertMultipleToObj(IList<TrimbleTINModel> tins, double eastingOffset, double northingOffset)
     {
       // FileStreamResult will dispose of this once the response has been completed

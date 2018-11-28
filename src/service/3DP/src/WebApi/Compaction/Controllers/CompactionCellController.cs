@@ -27,18 +27,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class CompactionCellController : BaseController<CompactionCellController>
   {
     /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionCellController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
       : base(configStore, fileListProxy, settingsManager)
-    {
-      this.raptorClient = raptorClient;
-    }
+    { }
 
     /// <summary>
     /// Requests a single thematic datum value from a single cell. Examples are elevation, compaction. temperature etc.
@@ -75,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       request.Validate();
 
-      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, raptorClient).Process(request) as CompactionCellDatumResult;
+      return RequestExecutorContainerFactory.Build<CompactionCellDatumExecutor>(LoggerFactory, RaptorClient).Process(request) as CompactionCellDatumResult;
     }
 
     /// <summary>
@@ -117,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       patchRequest.Validate();
 
-      var v2PatchRequestResponse = RequestExecutorContainerFactory.Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient)
+      var v2PatchRequestResponse = RequestExecutorContainerFactory.Build<CompactionPatchV2Executor>(LoggerFactory, RaptorClient)
                                                                   .Process(patchRequest);
 
       return Ok(v2PatchRequestResponse);

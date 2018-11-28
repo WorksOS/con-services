@@ -14,8 +14,7 @@ namespace VSS.MasterData.Proxies
   public class FileListProxy : BaseProxy, IFileListProxy
   {
       public FileListProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
-      {
-      }
+      { }
      
       public async Task<List<FileData>> GetFiles(string projectUid, string userId, IDictionary<string, string> customHeaders)
       {
@@ -25,11 +24,9 @@ namespace VSS.MasterData.Proxies
         {
           return result.ImportedFileDescriptors;
         }
-        else
-        {
-          log.LogDebug("Failed to get list of files: {0}, {1}", result.Code, result.Message);
-          return null;
-        }
+
+        log.LogDebug("Failed to get list of files: {0}, {1}", result.Code, result.Message);
+        return null;
       }
 
     /// <summary>

@@ -1,7 +1,4 @@
-﻿using System.Net;
-using BoundingExtents;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
+﻿using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -18,25 +15,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     /// <summary>
     /// Calls raptor to get project extents
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item">ExtentRequest</param>
-    /// <returns>ContractExecutionResult</returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
-        // get request parameters
-        var request = item as ExtentRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<ExtentRequest>();
-
-        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_TILES"), out var useTrexGateway);
-
+        var request = CastRequestObjectTo<ExtentRequest>(item);
         bool success;
         BoundingBox3DGrid bbExtents = null;
 
-        if (useTrexGateway)
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
         {
           bbExtents = trexCompactionDataProxy.SendProjectExtentsRequest(request.ProjectUid.ToString(), customHeaders).Result;
           success = bbExtents != null;

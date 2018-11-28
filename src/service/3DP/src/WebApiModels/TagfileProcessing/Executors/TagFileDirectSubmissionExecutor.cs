@@ -28,31 +28,25 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionTagFileRequest;
-
       if (request == null)
+      {
         ThrowRequestTypeCastException<CompactionTagFileRequest>();
+      }
 
-      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-        "3dPm Unknown exception.");
+      var useTrexGateway = UseTRexGateway("ENABLE_TREX_GATEWAY");
+      var useRaptorGateway = UseRaptorGateway("ENABLE_RAPTOR_GATEWAY");
 
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out var useTrexGateway);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY"), out var useRaptorGateway);
+      var result = new ContractExecutionResult();
 
       if (useTrexGateway)
       {
         request.Validate();
 
-        // gobbles any exception
         result = await CallTRexEndpoint(request).ConfigureAwait(false);
 
-        if (result.Code == 0)
-        {
-          log.LogDebug($"PostTagFile (Direct TRex): Successfully imported TAG file '{request.FileName}'.");
-        }
-        else
-        {
-          log.LogDebug($"PostTagFile (Direct TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
-        }
+        log.LogDebug(result.Code == 0
+          ? $"PostTagFile (Direct TRex): Successfully imported TAG file '{request.FileName}'."
+          : $"PostTagFile (Direct TRex): Failed to import TAG file '{request.FileName}', {result.Message}");
       }
 
       if (useRaptorGateway)
@@ -95,10 +89,9 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             "No tag file processing server configured."));
-
       }
 
-      return result;
+      return ContractExecutionResult.ErrorResult();
     }
 
     private async Task<ContractExecutionResult> CallTRexEndpoint(CompactionTagFileRequest request)
@@ -117,14 +110,14 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       {
 
         var data = new MemoryStream(tfRequest.Data);
-        var returnResult = (TTAGProcServerProcessResult) tagProcessor.ProjectDataServerTAGProcessorClient()
-          .SubmitTAGFileToTAGFileProcessor
-          (tfRequest.FileName,
-            data,
-            tfRequest.ProjectId ?? -1, 0, 0, tfRequest.MachineId ?? -1,
-            tfRequest.Boundary != null
-              ? RaptorConverters.convertWGS84Fence(tfRequest.Boundary)
-              : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
+        var returnResult = tagProcessor.ProjectDataServerTAGProcessorClient()
+                                       .SubmitTAGFileToTAGFileProcessor
+                                       (tfRequest.FileName,
+                                         data,
+                                         tfRequest.ProjectId ?? -1, 0, 0, tfRequest.MachineId ?? -1,
+                                         tfRequest.Boundary != null
+                                           ? RaptorConverters.convertWGS84Fence(tfRequest.Boundary)
+                                           : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
 
         log.LogInformation($"PostTagFile (Direct Raptor): result: {JsonConvert.SerializeObject(returnResult)}");
         return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(returnResult));
@@ -291,8 +284,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var nameWithoutTime = tagFileName.Substring(0, tagFileName.Length - 10);
       //TCC org ID is not provided with direct submission from machines
       var prefix = string.IsNullOrEmpty(tccOrgId) ? string.Empty : $"{tccOrgId}/";
+
       return $"{prefix}{parts[0]}{separator}{parts[1]}/{archiveFolder}/{nameWithoutTime}/{tagFileName}";
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException("Use the asynchronous form of this method");

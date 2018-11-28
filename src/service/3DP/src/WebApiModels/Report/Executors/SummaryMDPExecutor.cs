@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net;
 using ASNodeDecls;
-using SVOICFilterSettings;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -38,11 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       try
       {
-        var request = item as MDPRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<MDPRequest>();
-
+        var request = CastRequestObjectTo<MDPRequest>(item);
         bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_MDP"), out var useTrexGateway);
 
         if (useTrexGateway)
@@ -63,11 +56,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         var raptorFilter = RaptorConverters.ConvertFilter(request.FilterId, request.Filter, request.ProjectId,
           request.OverrideStartUtc, request.OverrideEndUtc, request.OverrideAssetIds, fileSpaceName);
         var raptorResult = raptorClient.GetMDPSummary(request.ProjectId ?? -1,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
+          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtMDPSummary),
           ConvertSettings(request.MdpSettings),
           raptorFilter,
           RaptorConverters.ConvertLift(request.LiftBuildSettings, raptorFilter.LayerMethod),
-          out TMDPSummary mdpSummary);
+          out var mdpSummary);
 
         if (raptorResult == TASNodeErrorStatus.asneOK)
           return ConvertResult(mdpSummary);
@@ -84,7 +77,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
 
     private MDPSummaryResult ConvertResult(TMDPSummary summary)
     {

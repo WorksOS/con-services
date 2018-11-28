@@ -34,7 +34,8 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
       return result;
     }
 
-    public static readonly string Productivity3DServiceBaseUrl = ConstructUri(Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI"));
+    public static readonly string Productivity3DServiceBaseUrl = "http://localhost:5000";
+    //public static readonly string Productivity3DServiceBaseUrl = ConstructUri(Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI"));
 
     private static string ConstructUri(string subDir)
     {

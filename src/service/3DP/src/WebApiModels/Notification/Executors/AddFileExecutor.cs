@@ -1,11 +1,11 @@
-﻿using ASNodeDecls;
-using DesignProfilerDecls;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using ASNodeDecls;
+using DesignProfilerDecls;
+using Microsoft.Extensions.Logging;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -19,7 +19,7 @@ using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Notification.Executors
+namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
 {
   /// <summary>
   /// Processes the request to add a file.
@@ -53,11 +53,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
     {
       try
       {
-        var request = item as ProjectFileDescriptor;
-
-        if (request == null)
-          ThrowRequestTypeCastException<ProjectFileDescriptor>();
-
+        var request = CastRequestObjectTo<ProjectFileDescriptor>(item);
         var zoomResult = new ZoomRangeResult();
         var fileType = request.FileType;
         log.LogDebug($"FileType is: {fileType}");
@@ -75,8 +71,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
-              string.Format("Failed to update Raptor design cache with error: {0}",
-                ContractExecutionStates.FirstNameWithOffset((int)result1))));
+              $"Failed to update Raptor design cache with error: {ContractExecutionStates.FirstNameWithOffset((int) result1)}"));
           }
         }
 
@@ -127,9 +122,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
               request.ProjectId.Value, dxfUnitsType, out string haFile);
             if (result3 != TASNodeErrorStatus.asneOK)
             {
-              log.LogWarning(string.Format(
-                "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
-                ContractExecutionStates.FirstNameWithOffset((int)result2)));
+              log.LogWarning("Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + $" file with error: {ContractExecutionStates.FirstNameWithOffset((int) result2)}.");
               return new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Add file notification partially successful. Can not create horizontal adjustment - no tiles can be generated")
               {
                 MinZoomLevel = 0,
@@ -173,7 +166,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
             }
             //Calculate the zoom range
             string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
-            var fullGeneratedName = string.Format("{0}/{1}", request.File.path, generatedName);
+            var fullGeneratedName = $"{request.File.path}/{generatedName}";
             zoomResult = await tileGenerator.CalculateTileZoomRange(request.File.filespaceId, fullGeneratedName).ConfigureAwait(false); 
             //Generate DXF tiles
             await tileGenerator.CreateDxfTiles(request.ProjectId.Value, request.File, suffix, zoomResult, false).ConfigureAwait(false);

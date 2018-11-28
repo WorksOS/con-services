@@ -43,15 +43,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as SummaryParametersBase;
-
-      if (request == null)
-        ThrowRequestTypeCastException<SummaryParametersBase>();
-
-      new TASNodeThicknessSummaryResult();
+      var request = CastRequestObjectTo<SummaryParametersBase>(item);
 
       bool success = raptorClient.GetSummaryThickness(request.ProjectId ?? -1,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.CallId ?? Guid.NewGuid()), 0,
+        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
           TASNodeCancellationDescriptorType.cdtVolumeSummary),
         RaptorConverters.ConvertFilter(request.BaseFilterId, request.BaseFilter, request.ProjectId, null, null),
         RaptorConverters.ConvertFilter(request.TopFilterId, request.TopFilter, request.ProjectId, null, null),

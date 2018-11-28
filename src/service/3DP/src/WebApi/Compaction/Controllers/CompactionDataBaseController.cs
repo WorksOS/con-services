@@ -19,11 +19,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   public class CompactionDataBaseController : BaseController<CompactionDataBaseController>
   {
     /// <summary>
-    /// Raptor client for use by executor
-    /// </summary>
-    protected readonly IASNodeClient RaptorClient;
-
-    /// <summary>
     /// The request factory
     /// </summary>
     protected readonly IProductionDataRequestFactory RequestFactory;
@@ -36,10 +31,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionDataBaseController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CompactionDataBaseController(IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, ITRexCompactionDataProxy trexCompactionDataProxy)
       : base(configStore, fileListProxy, settingsManager)
     {
-      RaptorClient = raptorClient;
       RequestFactory = requestFactory;
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Text;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.FIlters;
@@ -46,8 +43,7 @@ namespace VSS.MasterData.Models.Models
     /// Private constructor
     /// </summary>
     private FileDescriptor()
-    {
-    }
+    { }
 
     /// <summary>
     /// Create instance of FileDescriptor

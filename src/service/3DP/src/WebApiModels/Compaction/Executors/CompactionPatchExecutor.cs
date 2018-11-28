@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using SVOICVolumeCalculationsDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
@@ -30,11 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
-        var request = item as PatchRequest;
-
-        if (request == null)
-          ThrowRequestTypeCastException<PatchRequest>();
-
+        var request = CastRequestObjectTo<PatchRequest>(item);
         var filter1 = RaptorConverters.ConvertFilter(request.FilterId1, request.Filter1, request.ProjectId);
         var filter2 = RaptorConverters.ConvertFilter(request.FilterId2, request.Filter2, request.ProjectId);
         var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
