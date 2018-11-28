@@ -147,8 +147,7 @@
         <label id="myLabel">Lat Lon Position</text>
     </div> 
 
-    <img src="../../../../VSSApps/SampleData/compass.png" id="myCompass" class="toolbar-compass">
-    <img src="../../../../VSSApps/SampleData/compassNeedle.png" id="myNeedle" class="toolbar-compass">    
+    <img src="../../../../VSSApps/SampleData/compass2.png" id="myCompass" class="toolbar-compass">
 
   <script>
 
@@ -351,9 +350,9 @@ var alkMaps = new Cesium.WebMapTileServiceImageryProvider({
     var newHeading =  Cesium.Math.toDegrees(viewer.camera.heading).toFixed(6); // Cesium.Math.toDegrees(viewer.camera.heading);
     // document.getElementById('myLabel').innerHTML =  'Heading: ' + ('   ' + newHeading).slice(-11) + '\u00B0';
     var deg = 360 - newHeading;//The rotation angle, in degrees
-    var needle = document.getElementById('myNeedle');
-    if (needle)
-      needle.setAttribute("style", "transform: rotate(" + deg + "deg)");
+    var compass = document.getElementById('myCompass');
+    if (compass)
+      compass.setAttribute("style", "transform: rotate(" + deg + "deg)");
 
 
     var cartesian = viewer.camera.pickEllipsoid(movement.endPosition, scene.globe.ellipsoid);
