@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Types;
-using VSS.TRex.Events.Interfaces;
 
 namespace VSS.TRex.Machines.Interfaces
 {
@@ -20,8 +19,6 @@ namespace VSS.TRex.Machines.Interfaces
     string LastKnownDesignName { get; set; }
     ushort LastKnownLayerId { get; set; }
 
-    IProductionEventLists TargetValueChanges { get; }
-
     /// <summary>
     /// Indicates if the machine has ever reported any compaction related data, such as CCV, MDP or CCA measurements
     /// </summary>
@@ -38,13 +35,13 @@ namespace VSS.TRex.Machines.Interfaces
     void Assign(IMachine source);
 
     /// <summary>
-    /// Serialises machine using the given writer
+    /// Serializes machine using the given writer
     /// </summary>
     /// <param name="writer"></param>
     void Write(BinaryWriter writer);
 
     /// <summary>
-    /// Deserialises the machine using the given reader
+    /// Deserializes the machine using the given reader
     /// </summary>
     /// <param name="reader"></param>
     void Read(BinaryReader reader);
