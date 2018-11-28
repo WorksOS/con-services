@@ -1,11 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.AWS.TransferProxy;
-using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -19,11 +16,8 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Surfaces.Requestors;
 using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.GridFabric.Events;
-using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
@@ -60,9 +54,6 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager());
       services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
       services.AddSingleton<IDesignManager>(factory => new DesignManager());
-      services.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender());
-      services.AddSingleton<IExistenceMaps>(factory => new ExistenceMaps.ExistenceMaps());
-      services.AddTransient<ITransferProxy, TransferProxy>();
 
       services.AddOpenTracing(builder =>
       {

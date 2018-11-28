@@ -9,7 +9,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
-  public class ImportFileV2Tests
+  public class ImportFileV2ValidationTests
   {
     protected ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
     private readonly long _projectId;
@@ -19,7 +19,7 @@ namespace VSS.MasterData.ProjectTests
     private readonly ImportedFileType _importedFileTypeId;
     private readonly DateTime _createdUtc;
 
-    public ImportFileV2Tests()
+    public ImportFileV2ValidationTests()
     {
       _projectId = 56666;
       _fileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01";

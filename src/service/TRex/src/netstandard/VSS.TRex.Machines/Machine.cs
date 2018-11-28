@@ -2,7 +2,6 @@
 using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
@@ -50,15 +49,6 @@ namespace VSS.TRex.Machines
         public bool CompactionDataReported { get => _compactionDataReported; set => _compactionDataReported = _compactionDataReported | value; }
 
         public CompactionSensorType CompactionSensorType { get; set; } = CompactionSensorType.NoSensor;
-
-        private IProductionEventLists _TargetValueChange = null;
-
-        public IProductionEventLists TargetValueChanges
-        {
-          get { return _TargetValueChange; }
-          set { _TargetValueChange = value; }
-        } 
-
 
         /// <summary>
         /// Determines if the type of this machine is one of the machine tyeps that supports compaction operations
@@ -138,7 +128,7 @@ namespace VSS.TRex.Machines
         }
 
         /// <summary>
-        /// Serialises machine using the given writer
+        /// Serializes machine using the given writer
         /// </summary>
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
@@ -162,7 +152,7 @@ namespace VSS.TRex.Machines
         }
 
         /// <summary>
-        /// Deserialises the machine using the given reader
+        /// Deserializes the machine using the given reader
         /// </summary>
         /// <param name="reader"></param>
         public void Read(BinaryReader reader)

@@ -49,6 +49,9 @@
     <None Update="FileImportFiles\TestDesignSurface2.TTM">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="FileImportFiles\TestDesignSurface3_GoodContent.ttm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="FileImportFiles\TestSurveyedSurface1.ttm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -22,6 +23,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
       IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
+      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null
       ) 
@@ -39,7 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log, configStore, serviceExceptionHandler,
         customerUid, userId, userEmailAddress, headers,
         producer, kafkaTopicName,
-        raptorProxy, subscriptionProxy,
+        raptorProxy, subscriptionProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
         projectRepo, subscriptionRepo, fileRepo, customerRepo, httpContextAccessor
         );
 
