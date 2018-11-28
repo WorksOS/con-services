@@ -151,10 +151,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       // Now open tagfile and validate contents
       ISiteModel siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel();
-      var machine = new Machine
-      {
-        TargetValueChanges = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex)
-      };
+      var machine = new Machine();
       var siteModelGridAggregator = new ServerSubGridTree(siteModel.ID);
       var machineTargetValueChangesAggregator = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
       TAGProcessor processor = new TAGProcessor(siteModel, machine, siteModelGridAggregator, machineTargetValueChangesAggregator);

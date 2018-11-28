@@ -339,7 +339,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
 
             // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-            SiteModelFromDM.SaveToPersistentStore(storageProxy_Mutable);
+            SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
 
             // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
             // All operations within the transaction to integrate the changes into the live model have completed successfully.

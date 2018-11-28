@@ -1,5 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Net;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Handlers;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
@@ -38,5 +42,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return isMatch;
     }
 
+    public static void ValidateEnvironmentVariables(ImportedFileType importedFileType, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler)
+    {
+      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
+      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
+      var isDesignFileType = importedFileType == ImportedFileType.DesignSurface ||
+                             importedFileType == ImportedFileType.SurveyedSurface;
+      if (!useRaptorGatewayDesignImport &&
+          !(useTrexGatewayDesignImport && isDesignFileType))
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 113); 
+      }
+    }
   }
 }

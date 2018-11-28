@@ -39,7 +39,7 @@ namespace VSS.AWS.TransferProxy
           string.IsNullOrEmpty(awsSecretKey) ||
           string.IsNullOrEmpty(awsBucketName))
       {
-        throw new Exception("Missing environment variable AWS_ACCESS_KEY, AWS_SECRET_KEY or AWS_BUCKET_NAME");
+        throw new Exception($"Missing environment variable AWS_ACCESS_KEY, AWS_SECRET_KEY or {storageKey}");
       }
     }
 

@@ -94,8 +94,8 @@ namespace VSS.TRex.Machines
     public IMachine Locate(string name, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && name.Equals(x.Name));
 
     /// <summary>
-    // Locate finds the machine in the list whose name matches the given ID
-    // It returns NIL if there is no matching machine
+    /// Locate finds the machine in the list whose name matches the given ID
+    /// It returns NIL if there is no matching machine
     /// </summary>
     /// <param name="id"></param>
     /// <param name="isJohnDoeMachine"></param>

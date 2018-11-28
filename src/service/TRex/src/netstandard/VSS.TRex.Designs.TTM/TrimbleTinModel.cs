@@ -95,7 +95,7 @@ namespace VSS.TRex.Designs.TTM
           if (FHeader.FileMajorVersion != Consts.TTMMajorVersion
               || FHeader.FileMinorVersion != Consts.TTMMinorVersion)
           {
-            throw new Exception("Unable to read this version of Trimble TIN Model file.");
+            throw new Exception($"TTM.Read(): Unable to read this version {FHeader.FileMajorVersion}: {FHeader.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}");
           }
 
           Clear();
@@ -377,7 +377,7 @@ namespace VSS.TRex.Designs.TTM
             // Check file version
             if (Header.FileMajorVersion != Consts.TTMMajorVersion || Header.FileMinorVersion != Consts.TTMMinorVersion)
             {
-              ErrorMsg = "Unable to read this version of Trimble TIN Model file.";
+              ErrorMsg = $"TTM.IsTTMFile(): Unable to read this version {Header.FileMajorVersion}: {Header.FileMinorVersion} of Trimble TIN Model file. Expected version: { Consts.TTMMajorVersion}: {Consts.TTMMinorVersion}";
               return false;
             }
 
