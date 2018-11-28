@@ -518,17 +518,15 @@ namespace VSS.TRex.SiteModels
     /// <returns></returns>
     public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
     {
-      bool Result;
+      bool Result = true;
 
       lock (this)
       {
         if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML, this.ToStream(), this) != FileSystemErrorStatus.OK)
         {
           Log.LogError($"Failed to save sitemodel metadata for site model {ID} to persistent store");
-          return false;
+          Result = false;
         }
-
-        Result = SaveMetadataToPersistentStore(storageProxy);
 
         if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
         {
