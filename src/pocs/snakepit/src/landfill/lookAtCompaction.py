@@ -4,6 +4,7 @@ import csv
 import sys
 import pandas as pd
 from typing import Dict, Tuple, List
+from src.landfill.compaction_evaulation import CompcationEvaulation
 import xlsxwriter
 # from pandas import ExcelWriter
 # from openpyxl import Workbook
@@ -30,6 +31,7 @@ class LandfillAlgorithm():
         self.thick_lift = 2.5  # used to measure how often too much material is placed
         self.filter_low_volume_cell = 0.0  # used to refine area of operation by removing cells with little volume
         self.filter_elevation_uncertainty = 0.0  # used to keep passes with little elevation change out of compaction and lift statistics
+        self.current_file = None
 
 
     '''Set the units used depending on what is in the file)'''
@@ -49,7 +51,7 @@ class LandfillAlgorithm():
     def generate_report(self, input_file, output_location=None):
 
         filename = input_file
-        current_file = Path(filename).stem
+        self.current_file = Path(filename).stem
         cell_pass_count_total, north_east_dict = self.build_ne_dict(filename)
 
         #do we want/need point cloud? Probably not but here it is just in case
@@ -232,300 +234,196 @@ class LandfillAlgorithm():
         return bin_pass_counts, cell_summaries
 
 
-    def evaulate_compaction(self, ne_dict, cell_summaries):
-        #######################################
-        # Start of determining Machines and operating time #
-        #######################################
 
-        contributing_machines = self.get_contributing_machines(ne_dict)
-        machine_duration, machine_operation_dict = self.analyse_machine_operation(contributing_machines,
-                                                                                  ne_dict)
 
-        ###################
-        # summarize and evaluate individual cells #
-        ###################
-        cnt_unique_cell_compaction_area = 0
-        bin_0 = bin_1 = bin_2 = bin_3 = bin_4 = bin_5 = bin_6 = 0
-        neg_1 = neg_2 = neg_3 = neg_4 = neg_5 = neg_6 = 0
-        active_0 = active_1 = active_2 = active_3 = active_4 = active_5 = active_6 = 0
-        active_volume_1 = active_volume_2 = active_volume_3 = active_volume_4 = active_volume_5 = active_volume_6 = 0
-        # active_volume_list = []
-        positive_passes = 0
-        negative_passes = 0
-        # lift_passes = 0
-        # compaction_passes = 0
-        # positive_passes_greater_than_filter = 0
-        active_cnt = 0
-        cnt_low_volume_cells = 0
-        cnt_cut_cells = 0
-        cnt_cut_passes = 0
-        cnt_low_volume_passes = 0
-        cnt_lift_uncertainty = 0
-        cnt_compact_uncertainty = 0
-        double_handle_cubic = 0.0
-        remediation_under_compaction_events = 0.0
 
-        for cell, passes in ne_dict.items():
-            # PassElevDict = {}
-            PassElevList = []
-            if cell in cell_summaries:
-            #for vol in passes:  # determine if cell compaction should be evaluated for specific cell based on volume of cell
-                current_elevation = None
-                event_elevation_bottom_active_material = {}
-                volume = cell_summaries['volume']
-                passes_for_cell = cell_summaries['passes_for_cell']
+    def print_compaction_report(self):
+        #####################################################################################################################################
+        # Begin writing output
+        #####################################################################################################################################
+        print(
+            "**********************************************************************************************************************************************")
+        print("file processed: ", self.filename)
+        print("Variables set :", self.thick_lift, "Thick lift threshold ")
+        print("Variables set :", self.filter_low_volume_cell, "Minimum volume filter")
+        print("Variables set :", self.machine_compaction_zone, "Compaction ratio ")
+        print("Cell to sq ft conversion 1.244")
+        print(
+            "**********************************************************************************************************************************************")
+        print("Machines contributing :", len(contributing_machines))
+        # for v in contributing_machines:
+        #    print(v)
+        # print("Start Time : ",start_time)
+        # print("Stop  Time : ",stop_time)
+        # print("%.3f" % machine_duration, "hours")
+        print("%.2f" % total_duration, "hours")
 
-                if volume < 0:
-                    cnt_cut_cells += 1
-                    cnt_cut_passes += passes_for_cell
+        for cell, passes in machine_operation_dict.items():
+            for x in passes:
+                print(cell, "start time :", x['start'], "stop time :", x['stop'], "duration :", "%.2f" % x['duration'])
 
-                if volume <= self.filter_low_volume_cell and volume >= 0:
-                    cnt_low_volume_cells += 1
-                    cnt_low_volume_passes += passes_for_cell
-                # this is in the wrong place?
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Area - Site summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("Machine Operation Coverage area   :", "%.4f" % (cell_pass_count_total * self.AreatoAcre), " acres")
+        area_coverage = (len(northEastDict) * self.AreatoAcre)
+        print("Coverage - Area(VL uses)          :", "%.4f" % (area_coverage), " acres")
+        single_pass_area = single_pass_cells * self.AreatoAcre
+        print("Removed for single pass           :", "%.4f" % (single_pass_area), " acres")
+        area_cut_cell = cnt_cut_cells * self.AreatoAcre
+        print("Removed for Cut                   :", "%.4f" % (area_cut_cell), " acres")
+        print("Variables set :", self.filter_low_volume_cell, "Minimum volume filter")
+        area_low_volume_cell = cnt_low_volume_cells * self.AreatoAcre
+        print("Removed for low volume            :", "%.4f" % (area_low_volume_cell), " acres")
+        active_compaction_area = (cnt_unique_cell_compaction_area * self.AreatoAcre)
+        print("Active compaction - area          :", "%.4f" % (active_compaction_area), " acres")
+        # print("Area check                        :", (area_coverage - single_pass_area - area_low_volume_cell - area_cut_cell))
 
-                #TODO Why do this?
-                # filter out cells with little volume from surface area but not volume calcs
-                if volume > self.filter_low_volume_cell:
-                    # these are the remaining unique cells which were not filtered out
-                    cnt_unique_cell_compaction_area += 1
-                    compaction_state = 1 #TODO meaning of this?
-                    active_material = 0.0
-                    event_elevation_counter = 0
-                    event_elevation_bottom = []
-                    # create a pass and elevation dictionary for current cell  !!!!Is this ordered correctly? #TODO what order should it be in?
-                    for cell_pass in passes:  # pull out pass and elevation data and put in a pass and elevation dictionary
-                        if current_elevation is None:
-                            previous_elevation = cell_pass['elevation']
-                        current_elevation = cell_pass['elevation']
-                        delta_elevation = current_elevation - previous_elevation
-                        previous_elevation = current_elevation  # this is used to get the bottom of an elevation event
-                        cell_pass['delta_from_last_pass'] = delta_elevation
-                        layer = delta_elevation
-                        PassElevList.append(cell_pass['elevation'])
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Passes - Site summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("Total pass                        :", cell_pass_count_total)
+        print("Removed for single pass           :", single_pass_cells)
+        print("Removed for low volume            :", cnt_low_volume_passes)
+        print("Removed for Cut                   :", cnt_cut_passes)
+        print("Positive                          :", positive_passes)
+        print("Negative                          :", negative_passes)
+        # print("check : ",(cell_pass_count_total - single_pass_cells - cnt_low_volume_passes - cnt_cut_passes  - positive_passes - negative_passes))
+        print("Variables set :", self.filter_elevation_uncertainty, " elevation_uncertainty")
+        print("filter lift                       :", cnt_lift_uncertainty)
+        print("filter compaction                 :", cnt_compact_uncertainty)
+        lift_passes = positive_passes - cnt_lift_uncertainty
+        print("lift                              :", lift_passes)
+        compaction_passes = negative_passes - cnt_compact_uncertainty
+        print("Compaction                        :", compaction_passes)
+        print("Pass check                        :")
 
-                        ####################################
-                        # Single cell Evaluate compaction  #
-                        ####################################
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Airspace Performance summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-                        # for layer in elev_delta_list:
-                        # This area evalutes layers and records under compaction and Thick lift events for a single cell
-                        # - Full compaction state = 1.  Under compaction states are 0
-                        # - Under compaction event is defined as placing material on top of under compacted material.
-                        # - Compactiuon state goes to 1  when pass to pass compaction is between zero and the (-) MCZ value
+        F = float(total_fill * self.cellVoltoCubic)
+        print("Volume of fill")
+        print("(first to last pass) in compaction area yd^3 : ", "%.0f" % F)
 
-                        ##################
-                        # Movement Down  #
-                        ##################
-                        # Compaction state is set to complete with movement down less than MCZ value
-                        if layer <= 0.0:  # evaluate compaction layers
-                            if layer >= -self.machine_compaction_zone:  # this is the on only condition that sets compaction state to 1
-                                if (compaction_state == 1):  # Fully compacted material was compacted more
-                                    if layer < -self.filter_elevation_uncertainty:
-                                        cell_summaries[cell]['cnt_over_compaction'] += 1  # keep track of overcompaction effort
-                                compaction_state = 1  # set as compacted
-                                active_material = 0  # compaction is complete, no active material
-                                # print("reset compaction zone down")
+        V0 = float((total_event_volume) * self.cellVoltoCubic)
+        print("Volume Under compacted                yd^3  : ", "%.0f" % V0)
 
-                            else:  # moved down more than MCZ, this is normal compaction
-                                compaction_state = 0  # every time compaction is more than MCZ, full compaction is required
-                                active_material = active_material + layer  # Active material reduces because layer is negative
+        # Remediation means to eliminate
+        VR = remediation_under_compaction_events * self.cellVoltoCubic
+        print("Remediation of under compaction       yd^3  : ", "%.0f" % -VR)
 
-                                # CHECK if movement down mitigated an under compaction event
-                                if active_material < 0.0:  # movement down is larger than the lift, material may have been removed
-                                    # Compare the current elevation to the list of "bottom" of events.  If the current elevation is lower than a bottom,
-                                    # find the active material associated with that event and add it to the mitigation tally.
-                                    # Also pop the elevation of the event of the list and remove it from teh dictionaty
-                                    if len(event_elevation_bottom) > 0:
-                                        reverse_elevent_elevation_bottom = list(
-                                            reversed(event_elevation_bottom)) #TODO this variable is not used
+        # mitigation means to reduce the effect of
 
-                                    for bottom in event_elevation_bottom:
-                                        if current_elevation < bottom:  ## I don't think this works ??? #TODO DO we need to do something about that?
-                                            # print(current_elevation, " current elevation < bottom", bottom)
-                                            # if bottom in event_elevation_bottom:
-                                            # thing = event_elevation_bottom[str(bottom)]
-                                            # print("found it", thing)
+        VM = float((V0 - VR))
+        print("Remaining Volume Under compacted      yd^3  : ", "%.0f" % VM)
 
-                                            remediation = event_elevation_bottom_active_material[bottom]
-                                            cell_pass['EventMagnitude'] = -remediation  # Assign magnitude of event to pass of machine
-                                            # if remediation > 1.0:
-                                            # print(remediation)
-                                            # print(event_elevation_bottom)
-                                            popped = event_elevation_bottom.pop() #TODO not used
-                                            # print(" current elev, popped", current_elevation,popped)
-                                            remediation_under_compaction_events = remediation_under_compaction_events + remediation
-                                            # remove remediated event from event magnitude distribution
-                                            # figure out which machine removed the event???
-                                            active_cnt = active_cnt - 1
-                                            if remediation <= self.machine_compaction_zone:
-                                                active_1 -= 1
-                                                active_volume_1 -=  remediation
-                                            elif self.machine_compaction_zone < remediation <= self.machine_compaction_zone * 2:
-                                                active_2 -= 1
-                                                active_volume_2 = active_volume_2 - remediation
-                                            elif self.machine_compaction_zone * 2 < remediation <= self.machine_compaction_zone * 3:
-                                                active_3 -= 1
-                                                active_volume_3 -= remediation
-                                            elif self.machine_compaction_zone * 3 < remediation <= self.machine_compaction_zone * 4:
-                                                active_4 -= 1
-                                                active_volume_4 -= remediation
-                                            elif self.machine_compaction_zone * 4 < remediation <= self.machine_compaction_zone * 5:
-                                                active_5 -= 1
-                                                active_volume_5 -= remediation
-                                            else:
-                                                active_6 -= 1
-                                                active_volume_6 -= remediation
-                                    active_material = 0.0
-                                    # print("____________________________")
-                                    # print("reset active material < 0")
+        under_compacted_volume_percentage = VM / F
+        print("Percent volume under compacted              : ", "%.0f" % ((under_compacted_volume_percentage) * 100),
+              "%")
 
-                        ################
-                        # Movement UP  #
-                        ################
-                        # This is where event volumes occur, if material is placed on top of uncompacted material, the active material is the event volume
-                        if layer > 0.0:
-                            if layer <= self.machine_compaction_zone:  # Material added within MCZ
-                                if compaction_state == 1:  # compaction was complete, no under compaction event
-                                    active_material = 0
-                            elif self.machine_compaction_zone < layer < self.thick_lift:  # Material added more than MCZ but less than TL
-                                if compaction_state == 1:  # compaction was complete, no under compaction event
-                                    active_material = layer
-                                    # print(active_material)
-                                    compaction_state = 0  # movement was up greater than MCZ so reset compaction state
-                                else:  # UNDER COMPACTION EVENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                                    cell_summaries[cell]['cnt_under_compaction'] += 1 # put under compaction event information into summary dictionary
-                                    cell_summaries[cell]['volume_event'] += active_material  # add up total volume of all evants for cell
-                                    cell_pass['EventMagnitude'] = active_material  # Assign magnitude of event to pass of machine
-                                    event_adjusted_for_active = previous_elevation - active_material  # this gets us to the bottom of the previous lift
-                                    event_elevation_bottom.append(event_adjusted_for_active)
-                                    event_elevation_counter += 1
-                                    # add event bottom and active material to a dictionary so that if mitigated, the active material contribution to under
-                                    # compacted volume can be added to the undercompacted event mitigation tally
-                                    event_elevation_bottom_active_material[event_adjusted_for_active] = active_material
-                                    # print (event_elevation_bottom_active_material)
+        double_handle_volume = double_handle_cubic * self.cellVoltoCubic
+        print("Volume of Double handle               yd^3  :",
+              "%.0f" % double_handle_volume), "Threshold", self.double_handle_threshold
 
-                                    #  END of UNDER COMPATION EVENT  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        C = float(total_cut * self.cellVoltoCubic)
+        print("Volume of cut  (First to last Pass)   yd^3  : ", "%.0f" % C)
 
-                                    active_cnt += 1  # ???
-                                    if active_material <= self.machine_compaction_zone:
-                                        active_1 += 1
-                                        active_volume_1 += active_material
-                                    elif self.machine_compaction_zone < active_material <= self.machine_compaction_zone * 2:
-                                        active_2 += 1
-                                        active_volume_2 += active_material
-                                    elif self.machine_compaction_zone * 2 < active_material <= self.machine_compaction_zone * 3:
-                                        active_3 += 1
-                                        active_volume_3 += active_material
-                                    elif self.machine_compaction_zone * 3 < active_material <= self.machine_compaction_zone * 4:
-                                        active_4 += active_4 + 1
-                                        active_volume_4 += active_material
-                                    elif self.machine_compaction_zone * 4 < active_material <= self.machine_compaction_zone * 5:
-                                        active_5 += 1
-                                        active_volume_5 += active_material
-                                    else:
-                                        active_6 = active_6 + 1
-                                        active_volume_6 = active_volume_6 + active_material
+        V = float((total_fill + total_cut) * self.cellVoltoCubic)
+        # print("Volume of compaction area             yd^3  : ", "%.0f" % V)
 
-                                    active_material = layer  # + active_material ???  Only layer becasue active material has been recorded as under compacted event
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Distribution of under compacted event >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("between  0 and", self.machine_compaction_zone, "      : volume",
+              "%.0f" % (((active_volume_1 * self.cellVoltoCubic) / V0) * 100), "%",
+              "%.0f" % (active_volume_1 * self.cellVoltoCubic), " yd^3")
+        print("between ", self.machine_compaction_zone, "and", (self.machine_compaction_zone * 2), "    : volume",
+              "%2.0f" % (((active_volume_2 * self.cellVoltoCubic) / V0) * 100), "%",
+              "%.0f" % (active_volume_2 * self.cellVoltoCubic), " yd^3")
+        print("between ", self.machine_compaction_zone * 2, "and", (self.machine_compaction_zone * 3), "    : volume",
+              "%.0f" % (((active_volume_3 * self.cellVoltoCubic) / V0) * 100), "%",
+              "%.0f" % (active_volume_3 * self.cellVoltoCubic), " yd^3")
+        print("between ", self.machine_compaction_zone * 3, "and", (self.machine_compaction_zone * 4), "    : volume",
+              "%.0f" % (((active_volume_4 * self.cellVoltoCubic) / V0) * 100), "%",
+              "%.0f" % (active_volume_4 * self.cellVoltoCubic), " yd^3")
+        print("between ", self.machine_compaction_zone * 4, "and", (self.machine_compaction_zone * 5), "    : volume",
+              "%.0f" % (((active_volume_5 * self.cellVoltoCubic) / V0) * 100), "%",
+              "%.0f" % (active_volume_5 * self.cellVoltoCubic), " yd^3")
+        print("        ", self.machine_compaction_zone * 5, "and above   : volume",
+              "%.0f" % (((active_volume_6 * self.cellVoltoCubic) / V0) * 100), "%",
+              "%.0f" % (active_volume_6 * self.cellVoltoCubic), " yd^3")
 
-                            else:  # A thick lift occured
-                                if compaction_state == 1:  # compaction was complete, no under compaction event
-                                    active_material = layer
-                                    compaction_state = 0  # movement was up greater than MCZ so reset compaction state
-                                else:  # UNDER COMPACTION EVENT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                                    cell_summaries[cell]['cnt_under_compaction'] += 1  # put under compaction event information into summary dictionary
-                                    cell_summaries[cell]['volume_event'] += active_material  # put under compaction event information into summary dictionary
-                                    cell_pass['EventMagnitude'] = active_material  # Assign magnitude of event to pass of machine
-                                    event_adjusted_for_active = previous_elevation - active_material  # this gets us to the bottom of the previous lift
-                                    event_elevation_bottom.append(event_adjusted_for_active)
-                                    event_elevation_counter = event_elevation_counter + 1
-                                    # add event bottom and active material to a dictionary so that if mitigated, the active material contribution to under
-                                    # compacted volume can be added to the undercompacted event mitigation tally
-                                    event_elevation_bottom_active_material[event_adjusted_for_active] = active_material
-                                    # print ("thick",event_elevation_bottom_active_material)
-                                    #  END of UNDER COMPATION EVENT  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                                    # print("before",active_material)
-                                    active_cnt = active_cnt + 1
-                                    if active_material <= self.machine_compaction_zone:
-                                        active_1 += 1
-                                        active_volume_1 += active_material
-                                    elif self.machine_compaction_zone < active_material <= self.machine_compaction_zone * 2:
-                                        active_2 += 1
-                                        active_volume_2 += active_material
-                                    elif self.machine_compaction_zone * 2 < active_material <= self.machine_compaction_zone * 3:
-                                        active_3 = active_3 + 1
-                                        active_volume_3 = active_volume_3 + active_material
-                                    elif self.machine_compaction_zone * 3 < active_material <= self.machine_compaction_zone * 4:
-                                        active_4 += 1
-                                        active_volume_4 += active_material
-                                    elif self.machine_compaction_zone * 4 < active_material <= self.machine_compaction_zone * 5:
-                                        active_5 += 1
-                                        active_volume_5 += active_material
-                                    else:
-                                        active_6 = active_6 + 1
-                                        active_volume_6 = active_volume_6 + active_material
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Lift summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("lift passes              :", lift_passes)
+        # print("Less than      ", self.filter_elevation_uncertainty, "     :", "%.1f" % ((bin_0/lift_passes)*100) ,"%")
+        print("between ", self.filter_elevation_uncertainty, "and", self.machine_compaction_zone, "    :",
+              "%.1f" % ((bin_1 / lift_passes) * 100), "%")
+        print("between ", self.machine_compaction_zone, "and", (self.machine_compaction_zone * 2), "    :",
+              "%.1f" % ((bin_2 / lift_passes) * 100), "%")
+        print("between ", self.machine_compaction_zone * 2, "and", (self.machine_compaction_zone * 3), "    :",
+              "%.1f" % ((bin_3 / lift_passes) * 100), "%")
+        print("between ", self.machine_compaction_zone * 3, "and", (self.machine_compaction_zone * 4), "    :",
+              "%.1f" % ((bin_4 / lift_passes) * 100), "%")
+        print("between ", self.machine_compaction_zone * 4, "and", (self.machine_compaction_zone * 5), "    :",
+              "%.1f" % ((bin_5 / lift_passes) * 100), "%")
+        print("        ", self.machine_compaction_zone * 5, "and above   :", "%.1f" % ((bin_6 / lift_passes) * 100),
+              "%")
 
-                                    active_material = layer  # + active_material ???  Only layer becasue active material has been recorded as under compacted event
-                                    # print(active_material)
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Compaction summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("compaction passses       :", compaction_passes)
+        print("between ", -(self.filter_elevation_uncertainty), "and", -(self.machine_compaction_zone), "  :",
+              "%.1f" % ((neg_1 / compaction_passes) * 100), "%")
+        print("between ", -self.machine_compaction_zone, "and", -(self.machine_compaction_zone * 2), "  :",
+              "%.1f" % ((neg_2 / compaction_passes) * 100), "%")
+        print("between ", -(self.machine_compaction_zone * 2), "and", -(self.machine_compaction_zone * 3), "  :",
+              "%.1f" % ((neg_3 / compaction_passes) * 100), "%")
+        print("between ", -(self.machine_compaction_zone * 3), "and", -(self.machine_compaction_zone * 4), "  :",
+              "%.1f" % ((neg_4 / compaction_passes) * 100), "%")
+        print("between ", -(self.machine_compaction_zone * 4), "and", -(self.machine_compaction_zone * 5), "  :",
+              "%.1f" % ((neg_5 / compaction_passes) * 100), "%")
+        print("        ", -(self.machine_compaction_zone * 5), "and below  :",
+              "%.1f" % ((neg_6 / compaction_passes) * 100), "%")
+        # print("pass check: ", cnt_Unique_cell_compaction_area - (bin_1 + bin_2 + bin_3 + bin_4 + bin_5 + bin_6 + neg_1 + neg_2 + neg_3 + neg_4 + neg_5 + neg_6))
+        print("over compaction passes :", total_cnt_over)
+        print("Percent of passes over compacting: ", "%.1f" % ((total_cnt_over / compaction_passes) * 100), "%")
 
-                                cell_summaries[cell]['cnt_self.thick_lift'] += 1  # put thick lift information into summary dictionary
-                        # end of up movement evaluation
-                        ################
-                        # #Layer summary
-                        ################
-                        if layer <= 0.0:  # evaluate compaction layers
-                            negative_passes = negative_passes + 1
-                            if layer > -(
-                            self.machine_compaction_zone) and layer < -self.filter_elevation_uncertainty:
-                                neg_1 = neg_1 + 1
-                            elif layer < -(self.machine_compaction_zone) and layer >= -(
-                                    self.machine_compaction_zone * 2):
-                                neg_2 = neg_2 + 1
-                            elif layer < -(self.machine_compaction_zone * 2) and layer >= -(
-                                    self.machine_compaction_zone * 3):
-                                neg_3 = neg_3 + 1
-                            elif layer < -(self.machine_compaction_zone * 3) and layer >= -(
-                                    self.machine_compaction_zone * 4):
-                                neg_4 = neg_4 + 1
-                            elif layer < -(self.machine_compaction_zone * 4) and layer >= -(
-                                    self.machine_compaction_zone * 5):
-                                neg_5 = neg_5 + 1
-                            elif layer <= -(self.machine_compaction_zone * 5):
-                                neg_6 = neg_6 + 1
-                            # one more else to catch the rest....
-                            if (layer > -(self.filter_elevation_uncertainty)):
-                                cnt_compact_uncertainty = cnt_compact_uncertainty + 1
-                            if (layer < self.double_handle_threshold):
-                                double_handle_cubic = double_handle_cubic + layer
+        """
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Area of uncompacted events  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") 
+        print("Volume event passes :", active_cnt, "%.4f" % (active_cnt * self.cellToArea), " ft^2")
+        print("between ", self.filter_low_volume_cell, "and", self.machine_compaction_zone, "    : Area", "%.1f" % ((active_1/active_cnt)*100) ,"%", "%.0f" % (active_1 * self.cellToArea), " ft^2")
+        print("between ", self.machine_compaction_zone, "and", (self.machine_compaction_zone *2), "    : Area",  "%.1f" % ((active_2/active_cnt)*100) ,"%" , "%.0f" % (active_2 * self.cellToArea), " ft^2")
+        print("between ", self.machine_compaction_zone * 2, "and", (self.machine_compaction_zone *3), "    : Area",  "%.1f" % ((active_3/active_cnt)*100) ,"%", "%.0f" % (active_3 * self.cellToArea), " ft^2")
+        print("between ", self.machine_compaction_zone * 3, "and", (self.machine_compaction_zone *4), "    : Area",  "%.1f" % ((active_4/active_cnt)*100) ,"%", "%.0f" % (active_4 * self.cellToArea), " ft^2")
+        print("between ", self.machine_compaction_zone * 4, "and", (self.machine_compaction_zone *5), "    : Area",  "%.1f" % ((active_5/active_cnt)*100) ,"%", "%.0f" % (active_5 * self.cellToArea), " ft^2")
+        print("        ",self.machine_compaction_zone * 5, "and above   : Area",  "%.1f" % ((active_6/active_cnt)*100) ,"%", "%.0f" % (active_6 * self.cellToArea), " ft^2")
 
-                        if layer > 0.0:
-                            positive_passes = positive_passes + 1
-                            if layer <= self.filter_elevation_uncertainty:
-                                cnt_lift_uncertainty = cnt_lift_uncertainty + 1
-                                bin_0 = bin_0 + 1
-                            elif self.filter_elevation_uncertainty < layer <= self.machine_compaction_zone:
-                                bin_1 = bin_1 + 1
-                            elif layer > (self.machine_compaction_zone) and layer <= (
-                                    self.machine_compaction_zone * 2):
-                                bin_2 = bin_2 + 1
-                            elif layer > (self.machine_compaction_zone * 2) and layer <= (
-                                    self.machine_compaction_zone * 3):
-                                bin_3 = bin_3 + 1
-                            elif layer > (self.machine_compaction_zone * 3) and layer <= (
-                                    self.machine_compaction_zone * 4):
-                                bin_4 = bin_4 + 1
-                            elif layer > (self.machine_compaction_zone * 4) and layer <= (
-                                    self.machine_compaction_zone * 5):
-                                bin_5 = bin_5 + 1
-                            elif layer >= (self.machine_compaction_zone * 5):
-                                bin_6 = bin_6 + 1
 
-        ############################
-        # End Evaluate compaction  #
-        ############################
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Thick-Lift summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(">>>>>> Thick lift flag - count      :" , total_cnt_thick) # this is all thick lifts including repeats in single cell
+        print(">>>>>> Thick lift      - coverage   :", "%.4f" % (total_cnt_thick * self.AreatoAcre), " acres") # this is thick lift coverage, not all cells
 
-    def create_excel_report(self, contributing_machines, ne_dict, cell_summaries):
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Passcount details >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(">>>>>>>>>>>>>>>>>> (A check that this aligns with VL passcount details) >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+        passes_above_n = 1
+        for k,v in lst[:8]:
+            print(k , "Passes " ,v, " occurences ", "%.3f" % (v/(len(northEastDict))))
+            #print(cell_count_coverage)
+            #print(single_pass_cells)
+            #print(k, "Pass area: " ,((v * 1.41)/43560), " acres")
+            passes_above_n = passes_above_n - v/(len(northEastDict))
+        print("Above X passes :", "%.2f" % passes_above_n)
+        """
+
+    def create_excel_report(self, contributing_machines,
+                            total_duration,
+                            cell_pass_count_total,
+                            ne_dict,
+                            bin_pass_counts,
+                            cell_summaries,
+                            machine_operation_dict):
+
+        compaction_evaulation = CompcationEvaulation(self.machine_compaction_zone)
+        compaction_evaulation.evaulate_compaction(ne_dict, cell_summaries)
 
         ############################
         ##Determine what time events took place and what machines were involved for Excel outputs
@@ -713,33 +611,34 @@ class LandfillAlgorithm():
         # Create Over,Under and thicklift surface files #
         ##################################################
         # Over compaction surface file
+        #TODO move this elsewhere one day
         if self.create_points == True:
-            OverSurfaceOut = "./output/" + current_file + "_OverCompaction.pts"
+            OverSurfaceOut = "./output/" + self.current_file + "_OverCompaction.pts"
             OverOut = open(OverSurfaceOut, 'w')
             O = csv.writer(OverOut, delimiter=',', dialect='excel', lineterminator='\n')
 
             # Under compction surface file
-            UnderSurfaceOut = "./output/" + current_file + "_Under_compaction.pts"
+            UnderSurfaceOut = "./output/" + self.current_file + "_Under_compaction.pts"
             UnderOut = open(UnderSurfaceOut, 'w')
             U = csv.writer(UnderOut, delimiter=',', dialect='excel', lineterminator='\n')
 
             # Thicklift surface file
-            ThickSurfaceOut = "./output/" + current_file + "_ThickLift.pts"
+            ThickSurfaceOut = "./output/" + self.current_file + "_ThickLift.pts"
             ThickOut = open(ThickSurfaceOut, 'w')
             Th = csv.writer(ThickOut, delimiter=',', dialect='excel', lineterminator='\n')
 
             # Volume Event surface file
-            VolumeEventSurfaceOut = "./output/" + current_file + "_VolumeEvent.pts"
+            VolumeEventSurfaceOut = "./output/" + self.current_file + "_VolumeEvent.pts"
             VolumeEventOut = open(VolumeEventSurfaceOut, 'w')
             VE = csv.writer(VolumeEventOut, delimiter=',', dialect='excel', lineterminator='\n')
 
             # Coverage surface file
-            CoverageSurfaceOut = "./output/" + current_file + "_coverage.pts"
+            CoverageSurfaceOut = "./output/" + self.current_file + "_coverage.pts"
             CoverageOut = open(CoverageSurfaceOut, 'w')
             CO = csv.writer(CoverageOut, delimiter=',', dialect='excel', lineterminator='\n')
 
             # Active surface file
-            ActiveSurfaceOut = "./output/" + current_file + "_ActiveArea.pts"
+            ActiveSurfaceOut = "./output/" + self.current_file + "_ActiveArea.pts"
             ActiveOut = open(ActiveSurfaceOut, 'w')
             ACT = csv.writer(ActiveOut, delimiter=',', dialect='excel', lineterminator='\n')
 
@@ -752,54 +651,56 @@ class LandfillAlgorithm():
         total_fill = 0.0
         total_event_volume = 0.0
 
-        for cell, passes in northEastDict.items():
-            NEcoordinate = str(cell)
-            comma = NEcoordinate.find(',')
-            East = NEcoordinate[(comma + 2):-1]
-            North = NEcoordinate[1:(comma - 1)]
+        #Check
+        # for cell, passes in ne_dict.items():
+        #     East = cell[1]
+        #     North = cell[0]
 
-            for summary in passes:
-                if "passes_for_cell" in summary:  # determine if cell compaction is present to be evaluated
-                    if self.create_points == True:
-                        CO.writerow([East, North, 0.0])
-                    # Pull volume information for each cell
-                    current_cell_volume = float(summary['volume'])
-                    if current_cell_volume >= self.filter_low_volume_cell and self.create_points == True:
-                        ACT.writerow([East, North, current_cell_volume])
+        for cell, summary in cell_summaries.items:
+            North, East = cell
 
-                    current_cell_cut = float(summary['cut'])
-                    current_cell_fill = float(summary['fill'])
-                    current_event_volume = float(summary['volume_event'])
+            #if "passes_for_cell" in summary:  # determine if cell compaction is present to be evaluated
+            if self.create_points:
+                CO.writerow([East, North, 0.0])
+            # Pull volume information for each cell
+            current_cell_volume = summary['volume']
+            if current_cell_volume >= self.filter_low_volume_cell and self.create_points:
+                ACT.writerow([East, North, current_cell_volume])
 
-                    # Populate VolumeEvent surface
-                    if current_event_volume > 0 and self.create_points == True:
-                        VE.writerow([East, North, current_event_volume])
+            #TODO these casts should not be required
+            current_cell_cut = float(summary['cut'])
+            current_cell_fill = float(summary['fill'])
+            current_event_volume = float(summary['volume_event'])
 
-                    # total volume information
-                    total_volume = float(total_volume) + float(current_cell_volume)
-                    total_cut = float(total_cut) + float(current_cell_cut)
-                    total_fill = float(total_fill) + float(current_cell_fill)
-                    total_event_volume = float(total_event_volume) + float(current_event_volume)
+            # Populate VolumeEvent surface
+            if current_event_volume > 0 and self.create_points:
+                VE.writerow([East, North, current_event_volume])
 
-                    # pull cell stats
-                    current_cnt_over = summary['cnt_over_compaction']
-                    current_cnt_under = summary['cnt_under_compaction']
-                    current_cnt_thick = summary['cnt_self.thick_lift']
+            # total volume information
+            total_volume = float(total_volume) + float(current_cell_volume)
+            total_cut = float(total_cut) + float(current_cell_cut)
+            total_fill = float(total_fill) + float(current_cell_fill)
+            total_event_volume = float(total_event_volume) + float(current_event_volume)
 
-                    # Populate over, under and thick surface files
-                    if current_cnt_over > 0 and self.create_points == True:
-                        O.writerow([East, North, current_cnt_over])
-                    if current_cnt_under > 0 and self.create_points == True:
-                        U.writerow([East, North, current_cnt_under])
-                    if current_cnt_thick > 0 and self.create_points == True:
-                        Th.writerow([East, North, current_cnt_thick])
+            # pull cell stats
+            current_cnt_over = summary['cnt_over_compaction']
+            current_cnt_under = summary['cnt_under_compaction']
+            current_cnt_thick = summary['cnt_self.thick_lift']
 
-                    # total cell stats
-                    total_cnt_thick = total_cnt_thick + current_cnt_thick
-                    total_cnt_under = total_cnt_under + current_cnt_under
-                    total_cnt_over = total_cnt_over + current_cnt_over
+            # Populate over, under and thick surface files
+            if current_cnt_over > 0 and self.create_points:
+                O.writerow([East, North, current_cnt_over])
+            if current_cnt_under > 0 and self.create_points:
+                U.writerow([East, North, current_cnt_under])
+            if current_cnt_thick > 0 and self.create_points:
+                Th.writerow([East, North, current_cnt_thick])
 
-        if self.create_points == True:
+            # total cell stats
+            total_cnt_thick = total_cnt_thick + current_cnt_thick
+            total_cnt_under = total_cnt_under + current_cnt_under
+            total_cnt_over = total_cnt_over + current_cnt_over
+
+        if self.create_points:
             ActiveOut.close()
             print("wrote data to {}".format(ActiveSurfaceOut))
             CoverageOut.close()
@@ -815,186 +716,17 @@ class LandfillAlgorithm():
 
         # end tally totals from indivudual cells
 
-        #####################################################################################################################################
-        # Begin writing output
-        #####################################################################################################################################
-        print(
-            "**********************************************************************************************************************************************")
-        print("file processed: ", filename)
-        print("Variables set :", self.thick_lift, "Thick lift threshold ")
-        print("Variables set :", self.filter_low_volume_cell, "Minimum volume filter")
-        print("Variables set :", self.machine_compaction_zone, "Compaction ratio ")
-        print("Cell to sq ft conversion 1.244")
-        print(
-            "**********************************************************************************************************************************************")
-        print("Machines contributing :", len(contributing_machines))
-        # for v in contributing_machines:
-        #    print(v)
-        # print("Start Time : ",start_time)
-        # print("Stop  Time : ",stop_time)
-        # print("%.3f" % machine_duration, "hours")
-        print("%.2f" % total_duration, "hours")
-
-        for cell, passes in machine_operation_dict.items():
-            for x in passes:
-                print(cell, "start time :", x['start'], "stop time :", x['stop'], "duration :", "%.2f" % x['duration'])
-
-        print(
-            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Area - Site summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("Machine Operation Coverage area   :", "%.4f" % (cell_pass_count_total * self.AreatoAcre), " acres")
-        area_coverage = (len(northEastDict) * self.AreatoAcre)
-        print("Coverage - Area(VL uses)          :", "%.4f" % (area_coverage), " acres")
+        area_coverage = (len(ne_dict) * self.AreatoAcre)
         single_pass_area = single_pass_cells * self.AreatoAcre
-        print("Removed for single pass           :", "%.4f" % (single_pass_area), " acres")
         area_cut_cell = cnt_cut_cells * self.AreatoAcre
-        print("Removed for Cut                   :", "%.4f" % (area_cut_cell), " acres")
-        print("Variables set :", self.filter_low_volume_cell, "Minimum volume filter")
-        area_low_volume_cell = cnt_low_volume_cells * self.AreatoAcre
-        print("Removed for low volume            :", "%.4f" % (area_low_volume_cell), " acres")
-        active_compaction_area = (cnt_unique_cell_compaction_area * self.AreatoAcre)
-        print("Active compaction - area          :", "%.4f" % (active_compaction_area), " acres")
-        # print("Area check                        :", (area_coverage - single_pass_area - area_low_volume_cell - area_cut_cell))
+        area_low_volume_cell = compaction_evaulation.cnt_low_volume_cells * self.AreatoAcre
+        active_compaction_area = (compaction_evaulation.cnt_unique_cell_compaction_area * self.AreatoAcre)
 
-        print(
-            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Passes - Site summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("Total pass                        :", cell_pass_count_total)
-        print("Removed for single pass           :", single_pass_cells)
-        print("Removed for low volume            :", cnt_low_volume_passes)
-        print("Removed for Cut                   :", cnt_cut_passes)
-        print("Positive                          :", positive_passes)
-        print("Negative                          :", negative_passes)
-        # print("check : ",(cell_pass_count_total - single_pass_cells - cnt_low_volume_passes - cnt_cut_passes  - positive_passes - negative_passes))
-        print("Variables set :", self.filter_elevation_uncertainty, " elevation_uncertainty")
-        print("filter lift                       :", cnt_lift_uncertainty)
-        print("filter compaction                 :", cnt_compact_uncertainty)
-        lift_passes = positive_passes - cnt_lift_uncertainty
-        print("lift                              :", lift_passes)
-        compaction_passes = negative_passes - cnt_compact_uncertainty
-        print("Compaction                        :", compaction_passes)
-        print("Pass check                        :")
-
-        print(
-            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Airspace Performance summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-        F = float(total_fill * self.cellVoltoCubic)
-        print("Volume of fill")
-        print("(first to last pass) in compaction area yd^3 : ", "%.0f" % F)
-
-        V0 = float((total_event_volume) * self.cellVoltoCubic)
-        print("Volume Under compacted                yd^3  : ", "%.0f" % V0)
-
-        # Remediation means to eliminate
-        VR = remediation_under_compaction_events * self.cellVoltoCubic
-        print("Remediation of under compaction       yd^3  : ", "%.0f" % -VR)
-
-        # mitigation means to reduce the effect of
-
-        VM = float((V0 - VR))
-        print("Remaining Volume Under compacted      yd^3  : ", "%.0f" % VM)
-
-        under_compacted_volume_percentage = VM / F
-        print("Percent volume under compacted              : ", "%.0f" % ((under_compacted_volume_percentage) * 100),
-              "%")
-
-        double_handle_volume = double_handle_cubic * self.cellVoltoCubic
-        print("Volume of Double handle               yd^3  :",
-              "%.0f" % double_handle_volume), "Threshold", self.double_handle_threshold
-
-        C = float(total_cut * self.cellVoltoCubic)
-        print("Volume of cut  (First to last Pass)   yd^3  : ", "%.0f" % C)
-
-        V = float((total_fill + total_cut) * self.cellVoltoCubic)
-        # print("Volume of compaction area             yd^3  : ", "%.0f" % V)
-
-        print(
-            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Distribution of under compacted event >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("between  0 and", self.machine_compaction_zone, "      : volume",
-              "%.0f" % (((active_volume_1 * self.cellVoltoCubic) / V0) * 100), "%",
-              "%.0f" % (active_volume_1 * self.cellVoltoCubic), " yd^3")
-        print("between ", self.machine_compaction_zone, "and", (self.machine_compaction_zone * 2), "    : volume",
-              "%2.0f" % (((active_volume_2 * self.cellVoltoCubic) / V0) * 100), "%",
-              "%.0f" % (active_volume_2 * self.cellVoltoCubic), " yd^3")
-        print("between ", self.machine_compaction_zone * 2, "and", (self.machine_compaction_zone * 3), "    : volume",
-              "%.0f" % (((active_volume_3 * self.cellVoltoCubic) / V0) * 100), "%",
-              "%.0f" % (active_volume_3 * self.cellVoltoCubic), " yd^3")
-        print("between ", self.machine_compaction_zone * 3, "and", (self.machine_compaction_zone * 4), "    : volume",
-              "%.0f" % (((active_volume_4 * self.cellVoltoCubic) / V0) * 100), "%",
-              "%.0f" % (active_volume_4 * self.cellVoltoCubic), " yd^3")
-        print("between ", self.machine_compaction_zone * 4, "and", (self.machine_compaction_zone * 5), "    : volume",
-              "%.0f" % (((active_volume_5 * self.cellVoltoCubic) / V0) * 100), "%",
-              "%.0f" % (active_volume_5 * self.cellVoltoCubic), " yd^3")
-        print("        ", self.machine_compaction_zone * 5, "and above   : volume",
-              "%.0f" % (((active_volume_6 * self.cellVoltoCubic) / V0) * 100), "%",
-              "%.0f" % (active_volume_6 * self.cellVoltoCubic), " yd^3")
-
-        print(
-            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Lift summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("lift passes              :", lift_passes)
-        # print("Less than      ", self.filter_elevation_uncertainty, "     :", "%.1f" % ((bin_0/lift_passes)*100) ,"%")
-        print("between ", self.filter_elevation_uncertainty, "and", self.machine_compaction_zone, "    :",
-              "%.1f" % ((bin_1 / lift_passes) * 100), "%")
-        print("between ", self.machine_compaction_zone, "and", (self.machine_compaction_zone * 2), "    :",
-              "%.1f" % ((bin_2 / lift_passes) * 100), "%")
-        print("between ", self.machine_compaction_zone * 2, "and", (self.machine_compaction_zone * 3), "    :",
-              "%.1f" % ((bin_3 / lift_passes) * 100), "%")
-        print("between ", self.machine_compaction_zone * 3, "and", (self.machine_compaction_zone * 4), "    :",
-              "%.1f" % ((bin_4 / lift_passes) * 100), "%")
-        print("between ", self.machine_compaction_zone * 4, "and", (self.machine_compaction_zone * 5), "    :",
-              "%.1f" % ((bin_5 / lift_passes) * 100), "%")
-        print("        ", self.machine_compaction_zone * 5, "and above   :", "%.1f" % ((bin_6 / lift_passes) * 100),
-              "%")
-
-        print(
-            ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Compaction summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("compaction passses       :", compaction_passes)
-        print("between ", -(self.filter_elevation_uncertainty), "and", -(self.machine_compaction_zone), "  :",
-              "%.1f" % ((neg_1 / compaction_passes) * 100), "%")
-        print("between ", -self.machine_compaction_zone, "and", -(self.machine_compaction_zone * 2), "  :",
-              "%.1f" % ((neg_2 / compaction_passes) * 100), "%")
-        print("between ", -(self.machine_compaction_zone * 2), "and", -(self.machine_compaction_zone * 3), "  :",
-              "%.1f" % ((neg_3 / compaction_passes) * 100), "%")
-        print("between ", -(self.machine_compaction_zone * 3), "and", -(self.machine_compaction_zone * 4), "  :",
-              "%.1f" % ((neg_4 / compaction_passes) * 100), "%")
-        print("between ", -(self.machine_compaction_zone * 4), "and", -(self.machine_compaction_zone * 5), "  :",
-              "%.1f" % ((neg_5 / compaction_passes) * 100), "%")
-        print("        ", -(self.machine_compaction_zone * 5), "and below  :",
-              "%.1f" % ((neg_6 / compaction_passes) * 100), "%")
-        # print("pass check: ", cnt_Unique_cell_compaction_area - (bin_1 + bin_2 + bin_3 + bin_4 + bin_5 + bin_6 + neg_1 + neg_2 + neg_3 + neg_4 + neg_5 + neg_6))
-        print("over compaction passes :", total_cnt_over)
-        print("Percent of passes over compacting: ", "%.1f" % ((total_cnt_over / compaction_passes) * 100), "%")
-
-        """
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Area of uncompacted events  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") 
-        print("Volume event passes :", active_cnt, "%.4f" % (active_cnt * self.cellToArea), " ft^2")
-        print("between ", self.filter_low_volume_cell, "and", self.machine_compaction_zone, "    : Area", "%.1f" % ((active_1/active_cnt)*100) ,"%", "%.0f" % (active_1 * self.cellToArea), " ft^2")
-        print("between ", self.machine_compaction_zone, "and", (self.machine_compaction_zone *2), "    : Area",  "%.1f" % ((active_2/active_cnt)*100) ,"%" , "%.0f" % (active_2 * self.cellToArea), " ft^2")
-        print("between ", self.machine_compaction_zone * 2, "and", (self.machine_compaction_zone *3), "    : Area",  "%.1f" % ((active_3/active_cnt)*100) ,"%", "%.0f" % (active_3 * self.cellToArea), " ft^2")
-        print("between ", self.machine_compaction_zone * 3, "and", (self.machine_compaction_zone *4), "    : Area",  "%.1f" % ((active_4/active_cnt)*100) ,"%", "%.0f" % (active_4 * self.cellToArea), " ft^2")
-        print("between ", self.machine_compaction_zone * 4, "and", (self.machine_compaction_zone *5), "    : Area",  "%.1f" % ((active_5/active_cnt)*100) ,"%", "%.0f" % (active_5 * self.cellToArea), " ft^2")
-        print("        ",self.machine_compaction_zone * 5, "and above   : Area",  "%.1f" % ((active_6/active_cnt)*100) ,"%", "%.0f" % (active_6 * self.cellToArea), " ft^2")
-        
-        
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Thick-Lift summary >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print(">>>>>> Thick lift flag - count      :" , total_cnt_thick) # this is all thick lifts including repeats in single cell
-        print(">>>>>> Thick lift      - coverage   :", "%.4f" % (total_cnt_thick * self.AreatoAcre), " acres") # this is thick lift coverage, not all cells
-        
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Passcount details >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print(">>>>>>>>>>>>>>>>>> (A check that this aligns with VL passcount details) >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        
-        passes_above_n = 1
-        for k,v in lst[:8]:
-            print(k , "Passes " ,v, " occurences ", "%.3f" % (v/(len(northEastDict))))
-            #print(cell_count_coverage)
-            #print(single_pass_cells)
-            #print(k, "Pass area: " ,((v * 1.41)/43560), " acres")
-            passes_above_n = passes_above_n - v/(len(northEastDict))
-        print("Above X passes :", "%.2f" % passes_above_n)
-        """
 
         # Output file
-        output = "./output/CompactionOutput.csv"
-        fout = open(output, 'a')
-        w = csv.writer(fout, delimiter=',', dialect='excel', lineterminator='\n')
+        #output = "./output/CompactionOutput.csv"
+        #fout = open(output, 'a')
+        #w = csv.writer(fout, delimiter=',', dialect='excel', lineterminator='\n')
         """
         w.writerow(['Sourcefile',                           #1
                     'Number machines',                      #2
@@ -1035,47 +767,47 @@ class LandfillAlgorithm():
                     'Event > 2.5 volume',                          #34
                     ])
                     """
-
-        w.writerow([current_file,  # 1
-                    len(contributing_machines),  # 2
-                    total_duration,  # 3
-                    "%.4f" % (cell_pass_count_total * self.AreatoAcre),  # 4
-                    # "%.4f" % (area_coverage) ,   #4.5
-                    # "%.4f" %  (single_pass_area) ,                              #5
-                    # "%.4f" % (area_low_volume_cell) ,                           #6
-                    # "%.4f" % (area_cut_cell) ,                                  #7
-                    "%.4f" % (active_compaction_area),  # 8
-                    "%.0f" % F,  # 9
-                    # "%.0f" % -C,                                               #10
-                    # "%.0f" % V0,                                                #11
-                    # "%.0f" % VR,                                                #11.1
-                    "%.0f" % VM,  # 11.2
-                    "%.0f" % ((under_compacted_volume_percentage) * 100),  # 12
-                    # "%.0f" % (double_handle_volume),                              #13
-                    lift_passes,  # 14
-                    "%.1f" % ((bin_1 / lift_passes) * 100),
-                    "%.1f" % ((bin_2 / lift_passes) * 100),
-                    "%.1f" % ((bin_3 / lift_passes) * 100),
-                    "%.1f" % ((bin_4 / lift_passes) * 100),
-                    "%.1f" % ((bin_5 / lift_passes) * 100),
-                    "%.1f" % ((bin_6 / lift_passes) * 100),
-                    compaction_passes,  # 21
-                    # "%.1f" % ((neg_1/compaction_passes)*100) ,
-                    # "%.1f" % ((neg_2/compaction_passes)*100) ,
-                    # "%.1f" % ((neg_3/compaction_passes)*100) ,
-                    # "%.1f" % ((neg_3/compaction_passes)*100) ,
-                    # "%.1f" % ((neg_5/compaction_passes)*100) ,
-                    # "%.1f" % ((neg_6/compaction_passes)*100) ,
-                    "%.1f" % ((total_cnt_over / compaction_passes) * 100),  # 28
-                    "%.0f" % (active_volume_1 * self.cellVoltoCubic),
-                    "%.0f" % (active_volume_2 * self.cellVoltoCubic),
-                    "%.0f" % (active_volume_3 * self.cellVoltoCubic),
-                    "%.0f" % (active_volume_4 * self.cellVoltoCubic),
-                    "%.0f" % (active_volume_5 * self.cellVoltoCubic),
-                    "%.0f" % (active_volume_6 * self.cellVoltoCubic),  # 34
-
-                    ])
-        fout.close()
+        #TODO: This might not be needed
+        # w.writerow([self.current_file,  # 1
+        #             len(contributing_machines),  # 2
+        #             total_duration,  # 3
+        #             "%.4f" % (cell_pass_count_total * self.AreatoAcre),  # 4
+        #             # "%.4f" % (area_coverage) ,   #4.5
+        #             # "%.4f" %  (single_pass_area) ,                              #5
+        #             # "%.4f" % (area_low_volume_cell) ,                           #6
+        #             # "%.4f" % (area_cut_cell) ,                                  #7
+        #             "%.4f" % (active_compaction_area),  # 8
+        #             "%.0f" % F,  # 9
+        #             # "%.0f" % -C,                                               #10
+        #             # "%.0f" % V0,                                                #11
+        #             # "%.0f" % VR,                                                #11.1
+        #             "%.0f" % VM,  # 11.2
+        #             "%.0f" % ((under_compacted_volume_percentage) * 100),  # 12
+        #             # "%.0f" % (double_handle_volume),                              #13
+        #             lift_passes,  # 14
+        #             "%.1f" % ((bin_1 / lift_passes) * 100),
+        #             "%.1f" % ((bin_2 / lift_passes) * 100),
+        #             "%.1f" % ((bin_3 / lift_passes) * 100),
+        #             "%.1f" % ((bin_4 / lift_passes) * 100),
+        #             "%.1f" % ((bin_5 / lift_passes) * 100),
+        #             "%.1f" % ((bin_6 / lift_passes) * 100),
+        #             compaction_passes,  # 21
+        #             # "%.1f" % ((neg_1/compaction_passes)*100) ,
+        #             # "%.1f" % ((neg_2/compaction_passes)*100) ,
+        #             # "%.1f" % ((neg_3/compaction_passes)*100) ,
+        #             # "%.1f" % ((neg_3/compaction_passes)*100) ,
+        #             # "%.1f" % ((neg_5/compaction_passes)*100) ,
+        #             # "%.1f" % ((neg_6/compaction_passes)*100) ,
+        #             "%.1f" % ((total_cnt_over / compaction_passes) * 100),  # 28
+        #             "%.0f" % (active_volume_1 * self.cellVoltoCubic),
+        #             "%.0f" % (active_volume_2 * self.cellVoltoCubic),
+        #             "%.0f" % (active_volume_3 * self.cellVoltoCubic),
+        #             "%.0f" % (active_volume_4 * self.cellVoltoCubic),
+        #             "%.0f" % (active_volume_5 * self.cellVoltoCubic),
+        #             "%.0f" % (active_volume_6 * self.cellVoltoCubic),  # 34
+        #
+        #             ])
+        # fout.close()
 
         # print(machine_area_eventDict)
 
@@ -1083,7 +815,7 @@ class LandfillAlgorithm():
 
         # prepare site summary for Excel
         site_summary_to_excel = (
-            ['file processed', filename],
+            ['file processed', self.filename],
             ['Thicklift value', self.thick_lift],
             ['Low volume cell filter', self.filter_low_volume_cell],
             ['uncertainty filter', self.filter_elevation_uncertainty],
@@ -1096,50 +828,50 @@ class LandfillAlgorithm():
             ['Removed for Cut Acres', area_cut_cell],
             ['Removed for low volume Acres', area_low_volume_cell],
             ['Active compaction - area Acres', active_compaction_area],
-            ['Volume of Fill yd^3', F],
-            ['Total Volume under compacted yd^3', V0],
-            ['Remediated under compacted yd^3', -VR],
-            ['Remaining undercomapcted yd^3', VM],
-            ['% volume under compacted', ((under_compacted_volume_percentage) * 100)],
-            ['volume of double handle', double_handle_volume],
+            ['Volume of Fill yd^3', compaction_evaulation.F],
+            ['Total Volume under compacted yd^3', compaction_evaulation.V0],
+            ['Remediated under compacted yd^3', -compaction_evaulation.VR],
+            ['Remaining undercomapcted yd^3', compaction_evaulation.VM],
+            ['% volume under compacted', ((compaction_evaulation.under_compacted_volume_percentage) * 100)],
+            ['volume of double handle', compaction_evaulation.double_handle_volume],
             ['volume of cut', -C],
-            ['under compacted event % 0 to 0.5', (((active_volume_1 * self.cellVoltoCubic) / V0) * 100)],
-            ['under compacted event % 0.5 to 1.0', (((active_volume_2 * self.cellVoltoCubic) / V0) * 100)],
-            ['under compacted event % 1.0 to 1.5', (((active_volume_3 * self.cellVoltoCubic) / V0) * 100)],
-            ['under compacted event % 1.5 to 2.0', (((active_volume_4 * self.cellVoltoCubic) / V0) * 100)],
-            ['under compacted event % 2.0 to 2.5', (((active_volume_5 * self.cellVoltoCubic) / V0) * 100)],
-            ['under compacted event % 2.5 >', (((active_volume_6 * self.cellVoltoCubic) / V0) * 100)],
-            ['under compacted event volume 0 to 0.5', (active_volume_1 * self.cellVoltoCubic)],
-            ['under compacted event volume 0.5 to 1.0', (active_volume_2 * self.cellVoltoCubic)],
-            ['under compacted event volume 1.0 to 1.5', (active_volume_3 * self.cellVoltoCubic)],
-            ['under compacted event volume 1.5 to 2.0', (active_volume_4 * self.cellVoltoCubic)],
-            ['under compacted event volume 2.0 to 2.5', (active_volume_5 * self.cellVoltoCubic)],
-            ['under compacted event volume 2.5 >', (active_volume_6 * self.cellVoltoCubic)],
-            ['lift passes', lift_passes],
-            ['compaction passes', compaction_passes],
-            ['lift between filter and 0.5', ((bin_1 / lift_passes) * 100)],
-            ['lift between 0.5 and 1.0', ((bin_2 / lift_passes) * 100)],
-            ['lift between 1.0 and 1.5', ((bin_3 / lift_passes) * 100)],
-            ['lift between 1.5 and 2.0', ((bin_4 / lift_passes) * 100)],
-            ['lift between 2.0 and 2.5', ((bin_5 / lift_passes) * 100)],
-            ['lift greater than 2.5', ((bin_6 / lift_passes) * 100)],
+            ['under compacted event % 0 to 0.5', (((compaction_evaulation.active_volume_1 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
+            ['under compacted event % 0.5 to 1.0', (((compaction_evaulation.active_volume_2 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
+            ['under compacted event % 1.0 to 1.5', (((compaction_evaulation.active_volume_3 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
+            ['under compacted event % 1.5 to 2.0', (((compaction_evaulation.active_volume_4 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
+            ['under compacted event % 2.0 to 2.5', (((compaction_evaulation.active_volume_5 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
+            ['under compacted event % 2.5 >', (((compaction_evaulation.active_volume_6 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
+            ['under compacted event volume 0 to 0.5', (compaction_evaulation.active_volume_1 * self.cellVoltoCubic)],
+            ['under compacted event volume 0.5 to 1.0', (compaction_evaulation.active_volume_2 * self.cellVoltoCubic)],
+            ['under compacted event volume 1.0 to 1.5', (compaction_evaulation.active_volume_3 * self.cellVoltoCubic)],
+            ['under compacted event volume 1.5 to 2.0', (compaction_evaulation.active_volume_4 * self.cellVoltoCubic)],
+            ['under compacted event volume 2.0 to 2.5', (compaction_evaulation.active_volume_5 * self.cellVoltoCubic)],
+            ['under compacted event volume 2.5 >', (compaction_evaulation.active_volume_6 * self.cellVoltoCubic)],
+            ['lift passes', compaction_evaulation.lift_passes],
+            ['compaction passes', compaction_evaulation.compaction_passes],
+            ['lift between filter and 0.5', ((compaction_evaulation.bin_1 / compaction_evaulation.lift_passes) * 100)],
+            ['lift between 0.5 and 1.0', ((compaction_evaulation.bin_2 / compaction_evaulation.lift_passes) * 100)],
+            ['lift between 1.0 and 1.5', ((compaction_evaulation.bin_3 / compaction_evaulation.lift_passes) * 100)],
+            ['lift between 1.5 and 2.0', ((compaction_evaulation.bin_4 / compaction_evaulation.lift_passes) * 100)],
+            ['lift between 2.0 and 2.5', ((compaction_evaulation.bin_5 / compaction_evaulation.lift_passes) * 100)],
+            ['lift greater than 2.5', ((compaction_evaulation.bin_6 / compaction_evaulation.lift_passes) * 100)],
 
         )
 
         # create dictionary to display lift sumary by %
         lift_summaryDict = {"Lift Summary breakdown": {}, }
         lift_summary_breakdown_all = {}
-        ucv = ((bin_1 / lift_passes) * 100)
+        ucv = ((compaction_evaulation.bin_1 / compaction_evaulation.lift_passes) * 100)
         lift_summary_breakdown_all['0 to 0.5'] = ucv
-        ucv = ((bin_2 / lift_passes) * 100)
+        ucv = ((compaction_evaulation.bin_2 / compaction_evaulation.lift_passes) * 100)
         lift_summary_breakdown_all['0.5 to 1.0'] = ucv
-        ucv = ((bin_3 / lift_passes) * 100)
+        ucv = ((compaction_evaulation.bin_3 / compaction_evaulation.lift_passes) * 100)
         lift_summary_breakdown_all['1.0 to 1.5'] = ucv
-        ucv = ((bin_4 / lift_passes) * 100)
+        ucv = ((compaction_evaulation.bin_4 / compaction_evaulation.lift_passes) * 100)
         lift_summary_breakdown_all['1.5 to 2.0'] = ucv
-        ucv = ((bin_5 / lift_passes) * 100)
+        ucv = ((compaction_evaulation.bin_5 / compaction_evaulation.lift_passes) * 100)
         lift_summary_breakdown_all['2.0 to 2.5'] = ucv
-        ucv = ((bin_6 / lift_passes) * 100)
+        ucv = ((compaction_evaulation.bin_6 / compaction_evaulation.lift_passes) * 100)
         lift_summary_breakdown_all['> 2.5'] = ucv
 
         lift_summaryDict['Lift Summary breakdown'] = [lift_summary_breakdown_all]
@@ -1147,17 +879,17 @@ class LandfillAlgorithm():
         # create dictionary to display undercompacted material magnitude breakdown by %
         under_compacted_material_magnitude_breakdownDict = {"Under compacted breakdown": {}, }
         under_compacted_breakdown_all = {}
-        ucv = (active_volume_1 * self.cellVoltoCubic)
+        ucv = (compaction_evaulation.active_volume_1 * self.cellVoltoCubic)
         under_compacted_breakdown_all['0 to 0.5'] = ucv
-        ucv = (active_volume_2 * self.cellVoltoCubic)
+        ucv = (compaction_evaulation.active_volume_2 * self.cellVoltoCubic)
         under_compacted_breakdown_all['0.5 to 1.0'] = ucv
-        ucv = (active_volume_3 * self.cellVoltoCubic)
+        ucv = (compaction_evaulation.active_volume_3 * self.cellVoltoCubic)
         under_compacted_breakdown_all['1.0 to 1.5'] = ucv
-        ucv = (active_volume_4 * self.cellVoltoCubic)
+        ucv = (compaction_evaulation.active_volume_4 * self.cellVoltoCubic)
         under_compacted_breakdown_all['1.5 to 2.0'] = ucv
-        ucv = (active_volume_5 * self.cellVoltoCubic)
+        ucv = (compaction_evaulation.active_volume_5 * self.cellVoltoCubic)
         under_compacted_breakdown_all['2.0 to 2.5'] = ucv
-        ucv = (active_volume_6 * self.cellVoltoCubic)
+        ucv = (compaction_evaulation.active_volume_6 * self.cellVoltoCubic)
         under_compacted_breakdown_all['> 2.5'] = ucv
 
         under_compacted_material_magnitude_breakdownDict['Under compacted breakdown'] = [under_compacted_breakdown_all]
@@ -1165,17 +897,17 @@ class LandfillAlgorithm():
         # create dictionary to display undercompacted material volume by magnitude
         under_compacted_volume_breakdownDict = {"Under compacted vol breakdown": {}, }
         under_compacted_volume_breakdown_all = {}
-        ucv = int((((active_volume_1 * self.cellVoltoCubic) / VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_1 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
         under_compacted_volume_breakdown_all['0 to 0.5'] = ucv
-        ucv = int((((active_volume_2 * self.cellVoltoCubic) / VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_2 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
         under_compacted_volume_breakdown_all['0.5 to 1.0'] = ucv
-        ucv = int((((active_volume_3 * self.cellVoltoCubic) / VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_3 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
         under_compacted_volume_breakdown_all['1.0 to 1.5'] = ucv
-        ucv = int((((active_volume_4 * self.cellVoltoCubic) / VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_4 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
         under_compacted_volume_breakdown_all['1.5 to 2.0'] = ucv
-        ucv = int((((active_volume_5 * self.cellVoltoCubic) / VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_5 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
         under_compacted_volume_breakdown_all['2.0 to 2.5'] = ucv
-        ucv = int((((active_volume_6 * self.cellVoltoCubic) / VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_6 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
         under_compacted_volume_breakdown_all['> 2.5'] = ucv
 
         under_compacted_volume_breakdownDict['Under compacted vol breakdown'] = [under_compacted_volume_breakdown_all]
@@ -1185,7 +917,7 @@ class LandfillAlgorithm():
         ##########################################################
         # create Volume dictionary and write to .xlxs file
         ##########################################################
-        ExcelOutputFile = "./output/" + current_file + ".xlsx"
+        ExcelOutputFile = "./output/" + self.current_file + ".xlsx"
 
         tempVolumeDict = {}  # mitigated volume
         tempVolumeDict_accumulated = {}
