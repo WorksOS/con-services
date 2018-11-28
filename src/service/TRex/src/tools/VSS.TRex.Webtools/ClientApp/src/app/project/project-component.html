@@ -58,9 +58,9 @@
 
 <svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      (mouseover)="onMouseOverProfile($event)" (mousemove)="onMouseMoveProfile($event)">
-  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1" fill="none" />
+  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1.5" fill="none" />
 </svg>
-<p>Profile extents: Start station: {{profileExtents.minX}}, End station: {{profileExtents.minX}}, Min Z: {{profileExtents.minY}}, Max Z: {{profileExtents.maxY}}</p>
+<p>Profile extents: Start station: {{profileExtents.minX}}, End station: {{profileExtents.maxX}}, Min Z: {{profileExtents.minY}}, Max Z: {{profileExtents.maxY}}</p>
 <p>Mouse: Screen: {{mouseProfilePixelLocation}}, World: {{mouseProfileWorldLocation}} </p>
 
 <H3>Machines [{{machines.length}} in total]</H3>
