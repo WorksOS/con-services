@@ -105,8 +105,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     /// </summary>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-      loggerFactory.AddDebug();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.BuildServiceProvider();
 
