@@ -14,7 +14,9 @@ using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Servers.Compute;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
@@ -42,6 +44,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaces.SurveyedSurfaceFactory()))
+        .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Build()
         .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectProxy>())
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage())))
