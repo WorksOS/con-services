@@ -10,7 +10,7 @@ namespace VSS.TRex.Profiling.Interfaces
   public interface IProfilerBuilder
   {
     /// <summary>
-    /// Builder responsible fopr per-cell profile analysis
+    /// Builder responsible for per-cell profile analysis
     /// </summary>
     ICellLiftBuilder CellLiftBuilder { get; set; }
 
@@ -20,7 +20,7 @@ namespace VSS.TRex.Profiling.Interfaces
     ICellProfileBuilder CellProfileBuilder { get; set; }
 
     /// <summary>
-    /// Buidler responsibler from building overall profile informationk from cell vector
+    /// Builder responsible from building overall profile information from cell vector
     /// </summary>
     IProfileLiftBuilder ProfileLiftBuilder { get; set; }
 
