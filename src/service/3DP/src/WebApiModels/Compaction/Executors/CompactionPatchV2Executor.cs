@@ -50,14 +50,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request.PatchSize); 
 
           var fileResult = trexCompactionDataProxy.SendProductionDataPatchRequest(patchDataRequest, customHeaders).Result as FileStreamResult;
-          
-          using (var ms = new MemoryStream())
-          {
-            fileResult?.FileStream.CopyTo(ms);
-            return ms.Length > 0
+
+          var ms = fileResult?.FileStream as MemoryStream;
+
+          return ms?.Length > 0
               ? ConvertPatchResult(ms, true)
               : CreateNullPatchReturnedResult();
-          }
         }
 
         return ProcessWithRaptor(request);

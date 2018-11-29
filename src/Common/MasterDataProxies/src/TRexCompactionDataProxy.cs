@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -182,8 +183,8 @@ namespace VSS.MasterData.Proxies
       var request = JsonConvert.SerializeObject(tileRequest);
 
       log.LogDebug($"{nameof(SendProductionDataTileRequest)}: Sending the request: {request}");
-
-      return await SendRequestPostEx<FileResult>(request, customHeaders, "/tile");
+      
+      return await SendRequestPostAsStreamContent(request, "image/png", customHeaders, "/tile");
     }
 
     /// <summary>
@@ -242,7 +243,7 @@ namespace VSS.MasterData.Proxies
 
       log.LogDebug($"{nameof(SendProductionDataPatchRequest)}: Sending the request: {request}");
 
-      return await SendRequestPostEx<FileResult>(request, customHeaders, "/patches");
+      return await SendRequestPostAsStreamContent(request, "application/octet-stream", customHeaders, "/patches");
     }
 
 
@@ -278,6 +279,21 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"{nameof(SendRequestPostEx)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
       return response;
+    }
+
+    /// <summary>
+    /// Executes a POST request against the TRex Gateway service as stream content.
+    /// </summary>
+    /// <param name="payload"></param>
+    /// <param name="contentType"></param>
+    /// <param name="customHeaders"></param>
+    /// <param name="route"></param>
+    /// <returns></returns>
+    private async Task<ActionResult> SendRequestPostAsStreamContent(string payload, string contentType, IDictionary<string, string> customHeaders, string route)
+    {
+      var result = await GetMasterDataStreamContent("TREX_GATEWAY_API_URL", customHeaders, "POST", payload, null, route);
+
+      return new FileStreamResult(result, contentType);
     }
 
     /// <summary>
