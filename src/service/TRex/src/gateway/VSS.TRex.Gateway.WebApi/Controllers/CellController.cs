@@ -1,8 +1,11 @@
 ﻿using System.IO;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
@@ -36,6 +39,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         RequestExecutorContainer
           .Build<PatchRequestExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(patchRequest)) as PatchDataResult;
+
+      if (patchResult?.PatchData == null)
+      {
+        var code = patchResult == null ? HttpStatusCode.BadRequest : HttpStatusCode.NoContent;
+        var exCode = patchResult == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ValidationError;
+
+        throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get subgrid patches for project ID: {patchRequest.ProjectUid}"));
+      }
 
       return new FileStreamResult(new MemoryStream(patchResult?.PatchData), "application/octet-stream");
     }

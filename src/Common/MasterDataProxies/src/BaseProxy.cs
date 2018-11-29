@@ -221,11 +221,8 @@ namespace VSS.MasterData.Proxies
         var request = new GracefulWebRequest(logger, configurationStore);
         if (method != "GET")
         {
-          if (payload != null)
-          {
-            var streamPayload = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-            result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
-          }
+          var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
+          result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
         }
         else
           result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders)).ReadAsStreamAsync();

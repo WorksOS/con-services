@@ -14,6 +14,17 @@ namespace VSS.TRex.Exports.Patches
   /// </summary>
   public class SubgridDataPatchRecord_ElevationAndTime : SubgridDataPatchRecordBase
   {
+    private const byte ONE_BYTE = 1;
+    private const byte TWO_BYTES = 2;
+    private const byte FOUR_BYTES = 4;
+
+    private const double DOUBLE_VALUE = 1E10;
+    private const byte TIME_MINIMUM_VALUE = 0;
+    private const uint TIME_MAXIMUM_VALUE = 0xffffffff;
+
+    private const short ELEVATION_OFFSET_FACTOR = 1000;
+    private const double ELEVATION_OFFSET_TOLERANCE = 0.0005;
+
     /// <summary>
     /// The elevation offset size in bytes.
     /// </summary>
@@ -49,10 +60,6 @@ namespace VSS.TRex.Exports.Patches
       //========================================================================================
       byte BytesForRangeExcludingNull(uint range)
       {
-        const byte ONE_BYTE = 1;
-        const byte TWO_BYTES = 2;
-        const byte FOUR_BYTES = 4;
-
         if (range <= byte.MaxValue)
           return ONE_BYTE;
 
@@ -71,15 +78,11 @@ namespace VSS.TRex.Exports.Patches
       float[,] elevations = elevSubGrid.Cells;
       long[,] times = elevSubGrid.Times;
 
-      if (null == elevSubGrid.Cells)
+      if (elevSubGrid.Cells == null)
       {
         IsNull = true;
         return;
       }
-
-      const double DOUBLE_VALUE = 1E10;
-      const byte TIME_MINIMUM_VALUE = 0;
-      const uint TIME_MAXIMUM_VALUE = 0xffffffff;
 
       // Determine the minimum/maximum non-null elevation/time in the subgrid
       double minElevation = DOUBLE_VALUE;
@@ -109,9 +112,6 @@ namespace VSS.TRex.Exports.Patches
       
       if (Math.Abs(minElevation - CellPassConsts.NullHeight) < Consts.TOLERANCE_DIMENSION)
         return;
-
-      const short ELEVATION_OFFSET_FACTOR = 1000;
-      const double ELEVATION_OFFSET_TOLERANCE = 0.0005;
 
       var minElevationAsMM = (uint)Math.Floor(minElevation * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE);
       var maxElevationAsMM = (uint)Math.Floor(maxElevation * ELEVATION_OFFSET_FACTOR + ELEVATION_OFFSET_TOLERANCE);

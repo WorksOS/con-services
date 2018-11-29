@@ -49,12 +49,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request.PatchNumber, 
             request.PatchSize); 
 
-          var fileResult = trexCompactionDataProxy.SendProductionDataPatchRequest(patchDataRequest, customHeaders).Result as FileStreamResult;
+          var fileResult = trexCompactionDataProxy.SendProductionDataPatchRequest(patchDataRequest, customHeaders).Result;
 
-          var ms = fileResult?.FileStream as MemoryStream;
-
-          return ms?.Length > 0
-              ? ConvertPatchResult(ms, true)
+          return fileResult.Length > 0
+              ? ConvertPatchResult(fileResult, true)
               : CreateNullPatchReturnedResult();
         }
 
@@ -114,19 +112,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
 
-    private PatchResult ConvertPatchResult(MemoryStream ms, bool includeTimeOffsets)
+    private PatchResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
     {
-      var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      var dataPatchSubgridCount = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      double cellSize = StreamUtils.__Global.ReadDoubleFromStream(ms);
+      var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(stream);
+      var dataPatchSubgridCount = StreamUtils.__Global.ReadIntegerFromStream(stream);
+      double cellSize = StreamUtils.__Global.ReadDoubleFromStream(stream);
 
       var subgrids = new PatchSubgridResultBase[dataPatchSubgridCount];
 
       for (var i = 0; i < dataPatchSubgridCount; i++)
       {
-        var subgridOriginX = StreamUtils.__Global.ReadDoubleFromStream(ms);
-        var subgridOriginY = StreamUtils.__Global.ReadDoubleFromStream(ms);
-        var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
+        var subgridOriginX = StreamUtils.__Global.ReadDoubleFromStream(stream);
+        var subgridOriginY = StreamUtils.__Global.ReadDoubleFromStream(stream);
+        var isNull = StreamUtils.__Global.ReadBooleanFromStream(stream);
 
         log.LogDebug($"Subgrid {i + 1} in patch has world origin of {subgridOriginX}:{subgridOriginY}. IsNull?:{isNull}");
 
@@ -135,11 +133,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           continue;
         }
 
-        float elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
-        byte elevationOffsetSizeInBytes = StreamUtils.__Global.ReadByteFromStream(ms);
+        float elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(stream);
+        byte elevationOffsetSizeInBytes = StreamUtils.__Global.ReadByteFromStream(stream);
 
-        uint timeOrigin = StreamUtils.__Global.ReadLongWordFromStream(ms); // UTC expressed as Unix time in seconds.
-        byte timeOffsetSizeInBytes = StreamUtils.__Global.ReadByteFromStream(ms);
+        uint timeOrigin = StreamUtils.__Global.ReadLongWordFromStream(stream); // UTC expressed as Unix time in seconds.
+        byte timeOffsetSizeInBytes = StreamUtils.__Global.ReadByteFromStream(stream);
 
         log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
 
@@ -161,21 +159,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             // These efforts are to further help the variant length operations that Protobuf applies to the byte stream.
             case 1:
               {
-                uint elevationOffset = StreamUtils.__Global.ReadByteFromStream(ms);
+                uint elevationOffset = StreamUtils.__Global.ReadByteFromStream(stream);
                 elevationOffsetDelta = (ushort)(elevationOffset != 0xff ? elevationOffset + 0x1 : 0x0);
 
                 break;
               }
             case 2:
               {
-                uint elevationOffset = StreamUtils.__Global.ReadWordFromStream(ms);
+                uint elevationOffset = StreamUtils.__Global.ReadWordFromStream(stream);
                 elevationOffsetDelta = (ushort)(elevationOffset != 0xffff ? elevationOffset + 0x1 : 0x0);
 
                 break;
               }
             case 4:
               {
-                uint elevationOffset = StreamUtils.__Global.ReadLongWordFromStream(ms);
+                uint elevationOffset = StreamUtils.__Global.ReadLongWordFromStream(stream);
                 elevationOffsetDelta = (ushort)(elevationOffset != 0xffffffff ? elevationOffset + 0x1 : 0x0);
 
                 break;
@@ -191,21 +189,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           {
             case 1:
               {
-                var timeOffset = StreamUtils.__Global.ReadByteFromStream(ms);
+                var timeOffset = StreamUtils.__Global.ReadByteFromStream(stream);
                 time = (uint)(timeOffset != 0xff ? timeOffset : 0x0);
 
                 break;
               }
             case 2:
               {
-                var timeOffset = StreamUtils.__Global.ReadWordFromStream(ms);
+                var timeOffset = StreamUtils.__Global.ReadWordFromStream(stream);
                 time = (uint)(timeOffset != 0xffff ? timeOffset : 0x0);
 
                 break;
               }
             case 4:
               {
-                var timeOffset = StreamUtils.__Global.ReadLongWordFromStream(ms);
+                var timeOffset = StreamUtils.__Global.ReadLongWordFromStream(stream);
                 time = timeOffset != 0xffffffff ? timeOffset : 0x0;
 
                 break;

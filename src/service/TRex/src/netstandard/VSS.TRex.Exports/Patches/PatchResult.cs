@@ -18,52 +18,54 @@ namespace VSS.TRex.Exports.Patches
 
     public byte[] ConstructResultData()
     {
-      var ms = new MemoryStream();
-
-      var bw = new BinaryWriter(ms, Encoding.UTF8, true);
-
-      bw.Write(TotalNumberOfPagesToCoverFilteredData);
-      bw.Write(Patch?.Length ?? 0);
-      bw.Write(CellSize);
-
-      if (Patch == null)
-        return ms.ToArray();
-
-      foreach (var patch in Patch)
+      using (var ms = new MemoryStream())
       {
-        bw.Write(patch.CellOriginX);
-        bw.Write(patch.CellOriginY);
-        bw.Write(patch.IsNull);
-
-        if (patch.IsNull)
-          continue;
-
-        bw.Write(patch.ElevationOrigin);
-        bw.Write(patch.ElevationOffsetSize);
-        bw.Write(patch.TimeOrigin);
-        bw.Write(patch.TimeOffsetSize);
-
-        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+        using (var bw = new BinaryWriter(ms, Encoding.UTF8, true))
         {
-          switch (patch.ElevationOffsetSize)
+          bw.Write(TotalNumberOfPagesToCoverFilteredData);
+          bw.Write(Patch?.Length ?? 0);
+          bw.Write(CellSize);
+
+          if (Patch == null)
+            return ms.ToArray();
+
+          foreach (var patch in Patch)
           {
-            case 1: bw.Write((byte)(patch.Data[x, y].ElevationOffset & 0xFF)); break;
-            case 2: bw.Write((ushort)(patch.Data[x, y].ElevationOffset & 0xFFFF)); break;
-            case 4: bw.Write((uint)(patch.Data[x, y].ElevationOffset & 0xFFFFFFFF)); break;
-            default: throw new System.ArgumentException("Unknown bytes size for elevation offset");
+            bw.Write(patch.CellOriginX);
+            bw.Write(patch.CellOriginY);
+            bw.Write(patch.IsNull);
+
+            if (patch.IsNull)
+              continue;
+
+            bw.Write(patch.ElevationOrigin);
+            bw.Write(patch.ElevationOffsetSize);
+            bw.Write(patch.TimeOrigin);
+            bw.Write(patch.TimeOffsetSize);
+
+            SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+            {
+              switch (patch.ElevationOffsetSize)
+              {
+                case 1: bw.Write((byte)(patch.Data[x, y].ElevationOffset & 0xFF)); break;
+                case 2: bw.Write((ushort)(patch.Data[x, y].ElevationOffset & 0xFFFF)); break;
+                case 4: bw.Write((uint)(patch.Data[x, y].ElevationOffset & 0xFFFFFFFF)); break;
+                default: throw new System.ArgumentException("Unknown bytes size for elevation offset");
+              }
+
+              switch (patch.TimeOffsetSize)
+              {
+                case 1: bw.Write((byte)(patch.Data[x, y].TimeOffset & 0xFF)); break;
+                case 2: bw.Write((ushort)(patch.Data[x, y].TimeOffset & 0xFFFF)); break;
+                case 4: bw.Write((uint)(patch.Data[x, y].TimeOffset & 0xFFFFFFFF)); break;
+                default: throw new System.ArgumentException("Unknown bytes size for time offset");
+              }
+            });
           }
 
-          switch (patch.TimeOffsetSize)
-          {
-            case 1: bw.Write((byte)(patch.Data[x, y].TimeOffset & 0xFF)); break;
-            case 2: bw.Write((ushort)(patch.Data[x, y].TimeOffset & 0xFFFF)); break;
-            case 4: bw.Write((uint)(patch.Data[x, y].TimeOffset & 0xFFFFFFFF)); break;
-            default: throw new System.ArgumentException("Unknown bytes size for time offset");
-          }
-        });
+          return ms.ToArray();
+        }
       }
-
-      return ms.ToArray();
     }
   }
 }
