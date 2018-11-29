@@ -338,18 +338,37 @@ namespace VSS.MasterData.Proxies
     public async Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid, 
       Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.GetBoundingBox: projectUid={projectUid}, overlays={overlays}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}, headers {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
+      log.LogDebug($"RaptorProxy.GetBoundingBox: projectUid={projectUid}, overlays={JsonConvert.SerializeObject(overlays)}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}, headers {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
 
-      string filterParam = filterUid.HasValue ? $"&filterUid={filterUid}" : string.Empty;
-      string cutFillDesignParam = cutFillDesignUid.HasValue ? $"&cutFillDesignUid={cutFillDesignUid}" : string.Empty;
-      string baseParam = baseUid.HasValue ? $"&baseUid={baseUid}" : string.Empty;
-      string topParam = topUid.HasValue ? $"&topUid={topUid}" : string.Empty;
-      string volCalcTypeParam = volCalcType.HasValue ? $"&volumeCalcType={volCalcType}" : string.Empty;
-      var overlaysParameter = string.Join("&overlays=", overlays);
-      var queryParameters = $"?projectUid={projectUid}&overlays={overlaysParameter}{filterParam}{cutFillDesignParam}{baseParam}{topParam}{volCalcTypeParam}";
+      Dictionary<string, string> parameters = new Dictionary<string, string>
+      {
+        {"projectUid", projectUid.ToString()}
+
+      };
+      if (filterUid.HasValue)
+      {
+        parameters.Add("filterUid", filterUid.ToString());
+      }
+      if (cutFillDesignUid.HasValue)
+      {
+        parameters.Add("cutFillDesignUid", cutFillDesignUid.ToString());
+      }
+      if (baseUid.HasValue)
+      {
+        parameters.Add("baseUid", baseUid.ToString());
+      }
+      if (topUid.HasValue)
+      {
+        parameters.Add("topUid", topUid.ToString());
+      }
+      if (volCalcType.HasValue)
+      {
+        parameters.Add("volumeCalcType", volCalcType.ToString());
+      }
+      var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}{string.Join("&overlays=", overlays)}";
 
       string response = await SendRequest<string>("RAPTOR_3DPM_API_URL",
-        string.Empty, customHeaders, "/raptor/boundingbox", "GET", queryParameters);
+        string.Empty, customHeaders, "/raptor/boundingbox", "GET", queryParams);
       return response;
     }
     #endregion
