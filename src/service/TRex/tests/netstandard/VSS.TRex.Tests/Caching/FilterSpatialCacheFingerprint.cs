@@ -348,7 +348,7 @@ namespace VSS.TRex.Tests.Caching
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GA:1-Fine", StringComparison.OrdinalIgnoreCase),
-        "Fingerprint does not contain guidance mode filter ID");
+        "Fingerprint does not contain GPS Accuracy filter ID");
 
       filter = MakeFilterWith(x =>
       {
@@ -359,7 +359,7 @@ namespace VSS.TRex.Tests.Caching
       });
 
       Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GA:0-Fine", StringComparison.OrdinalIgnoreCase),
-        "Fingerprint does not contain GPS Accuracy mode filter ID");
+        "Fingerprint does not contain GPS Accuracy filter ID");
     }
 
     [Fact]
@@ -369,6 +369,103 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GA:", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains GPS Accuracy filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_GPSTolerance_Present()
+    {
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasGPSToleranceFilter = true;
+        x.AttributeFilter.GPSTolerance = 123;
+        x.AttributeFilter.GPSToleranceIsGreaterThan = true;
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GT:1-123", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain GPS Tolerance filter ID");
+
+      filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasGPSToleranceFilter = true;
+        x.AttributeFilter.GPSTolerance = 123;
+        x.AttributeFilter.GPSToleranceIsGreaterThan = false;
+
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GT:0-123", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain GPS Tolerance filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_GPSTolerance_NotPresent()
+    {
+      var filter = new CombinedFilter();
+
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("GT:", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint contains GPS Tolerance filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_PositiongTech_Present()
+    {
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasPositioningTechFilter = true;
+        x.AttributeFilter.PositioningTech = PositioningTech.UTS;
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("PT:UTS", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain positioning tech filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_PositiongTech_NotPresent()
+    {
+      var filter = new CombinedFilter();
+
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("PT:", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint contains positioning tech filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_ElevationRange_Present()
+    {
+      Guid designGuid = Guid.Parse("12345678-1234-1234-1234-123456781234");
+
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasElevationRangeFilter = true;
+        x.AttributeFilter.ElevationRangeDesignID = designGuid;
+        x.AttributeFilter.ElevationRangeOffset = 123.456;
+        x.AttributeFilter.ElevationRangeThickness = 1.234;
+      });
+
+      var s = filter.AttributeFilter.SpatialCacheFingerprint();
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("ER:12345678-1234-1234-1234-123456781234-123.456-1.234", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain elevation range filter ID");
+
+      filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasElevationRangeFilter = true;
+        x.AttributeFilter.ElevationRangeLevel = 123.456;
+        x.AttributeFilter.ElevationRangeOffset = 456.789;
+        x.AttributeFilter.ElevationRangeThickness = 2.345;
+      });
+
+      s = filter.AttributeFilter.SpatialCacheFingerprint();
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("ER:123.456-456.789-2.345", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain elevation range filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_ElevationRange_NotPresent()
+    {
+      var filter = new CombinedFilter();
+
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("ER:", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint contains elevation range filter ID");
     }
   }
 }
