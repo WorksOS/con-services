@@ -47,18 +47,21 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_RestrictFilteredDataToCompactorsOnly_Present()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.RestrictFilteredDataToCompactorsOnly = true);
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasCompactionMachinesOnlyFilter = true;
+      });
 
-      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("RFDTCO:1", StringComparison.OrdinalIgnoreCase),
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("CMO:1", StringComparison.OrdinalIgnoreCase),
         "Fingerprint does not contain compactor restriction ID");
     }
 
     [Fact]
     public void Test_GetCacheFingerPrint_RestrictFilteredDataToCompactorsOnly_NotPresent()
     {
-      var filter = MakeFilterWith(x => x.AttributeFilter.RestrictFilteredDataToCompactorsOnly = false);
+      var filter = MakeFilterWith(x => x.AttributeFilter.HasCompactionMachinesOnlyFilter = false);
 
-      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("RFDTCO", StringComparison.OrdinalIgnoreCase),
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("CMO", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains compactor restriction ID");
     }
 
@@ -466,6 +469,109 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("ER:", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains elevation range filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_LayerState_Present()
+    {
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasLayerStateFilter = true;
+        x.AttributeFilter.LayerState = LayerState.On;
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("LS:On", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain layer state filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_LayerState_NotPresent()
+    {
+      var filter = new CombinedFilter();
+
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("LS:", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint contains layer state filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_LayerID_Present()
+    {
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasLayerIDFilter = true;
+        x.AttributeFilter.LayerID = 1234;
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("LID:1234", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain layer ID filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_LayerID_NotPresent()
+    {
+      var filter = new CombinedFilter();
+
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("LID:", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint contains layer ID filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_TemperatureRange_Present()
+    {
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasTemperatureRangeFilter = true;
+        x.AttributeFilter.MaterialTemperatureMin = 123;
+        x.AttributeFilter.MaterialTemperatureMax = 456;
+        x.AttributeFilter.FilterTemperatureByLastPass = true;
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("TR:123-456-1", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain temperature range filter ID");
+
+      filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasTemperatureRangeFilter = true;
+        x.AttributeFilter.MaterialTemperatureMin = 123;
+        x.AttributeFilter.MaterialTemperatureMax = 456;
+        x.AttributeFilter.FilterTemperatureByLastPass = false;
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("TR:123-456-0", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain temperature range filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_TemperatureRange_NotPresent()
+    {
+      var filter = new CombinedFilter();
+
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("TR:", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint contains temperature range filter ID");
+    }
+
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_PassCountRange_Present()
+    {
+      var filter = MakeFilterWith(x =>
+      {
+        x.AttributeFilter.HasPassCountRangeFilter = true;
+        x.AttributeFilter.PasscountRangeMin = 2;
+        x.AttributeFilter.PasscountRangeMax = 11;
+      });
+
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("PC:2-11", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint does not contain layer ID filter ID");
+    }
+
+    [Fact]
+    public void Test_GetCacheFingerPrint_PassCountRange_NotPresent()
+    {
+      var filter = new CombinedFilter();
+
+      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("PC:", StringComparison.OrdinalIgnoreCase),
+        "Fingerprint contains layer ID filter ID");
     }
   }
 }

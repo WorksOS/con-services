@@ -609,8 +609,6 @@ namespace VSS.TRex.Filters
       ElevationRangeThickness = Source.ElevationRangeThickness;
       ElevationRangeDesignID = Source.ElevationRangeDesignID;
 
-      RestrictFilteredDataToCompactorsOnly = Source.RestrictFilteredDataToCompactorsOnly;
-
       LayerID = Source.LayerID;
 
       MaterialTemperatureMin = Source.MaterialTemperatureMin;
@@ -657,7 +655,6 @@ namespace VSS.TRex.Filters
     public void ClearCompactionMachineOnlyRestriction()
     {
       HasCompactionMachinesOnlyFilter = false;
-      RestrictFilteredDataToCompactorsOnly = false;
     }
 
     public void ClearMachineDirection()
@@ -1377,7 +1374,7 @@ namespace VSS.TRex.Filters
         sb.Append($"LS:{LayerState}");
 
       // Compaction machines only
-      if (HasLayerStateFilter)
+      if (HasCompactionMachinesOnlyFilter)
         sb.Append("CMO:1");
 
       // Layer ID filter
@@ -1394,9 +1391,6 @@ namespace VSS.TRex.Filters
 
       if (ReturnEarliestFilteredCellPass)
         sb.Append("REFCP:1");
-
-      if (RestrictFilteredDataToCompactorsOnly)
-        sb.Append("RFDTCO:1");
 
       return sb.ToString();
     }
