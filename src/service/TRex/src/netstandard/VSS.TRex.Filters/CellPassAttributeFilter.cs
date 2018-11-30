@@ -1367,9 +1367,9 @@ namespace VSS.TRex.Filters
       if (HasElevationRangeFilter)
       {
         if (ElevationRangeDesignID != Guid.Empty)
-          sb.Append($"ER-{ElevationRangeDesignID}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+          sb.Append($"ER:{ElevationRangeDesignID}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
         else
-          sb.Append($"ER-{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+          sb.Append($"ER:{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
       }
 
       // Layer state filter
@@ -1382,15 +1382,21 @@ namespace VSS.TRex.Filters
 
       // Layer ID filter
       if (HasLayerIDFilter)
-        sb.Append($"LF:{LayerID}");
+        sb.Append($"LID:{LayerID}");
 
       // TemperatureRangeFilter
       if (HasTemperatureRangeFilter)
-        sb.Append($"LF:{MaterialTemperatureMin}-{MaterialTemperatureMax}-{(FilterTemperatureByLastPass?1:0)}");
+        sb.Append($"TR:{MaterialTemperatureMin}-{MaterialTemperatureMax}-{(FilterTemperatureByLastPass?1:0)}");
 
       // PassCountRangeFilter
       if (HasPassCountRangeFilter)
         sb.Append($"PC:{PasscountRangeMin}-{PasscountRangeMax}");
+
+      if (ReturnEarliestFilteredCellPass)
+        sb.Append("REFCP:1");
+
+      if (RestrictFilteredDataToCompactorsOnly)
+        sb.Append("RFDTCO:1");
 
       return sb.ToString();
     }
