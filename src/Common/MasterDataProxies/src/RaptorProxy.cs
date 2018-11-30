@@ -368,7 +368,7 @@ namespace VSS.MasterData.Proxies
       var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}&overlays={string.Join("&overlays=", overlays)}";
 
       string response = await SendRequest<string>("RAPTOR_3DPM_API_URL",
-        string.Empty, customHeaders, "/raptor/boundingbox", HttpMethod.Get, queryParameters);
+        string.Empty, customHeaders, "/raptor/boundingbox", HttpMethod.Get, queryParams);
       return response;
     }
     #endregion
