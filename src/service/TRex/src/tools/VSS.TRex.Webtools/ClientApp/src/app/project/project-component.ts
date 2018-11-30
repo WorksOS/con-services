@@ -208,7 +208,7 @@ constructor(
 
   public getTile() : void {
     // If there is no project bail...
-    if (this.projectUid == undefined)
+    if (this.projectUid === undefined)
       return;
 
     // Make sure the displayed tile extents is updated
@@ -387,8 +387,8 @@ constructor(
   public getSurveyedSurfaces(): void {
     var result: SurveyedSurface[] = [];
     this.projectService.getSurveyedSurfaces(this.projectUid).subscribe(
-      surveyedsurfaces => {
-        surveyedsurfaces.forEach(ss => result.push(ss));
+      surveyedSurfaces => {
+        surveyedSurfaces.forEach(ss => result.push(ss));
         this.surveyedSurfaces = result;
       });  
   }
@@ -493,12 +493,12 @@ constructor(
     var result: string[] = [];
 
     var startDate: Date = this.machineEventsStartDate;
-    if (startDate == undefined) {
+    if (startDate === undefined) {
       startDate = new Date(1980, 1, 1, 0, 0, 0, 0);
     }
       
     var endDate: Date = this.machineEventsEndDate;
-    if (endDate == undefined) {
+    if (endDate === undefined) {
       endDate = new Date(2100, 1, 1, 0, 0, 0, 0);
     }
 
@@ -562,7 +562,7 @@ constructor(
             first = true;
           }
           else {
-            result += (first ? "M" : "L") + point.station * stationRatio + " " + (profileCanvasHeight - (point.z - minZ) * zRatio);
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
             first = false;
             }
         });
@@ -631,7 +631,7 @@ constructor(
             first = true;
           }
           else {
-            result += (first ? "M" : "L") + point.station * stationRatio + " " + (profileCanvasHeight - (point.z - minZ) * zRatio);
+            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
             first = false;
           }
         });

@@ -38,7 +38,7 @@ namespace VSS.TRex.Volumes.Executors
         /// <summary>
         /// BaseFilter and TopFilter reference two sets of filter settings
         /// between which we may calculate volumes. At the current time, it is
-        /// meaingful for a filter to have a spatial extent, and to denote aa
+        /// meaningful for a filter to have a spatial extent, and to denote aa
         /// 'as-at' time only.
         /// </summary>
         public ICombinedFilter BaseFilter;
@@ -84,12 +84,12 @@ namespace VSS.TRex.Volumes.Executors
         public SimpleVolumesCalculationsAggregator Aggregator { get; set; }
 
         /// <summary>
-        ///  Local refernece to the sitemodel to be used during processing
+        ///  Local reference to the sitemodel to be used during processing
         /// </summary>
         private ISiteModel siteModel;
 
         /// <summary>
-        /// Performs funcional initialisation of ComnputeVolumes state that is dependent on the initial state
+        /// Performs functional initialiaation of ComputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
         /// <param name="ComputeVolumes"></param>
@@ -259,9 +259,9 @@ namespace VSS.TRex.Volumes.Executors
                       return VolumesResult;
                     }
 
-                    Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutVolume:.3F}, Fill={Aggregator.FillVolume:.3F}, Area={Aggregator.CoverageArea:.3F}");
+                    Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutVolume:F3}, Fill={Aggregator.FillVolume:F3}, Area={Aggregator.CoverageArea:F3}");
 
-                    // Instruct the Aggregator to perform any finalisation logic before reading out the results
+                    // Instruct the Aggregator to perform any finalization logic before reading out the results
                     Aggregator.Finalise();
 
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)

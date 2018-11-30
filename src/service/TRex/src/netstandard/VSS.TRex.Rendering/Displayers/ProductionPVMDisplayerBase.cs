@@ -95,7 +95,12 @@ namespace VSS.TRex.Rendering.Displayers
             // Calculate the world coordinate location of the origin (bottom left corner)
             // of this subgrid
             SubGrid.CalculateWorldOrigin(out double SubGridWorldOriginX, out double SubGridWorldOriginY);
-
+          
+            // Draw the background of the subgrid if a pixel is less than 1 meter is width
+            // if (MapView.XPixelSize < 1.0)
+            //    MapView.DrawRect(SubGridWorldOriginX, SubGridWorldOriginY + _CellSize * 32, _CellSize * 32, _CellSize * 32, true,
+            //    ((SubGrid.OriginX >> 5) + (SubGrid.OriginY >> 5)) % 2 == 0 ? Draw.Color.Black : Draw.Color.Blue);
+            
             // Skip-Iterate through the cells drawing them in strips
 
             double Temp = SubGridWorldOriginY / StepYIncrement;
