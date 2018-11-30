@@ -259,7 +259,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
@@ -275,7 +275,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ActionResult
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPostEx)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
@@ -290,9 +290,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
     /// <returns></returns>
-    private async Task<Stream> SendRequestPostAsStreamContent(string payload, IDictionary<string, string> customHeaders, string route)
+    private Task<Stream> SendRequestPostAsStreamContent(string payload, IDictionary<string, string> customHeaders, string route)
     {
-      var result = await  GetMasterDataStreamContent("TREX_GATEWAY_API_URL", customHeaders, "POST", payload, null, route);
+      var result = GetMasterDataStreamContent("TREX_GATEWAY_API_URL", customHeaders, HttpMethod.Post, payload, null, route);
 
       return result;
     }
@@ -306,9 +306,9 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, string queryParameters = null)
     {
-      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route,  HttpMethod.Get, queryParameters);
+      var response = SendRequest<T>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route,  HttpMethod.Get, queryParameters);
 
-      log.LogDebug($"{nameof(SendRequestGet)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
+      log.LogDebug($"{nameof(SendRequestGet)}: response: {JsonConvert.SerializeObject(response)}");
 
       return response;
     }
