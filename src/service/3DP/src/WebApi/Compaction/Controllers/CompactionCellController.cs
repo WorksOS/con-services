@@ -15,6 +15,7 @@ using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -127,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
         .Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-        .Process(patchRequest) as CompactionExportResult);
+        .Process(patchRequest));
 
       return Ok(v2PatchRequestResponse);
     }
