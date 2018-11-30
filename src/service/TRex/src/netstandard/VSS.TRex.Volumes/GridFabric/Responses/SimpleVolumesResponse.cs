@@ -25,17 +25,17 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     public double? Fill;
 
     /// <summary>
-    /// Total area coverged by the volume computation, expressed in square meters
+    /// Total area covered by the volume computation, expressed in square meters
     /// </summary>
     public double? TotalCoverageArea;
 
     /// <summary>
-    /// Total area coverged by the volume computation that produced cut volume, expressed in square meters
+    /// Total area covered by the volume computation that produced cut volume, expressed in square meters
     /// </summary>
     public double? CutArea;
 
     /// <summary>
-    /// Total area coverged by the volume computation that produced fill volume, expressed in square meters
+    /// Total area covered by the volume computation that produced fill volume, expressed in square meters
     /// </summary>
     public double? FillArea;
 
@@ -57,7 +57,7 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -89,7 +89,7 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
@@ -111,8 +111,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
       if (reader.ReadBoolean())
         FillArea = reader.ReadDouble();
 
-      BoundingExtentGrid.FromBinary(reader);
-      BoundingExtentLLH.FromBinary(reader);
+      (BoundingExtentGrid ?? (BoundingExtentGrid = new BoundingWorldExtent3D())).FromBinary(reader);
+      (BoundingExtentLLH ?? (BoundingExtentLLH = new BoundingWorldExtent3D())).FromBinary(reader);
     }
 
     /// <summary>

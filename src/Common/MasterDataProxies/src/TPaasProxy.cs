@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
@@ -31,7 +32,7 @@ namespace VSS.MasterData.Proxies
       var tPaasOauthResult = new TPaasOauthResult();
       try
       {
-        tPaasOauthResult.tPaasOauthRawResult = await SendRequest<TPaasOauthRawResult>("TPAAS_OAUTH_URL", payLoadToSend, customHeaders, String.Empty, "POST", String.Empty);
+        tPaasOauthResult.tPaasOauthRawResult = await SendRequest<TPaasOauthRawResult>("TPAAS_OAUTH_URL", payLoadToSend, customHeaders, String.Empty, HttpMethod.Post, String.Empty);
       }
       catch (Exception e)
       {

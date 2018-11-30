@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
@@ -9,7 +8,6 @@ using VSS.TRex.GridFabric.Models;
 using VSS.TRex.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.Executors
@@ -275,31 +273,6 @@ namespace VSS.TRex.Volumes.Executors
 
                         return VolumesResult;
                     }
-
-                    // Convert bounding extents grid coordinates into WGS84 ones...
-                    var NEECoords = new []
-                    {
-                      new XYZ(Aggregator.BoundingExtents.MinX, Aggregator.BoundingExtents.MinY),
-                      new XYZ(Aggregator.BoundingExtents.MaxX, Aggregator.BoundingExtents.MaxY)
-                    };
-                  
-                    (var errorCode, XYZ[] LLHCoords) = ConvertCoordinates.NEEToLLH(siteModel.CSIB(), NEECoords);
-
-                    if (errorCode != RequestErrorStatus.OK)
-                    {
-                      Log.LogInformation("Summary volume failure, could not convert bounding area from grid to WGS coordinates");
-                      ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
-                    
-                      return null;
-                    }
-
-                    ResultBoundingExtents = new BoundingWorldExtent3D
-                    {
-                      MinX = MathUtilities.RadiansToDegrees(LLHCoords[0].X),
-                      MinY = MathUtilities.RadiansToDegrees(LLHCoords[0].Y),
-                      MaxX = MathUtilities.RadiansToDegrees(LLHCoords[1].X),
-                      MaxY = MathUtilities.RadiansToDegrees(LLHCoords[1].Y)
-                    };
 
                     // Fill in the result object to pass back to the caller
                     VolumesResult.Cut = Aggregator.CutFillVolume.CutVolume;

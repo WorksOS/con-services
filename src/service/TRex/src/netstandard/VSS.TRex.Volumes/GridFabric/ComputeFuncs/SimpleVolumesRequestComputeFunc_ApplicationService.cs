@@ -1,9 +1,8 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Volumes.GridFabric.Requests;
+using VSS.TRex.Volumes.GridFabric.Executors;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
@@ -14,7 +13,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// </summary>
     public class SimpleVolumesRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SimpleVolumesRequestComputeFunc_ApplicationService>();
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -30,19 +29,16 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         /// <returns></returns>
         public SimpleVolumesResponse Invoke(SimpleVolumesRequestArgument arg)
         {
-            Log.LogInformation("In SimpleVolumesRequestComputeFunc_ApplicationService.Invoke()");
+            Log.LogInformation($"In {nameof(Invoke)}");
 
             try
             {
-                SimpleVolumesRequest_ClusterCompute request = new SimpleVolumesRequest_ClusterCompute();
-
-                Log.LogInformation("Executing SimpleVolumesRequestComputeFunc_ApplicationService.Execute()");
-
-                return request.Execute(arg);
+                var Executor = new SimpleVolumesExecutor();
+                return Executor.Execute(arg);
             }
             finally
             {
-                Log.LogInformation("Exiting SimpleVolumesRequestComputeFunc_ApplicationService.Invoke()");
+                Log.LogInformation($"Exiting {nameof(Invoke)}");
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -37,7 +38,7 @@ namespace VSS.MasterData.Proxies
 
     private async Task<ContractExecutionResult> SendTagFilePost(string urlKey, string payload, IDictionary<string, string> customHeaders, string route)
     {
-      var response = await SendRequest<ContractExecutionResult>(urlKey, payload, customHeaders, route, "POST", String.Empty);
+      var response = await SendRequest<ContractExecutionResult>(urlKey, payload, customHeaders, route, HttpMethod.Post, String.Empty);
       log.LogDebug("TRexTagFileProxy.SendTagFilePost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
