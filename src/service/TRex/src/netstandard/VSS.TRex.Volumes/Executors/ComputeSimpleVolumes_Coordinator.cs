@@ -218,7 +218,7 @@ namespace VSS.TRex.Volumes.Executors
 
                     // Create and configure the aggregator that contains the business logic for the 
                     // underlying volume calculation
-                    Aggregator = new SimpleVolumesCalculationsAggregator()
+                    Aggregator = new SimpleVolumesCalculationsAggregator
                     {
                         RequiresSerialisation = true,
                         SiteModelID = SiteModelID,
@@ -259,10 +259,10 @@ namespace VSS.TRex.Volumes.Executors
                       return VolumesResult;
                     }
 
-                    Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutVolume:F3}, Fill={Aggregator.FillVolume:F3}, Area={Aggregator.CoverageArea:F3}");
-
                     // Instruct the Aggregator to perform any finalization logic before reading out the results
                     Aggregator.Finalise();
+
+                    Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutFillVolume.CutVolume:F3}, Fill={Aggregator.CutFillVolume.FillVolume:F3}, Area={Aggregator.CoverageArea:F3}");
 
                     if (!Aggregator.BoundingExtents.IsValidPlanExtent)
                     {
