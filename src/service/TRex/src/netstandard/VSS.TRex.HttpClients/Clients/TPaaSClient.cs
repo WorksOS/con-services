@@ -19,7 +19,7 @@ namespace VSS.TRex.HttpClients.Clients
     private readonly int TOKEN_EXPIRY_GRACE_SECONDS = 60;
     private const string REVOKE_TOKEN_URI = "/revoke";
     private const string GET_TOKEN_URI = "/token";
-    private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+    private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
 
     private ITPaaSClientState _state;
 
