@@ -1337,7 +1337,7 @@ namespace VSS.TRex.Filters
 
       // Min elev mapping
       if (HasMinElevMappingFilter)
-        sb.Append($"VS:{(MinElevationMapping ? 1 : 0)}");
+        sb.Append($"MEM:{(MinElevationMapping ? 1 : 0)}");
 
       // Elevation type
       if (HasElevationTypeFilter)
@@ -1353,7 +1353,7 @@ namespace VSS.TRex.Filters
 
       // GPS Accuracy
       if (HasGPSAccuracyFilter)
-        sb.Append($"GA:{GCSGuidanceMode}-{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
+        sb.Append($"GA:{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
 
       // GPS Tolerance
       if (HasGPSToleranceFilter)
