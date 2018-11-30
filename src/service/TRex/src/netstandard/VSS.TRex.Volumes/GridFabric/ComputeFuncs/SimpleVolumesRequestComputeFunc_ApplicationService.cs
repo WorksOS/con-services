@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Executors;
-using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
