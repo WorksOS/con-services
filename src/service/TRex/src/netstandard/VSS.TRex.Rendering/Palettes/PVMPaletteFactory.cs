@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;

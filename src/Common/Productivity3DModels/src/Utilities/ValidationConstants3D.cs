@@ -71,5 +71,25 @@ namespace VSS.Productivity3D.Models.Utilities
     /// Default spacing interval for the sampled points.
     /// </summary>
     public const double DEFAULT_SPACING_INERVAL = 1.0;
+
+    /// <summary>
+    /// Production data minimum patch size.
+    /// </summary>
+    public const int MIN_PATCH_SIZE = 1;
+
+    /// <summary>
+    /// Production data maximum patch size
+    /// </summary>
+    public const int MAX_PATCH_SIZE = 1000;
+
+    /// <summary>
+    /// Minimum number of production data patches.
+    /// </summary>
+    public const int MIN_PATCH_NUM = 0;
+
+    /// <summary>
+    /// Maximum number of production data patches
+    /// </summary>
+    public const int MAX_PATCH_NUM = 1000;
   }
 }

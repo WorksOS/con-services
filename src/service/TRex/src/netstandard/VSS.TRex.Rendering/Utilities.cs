@@ -1,10 +1,10 @@
 ﻿using System.Linq;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
 {
-    public static class Utilities
+  public static class Utilities
     {
         /// <summary>
         /// Determines if a display mode requires surveyed surface information to be included within it

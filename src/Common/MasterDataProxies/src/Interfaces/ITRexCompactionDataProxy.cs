@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
@@ -18,7 +18,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="cmvChangeDetailsRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendCMVChangeDetailsRequest(CMVChangeDetailsRequest cmvChangeDetailsRequest,
+    Task<CMVChangeSummaryResult> SendCMVChangeDetailsRequest(CMVChangeDetailsRequest cmvChangeDetailsRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -27,7 +27,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="cmvDetailsRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendCMVDetailsRequest(CMVDetailsRequest cmvDetailsRequest,
+    Task<CMVDetailedResult> SendCMVDetailsRequest(CMVDetailsRequest cmvDetailsRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="cmvSummaryRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendCMVSummaryRequest(CMVSummaryRequest cmvSummaryRequest,
+    Task<CMVSummaryResult> SendCMVSummaryRequest(CMVSummaryRequest cmvSummaryRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -45,7 +45,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="pcDetailsRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendPassCountDetailsRequest(PassCountDetailsRequest pcDetailsRequest,
+    Task<PassCountDetailedResult> SendPassCountDetailsRequest(PassCountDetailsRequest pcDetailsRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -54,7 +54,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="pcSummaryRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendPassCountSummaryRequest(PassCountSummaryRequest pcSummaryRequest,
+    Task<PassCountSummaryResult> SendPassCountSummaryRequest(PassCountSummaryRequest pcSummaryRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -63,7 +63,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="cfDetailsRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendCutFillDetailsRequest(CutFillDetailsRequest cfDetailsRequest,
+    Task<CompactionCutFillDetailedResult> SendCutFillDetailsRequest(CutFillDetailsRequest cfDetailsRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -72,7 +72,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="mdpSummaryRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendMDPSummaryRequest(MDPSummaryRequest mdpSummaryRequest,
+    Task<MDPSummaryResult> SendMDPSummaryRequest(MDPSummaryRequest mdpSummaryRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -81,7 +81,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="temperatureSummaryRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendTemperatureSummaryRequest(TemperatureSummaryRequest temperatureSummaryRequest,
+    Task<TemperatureSummaryResult> SendTemperatureSummaryRequest(TemperatureSummaryRequest temperatureSummaryRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -90,7 +90,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="temperatureDetailsRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendTemperatureDetailsRequest(TemperatureDetailRequest temperatureDetailsRequest,
+    Task<TemperatureDetailResult> SendTemperatureDetailsRequest(TemperatureDetailRequest temperatureDetailsRequest,
     IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -99,7 +99,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="speedSummaryRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendSpeedSummaryRequest(SpeedSummaryRequest speedSummaryRequest,
+    Task<SpeedSummaryResult> SendSpeedSummaryRequest(SpeedSummaryRequest speedSummaryRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -108,7 +108,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="tileRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ActionResult> SendProductionDataTileRequest(TileRequest tileRequest,
+    Task<Stream> SendProductionDataTileRequest(TileRequest tileRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -117,7 +117,7 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="summaryVolumesRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest,
+    Task<SummaryVolumesResult> SendSummaryVolumesRequest(SummaryVolumesDataRequest summaryVolumesRequest,
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
@@ -135,7 +135,16 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <param name="compactionExportRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<ContractExecutionResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
+    Task<CompactionExportResult> SendSurfaceExportRequest(CompactionExportRequest compactionExportRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get production data patches from the TRex database.
+    /// </summary>
+    /// <param name="tileRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<Stream> SendProductionDataPatchRequest(PatchDataRequest patchDataRequest,
       IDictionary<string, string> customHeaders = null);
   }
 }

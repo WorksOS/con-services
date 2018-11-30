@@ -1,9 +1,9 @@
-﻿using VSS.TRex.Rendering.Palettes.Interfaces;
-using VSS.TRex.Types;
+﻿using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-    public class PVMDisplayerBase : ProductionPVMDisplayerBase
+  public class PVMDisplayerBase : ProductionPVMDisplayerBase
     {
         private DisplayMode DisplayMode = DisplayMode.Height;
 
