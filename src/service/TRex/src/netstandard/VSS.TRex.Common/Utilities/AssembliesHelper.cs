@@ -48,7 +48,7 @@ namespace VSS.TRex.Common.Utilities
         Log.LogInformation($"{asm.FullName}");
 
       Log.LogInformation("");
-      Log.LogInformation($"Loading additional assmemblies from {path}");
+      Log.LogInformation($"Loading additional assemblies from {path}");
       Log.LogInformation("====================================");
 
       foreach (var dll in Directory.GetFiles(path, "*.dll"))
