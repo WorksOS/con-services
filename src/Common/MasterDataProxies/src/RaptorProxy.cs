@@ -365,7 +365,7 @@ namespace VSS.MasterData.Proxies
       {
         parameters.Add("volumeCalcType", volCalcType.ToString());
       }
-      var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}{string.Join("&overlays=", overlays)}";
+      var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}&overlays={string.Join("&overlays=", overlays)}";
 
       string response = await SendRequest<string>("RAPTOR_3DPM_API_URL",
         string.Empty, customHeaders, "/raptor/boundingbox", "GET", queryParams);
