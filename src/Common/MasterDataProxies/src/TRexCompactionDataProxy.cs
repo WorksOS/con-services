@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -259,9 +257,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
     /// <returns></returns>
-    private Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
+    private async Task<T> SendRequestPost<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ContractExecutionResult
     {
-      var response = SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPost)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
@@ -275,9 +273,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
     /// <returns></returns>
-    private Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ActionResult
+    private async Task<T> SendRequestPostEx<T>(string payload, IDictionary<string, string> customHeaders, string route) where T : ActionResult
     {
-      var response = SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
+      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
 
       log.LogDebug($"{nameof(SendRequestPostEx)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
@@ -288,13 +286,12 @@ namespace VSS.MasterData.Proxies
     /// Executes a POST request against the TRex Gateway service as stream content.
     /// </summary>
     /// <param name="payload"></param>
-    /// <param name="contentType"></param>
     /// <param name="customHeaders"></param>
     /// <param name="route"></param>
     /// <returns></returns>
-    private async Task<Stream> SendRequestPostAsStreamContent(string payload, IDictionary<string, string> customHeaders, string route)
+    private Task<Stream> SendRequestPostAsStreamContent(string payload, IDictionary<string, string> customHeaders, string route)
     {
-      var result = await  GetMasterDataStreamContent("TREX_GATEWAY_API_URL", customHeaders, "POST", payload, null, route);
+      var result = GetMasterDataStreamContent("TREX_GATEWAY_API_URL", customHeaders, HttpMethod.Post, payload, null, route);
 
       return result;
     }
@@ -306,9 +303,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="route"></param>
     /// <param name="queryParameters"></param>
     /// <returns></returns>
-    private Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, string queryParameters = null)
+    private async Task<T> SendRequestGet<T>(IDictionary<string, string> customHeaders, string route, string queryParameters = null)
     {
-      var response = SendRequest<T>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route, HttpMethod.Get, queryParameters);
+      var response = await SendRequest<T>("TREX_GATEWAY_API_URL", string.Empty, customHeaders, route,  HttpMethod.Get, queryParameters);
 
       log.LogDebug($"{nameof(SendRequestGet)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 

@@ -214,16 +214,24 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
     protected async Task<Stream> GetMasterDataStreamContent(string urlKey,
-      IDictionary<string, string> customHeaders, string method = "GET", string payload = null,
+      IDictionary<string, string> customHeaders, HttpMethod method = null, string payload = null,
       string queryParams = null, string route = null)
     {
       Stream result = null;
       var url = ExtractUrl(urlKey, route, queryParams);
       try
       {
+	  	if (method == null)
+	      method = HttpMethod.Get;
+		  
         var request = new GracefulWebRequest(logger, configurationStore);
-        result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
-        log.LogDebug($"Result of get stream content request: {JsonConvert.SerializeObject(result)}");
+        if (method != HttpMethod.Get)
+        {
+          var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
+          result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
+        }
+        else
+          result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
       }
       catch (Exception ex)
       {
