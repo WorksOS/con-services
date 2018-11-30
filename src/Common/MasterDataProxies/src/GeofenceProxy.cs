@@ -87,7 +87,7 @@ namespace VSS.MasterData.Proxies
       };
 
       var result = await SendRequest<GeofenceCreateResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, "POST", String.Empty);
+        customHeaders, String.Empty, HttpMethod.Post, String.Empty);
 
       ClearCacheItem<GeofenceDataResult>(customerGuid.ToString(), userUid.ToString());
 
@@ -124,7 +124,7 @@ namespace VSS.MasterData.Proxies
         AreaSqMeters = areaSqMeters
       };
       await SendRequest<OkResult>("GEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend),
-        customHeaders, String.Empty, "PUT", String.Empty);
+        customHeaders, String.Empty, HttpMethod.Put, String.Empty);
 
       ClearCacheItem<GeofenceDataResult>(customerGuid.ToString(), userUid.ToString());
 
