@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     public async Task<HttpContent> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
     {
       HttpContent result = null;
-      var method = jobRequest.Method ?? "GET";
+      var method = new HttpMethod(jobRequest.Method ?? "GET");
       log.LogDebug($"Job request is {JsonConvert.SerializeObject(jobRequest)}");
       try
       {

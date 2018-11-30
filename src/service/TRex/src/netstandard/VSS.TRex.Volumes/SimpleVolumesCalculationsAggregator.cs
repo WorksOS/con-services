@@ -69,12 +69,10 @@ namespace VSS.TRex.Volumes
         public double CellSize { get; set; }
         public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
 
-        // Volume is the calculated volume deterimined by simple difference between
+        // Volume is the calculated volume determined by simple difference between
         // cells. It does not take into account cut/fill differences (see FCut|FillVolume)
         // This volume is the sole output for operations that apply levels to the surfaces
         public double Volume { get; set; }
-        public double CutVolume { get; set; } = 0;
-        public double FillVolume { get; set; } = 0;
 
         // CutFillVolume is the calculated volume of material that has been 'cut' and 'filled' when the
         // base surface is compared to the top surface. ie: If the top surface is below
@@ -89,7 +87,7 @@ namespace VSS.TRex.Volumes
         public double CutArea { get; set; }
         public double FillArea { get; set; }
         public double TotalArea { get; set; }
-        public BoundingWorldExtent3D BoundingExtents = BoundingWorldExtent3D.Inverted(); // no {get; set;} intentionally 
+        public BoundingWorldExtent3D BoundingExtents { get; set; } = BoundingWorldExtent3D.Inverted();
 
         // CutTolerance determines the tolerance (in meters) that the 'From' surface
         // needs to be above the 'To' surface before the two surfaces are not
@@ -108,9 +106,9 @@ namespace VSS.TRex.Volumes
         public SimpleVolumesCalculationsAggregator()
         {
             // NOTE: This aggregator state is now single threaded in the context of processing subgrid
-            // information into it as the processing threads access independent substate aggregators which
+            // information into it as the processing threads access independent sub-state aggregators which
             // are aggregated together to form the final aggregation result. However, in contexts that do support
-            // threaded access to this sturcture the FRequiresSerialisation flag should be set
+            // threaded access to this structure the FRequiresSerialisation flag should be set
 
             // if Assigned(Source) then
             //    Initialise(Source);
@@ -390,7 +388,7 @@ namespace VSS.TRex.Volumes
                     // regardless of whether it really forms the 'top' or 'bottom' of the interval.
 
                     IClientLeafSubGrid TopSubGrid;
-                    IClientLeafSubGrid BaseSubGrid = subGridResult[0]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
+                    IClientLeafSubGrid BaseSubGrid = subGridResult[0];
 
                     if (BaseSubGrid == null)
                     {
@@ -399,7 +397,7 @@ namespace VSS.TRex.Volumes
                     }
 
                     if (subGrids.Length > 1)
-                        TopSubGrid = subGridResult[1]; //.Subgrid as TICClientSubGridTreeLeaf_Height;
+                        TopSubGrid = subGridResult[1]; 
                     else
                         TopSubGrid = NullHeightSubgrid;
 

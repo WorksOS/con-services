@@ -517,7 +517,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     /// <summary>
     /// Process the set of subgrids in the request that have partition mappings that match their affinity with this node
     /// </summary>
-    private async Task<TSubGridRequestsResponse> PerformSubgridRequests()
+    private TSubGridRequestsResponse PerformSubgridRequests()
     {
       // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
       // noted with the 'set' bits in the bitmask, processing only those that matter for this server
@@ -564,7 +564,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
       // Wait for all the sub-tasks to complete
       var summaryTask = Task.WhenAll(tasks);
-      await summaryTask;
+      summaryTask.Wait();
 
       if (summaryTask.Status == TaskStatus.RanToCompletion)
         return AcquireComputationResult();
@@ -595,7 +595,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 
       RequestorIntermediaries = ConstructRequestorIntermediaries();
 
-      TSubGridRequestsResponse result = PerformSubgridRequests().Result;
+      TSubGridRequestsResponse result = PerformSubgridRequests();
       result.NumSubgridsExamined = NumSubgridsToBeExamined;
 
       //TODO: Map the actual response code into this

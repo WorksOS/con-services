@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -192,7 +193,7 @@ namespace VSS.TCCFileAccess
       PutFileResponse result = default(PutFileResponse);
       try
       {
-        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, contents, headers, "PUT");
+        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, contents, headers, HttpMethod.Put);
       }
       catch (WebException webException)
       {
@@ -272,7 +273,7 @@ namespace VSS.TCCFileAccess
       {
         if (!cacheable)
         {
-          using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers, retries: 0)).ReadAsStreamAsync())
+          using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers, retries: 0)).ReadAsStreamAsync())
           {
             responseStream.Position = 0;
             file = new byte[responseStream.Length];
@@ -281,7 +282,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, "GET", headers)).ReadAsStreamAsync())
+        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers)).ReadAsStreamAsync())
         {
           Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
           responseStream.Position = 0;
@@ -713,7 +714,7 @@ namespace VSS.TCCFileAccess
       var result = default(T);
       try
       {
-        result = await gracefulClient.ExecuteRequest<T>(requestString, method: "GET", customHeaders: headers);
+        result = await gracefulClient.ExecuteRequest<T>(requestString, method: HttpMethod.Get, customHeaders: headers);
       }
       catch (WebException webException)
       {
@@ -746,7 +747,7 @@ namespace VSS.TCCFileAccess
       T result = default(T);
       try
       {
-        result = await gracefulClient.ExecuteRequest<T>(requestString, method: "GET", customHeaders:headers, retries: 0, suppressExceptionLogging: true);
+        result = await gracefulClient.ExecuteRequest<T>(requestString, method: HttpMethod.Get, customHeaders:headers, retries: 0, suppressExceptionLogging: true);
       }
       catch (WebException webException)
       {

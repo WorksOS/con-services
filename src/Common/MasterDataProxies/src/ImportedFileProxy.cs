@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"ImportedFileProxy.CreateImportedFile: request for file {utf8filename}");
       FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
-        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "POST");
+        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, HttpMethod.Post);
       log.LogDebug("ImportedFileProxy.CreateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -42,7 +43,7 @@ namespace VSS.MasterData.Proxies
       DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null)
     {
       FileDataSingleResult response = await SendImportedFileToWebApi($"{fullFileName}", utf8filename, projectUid,
-        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, "PUT");
+        importedFileType, fileCreatedUtc, fileUpdatedUtc, dxfUnitsType, surveyedUtc, customHeaders, HttpMethod.Put);
       log.LogDebug("ImportedFileProxy.UpdateImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -51,7 +52,7 @@ namespace VSS.MasterData.Proxies
 
     public async Task<BaseDataResult> DeleteImportedFile(Guid projectUid, Guid importedFileUid, IDictionary<string, string> customHeaders = null)
     {
-      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", string.Empty, customHeaders, null, "DELETE", 
+      BaseDataResult response = await SendRequest<BaseDataResult>("IMPORTED_FILE_API_URL2", string.Empty, customHeaders, null, HttpMethod.Delete, 
         $"?projectUid={projectUid}&importedFileUid={importedFileUid}");
       log.LogDebug("ImportedFileProxy.DeleteImportedFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
@@ -62,7 +63,7 @@ namespace VSS.MasterData.Proxies
 
     private async Task<FileDataSingleResult> SendImportedFileToWebApi(string importedFileName, string utf8filename, Guid projectUid, ImportedFileType importedFileType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DxfUnitsType? dxfUnitsType,
-      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, string method = "POST")
+      DateTime? surveyedUtc, IDictionary<string, string> customHeaders = null, HttpMethod method = null)
     {
 
       var queryParams = new Dictionary<string,string>();
@@ -99,7 +100,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">HTTP method</param>
     /// <param name="customHeaders">Custom headers for the request</param>
     /// <returns>Repsonse from web api as string</returns>
-    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, string utf8filename, IDictionary<string,string> queryParameters, string method, IDictionary<string, string> customHeaders = null)
+    public async Task<FileDataSingleResult> UploadFileToWebApi(string fullFileName, string utf8filename, IDictionary<string,string> queryParameters, HttpMethod method, IDictionary<string, string> customHeaders = null)
     {
       if (customHeaders == null)
       {
