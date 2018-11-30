@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ASNodeRaptorReports;
+﻿using ASNodeRaptorReports;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
