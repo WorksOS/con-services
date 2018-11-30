@@ -111,8 +111,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
       if (reader.ReadBoolean())
         FillArea = reader.ReadDouble();
 
-      BoundingExtentGrid.FromBinary(reader);
-      BoundingExtentLLH.FromBinary(reader);
+      (BoundingExtentGrid ?? (BoundingExtentGrid = new BoundingWorldExtent3D())).FromBinary(reader);
+      (BoundingExtentLLH ?? (BoundingExtentLLH = new BoundingWorldExtent3D())).FromBinary(reader);
     }
 
     /// <summary>

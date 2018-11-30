@@ -19,7 +19,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
 
     private SimpleVolumesResponse ConvertBoundaryFromGridToWGS84(Guid projectUid, SimpleVolumesResponse response)
     {
-      if (!(response.BoundingExtentGrid.IsValidPlanExtent))
+      if (!response.BoundingExtentGrid.IsValidPlanExtent)
         return response; // No conversion possible
 
       var NEECoords = new[]
