@@ -1,9 +1,9 @@
 ﻿using System;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
-using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Rendering

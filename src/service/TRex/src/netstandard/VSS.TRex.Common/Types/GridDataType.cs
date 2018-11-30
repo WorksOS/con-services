@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.TRex.Types
 {
@@ -54,7 +55,7 @@ namespace VSS.TRex.Types
     {
       switch (Mode)
       {
-        case DisplayMode.Height: return GridDataType.Height;
+        case DisplayMode.Height: return GridDataType.HeightAndTime;
         case DisplayMode.CCV: return GridDataType.CCV;
         case DisplayMode.CCVPercent: return GridDataType.CCV;
         case DisplayMode.CCVSummary: return GridDataType.CCV;
@@ -81,12 +82,12 @@ namespace VSS.TRex.Types
         case DisplayMode.CCVPercentChange: return GridDataType.CCVPercentChange;
         case DisplayMode.TargetThicknessSummary: return GridDataType.SimpleVolumeOverlay;
         case DisplayMode.TargetSpeedSummary: return GridDataType.MachineSpeedTarget;
-        case DisplayMode.CCVChange: return GridDataType.CCVPercentChangeIgnoredTopNullValue;
+        case DisplayMode.CMVChange: return GridDataType.CCVPercentChangeIgnoredTopNullValue;
         case DisplayMode.CCA: return GridDataType.CCA;
         case DisplayMode.CCASummary: return GridDataType.CCA;
         case DisplayMode.TemperatureDetail: return GridDataType.TemperatureDetail;
-        case DisplayMode.ThreeDTerrain: return GridDataType.Height;
-        case DisplayMode.ThreeDDesign: return GridDataType.DesignHeight;
+        case DisplayMode.Terrain3D: return GridDataType.Height;
+        case DisplayMode.Design3D: return GridDataType.DesignHeight;
 
         default:
           Debug.Assert(false, $"Unknown mode ({Mode}) in ICGridDataTypeForDisplayMode");

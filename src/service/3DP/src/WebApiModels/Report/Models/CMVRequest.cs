@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     [JsonProperty(PropertyName = "isCustomCMVTargets", Required = Required.Default)]
     public bool IsCustomCMVTargets { get; private set; }
 
-      /// <summary>
+    /// <summary>
     /// Default private constructor
     /// </summary>
     private CMVRequest()

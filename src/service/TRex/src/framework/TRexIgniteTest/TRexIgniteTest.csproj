@@ -182,6 +182,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj">
+      <Project>{F1DA59E1-5696-45B7-B25F-4EDB132A7393}</Project>
+      <Name>VSS.Productivity3D.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Analytics\VSS.TRex.Analytics.csproj">
       <Project>{C943B9D9-7331-40F9-BFCF-C2389B1B4974}</Project>
       <Name>VSS.TRex.Analytics</Name>

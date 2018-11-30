@@ -49,7 +49,7 @@ namespace VSS.TRex.Exports.Servers.Client
         PatchNumber = argument.DataPatchNumber,
         Patch = response?.SubGrids?.Select(x =>
         {
-          SubgridDataPatchRecord_Elevation s = new SubgridDataPatchRecord_Elevation();
+          SubgridDataPatchRecord_ElevationAndTime s = new SubgridDataPatchRecord_ElevationAndTime();
           s.Populate(x);
           return s;
         }).ToArray()

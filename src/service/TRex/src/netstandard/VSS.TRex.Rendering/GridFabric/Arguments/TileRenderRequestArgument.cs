@@ -1,12 +1,12 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
