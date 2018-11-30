@@ -30,7 +30,7 @@ namespace VSS.MasterData.Proxies
     public async Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
     {
       var payload = JsonConvert.SerializeObject(request);
-      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_INTERNAL_EXPORT_URL", payload, customHeaders, null, "POST", string.Empty);
+      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_INTERNAL_EXPORT_URL", payload, customHeaders, null, HttpMethod.Post, string.Empty);
       if (result != null)
       {
         return result;
@@ -68,7 +68,7 @@ namespace VSS.MasterData.Proxies
     public async Task<ScheduleJobResult> ScheduleBackgroundJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
     {
       var payload = JsonConvert.SerializeObject(request);
-      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_INTERNAL_BACKGROUND_JOB_URL", payload, customHeaders, null, "POST", string.Empty);
+      var result = await SendRequest<ScheduleJobResult>("SCHEDULER_INTERNAL_BACKGROUND_JOB_URL", payload, customHeaders, null, HttpMethod.Post, string.Empty);
       if (result != null)
         return result;
 

@@ -54,6 +54,11 @@ namespace VSS.MasterData.Proxies
         }
       }
 
+      // If we retry a request that uses a stream payload, it will not reset the position to 0
+      // Causing an empty body to be sent (which is invalid for POST requests).
+      if (requestStream != null && requestStream.CanSeek)
+        requestStream.Seek(0, SeekOrigin.Begin);
+      
       if (requestStream == null && method != HttpMethod.Get)
         throw new ArgumentException($"Empty body for non-GET request {nameof(requestStream)}");
 
@@ -63,6 +68,9 @@ namespace VSS.MasterData.Proxies
       if (method == HttpMethod.Post || method == HttpMethod.Put)
         return httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
           x => { ApplyHeaders(customHeaders, x); }, log);
+
+      if (method == HttpMethod.Delete)
+        return httpClient.DeleteAsync(endpoint);
 
       throw new ArgumentException($"Unknown HTTP method {method}");
     }
@@ -75,13 +83,14 @@ namespace VSS.MasterData.Proxies
     /// <param name="endpoint">The endpoint.</param>
     /// <param name="method">The method.</param>
     /// <param name="customHeaders">The custom headers.</param>
-    /// <param name="payloadData">The payload data.</param>
     /// <param name="payloadStream">Stream to payload data, will be used instead of payloadData if set</param>
     /// <param name="timeout">Optional timeout in millisecs for the request</param>
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
+    /// <exception cref="ArgumentException">If the Method is POST/PUT and the Payload is null.</exception>
+    /// <exception cref="HttpRequestException">If the Status Code from the request is not 200.</exception>
     /// <returns>A stream content representing the result returned from the endpoint if successful, otherwise null</returns>
-    public async Task<HttpContent> ExecuteRequestAsStreamContent(string endpoint, string method,
+    public async Task<HttpContent> ExecuteRequestAsStreamContent(string endpoint, HttpMethod method,
       IDictionary<string, string> customHeaders = null, Stream payloadStream = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
@@ -90,6 +99,14 @@ namespace VSS.MasterData.Proxies
         $"method {method}, " +
         $"customHeaders {customHeaders.LogHeaders()} " +
         $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}");
+
+      // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
+      if (payloadStream != null && !payloadStream.CanSeek && retries > 0)
+      {
+        log.LogWarning(
+          $"Attempting a HTTP {method} with a Stream ({payloadStream.GetType().Name}) that doesn't not support seeking, disabling retries");
+        retries = 0; 
+      }
 
       var policyResult = await Policy
         .Handle<Exception>(exception =>
@@ -100,9 +117,8 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-     
           log.LogDebug($"Trying to execute request {endpoint}");
-          var result = await ExecuteRequestInternal(endpoint, new HttpMethod(method), customHeaders, payloadStream, timeout);
+          var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
           log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
           if (result.StatusCode != HttpStatusCode.OK)
@@ -136,7 +152,7 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    /// Executes the request.
+    /// Executes the request. (Only use for classes that can be Serialized to JSON, i.e not binary data unless it's BASE64 Encoded)
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="endpoint">The endpoint.</param>
@@ -146,16 +162,30 @@ namespace VSS.MasterData.Proxies
     /// <param name="timeout">Optional timeout in millisecs for the request</param>
     /// <param name="retries">The retries.</param>
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
+    /// <exception cref="ArgumentException">If the Method is POST/PUT and the Payload is null.</exception>
+    /// <exception cref="HttpRequestException">If the Status Code from the request is not 200.</exception>
     /// <returns></returns>
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload = null,
-      IDictionary<string, string> customHeaders = null, string method = "POST",
+      IDictionary<string, string> customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
+      // Default to POST
+      if (method == null)
+        method = HttpMethod.Post;
+
       log.LogDebug(
         $"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders()}");
 
-      if (payload == null && method != "GET")
+      if (payload == null && method != HttpMethod.Get)
         throw new ArgumentException("Can't have null payload with a non-GET method.");
+
+      // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
+      if (payload != null && !payload.CanSeek && retries > 0)
+      {
+        log.LogWarning(
+          $"Attempting a HTTP {method} with a Stream ({payload.GetType().Name}) that doesn't not support seeking, disabling retries");
+        retries = 0;
+      }
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -163,7 +193,7 @@ namespace VSS.MasterData.Proxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var result = await ExecuteRequestInternal(endpoint, new HttpMethod(method), customHeaders, payload, timeout);
+          var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           log.LogDebug($"Request to {endpoint} completed");
 
           var contents = await result.Content.ReadAsStringAsync();

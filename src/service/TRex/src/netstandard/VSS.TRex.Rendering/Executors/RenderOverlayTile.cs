@@ -436,7 +436,7 @@ namespace VSS.TRex.Rendering.Executors
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
-          Log.LogInformation("Summary volume failure, could not convert bounding area from WGS to grid coordinates");
+          Log.LogInformation("Tile render failure, could not convert bounding area from WGS to grid coordinates");
           ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
 
           return null;
