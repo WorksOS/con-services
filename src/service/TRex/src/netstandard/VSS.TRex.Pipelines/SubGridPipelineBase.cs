@@ -100,7 +100,8 @@ namespace VSS.TRex.Pipelines
 
                 // The pipeline has been signaled as complete so set its completion signal
                 // Don't modify AllFinished as all results may not have been received/processed before completion
-                PipelineSignalEvent.Release();
+                if (PipelineSignalEvent.CurrentCount == 0)
+                    PipelineSignalEvent.Release();
             }
         }
 
@@ -129,7 +130,8 @@ namespace VSS.TRex.Pipelines
         private void AllSubgridsProcessed()
         {
             AllFinished = true;
-            PipelineSignalEvent.Release();
+            if (PipelineSignalEvent.CurrentCount == 0)
+              PipelineSignalEvent.Release();
         }
 
         /// <summary>
@@ -194,7 +196,8 @@ namespace VSS.TRex.Pipelines
         {
             Aborted = true;
 
-            PipelineSignalEvent.Release();
+            if (PipelineSignalEvent.CurrentCount == 0)
+              PipelineSignalEvent.Release();
         }
 
         // procedure Terminate; Virtual;

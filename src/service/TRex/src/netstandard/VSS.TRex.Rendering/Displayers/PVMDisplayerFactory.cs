@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using VSS.TRex.Types;
+using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-    public static class PVMDisplayerFactory
+  public static class PVMDisplayerFactory
     {
         public static PVMDisplayerBase GetDisplayer(DisplayMode Mode /*, FICOptions*/)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
@@ -436,7 +437,7 @@ namespace VSS.TRex.Rendering.Executors
 
         if (conversionResult.ErrorCode != RequestErrorStatus.OK)
         {
-          Log.LogInformation("Summary volume failure, could not convert bounding area from WGS to grid coordinates");
+          Log.LogInformation("Tile render failure, could not convert bounding area from WGS to grid coordinates");
           ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
 
           return null;

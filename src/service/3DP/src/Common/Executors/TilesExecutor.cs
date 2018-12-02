@@ -42,11 +42,11 @@ namespace VSS.Productivity3D.Common.Executors
 
         if (useTrexGateway)
         {
-          var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result as FileStreamResult;
+          var fileResult = trexCompactionDataProxy.SendProductionDataTileRequest(request, customHeaders).Result;
 
           using (var ms = new MemoryStream())
           {
-            fileResult?.FileStream.CopyTo(ms);
+            fileResult.CopyTo(ms);
             return new TileResult(ms.ToArray());
           }
         }

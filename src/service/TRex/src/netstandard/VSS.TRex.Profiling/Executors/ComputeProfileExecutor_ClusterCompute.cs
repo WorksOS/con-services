@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -156,9 +158,16 @@ namespace VSS.TRex.Profiling.Executors
             {
               Log.LogInformation("Lift profile building succeeded");
 
+              // Remove null cells in the profiles list. NUll cells are defined by cells with null CellLastHeight.
+              // All duplicate null cells will be replaced by a by single null cell entry
+              var ThinnedProfileCells = ProfileCells.Where((x, i) =>
+                  i == 0 ||
+                  ((ProfileCell) ProfileCells[i]).CellLastElev != Consts.NullHeight ||
+                  ((ProfileCell) ProfileCells[i]).CellLastElev == Consts.NullHeight && ((ProfileCell) ProfileCells[i - 1]).CellLastElev != Consts.NullHeight).ToList();
+
               Response = new ProfileRequestResponse
               {
-                ProfileCells = ProfileCells,
+                ProfileCells = ThinnedProfileCells,
                 ResultStatus = RequestErrorStatus.OK
               };
 

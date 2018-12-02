@@ -10,11 +10,12 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -32,12 +33,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
+
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionCellController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory)
+    public CompactionCellController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy trexCompactionDataProxy)
       : base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
+      TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
     /// <summary>
@@ -104,8 +112,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var filter = await GetCompactionFilter(projectUid, filterUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(await GetProjectSettingsTargets(projectUid));
 
-      var patchRequest = PatchRequest.Create(
+      var patchRequest = new PatchRequest(
         projectId,
+        projectUid,
         new Guid(),
         mode,
         null,
@@ -117,8 +126,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       patchRequest.Validate();
 
-      var v2PatchRequestResponse = RequestExecutorContainerFactory.Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient)
-                                                                  .Process(patchRequest);
+      var v2PatchRequestResponse = WithServiceExceptionTryExecute(() => RequestExecutorContainerFactory
+        .Build<CompactionPatchV2Executor>(LoggerFactory, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Process(patchRequest));
 
       return Ok(v2PatchRequestResponse);
     }
