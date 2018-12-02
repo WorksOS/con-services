@@ -134,6 +134,8 @@ export class ProjectComponent {
   public mouseProfilePixelLocation:string = '';
   public mouseProfileWorldLocation: string = '';
 
+  public designProfileUid: string = ""
+
 constructor(
     private projectService: ProjectService
   ) { }
@@ -565,7 +567,7 @@ constructor(
     var result: string = "";
     var first: boolean = true;
 
-    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUID, startX, startY, endX, endY)
+    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designProfileUid, startX, startY, endX, endY)
       .subscribe(points =>
       {
         var stationRange:number = points[points.length - 1].station - points[0].station;
