@@ -392,7 +392,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       ISubGridCellAddress[] addressListCopy = new ISubGridCellAddress[addressCount];
       Array.Copy(addressList, addressListCopy, addressCount);
 
-      tasks.Add(Task.Factory.StartNew(() => PerformSubgridRequestList(addressListCopy, addressCount)));
+      tasks.Add(Task.Run(() => PerformSubgridRequestList(addressListCopy, addressCount)));
     }
 
     /// <summary>
@@ -486,6 +486,10 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       // Construct the resulting requestors
       return RequestorIntermediaries.Select(x =>
       {
+        // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
+        // the common elements for this set of subgrids being requested. We always want to request all surface elevations to 
+        // promote cacheability.
+
         var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
         {
           SiteModelID = localArg.ProjectID,

@@ -136,7 +136,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <returns></returns>
     public bool Invoke(Guid nodeId, byte[] message)
     {
-      Task.Factory.StartNew(() => ProcessResponse(message));
+      Task.Run(() => ProcessResponse(message));
 
       return true;
     }
