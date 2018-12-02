@@ -614,6 +614,8 @@ constructor(
 
       this.userProfilePoint2SVG_CX = this.mousePixelX;
       this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
+
+      this.drawProfileLineFromStartToEndPointsForProdData();
     }
 
     if (this.updateFirstPointLocation) {
