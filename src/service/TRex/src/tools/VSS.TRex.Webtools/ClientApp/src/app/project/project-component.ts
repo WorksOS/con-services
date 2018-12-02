@@ -18,7 +18,7 @@ export class ProjectComponent {
 
   public projectUid: string;
   public mode: number = 0;
-  public pixelsX: number = 850;
+  public pixelsX: number = 1000;
   public pixelsY: number = 500;
 
   public base64EncodedTile: string = '';
@@ -39,6 +39,9 @@ export class ProjectComponent {
 
   public mousePixelLocation: string;
   public mouseWorldLocation: string;
+
+  private mousePixelX: number = 0;
+  private mousePixelY: number = 0;
 
   private mouseWorldX: number = 0;
   private mouseWorldY: number = 0;
@@ -107,6 +110,12 @@ export class ProjectComponent {
   public maxMachineEventsToReturn: number = 100;
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
+  public userProfilePath: string = "";
+  public userProfilePoint1SVG_CX: Number = 0;
+  public userProfilePoint1SVG_CY: Number = 0;
+  public userProfilePoint2SVG_CX: Number = 0;
+  public userProfilePoint2SVG_CY: Number = 0;
+
   public numPointInProfile: number = 0;
 
   public updateFirstPointLocation: boolean = false;
@@ -298,14 +307,28 @@ constructor(
   }
 
   private updateMouseLocationDetails(offsetX : number, offsetY: number): void {
-    let localX = offsetX;
-    let localY = this.pixelsY - offsetY;
+    this.mousePixelX = offsetX;
+    this.mousePixelY = this.pixelsY - offsetY;
 
     this.mouseWorldX = this.tileExtents.minX + offsetX * (this.tileExtents.sizeX() / this.pixelsX);
     this.mouseWorldY = this.tileExtents.minY + (this.pixelsY - offsetY) * (this.tileExtents.sizeY() / this.pixelsY);
 
-    this.mousePixelLocation = `${localX}, ${localY}`;
+    this.mousePixelLocation = `${this.mousePixelX}, ${this.mousePixelY}`;
     this.mouseWorldLocation = `${this.mouseWorldX.toFixed(3)}, ${this.mouseWorldY.toFixed(3)}`;
+
+    if (this.updateFirstPointLocation) {
+      this.userProfilePoint1SVG_CX = this.mousePixelX;
+      this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
+    }
+
+    if (this.updateSecondPointLocation) {
+      this.userProfilePoint2SVG_CX = this.mousePixelX;
+      this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
+    }
+
+    if (this.updateFirstPointLocation || this.updateSecondPointLocation) {
+      this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
+    }
   }
 
   public onMouseOver(event: any): void {
@@ -588,6 +611,11 @@ constructor(
       this.secondPointX = this.mouseWorldX;
       this.secondPointY = this.mouseWorldY;
       this.updateSecondPointLocation = false; // Uncheck the second check box
+
+      this.userProfilePoint2SVG_CX = this.mousePixelX;
+      this.userProfilePoint2SVG_CY = this.pixelsY - this.mousePixelY;
+
+      this.drawProfileLineFromStartToEndPointsForProdData();
     }
 
     if (this.updateFirstPointLocation) {
@@ -595,7 +623,12 @@ constructor(
       this.firstPointY = this.mouseWorldY;
       this.updateFirstPointLocation = false; // Uncheck the first check box
       this.updateSecondPointLocation = true; // Check the second check box
+
+      this.userProfilePoint1SVG_CX = this.mousePixelX;
+      this.userProfilePoint1SVG_CY = this.pixelsY - this.mousePixelY;
     }
+
+    this.userProfilePath = `M${this.userProfilePoint1SVG_CX},${this.userProfilePoint1SVG_CY} L${this.userProfilePoint2SVG_CX},${this.userProfilePoint2SVG_CY}`;
   }
 
   public drawProfileLineFromStartToEndPointsForDesign(): void {
