@@ -31,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     // Declarations that hold values from read records
 
-    private string _Design = "";
+    private string _Design = string.Empty;
     //        private string _MachineID = "";
     //        private byte _MachineType = 0;
     //        private string _HardwareID = "";
@@ -54,7 +54,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private short _RMVJumpThreshold = CellPassConsts.NullRMV;
 
     // Proofing runs declarations...
-    private string _StartProofing = "";    // Proofing run name...
+    private string _StartProofing = string.Empty;    // Proofing run name...
     private DateTime _StartProofingDataTime = DateTime.MinValue;
 
     // Declarations for processing state information
@@ -62,7 +62,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
     // FApplicationVersion is the version of the application reported in the
     // TAG file returned by the machine.
-    private string _ApplicationVersion = "";
+    private string _ApplicationVersion = string.Empty;
 
     // The control state members contain the control state flags set for five different
     // automatics controls supported by the GCS900 machine control system
@@ -452,7 +452,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     /// </summary>
     public uint StartProofingTime { get; set; }
     public short StartProofingWeek { get; set; }
-    public string EndProofingName { get; set; } = "";
+    public string EndProofingName { get; set; } = string.Empty;
 
     public DateTime StartProofingDataTime { get { return _StartProofingDataTime; } set { SetStartProofingDataTime(value); } }
 
@@ -484,9 +484,9 @@ namespace VSS.TRex.TAGFiles.Classes.States
     public PositioningTech PositioningTech { get; set; } = PositioningTech.Unknown;
 
     // Serial of the IP radio, expected to be unique for a given Radio Type
-    public string RadioSerial { get; set; } = "";
+    public string RadioSerial { get; set; } = string.Empty;
     // Type of IP radio, e.g. torch
-    public string RadioType { get; set; } = "";
+    public string RadioType { get; set; } = string.Empty;
     public double LLHLat { get => _LLHLat; set => SetLLHLat(value); } 
     private void SetLLHLat(double value)
     {
