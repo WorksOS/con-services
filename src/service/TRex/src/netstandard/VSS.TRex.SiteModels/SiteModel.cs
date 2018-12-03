@@ -146,9 +146,6 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public bool CSIBLoaded => csib != null;
     
-    // ProofingRuns is the set of proofing runs that have been collected in this site model
-    // public SiteProofingRuns ProofingRuns;
-
     // MachinesTargetValues stores a list of target values, one list per machine,
     // that record how the configured target CCV and pass count settings on each
     // machine has changed over time.
@@ -197,7 +194,7 @@ namespace VSS.TRex.SiteModels
     public bool DesignsLoaded => designs != null;
 
     // The siteProofingRuns is the set of proofing runs that have been collected in this site model
-    private SiteProofingRunList siteProofingRuns { get; set; }
+    private ISiteProofingRunList siteProofingRuns { get; set; }
 
     /// <summary>
     /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this sitemodel.
@@ -210,7 +207,7 @@ namespace VSS.TRex.SiteModels
       {
         if (siteProofingRunLockObject == null)
         {
-          lock (siteModelMachineDesignsLockObject)
+          lock (siteProofingRunLockObject)
           {
             if (siteProofingRuns != null)
               return siteProofingRuns;
@@ -225,6 +222,8 @@ namespace VSS.TRex.SiteModels
         return siteProofingRuns;
       }
     }
+
+    public bool SiteProofingRunsLoaded => siteProofingRuns != null;
 
     /// <summary>
     /// SiteModelMachineDesigns records all the designs that have been seen in tag files for this sitemodel.
@@ -342,6 +341,10 @@ namespace VSS.TRex.SiteModels
         ? originModel.Machines
         : null;
 
+      siteProofingRuns = originModel.SiteProofingRunsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveProofingRuns) != 0
+        ? originModel.SiteProofingRuns
+        : null;
+
       siteModelMachineDesigns = originModel.SiteModelMachineDesignsLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineDesigns) != 0
         ? originModel.SiteModelMachineDesigns
         : null;
@@ -350,8 +353,6 @@ namespace VSS.TRex.SiteModels
       machinesTargetValues = originModel.MachineTargetValuesLoaded && (originFlags & SiteModelOriginConstructionFlags.PreserveMachineTargetValues) != 0
         ? originModel.MachinesTargetValues
         : null;
-
-      // FProofingRuns:= TICSiteProofingRuns.Create;
 
       // Reload the bits that need to be reloaded
       LoadFromPersistentStore();
@@ -372,8 +373,6 @@ namespace VSS.TRex.SiteModels
 
       // Allow existence map loading to be deferred/lazy on reference
       existenceMap = null;
-
-      // FProofingRuns:= TICSiteProofingRuns.Create;
     }
 
     public SiteModel( //string name,
@@ -392,28 +391,28 @@ namespace VSS.TRex.SiteModels
       SiteModelExtent.Include(Source.SiteModelExtent);
 
       // Proofing runs
-      /* TODO: Proofing runs
-      for (int I = 0; I < Source.ProofingRuns.ProofingRuns.Count; I++)
-        with Source.ProofingRuns.ProofingRuns[I] do
-          begin
-            Index := FProofingRuns.IndexOf(Name, MachineID, StartTime, EndTime);
-  
-            if Index = -1 then
-              FProofingRuns.CreateNew(Name, MachineID, StartTime, EndTime, Extents)
-            else
-              begin
-                FProofingRuns.ProofingRuns[Index].Extents.Include(Extents);
-                if FProofingRuns.ProofingRuns[Index].StartTime > StartTime then
-                  FProofingRuns.ProofingRuns[Index].StartTime := StartTime;
-                if FProofingRuns.ProofingRuns[Index].EndTime<EndTime then
-                  FProofingRuns.ProofingRuns[Index].EndTime := EndTime;
-              end;
-          end;
-       */
+      for (var i = 0; i < Source.SiteProofingRuns.Count; i++)
+      {
+        var profingRun = Source.SiteProofingRuns[i];
+
+        if (siteProofingRuns.Locate(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime) == null)
+          siteProofingRuns.CreateNew(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime, profingRun.Extents);
+        else
+        {
+          siteProofingRuns[i].Extents.Include(profingRun.Extents);
+
+          if (DateTime.Compare(siteProofingRuns[i].StartTime, profingRun.StartTime) > 0)
+            siteProofingRuns[i].StartTime = profingRun.StartTime;
+
+          if (DateTime.Compare(siteProofingRuns[i].EndTime, profingRun.EndTime) < 0)
+            siteProofingRuns[i].EndTime = profingRun.EndTime;
+        }
+      }
+
       // Designs
       // Note: Design names are handled as a part of integration of machine events
 
-      LastModifiedDate = Source.LastModifiedDate;
+        LastModifiedDate = Source.LastModifiedDate;
     }
 
     public void Write(BinaryWriter writer)
@@ -536,6 +535,16 @@ namespace VSS.TRex.SiteModels
         catch (Exception e)
         {
           Log.LogError($"Failed to save machine list for site model {ID} to persistent store: {e}");
+          Result = false;
+        }
+
+        try
+        {
+          siteProofingRuns?.SaveToPersistentStore(storageProxy);
+        }
+        catch (Exception e)
+        {
+          Log.LogError($"Failed to save proofing run list for site model {ID} to persistent store: {e}");
           Result = false;
         }
 

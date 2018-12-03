@@ -1,10 +1,11 @@
 ﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Geometry;
+using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
-  public interface ISiteProofingRun
+  public interface ISiteProofingRun : IBinaryReaderWriter
   {
     long MachineID { get; }
     string Name { get; }

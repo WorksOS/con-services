@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 
@@ -11,9 +13,9 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteProofingRun : IEquatable<string>, ISiteProofingRun
   {
-    public long MachineID { get; }
+    public long MachineID { get; set; }
 
-    public string Name { get; }
+    public string Name { get; set; }
 
     public DateTime StartTime { get; set; }
 
@@ -61,5 +63,43 @@ namespace VSS.TRex.SiteModels
     }
 
     public bool Equals(string other) => (other != null) && Name.Equals(other);
+
+    public void Read(BinaryReader reader)
+    {
+      int version = reader.ReadInt32();
+      if (version != UtilitiesConsts.ReaderWriterVersion)
+        throw new Exception($"Invalid version number ({version}) reading proofing run data, expected version (1)");
+
+      Name = reader.ReadString();
+      MachineID = reader.ReadInt64();
+      StartTime = DateTime.FromBinary(reader.ReadInt64());
+      EndTime = DateTime.FromBinary(reader.ReadInt64());
+
+      if (reader.ReadBoolean())
+      {
+        Extents = new BoundingWorldExtent3D();
+        Extents.Read(reader);
+      }
+    }
+
+    /// <summary>
+    /// Serialises proofing run using the given writer
+    /// </summary>
+    /// <param name="writer"></param>
+
+    public void Write(BinaryWriter writer)
+    {
+      writer.Write(UtilitiesConsts.ReaderWriterVersion);
+
+      writer.Write(Name);
+      writer.Write(MachineID);
+      writer.Write(StartTime.ToBinary());
+      writer.Write(EndTime.ToBinary());
+
+      writer.Write(Extents != null);
+      Extents?.Write(writer);
+    }
+
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
   }
 }
