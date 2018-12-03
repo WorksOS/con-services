@@ -128,25 +128,8 @@ namespace VSS.TRex.SubGrids
 
             ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-            // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
-            // the common elements for this set of subgrids being requested. We always want to request all surface elevations to 
-            // promote cacheability.
-
-          //Todo Move this into the pipeline context to provide the surface elevation request and per requestor/filter argument
-          //  rather than creating many of them here
-
-          SurfaceElevationPatchArg = surfaceElevationPatchArgument;
-          this.surfaceElevationPatchRequest = surfaceElevationPatchRequest;
-       /*     SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
-            {
-                SiteModelID = SiteModel.ID,
-                CellSize = SiteModel.Grid.CellSize,
-                IncludedSurveyedSurfaces = filteredSurveyedSurfacesAsArray,
-                SurveyedSurfacePatchType = ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation,
-                ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
-            };*/
-
-         //   surfaceElevationPatchRequest = new SurfaceElevationPatchRequest(SurfaceElevationPatchArg.SiteModelID, SurfaceElevationPatchArg.CacheFingerprint());
+            SurfaceElevationPatchArg = surfaceElevationPatchArgument;
+            this.surfaceElevationPatchRequest = surfaceElevationPatchRequest;
         
             SubGridCache = subGridCache;
             SubGridCacheContext = subGridCacheContext;
