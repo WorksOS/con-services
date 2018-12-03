@@ -33,6 +33,8 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
         public virtual bool AllowCacheLookup(ResponseCachingContext context)
         {
+          //TODO: Reinstate this when our custom response caching fixed
+
       return false;
           /*
             var request = context.HttpContext.Request;
@@ -69,6 +71,7 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
         public virtual bool IsResponseCacheable(ResponseCachingContext context)
         {
+          //TODO: Reinstate this when our custom response caching fixed
       return false;
           /*
             var responseCacheControlHeader = context.HttpContext.Response.Headers[HeaderNames.CacheControl];
