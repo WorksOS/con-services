@@ -299,19 +299,18 @@ namespace VSS.TRex.SubGrids
 
             ServerRequestResult Result = ServerRequestResult.NoError;
 
-            // TICClientSubGridTreeLeaf_CellProfile ClientGridAsCellProfile = null
+            ClientCellProfileLeafSubgrid ClientGridAsCellProfile = null;
 
+            // TODO: Add Debug_SwitchOffCompositeSurfaceGenerationFromSurveyedSurfaces to configuration
             // if <config>.Debug_SwitchOffCompositeSurfaceGenerationFromSurveyedSurfaces then
             // Exit;
-
+          
             ModifyFilterMapBasedOnAdditionalSpatialFiltering();
 
             bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime = ClientGrid is ClientHeightAndTimeLeafSubGrid;
+            bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is ClientCellProfileLeafSubgrid;
 
-            //* TODO - subgrids containing cell profiles not yet supported
-            // bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is ClientCellProfileLeafSubGrid; // TICClientSubGridTreeLeaf_CellProfile;
-
-            if (!(ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime /* || ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile */))
+            if (!(ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime || ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile))
                 return ServerRequestResult.NoError;
 
             if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
@@ -329,15 +328,14 @@ namespace VSS.TRex.SubGrids
                 ProcessingMap.ForEachSetBit((x, y) =>
                 {
                     if (ClientGridAsHeightAndTime.Cells[x, y] != Consts.NullHeight &&
-                        (!(ReturnEarliestFilteredCellPass ? FilteredSurveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : FilteredSurveyedSurfaces.HasSurfaceLaterThan(Times[x, y]))))
+                        !(ReturnEarliestFilteredCellPass ? FilteredSurveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : FilteredSurveyedSurfaces.HasSurfaceLaterThan(Times[x, y])))
                         ProcessingMap.ClearBit(x, y);
                 });
             }
-            /*
             else
             if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
             {
-                ClientGridAsCellProfile = TICClientSubGridTreeLeaf_CellProfile(ClientGrid);
+                ClientGridAsCellProfile = (ClientCellProfileLeafSubgrid)ClientGrid;
                 ProcessingMap.Assign(ClientGridAsCellProfile.FilterMap);
 
                 // If we're interested in a particular cell, but we don't have any
@@ -353,18 +351,17 @@ namespace VSS.TRex.SubGrids
 
                         if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
                         {
-                            if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsCellProfile.Cells[x, y].Time))
+                            if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsCellProfile.Cells[x, y].LastPassTime))
                                 ProcessingMap.ClearBit(x, y);
                         }
                         else
                         {
-                            if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsCellProfile.Cells[x, y].Time))
+                            if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsCellProfile.Cells[x, y].LastPassTime))
                                 ProcessingMap.ClearBit(x, y);
                         }
                     });
                 }
             }
-            */
 
             // If we still have any cells to request surveyed surface elevations for...
             if (ProcessingMap.IsEmpty())
@@ -404,14 +401,12 @@ namespace VSS.TRex.SubGrids
                         ProdTime = ClientGridAsHeightAndTime.Times[x, y];
                     }
                     else
-                    /*
                     if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
                     {
                         ProdHeight = ClientGridAsCellProfile.Cells[x, y].Height;
-                        ProdTime = ClientGridAsCellProfile.Cells[x, y].LastPassTime;
+                        ProdTime = ClientGridAsCellProfile.Cells[x, y].LastPassTime.Ticks;
                     }
                     else
-                    */
                     {
                         ProdHeight = Consts.NullHeight; // should not get here
                         ProdTime = DateTime.MinValue.Ticks;
@@ -449,13 +444,11 @@ namespace VSS.TRex.SubGrids
                                 ClientGridAsHeightAndTime.Cells[x, y] = SurveyedSurfaceCellHeight;
                                 ClientGridAsHeightAndTime.Times[x, y] = SurveyedSurfaceCellTime;
                             }
-                            /*
                             else
                             {
                                 if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
-                                    ClientGridAsCellProfile.Cells[I, J] = SurveyedSurfaceCellHeight;
+                                    ClientGridAsCellProfile.Cells[x, y].Height = SurveyedSurfaceCellHeight;
                             }
-                            */
                         }
                     }
                     else
