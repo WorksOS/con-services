@@ -2,31 +2,32 @@
 using ASNodeRaptorReports;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Net;
-using Newtonsoft.Json;
-using SVOICDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Reports;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
   /// <summary>
-  /// The executor, which passes the report grid request to Raptor.
+  /// Processes the request to get station-offset details.
   /// </summary>
   public class CompactionReportStationOffsetExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Processes the report grid request by passing the request to Raptor and returning the result.
-    /// </summary>
-    /// <returns>Returns an instance of the <see cref="CompactionReportResult"/> class if successful.</returns>
+    public CompactionReportStationOffsetExecutor()
+    {
+      ProcessErrorCodes();
+    }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
@@ -36,49 +37,61 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (request == null)
           ThrowRequestTypeCastException<CompactionReportStationOffsetRequest>();
 
-        var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
-        var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
-        var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
-        var userPreferences = ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
+        bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_STATIONOFFSET"), out var useTrexGateway);
 
-        var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
-          request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
-
-        log.LogDebug("About to call GetReportStationOffset");
-
-        var args = ASNode.StationOffsetReport.RPC.__Global.Construct_StationOffsetReport_Args(
-          request.ProjectId ?? -1,
-          (int)CompactionReportType.StationOffset,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0, TASNodeCancellationDescriptorType.cdtProdDataReport),
-          userPreferences,
-          alignmentDescriptor,
-          cutfillDesignDescriptor,
-          request.StartStation,
-          request.EndStation,
-          request.Offsets,
-          request.CrossSectionInterval,
-          request.ReportElevation,
-          request.ReportCutFill,
-          request.ReportCMV,
-          request.ReportMDP,
-          request.ReportPassCount,
-          request.ReportTemperature,
-          (int)GridReportOption.Unused,
-          0, 0, 0, 0, 0, 0, 0, // Northings, Eastings and Direction values are not used on Station Offset report.
-          filterSettings,
-          RaptorConverters.ConvertLift(request.LiftBuildSettings, filterSettings.LayerMethod),
-          options
-        );
-
-        int returnedResult = raptorClient.GetReportStationOffset(args, out var responseData);
-
-        log.LogDebug("Completed call to GetReportStationOffset");
-
+        MemoryStream responseData;
         var success = 1;
 
-        if (returnedResult != success)
-          throw CreateServiceException<CompactionReportStationOffsetExecutor>();
+        if (useTrexGateway)
+        {
+          responseData = (MemoryStream) trexCompactionDataProxy.SendStationOffsetRequest(request, customHeaders).Result;
+        }
+        else
+        {
+          var filterSettings = RaptorConverters.ConvertFilter(request.FilterID, request.Filter, request.ProjectId);
+          var cutfillDesignDescriptor = RaptorConverters.DesignDescriptor(request.DesignFile);
+          var alignmentDescriptor = RaptorConverters.DesignDescriptor(request.AlignmentFile);
+          var userPreferences =
+            ExportRequestHelper.ConvertUserPreferences(request.UserPreferences, request.ProjectTimezone);
 
+          var options = RaptorConverters.convertOptions(null, request.LiftBuildSettings, 0,
+            request.Filter?.LayerType ?? FilterLayerMethod.None, DisplayMode.Height, false);
+
+          log.LogDebug("About to call GetReportStationOffset");
+
+          var args = ASNode.StationOffsetReport.RPC.__Global.Construct_StationOffsetReport_Args(
+            request.ProjectId ?? -1,
+            (int) CompactionReportType.StationOffset,
+            ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(Guid.NewGuid(), 0,
+              TASNodeCancellationDescriptorType.cdtProdDataReport),
+            userPreferences,
+            alignmentDescriptor,
+            cutfillDesignDescriptor,
+            request.StartStation,
+            request.EndStation,
+            request.Offsets,
+            request.CrossSectionInterval,
+            request.ReportElevation,
+            request.ReportCutFill,
+            request.ReportCMV,
+            request.ReportMDP,
+            request.ReportPassCount,
+            request.ReportTemperature,
+            (int) GridReportOption.Unused,
+            0, 0, 0, 0, 0, 0, 0, // Northings, Eastings and Direction values are not used on Station Offset report.
+            filterSettings,
+            RaptorConverters.ConvertLift(request.LiftBuildSettings, filterSettings.LayerMethod),
+            options
+          );
+
+          int returnedResult = raptorClient.GetReportStationOffset(args, out responseData);
+
+          if (returnedResult != success)
+            throw CreateServiceException<CompactionReportStationOffsetExecutor>();
+        }
+
+        log.LogDebug("Completed call to GetReportStationOffset");
+        
         try
         {
           // Unpack the data for the report and construct a stream containing the result
@@ -109,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           var startAndEndTime = request.Filter.StartUtc ?? DateTime.Now;
           var stationOffsetReport = StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
 
-          return CompactionReportResult.CreateExportDataResult(stationOffsetReport, (short)returnedResult);
+          return CompactionReportResult.CreateExportDataResult(stationOffsetReport, (short)success);
         }
         catch (Exception ex)
         {
@@ -122,6 +135,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
+    }
+    protected sealed override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
   }
 }

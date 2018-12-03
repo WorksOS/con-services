@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.MasterData.Proxies
@@ -245,6 +246,22 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"{nameof(SendProductionDataPatchRequest)}: Sending the request: {request}");
 
       return SendRequestPostAsStreamContent(request, customHeaders, "/patches");
+    }
+
+    /// <summary>
+    /// Sends a request to get station and offset data from TRex.
+    /// </summary>
+    /// <param name="stationOffsetRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<Stream> SendStationOffsetRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(stationOffsetRequest);
+
+      log.LogDebug($"{nameof(SendStationOffsetRequest)}: Sending the request: {request}");
+
+      return SendRequestPostAsStreamContent(request, customHeaders, "/report/stationoffset");
     }
 
 

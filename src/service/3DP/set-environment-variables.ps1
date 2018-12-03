@@ -27,8 +27,10 @@ $acceptanceTestsEnvironmentVariables = @(
   @{key = "REPORT_SVC_BASE_URI"; value = ":5000"},
   @{key = "TAG_SVC_BASE_URI"; value = ":5000"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"})
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 # Common TCC and AWS variables, will be set for any chosen $environment type.
 $tccAndAwsEnvironmentVariables = @(
@@ -46,8 +48,10 @@ $tccAndAwsEnvironmentVariables = @(
   @{key = "TCCSynchProjectBoundaryIssueFolder"; value = "Project Boundary (Issue)"},    
   @{key = "TCCSynchSubscriptionIssueFolder"; value = "Subscription (Issue)"},
   @{key = "TCCSynchOtherIssueFolder"; value = "Other... (Issue)"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"})
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 # Used when running the collaborating services against a locally running MockWebApi service.
 $localhostEnvironmentVariables = @(
@@ -64,8 +68,10 @@ $localhostEnvironmentVariables = @(
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
   @{key = "TCCUSERNAME"; value = "vldev"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"},
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"})
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
   @{key = "MYSQL_SERVER_NAME_VSPDB"; value = "db"},
   @{key = "MYSQL_PORT"; value = "3306"},
   @{key = "MYSQL_USERNAME"; value = "root"},
@@ -95,8 +101,10 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "TCCORG"; value = "vldev"},
   @{key = "TCCPWD"; value = "vldev_key"},
   @{key = "TCCUSERNAME"; value = "vldev"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"})
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 # Used when running 3DP service locally but connecting to /alpha deployed collaborating services
 $alphaCollaboratorsEnvironmentVariables = @(
@@ -113,8 +121,10 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "TCCORG"; value = "vlalpha"},
   @{key = "TCCPWD"; value = "vlalpha_key"},
   @{key = "TCCUSERNAME"; value = "vlalpha"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"})
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 # Used when running 3DP service locally but connecting to /prod deployed collaborating services
 $prodCollaboratorsEnvironmentVariables = @(
@@ -131,8 +141,10 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "TCCORG"; value = "vlprod"},
   @{key = "TCCPWD"; value = "vlprod_key"},
   @{key = "TCCUSERNAME"; value = "vlprod"},
-  @{key = "ENABLE_TREX_GATEWAY"; value = "false"},
-  @{key = "ENABLE_RAPTOR_GATEWAY"; value = "true"})
+  @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"})
+  @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
 
 if ($environment -ieq "--dev" -or $environment -ieq "-d") {
   $environmentVariables = $devCollaboratorsEnvironmentVariables

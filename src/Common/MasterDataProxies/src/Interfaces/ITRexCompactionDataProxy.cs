@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
 
 namespace VSS.MasterData.Proxies.Interfaces
@@ -141,10 +142,19 @@ namespace VSS.MasterData.Proxies.Interfaces
     /// <summary>
     /// Sends a request to get production data patches from the TRex database.
     /// </summary>
-    /// <param name="tileRequest"></param>
+    /// <param name="patchDataRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
     Task<Stream> SendProductionDataPatchRequest(PatchDataRequest patchDataRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get station and offset data from TRex.
+    /// </summary>
+    /// <param name="stationOffsetRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<Stream> SendStationOffsetRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
       IDictionary<string, string> customHeaders = null);
   }
 }

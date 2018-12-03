@@ -9,6 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -43,14 +44,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IPreferenceProxy prefProxy;
 
     /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
+
+    /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionReportController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy) :
+    public CompactionReportController(IASNodeClient raptorClient, IConfigurationStore configStore, IFileListProxy fileListProxy, ICompactionSettingsManager settingsManager, IProductionDataRequestFactory requestFactory, IPreferenceProxy prefProxy, ITRexCompactionDataProxy tRexCompactionDataProxy) :
       base(configStore, fileListProxy, settingsManager)
     {
       this.raptorClient = raptorClient;
       this.requestFactory = requestFactory;
       this.prefProxy = prefProxy;
+      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// <summary>
@@ -101,6 +108,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await GetProjectSettingsTargets(projectUid);
 
       var reportGridRequest = requestFactory.Create<CompactionReportGridRequestHelper>(r => r
+          .ProjectUid(projectUid)
           .ProjectId(projectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings)
@@ -126,7 +134,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportGridExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
+          .Build<CompactionReportGridExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportGridRequest) as CompactionReportResult
       );
     }
@@ -167,8 +175,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var userPreferences = user.IsApplication ? new UserPreferenceData() : await GetUserPreferences();
-
-
+      
       double[] updatedOffsets;
       if (leftOffsets.Length > 0 || rightOffsets.Length > 0)
       {
@@ -184,9 +191,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         updatedOffsets = offsets?.AddZeroDistinctSortBy();
       }
 
-
-
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
+        .ProjectUid(projectUid)
         .ProjectId(project.LegacyProjectId)
         .Headers(CustomHeaders)
         .ProjectSettings(projectSettings)
@@ -211,7 +217,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() =>
         RequestExecutorContainerFactory
-          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory, raptorClient, null, ConfigStore)
+          .Build<CompactionReportStationOffsetExecutor>(LoggerFactory, raptorClient, configStore: ConfigStore, trexCompactionDataProxy: tRexCompactionDataProxy)
           .Process(reportRequest) as CompactionReportResult
       );
     }
