@@ -21,6 +21,9 @@ namespace VSS.TRex.SubGridTrees.Client
 
     /*
   TICClientSubGridTreeLeaf_CellProfile = class(TICClientSubGridTreeLeaf_Base<TICSubGridCellPassData_CellProfile_Entry>)
+    Public
+      Function CellHasValue(CellX, CellY : Integer) : Boolean; Override;
+      Procedure Clear; Override;
       Procedure AssignFilteredValue(const CellX, CellY : Integer;
                                     const Context : TICSubGridFilteredValueAssignmentContext); Override;
   */
