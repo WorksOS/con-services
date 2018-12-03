@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using Gherkin.Ast;
 using Newtonsoft.Json;
@@ -100,9 +101,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
     [Then(@"Delete surveyed surface file (.*)")]
-    public void ThenDeleteSurveyedSurfaceFile(int fileId)
+    public async void ThenDeleteSurveyedSurfaceFile(int fileId)
     {
-      var result = BeforeAndAfter.DeleteSurveyedSurfaceFile(fileId);
+      var result = await BeforeAndAfter.DeleteSurveyedSurfaceFile(fileId);
 
       Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }

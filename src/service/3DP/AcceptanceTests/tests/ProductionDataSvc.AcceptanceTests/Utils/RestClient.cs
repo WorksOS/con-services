@@ -8,12 +8,12 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
 {
   public static class RestClient
   {
-    public static async Task<HttpResponseMessage> SendHttpClientRequest(string baseAddress, string route, HttpMethod method, string acceptHeader, string contentType, string payloadData)
+    public static Task<HttpResponseMessage> SendHttpClientRequest(string baseAddress, string route, HttpMethod method, string acceptHeader, string contentType, string payloadData)
     {
-      return await SendHttpClientRequest(new Uri($"{baseAddress}{route}"), method, acceptHeader, contentType, payloadData);
+      return SendHttpClientRequest(new Uri($"{baseAddress}{route}"), method, acceptHeader, contentType, payloadData);
     }
 
-    public static async Task<HttpResponseMessage> SendHttpClientRequest(Uri uri, HttpMethod method, string acceptHeader, string contentType, string payloadData)
+    public static Task<HttpResponseMessage> SendHttpClientRequest(Uri uri, HttpMethod method, string acceptHeader, string contentType, string payloadData)
     {
       var client = new HttpClient { BaseAddress = uri };
       client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
@@ -29,9 +29,7 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
         requestMessage.Content = new StringContent(payloadData, Encoding.UTF8, contentType);
       }
 
-      var result = await client.SendAsync(requestMessage);
-
-      return result;
+      return client.SendAsync(requestMessage);
     }
 
     public static readonly string Productivity3DServiceBaseUrl = ConstructUri(Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI"));
