@@ -138,7 +138,6 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       Assert.AreEqual(cacheKeysSet2.Count, cacheKeysValue?.Values.First().Count); // ...and after invalidating the cache we should have the 500 items that were added during that process.
     }
 
-    [Ignore("Ignored while Aaron determines why this is failing on CI machine.")]
     [TestMethod]
     public void InvalidateReponseCacheForProject_should_handle_multithreaded_interaction()
     {
