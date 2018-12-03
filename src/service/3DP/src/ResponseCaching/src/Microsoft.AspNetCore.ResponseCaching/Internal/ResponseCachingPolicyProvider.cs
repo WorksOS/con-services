@@ -33,6 +33,7 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
         public virtual bool AllowCacheLookup(ResponseCachingContext context)
         {
+      return false;
             var request = context.HttpContext.Request;
 
             // Verify request cache-control parameters
@@ -66,6 +67,7 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
         public virtual bool IsResponseCacheable(ResponseCachingContext context)
         {
+      return false;
             var responseCacheControlHeader = context.HttpContext.Response.Headers[HeaderNames.CacheControl];
 
             // Only cache pages explicitly marked with public
