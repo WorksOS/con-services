@@ -33,10 +33,6 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
         public virtual bool AllowCacheLookup(ResponseCachingContext context)
         {
-          //TODO: Reinstate this when our custom response caching fixed
-
-      return false;
-          /*
             var request = context.HttpContext.Request;
 
             // Verify request cache-control parameters
@@ -60,7 +56,6 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
             }
 
             return true;
-            */
         }
 
         public virtual bool AllowCacheStorage(ResponseCachingContext context)
@@ -71,9 +66,6 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
         public virtual bool IsResponseCacheable(ResponseCachingContext context)
         {
-          //TODO: Reinstate this when our custom response caching fixed
-      return false;
-          /*
             var responseCacheControlHeader = context.HttpContext.Response.Headers[HeaderNames.CacheControl];
 
             // Only cache pages explicitly marked with public
@@ -170,7 +162,6 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
             }
 
             return true;
-            */
         }
 
         public virtual bool IsCachedEntryFresh(ResponseCachingContext context)

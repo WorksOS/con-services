@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
 namespace VSS.Productivity3D.Common.Filters.Caching
@@ -9,7 +7,17 @@ namespace VSS.Productivity3D.Common.Filters.Caching
   //Based on reference implementation
   public class CustomCachingPolicyProvider : ResponseCachingPolicyProvider
   {
+    //TODO: Temporary until our custom response caching is fixed.
+    public static readonly bool ResponseCachingDisabled = true;
+
     private static readonly CacheControlHeaderValue emptyCacheControl = new CacheControlHeaderValue();
+ 
+    public override bool AllowCacheLookup(ResponseCachingContext context)
+    {
+      //TODO: Remove this when our custom response caching fixed
+      return false;
+
+    }
 
     public override bool AttemptResponseCaching(ResponseCachingContext context)
     {
@@ -21,6 +29,9 @@ namespace VSS.Productivity3D.Common.Filters.Caching
 
     public override bool IsResponseCacheable(ResponseCachingContext context)
     {
+      //TODO: Reinstate this when our custom response caching fixed
+      return false;
+      /*
       var typedHeaders = context.HttpContext.Response.GetTypedHeaders();
       var responseHeaders = typedHeaders.CacheControl ?? emptyCacheControl;
 
@@ -103,6 +114,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
       }
 
       return true;
+      */
     }
   }
 }
