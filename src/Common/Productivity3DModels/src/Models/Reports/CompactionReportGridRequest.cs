@@ -3,11 +3,10 @@ using System;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
-namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
+namespace VSS.Productivity3D.Models.Models.Reports
 {
   /// <summary>
   /// The request representation for getting production data from Raptor for a grid report.
@@ -64,6 +63,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 
     public static CompactionReportGridRequest CreateCompactionReportGridRequest(
       long projectId,
+      Guid? projectUid,
       FilterResult filter,
       long filterId,
       LiftBuildSettings liftBuildSettings,
@@ -85,6 +85,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
       return new CompactionReportGridRequest
       {
         ProjectId = projectId,
+        ProjectUid = projectUid,
         Filter = filter,
         FilterID = filterId,
         LiftBuildSettings = liftBuildSettings,

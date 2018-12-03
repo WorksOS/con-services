@@ -118,14 +118,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var exception = new ServiceException(HttpStatusCode.InternalServerError, 
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"StationOffset report has not been implemented in Trex yet. ProjectUid: { projectUid }"));
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendStationOffsetRequest(request, It.IsAny<IDictionary<string, string>>())).Throws(exception);
+      tRexProxy.Setup(x => x.SendStationOffsetReportRequest(request, It.IsAny<IDictionary<string, string>>())).Throws(exception);
       var executor = RequestExecutorContainerFactory
         .Build<CompactionReportStationOffsetExecutor>(logger, null, configStore: mockConfigStore.Object, trexCompactionDataProxy: tRexProxy.Object);
       var result = Assert.ThrowsException<ServiceException>(() => executor.Process(request));
       Assert.AreEqual(HttpStatusCode.InternalServerError, result.Code);
-      var contractResult = JsonConvert.DeserializeObject<ContractExecutionResult>(result.GetContent);
-      Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, contractResult.Code);
-      Assert.AreEqual($"StationOffset report has not been implemented in Trex yet. ProjectUid: {projectUid}", contractResult.Message);
+      Assert.AreEqual(ContractExecutionStatesEnum.InternalProcessingError, result.GetResult.Code);
+      Assert.AreEqual(exception.GetResult.Message, result.GetResult.Message);
     }
 
   }

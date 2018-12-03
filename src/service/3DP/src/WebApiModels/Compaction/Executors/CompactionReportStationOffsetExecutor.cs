@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (useTrexGateway)
         {
-          responseData = (MemoryStream) trexCompactionDataProxy.SendStationOffsetRequest(request, customHeaders).Result;
+          responseData = (MemoryStream) trexCompactionDataProxy.SendStationOffsetReportRequest(request, customHeaders).Result;
         }
         else
         {

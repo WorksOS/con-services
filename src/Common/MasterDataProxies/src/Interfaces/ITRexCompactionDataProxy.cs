@@ -5,6 +5,7 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
@@ -149,12 +150,21 @@ namespace VSS.MasterData.Proxies.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     /// <summary>
-    /// Sends a request to get station and offset data from TRex.
+    /// Sends a request to get station and offset report data from TRex.
     /// </summary>
     /// <param name="stationOffsetRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    Task<Stream> SendStationOffsetRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
+    Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
+      IDictionary<string, string> customHeaders = null);
+
+    /// <summary>
+    /// Sends a request to get grid report data from TRex.
+    /// </summary>
+    /// <param name="gridRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    Task<Stream> SendGridReportRequest(CompactionReportGridRequest gridRequest,
       IDictionary<string, string> customHeaders = null);
   }
 }

@@ -249,22 +249,36 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    /// Sends a request to get station and offset data from TRex.
+    /// Sends a request to get station and offset report data from TRex.
     /// </summary>
     /// <param name="stationOffsetRequest"></param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public Task<Stream> SendStationOffsetRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
+    public Task<Stream> SendStationOffsetReportRequest(CompactionReportStationOffsetRequest stationOffsetRequest,
       IDictionary<string, string> customHeaders = null)
     {
       var request = JsonConvert.SerializeObject(stationOffsetRequest);
 
-      log.LogDebug($"{nameof(SendStationOffsetRequest)}: Sending the request: {request}");
+      log.LogDebug($"{nameof(SendStationOffsetReportRequest)}: Sending the request: {request}");
 
       return SendRequestPostAsStreamContent(request, customHeaders, "/report/stationoffset");
     }
 
+    /// <summary>
+    /// Sends a request to get grid report data from TRex.
+    /// </summary>
+    /// <param name="gridRequest"></param>
+    /// <param name="customHeaders"></param>
+    /// <returns></returns>
+    public Task<Stream> SendGridReportRequest(CompactionReportGridRequest gridRequest,
+      IDictionary<string, string> customHeaders = null)
+    {
+      var request = JsonConvert.SerializeObject(gridRequest);
 
+      log.LogDebug($"{nameof(SendGridReportRequest)}: Sending the request: {request}");
+
+      return SendRequestPostAsStreamContent(request, customHeaders, "/report/grid");
+    }
 
 
     /// <summary>
