@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
+using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -16,9 +18,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
     [And(@"require surveyed surface larger than production data")]
-    public void RequireSurveyedSurfaceLargerThanProductionData()
+    public async void RequireSurveyedSurfaceLargerThanProductionData()
     {
-      BeforeAndAfter.CreateSurveyedSurfaceLargerThanProductionData();
+      var result = await BeforeAndAfter.CreateSurveyedSurfaceLargerThanProductionData();
+
+      Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
     [And(@"I decide to exclude all surveyed surfaces")]

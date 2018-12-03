@@ -1,5 +1,7 @@
-﻿using ProductionDataSvc.AcceptanceTests.Helpers;
+﻿using System.Net;
+using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
+using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -8,9 +10,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public class SummaryVolumesSteps : FeaturePostRequestBase<SummaryVolumesParameters, ResponseBase>
   {
     [And(@"I require surveyed surface")]
-    public void AndIRequireSurveyedSurface()
+    public async void AndIRequireSurveyedSurface()
     {
-      BeforeAndAfter.CreateSurveyedSurface();
+      var result = await BeforeAndAfter.CreateSurveyedSurface();
+
+      Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
   }
 }
