@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -13,13 +12,11 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
   {
     private readonly IMemoryCache _cache;
     private readonly ConcurrentDictionary<string, ConcurrentBag<string>> _cacheKeys;
-    private readonly SemaphoreSlim _semaphore;
 
     public MemoryResponseCache(IMemoryCache cache)
     {
       _cache = cache ?? throw new ArgumentNullException(nameof(cache));
       _cacheKeys = new ConcurrentDictionary<string, ConcurrentBag<string>>();
-      _semaphore = new SemaphoreSlim(1, 1);
     }
 
     public IResponseCacheEntry Get(string key)
@@ -47,47 +44,38 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
     public void Set(string baseKey, string key, IResponseCacheEntry entry, TimeSpan validFor)
     {
-      try
+      if (entry is CachedResponse cachedResponse)
       {
-        _semaphore.Wait();
-        if (entry is CachedResponse cachedResponse)
-        {
-          var segmentStream = new SegmentWriteStream(StreamUtilities.BodySegmentSize);
-          cachedResponse.Body.CopyTo(segmentStream);
-          _cache.Set(
-              key,
-              new MemoryCachedResponse
-              {
-                Created = cachedResponse.Created,
-                StatusCode = cachedResponse.StatusCode,
-                Headers = cachedResponse.Headers,
-                BodySegments = segmentStream.GetSegments(),
-                BodyLength = segmentStream.Length
-              },
-              new MemoryCacheEntryOptions
-              {
-                AbsoluteExpirationRelativeToNow = validFor,
-                Size = CacheEntryHelpers.EstimateCachedResponseSize(cachedResponse)
-              });
-        }
-        else
-        {
-          _cache.Set(
-              key,
-              entry,
-              new MemoryCacheEntryOptions
-              {
-                AbsoluteExpirationRelativeToNow = validFor,
-                Size = CacheEntryHelpers.EstimateCachedVaryByRulesySize(entry as CachedVaryByRules)
-              });
-        }
-      }
-      finally
-      {
-        _semaphore.Release();
-      }
-      
+        var segmentStream = new SegmentWriteStream(StreamUtilities.BodySegmentSize);
+        cachedResponse.Body.CopyTo(segmentStream);
 
+        _cache.Set(
+            key,
+            new MemoryCachedResponse
+            {
+              Created = cachedResponse.Created,
+              StatusCode = cachedResponse.StatusCode,
+              Headers = cachedResponse.Headers,
+              BodySegments = segmentStream.GetSegments(),
+              BodyLength = segmentStream.Length
+            },
+            new MemoryCacheEntryOptions
+            {
+              AbsoluteExpirationRelativeToNow = validFor,
+              Size = CacheEntryHelpers.EstimateCachedResponseSize(cachedResponse)
+            });
+      }
+      else
+      {
+        _cache.Set(
+            key,
+            entry,
+            new MemoryCacheEntryOptions
+            {
+              AbsoluteExpirationRelativeToNow = validFor,
+              Size = CacheEntryHelpers.EstimateCachedVaryByRulesySize(entry as CachedVaryByRules)
+            });
+      }
 
       var cacheKey = baseKey ?? key;
       if (cacheKey.StartsWith("PRJUID=") && !_cacheKeys.ContainsKey(cacheKey))
