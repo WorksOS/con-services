@@ -34,7 +34,9 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
              gridDataType == GridDataType.MachineSpeedTarget ||
              gridDataType == GridDataType.Temperature ||
              gridDataType == GridDataType.TemperatureDetail ||
-             gridDataType == GridDataType.PassCount;
+             gridDataType == GridDataType.PassCount ||
+             gridDataType == GridDataType.CellProfile ||
+             gridDataType == GridDataType.CellPasses;
     }
 
     /// <summary>

@@ -296,7 +296,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Internal function to determine is there is an intesection on the Y axis
+    /// Internal function to determine is there is an intersection on the Y axis
     /// </summary>
     /// <param name="P1"></param>
     /// <param name="P2"></param>

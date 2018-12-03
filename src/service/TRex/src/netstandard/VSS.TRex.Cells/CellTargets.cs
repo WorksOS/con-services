@@ -13,7 +13,7 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Null value for the CCA target configured at the time of cell pass measurement
     /// </summary>
-    public const short NullCCATarget = short.MaxValue;
+    public const byte NullCCATarget = byte.MaxValue;
 
     /// <summary>
     /// Null value for the pass count target configured at the time of cell pass measurement
@@ -59,7 +59,7 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Target Caterpillar Compaction algorithm value at the time a cell pass was recorded
     /// </summary>
-    public short TargetCCA { get; set; }
+    public byte TargetCCA { get; set; }
 
     /// <summary>
     /// Set all state in this structure to null values
