@@ -9,8 +9,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   [FeatureFile("SummaryVolumes.feature")]
   public class SummaryVolumesSteps : FeaturePostRequestBase<SummaryVolumesParameters, ResponseBase>
   {
-    [And(@"I require surveyed surface")]
-    public async void AndIRequireSurveyedSurface()
+    [And(@"require surveyed surface")]
+    public async void AndRequireSurveyedSurface()
     {
       var result = await BeforeAndAfter.CreateSurveyedSurface();
 

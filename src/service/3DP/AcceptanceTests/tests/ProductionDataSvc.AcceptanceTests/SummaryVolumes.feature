@@ -1,10 +1,11 @@
 ﻿Feature: SummaryVolumes
   I should be able to request Summary Volumes.
 
-Scenario: SummaryVolumes - Good Request
+Scenario Outline: SummaryVolumes - Good Request
   Given the service route "/api/v1/volumes/summary" request repo "SummaryVolumeRequest.json" and result repo "SummaryVolumeResponse.json"
-  And I require surveyed surface
+  And require surveyed surface
   When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then Delete surveyed surface file 111
   Then the response should match "<ResultName>" from the repository
   Examples: 
   | ParameterName                        | ResultName                           | HttpCode |
@@ -22,21 +23,20 @@ Scenario: SummaryVolumes - Good Request
   | FilterToDesignWithFillTolerances     | FilterToDesignWithFillTolerances     | 200      |
   | FilterToDesignWithCutTolerances      | FilterToDesignWithCutTolerances      | 200      |
   | FilterToFilterWithBothTolerances     | FilterToFilterWithBothTolerances     | 200      |
-  Then Delete surveyed surface file 111
 
-Scenario: SummaryVolumes - Good Request with Old SS
+Scenario Outline: SummaryVolumes - Good Request with Old SS
   Given the service route "/api/v1/volumes/summary" request repo "SummaryVolumeRequest.json" and result repo "SummaryVolumeResponse.json"
-  And I require surveyed surface
+  And require surveyed surface
   When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
+  Then Delete surveyed surface file 111
   Then the response should match "<ResultName>" from the repository
   Examples: 
   | ParameterName                        | ResultName                            | HttpCode |
   | FilterToCompositeWithSurveyedSurface | FilterToCompositeNoSurveyedSurfaceOld | 200      |
   | CompositeToDesignWithSurveyedSurface | CompositeToDesignNoSurveyedSurfaceOld | 200      |
   | DesignToCompositeWithSurveyedSurface | DesignToCompositeNoSurveyedSurfaceOld | 200      |
-  Then Delete surveyed surface file 111
 
-Scenario: SummaryVolumes - Bad Request
+Scenario Outline: SummaryVolumes - Bad Request
   Given the service route "/api/v1/volumes/summary" request repo "SummaryVolumeRequest.json" and result repo "SummaryVolumeResponse.json"
   When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
   Then the response should contain code "<ErrorCode>"
