@@ -5,8 +5,8 @@ using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
-namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
-{
+namespace VSS.TRex.SubGrids.Executors
+{ 
   /// <summary>
   /// The closure/function that implements subgrid request processing on compute nodes
   /// </summary>

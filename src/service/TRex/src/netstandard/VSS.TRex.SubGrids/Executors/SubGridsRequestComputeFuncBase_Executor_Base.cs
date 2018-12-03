@@ -30,7 +30,7 @@ using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
-namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
+namespace VSS.TRex.SubGrids.Executors
 {
   /// <summary>
   /// The closure/function that implements subgrid request processing on compute nodes
