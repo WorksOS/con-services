@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -12,11 +13,13 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
   {
     private readonly IMemoryCache _cache;
     private readonly ConcurrentDictionary<string, ConcurrentBag<string>> _cacheKeys;
+    private readonly SemaphoreSlim _semaphore;
 
     public MemoryResponseCache(IMemoryCache cache)
     {
       _cache = cache ?? throw new ArgumentNullException(nameof(cache));
       _cacheKeys = new ConcurrentDictionary<string, ConcurrentBag<string>>();
+      _semaphore = new SemaphoreSlim(1, 1);
     }
 
     public IResponseCacheEntry Get(string key)
@@ -44,49 +47,57 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
 
     public void Set(string baseKey, string key, IResponseCacheEntry entry, TimeSpan validFor)
     {
-      if (entry is CachedResponse cachedResponse)
+      try
       {
-        var segmentStream = new SegmentWriteStream(StreamUtilities.BodySegmentSize);
-        cachedResponse.Body.CopyTo(segmentStream);
+        _semaphore.Wait();
+        if (entry is CachedResponse cachedResponse)
+        {
+          var segmentStream = new SegmentWriteStream(StreamUtilities.BodySegmentSize);
+          cachedResponse.Body.CopyTo(segmentStream);
 
-        _cache.Set(
-            key,
-            new MemoryCachedResponse
-            {
-              Created = cachedResponse.Created,
-              StatusCode = cachedResponse.StatusCode,
-              Headers = cachedResponse.Headers,
-              BodySegments = segmentStream.GetSegments(),
-              BodyLength = segmentStream.Length
-            },
-            new MemoryCacheEntryOptions
-            {
-              AbsoluteExpirationRelativeToNow = validFor,
-              Size = CacheEntryHelpers.EstimateCachedResponseSize(cachedResponse)
-            });
-      }
-      else
-      {
-        _cache.Set(
-            key,
-            entry,
-            new MemoryCacheEntryOptions
-            {
-              AbsoluteExpirationRelativeToNow = validFor,
-              Size = CacheEntryHelpers.EstimateCachedVaryByRulesySize(entry as CachedVaryByRules)
-            });
-      }
+          _cache.Set(
+              key,
+              new MemoryCachedResponse
+              {
+                Created = cachedResponse.Created,
+                StatusCode = cachedResponse.StatusCode,
+                Headers = cachedResponse.Headers,
+                BodySegments = segmentStream.GetSegments(),
+                BodyLength = segmentStream.Length
+              },
+              new MemoryCacheEntryOptions
+              {
+                AbsoluteExpirationRelativeToNow = validFor,
+                Size = CacheEntryHelpers.EstimateCachedResponseSize(cachedResponse)
+              });
+        }
+        else
+        {
+          _cache.Set(
+              key,
+              entry,
+              new MemoryCacheEntryOptions
+              {
+                AbsoluteExpirationRelativeToNow = validFor,
+                Size = CacheEntryHelpers.EstimateCachedVaryByRulesySize(entry as CachedVaryByRules)
+              });
+        }
 
-      var cacheKey = baseKey ?? key;
-      if (cacheKey.StartsWith("PRJUID=") && !_cacheKeys.ContainsKey(cacheKey))
-      {
-        _cacheKeys.TryAdd(cacheKey, new ConcurrentBag<string>());
-      }
+        var cacheKey = baseKey ?? key;
+        if (cacheKey.StartsWith("PRJUID=") && !_cacheKeys.ContainsKey(cacheKey))
+        {
+          _cacheKeys.TryAdd(cacheKey, new ConcurrentBag<string>());
+        }
 
-      if (!string.IsNullOrEmpty(baseKey) && !string.IsNullOrEmpty(key))
+        if (!string.IsNullOrEmpty(baseKey) && !string.IsNullOrEmpty(key))
+        {
+          _cacheKeys.TryGetValue(baseKey, out var cacheBag);
+          cacheBag.Add(key);
+        }
+      }
+      finally
       {
-        _cacheKeys.TryGetValue(baseKey, out var cacheBag);
-        cacheBag.Add(key);
+        _semaphore.Release();
       }
     }
 
@@ -105,7 +116,7 @@ namespace Microsoft.AspNetCore.ResponseCaching.Internal
       {
         while (cacheBag.TryTake(out var cacheKey))
         {
-            _cache.Remove(cacheKey);
+          _cache.Remove(cacheKey);
         }
 
         // After clearing our collection of cached response keys and their response cache objects, remember to remove the root key.
