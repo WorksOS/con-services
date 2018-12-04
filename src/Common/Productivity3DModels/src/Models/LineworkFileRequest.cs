@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
@@ -25,8 +26,11 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// The content of the DXF linework file as an array of bytes.
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
-    public byte[] Data { get; set; }
+    //[JsonProperty(Required = Required.Always)]
+    //public byte[] Data { get; set; }
+
+    [JsonProperty(PropertyName = "designUid", Required = Required.Always)]
+    public Guid DesignUid { get; set; }
 
     /// <summary>
     /// Validates required request properties.
@@ -35,12 +39,12 @@ namespace VSS.Productivity3D.Models.Models
     {
       base.Validate();
 
-      if (Data == null || !Data.Any())
-      {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                          "Data cannot be null"));
-      }
+      //if (Data == null || !Data.Any())
+      //{
+      //    throw new ServiceException(HttpStatusCode.BadRequest,
+      //            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+      //                    "Data cannot be null"));
+      //}
     }
   }
 }

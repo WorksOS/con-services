@@ -11,9 +11,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
   {
     public DesignDescriptor LineworkDescriptor { get; private set; }
     public TVLPDDistanceUnits LineworkUnits { get; private set; }
-    public int MaxBoundariesToProcess { get; private set; }
-    public int MaxVerticesPerBoundary { get; private set; }
     public string CoordSystemFileName { get; private set; }
+    public int NumberOfBoundariesToProcess => string.IsNullOrEmpty(CoordSystemFileName) ? 1 : __Global.MAX_BOUNDARIES_TO_PROCESS;
+    public int NumberOfVerticesPerBoundary = __Global.MAX_VERTICES_PER_BOUNDARY;
 
     private LineworkRequest()
     { }
@@ -22,18 +22,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       long projectId,
       DesignDescriptor lineworkDescriptor,
       TVLPDDistanceUnits lineworkUnits,
-      int maxBoundariesToProcess,
-      int maxVerticiesPerBoundary,
       string coordSystemFilename)
     {
       var result = new LineworkRequest
       {
         ProjectId = projectId,
         LineworkDescriptor = lineworkDescriptor,
-        CoordSystemFileName = coordSystemFilename,
+        CoordSystemFileName = coordSystemFilename?.Trim(),
         LineworkUnits = lineworkUnits,
-        MaxBoundariesToProcess = maxBoundariesToProcess,
-        MaxVerticesPerBoundary = maxVerticiesPerBoundary
       };
 
       result.Validate();
@@ -45,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     {
       base.Validate();
 
-      throw new System.NotImplementedException();
+   //   throw new System.NotImplementedException();
     }
   }
 }

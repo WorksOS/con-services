@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="bin\x64\Debug\net471\Velociraptor.Config.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Views;Areas\**\Views;log4net.xml;docker-compose.yml;docker-compose.debug.yml;Dockerfile.debug;Dockerfile;.dockerignore">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>

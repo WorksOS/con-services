@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ASNode.DXF.RequestBoundaries.RPC;
+using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using TAGProcServiceDecls;
-using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
-using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -22,51 +20,48 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       var request = CastRequestObjectTo<LineworkRequest>(item);
 
-   if (UseTRexGateway("ENABLE_TREX_GATEWAY"))
+      if (UseTRexGateway("ENABLE_TREX_GATEWAY"))
       {
-        return await CallTRexEndpoint(request).ConfigureAwait(false);
+        return CallTRexEndpoint(request);
       }
 
       if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY"))
       {
-        var lineworkRequest = LineworkRequest.Create(0, null, TVLPDDistanceUnits.vduImperialFeet, 0, 0, "");
-
-        var result = CallRaptorEndpoint(lineworkRequest);
-        if (result.Code == 0)
-        {
-
-        }
-        else
-        {
-        }
+        var result = CallRaptorEndpoint(request);
       }
 
       return ContractExecutionResult.ErrorResult();
     }
 
-    private Task<ContractExecutionResult> CallTRexEndpoint(LineworkRequest request)
+    private ContractExecutionResult CallTRexEndpoint(LineworkRequest request)
     {
       throw new NotImplementedException();
     }
 
-    private TagFileDirectSubmissionResult CallRaptorEndpoint(LineworkRequest request)
+    private ContractExecutionResult CallRaptorEndpoint(LineworkRequest request)
     {
+      var returnResult = TASNodeErrorStatus.asneUnknown;
+
       try
       {
-        var returnResult = raptorClient.GetBoundariesFromLinework(
-          new TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args
-          {
-            DataModelID = request.ProjectId ?? -1,
-            LineworkDescriptor = RaptorConverters.DesignDescriptor(request.LineworkDescriptor)
-          },
-        out var lineworksBoundary);
+        var args = new TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args
+        {
+          DataModelID = request.ProjectId ?? -1,
+          LineworkDescriptor = RaptorConverters.DesignDescriptor(request.LineworkDescriptor),
+          MaxVerticesPerBoundary = request.NumberOfVerticesPerBoundary,
+          MaxBoundariesToProcess = request.NumberOfBoundariesToProcess,
+          CoordSystemFileName = request.CoordSystemFileName,
+          LineworkUnits = request.LineworkUnits
+        };
 
-        log.LogInformation($"PostTagFile (Direct Raptor): result: {JsonConvert.SerializeObject(returnResult)}");
+        returnResult = raptorClient.GetBoundariesFromLinework(args, out var lineworksBoundary);
+
+        log.LogInformation($"RequestBoundariesFromLinework: result: {JsonConvert.SerializeObject(returnResult)}");
       }
       catch (Exception ex)
       {
-        log.LogError($"PostTagFile (Direct Raptor): exception {ex.Message}");
-        return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TTAGProcServerProcessResult.tpsprUnknown));
+        log.LogError($"RequestBoundariesFromLinework: exception {ex.Message}");
+        return new ContractExecutionResult((int)returnResult);
       }
       finally
       {
