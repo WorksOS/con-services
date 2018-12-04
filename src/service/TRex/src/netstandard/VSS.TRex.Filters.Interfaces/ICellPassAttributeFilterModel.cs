@@ -129,11 +129,6 @@ namespace VSS.TRex.Filters.Interfaces
     int LayerID { get; set; }
 
     /// <summary>
-    /// Only permit cell passes recorded from a compaction type machine to be considered for filtering
-    /// </summary>
-    bool RestrictFilteredDataToCompactorsOnly { get; set; }
-
-    /// <summary>
     /// The list of surveyed surface identifiers to be excluded from the filtered result
     /// </summary>
     Guid[] SurveyedSurfaceExclusionList { get; set; } // note this is not saved in the database and must be set in the server

@@ -176,8 +176,7 @@ namespace VSS.TRex.SubGrids
             if (Filter.AttributeFilter.HasElevationTypeFilter) 
               AssignmentContext.FilteredValue.PassCount = 1;
 
-            if (Filter.AttributeFilter.HasMinElevMappingFilter ||
-                (Filter.AttributeFilter.HasElevationTypeFilter &&
+            if (Filter.AttributeFilter.HasMinElevMappingFilter || (Filter.AttributeFilter.HasElevationTypeFilter &&
                  Filter.AttributeFilter.ElevationType == ElevationType.Lowest))
             {
               if (!HaveFilteredPass || CurrentPass.FilteredPass.Height < TempPass.FilteredPass.Height)
@@ -186,8 +185,7 @@ namespace VSS.TRex.SubGrids
             }
             else
             {
-              if (Filter.AttributeFilter.HasElevationTypeFilter &&
-                  Filter.AttributeFilter.ElevationType == ElevationType.Highest)
+              if (Filter.AttributeFilter.HasElevationTypeFilter && Filter.AttributeFilter.ElevationType == ElevationType.Highest)
               {
                 if (!HaveFilteredPass || CurrentPass.FilteredPass.Height > TempPass.FilteredPass.Height)
                   TempPass = CurrentPass;
@@ -657,7 +655,7 @@ namespace VSS.TRex.SubGrids
     {
       const int kMaxStepSize = 10000;
 
-      /* TODO - add configuration item
+      /* TODO - add configuration item for VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests
       if (!VLPDSvcLocations.VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests)
           return false;
       */
@@ -737,7 +735,7 @@ namespace VSS.TRex.SubGrids
       {
         Fence RotatedSubgridBoundary = new Fence();
 
-        // Create the rotated boundary by 'unrotating' the subgrid world extents into a context
+        // Create the rotated boundary by 'un-rotating' the subgrid world extents into a context
         // where the grid is itself not rotated
         GeometryHelper.RotatePointAbout(Rotation, SubgridMinX, SubgridMinY, out double _X, out double _Y, AreaControlSet.UserOriginX, AreaControlSet.UserOriginY);
         RotatedSubgridBoundary.Points.Add(new FencePoint(_X, _Y));
@@ -810,8 +808,8 @@ namespace VSS.TRex.SubGrids
                 CurrentNorth - SubgridMinY); // = new ProbePoint(CurrentEast - SubgridMinX, CurrentNorth - SubgridMinY);
           }
 
-          CurrentEast = CurrentEast + StepEastX;
-          CurrentNorth = CurrentNorth + StepEastY;
+          CurrentEast += StepEastX;
+          CurrentNorth += StepEastY;
         }
       }
     }
@@ -965,6 +963,7 @@ namespace VSS.TRex.SubGrids
 
           if (PruneSubGridRetrievalHere())
             return ServerRequestResult.NoError;
+
           //todo: This map calculation seems odd if we are caching subgrids...
           // Determine the bitmask detailing which cells match the cell selection filter
           if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
