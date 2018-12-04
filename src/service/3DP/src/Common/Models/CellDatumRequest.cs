@@ -70,8 +70,7 @@ namespace VSS.Productivity3D.Common.Models
         DisplayMode displayMode, 
         WGSPoint3D llPoint, 
         Point gridPoint,
-        FilterResult filter, 
-        long filterId, 
+        FilterResult filter,
         LiftBuildSettings liftBuildSettings, 
         DesignDescriptor design)
       {
@@ -82,7 +81,7 @@ namespace VSS.Productivity3D.Common.Models
             llPoint = llPoint,
             gridPoint = gridPoint,
             filter = filter,
-            filterId = filterId,
+            filterId = filter?.Id ?? -1,
             liftBuildSettings = liftBuildSettings,
             design = design
           };

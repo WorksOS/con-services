@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       var useTrexGateway = UseTRexGateway("ENABLE_TREX_GATEWAY");
       var useRaptorGateway = UseRaptorGateway("ENABLE_RAPTOR_GATEWAY");
 
-      var result = new ContractExecutionResult();
+      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
 
       if (useTrexGateway)
       {
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
             "No tag file processing server configured."));
       }
 
-      return ContractExecutionResult.ErrorResult();
+      return result;
     }
 
     private async Task<ContractExecutionResult> CallTRexEndpoint(CompactionTagFileRequest request)

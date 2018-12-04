@@ -11,10 +11,8 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

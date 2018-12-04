@@ -45,6 +45,8 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         ThrowRequestTypeCastException<CompactionTagFileRequestExtended>();
       }
       
+      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
+
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY"), out var useTrexGateway);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY"), out var useRaptorGateway);
 
@@ -52,8 +54,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       {
         request.Validate();
 
-        // gobbles any exception
-        var result = await CallTRexEndpoint(request).ConfigureAwait(false);
+        result = await CallTRexEndpoint(request).ConfigureAwait(false);
 
         if (result.Code == 0)
         {
@@ -93,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         return CallRaptorEndpoint(tagFileRequest);
       }
 
-      return ContractExecutionResult.ErrorResult();
+      return result;
     }
 
     private async Task<ContractExecutionResult> CallTRexEndpoint(CompactionTagFileRequest request)
@@ -114,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       try
       {
-        var resultCode = (TTAGProcServerProcessResult) tagProcessor.ProjectDataServerTAGProcessorClient()
+        var resultCode = tagProcessor.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor
           (tfRequest.FileName,
             new MemoryStream(tfRequest.Data),
