@@ -24,11 +24,13 @@ namespace VSS.TRex.SubGridTrees.Client
       SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = nullRecord);
     }
 
+    public override bool WantsLiftProcessingResults() => true;
+
     private void Initialise()
     {
       _gridDataType = TRex.Types.GridDataType.CellPasses;
 
-      EventPopulationFlags |= //PopulationControlFlags.WantLiftProcessingResults     | todo ???
+      EventPopulationFlags |= 
         PopulationControlFlags.WantsTargetPassCountValues |
         PopulationControlFlags.WantsTargetCCVValues |
         PopulationControlFlags.WantsTargetMDPValues |
