@@ -1,18 +1,17 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.TRex.Designs.Servers.Client;
 using System.Threading;
-using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Servers.Client;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -40,6 +39,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Build()
         .Add(x => x.AddSingleton(new CalculateDesignElevationsServer()))
+        .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))

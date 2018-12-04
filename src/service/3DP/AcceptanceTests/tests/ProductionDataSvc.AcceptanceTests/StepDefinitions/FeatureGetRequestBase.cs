@@ -109,7 +109,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     }
 
     [Then(@"the response should match to (.*) decimal places ""(.*)"" from the repository")]
-    public void ThenTheResultShouldMatchFromTheRepositoryToDecimalPlaces(int precision, string resultName)
+    public void ThenTheResultShouldMatchToDecimalPlacesFromTheRepository(int precision, string resultName)
     {
       var actualJObject = JObject.FromObject(GetResponseHandler.CurrentResponse);
       var expectedJObject = JsonConvert.DeserializeObject<JObject>(GetResponseHandler.ResponseRepo[resultName].ToString());
@@ -123,7 +123,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the response should match ""(.*)"" from the repository")]
     public void ThenTheResultShouldMatchFromTheRepository(string resultName)
     {
-      ThenTheResultShouldMatchFromTheRepositoryToDecimalPlaces(8, resultName);
+      ThenTheResultShouldMatchToDecimalPlacesFromTheRepository(8, resultName);
     }
 
     [Then(@"the response should contain code (.*)")]

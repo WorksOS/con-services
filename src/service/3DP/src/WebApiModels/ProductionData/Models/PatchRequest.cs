@@ -18,11 +18,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
   /// </summary>
   public class PatchRequest : RaptorHelper
   {
-    private const int MIN_PATCH_SIZE = 1;
-    private const int MAX_PATCH_SIZE = 1000;
-    private const int MIN_PATCH_NUM = 0;
-    private const int MAX_PATCH_NUM = 1000;
-
     /// <summary>
     /// An identifying string from the caller
     /// </summary>
@@ -108,7 +103,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <summary>
     /// The number of the patch of data to be requested in the overall series of patches covering the required dataset.
     /// </summary>
-    [Range(MIN_PATCH_NUM, MAX_PATCH_NUM)]
+    [Range(ValidationConstants3D.MIN_PATCH_NUM, ValidationConstants3D.MAX_PATCH_NUM)]
     [JsonProperty(PropertyName = "patchNumber", Required = Required.Always)]
     [Required]
     public int PatchNumber { get; private set; }
@@ -116,7 +111,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// <summary>
     /// The number of subgrids to return in the patch
     /// </summary>
-    [Range(MIN_PATCH_SIZE, MAX_PATCH_SIZE)]
+    [Range(ValidationConstants3D.MIN_PATCH_SIZE, ValidationConstants3D.MAX_PATCH_SIZE)]
     [JsonProperty(PropertyName = "patchSize", Required = Required.Always)]
     [Required]
     public int PatchSize { get; private set; }
@@ -125,16 +120,17 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     public bool IncludeTimeOffsets { get; private set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default private constructor
     /// </summary>
     private PatchRequest()
     { }
 
     /// <summary>
-    /// Create instance of PatchRequest
+    /// Overload constructor with parameters.
     /// </summary>
-    public static PatchRequest Create(
-      long projectId,
+    public PatchRequest(
+      long? projectId,
+      Guid? projectUid,
       Guid? callId,
       DisplayMode mode,
       List<ColorPalette> palettes,
@@ -153,26 +149,24 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       bool includeTimeOffsets = false
       )
     {
-      return new PatchRequest
-      {
-        ProjectId = projectId,
-        CallId = callId,
-        Mode = mode,
-        Palettes = palettes,
-        LiftBuildSettings = liftBuildSettings,
-        RenderColorValues = renderColorValues,
-        ComputeVolType = computeVolType,
-        ComputeVolNoChangeTolerance = computeVolNoChangeTolerance,
-        DesignDescriptor = designDescriptor,
-        Filter1 = filter1,
-        FilterId1 = filterId1,
-        Filter2 = filter2,
-        FilterId2 = filterId2,
-        FilterLayerMethod = filterLayerMethod,
-        PatchNumber = patchNumber,
-        PatchSize = patchSize,
-        IncludeTimeOffsets = includeTimeOffsets
-      };
+      ProjectId = projectId;
+      ProjectUid = projectUid;
+      CallId = callId;
+      Mode = mode;
+      Palettes = palettes;
+      LiftBuildSettings = liftBuildSettings;
+      RenderColorValues = renderColorValues;
+      ComputeVolType = computeVolType;
+      ComputeVolNoChangeTolerance = computeVolNoChangeTolerance;
+      DesignDescriptor = designDescriptor;
+      Filter1 = filter1;
+      FilterId1 = filterId1;
+      Filter2 = filter2;
+      FilterId2 = filterId2;
+      FilterLayerMethod = filterLayerMethod;
+      PatchNumber = patchNumber;
+      PatchSize = patchSize;
+      IncludeTimeOffsets = includeTimeOffsets;
     }
 
     public override void Validate()

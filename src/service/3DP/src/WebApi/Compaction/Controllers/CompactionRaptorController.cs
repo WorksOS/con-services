@@ -11,7 +11,10 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Compaction.ActionServices;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -125,6 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [Route("api/v2/raptor/filterpointslist")]
     [HttpGet]
     public async Task<PointsListResult> GetFilterPointsList(
+      [FromServices] ISummaryDataHelper summaryDataHelper,
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
       [FromQuery] Guid? baseUid,
@@ -133,11 +137,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetFilterPointsList: " + Request.QueryString);
-
+       
       var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
-      var baseFilter = await GetCompactionFilter(projectUid, baseUid);
-      var topFilter = await GetCompactionFilter(projectUid, topUid);
+      //Base or top may be a design UID
+      var baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
+      var topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
 
       PointsListResult result = new PointsListResult();
  

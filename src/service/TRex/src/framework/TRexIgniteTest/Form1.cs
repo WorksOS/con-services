@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Query;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Analytics.CMVChangeStatistics;
 using VSS.TRex.Analytics.CMVChangeStatistics.GridFabric;
 using VSS.TRex.Analytics.CMVStatistics;

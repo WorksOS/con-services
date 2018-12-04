@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -156,11 +155,6 @@ namespace VSS.TRex.Filters
     public int LayerID { get; set; } = -1;
 
     /// <summary>
-    /// Only permit cell passes recorded from a compaction type machine to be considered for filtering
-    /// </summary>
-    public bool RestrictFilteredDataToCompactorsOnly { get; set; }
-
-    /// <summary>
     /// The list of surveyed surface identifiers to be excluded from the filtered result
     /// </summary>
     public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
@@ -254,8 +248,6 @@ namespace VSS.TRex.Filters
       writer.WriteInt((int)LayerState);
       writer.WriteInt(LayerID);
 
-      writer.WriteBoolean(RestrictFilteredDataToCompactorsOnly);
-
       writer.WriteInt(SurveyedSurfaceExclusionList?.Length ?? 0);
       for (int i = 0; i < (SurveyedSurfaceExclusionList?.Length ?? 0); i++)
         writer.WriteGuid(SurveyedSurfaceExclusionList?[i]);
@@ -339,8 +331,6 @@ namespace VSS.TRex.Filters
       LayerState = (LayerState)reader.ReadInt();
       LayerID = reader.ReadInt();
 
-      RestrictFilteredDataToCompactorsOnly = reader.ReadBoolean();
-
       int surveyedSurfaceCount = reader.ReadInt();
       SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
       for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
@@ -407,7 +397,6 @@ namespace VSS.TRex.Filters
              ElevationRangeBottomElevationForCell.Equals(other.ElevationRangeBottomElevationForCell) &&
              LayerState == other.LayerState &&
              LayerID == other.LayerID &&
-             RestrictFilteredDataToCompactorsOnly == other.RestrictFilteredDataToCompactorsOnly &&
 
              SurveyedSurfaceExclusionList.GuidsEqual(other.SurveyedSurfaceExclusionList) &&
 
@@ -494,7 +483,6 @@ namespace VSS.TRex.Filters
         hashCode = (hashCode * 397) ^ ElevationRangeBottomElevationForCell.GetHashCode();
         hashCode = (hashCode * 397) ^ (int)LayerState;
         hashCode = (hashCode * 397) ^ LayerID;
-        hashCode = (hashCode * 397) ^ RestrictFilteredDataToCompactorsOnly.GetHashCode();
         hashCode = (hashCode * 397) ^ (SurveyedSurfaceExclusionList != null ? SurveyedSurfaceExclusionList.GetHashCode() : 0);
         hashCode = (hashCode * 397) ^ MaterialTemperatureMin.GetHashCode();
         hashCode = (hashCode * 397) ^ MaterialTemperatureMax.GetHashCode();
