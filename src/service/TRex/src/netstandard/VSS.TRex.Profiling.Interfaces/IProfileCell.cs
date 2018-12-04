@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
+using VSS.TRex.Filters.Models;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
@@ -29,6 +30,20 @@ namespace VSS.TRex.Profiling.Interfaces
     ushort CellMaxSpeed { get; set; }
     ushort CellMinSpeed { get; set; }
 
+    short CellCCV { get; set; }
+    short CellTargetCCV { get; set; }
+    short CellPreviousMeasuredCCV { get; set; }
+    short CellPreviousMeasuredTargetCCV { get; set; }
+    float CellCCVElev { get; set; }
+
+    short CellMDP { get; set; }
+    short CellTargetMDP { get; set; }
+    float CellMDPElev { get; set; }
+
+    byte CellCCA { get; set; }
+    short CellTargetCCA { get; set; }
+    float CellCCAElev { get; set; }
+
     /// <summary>
     /// A collection of layers constituting a profile through a cell.
     /// Depending on the context, the layers may be equivalent to the passes over a cell
@@ -37,13 +52,18 @@ namespace VSS.TRex.Profiling.Interfaces
     /// </summary>
     IProfileLayers Layers { get; set; }
 
+    FilteredMultiplePassInfo Passes { get; }
+
     /// <summary>
     /// Determines if the recorded time of a given pass lies within the time range of a layer that is
-    /// deemed to be superceded by another layer
+    /// deemed to be superseded by another layer
     /// </summary>
     /// <param name="Pass"></param>
     /// <returns></returns>
     bool IsInSupersededLayer(CellPass Pass);
+
+    int TotalNumberOfHalfPasses(bool includeSupersededLayers);
+    int TotalNumberOfWholePasses(bool includeSupersededLayers);
 
     /// <summary>
     /// Serializes content to the writer

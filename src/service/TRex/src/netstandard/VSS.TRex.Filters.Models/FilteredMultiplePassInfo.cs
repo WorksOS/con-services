@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
 using VSS.TRex.DI;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Models
 {
@@ -173,235 +176,160 @@ namespace VSS.TRex.Filters.Models
     public DateTime LastPassTime() => PassCount > 0 ? FilteredPassData[PassCount - 1].FilteredPass.Time : DateTime.MinValue;
 
 
-    /*
-function TICFilteredMultiplePassInfo.LastPassValidAmp: TICVibrationAmplitude;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if Amplitude<> kICNullAmplitudeValue then
-   begin
-      Result := Amplitude;
-      Exit;
-    end;
+    public ushort LastPassValidAmp()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.Amplitude != CellPassConsts.NullAmplitude)
+          return FilteredPassData[i].FilteredPass.Amplitude;
 
-Result := kICNullAmplitudeValue;
-end;
+      return CellPassConsts.NullAmplitude;
+    }
 
+    public void LastPassValidCCVDetails(out short aCCV, out short aTarget)
+    {
+      aCCV = CellPassConsts.NullCCV;
+      aTarget = CellPassConsts.NullCCV;
+      for (int i = PassCount - 1; i >= 0; i--)
+      {
+        if (FilteredPassData[i].TargetValues.TargetCCV != CellPassConsts.NullCCV && aTarget == CellPassConsts.NullCCV) 
+          aTarget = FilteredPassData[i].TargetValues.TargetCCV; // just in case ccv is missing but not target
 
-procedure TICFilteredMultiplePassInfo.LastPassValidCCVDetails(var aCCV, aTarget : TICCCVValue);
-var
-i :Integer;
-begin
-aCCV := kICNullCCVValue;
-aTarget := kICNullCCVValue;
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-begin
+        if (FilteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
+        {
+          aCCV = FilteredPassData[i].FilteredPass.CCV;
+          aTarget = FilteredPassData[i].TargetValues.TargetCCV; // update target with this record
+          return;
+        }
+      }
+    }
 
-  if (FilteredPassData[i].TargetValues.TargetCCV<> kICNullCCVValue) and(aTarget = kICNullCCVValue)  then
-  atarget:= FilteredPassData[i].TargetValues.TargetCCV; // just in case ccv is missing but not target
+    public byte LastPassValidCCA()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.CCA != CellPassConsts.NullCCA)
+          return FilteredPassData[i].FilteredPass.CCA;
 
-  if CCV<> kICNullCCVValue then
-   begin
-      aCCV := CCV;
-      atarget:= FilteredPassData[i].TargetValues.TargetCCV; // update target with this record
-      Exit;
-    end;
-end;
+      return CellPassConsts.NullCCA;
+    }
 
-end;
+    public void LastPassValidCCADetails(out byte aCCA, out byte aTarget)
+    {
+      aCCA = CellPassConsts.NullCCA;
+      aTarget = CellPassConsts.NullCCA;
+      for (int i = PassCount - 1; i >= 0; i--)
+      {
+        if (FilteredPassData[i].TargetValues.TargetCCA != CellPassConsts.NullCCA && aTarget == CellPassConsts.NullCCA)
+          aTarget = FilteredPassData[i].TargetValues.TargetCCA; // just in case cca is missing but not target
 
-function TICFilteredMultiplePassInfo.LastPassValidCCA: TICCCAValue;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if CCA<> kICNullCCA then
-   begin
-      Result := CCA;
-      Exit;
-    end;
+        if (FilteredPassData[i].FilteredPass.CCA != CellPassConsts.NullCCA)
+        {
+          aCCA = FilteredPassData[i].FilteredPass.CCA;
+          aTarget = FilteredPassData[i].TargetValues.TargetCCA; // update target with this record
+          return;
+        }
+      }
+    }
 
-Result := kICNullCCA;
+    public short LastPassValidCCV()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
+          return FilteredPassData[i].FilteredPass.CCV;
 
-end;
+      return CellPassConsts.NullCCV;
+    }
 
-procedure TICFilteredMultiplePassInfo.LastPassValidCCADetails(var aCCA: TICCCAValue; var aTarget : TICCCAMinPassesValue);
-var
-i :Integer;
-begin
-aCCA := kICNullCCA;
-aTarget :=  kICNullCCATarget;
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-begin
-  if (FilteredPassData[i].TargetValues.TargetCCA<> kICNullCCATarget) and(aTarget = kICNullCCATarget)  then
-  aTarget:= FilteredPassData[i].TargetValues.TargetCCA; // just in case mdp is missing but not target
-  if CCA<> kICNullCCA then
-   begin
-      aCCA := CCA;
-      aTarget:= FilteredPassData[i].TargetValues.TargetCCA;
-      Exit;
-    end;
-end;
+    public double LastPassValidCCVPercentage()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.CCV != CellPassConsts.NullCCV)
+        {
+          short CCVtarget = FilteredPassData[i].TargetValues.TargetCCV;
+          if (CCVtarget != 0 && CCVtarget != CellPassConsts.NullCCV)
+            return FilteredPassData[i].FilteredPass.CCV / CCVtarget;
 
-end;
+          return CellPassConsts.NullCCVPercentage;
+        }
 
-function TICFilteredMultiplePassInfo.LastPassValidCCV :TICCCVValue;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if CCV<> kICNullCCVValue then
-   begin
-      Result := CCV;
-      Exit;
-    end;
+      return CellPassConsts.NullCCVPercentage;
+    }
 
-Result := kICNullCCVValue;
-end;
+    public ushort LastPassValidFreq()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.Frequency != CellPassConsts.NullFrequency)
+          return FilteredPassData[i].FilteredPass.Frequency;
 
-function TICFilteredMultiplePassInfo.LastPassValidCCVPercentage :double;
-var
-i :Integer;
-CCVtarget:TICCCVValue;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i] do
-  if FilteredPass.CCV<> kICNullCCVValue then
-   begin
-      CCVtarget:= TargetValues.TargetCCV;
-      if (CCVtarget<> 0) and(CCVtarget<> kICNullCCVValue) then
-     Result := FilteredPass.CCV / CCVtarget
-      else
-        Result := kNullCCVPercentage;
-      Exit;
-    end;
+      return CellPassConsts.NullFrequency;
+    }
 
-Result := kNullCCVPercentage;
-end;
+    public short LastPassValidMDP()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
+          return FilteredPassData[i].FilteredPass.MDP;
 
-function TICFilteredMultiplePassInfo.LastPassValidFreq: TICVibrationFrequency;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if Frequency<> kICNullFrequencyValue then
-   begin
-      Result := Frequency;
-      Exit;
-    end;
+      return CellPassConsts.NullMDP;
+    }
 
-Result := kICNullFrequencyValue;
-end;
+    public void LastPassValidMDPDetails(out short aMDP, out short aTarget)
+    {
+      aMDP = CellPassConsts.NullMDP;
+      aTarget = CellPassConsts.NullMDP;
+      for (int i = PassCount - 1; i >= 0; i--)
+      {
+        if (FilteredPassData[i].TargetValues.TargetMDP != CellPassConsts.NullMDP && aTarget == CellPassConsts.NullMDP)
+          aTarget = FilteredPassData[i].TargetValues.TargetMDP; // just in case ccv is missing but not target
 
-function TICFilteredMultiplePassInfo.LastPassValidGPSMode: TICGPSMode;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if GPSMode<> kICNUllGPSModeValue then
-   begin
-      Result := GPSMode;
-      Exit;
-    end;
+        if (FilteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
+        {
+          aMDP = FilteredPassData[i].FilteredPass.MDP;
+          aTarget = FilteredPassData[i].TargetValues.TargetMDP; // update target with this record
+          return;
+        }
+      }
+    }
+    public double LastPassValidMDPPercentage()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.MDP != CellPassConsts.NullMDP)
+        {
+          short MDPtarget = FilteredPassData[i].TargetValues.TargetCCV;
+          if (MDPtarget != 0 && MDPtarget != CellPassConsts.NullMDP)
+            return FilteredPassData[i].FilteredPass.MDP / MDPtarget;
 
-Result := kICNUllGPSModeValue;
-end;
+          return CellPassConsts.NullMDPPercentage;
+        }
 
-function TICFilteredMultiplePassInfo.LastPassValidMDP: TICMDPValue;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if MDP<> kICNullMDPValue then
-   begin
-      Result := MDP;
-      Exit;
-    end;
+      return CellPassConsts.NullMDPPercentage;
+    }
 
-Result := kICNullMDPValue;
-end;
+    public GPSMode LastPassValidGPSMode()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.gpsMode != CellPassConsts.NullGPSMode)
+          return FilteredPassData[i].FilteredPass.gpsMode;
 
+      return CellPassConsts.NullGPSMode;
+    }
 
-procedure TICFilteredMultiplePassInfo.LastPassValidMDPDetails(var aMDP, aTarget : TICMDPValue);
-var
-i :Integer;
-begin
-aMDP := kICNullMDPValue; aTarget :=  kICNullMDPValue;
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-begin
-  if (FilteredPassData[i].TargetValues.TargetMDP<> kICNullMDPValue) and(aTarget = kICNullMDPValue)  then
-  atarget:= FilteredPassData[i].TargetValues.TargetCCV; // just in case mdp is missing but not target
+    public byte LastPassValidRadioLatency()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.RadioLatency != CellPassConsts.NullRadioLatency)
+          return FilteredPassData[i].FilteredPass.RadioLatency;
 
-  if MDP<> kICNullMDPValue then
-   begin
-      aMDP := MDP;
-      aTarget:= FilteredPassData[i].TargetValues.TargetMDP;
-      Exit;
-    end;
-end;
-end;
+      return CellPassConsts.NullRadioLatency;
+    }
 
+    public short LastPassValidRMV()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.RMV != CellPassConsts.NullRMV)
+          return FilteredPassData[i].FilteredPass.RMV;
 
-function TICFilteredMultiplePassInfo.LastPassValidMDPPercentage: double;
-var
-i :Integer;
-MDPtarget:TICMDPValue;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i] do
-  if FilteredPass.MDP<> kICNullMDPValue then
-   begin
-      MDPtarget:= TargetValues.TargetMDP;
-      if (MDPtarget<> 0) and(MDPtarget<> kICNullMDPValue) then
-     Result := FilteredPass.MDP / MDPtarget
-      else
-        Result := kNullMDPPercentage;
-      Exit;
-    end;
-
-Result := kNullMDPPercentage;
-end;
-
-function TICFilteredMultiplePassInfo.LastPassValidRadioLatency: TICRadioLatency;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if RadioLatency<> kICNullRadioLatency then
-   begin
-      Result := RadioLatency;
-      Exit;
-    end;
-
-Result := kICNullRadioLatency;
-end;
-
-function TICFilteredMultiplePassInfo.LastPassValidRMV: TICRMVValue;
-var
-i :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-with FilteredPassData[i].FilteredPass do
-  if RMV<> kICNullRMVValue then
-   begin
-      Result := RMV;
-      Exit;
-    end;
-
-Result := kICNullRMVValue;
-end;
-*/
+      return CellPassConsts.NullRMV;
+    }
 
     public DateTime LowestPassTime()
     {
@@ -409,42 +337,31 @@ end;
       DateTime Result = DateTime.MinValue;
 
       for (int i = PassCount - 1; i >= 0; i--)
-        //  with FilteredPassData[i].FilteredPass do
+      {
         if (TempHeight == Consts.NullHeight)
         {
           TempHeight = FilteredPassData[i].FilteredPass.Height;
           Result = FilteredPassData[i].FilteredPass.Time;
         }
-        else if (FilteredPassData[i].FilteredPass.Height < TempHeight)
-          Result = FilteredPassData[i].FilteredPass.Time;
+        else 
+          if (FilteredPassData[i].FilteredPass.Height < TempHeight)
+            Result = FilteredPassData[i].FilteredPass.Time;
+      }
 
       return Result;
     }
 
-    /*
-function TICFilteredMultiplePassInfo.LastPassValidTemperature :TICMaterialTemperature;
-var
-I :Integer;
-begin
-for i := FPassCount - 1 downto 0 do
-  with FilteredPassData[i].FilteredPass do
-    if MaterialTemperature<> kICNullMaterialTempValue then
-     begin
-        Result := MaterialTemperature;
-        Exit;
-      end;
+    public ushort LastPassValidMaterialTemperature()
+    {
+      for (int i = PassCount - 1; i >= 0; i--)
+        if (FilteredPassData[i].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue)
+          return FilteredPassData[i].FilteredPass.MaterialTemperature;
 
-Result := kICNullMaterialTempValue;
-end;
-
-procedure TICFilteredMultiplePassInfo.SetPassesLength(Value: Integer);
-begin
-SetLength(FilteredPassData, Value);
-end;
-*/
+      return CellPassConsts.NullMaterialTemperatureValue;
+    }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -461,7 +378,7 @@ end;
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

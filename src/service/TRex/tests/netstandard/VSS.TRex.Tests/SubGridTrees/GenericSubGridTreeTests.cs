@@ -42,7 +42,7 @@ namespace VSS.TRex.Tests.SubGridTrees
         }
 
         [Fact]
-        public void Test_GenericSubGridTree_NullCellValue()
+        public void Test_GenericSubGridTree_NullCellValue_Bool()
         {
             var tree1 = new GenericSubGridTree_Bool(SubGridTreeConsts.SubGridTreeLevels, 1.0);
             Assert.False(tree1.NullCellValue);
@@ -53,6 +53,53 @@ namespace VSS.TRex.Tests.SubGridTrees
             var tree3 = new GenericSubGridTree<object, GenericLeafSubGrid<object>>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
             Assert.Null(tree3.NullCellValue);
         }
+
+    [Fact]
+    public void Test_GenericSubGridTree_NullCellValue_Int()
+    {
+      var tree1 = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree1.NullCellValue);
+
+      var tree2 = new GenericSubGridTree<int, GenericLeafSubGrid<int>>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree2.NullCellValue);
+    }
+
+    [Fact]
+    public void Test_GenericSubGridTree_NullCellValue_long()
+    {
+      var tree1 = new GenericSubGridTree_Long(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree1.NullCellValue);
+
+      var tree2 = new GenericSubGridTree<long, GenericLeafSubGrid<long>>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree2.NullCellValue);
+    }
+
+    [Fact]
+    public void Test_GenericSubGridTree_NullCellValue_Float()
+    {
+      var tree1 = new GenericSubGridTree_Float(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree1.NullCellValue);
+
+      var tree2 = new GenericSubGridTree<float, GenericLeafSubGrid<float>>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree2.NullCellValue);
+    }
+
+    [Fact]
+    public void Test_GenericSubGridTree_NullCellValue_Double()
+    {
+      var tree1 = new GenericSubGridTree_Float(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree1.NullCellValue);
+
+      var tree2 = new GenericSubGridTree<double, GenericLeafSubGrid<double>>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Equal(0, tree2.NullCellValue);
+    }
+
+    [Fact]
+    public void Test_GenericSubGridTree_NullCellValue_Object()
+    {
+      var tree3 = new GenericSubGridTree<object, GenericLeafSubGrid<object>>(SubGridTreeConsts.SubGridTreeLevels, 1.0);
+      Assert.Null(tree3.NullCellValue);
+    }
 
     [Fact]
     public void Test_GenericSubGridTree_ForEach()

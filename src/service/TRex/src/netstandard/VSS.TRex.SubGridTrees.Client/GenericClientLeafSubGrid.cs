@@ -19,12 +19,12 @@ namespace VSS.TRex.SubGridTrees.Client
         /// It is the responsibility of the derived class to proved a class constructor to initialise the
         /// values NullCells to the correct nu ll values
         /// </summary>
-        protected static T[,] NullCells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+        protected static readonly T[,] NullCells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
-        /// Represented a T element configured as the null value for cells is this client leafe subgrid
+        /// Represented a T element configured as the null value for cells is this client leaf subgrid
         /// </summary>
-        public abstract T NullCell(); // => default(T);
+        public abstract T NullCell();
 
         /// <summary>
         /// Constructs a default client subgrid with no owner or parent, at the standard leaf bottom subgrid level,
@@ -135,50 +135,12 @@ namespace VSS.TRex.SubGridTrees.Client
           }
         }
 
-    /*
-            /// <summary>
-            /// Write the contents of leaf sub grid using the supplied formatter
-            /// </summary>
-            /// <param name="formatter"></param>
-            /// <param name="stream"></param>
-            public override void Write(BinaryFormatter formatter, Stream stream)
-            {
-                base.Write(formatter, stream);
-
-                formatter.Serialize(stream, Cells);
-            }
-
-            /// <summary>
-            /// Fill the contents of the leaf sub grid reading the binary representation using the provided formatter
-            /// </summary>
-            /// <param name="formatter"></param>
-            /// <param name="stream"></param>
-            public override void Read(BinaryFormatter formatter, Stream stream)
-            {
-                base.Read(formatter, stream);
-
-                Cells = (T[,])formatter.Deserialize(stream);
-            }
-    */
-
     /// <summary>
     /// Dumps the contents of this client leaf subgrid into the log in a human readable form
     /// </summary>
     public override void DumpToLog(string title)
         {
           Log.LogDebug($"Subgrid {Moniker()}: {title}");
-        }
-
-        /// <summary>
-        /// Assign 
-        /// </summary>
-        /// <param name="source"></param>
-        public void Assign_(IGenericClientLeafSubGrid<T> source)
-        {
-            base.Assign(source);
-
-            // Derived classes are responsible for performing assignation of the Cells structure as they can use optimal methods such as BlockCopy()
-            // ForEach((x, y) => Cells[x, y] = source.Cells[x, y]);
         }
     }
 }

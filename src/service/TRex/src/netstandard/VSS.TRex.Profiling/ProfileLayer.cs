@@ -168,10 +168,9 @@ namespace VSS.TRex.Profiling
 
       if (cellPassValues.PassCount > 0)
       {
-        Owner.Passes.FilteredPassData = new FilteredPassData[cellPassValues.PassCount];
-        Array.Copy(cellPassValues.FilteredPassData, Owner.Passes.FilteredPassData, cellPassValues.PassCount);
-
-        Owner.Passes.PassCount = cellPassValues.PassCount;
+        var filteredPasses = new FilteredPassData[cellPassValues.PassCount];
+        Array.Copy(cellPassValues.FilteredPassData, filteredPasses, cellPassValues.PassCount);
+        Owner.SetFilteredPasses(filteredPasses);
 
         StartCellPassIdx = 0;
         EndCellPassIdx = cellPassValues.PassCount - 1;
