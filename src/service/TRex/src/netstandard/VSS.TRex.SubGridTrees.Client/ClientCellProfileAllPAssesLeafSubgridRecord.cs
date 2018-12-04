@@ -7,9 +7,9 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   public struct ClientCellProfileAllPassesLeafSubgridRecord : IBinaryReaderWriter, IEquatable<ClientCellProfileAllPassesLeafSubgridRecord>
   {
-    public int TotalPasses;
+    public int TotalPasses { get; set; }
 
-    public ClientCellProfileLeafSubgridRecord[] CellPasses;
+    public ClientCellProfileLeafSubgridRecord[] CellPasses { get; set; }
 
     public void Clear()
     {

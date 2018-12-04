@@ -10,53 +10,53 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   public struct ClientCellProfileLeafSubgridRecord : IBinaryReaderWriter, IEquatable<ClientCellProfileLeafSubgridRecord>
   {
-    public float CellXOffset;
-    public float CellYOffset;
-    public DateTime LastPassTime;
-    public int PassCount;
-    public int LastPassValidRadioLatency;
+    public float CellXOffset{get; set;}
+    public float CellYOffset{get; set;}
+    public DateTime LastPassTime{get; set;}
+    public int PassCount{get; set;}
+    public int LastPassValidRadioLatency{get; set;}
 
-    public int EventDesignNameID;
+    public int EventDesignNameID{get; set;}
 
-    public short InternalSiteModelMachineIndex;
+    public short InternalSiteModelMachineIndex{get; set;}
 
-    public ushort MachineSpeed;
+    public ushort MachineSpeed{get; set;}
 
-    public GPSMode LastPassValidGPSMode;
+    public GPSMode LastPassValidGPSMode{get; set;}
 
-    public ushort GPSTolerance;
+    public ushort GPSTolerance{get; set;}
 
-    public GPSAccuracy GPSAccuracy;
+    public GPSAccuracy GPSAccuracy{get; set;}
 
-    public int TargetPassCount;
-//    public int TotalWholePasses;
-//    public int TotalHalfPasses;
-    public int LayersCount;
-    public short LastPassValidCCV;
-    public short TargetCCV;
-    public short LastPassValidMDP;
-    public short TargetMDP;
+    public int TargetPassCount{get; set;}
+//    public int TotalWholePasses{get; set;}
+//    public int TotalHalfPasses{get; set;}
+    public int LayersCount{get; set;}
+    public short LastPassValidCCV{get; set;}
+    public short TargetCCV{get; set;}
+    public short LastPassValidMDP{get; set;}
+    public short TargetMDP{get; set;}
 
-    public short LastPassValidRMV;
+    public short LastPassValidRMV{get; set;}
 
-    public ushort LastPassValidFreq;
-    public ushort LastPassValidAmp;
+    public ushort LastPassValidFreq{get; set;}
+    public ushort LastPassValidAmp{get; set;}
 
-    public float TargetThickness;
+    public float TargetThickness{get; set;}
 
-    public MachineGear EventMachineGear;
+    public MachineGear EventMachineGear{get; set;}
 
-    public VibrationState EventVibrationState;
+    public VibrationState EventVibrationState{get; set;}
 
-    public ushort LastPassValidTemperature;
+    public ushort LastPassValidTemperature{get; set;}
 
-    public float Height;
+    public float Height{get; set;}
 
-    public bool HalfPass;
-    public float CCVChange;
+    public bool HalfPass{get; set;}
+    public float CCVChange{get; set;}
 
-    public byte LastPassValidCCA;
-    public byte TargetCCA;
+    public byte LastPassValidCCA{get; set;}
+    public byte TargetCCA{get; set;}
 
 
     public void Clear()
