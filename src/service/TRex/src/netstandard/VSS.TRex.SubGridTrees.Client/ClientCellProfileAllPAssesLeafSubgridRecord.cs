@@ -17,6 +17,13 @@ namespace VSS.TRex.SubGridTrees.Client
       CellPasses = new ClientCellProfileLeafSubgridRecord[0];
     }
 
+    public static ClientCellProfileAllPassesLeafSubgridRecord Null()
+    {
+      var record = new ClientCellProfileAllPassesLeafSubgridRecord();
+      record.Clear();
+      return record;
+    }
+
     public void Read(BinaryReader reader)
     {
       TotalPasses = reader.ReadInt32();

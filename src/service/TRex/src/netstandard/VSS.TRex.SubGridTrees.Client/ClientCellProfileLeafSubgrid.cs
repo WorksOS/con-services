@@ -24,9 +24,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientCellProfileLeafSubgrid()
     {
-      var nullRecord = new ClientCellProfileLeafSubgridRecord();
-      nullRecord.Clear();
-
+      var nullRecord = ClientCellProfileLeafSubgridRecord.Null();
       SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = nullRecord);
     }
 

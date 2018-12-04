@@ -94,6 +94,13 @@ namespace VSS.TRex.SubGridTrees.Client
       TargetCCA = CellTargets.NullCCATarget;
     }
 
+    public static ClientCellProfileLeafSubgridRecord Null()
+    {
+      var record = new ClientCellProfileLeafSubgridRecord;
+      record.Clear();
+      return record;
+    }
+
     public void Read(BinaryReader reader)
     {
       CellXOffset = reader.ReadSingle();
