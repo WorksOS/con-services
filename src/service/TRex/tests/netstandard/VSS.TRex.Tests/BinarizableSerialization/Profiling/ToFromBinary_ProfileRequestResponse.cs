@@ -28,13 +28,15 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
 
       var cells = new List<IProfileCell>{ cell };
 
-      var response = new ProfileRequestResponse()
+      var response = new ProfileRequestResponse
       {
         ResultStatus = RequestErrorStatus.OK,
         ProfileCells = cells
-    };
+      };
 
-      SimpleBinarizableInstanceTester.TestClass(response, "Custom ProfileRequestResponse not same after round trip serialisation");
+      var result = SimpleBinarizableInstanceTester.TestClass(response, "Custom ProfileRequestResponse not same after round trip serialisation");
+
+      Assert.True(result != null);
     }
   }
 }

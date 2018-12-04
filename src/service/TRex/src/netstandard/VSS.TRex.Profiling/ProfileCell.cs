@@ -65,12 +65,13 @@ namespace VSS.TRex.Profiling
     public short CellPreviousMeasuredTargetCCV { get; set; }
     public float CellCCVElev { get; set; }
 
-    public short CellMDP, CellTargetMDP;
-    public float CellMDPElev;
+    public short CellMDP  { get; set; }
+    public short CellTargetMDP { get; set; }
+    public float CellMDPElev { get; set; }
 
-    public byte CellCCA;
-    public short CellTargetCCA;
-    public float CellCCAElev;
+    public byte CellCCA { get; set; }
+    public short CellTargetCCA { get; set; }
+    public float CellCCAElev { get; set; }
 
     public float CellTopLayerThickness;
     public bool IncludesProductionData;
@@ -132,6 +133,12 @@ namespace VSS.TRex.Profiling
       passes.FilteredPassData = filteredPasses;
       passes.PassCount = filteredPasses.Length;
     }
+
+    /// <summary>
+    /// Changes the count of passes present in the filtered set of passes held in the profile cell
+    /// </summary>
+    /// <param name="filteredPassCount"></param>
+    public void SetFilteredPassCount(int filteredPassCount) => passes.PassCount = filteredPassCount;
 
     /// <summary>
     /// Constructs a profiler layer from a given set of filtered passes and the location of the cell on the profile line
@@ -529,7 +536,7 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(CellMaxSpeed);
       writer.WriteInt(CellMinSpeed);
 
-      Passes.ToBinary(writer);
+      passes.ToBinary(writer);
 
       writer.WriteBooleanArray(FilteredPassFlags);
       writer.WriteInt(FilteredPassCount);
@@ -601,7 +608,7 @@ namespace VSS.TRex.Profiling
       CellMaxSpeed = (ushort)reader.ReadInt();
       CellMinSpeed = (ushort)reader.ReadInt();
 
-      Passes.FromBinary(reader);
+      passes.FromBinary(reader);
 
       FilteredPassFlags = reader.ReadBooleanArray();
       FilteredPassCount = reader.ReadInt();

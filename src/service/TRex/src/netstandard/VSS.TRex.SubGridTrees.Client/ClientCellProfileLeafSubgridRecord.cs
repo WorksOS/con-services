@@ -18,7 +18,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public int EventDesignNameID;
 
-    public short InternalMachineID;
+    public short InternalSiteModelMachineIndex;
 
     public ushort MachineSpeed;
 
@@ -29,8 +29,8 @@ namespace VSS.TRex.SubGridTrees.Client
     public GPSAccuracy GPSAccuracy;
 
     public int TargetPassCount;
-    public int TotalWholePasses;
-    public int TotalHalfPasses;
+//    public int TotalWholePasses;
+//    public int TotalHalfPasses;
     public int LayersCount;
     public short LastPassValidCCV;
     public short TargetCCV;
@@ -67,14 +67,14 @@ namespace VSS.TRex.SubGridTrees.Client
       PassCount = 0;
       LastPassValidRadioLatency = CellPassConsts.NullRadioLatency;
       EventDesignNameID = Consts.kNoDesignNameID;
-      InternalMachineID = -1;
+      InternalSiteModelMachineIndex = -1;
       MachineSpeed = CellPassConsts.NullMachineSpeed;
       LastPassValidGPSMode = CellPassConsts.NullGPSMode;
       GPSTolerance = CellPassConsts.NullGPSTolerance;
       GPSAccuracy = GPSAccuracy.Unknown;
       TargetPassCount = CellPassConsts.NullPassCountValue;
-      TotalHalfPasses = 0;
-      TotalWholePasses = 0;
+//      TotalHalfPasses = 0;
+//      TotalWholePasses = 0;
       LayersCount = 0;
       LastPassValidCCV = CellPassConsts.NullCCV;
       TargetCCV = CellPassConsts.NullCCV;
@@ -100,15 +100,15 @@ namespace VSS.TRex.SubGridTrees.Client
       CellYOffset = reader.ReadSingle();
       LastPassTime = new DateTime(reader.ReadInt64());
       PassCount = reader.ReadInt32(); // Todo: Is this too big?
-      LastPassValidRadioLatency = reader.ReadByte();
+      LastPassValidRadioLatency = reader.ReadInt32();
       EventDesignNameID = reader.ReadInt32();
       MachineSpeed = reader.ReadUInt16();
       LastPassValidGPSMode = (GPSMode) reader.ReadByte();
       GPSTolerance = reader.ReadUInt16();
       GPSAccuracy = (GPSAccuracy) reader.ReadByte();
       TargetPassCount = reader.ReadInt32();
-      TotalHalfPasses = reader.ReadInt32();
-      TotalWholePasses = reader.ReadInt32();
+//      TotalHalfPasses = reader.ReadInt32();
+//      TotalWholePasses = reader.ReadInt32();
       LayersCount = reader.ReadInt32();
       LastPassValidCCV = reader.ReadInt16();
       TargetCCV = reader.ReadInt16();
@@ -120,7 +120,7 @@ namespace VSS.TRex.SubGridTrees.Client
       TargetThickness = reader.ReadSingle();
       EventMachineGear = (MachineGear) reader.ReadByte();
       EventVibrationState = (VibrationState) reader.ReadByte();
-      LastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
+      LastPassValidTemperature = reader.ReadUInt16();
       Height = reader.ReadSingle();
       HalfPass = reader.ReadBoolean();
       CCVChange = reader.ReadSingle();
@@ -141,8 +141,8 @@ namespace VSS.TRex.SubGridTrees.Client
       writer.Write(GPSTolerance);
       writer.Write((byte) GPSAccuracy);
       writer.Write(TargetPassCount);
-      writer.Write(TotalHalfPasses);
-      writer.Write(TotalWholePasses);
+//      writer.Write(TotalHalfPasses);
+//      writer.Write(TotalWholePasses);
       writer.Write(LayersCount);
       writer.Write(LastPassValidCCV);
       writer.Write(TargetCCV);
@@ -172,14 +172,14 @@ namespace VSS.TRex.SubGridTrees.Client
              PassCount == other.PassCount &&
              LastPassValidRadioLatency == other.LastPassValidRadioLatency &&
              EventDesignNameID == other.EventDesignNameID &&
-             InternalMachineID == other.InternalMachineID &&
+             InternalSiteModelMachineIndex == other.InternalSiteModelMachineIndex &&
              MachineSpeed == other.MachineSpeed &&
              LastPassValidGPSMode == other.LastPassValidGPSMode &&
              GPSTolerance == other.GPSTolerance &&
              GPSAccuracy == other.GPSAccuracy &&
              TargetPassCount == other.TargetPassCount &&
-             TotalWholePasses == other.TotalWholePasses &&
-             TotalHalfPasses == other.TotalHalfPasses &&
+//             TotalWholePasses == other.TotalWholePasses &&
+//             TotalHalfPasses == other.TotalHalfPasses &&
              LayersCount == other.LayersCount &&
              LastPassValidCCV == other.LastPassValidCCV &&
              TargetCCV == other.TargetCCV &&

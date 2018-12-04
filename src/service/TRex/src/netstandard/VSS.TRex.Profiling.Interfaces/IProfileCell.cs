@@ -36,7 +36,13 @@ namespace VSS.TRex.Profiling.Interfaces
     short CellPreviousMeasuredTargetCCV { get; set; }
     float CellCCVElev { get; set; }
 
-    float CCVChange { get; set; }
+    short CellMDP { get; set; }
+    short CellTargetMDP { get; set; }
+    float CellMDPElev { get; set; }
+
+    byte CellCCA { get; set; }
+    short CellTargetCCA { get; set; }
+    float CellCCAElev { get; set; }
 
     /// <summary>
     /// A collection of layers constituting a profile through a cell.

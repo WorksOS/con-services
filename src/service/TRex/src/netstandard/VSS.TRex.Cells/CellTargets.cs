@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 
@@ -94,7 +93,7 @@ namespace VSS.TRex.Cells
     //Procedure WriteToStream(const Stream : TStream);
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -105,11 +104,11 @@ namespace VSS.TRex.Cells
       writer.WriteInt(TargetPassCount);
       writer.WriteInt(TempWarningLevelMin);
       writer.WriteInt(TempWarningLevelMax);
-      writer.WriteShort(TargetCCA);
+      writer.WriteByte(TargetCCA);
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
@@ -120,7 +119,7 @@ namespace VSS.TRex.Cells
       TargetPassCount = (ushort)reader.ReadInt();
       TempWarningLevelMin = (ushort)reader.ReadInt();
       TempWarningLevelMax = (ushort)reader.ReadInt();
-      TargetCCA = reader.ReadShort();
+      TargetCCA = reader.ReadByte();
     }
   }
 }

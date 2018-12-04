@@ -27,9 +27,15 @@ namespace VSS.TRex.Filters.Models
                 XOffset = xOffset;
                 YOffset = yOffset;
             }
+
+          public void SetOffsets(double xOffset, double yOffset)
+          {
+            XOffset = (float)xOffset;
+            YOffset = (float)yOffset;
+          }
         }
 
-        public FilteredSinglePassInfo FilteredValue;
+    public FilteredSinglePassInfo FilteredValue;
 
         public FilteredSinglePassInfo PreviousFilteredValue;
 

@@ -19,21 +19,15 @@ namespace VSS.TRex.SubGridTrees.Client
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientCellProfileLeafSubgrid>();
 
-    /*
-  TICClientSubGridTreeLeaf_CellProfile = class(TICClientSubGridTreeLeaf_Base<TICSubGridCellPassData_CellProfile_Entry>)
-    Public
-      Function CellHasValue(CellX, CellY : Integer) : Boolean; Override;
-      Procedure Clear; Override;
-      Procedure AssignFilteredValue(const CellX, CellY : Integer;
-                                    const Context : TICSubGridFilteredValueAssignmentContext); Override;
-  */
-
     /// <summary>
     /// Initialise the null cell values for the client subgrid
     /// </summary>
     static ClientCellProfileLeafSubgrid()
     {
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = new ClientCellProfileLeafSubgridRecord());
+      var nullRecord = new ClientCellProfileLeafSubgridRecord();
+      nullRecord.Clear();
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => NullCells[x, y] = nullRecord);
     }
 
     private void Initialise()
@@ -58,7 +52,7 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructor. Set the grid to HeightAndTime.
+    /// Constructor. Set the grid to CellProfile.
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="parent"></param>
@@ -103,8 +97,8 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         Cells[x, y] = new ClientCellProfileLeafSubgridRecord
         {
-          LastPassTime = new DateTime(x * 1000 + y),
-          PassCount = x + y
+          LastPassTime = new DateTime(x * 1000 + y + 1),
+          PassCount = x + y,
         };
       });
     }
@@ -121,7 +115,9 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public override ClientCellProfileLeafSubgridRecord NullCell()
     {
-      return new ClientCellProfileLeafSubgridRecord();
+      var nullRecord = new ClientCellProfileLeafSubgridRecord();
+      nullRecord.Clear();
+      return nullRecord;
     }
 
     public override bool CellHasValue(byte cellX, byte cellY) => Cells[cellX, cellY].LastPassTime != DateTime.MinValue;
@@ -131,17 +127,14 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
-    /// <param name="Context"></param>
+    /// <param name="context"></param>
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      //  LastPass : TICFilteredPassData;
       double v1, v2;
 
-      void CalculateCMVChange(IProfileCell profileCell /*; Todo: Lifebuildsettings
+      void CalculateCMVChange(IProfileCell profileCell /*; Todo: Liftbuildsettings
       LiftBuildSettings : TICLiftBuildSettings*/)
       {
-        //      with ProfileCell, LiftBuildSettings do
-        //      begin
         profileCell.CellCCV = CellPassConsts.NullCCV;
         profileCell.CellTargetCCV = CellPassConsts.NullCCV;
         profileCell.CellPreviousMeasuredCCV = CellPassConsts.NullCCV;
@@ -150,7 +143,7 @@ namespace VSS.TRex.SubGridTrees.Client
         bool DataStillRequiredForCCV = true;
 
         for (int i = profileCell.Layers.Count() - 1; i >= 0; i--)
-          //     with Layers[i] do
+        {
           if (profileCell.Layers[i].FilteredPassCount > 0)
           {
             if ((profileCell.Layers[i].Status & LayerStatus.Superseded) != 0 && !Dummy_LiftBuildSettings.IncludeSuperseded)
@@ -190,6 +183,7 @@ namespace VSS.TRex.SubGridTrees.Client
             if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
               DataStillRequiredForCCV = false;
           }
+        }
       }
 
       if (context.CellProfile == null)
@@ -201,36 +195,34 @@ namespace VSS.TRex.SubGridTrees.Client
       IProfileCell cellProfileFromContext = context.CellProfile as IProfileCell;
       FilteredPassData LastPass = cellProfileFromContext.Passes.FilteredPassData[cellProfileFromContext.Passes.PassCount - 1];
 
-      //  with Cells[CellX, CellY], Context.CellProfile do
-      //  begin
-
-      //    with Context.ProbePositions[CellX, CellY] do
-      //      begin
       Cells[cellX, cellY].CellXOffset = context.ProbePositions[cellX, cellY].XOffset;
       Cells[cellX, cellY].CellYOffset = context.ProbePositions[cellX, cellY].YOffset;
-      //      end;
 
       Cells[cellX, cellY].LastPassTime = cellProfileFromContext.Passes.LastPassTime();
       Cells[cellX, cellY].PassCount = context.FilteredValue.PassCount;
       Cells[cellX, cellY].LastPassValidRadioLatency = cellProfileFromContext.Passes.LastPassValidRadioLatency();
       Cells[cellX, cellY].EventDesignNameID = LastPass.EventValues.EventDesignNameID;
-      Cells[cellX, cellY].MachineID = LastPass.FilteredPass.MachineID;
+      Cells[cellX, cellY].InternalSiteModelMachineIndex = LastPass.FilteredPass.InternalSiteModelMachineIndex;
       Cells[cellX, cellY].MachineSpeed = LastPass.FilteredPass.MachineSpeed;
       Cells[cellX, cellY].LastPassValidGPSMode = cellProfileFromContext.Passes.LastPassValidGPSMode();
       Cells[cellX, cellY].GPSTolerance = LastPass.EventValues.GPSTolerance;
       Cells[cellX, cellY].GPSAccuracy = LastPass.EventValues.GPSAccuracy;
       Cells[cellX, cellY].TargetPassCount = LastPass.TargetValues.TargetPassCount;
-      Cells[cellX, cellY].TotalWholePasses = cellProfileFromContext.TotalNumberOfWholePasses(true); // include superseded layers
-      Cells[cellX, cellY].TotalHalfPasses = cellProfileFromContext.TotalNumberOfHalfPasses(true); // include superseded layers
-      Cells[cellX, cellY].LayersCount = cellProfileFromContext.Layers.Count;
+//      Cells[cellX, cellY].TotalWholePasses = cellProfileFromContext.TotalNumberOfWholePasses(true); // include superseded layers
+//      Cells[cellX, cellY].TotalHalfPasses = cellProfileFromContext.TotalNumberOfHalfPasses(true); // include superseded layers
+      Cells[cellX, cellY].LayersCount = cellProfileFromContext.Layers.Count();
 
       cellProfileFromContext.Passes.LastPassValidCCVDetails(out var lastPassValidCCV, out var _targetCCV); // get details from last VALID pass
       Cells[cellX, cellY].LastPassValidCCV = lastPassValidCCV;
-      Cells[cellX, cellY].CellTargetCCV = _targetCCV;
+      cellProfileFromContext.CellTargetCCV = _targetCCV;
 
-      cellProfileFromContext.Passes.LastPassValidMDPDetails(LastPassValidMDP, TargetMDP); // get details from last VALID pass
+      cellProfileFromContext.Passes.LastPassValidMDPDetails(out var _lastPassValidMDP, out var _targetMDP); // get details from last VALID pass
+      Cells[cellX, cellY].LastPassValidMDP = _lastPassValidMDP;
+      cellProfileFromContext.CellTargetMDP = _targetMDP;
 
-      cellProfileFromContext.Passes.LastPassValidCCADetails(LastPassValidCCA, TargetCCA); // get details from last VALID pass
+      cellProfileFromContext.Passes.LastPassValidCCADetails(out var _lastPassValidCCA, out var _targetCCA); // get details from last VALID pass
+      Cells[cellX, cellY].LastPassValidCCA = _lastPassValidCCA;
+      cellProfileFromContext.CellTargetCCA = _targetCCA;
 
       Cells[cellX, cellY].LastPassValidRMV = cellProfileFromContext.Passes.LastPassValidRMV();
       Cells[cellX, cellY].LastPassValidFreq = cellProfileFromContext.Passes.LastPassValidFreq();
@@ -242,20 +234,20 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].Height = LastPass.FilteredPass.Height;
 
       CalculateCMVChange(cellProfileFromContext /* todo: , context.LiftBuildSettings*/);
-      cellProfileFromContext.CCVChange = 0;
+      Cells[cellX, cellY].CCVChange = 0;
       v2 = cellProfileFromContext.CellCCV;
       v1 = cellProfileFromContext.CellPreviousMeasuredCCV;
 
       if (v2 == CellPassConsts.NullCCV)
-        cellProfileFromContext.CCVChange = CellPassConsts.NullCCV; // will force no result to show
+        Cells[cellX, cellY].CCVChange = CellPassConsts.NullCCV; // will force no result to show
       else if (v1 == CellPassConsts.NullCCV)
-        cellProfileFromContext.CCVChange = 100; // %100 diff
+        Cells[cellX, cellY].CCVChange = 100; // %100 diff
       else
       {
         if (v1 == 0) // avoid div by 0 error
-          cellProfileFromContext.CCVChange = 100;
+          Cells[cellX, cellY].CCVChange = 100; // %100 diff
         else
-          cellProfileFromContext.CCVChange = (float) (((v2 - v1) / v1) * 100);
+          Cells[cellX, cellY].CCVChange = (float) (((v2 - v1) / v1) * 100);
       }
     }
 

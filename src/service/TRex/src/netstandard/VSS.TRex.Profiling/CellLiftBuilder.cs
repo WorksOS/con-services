@@ -33,7 +33,7 @@ namespace VSS.TRex.Profiling
     private int LayerIDOfLastProcessedCellPass;
 
     private short LastPassCCV;
-    public DateTime LastPassCCVTime;
+    private DateTime LastPassCCVTime;
     private short LastPassCCVMachine;
     private float LastPassCCVElev;
     private int LastPassCCVIdx;
@@ -899,7 +899,7 @@ namespace VSS.TRex.Profiling
 
       Cell.FilteredPassCount = Count;
       Cell.FilteredHalfPassCount = HalfPassCount;
-      Cell.Passes.PassCount = Count;
+      Cell.SetFilteredPassCount(Count);
 
       // Remove any layers at the top of the stack that do not have any cell passes in them
       for (int LayerIndex = Cell.Layers.Count() - 1; LayerIndex >= 0; LayerIndex--)
