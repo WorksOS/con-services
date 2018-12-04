@@ -1,0 +1,7 @@
+FROM registry-docker-registry.jenkins:5000/dotnet:2.1-sdk 
+ARG SERVICE_PATH
+
+COPY . /build/
+WORKDIR /build
+
+RUN dotnet publish ./$SERVICE_PATH/Service/VSS.Productivity3D.Push/VSS.Productivity3D.Push.csproj -o /build/artifacts/Push --framework netcoreapp2.1 --runtime linux-x64
