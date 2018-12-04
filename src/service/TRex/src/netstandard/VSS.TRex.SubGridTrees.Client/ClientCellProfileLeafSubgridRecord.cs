@@ -96,7 +96,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public static ClientCellProfileLeafSubgridRecord Null()
     {
-      var record = new ClientCellProfileLeafSubgridRecord;
+      var record = new ClientCellProfileLeafSubgridRecord();
       record.Clear();
       return record;
     }
