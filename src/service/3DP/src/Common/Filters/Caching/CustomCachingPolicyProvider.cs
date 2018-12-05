@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
   public class CustomCachingPolicyProvider : ResponseCachingPolicyProvider
   {
     private static readonly CacheControlHeaderValue emptyCacheControl = new CacheControlHeaderValue();
-
+ 
     public override bool AttemptResponseCaching(ResponseCachingContext context)
     {
       var request = context.HttpContext.Request;
@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Common.Filters.Caching
     }
 
     public override bool IsResponseCacheable(ResponseCachingContext context)
-    {
+    {    
       var typedHeaders = context.HttpContext.Response.GetTypedHeaders();
       var responseHeaders = typedHeaders.CacheControl ?? emptyCacheControl;
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Caching.Memory;
@@ -138,7 +139,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       Assert.AreEqual(cacheKeysSet2.Count, cacheKeysValue?.Values.First().Count); // ...and after invalidating the cache we should have the 500 items that were added during that process.
     }
 
-    [Ignore("Ignored while Aaron determines why this is failing on CI machine.")]
+
     [TestMethod]
     public void InvalidateReponseCacheForProject_should_handle_multithreaded_interaction()
     {
@@ -154,12 +155,16 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       {
         cacheKeysSet1.Add(Guid.NewGuid().ToString());
       }
+      cacheKeysSet1.Sort((x, y) => x.CompareTo(y));
+
 
       var cacheKeysSet2 = new List<string>();
       for (var i = 0; i < 50000; i++)
       {
         cacheKeysSet2.Add(Guid.NewGuid().ToString());
       }
+      cacheKeysSet2.Sort((x, y) => x.CompareTo(y));
+
 
       // Establish the root cache keys for the test projects.
       var projectUid1 = Guid.NewGuid();
@@ -170,40 +175,64 @@ namespace VSS.Productivity3D.WebApiTests.Common.Extensions
       var projectCacheKey2 = projectUid2.ToString().GetProjectCacheKey();
       responseCache.Set(null, projectCacheKey2, cacheObj, TimeSpan.FromMinutes(10));
 
-      var cachePopulated = false;
+      var cachePopulated1 = false;
+      var cachePopulated2 = false;
 
       // Populate the internal cache keys collection for the test projects.
 #pragma warning disable 4014
       Task.Run(() => PopulateResponseCache(responseCache, projectCacheKey1, cacheKeysSet1))
           .ContinueWith(task =>
           {
-            // Set the flag only when the largest of the response caches has finished populating.
-            cachePopulated = true;
+            // After cache hydration has completed test it's structured correctly.
+            var cacheKeysFieldAfter1 = ((MemoryResponseCache)responseCache).GetType().GetField("_cacheKeys", BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.NonPublic);
+            var cacheKeysValueAfter1 = (ConcurrentDictionary<string, ConcurrentBag<string>>)cacheKeysFieldAfter1?.GetValue(responseCache);
+            cacheKeysValueAfter1.Should().NotBeNull();
+            cacheKeysValueAfter1.Count.Should().BeGreaterOrEqualTo(1);
+            cacheKeysValueAfter1.TryGetValue(projectCacheKey1, out var project1CachedResponses).Should().BeTrue();
+            var sortedValues1 = project1CachedResponses.ToList();
+            sortedValues1.Sort((x, y) => x.CompareTo(y));
+            sortedValues1.SequenceEqual(cacheKeysSet1).Should().BeTrue();
+   
+            // Set the flag only when the response cache has finished populating.
+            cachePopulated1 = true;
           });
 
-      Task.Run(() => PopulateResponseCache(responseCache, projectCacheKey2, cacheKeysSet2));
+      Task.Run(() => PopulateResponseCache(responseCache, projectCacheKey2, cacheKeysSet2))
+        .ContinueWith(task =>
+      {
+        //Verify the cache has the values we expect in it
+        var cacheKeysFieldAfter2 = ((MemoryResponseCache)responseCache).GetType().GetField("_cacheKeys", BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.NonPublic);
+        var cacheKeysValueAfter2 = (ConcurrentDictionary<string, ConcurrentBag<string>>)cacheKeysFieldAfter2?.GetValue(responseCache);
+        cacheKeysValueAfter2.Should().NotBeNull();
+        cacheKeysValueAfter2.Should().ContainKey(projectCacheKey2);
+        cacheKeysValueAfter2.TryGetValue(projectCacheKey2, out var project2CachedResponses).Should().BeTrue();
+        var sortedValues2 = project2CachedResponses.ToList();
+        sortedValues2.Sort((x, y) => x.CompareTo(y));
+        sortedValues2.SequenceEqual(cacheKeysSet2).Should().BeTrue();
+        // Set the flag only when the response cache has finished populating.
+        cachePopulated2 = true;
+      });
 #pragma warning restore 4014
 
-      while (!cachePopulated) { }
+      while (!(cachePopulated1 && cachePopulated2)) { }
 
       // After cache hydration has completed test it's structured correctly.
       var cacheKeysField = ((MemoryResponseCache)responseCache).GetType().GetField("_cacheKeys", BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.NonPublic);
       var cacheKeysValue = (ConcurrentDictionary<string, ConcurrentBag<string>>)cacheKeysField?.GetValue(responseCache);
 
-      Assert.IsNotNull(cacheKeysValue);
-      Assert.AreEqual(2, cacheKeysValue.Count);
+      cacheKeysValue.Should().NotBeNull();
+      cacheKeysValue.Should().ContainKeys(projectCacheKey1, projectCacheKey2);
 
-      // ...and after adding all items we should have correctly populated response caches.
-      Assert.IsTrue(cacheKeysValue.TryGetValue(projectCacheKey1, out var project1CachedResponses));
-      Assert.AreEqual(cacheKeysSet1.Count, project1CachedResponses.Count);
-
-      Assert.IsTrue(cacheKeysValue.TryGetValue(projectCacheKey2, out var project2CachedResponses));
-      Assert.AreEqual(cacheKeysSet2.Count, project2CachedResponses.Count);
-
-      // Final check
+      // Invalidation check
       responseCache.InvalidateReponseCacheForProject(projectUid1);
-      Assert.IsTrue(cacheKeysValue.TryGetValue(projectCacheKey2, out project2CachedResponses));
-      Assert.AreEqual(cacheKeysSet2.Count, project2CachedResponses.Count);
+      cacheKeysValue = (ConcurrentDictionary<string, ConcurrentBag<string>>)cacheKeysField?.GetValue(responseCache);
+      cacheKeysValue.Should().ContainKey(projectCacheKey2);
+      cacheKeysValue.Should().NotContainKey(projectCacheKey1);
+      cacheKeysValue.TryGetValue(projectCacheKey2, out var project2CachedResponsesAfterInvalidate).Should().BeTrue();
+
+      var sortedproject2CachedResponsesAfterInvalidate = project2CachedResponsesAfterInvalidate.ToList();
+      sortedproject2CachedResponsesAfterInvalidate.Sort((x, y) => x.CompareTo(y));
+      sortedproject2CachedResponsesAfterInvalidate.SequenceEqual(cacheKeysSet2).Should().BeTrue();
     }
 
     private static Stream GenerateStreamFromString(string seedString)

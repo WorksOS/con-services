@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
@@ -62,15 +59,19 @@ namespace VSS.TRex.Profiling
     public float CellFirstCompositeElev;
     public float DesignElev;
 
-    public short CellCCV, CellTargetCCV, CellPreviousMeasuredCCV, CellPreviousMeasuredTargetCCV;
-    public float CellCCVElev;
+    public short CellCCV { get; set; }
+    public short CellTargetCCV { get; set; }
+    public short CellPreviousMeasuredCCV { get; set; }
+    public short CellPreviousMeasuredTargetCCV { get; set; }
+    public float CellCCVElev { get; set; }
 
-    public short CellMDP, CellTargetMDP;
-    public float CellMDPElev;
+    public short CellMDP  { get; set; }
+    public short CellTargetMDP { get; set; }
+    public float CellMDPElev { get; set; }
 
-    public byte CellCCA;
-    public short CellTargetCCA;
-    public float CellCCAElev;
+    public byte CellCCA { get; set; }
+    public short CellTargetCCA { get; set; }
+    public float CellCCAElev { get; set; }
 
     public float CellTopLayerThickness;
     public bool IncludesProductionData;
@@ -85,7 +86,9 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Passes contains the entire list of passes that all the layers in the layer collection refer to
     /// </summary>
-    public FilteredMultiplePassInfo Passes;
+    private FilteredMultiplePassInfo passes = new FilteredMultiplePassInfo();
+
+    public FilteredMultiplePassInfo Passes => passes;
 
     public bool[] FilteredPassFlags = new bool[0];
     public int FilteredPassCount;
@@ -124,6 +127,18 @@ namespace VSS.TRex.Profiling
       CellPreviousMeasuredCCV = CellPassConsts.NullCCV;
       CellPreviousMeasuredTargetCCV = CellPassConsts.NullCCV;
     }
+
+    public void SetFilteredPasses(FilteredPassData[] filteredPasses)
+    {
+      passes.FilteredPassData = filteredPasses;
+      passes.PassCount = filteredPasses.Length;
+    }
+
+    /// <summary>
+    /// Changes the count of passes present in the filtered set of passes held in the profile cell
+    /// </summary>
+    /// <param name="filteredPassCount"></param>
+    public void SetFilteredPassCount(int filteredPassCount) => passes.PassCount = filteredPassCount;
 
     /// <summary>
     /// Constructs a profiler layer from a given set of filtered passes and the location of the cell on the profile line
@@ -166,7 +181,7 @@ namespace VSS.TRex.Profiling
 
     /// <summary>
     /// Determines if the internal layer contains no cell passes from the internal stack of cell passes.
-    /// Note: Thsi count is derived from teh start and stop index within the list of cells; layers do
+    /// Note: This count is derived from teh start and stop index within the list of cells; layers do
     /// not separately contain the cell passes themselves.
     /// </summary>
     /// <returns></returns>
@@ -428,7 +443,7 @@ namespace VSS.TRex.Profiling
           if (I == layer.StartCellPassIdx) // if no more passes to check
             layer.Status |= TargetMeet ? LayerStatus.Complete : LayerStatus.Undercompacted;
 
-          continue; // Continue until satisfied checking for overcompacted or at end of layer
+          continue; // Continue until satisfied checking for over-compacted or at end of layer
         }
 
         break;
@@ -449,7 +464,7 @@ namespace VSS.TRex.Profiling
 
     /// <summary>
     /// Determines if the recorded time of a given pass lies within the time range of a layer that is
-    /// deemed to be superceded by another layer
+    /// deemed to be superseded by another layer
     /// </summary>
     /// <param name="Pass"></param>
     /// <returns></returns>
@@ -470,7 +485,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -521,7 +536,7 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(CellMaxSpeed);
       writer.WriteInt(CellMinSpeed);
 
-      Passes.ToBinary(writer);
+      passes.ToBinary(writer);
 
       writer.WriteBooleanArray(FilteredPassFlags);
       writer.WriteInt(FilteredPassCount);
@@ -536,7 +551,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
@@ -593,7 +608,7 @@ namespace VSS.TRex.Profiling
       CellMaxSpeed = (ushort)reader.ReadInt();
       CellMinSpeed = (ushort)reader.ReadInt();
 
-      Passes.FromBinary(reader);
+      passes.FromBinary(reader);
 
       FilteredPassFlags = reader.ReadBooleanArray();
       FilteredPassCount = reader.ReadInt();
@@ -605,6 +620,50 @@ namespace VSS.TRex.Profiling
       CellMaterialTemperatureWarnMax = (ushort)reader.ReadInt();
 
       CellMaterialTemperatureElev = reader.ReadFloat();
+    }
+
+    /// <summary>
+    /// Use this function to loop through all passes regardless if half pass or not
+    /// if no half passes present then this is a one for one relationship
+    /// </summary>
+    /// <param name="includeSupersededLayers"></param>
+    /// <returns></returns>
+    public int TotalNumberOfHalfPasses(bool includeSupersededLayers)
+    {
+      var Result = 0;
+
+      var layerCount = Layers.Count();
+      for (int i = 0; i < layerCount; i++)
+      {
+        if (!includeSupersededLayers && (LayerStatus.Superseded & Layers[i].Status) != 0)
+          continue;
+
+        Result += Layers[i].PassCount; // count all passes even if half
+      }
+
+      return Result;
+    }
+
+
+    /// <summary>
+    /// Use this function to get a count of whole passes. It takes two half passes to make one whole pass
+    /// </summary>
+    /// <param name="includeSupersededLayers"></param>
+    /// <returns></returns>
+    public int TotalNumberOfWholePasses(bool includeSupersededLayers)
+    {
+      var Result = 0;
+
+      var layerCount = Layers.Count();
+      for (int i = 0; i < layerCount; i++)
+      {
+        if (!includeSupersededLayers && (LayerStatus.Superseded & Layers[i].Status) != 0)
+          continue;
+
+        Result += FilteredHalfPassCount > 0 ? FilteredHalfPassCount / 2 : Layers[i].PassCount;
+      }
+
+      return Result;
     }
 
     //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
@@ -625,8 +684,6 @@ namespace VSS.TRex.Profiling
         function  GetNearestValdLayerHeight(const LayerIndex :Integer) :TICCellHeight;
 
         function  MaxNumberOfPasses  (const IncludeSupersededLayers :Boolean = False) :Integer;
-        function  TotalNumberOfHalfPasses(const IncludeSupersededLayers :Boolean = False) :Integer;
-        function  TotalNumberOfWholePasses(const IncludeSupersededLayers :Boolean = False) :Integer;
 
         function  MaxCCVValue              :TICCCVValue;
         function  MaxTargetCCVValue        :TICCCVValue;
