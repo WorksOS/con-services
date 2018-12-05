@@ -4,7 +4,7 @@ using VSS.TRex.Filters.Models;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
-  public interface IProfileLayer : IEquatable<IProfileLayer>
+  public interface IProfileLayer
   {
     /// <summary>
     /// StartCellPssIdx and EndCellPassIdx hold the start and end indices of

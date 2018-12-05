@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
@@ -11,7 +10,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// The response state returned from a MDP statistics request
   /// </summary>
   public class MDPStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<MDPStatisticsResponse>, 
-    IAnalyticsOperationResponseResultConversion<MDPStatisticsResult>, IEquatable<MDPStatisticsResponse>
+    IAnalyticsOperationResponseResultConversion<MDPStatisticsResult>
   {
     /// <summary>
     /// Holds last known good target MDP value.
@@ -75,29 +74,6 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
         Counts = Counts,
         ResultStatus = ResultStatus
       };
-    }
-
-    public bool Equals(MDPStatisticsResponse other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && LastTargetMDP == other.LastTargetMDP;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((MDPStatisticsResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (base.GetHashCode() * 397) ^ LastTargetMDP.GetHashCode();
-      }
     }
   }
 }

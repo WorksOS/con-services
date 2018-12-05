@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Affinity
@@ -11,7 +10,7 @@ namespace VSS.TRex.GridFabric.Affinity
   /// The key type used to drive non-spatial affinity key mapping for elements stored in the Ignite cache. This controls
   /// which nodes in the PSNode layer the data for this key should reside. 
   /// </summary>
-  public struct NonSpatialAffinityKey : INonSpatialAffinityKey, IBinarizable, IFromToBinary, IEquatable<NonSpatialAffinityKey>
+  public struct NonSpatialAffinityKey : INonSpatialAffinityKey, IBinarizable, IFromToBinary
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -64,25 +63,6 @@ namespace VSS.TRex.GridFabric.Affinity
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       KeyName = reader.ReadString();
-    }
-
-    public bool Equals(NonSpatialAffinityKey other)
-    {
-      return ProjectUID.Equals(other.ProjectUID) && string.Equals(KeyName, other.KeyName);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is NonSpatialAffinityKey other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (ProjectUID.GetHashCode() * 397) ^ (KeyName != null ? KeyName.GetHashCode() : 0);
-      }
     }
   }
 }

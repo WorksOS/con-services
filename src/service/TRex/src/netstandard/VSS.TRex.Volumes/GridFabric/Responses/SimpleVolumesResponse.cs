@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.GridFabric.Interfaces;
@@ -10,7 +9,7 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
   /// <summary>
   /// Describes the result of a simple volumes computation in terms of cut, fill and total volumes plus coverage areas
   /// </summary>
-  public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>, IEquatable<SimpleVolumesResponse>
+  public class SimpleVolumesResponse : SubGridRequestsResponse, IAggregateWith<SimpleVolumesResponse>
   {
     private double DEFAULT_DOUBLE_VALUE = 0.0;
 
@@ -147,48 +146,8 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     }
 
     /// <summary>
-    /// Simple textual represenation of the information in a simple volumes response
+    /// Simple textual representation of the information in a simple volumes response
     /// </summary>
     public override string ToString() => $"Cut:{Cut}, Fill:{Fill}, Cut Area:{CutArea}, FillArea: {FillArea}, Total Area:{TotalCoverageArea}, BoundingGrid:{BoundingExtentGrid}, BoundingLLH:{BoundingExtentLLH}";
-
-    public bool Equals(SimpleVolumesResponse other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && 
-             DEFAULT_DOUBLE_VALUE.Equals(other.DEFAULT_DOUBLE_VALUE) && 
-             Cut.Equals(other.Cut) && 
-             Fill.Equals(other.Fill) && 
-             TotalCoverageArea.Equals(other.TotalCoverageArea) && 
-             CutArea.Equals(other.CutArea) && 
-             FillArea.Equals(other.FillArea) && 
-             Equals(BoundingExtentGrid, other.BoundingExtentGrid) && 
-             Equals(BoundingExtentLLH, other.BoundingExtentLLH);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((SimpleVolumesResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ DEFAULT_DOUBLE_VALUE.GetHashCode();
-        hashCode = (hashCode * 397) ^ Cut.GetHashCode();
-        hashCode = (hashCode * 397) ^ Fill.GetHashCode();
-        hashCode = (hashCode * 397) ^ TotalCoverageArea.GetHashCode();
-        hashCode = (hashCode * 397) ^ CutArea.GetHashCode();
-        hashCode = (hashCode * 397) ^ FillArea.GetHashCode();
-        hashCode = (hashCode * 397) ^ (BoundingExtentGrid != null ? BoundingExtentGrid.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (BoundingExtentLLH != null ? BoundingExtentLLH.GetHashCode() : 0);
-        return hashCode;
-      }
-    }
   }
 }

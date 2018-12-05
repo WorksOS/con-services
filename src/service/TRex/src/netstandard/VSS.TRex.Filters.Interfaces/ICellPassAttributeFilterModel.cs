@@ -4,7 +4,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Filters.Interfaces
 {
-  public interface ICellPassAttributeFilterModel : IFromToBinary, IEquatable<ICellPassAttributeFilterModel>
+  public interface ICellPassAttributeFilterModel : IFromToBinary
   {
     /// <summary>
     /// RequestedGridDataType stores the type of grid data being requested at

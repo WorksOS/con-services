@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
@@ -11,7 +10,7 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
 	/// The response state returned from a Temperature statistics request
 	/// </summary>
 	public class TemperatureStatisticsResponse : StatisticsAnalyticsResponse, IAggregateWith<TemperatureStatisticsResponse>, 
-	  IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>, IEquatable<TemperatureStatisticsResponse>
+	  IAnalyticsOperationResponseResultConversion<TemperatureStatisticsResult>
   {
 		/// <summary>
 		/// Holds last known good minimum temperature level value.
@@ -82,34 +81,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics.GridFabric
     public TemperatureStatisticsResponse AggregateWith(TemperatureStatisticsResponse other)
     {
       return base.AggregateWith(other) as TemperatureStatisticsResponse;
-    }
-
-    public bool Equals(TemperatureStatisticsResponse other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && 
-             LastTempRangeMin == other.LastTempRangeMin && 
-             LastTempRangeMax == other.LastTempRangeMax;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((TemperatureStatisticsResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ LastTempRangeMin.GetHashCode();
-        hashCode = (hashCode * 397) ^ LastTempRangeMax.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

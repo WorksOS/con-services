@@ -579,15 +579,6 @@ namespace VSS.TRex.Geometry
     public static XYZ UnitVector(XYZ V) => V * (1 / VectorLength(V));
 
     /// <summary>
-    /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
-    /// </summary>
-    /// <returns></returns>
-    public override int GetHashCode()
-    {
-      return base.GetHashCode();
-    }
-
-    /// <summary>
     /// Returns the triangle centroid
     /// </summary>
     /// <param name="P1"></param>

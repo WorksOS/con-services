@@ -4,7 +4,7 @@ using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
-  public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument, IEquatable<CalculateDesignElevationPatchArgument>
+  public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
     /// The X origin location for the patch of elevations to be computed from
@@ -107,42 +107,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       CellSize = reader.ReadDouble();
 
       DesignUid = reader.ReadGuid() ?? Guid.Empty;
-    }
-
-
-    public bool Equals(CalculateDesignElevationPatchArgument other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-
-      return base.Equals(other) && 
-             OriginX == other.OriginX && 
-             OriginY == other.OriginY && 
-             CellSize.Equals(other.CellSize) && 
-             DesignUid.Equals(other.DesignUid) && 
-             Offset.Equals(other.Offset);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((CalculateDesignElevationPatchArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) OriginX;
-        hashCode = (hashCode * 397) ^ (int) OriginY;
-        hashCode = (hashCode * 397) ^ CellSize.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignUid.GetHashCode();
-        hashCode = (hashCode * 397) ^ Offset.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

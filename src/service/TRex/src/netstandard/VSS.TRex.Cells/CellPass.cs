@@ -26,7 +26,7 @@ namespace VSS.TRex.Cells
   /// <summary>
   /// Describes all the 'per-cell' state recorded for a pass recorded by a machine over a cell.
   /// </summary>
-  public struct CellPass : IEquatable<CellPass>
+  public struct CellPass
   {
     /// <summary>
     /// Helper class that maps the two bites in the GPSMode byte to the four pass type values
@@ -293,29 +293,6 @@ namespace VSS.TRex.Cells
     }
 
     /// <summary>
-    /// Determine if this pass is the same as another pass
-    /// </summary>
-    /// <param name="Pass"></param>
-    /// <returns></returns>
-    public bool Equals(CellPass Pass)
-    {
-      return (GPSModeStore == Pass.GPSModeStore) &&
-              //(MachineID == Pass.MachineID) &&
-              (InternalSiteModelMachineIndex == Pass.InternalSiteModelMachineIndex) &&
-              (Height == Pass.Height) &&
-              (Time == Pass.Time) &&
-              (CCV == Pass.CCV) &&
-              (RadioLatency == Pass.RadioLatency) &&
-              (RMV == Pass.RMV) &&
-              (Frequency == Pass.Frequency) &&
-              (Amplitude == Pass.Amplitude) &&
-              (MaterialTemperature == Pass.MaterialTemperature) &&
-              (MachineSpeed == Pass.MachineSpeed) &&
-              (MDP == Pass.MDP) &&
-              (CCA == Pass.CCA);
-    }
-
-    /// <summary>
     /// Emit the content of the cell pass into a binary stream represented by a BinaryWriter
     /// </summary>
     /// <param name="writer"></param>
@@ -368,7 +345,7 @@ namespace VSS.TRex.Cells
       writer.WriteByte(GPSModeStore);
       writer.WriteShort(InternalSiteModelMachineIndex);
       writer.WriteFloat(Height);
-      writer.WriteLong(Time.Ticks);
+      writer.WriteLong(Time.ToBinary());
       writer.WriteShort(CCV);
       writer.WriteByte(RadioLatency);
       writer.WriteShort(RMV);
@@ -389,7 +366,7 @@ namespace VSS.TRex.Cells
       GPSModeStore = reader.ReadByte();
       InternalSiteModelMachineIndex = reader.ReadShort();
       Height = reader.ReadFloat();
-      Time = new DateTime(reader.ReadLong());
+      Time = DateTime.FromFileTime(reader.ReadLong());
       CCV = reader.ReadShort();
       RadioLatency = reader.ReadByte();
       RMV = reader.ReadShort();

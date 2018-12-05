@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Interfaces;
 
@@ -9,7 +8,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
   /// <summary>
   /// Base class for statistic analytics response.
   /// </summary>
-  public class StatisticsAnalyticsResponse : BaseAnalyticsResponse, IAggregateWith<StatisticsAnalyticsResponse>, IEquatable<StatisticsAnalyticsResponse>
+  public class StatisticsAnalyticsResponse : BaseAnalyticsResponse, IAggregateWith<StatisticsAnalyticsResponse>
   {
     /// <summary>
     /// An array values representing the counts of cells within each of the details bands defined in the request.
@@ -137,48 +136,6 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
       {
         IsTargetValueConstant &= other.IsTargetValueConstant;
         MissingTargetValue |= other.MissingTargetValue;
-      }
-    }
-
-    public bool Equals(StatisticsAnalyticsResponse other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) &&
-        
-             (Equals(Counts, other.Counts) ||
-              (Counts != null && other.Counts != null && Counts.Length == other.Counts.Length && Counts.SequenceEqual(other.Counts))) &&
-
-             SummaryCellsScanned == other.SummaryCellsScanned && 
-             CellsScannedAtTarget == other.CellsScannedAtTarget && 
-             CellsScannedOverTarget == other.CellsScannedOverTarget && 
-             CellsScannedUnderTarget == other.CellsScannedUnderTarget && 
-             IsTargetValueConstant == other.IsTargetValueConstant && 
-             MissingTargetValue == other.MissingTargetValue;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((StatisticsAnalyticsResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Counts != null ? Counts.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ CellSize.GetHashCode();
-        hashCode = (hashCode * 397) ^ SummaryCellsScanned;
-        hashCode = (hashCode * 397) ^ CellsScannedAtTarget;
-        hashCode = (hashCode * 397) ^ CellsScannedOverTarget;
-        hashCode = (hashCode * 397) ^ CellsScannedUnderTarget;
-        hashCode = (hashCode * 397) ^ IsTargetValueConstant.GetHashCode();
-        hashCode = (hashCode * 397) ^ MissingTargetValue.GetHashCode();
-        return hashCode;
       }
     }
   }
