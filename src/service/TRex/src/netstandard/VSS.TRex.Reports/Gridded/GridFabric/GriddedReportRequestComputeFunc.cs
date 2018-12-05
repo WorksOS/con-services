@@ -32,11 +32,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
         // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
         // subgrid results to it.
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
-
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        var request = new GriddedReportExecutor(arg.ProjectID, arg.Filters, arg.ReferenceDesignID,
-          arg.TRexNodeID);
+        var request = new GriddedReportExecutor(arg);
 
         Log.LogInformation("Executing request.Execute()");
 

@@ -68,7 +68,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         var code = reportGridDataResult == null ? HttpStatusCode.BadRequest : HttpStatusCode.NoContent;
         var exCode = reportGridDataResult == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ValidationError;
 
-        throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get grid data for projectUid: {reportGridRequest.ProjectUid}"));
+        throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get gridded report data for projectUid: {reportGridRequest.ProjectUid}"));
       }
 
       return new FileStreamResult(new MemoryStream(reportGridDataResult?.GriddedData), "application/octet-stream");

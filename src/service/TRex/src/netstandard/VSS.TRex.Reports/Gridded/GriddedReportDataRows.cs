@@ -13,7 +13,7 @@ namespace VSS.TRex.Reports.Gridded
     {
     }
 
-    public void Add(GriddedReportDataRow value)
+    public new void Add(GriddedReportDataRow value)
     {
       base.Add(value);
     }

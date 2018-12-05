@@ -9,7 +9,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Reports.Gridded;
 using VSS.TRex.Reports.Gridded.GridFabric;
-using VSS.TRex.Reports.Services.Client;
+using VSS.TRex.Reports.Servers.Client;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

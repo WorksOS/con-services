@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
@@ -14,10 +15,10 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-    ///// <summary>
-    ///// The collection of subgrids being collected for a patch response
-    ///// </summary>
-    //public List<IClientLeafSubGrid> PatchSubgrids = new List<IClientLeafSubGrid>();
+    /// <summary>
+    /// The collection of subgrids being collected for a patch response
+    /// </summary>
+    public List<IClientLeafSubGrid> ResultantSubgrids = new List<IClientLeafSubGrid>();
 
     public GriddedReportTask()
     { }
@@ -39,8 +40,6 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     /// <returns></returns>
     public override bool TransferResponse(object response)
     {
-      // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
-
       if (!base.TransferResponse(response))
       {
         Log.LogWarning("Base TransferResponse returned false");
@@ -53,74 +52,14 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
         return false;
       }
 
-      // todoJeannie packager to loop through and store as below. like Raptor packager
-      //foreach (var subGrid in subGridResponses)
-      //{
-      //  if (subGrid == null)
-      //    continue;
+      foreach (var subGrid in subGridResponses)
+      {
+        if (subGrid == null)
+          continue;
 
-      //  PatchSubgrids.Add(subGrid);
-      //}
-
+        ResultantSubgrids.Add(subGrid);
+      }
       return true;
     }
   }
 }
-
-
-/* todoJeannie from Raptor to go in GridTask to
-   with SubgridResult.Subgrids[0].Subgrid do
-    begin
-      FIndexOriginOffset := SubgridResult.Subgrids[0].Subgrid.IndexOriginOffset;
-      CalculateWorldOrigin(SubgridWorldOriginX, SubgridWorldOriginY);
-
-      HaveDesignElevationDataForThisSubgrid := FCutFill and
-                                               Assigned(FDesignSubgridExistanceMap) and
-                                               FDesignSubgridExistanceMap.Cells[OriginX SHR kSubGridIndexBitsPerLevel,
-                                                                                OriginY SHR kSubGridIndexBitsPerLevel];
-    end;
-
-  for I := 0 to kSubGridTreeDimension - 1 do
-    for J := 0 to kSubGridTreeDimension - 1 do
-      begin
-        PassCountValue := CellProfileSubGrid.Cells[I, J].PassCount;
-
-        if PassCountValue <> kICNullPassCountValue then // if pass data
-          with CellProfileSubGrid.Cells[I,J] do
-            begin
-              myDataRow := TGridRow.Create;
-
-              with SubgridResult.Subgrids[0].Subgrid do
-                begin
-                  myDataRow.Easting := SubgridWorldOriginX + CellXOffset;
-                  myDataRow.Northing := SubgridWorldOriginY + CellYOffset;
-                end;
-
-              myDataRow.Elevation := Height;
-              myDataRow.CMV       := LastPassValidCCV;
-              myDataRow.MDP       := LastPassValidMDP;
-              myDataRow.PassCount := PassCount;
-              myDataRow.Temperature := LastPassValidTemperature;
-              myDataRow.MDP       := LastPassValidMDP;
-              myDataRow.CutFill   := kICNullHeight;
-
-              // todo move cutfill lookup to psnode
-              if HaveDesignElevationDataForThisSubgrid and (Height <> kICNullHeight) then
-                with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
-                  begin
-                    DesignResult := RequestDesignElevationSpot(Construct_CalculateDesignElevationSpot_Args(FProjectID,
-                                                               myDataRow.Easting,
-                                                               myDataRow.Northing,
-                                                               FCellSize,
-                                                               FDesignDescriptor),
-                                                               DesignElevation);
-
-                    if (DesignResult = dppiOK) and Designelevation.Success then
-                      if DesignElevation.Height <> kICNullHeight then
-                        myDataRow.CutFill := Height - DesignElevation.Height;
-                  end;
-
-              FReportPackager.GridReport.Rows.Add(myDataRow);
-   
-*/
-
