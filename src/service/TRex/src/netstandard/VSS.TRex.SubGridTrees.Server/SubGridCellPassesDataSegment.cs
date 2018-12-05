@@ -219,7 +219,7 @@ namespace VSS.TRex.SubGridTrees.Server
         Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridSegmentFile,
         StartTime = SegmentInfo?.StartTime ?? StartTime,
         EndTime = SegmentInfo?.EndTime ?? EndTime,
-        LastUpdateTimeUTC = DateTime.Now - Time.GPS.GetLocalGMTOffset()
+        LastUpdateTimeUTC = DateTime.UtcNow
       };
 
       Header.Write(writer);

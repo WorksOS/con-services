@@ -34,7 +34,7 @@ namespace VSS.TRex.Designs.Models
       Offset = offset;
     }
 
-    public string FullPath => Path.Combine(Folder, FileName);
+    public string FullPath => Folder != null && FileName != null ? Path.Combine(Folder, FileName) : Folder ?? "" + FileName ?? "";
 
     public bool IsNull => string.IsNullOrEmpty(FileName);
 

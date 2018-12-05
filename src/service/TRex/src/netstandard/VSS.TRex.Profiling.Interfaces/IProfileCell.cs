@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters.Models;
 
@@ -8,7 +7,7 @@ namespace VSS.TRex.Profiling.Interfaces
   /// <summary>
   /// Currently just a generic interface holder for a profile cell. All consumers will need to cast to a ProfileCell concrete implementation to access it
   /// </summary>
-  public interface IProfileCell: IEquatable<IProfileCell>
+  public interface IProfileCell
   {
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell

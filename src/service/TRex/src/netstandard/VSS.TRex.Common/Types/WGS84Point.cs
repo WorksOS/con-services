@@ -26,13 +26,6 @@ namespace VSS.TRex.Types
              Math.Abs(other.Height - Height) < Consts.TOLERANCE_DIMENSION;
     }
 
-    public override bool Equals(object obj)
-    {
-      return Equals(obj as WGS84Point);
-    }
-
-    public override int GetHashCode() => 0;
-
     /// <summary>
     /// Serializes content to the writer
     /// </summary>

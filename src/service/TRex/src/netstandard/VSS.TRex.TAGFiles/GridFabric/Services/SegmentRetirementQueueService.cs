@@ -100,7 +100,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
           Log.LogInformation("About to query retiree spatial streams from cache");
 
-          DateTime earlierThan = DateTime.Now - retirementAge;
+          DateTime earlierThan = DateTime.UtcNow - retirementAge;
           // Retrieve the list of segments to be retired
           var retirees = queue.Query(earlierThan);
 

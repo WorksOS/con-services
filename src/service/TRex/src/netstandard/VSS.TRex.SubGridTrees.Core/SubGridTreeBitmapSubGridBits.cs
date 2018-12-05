@@ -690,25 +690,6 @@ namespace VSS.TRex.SubGridTrees
          
             return true;
         }
-      
-        /// <summary>
-        /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        /// <summary>
-        /// Overloaded Equals() accepting generic object type parameter
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object obj)
-        {
-            return obj != null && Equals((SubGridTreeBitmapSubGridBits)obj);
-        }
 
       /// <summary>
       /// Return an indicative size for memory consumption of this class to be used in cache tracking

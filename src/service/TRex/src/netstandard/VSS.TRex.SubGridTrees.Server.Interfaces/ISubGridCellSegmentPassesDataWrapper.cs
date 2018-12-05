@@ -13,7 +13,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         int SegmentPassCount { get; set; }
 
         /// <summary>
-        /// The number of cell passes present in the cell within this subgrid segment identitifed by X and Y in 
+        /// The number of cell passes present in the cell within this subgrid segment identified by X and Y in 
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
@@ -186,7 +186,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         BitArray GetMachineIDSet();
 
         /// <summary>
-        /// Sets the internal machine ID for the cell pass identifid by x & y spatial location and passNumber.
+        /// Sets the internal machine ID for the cell pass identified by x & y spatial location and passNumber.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
