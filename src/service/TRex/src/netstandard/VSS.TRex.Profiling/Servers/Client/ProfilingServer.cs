@@ -1,4 +1,5 @@
 ﻿using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;

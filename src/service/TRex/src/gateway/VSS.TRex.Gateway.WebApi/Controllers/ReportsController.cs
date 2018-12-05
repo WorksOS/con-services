@@ -7,7 +7,8 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Gateway.Common.Executors;
+using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
@@ -34,7 +35,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/report/stationoffset")]
     [HttpPost]
-    public Stream PostStationOffsetReport([FromBody] CompactionReportStationOffsetRequest stationOffsetRequest)
+    public FileResult PostStationOffsetReport([FromBody] CompactionReportStationOffsetRequest stationOffsetRequest)
     {
       Log.LogInformation($"{nameof(PostStationOffsetReport)}: {Request.QueryString}");
 
@@ -47,18 +48,30 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get grid report for the specified project, filter etc.
     /// </summary>
-    /// <param name="gridRequest"></param>
+    /// <param name="reportGridRequest"></param>
     /// <returns></returns>
     [Route("api/v1/report/grid")]
     [HttpPost]
-    public Stream PostGridReport([FromBody] CompactionReportGridRequest gridRequest)
+    public FileResult PostGriddedReport([FromBody] CompactionReportGridRequest reportGridRequest)
     {
-      Log.LogInformation($"{nameof(CompactionReportGridRequest)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostGriddedReport)}: {Request.QueryString}");
 
-      gridRequest.Validate();
+      reportGridRequest.Validate();
 
-      throw new ServiceException(HttpStatusCode.NotImplemented,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Grid report has not been implemented in Trex yet. ProjectUid: {gridRequest.ProjectUid}"));
+      var reportGridDataResult =  WithServiceExceptionTryExecute(() =>
+        RequestExecutorContainer
+          .Build<GriddedReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .Process(reportGridRequest) as ReportGridDataResult);
+
+      if (reportGridDataResult?.GriddedData == null)
+      {
+        var code = reportGridDataResult == null ? HttpStatusCode.BadRequest : HttpStatusCode.NoContent;
+        var exCode = reportGridDataResult == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ValidationError;
+
+        throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get grid data for projectUid: {reportGridRequest.ProjectUid}"));
+      }
+
+      return new FileStreamResult(new MemoryStream(reportGridDataResult?.GriddedData), "application/octet-stream");
     }
   }
 }
