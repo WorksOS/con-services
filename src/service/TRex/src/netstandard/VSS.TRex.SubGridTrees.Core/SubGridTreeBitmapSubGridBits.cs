@@ -707,7 +707,11 @@ namespace VSS.TRex.SubGridTrees
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            return obj != null && Equals((SubGridTreeBitmapSubGridBits)obj);
+          if (ReferenceEquals(null, obj)) return false;
+          if (ReferenceEquals(this, obj)) return true;
+          if (obj.GetType() != this.GetType()) return false;
+
+          return Equals((SubGridTreeBitmapSubGridBits)obj);
         }
 
       /// <summary>

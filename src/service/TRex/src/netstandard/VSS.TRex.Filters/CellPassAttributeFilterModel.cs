@@ -157,7 +157,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The list of surveyed surface identifiers to be excluded from the filtered result
     /// </summary>
-    public Guid[] SurveyedSurfaceExclusionList { get; set; } = new Guid[0]; // note this is not saved in the database and must be set in the server
+    public Guid[] SurveyedSurfaceExclusionList { get; set; } // note this is not saved in the database and must be set in the server
 
     /// <summary>
     /// Only permit cell passes for temperature values within min max range
@@ -209,13 +209,17 @@ namespace VSS.TRex.Filters
       writer.WriteBoolean(FilterTemperatureByLastPass);
       writer.WriteBoolean(HasPassCountRangeFilter);
 
-      writer.WriteLong(StartTime.Ticks);
-      writer.WriteLong(EndTime.Ticks);
+      writer.WriteLong(StartTime.ToBinary());
+      writer.WriteLong(EndTime.ToBinary());
 
-      writer.WriteInt(MachinesList?.Length ?? 0);
-      for (int i = 0; i < (MachinesList?.Length ?? 0); i++)
-        writer.WriteGuid(MachinesList?[i]);
-      
+      writer.WriteBoolean(MachinesList != null);
+      if (MachinesList != null)
+      {
+        writer.WriteInt(MachinesList.Length);
+        for (int i = 0; i < MachinesList.Length; i++)
+          writer.WriteGuid(MachinesList[i]);
+      }
+
       writer.WriteInt(DesignNameID);
       writer.WriteInt((int)VibeState);
       writer.WriteInt((int)MachineDirection);
@@ -248,9 +252,13 @@ namespace VSS.TRex.Filters
       writer.WriteInt((int)LayerState);
       writer.WriteInt(LayerID);
 
-      writer.WriteInt(SurveyedSurfaceExclusionList?.Length ?? 0);
-      for (int i = 0; i < (SurveyedSurfaceExclusionList?.Length ?? 0); i++)
-        writer.WriteGuid(SurveyedSurfaceExclusionList?[i]);
+      writer.WriteBoolean(SurveyedSurfaceExclusionList != null);
+      if (SurveyedSurfaceExclusionList != null)
+      {
+        writer.WriteInt(SurveyedSurfaceExclusionList.Length);
+        for (int i = 0; i < (SurveyedSurfaceExclusionList.Length); i++)
+          writer.WriteGuid(SurveyedSurfaceExclusionList[i]);
+      }
 
       writer.WriteInt(MaterialTemperatureMin); // No Writer.WriteUShort, use int instead
       writer.WriteInt(MaterialTemperatureMax); // No Writer.WriteUShort, use int instead
@@ -259,7 +267,7 @@ namespace VSS.TRex.Filters
     }
 
     /// <summary>
-    /// Deserialise the state of the cell pass attribute filter using the FromToBinary serialization approach
+    /// Deserialize the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
     public void FromBinary(IBinaryRawReader reader)
     {
@@ -291,13 +299,16 @@ namespace VSS.TRex.Filters
       FilterTemperatureByLastPass = reader.ReadBoolean();
       HasPassCountRangeFilter = reader.ReadBoolean();
 
-      StartTime = new DateTime(reader.ReadLong());
-      EndTime = new DateTime(reader.ReadLong());
+      StartTime = DateTime.FromBinary(reader.ReadLong());
+      EndTime = DateTime.FromBinary(reader.ReadLong());
 
-      int machineCount = reader.ReadInt();
-      MachinesList = new Guid[machineCount];
-      for (int i = 0; i < machineCount; i++)
-        MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
+      if (reader.ReadBoolean())
+      {
+        int machineCount = reader.ReadInt();
+        MachinesList = new Guid[machineCount];
+        for (int i = 0; i < machineCount; i++)
+          MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
+      }
 
       DesignNameID = reader.ReadInt();
       VibeState = (VibrationState)reader.ReadInt();
@@ -331,10 +342,13 @@ namespace VSS.TRex.Filters
       LayerState = (LayerState)reader.ReadInt();
       LayerID = reader.ReadInt();
 
-      int surveyedSurfaceCount = reader.ReadInt();
-      SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
-      for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
+      if (reader.ReadBoolean())
+      {
+        int surveyedSurfaceCount = reader.ReadInt();
+        SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
+        for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
           SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
+      }
 
       MaterialTemperatureMin = (ushort)reader.ReadInt();
       MaterialTemperatureMax = (ushort)reader.ReadInt();

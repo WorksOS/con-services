@@ -180,10 +180,16 @@ namespace VSS.TRex.Filters
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
 
       if (reader.ReadBoolean())
+      {
         (Fence ?? (Fence = new Fence())).FromBinary(reader);
+        Fence.UpdateExtents();
+      }
 
       if (reader.ReadBoolean())
+      {
         (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
+        AlignmentFence.UpdateExtents();
+      }
 
       PositionX = reader.ReadDouble();
       PositionY = reader.ReadDouble();

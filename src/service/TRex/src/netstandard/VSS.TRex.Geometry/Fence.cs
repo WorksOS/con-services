@@ -83,34 +83,22 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Minimum X ordinate for all points in the fence
     /// </summary>
-    public double MinX
-    {
-      get { return minX; }
-    }
+    public double MinX => minX; 
 
     /// <summary>
     /// Maximum X ordinate for all points in the fence
     /// </summary>
-    public double MaxX
-    {
-      get { return maxX; }
-    }
+    public double MaxX => maxX; 
 
     /// <summary>
     /// Minimum Y ordinate for all points in the fence
     /// </summary>
-    public double MinY
-    {
-      get { return minY; }
-    }
+    public double MinY => minY;
 
     /// <summary>
     /// Maximum Y ordinate for all points in the fence
     /// </summary>
-    public double MaxY
-    {
-      get { return maxY; }
-    }
+    public double MaxY => maxY;    
 
     /// <summary>
     /// Is the fence intrinsically a rectangle?
