@@ -157,11 +157,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
             int NumFences = Enum.GetValues(typeof(MachineSide)).Length;
             InterpolationFences = Enumerable.Range(1, NumFences).Select(x => new List<Fence>()).ToArray();
-           // InterpolationFences[(int)MachineSide.None] = null;
         }
 
         /// <summary>
-        /// Prepares the processor for the next interplation interval between measurement epochs
+        /// Prepares the processor for the next interpolation interval between measurement epochs
         /// </summary>
         private void ClearInterpolationState()
         {
@@ -230,7 +229,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     LeftFence2.SetXY(ADataLeft.X + Ratio * DeltaX, ADataLeft.Y + Ratio * DeltaY);
 
 //                    LeftInterpolationFence.UpdateExtents();
-                    InterpolationFences[MachineSideConst.Left].Add(LeftInterpolationFence); // machineside left
+                    InterpolationFences[MachineSideConst.Left].Add(LeftInterpolationFence); // machine side left
 
           RightFence1.SetXY(ADataRight.X - Ratio * DeltaX, ADataRight.Y - Ratio * DeltaY);
                     RightFence2.SetXY(ADataRight.X, ADataRight.Y);

@@ -922,7 +922,7 @@ namespace TRexIgniteTest
 				// Make a test queue object and see how it goes
 				TestQueueHolder queue = new TestQueueHolder();
 
-				IEnumerable<TestQueueItem> result = queue.Query(DateTime.Now);
+				IEnumerable<TestQueueItem> result = queue.Query(DateTime.UtcNow);
 
 				if (result?.Count() > 0)
 				{

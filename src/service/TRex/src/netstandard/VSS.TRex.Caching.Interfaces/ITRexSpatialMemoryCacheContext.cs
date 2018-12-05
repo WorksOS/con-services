@@ -11,7 +11,7 @@ namespace VSS.TRex.Caching.Interfaces
 
     bool MarkedForRemoval { get; set; }
 
-    DateTime MarkedForRemovalAt { get; set; }
+    DateTime MarkedForRemovalAtUtc { get; set; }
 
     ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
@@ -35,7 +35,7 @@ namespace VSS.TRex.Caching.Interfaces
 
     void InvalidateSubgridNoLock(uint originX, uint originY, out bool subGridPresentForInvalidation);
 
-    void MarkForRemoval(DateTime markedForRemovalAt);
+    void MarkForRemoval(DateTime markedForRemovalAtUtc);
 
     void Reanimate();
   }
