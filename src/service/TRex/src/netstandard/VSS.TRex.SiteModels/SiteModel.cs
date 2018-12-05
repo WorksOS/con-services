@@ -205,7 +205,7 @@ namespace VSS.TRex.SiteModels
     {
       get
       {
-        if (siteProofingRunLockObject == null)
+        if (siteProofingRuns == null)
         {
           lock (siteProofingRunLockObject)
           {
@@ -391,23 +391,24 @@ namespace VSS.TRex.SiteModels
       SiteModelExtent.Include(Source.SiteModelExtent);
 
       // Proofing runs
-      for (var i = 0; i < Source.SiteProofingRuns.Count; i++)
-      {
-        var profingRun = Source.SiteProofingRuns[i];
-
-        if (siteProofingRuns.Locate(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime) == null)
-          siteProofingRuns.CreateNew(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime, profingRun.Extents);
-        else
+      if (Source.SiteProofingRuns != null)
+        for (var i = 0; i < Source.SiteProofingRuns.Count; i++)
         {
-          siteProofingRuns[i].Extents.Include(profingRun.Extents);
+          var profingRun = Source.SiteProofingRuns[i];
 
-          if (DateTime.Compare(siteProofingRuns[i].StartTime, profingRun.StartTime) > 0)
-            siteProofingRuns[i].StartTime = profingRun.StartTime;
+          if (siteProofingRuns.Locate(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime) == null)
+            siteProofingRuns.CreateNew(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime, profingRun.Extents);
+          else
+          {
+            siteProofingRuns[i].Extents.Include(profingRun.Extents);
 
-          if (DateTime.Compare(siteProofingRuns[i].EndTime, profingRun.EndTime) < 0)
-            siteProofingRuns[i].EndTime = profingRun.EndTime;
+            if (DateTime.Compare(siteProofingRuns[i].StartTime, profingRun.StartTime) > 0)
+              siteProofingRuns[i].StartTime = profingRun.StartTime;
+
+            if (DateTime.Compare(siteProofingRuns[i].EndTime, profingRun.EndTime) < 0)
+              siteProofingRuns[i].EndTime = profingRun.EndTime;
+          }
         }
-      }
 
       // Designs
       // Note: Design names are handled as a part of integration of machine events

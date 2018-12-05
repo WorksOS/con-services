@@ -107,7 +107,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       DateTime LocalTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
 
-      EndProofingName = $"{TempStr} ({LocalTime:YYYY:MM:DD} {LocalTime:HH:mm:ss})";
+      EndProofingName = $"{TempStr} ({LocalTime:yyyy/MM/dd} {LocalTime:HH:mm:ss})";
 
       // Create a new proofing run entry to represent this run.
       if (SiteModel.SiteProofingRuns.Locate(EndProofingName, Machine.InternalSiteModelMachineIndex, StartProofingDataTime, DataTime) == null)

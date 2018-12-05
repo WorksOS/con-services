@@ -21,13 +21,13 @@ namespace VSS.TRex.SiteModels
 
     public DateTime EndTime { get; set; }
 
-    public BoundingWorldExtent3D Extents { get; set; }
+    public BoundingWorldExtent3D Extents { get; set; } = new BoundingWorldExtent3D();
 
     /// <summary>
     /// The WorkingExtents is used as a working area for computing modified proofing run extents by operations such as data deletion. 
     /// It is not persisted in the proofing run description.
     /// </summary>
-    public BoundingWorldExtent3D WorkingExtents { get; set; }
+    public BoundingWorldExtent3D WorkingExtents { get; set; } = new BoundingWorldExtent3D();
 
     /// <summary>
     /// Default public constructor.
@@ -46,11 +46,11 @@ namespace VSS.TRex.SiteModels
     /// <param name="stratTime"></param>
     /// <param name="endTime"></param>
     /// <param name="extents"></param>
-    public SiteProofingRun(string name, long machineID, DateTime stratTime, DateTime endTime, BoundingWorldExtent3D extents) : this()
+    public SiteProofingRun(string name, long machineID, DateTime startTime, DateTime endTime, BoundingWorldExtent3D extents) : this()
     {
       Name = name;
       MachineID = machineID;
-      StartTime = StartTime;
+      StartTime = startTime;
       EndTime = endTime;
       Extents = extents;
     }
