@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 
@@ -13,7 +12,7 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Null value for the CCA target configured at the time of cell pass measurement
     /// </summary>
-    public const short NullCCATarget = short.MaxValue;
+    public const byte NullCCATarget = byte.MaxValue;
 
     /// <summary>
     /// Null value for the pass count target configured at the time of cell pass measurement
@@ -59,7 +58,7 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Target Caterpillar Compaction algorithm value at the time a cell pass was recorded
     /// </summary>
-    public short TargetCCA { get; set; }
+    public byte TargetCCA { get; set; }
 
     /// <summary>
     /// Set all state in this structure to null values
@@ -94,7 +93,7 @@ namespace VSS.TRex.Cells
     //Procedure WriteToStream(const Stream : TStream);
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -105,11 +104,11 @@ namespace VSS.TRex.Cells
       writer.WriteInt(TargetPassCount);
       writer.WriteInt(TempWarningLevelMin);
       writer.WriteInt(TempWarningLevelMax);
-      writer.WriteShort(TargetCCA);
+      writer.WriteByte(TargetCCA);
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Serializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
@@ -120,7 +119,7 @@ namespace VSS.TRex.Cells
       TargetPassCount = (ushort)reader.ReadInt();
       TempWarningLevelMin = (ushort)reader.ReadInt();
       TempWarningLevelMax = (ushort)reader.ReadInt();
-      TargetCCA = reader.ReadShort();
+      TargetCCA = reader.ReadByte();
     }
   }
 }

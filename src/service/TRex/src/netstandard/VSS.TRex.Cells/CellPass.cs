@@ -150,7 +150,7 @@ namespace VSS.TRex.Cells
     /// may always be referred to via this descriptor
     /// </summary>
     /// Note: This is removed in favour of CellPasses only ever containing the internal sitemodel machine index
-    // public long MachineID { get; set; }
+    /// public long MachineID { get; set; }
 
     /// <summary>
     /// The internal descriptor for a machine within a project. This is volatile and is not guaranteed to be the same value between references by

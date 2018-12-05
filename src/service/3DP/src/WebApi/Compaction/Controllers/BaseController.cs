@@ -106,9 +106,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Returns the legacy ProjectId (long) for a given ProjectUid (Guid).
     /// </summary>
-    protected async Task<long> GetLegacyProjectId(Guid projectUid)
+    protected Task<long> GetLegacyProjectId(Guid projectUid)
     {
-      return await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      return ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
     }
 
     /// <summary>
