@@ -11,13 +11,6 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   /// </summary>
   public static class SimpleBinarizableInstanceTester
   {
-    private static bool CompareObjects(object obj1, object obj2)
-    {
-      obj1.Should().BeEquivalentTo(obj2);
-
-      return true;
-    }
-
     /// <summary>
     /// Given an instance of a class to test serialise it to an Ignite IBinaryObject, then deserialize it to
     /// the source type, comparing the before and after versions for equality
@@ -32,9 +25,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(T).FullName}: {failureMsg}");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
       else
-        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(T).FullName} not the same after round trip serialisation");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: not the same after round trip serialisation");
 
       return result;
     }
@@ -53,9 +46,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName}: {failureMsg}");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
       else
-        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: not the same after round trip serialisation");
 
       return result;
     }
@@ -74,9 +67,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName}: {failureMsg}");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
       else
-        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: not the same after round trip serialisation");
 
       return result;
     }
