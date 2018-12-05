@@ -1,6 +1,6 @@
-class CompcationEvaulation:
+class CompactionEvaulation:
 
-    def __init__(self, machine_compcation_zone):
+    def __init__(self, machine_compaction_zone, low_volume_cell_threshold, elevation_uncertainty_threshold ):
         self.cnt_unique_cell_compaction_area = 0
         self.bin_0 = self.bin_1 = self.bin_2 = self.bin_3 = self.bin_4 = self.bin_5 = self.bin_6 = 0
         self.neg_1 = self.neg_2 = self.neg_3 = self.neg_4 = self.neg_5 = self.neg_6 = 0
@@ -21,7 +21,9 @@ class CompcationEvaulation:
         self.cnt_compact_uncertainty = 0
         self.double_handle_cubic = 0.0
         self.remediation_under_compaction_events = 0.0
-        self.machine_compcation_zone = machine_compcation_zone
+        self.machine_compaction_zone = machine_compaction_zone
+        self.low_volume_cell_threshold = low_volume_cell_threshold
+        self.elevation_uncertainty_threshold = elevation_uncertainty_threshold
 
     # TODO lift this into compcation evaulation
     def evaulate_compaction(self, ne_dict, cell_summaries):
@@ -71,14 +73,14 @@ class CompcationEvaulation:
                     self.cnt_cut_cells += 1
                     self.cnt_cut_passes += passes_for_cell
 
-                if volume <= self.filter_low_volume_cell and volume >= 0:
+                if volume <= self.low_volume_cell_threshold and volume >= 0:
                     self.cnt_low_volume_cells += 1
                     self.cnt_low_volume_passes += passes_for_cell
                 # this is in the wrong place?
 
                 # TODO Why do this?
                 # filter out cells with little volume from surface area but not volume calcs
-                if volume > self.filter_low_volume_cell:
+                if volume > self.low_volume_cell_threshold:
                     # these are the remaining unique cells which were not filtered out
                     self.cnt_unique_cell_compaction_area += 1
                     compaction_state = 1  # TODO meaning of this?
@@ -113,7 +115,7 @@ class CompcationEvaulation:
                         if layer <= 0.0:  # evaluate compaction layers
                             if layer >= -self.machine_compaction_zone:  # this is the on only condition that sets compaction state to 1
                                 if (compaction_state == 1):  # Fully compacted material was compacted more
-                                    if layer < -self.filter_elevation_uncertainty:
+                                    if layer < -self.elevation_uncertainty_threshold:
                                         cell_summaries[cell][
                                             'cnt_over_compaction'] += 1  # keep track of overcompaction effort
                                 compaction_state = 1  # set as compacted
@@ -148,7 +150,7 @@ class CompcationEvaulation:
                                             # print(event_elevation_bottom)
                                             popped = event_elevation_bottom.pop()  # TODO not used
                                             # print(" current elev, popped", current_elevation,popped)
-                                            remediation_under_compaction_events = remediation_under_compaction_events + remediation
+                                            self.remediation_under_compaction_events += remediation
                                             # remove remediated event from event magnitude distribution
                                             # figure out which machine removed the event???
                                             active_cnt = active_cnt - 1

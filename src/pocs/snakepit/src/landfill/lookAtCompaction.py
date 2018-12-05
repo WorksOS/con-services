@@ -4,7 +4,7 @@ import csv
 import sys
 import pandas as pd
 from typing import Dict, Tuple, List
-from src.landfill.compaction_evaulation import CompcationEvaulation
+from src.landfill.compaction_evaulation import CompactionEvaulation
 import xlsxwriter
 # from pandas import ExcelWriter
 # from openpyxl import Workbook
@@ -66,7 +66,7 @@ class LandfillAlgorithm():
 
     #TODO sort out cell header names depending on type
     '''Read a cav file like object and return a tuple with passcount and NE Dict '''
-    def build_ne_dict(self, filename) -> Tuple[int ,Dict]:
+    def build_ne_dict(self, filename) -> Tuple[int, Dict]:
         #############################################################
         # read CSV file into dictionary grouped by unique NE values #
         #############################################################
@@ -90,7 +90,7 @@ class LandfillAlgorithm():
             # End of for csvRow in csvReader:
         # End of with open(filename) as csvFile:
         # created a dictionary grouped by NE grid
-        return (cell_pass_count_total, northEastDict)
+        return cell_pass_count_total, northEastDict
 
     '''Get set of machines which have contriubted to the project '''
     def get_contributing_machines(self, northEastDict):
@@ -225,8 +225,8 @@ class LandfillAlgorithm():
                 }
 
                 # append summary information to current NE key in northEastDict dictionary
-                northEastDict[cell].append(summaryData)
-                cell_summaries[cell] = cell_summaries.get(cell, []).append(summaryData)
+                #northEastDict[cell].append(summaryData)
+                cell_summaries[cell] = summaryData
 
             # bin passcount occurances into a dictionary (to compare with VL and to tally single pass cells)
             bin_pass_counts[max_pass_count] = bin_pass_counts.get(max_pass_count, 0) + 1
@@ -236,7 +236,7 @@ class LandfillAlgorithm():
 
 
 
-
+    ''' Not currently used
     def print_compaction_report(self):
         #####################################################################################################################################
         # Begin writing output
@@ -413,6 +413,8 @@ class LandfillAlgorithm():
             passes_above_n = passes_above_n - v/(len(northEastDict))
         print("Above X passes :", "%.2f" % passes_above_n)
         """
+        
+        END NOT CURRENTLY USED '''
 
     def create_excel_report(self, contributing_machines,
                             total_duration,
@@ -422,8 +424,11 @@ class LandfillAlgorithm():
                             cell_summaries,
                             machine_operation_dict):
 
-        compaction_evaulation = CompcationEvaulation(self.machine_compaction_zone)
+        compaction_evaulation = CompactionEvaulation(self.machine_compaction_zone)
         compaction_evaulation.evaulate_compaction(ne_dict, cell_summaries)
+
+
+
 
         ############################
         ##Determine what time events took place and what machines were involved for Excel outputs
@@ -611,7 +616,7 @@ class LandfillAlgorithm():
         # Create Over,Under and thicklift surface files #
         ##################################################
         # Over compaction surface file
-        #TODO move this elsewhere one day
+        #TODO move this elsewhere one day snakepit (probably) will not use this
         if self.create_points == True:
             OverSurfaceOut = "./output/" + self.current_file + "_OverCompaction.pts"
             OverOut = open(OverSurfaceOut, 'w')
@@ -650,6 +655,7 @@ class LandfillAlgorithm():
         total_cut = 0.0
         total_fill = 0.0
         total_event_volume = 0.0
+
 
         #Check
         # for cell, passes in ne_dict.items():
@@ -718,7 +724,7 @@ class LandfillAlgorithm():
 
         area_coverage = (len(ne_dict) * self.AreatoAcre)
         single_pass_area = single_pass_cells * self.AreatoAcre
-        area_cut_cell = cnt_cut_cells * self.AreatoAcre
+        area_cut_cell = compaction_evaulation.cnt_cut_cells * self.AreatoAcre
         area_low_volume_cell = compaction_evaulation.cnt_low_volume_cells * self.AreatoAcre
         active_compaction_area = (compaction_evaulation.cnt_unique_cell_compaction_area * self.AreatoAcre)
 
@@ -814,6 +820,17 @@ class LandfillAlgorithm():
         # prepare Dictionary for Excel output of undercompacted material distribution
 
         # prepare site summary for Excel
+
+        F = float(total_fill * self.cellVoltoCubic)
+        V0 = float(total_event_volume * self.cellVoltoCubic)
+        VR = compaction_evaulation.remediation_under_compaction_events * self.cellVoltoCubic
+        VM = float((V0 - VR))
+        under_compacted_volume_percentage = VM / F
+        double_handle_volume = compaction_evaulation.double_handle_cubic * self.cellVoltoCubic
+        C = float(total_cut * self.cellVoltoCubic)
+        V = float((total_fill + total_cut) * self.cellVoltoCubic)
+
+
         site_summary_to_excel = (
             ['file processed', self.filename],
             ['Thicklift value', self.thick_lift],
@@ -828,19 +845,19 @@ class LandfillAlgorithm():
             ['Removed for Cut Acres', area_cut_cell],
             ['Removed for low volume Acres', area_low_volume_cell],
             ['Active compaction - area Acres', active_compaction_area],
-            ['Volume of Fill yd^3', compaction_evaulation.F],
-            ['Total Volume under compacted yd^3', compaction_evaulation.V0],
-            ['Remediated under compacted yd^3', -compaction_evaulation.VR],
-            ['Remaining undercomapcted yd^3', compaction_evaulation.VM],
-            ['% volume under compacted', ((compaction_evaulation.under_compacted_volume_percentage) * 100)],
-            ['volume of double handle', compaction_evaulation.double_handle_volume],
+            ['Volume of Fill yd^3', F],
+            ['Total Volume under compacted yd^3', V0],
+            ['Remediated under compacted yd^3', -VR],
+            ['Remaining undercomapcted yd^3', VM],
+            ['% volume under compacted', under_compacted_volume_percentage * 100],
+            ['volume of double handle', double_handle_volume],
             ['volume of cut', -C],
-            ['under compacted event % 0 to 0.5', (((compaction_evaulation.active_volume_1 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
-            ['under compacted event % 0.5 to 1.0', (((compaction_evaulation.active_volume_2 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
-            ['under compacted event % 1.0 to 1.5', (((compaction_evaulation.active_volume_3 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
-            ['under compacted event % 1.5 to 2.0', (((compaction_evaulation.active_volume_4 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
-            ['under compacted event % 2.0 to 2.5', (((compaction_evaulation.active_volume_5 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
-            ['under compacted event % 2.5 >', (((compaction_evaulation.active_volume_6 * self.cellVoltoCubic) / compaction_evaulation.V0) * 100)],
+            ['under compacted event % 0 to 0.5', (((compaction_evaulation.active_volume_1 * self.cellVoltoCubic) / V0) * 100)],
+            ['under compacted event % 0.5 to 1.0', (((compaction_evaulation.active_volume_2 * self.cellVoltoCubic) / V0) * 100)],
+            ['under compacted event % 1.0 to 1.5', (((compaction_evaulation.active_volume_3 * self.cellVoltoCubic) / V0) * 100)],
+            ['under compacted event % 1.5 to 2.0', (((compaction_evaulation.active_volume_4 * self.cellVoltoCubic) / V0) * 100)],
+            ['under compacted event % 2.0 to 2.5', (((compaction_evaulation.active_volume_5 * self.cellVoltoCubic) / V0) * 100)],
+            ['under compacted event % 2.5 >', (((compaction_evaulation.active_volume_6 * self.cellVoltoCubic) / V0) * 100)],
             ['under compacted event volume 0 to 0.5', (compaction_evaulation.active_volume_1 * self.cellVoltoCubic)],
             ['under compacted event volume 0.5 to 1.0', (compaction_evaulation.active_volume_2 * self.cellVoltoCubic)],
             ['under compacted event volume 1.0 to 1.5', (compaction_evaulation.active_volume_3 * self.cellVoltoCubic)],
@@ -897,17 +914,17 @@ class LandfillAlgorithm():
         # create dictionary to display undercompacted material volume by magnitude
         under_compacted_volume_breakdownDict = {"Under compacted vol breakdown": {}, }
         under_compacted_volume_breakdown_all = {}
-        ucv = int((((compaction_evaulation.active_volume_1 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_1 * self.cellVoltoCubic) / VM) * 100))
         under_compacted_volume_breakdown_all['0 to 0.5'] = ucv
-        ucv = int((((compaction_evaulation.active_volume_2 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_2 * self.cellVoltoCubic) / VM) * 100))
         under_compacted_volume_breakdown_all['0.5 to 1.0'] = ucv
-        ucv = int((((compaction_evaulation.active_volume_3 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_3 * self.cellVoltoCubic) / VM) * 100))
         under_compacted_volume_breakdown_all['1.0 to 1.5'] = ucv
-        ucv = int((((compaction_evaulation.active_volume_4 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_4 * self.cellVoltoCubic) / VM) * 100))
         under_compacted_volume_breakdown_all['1.5 to 2.0'] = ucv
-        ucv = int((((compaction_evaulation.active_volume_5 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_5 * self.cellVoltoCubic) / VM) * 100))
         under_compacted_volume_breakdown_all['2.0 to 2.5'] = ucv
-        ucv = int((((compaction_evaulation.active_volume_6 * self.cellVoltoCubic) / compaction_evaulation.VM) * 100))
+        ucv = int((((compaction_evaulation.active_volume_6 * self.cellVoltoCubic) / VM) * 100))
         under_compacted_volume_breakdown_all['> 2.5'] = ucv
 
         under_compacted_volume_breakdownDict['Under compacted vol breakdown'] = [under_compacted_volume_breakdown_all]
@@ -1195,5 +1212,3 @@ class LandfillAlgorithm():
         """
         ###############################################
         writer.save()
-
-        # print("wrote data to {}".format(outputEvent))
