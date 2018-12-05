@@ -396,17 +396,17 @@ namespace VSS.TRex.SiteModels
         {
           var profingRun = Source.SiteProofingRuns[i];
 
-          if (siteProofingRuns.Locate(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime) == null)
-            siteProofingRuns.CreateNew(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime, profingRun.Extents);
+          if (SiteProofingRuns.Locate(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime) == null)
+            SiteProofingRuns.CreateNew(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime, profingRun.Extents);
           else
           {
-            siteProofingRuns[i].Extents.Include(profingRun.Extents);
+            SiteProofingRuns[i].Extents.Include(profingRun.Extents);
 
-            if (DateTime.Compare(siteProofingRuns[i].StartTime, profingRun.StartTime) > 0)
-              siteProofingRuns[i].StartTime = profingRun.StartTime;
+            if (DateTime.Compare(SiteProofingRuns[i].StartTime, profingRun.StartTime) > 0)
+              SiteProofingRuns[i].StartTime = profingRun.StartTime;
 
-            if (DateTime.Compare(siteProofingRuns[i].EndTime, profingRun.EndTime) < 0)
-              siteProofingRuns[i].EndTime = profingRun.EndTime;
+            if (DateTime.Compare(SiteProofingRuns[i].EndTime, profingRun.EndTime) < 0)
+              SiteProofingRuns[i].EndTime = profingRun.EndTime;
           }
         }
 
