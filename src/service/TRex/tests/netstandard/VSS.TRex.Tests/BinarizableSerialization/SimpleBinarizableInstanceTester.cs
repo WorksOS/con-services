@@ -1,8 +1,8 @@
 ﻿using Apache.Ignite.Core.Binary;
-using Newtonsoft.Json;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using Xunit;
+using FluentAssertions;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
@@ -11,18 +11,11 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   /// </summary>
   public static class SimpleBinarizableInstanceTester
   {
-    private static bool CompareObjectsViaJSON(object obj1, object obj2)
+    private static bool CompareObjects(object obj1, object obj2)
     {
-      string s1 = JsonConvert.SerializeObject(obj1, new JsonSerializerSettings
-      {
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-      });
-      string s2 = JsonConvert.SerializeObject(obj2, new JsonSerializerSettings
-      {
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-      });
+      obj1.Should().BeEquivalentTo(obj2);
 
-      return s1.Equals(s2);
+      return true;
     }
 
     /// <summary>
@@ -39,16 +32,10 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(CompareObjectsViaJSON(instance.member, result.member), $"{typeof(T).FullName}: {failureMsg}");
+        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(T).FullName}: {failureMsg}");
       else
-        Assert.True(CompareObjectsViaJSON(instance.member, result.member), $"{typeof(T).FullName} not the same after round trip serialisation");
+        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(T).FullName} not the same after round trip serialisation");
 
-      /*
-      if (failureMsg != "")
-        Assert.True(instance.member.Equals(result.member), $"{typeof(T).FullName}: {failureMsg}");
-      else
-        Assert.True(instance.member.Equals(result.member), $"{typeof(T).FullName} not the same after round trip serialisation");
-        */
       return result;
     }
 
@@ -66,16 +53,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(CompareObjectsViaJSON(instance.member, result.member), $"{typeof(U).FullName}: {failureMsg}");
+        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName}: {failureMsg}");
       else
-        Assert.True(CompareObjectsViaJSON(instance.member, result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
-
-      /*
-      if (failureMsg != "")
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName}: {failureMsg}");
-      else
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
-      */
+        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
 
       return result;
     }
@@ -94,16 +74,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(CompareObjectsViaJSON(instance.member, result.member), $"{typeof(U).FullName}: {failureMsg}");
+        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName}: {failureMsg}");
       else
-        Assert.True(CompareObjectsViaJSON(instance.member, result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
-
-      /*
-      if (failureMsg != "")
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName}: {failureMsg}");
-      else
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
-      */
+        Assert.True(CompareObjects(instance.member, result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
 
       return result;
     }

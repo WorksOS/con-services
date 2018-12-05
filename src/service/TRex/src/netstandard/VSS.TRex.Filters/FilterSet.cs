@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
@@ -11,7 +9,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// FilterSet represents a set of filters to be applied to each subgrid in a query within a single operation
   /// </summary>
-  public class FilterSet : IFilterSet, IEquatable<FilterSet>
+  public class FilterSet : IFilterSet
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -102,29 +100,6 @@ namespace VSS.TRex.Filters
       Filters = new ICombinedFilter[reader.ReadInt()];
       for(int i = 0; i < Filters.Length; i++)
         Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
-    }
-
-    public bool Equals(FilterSet other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-
-      return Filters != null && other.Filters != null && 
-             Filters.Length == other.Filters.Length && 
-             !Filters.Where((t, i) => !t.Equals(other.Filters[i])).Any();
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((FilterSet) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      return (Filters != null ? Filters.GetHashCode() : 0);
     }
   }
 }

@@ -23,7 +23,7 @@ namespace VSS.TRex.Profiling
     /// cell does and the layer keeps track of the range of passes in the profile
     /// that the layer represents. This is mainly a performance measure to reduce
     /// the number of time the lists of cell passes get copied and reconstructed
-    /// in the process of extracting them from the databace (by RequestSubGrid() etc)
+    /// in the process of extracting them from the database (by RequestSubGrid() etc)
     /// </summary>
     public ProfileCell Owner;
 
@@ -82,10 +82,10 @@ namespace VSS.TRex.Profiling
     public short MaterialTemperature_MachineID { get; set; }
     public float MaterialTemperature_Elev { get; set; } // The height of the cell pass from which the Temperature came from
 
-    public LayerStatus Status { get; set; } // The status of the layer; complete, undercompacted, etc.
+    public LayerStatus Status { get; set; } // The status of the layer; complete, under compacted, etc.
 
     /// <summary>
-    /// The calculated maximum thickness of any pass in this layer (when interested in "uncompacted" lift thickness)
+    /// The calculated maximum thickness of any pass in this layer (when interested in "un-compacted" lift thickness)
     /// </summary>
     public float MaxThickness { get; set; }
 
@@ -107,7 +107,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Createa a new defaulted profile layer with the given ProfileCell as owner
+    /// Creates a new defaulted profile layer with the given ProfileCell as owner
     /// </summary>
     /// <param name="owner"></param>
     public ProfileLayer(ProfileCell owner)
@@ -195,7 +195,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Assigns the contents of anothern prfile layer to this profile layer
+    /// Assigns the contents of another profile layer to this profile layer
     /// </summary>
     /// <param name="source_"></param>
     public void Assign(IProfileLayer source_)
@@ -229,9 +229,6 @@ namespace VSS.TRex.Profiling
       MaxThickness = source.MaxThickness;
     }
 
-    // procedure LoadFromStream(const Stream : TStream);
-    // procedure SaveToStream(const Stream : TStream);
-
     /// <summary>
     /// The number of cell passes within the layer
     /// </summary>
@@ -239,8 +236,8 @@ namespace VSS.TRex.Profiling
 
     /// <summary>
     /// Records the addition of a cell pass identified by its index in the overall set passes for
-    /// the cell being analysed. The pass itself is not physically added, but the index range of
-    /// cells included in the layer is nodified to take the newly added cell pass into account
+    /// the cell being analyzed. The pass itself is not physically added, but the index range of
+    /// cells included in the layer is modified to take the newly added cell pass into account
     /// </summary>
     /// <param name="passIndex"></param>
     public void AddPass(int passIndex)
@@ -252,7 +249,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -305,7 +302,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Deserializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
