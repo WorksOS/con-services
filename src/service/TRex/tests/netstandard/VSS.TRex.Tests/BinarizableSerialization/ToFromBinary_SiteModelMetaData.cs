@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Tests.TestFixtures;
@@ -31,7 +32,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
 
       var result = SimpleBinarizableInstanceTester.TestClass(argument, "Custom SiteModelMetadata not same after round trip serialisation");
 
-      Assert.True(argument.LastModifiedDate.Equals(result.member.LastModifiedDate), "Dates are not equal");
+      argument.LastModifiedDate.Should().Be(result.member.LastModifiedDate, "Dates are not equal");
     }
   }
 }
