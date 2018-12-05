@@ -30,7 +30,7 @@ namespace VSS.TRex.SiteModels
       writer.WriteGuid(ID);
       writer.WriteString(Name);
       writer.WriteString(Description);
-      writer.WriteLong(LastModifiedDate.Ticks);
+      writer.WriteLong(LastModifiedDate.ToBinary());
 
       writer.WriteBoolean(SiteModelExtent != null);
       SiteModelExtent?.ToBinary(writer);
@@ -50,7 +50,7 @@ namespace VSS.TRex.SiteModels
       ID = reader.ReadGuid() ?? Guid.Empty;
       Name = reader.ReadString();
       Description = reader.ReadString();
-      LastModifiedDate = new DateTime(reader.ReadLong());
+      LastModifiedDate = DateTime.FromBinary(reader.ReadLong());
 
       if (reader.ReadBoolean())
       {

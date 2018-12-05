@@ -105,7 +105,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       CellXOffset = reader.ReadSingle();
       CellYOffset = reader.ReadSingle();
-      LastPassTime = new DateTime(reader.ReadInt64());
+      LastPassTime = DateTime.FromBinary(reader.ReadInt64());
       PassCount = reader.ReadInt32(); // Todo: Is this too big?
       InternalSiteModelMachineIndex = reader.ReadInt16();
       LastPassValidRadioLatency = reader.ReadInt32();
@@ -140,7 +140,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       writer.Write(CellXOffset);
       writer.Write(CellYOffset);
-      writer.Write(LastPassTime.Ticks);
+      writer.Write(LastPassTime.ToBinary());
       writer.Write(PassCount);
       writer.Write(LastPassValidRadioLatency);
       writer.Write(EventDesignNameID);

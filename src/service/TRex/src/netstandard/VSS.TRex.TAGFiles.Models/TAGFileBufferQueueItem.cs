@@ -56,7 +56,7 @@ namespace VSS.TRex.TAGFiles.Models
     {
       writer.WriteByte(VERSION_NUMBER);
 
-      writer.WriteLong(InsertUTC.Ticks);
+      writer.WriteLong(InsertUTC.ToBinary());
       writer.WriteString(FileName);
       writer.WriteByteArray(Content);
       writer.WriteGuid(ProjectID);
@@ -71,7 +71,7 @@ namespace VSS.TRex.TAGFiles.Models
       if (version != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
-      InsertUTC = new DateTime(reader.ReadLong());
+      InsertUTC = DateTime.FromBinary(reader.ReadLong());
       FileName = reader.ReadString();
       Content = reader.ReadByteArray();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;

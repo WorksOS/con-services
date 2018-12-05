@@ -43,11 +43,14 @@ namespace VSS.TRex.TAGFiles.Models
       writer.WriteGuid(ProjectUID);
       writer.WriteLong(InsertUTCAsLong);
 
-      int numKeys = SegmentKeys?.Length ?? 0;
-      writer.WriteInt(numKeys);
+      writer.WriteBoolean(SegmentKeys != null);
+      if (SegmentKeys != null)
+      {
+        writer.WriteInt(SegmentKeys.Length);
 
-      for (int i = 0; i < numKeys; i++)
-        ((IFromToBinary) SegmentKeys[i]).ToBinary(writer);
+        for (int i = 0; i < SegmentKeys.Length; i++)
+          ((IFromToBinary) SegmentKeys[i]).ToBinary(writer);
+      }
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -60,13 +63,16 @@ namespace VSS.TRex.TAGFiles.Models
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       InsertUTCAsLong = reader.ReadLong();
 
-      int numKeys = reader.ReadInt();
-      SegmentKeys = new ISubGridSpatialAffinityKey[numKeys];
-
-      for (int i = 0; i < numKeys; i++)
+      if (reader.ReadBoolean())
       {
-        SegmentKeys[i] = KeyFactory.NewInstance();
-        ((IFromToBinary) SegmentKeys[i]).FromBinary(reader);
+        int numKeys = reader.ReadInt();
+        SegmentKeys = new ISubGridSpatialAffinityKey[numKeys];
+
+        for (int i = 0; i < numKeys; i++)
+        {
+          SegmentKeys[i] = KeyFactory.NewInstance();
+          ((IFromToBinary) SegmentKeys[i]).FromBinary(reader);
+        }
       }
     }
 
