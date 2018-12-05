@@ -10,7 +10,7 @@ using VSS.TRex.GridFabric.ExtensionMethods;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
-  public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument, IEquatable<TileRenderRequestArgument>
+  public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -111,44 +111,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       {
         Filter2 = new CombinedFilter();
         Filter2.FromBinary(reader);
-      }
-    }
-
-    public bool Equals(TileRenderRequestArgument other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && 
-             Equals(Extents, other.Extents) && 
-             Mode == other.Mode && 
-             CoordsAreGrid == other.CoordsAreGrid && 
-             PixelsX == other.PixelsX && 
-             PixelsY == other.PixelsY && 
-             Equals(Filter1, other.Filter1) && 
-             Equals(Filter2, other.Filter2);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((TileRenderRequestArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Extents != null ? Extents.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (int) Mode;
-        hashCode = (hashCode * 397) ^ CoordsAreGrid.GetHashCode();
-        hashCode = (hashCode * 397) ^ PixelsX.GetHashCode();
-        hashCode = (hashCode * 397) ^ PixelsY.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Filter1 != null ? Filter1.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (Filter2 != null ? Filter2.GetHashCode() : 0);
-        return hashCode;
       }
     }
   }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 
@@ -8,7 +7,7 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a Cut/Fill statistics request
   /// </summary>    
-  public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<CutFillStatisticsArgument>
+  public class CutFillStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
     /// The set of cut/fill offsets
@@ -44,36 +43,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics.GridFabric
 
       Offsets = reader.ReadDoubleArray();
       DesignID = reader.ReadGuid() ?? Guid.Empty;
-    }
-
-    public bool Equals(CutFillStatisticsArgument other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) &&
-             DesignID.Equals(other.DesignID) &&
-
-             (Equals(Offsets, other.Offsets) ||
-              (Offsets != null && other.Offsets != null && Offsets.Length == other.Offsets.Length && Offsets.SequenceEqual(other.Offsets)));
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((CutFillStatisticsArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Offsets != null ? Offsets.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ DesignID.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

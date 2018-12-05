@@ -13,7 +13,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// <summary>
   /// Defines the parameters required for a production data profile request argument on cluster compute nodes
   /// </summary>
-  public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument, IEquatable<ProfileRequestArgument_ClusterCompute>
+  public class ProfileRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -95,42 +95,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       DesignDescriptor.FromBinary(reader);
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
-    }
-
-    public bool Equals(ProfileRequestArgument_ClusterCompute other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-
-      return base.Equals(other) && 
-             DesignDescriptor.Equals(other.DesignDescriptor) && 
-             ProfileTypeRequired == other.ProfileTypeRequired &&
-
-             (Equals(NEECoords, other.NEECoords) ||
-              (NEECoords != null && other.NEECoords != null && NEECoords.Length == other.NEECoords.Length && NEECoords.SequenceEqual(other.NEECoords))) && 
-             
-             ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((ProfileRequestArgument_ClusterCompute) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) ProfileTypeRequired;
-        hashCode = (hashCode * 397) ^ (NEECoords != null ? NEECoords.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ ReturnAllPassesAndLayers.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

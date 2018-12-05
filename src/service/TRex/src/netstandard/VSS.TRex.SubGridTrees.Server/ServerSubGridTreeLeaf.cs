@@ -643,7 +643,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridDirectoryFile,
                 StartTime = LeafStartTime,
                 EndTime = LeafEndTime,
-                LastUpdateTimeUTC = DateTime.Now - Time.GPS.GetLocalGMTOffset()
+                LastUpdateTimeUTC = DateTime.UtcNow
             };
 
             // Write the header/version to the stream

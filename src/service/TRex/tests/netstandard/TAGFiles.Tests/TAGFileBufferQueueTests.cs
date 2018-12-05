@@ -68,7 +68,7 @@ namespace TAGFiles.Tests
             ITAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectID, assetID);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
-                InsertUTC = DateTime.Now,
+                InsertUTC = DateTime.UtcNow,
                 ProjectID = projectID,
                 AssetID = assetID,
                 FileName = tagFileName,

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Types;
 
@@ -9,7 +7,7 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
   /// <summary>
   /// Argument containing the parameters required for a MDP statistics request
   /// </summary>    
-  public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument, IEquatable<MDPStatisticsArgument>
+  public class MDPStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     /// <summary>
     /// The flag is to indicate wehther or not the machine MDP target to be user overrides.
@@ -61,40 +59,6 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
       MDPPercentageRange.FromBinary(reader);
 
       MDPDetailValues = reader.ReadIntArray();
-    }
-
-    public bool Equals(MDPStatisticsArgument other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && 
-             MDPPercentageRange.Equals(other.MDPPercentageRange) && 
-             OverrideMachineMDP == other.OverrideMachineMDP && 
-             OverridingMachineMDP == other.OverridingMachineMDP &&
-             
-             (Equals(MDPDetailValues, other.MDPDetailValues) ||
-              (MDPDetailValues != null && other.MDPDetailValues != null && MDPDetailValues.Length == other.MDPDetailValues.Length && MDPDetailValues.SequenceEqual(other.MDPDetailValues)));
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((MDPStatisticsArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ MDPPercentageRange.GetHashCode();
-        hashCode = (hashCode * 397) ^ OverrideMachineMDP.GetHashCode();
-        hashCode = (hashCode * 397) ^ OverridingMachineMDP.GetHashCode();
-        hashCode = (hashCode * 397) ^ (MDPDetailValues != null ? MDPDetailValues.GetHashCode() : 0);
-        return hashCode;
-      }
     }
   }
 }

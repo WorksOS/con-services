@@ -108,7 +108,20 @@ namespace VSS.TRex.DI
     }
 
     /// <summary>
-    /// A handly shorthand version of .Build()
+    /// Clears out any established DI context returning a empty TRex DI builder & context.
+    /// </summary>
+    public DIBuilder Eject()
+    {
+      DIContext.Eject();
+
+      ServiceProvider = null;
+      ServiceCollection = new ServiceCollection();
+
+      return this;
+    }
+
+    /// <summary>
+    /// A handy shorthand version of .Build()
     /// </summary>
     public DIBuilder Complete() => Build();
 

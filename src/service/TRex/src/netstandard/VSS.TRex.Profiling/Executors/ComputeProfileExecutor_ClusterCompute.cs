@@ -179,7 +179,7 @@ namespace VSS.TRex.Profiling.Executors
         }
         finally
         {
-          Log.LogInformation($"#Out# Execute: DataModel {ProjectID} complete for profile line. #Result#:{Response.ResultStatus} with {Response.ProfileCells?.Count ?? 0} vertices");
+          Log.LogInformation($"#Out# Execute: DataModel {ProjectID} complete for profile line. #Result#:{Response?.ResultStatus ?? RequestErrorStatus.Exception} with {Response?.ProfileCells?.Count ?? 0} vertices");
         }
       }
       catch (Exception E)

@@ -3,12 +3,11 @@ using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache.Configuration;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.GridFabric.Affinity
 {
-  public class SegmentRetirementQueueKey : ISegmentRetirementQueueKey, IBinarizable, IFromToBinary, IEquatable<SegmentRetirementQueueKey>
+  public class SegmentRetirementQueueKey : ISegmentRetirementQueueKey, IBinarizable, IFromToBinary
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -39,29 +38,6 @@ namespace VSS.TRex.GridFabric.Affinity
 
       ProjectUID = reader.ReadGuid() ?? Guid.Empty;
       InsertUTCAsLong = reader.ReadLong();
-    }
-
-    public bool Equals(SegmentRetirementQueueKey other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return ProjectUID.Equals(other.ProjectUID) && InsertUTCAsLong == other.InsertUTCAsLong;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((SegmentRetirementQueueKey) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (ProjectUID.GetHashCode() * 397) ^ InsertUTCAsLong.GetHashCode();
-      }
     }
   }
 }

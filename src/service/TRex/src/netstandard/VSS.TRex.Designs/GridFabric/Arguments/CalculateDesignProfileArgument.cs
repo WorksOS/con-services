@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
@@ -8,7 +7,7 @@ using VSS.TRex.GridFabric.ExtensionMethods;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
-  public class CalculateDesignProfileArgument : BaseApplicationServiceRequestArgument, IEquatable<CalculateDesignProfileArgument>
+  public class CalculateDesignProfileArgument : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -105,40 +104,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       for (int i = 0; i < count; i++)
       {       
         ProfilePath[i] = ProfilePath[i].FromBinaryUnversioned(reader);
-      }
-    }
-
-    public bool Equals(CalculateDesignProfileArgument other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-
-      return base.Equals(other) &&
-             
-             (Equals(ProfilePath, other.ProfilePath) || 
-              (ProfilePath != null && other.ProfilePath != null && ProfilePath.Length == other.ProfilePath.Length && !ProfilePath.Where((pt, i) => !pt.Equals(other.ProfilePath[i])).Any())) &&
-
-             CellSize.Equals(other.CellSize) && 
-             DesignUid.Equals(other.DesignUid);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != GetType()) return false;
-      return Equals((CalculateDesignProfileArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ (ProfilePath != null ? ProfilePath.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ CellSize.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignUid.GetHashCode();
-        return hashCode;
       }
     }
   }
