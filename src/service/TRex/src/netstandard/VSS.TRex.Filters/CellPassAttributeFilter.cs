@@ -1487,7 +1487,7 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public bool FilterMultiplePasses(CellPass[] passValues,
       int passValueCount,
-      ref FilteredMultiplePassInfo filteredPassInfo)
+      FilteredMultiplePassInfo filteredPassInfo)
     {
       if (!AnyFilterSelections)
       {

@@ -13,7 +13,7 @@ namespace VSS.TRex.Filters.Models
   /// FilteredMultiplePassInfo records all the information that a filtering operation
   ///   selected from an IC grid cell containing all the recorded machine passes.
   /// </summary>
-  public struct FilteredMultiplePassInfo
+  public class FilteredMultiplePassInfo
   {
     /// <summary>
     /// PassCount keeps track of the actual number of passes in the list

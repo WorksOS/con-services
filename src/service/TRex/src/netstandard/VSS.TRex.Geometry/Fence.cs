@@ -10,11 +10,6 @@ namespace VSS.TRex.Geometry
   /// </summary>
   public class Fence
   {
-    private double minX;
-    private double maxX;
-    private double minY;
-    private double maxY;
-
     /// <summary>
     /// No-arg constructor. Created a fence with no vertices
     /// </summary>
@@ -83,22 +78,24 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Minimum X ordinate for all points in the fence
     /// </summary>
-    public double MinX => minX; 
+    public double MinX { get; private set; }
 
     /// <summary>
     /// Maximum X ordinate for all points in the fence
     /// </summary>
-    public double MaxX => maxX; 
+    public double MaxX { get; private set; }
 
     /// <summary>
     /// Minimum Y ordinate for all points in the fence
     /// </summary>
-    public double MinY => minY;
+    public double MinY { get; private set; }
+
 
     /// <summary>
     /// Maximum Y ordinate for all points in the fence
     /// </summary>
-    public double MaxY => maxY;    
+    public double MaxY { get; private set; }
+
 
     /// <summary>
     /// Is the fence intrinsically a rectangle?
@@ -110,10 +107,10 @@ namespace VSS.TRex.Geometry
     /// </summary>
     protected void InitialiseMaxMins()
     {
-      minX = 1E10;
-      minY = 1E10;
-      maxX = -1E10;
-      maxY = -1E10;
+      MinX = 1E10;
+      MinY = 1E10;
+      MaxX = -1E10;
+      MaxY = -1E10;
     }
 
     /// <summary>
@@ -125,10 +122,10 @@ namespace VSS.TRex.Geometry
 
       foreach(var pt in Points)
       {
-        if (pt.X < minX) minX = pt.X;
-        if (pt.Y < minY) minY = pt.Y;
-        if (pt.X > maxX) maxX = pt.X;
-        if (pt.Y > maxY) maxY = pt.Y;
+        if (pt.X < MinX) MinX = pt.X;
+        if (pt.Y < MinY) MinY = pt.Y;
+        if (pt.X > MaxX) MaxX = pt.X;
+        if (pt.Y > MaxY) MaxY = pt.Y;
       };
     }
 
@@ -403,10 +400,10 @@ namespace VSS.TRex.Geometry
     /// <param name="AMaxY"></param>
     public void GetExtents(out double AMinX, out double AMinY, out double AMaxX, out double AMaxY)
     {
-      AMinX = minX;
-      AMinY = minY;
-      AMaxX = maxX;
-      AMaxY = maxY;
+      AMinX = MinX;
+      AMinY = MinY;
+      AMaxX = MaxX;
+      AMaxY = MaxY;
     }
 
     /// <summary>

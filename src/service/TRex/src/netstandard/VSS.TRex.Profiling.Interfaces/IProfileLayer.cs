@@ -90,7 +90,7 @@ namespace VSS.TRex.Profiling.Interfaces
     void Assign(FilteredMultiplePassInfo cellPassValues);
 
     /// <summary>
-    /// Assigns the contents of anothern prfile layer to this profile layer
+    /// Assigns the contents of another profile layer to this profile layer
     /// </summary>
     /// <param name="source"></param>
     void Assign(IProfileLayer source);

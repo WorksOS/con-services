@@ -85,9 +85,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Passes contains the entire list of passes that all the layers in the layer collection refer to
     /// </summary>
-    private FilteredMultiplePassInfo passes = new FilteredMultiplePassInfo();
-
-    public FilteredMultiplePassInfo Passes => passes;
+    public FilteredMultiplePassInfo Passes { get; private set; } = new FilteredMultiplePassInfo();
 
     public bool[] FilteredPassFlags = new bool[0];
     public int FilteredPassCount;
@@ -129,15 +127,15 @@ namespace VSS.TRex.Profiling
 
     public void SetFilteredPasses(FilteredPassData[] filteredPasses)
     {
-      passes.FilteredPassData = filteredPasses;
-      passes.PassCount = filteredPasses.Length;
+      Passes.FilteredPassData = filteredPasses;
+      Passes.PassCount = filteredPasses.Length;
     }
 
     /// <summary>
     /// Changes the count of passes present in the filtered set of passes held in the profile cell
     /// </summary>
     /// <param name="filteredPassCount"></param>
-    public void SetFilteredPassCount(int filteredPassCount) => passes.PassCount = filteredPassCount;
+    public void SetFilteredPassCount(int filteredPassCount) => Passes.PassCount = filteredPassCount;
 
     /// <summary>
     /// Constructs a profiler layer from a given set of filtered passes and the location of the cell on the profile line
@@ -535,7 +533,7 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(CellMaxSpeed);
       writer.WriteInt(CellMinSpeed);
 
-      passes.ToBinary(writer);
+      Passes.ToBinary(writer);
 
       writer.WriteBooleanArray(FilteredPassFlags);
       writer.WriteInt(FilteredPassCount);
@@ -607,7 +605,7 @@ namespace VSS.TRex.Profiling
       CellMaxSpeed = (ushort)reader.ReadInt();
       CellMinSpeed = (ushort)reader.ReadInt();
 
-      passes.FromBinary(reader);
+      (Passes ?? (Passes = new FilteredMultiplePassInfo())).FromBinary(reader);
 
       FilteredPassFlags = reader.ReadBooleanArray();
       FilteredPassCount = reader.ReadInt();
