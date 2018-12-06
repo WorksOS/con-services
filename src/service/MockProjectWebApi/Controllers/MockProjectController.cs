@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MockProjectWebApi.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
@@ -26,6 +27,20 @@ namespace MockProjectWebApi.Controllers
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
       return new ProjectDataResult { ProjectDescriptors = this.projectList };
+    }
+
+    /// <summary>
+    /// Gets the list of projects used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The list of mocked projects</returns>
+    [Route("api/v4/mockproject/{projectUid}")] [HttpGet]
+    public ProjectDataSingleResult GetMockProject(Guid projectUid)
+    {
+      Console.WriteLine("GetMockProject");
+      //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
+      return new ProjectDataSingleResult() { ProjectDescriptor = this.projectList.SingleOrDefault(p => p.ProjectUid == projectUid.ToString()) };
     }
 
     /// <summary>

@@ -22,7 +22,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             DateTime _startTime = startTime;
             DateTime _endTime = endTime;
 
-          Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
                 uint ThePassCount = segment.PassCount(i, j);
 

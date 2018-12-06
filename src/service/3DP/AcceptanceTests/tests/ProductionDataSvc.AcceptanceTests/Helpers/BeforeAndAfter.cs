@@ -1,13 +1,14 @@
 ﻿using System.Net.Http;
+using System.Threading.Tasks;
 using ProductionDataSvc.AcceptanceTests.Utils;
 
 namespace ProductionDataSvc.AcceptanceTests.Helpers
 {
   public static class BeforeAndAfter
   {
-    public static void CreateSurveyedSurfaceLargerThanProductionData()
+    public static Task<HttpResponseMessage> CreateSurveyedSurfaceLargerThanProductionData()
     {
-      RestClient.SendHttpClientRequest(
+      return RestClient.SendHttpClientRequest(
         RestClient.Productivity3DServiceBaseUrl,
         "/api/v1/surveyedsurfaces",
         HttpMethod.Post,
@@ -25,12 +26,12 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                         ""offset"": 0.0
                       },
                       ""SurveyedUtc"": ""2015-03-15T18:13:09.265Z""
-                }").ConfigureAwait(false);
+                }");
     }
 
-    public static void CreateSurveyedSurface()
+    public static Task<HttpResponseMessage> CreateSurveyedSurface()
     {
-      RestClient.SendHttpClientRequest(
+      return RestClient.SendHttpClientRequest(
         RestClient.Productivity3DServiceBaseUrl,
         "/api/v1/surveyedsurfaces",
         HttpMethod.Post,
@@ -48,10 +49,10 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
                     ""offset"": 0.0
                     },
                     ""SurveyedUtc"": ""2015-03-15T18:13:09.265Z""
-            }").ConfigureAwait(false);
+            }");
     }
 
-    public static HttpResponseMessage DeleteSurveyedSurfaceFile(int fileId = 111)
+    public static Task<HttpResponseMessage> DeleteSurveyedSurfaceFile(int fileId = 111)
     {
       return RestClient.SendHttpClientRequest(
         RestClient.Productivity3DServiceBaseUrl,
@@ -59,7 +60,7 @@ namespace ProductionDataSvc.AcceptanceTests.Helpers
         HttpMethod.Get,
         MediaTypes.JSON,
         MediaTypes.JSON,
-        null).ConfigureAwait(false).GetAwaiter().GetResult();
+        null);
     }
   }
 }

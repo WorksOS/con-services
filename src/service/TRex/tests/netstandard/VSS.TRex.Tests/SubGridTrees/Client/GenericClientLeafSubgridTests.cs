@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     static int GridDataTypeCount = GetGridDataTypeCount();
 
-    private const int kGridDataTypeCount_Expected = 11;
+    private const int kGridDataTypeCount_Expected = 13;
     private const int kGridDataTypeCount = 29;
 
     /// <summary>
@@ -34,7 +34,9 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
              gridDataType == GridDataType.MachineSpeedTarget ||
              gridDataType == GridDataType.Temperature ||
              gridDataType == GridDataType.TemperatureDetail ||
-             gridDataType == GridDataType.PassCount;
+             gridDataType == GridDataType.PassCount ||
+             gridDataType == GridDataType.CellProfile ||
+             gridDataType == GridDataType.CellPasses;
     }
 
     /// <summary>

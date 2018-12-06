@@ -609,8 +609,6 @@ namespace VSS.TRex.Filters
       ElevationRangeThickness = Source.ElevationRangeThickness;
       ElevationRangeDesignID = Source.ElevationRangeDesignID;
 
-      RestrictFilteredDataToCompactorsOnly = Source.RestrictFilteredDataToCompactorsOnly;
-
       LayerID = Source.LayerID;
 
       MaterialTemperatureMin = Source.MaterialTemperatureMin;
@@ -657,7 +655,6 @@ namespace VSS.TRex.Filters
     public void ClearCompactionMachineOnlyRestriction()
     {
       HasCompactionMachinesOnlyFilter = false;
-      RestrictFilteredDataToCompactorsOnly = false;
     }
 
     public void ClearMachineDirection()
@@ -1337,7 +1334,7 @@ namespace VSS.TRex.Filters
 
       // Min elev mapping
       if (HasMinElevMappingFilter)
-        sb.Append($"VS:{(MinElevationMapping ? 1 : 0)}");
+        sb.Append($"MEM:{(MinElevationMapping ? 1 : 0)}");
 
       // Elevation type
       if (HasElevationTypeFilter)
@@ -1353,7 +1350,7 @@ namespace VSS.TRex.Filters
 
       // GPS Accuracy
       if (HasGPSAccuracyFilter)
-        sb.Append($"GA:{GCSGuidanceMode}-{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
+        sb.Append($"GA:{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
 
       // GPS Tolerance
       if (HasGPSToleranceFilter)
@@ -1377,7 +1374,7 @@ namespace VSS.TRex.Filters
         sb.Append($"LS:{LayerState}");
 
       // Compaction machines only
-      if (HasLayerStateFilter)
+      if (HasCompactionMachinesOnlyFilter)
         sb.Append("CMO:1");
 
       // Layer ID filter
@@ -1394,9 +1391,6 @@ namespace VSS.TRex.Filters
 
       if (ReturnEarliestFilteredCellPass)
         sb.Append("REFCP:1");
-
-      if (RestrictFilteredDataToCompactorsOnly)
-        sb.Append("RFDTCO:1");
 
       return sb.ToString();
     }
@@ -1493,7 +1487,7 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public bool FilterMultiplePasses(CellPass[] passValues,
       int passValueCount,
-      ref FilteredMultiplePassInfo filteredPassInfo)
+      FilteredMultiplePassInfo filteredPassInfo)
     {
       if (!AnyFilterSelections)
       {

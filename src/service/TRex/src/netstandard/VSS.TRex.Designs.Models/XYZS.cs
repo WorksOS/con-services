@@ -50,24 +50,5 @@ namespace VSS.TRex.Designs.Models
     {
       return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && Station.Equals(other.Station) && TriIndex == other.TriIndex;
     }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is XYZS other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = X.GetHashCode();
-        hashCode = (hashCode * 397) ^ Y.GetHashCode();
-        hashCode = (hashCode * 397) ^ Z.GetHashCode();
-        hashCode = (hashCode * 397) ^ Station.GetHashCode();
-        hashCode = (hashCode * 397) ^ TriIndex;
-        return hashCode;
-      }
-    }
   }
 }

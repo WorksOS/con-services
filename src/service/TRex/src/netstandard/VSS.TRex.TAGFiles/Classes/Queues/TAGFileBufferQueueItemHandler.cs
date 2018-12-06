@@ -338,6 +338,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             grouper = new TAGFileBufferQueueGrouper();
             // waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
+            // Todo: Make the number of parallel TAG file processing TAG executors configurable
             const int NumTasks = 1;
             Task[] tasks = Enumerable.Range(0, NumTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
         }

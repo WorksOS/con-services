@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text;
 using Apache.Ignite.Core;
@@ -11,7 +10,7 @@ using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
-namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
+namespace VSS.TRex.SubGrids.Executors
 {
   /// <summary>
   /// The closure/function that implements subgrid request processing on compute nodes

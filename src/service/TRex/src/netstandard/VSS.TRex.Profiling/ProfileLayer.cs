@@ -23,7 +23,7 @@ namespace VSS.TRex.Profiling
     /// cell does and the layer keeps track of the range of passes in the profile
     /// that the layer represents. This is mainly a performance measure to reduce
     /// the number of time the lists of cell passes get copied and reconstructed
-    /// in the process of extracting them from the databace (by RequestSubGrid() etc)
+    /// in the process of extracting them from the database (by RequestSubGrid() etc)
     /// </summary>
     public ProfileCell Owner;
 
@@ -82,10 +82,10 @@ namespace VSS.TRex.Profiling
     public short MaterialTemperature_MachineID { get; set; }
     public float MaterialTemperature_Elev { get; set; } // The height of the cell pass from which the Temperature came from
 
-    public LayerStatus Status { get; set; } // The status of the layer; complete, undercompacted, etc.
+    public LayerStatus Status { get; set; } // The status of the layer; complete, under compacted, etc.
 
     /// <summary>
-    /// The calculated maximum thickness of any pass in this layer (when interested in "uncompacted" lift thickness)
+    /// The calculated maximum thickness of any pass in this layer (when interested in "un-compacted" lift thickness)
     /// </summary>
     public float MaxThickness { get; set; }
 
@@ -107,7 +107,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Createa a new defaulted profile layer with the given ProfileCell as owner
+    /// Creates a new defaulted profile layer with the given ProfileCell as owner
     /// </summary>
     /// <param name="owner"></param>
     public ProfileLayer(ProfileCell owner)
@@ -168,10 +168,9 @@ namespace VSS.TRex.Profiling
 
       if (cellPassValues.PassCount > 0)
       {
-        Owner.Passes.FilteredPassData = new FilteredPassData[cellPassValues.PassCount];
-        Array.Copy(cellPassValues.FilteredPassData, Owner.Passes.FilteredPassData, cellPassValues.PassCount);
-
-        Owner.Passes.PassCount = cellPassValues.PassCount;
+        var filteredPasses = new FilteredPassData[cellPassValues.PassCount];
+        Array.Copy(cellPassValues.FilteredPassData, filteredPasses, cellPassValues.PassCount);
+        Owner.SetFilteredPasses(filteredPasses);
 
         StartCellPassIdx = 0;
         EndCellPassIdx = cellPassValues.PassCount - 1;
@@ -196,7 +195,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Assigns the contents of anothern prfile layer to this profile layer
+    /// Assigns the contents of another profile layer to this profile layer
     /// </summary>
     /// <param name="source_"></param>
     public void Assign(IProfileLayer source_)
@@ -230,9 +229,6 @@ namespace VSS.TRex.Profiling
       MaxThickness = source.MaxThickness;
     }
 
-    // procedure LoadFromStream(const Stream : TStream);
-    // procedure SaveToStream(const Stream : TStream);
-
     /// <summary>
     /// The number of cell passes within the layer
     /// </summary>
@@ -240,8 +236,8 @@ namespace VSS.TRex.Profiling
 
     /// <summary>
     /// Records the addition of a cell pass identified by its index in the overall set passes for
-    /// the cell being analysed. The pass itself is not physically added, but the index range of
-    /// cells included in the layer is nodified to take the newly added cell pass into account
+    /// the cell being analyzed. The pass itself is not physically added, but the index range of
+    /// cells included in the layer is modified to take the newly added cell pass into account
     /// </summary>
     /// <param name="passIndex"></param>
     public void AddPass(int passIndex)
@@ -253,7 +249,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -261,23 +257,23 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(StartCellPassIdx);
       writer.WriteInt(EndCellPassIdx);
       writer.WriteShort(MachineID);
-      writer.WriteLong(LastLayerPassTime.Ticks);
+      writer.WriteLong(LastLayerPassTime.ToBinary());
 
       writer.WriteShort(CCV);
-      writer.WriteLong(CCV_Time.Ticks);
+      writer.WriteLong(CCV_Time.ToBinary());
       writer.WriteShort(CCV_MachineID);
       writer.WriteFloat(CCV_Elev);
       writer.WriteShort(TargetCCV);
       writer.WriteInt(CCV_CellPassIdx);
 
       writer.WriteShort(MDP);
-      writer.WriteLong(MDP_Time.Ticks);
+      writer.WriteLong(MDP_Time.ToBinary());
       writer.WriteShort(MDP_MachineID);
       writer.WriteFloat(MDP_Elev);
       writer.WriteShort(TargetMDP);
 
       writer.WriteByte(CCA);
-      writer.WriteLong(CCA_Time.Ticks);
+      writer.WriteLong(CCA_Time.ToBinary());
       writer.WriteShort(CCA_MachineID);
       writer.WriteFloat(CCA_Elev);
       writer.WriteShort(TargetCCA);
@@ -291,7 +287,7 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(Frequency);
       writer.WriteInt(Amplitude);
       writer.WriteInt(MaterialTemperature);
-      writer.WriteLong(MaterialTemperature_Time.Ticks);
+      writer.WriteLong(MaterialTemperature_Time.ToBinary());
       writer.WriteShort(MaterialTemperature_MachineID);
       writer.WriteFloat(MaterialTemperature_Elev);
 
@@ -306,7 +302,7 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Deserializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
@@ -314,23 +310,23 @@ namespace VSS.TRex.Profiling
       StartCellPassIdx = reader.ReadInt();
       EndCellPassIdx = reader.ReadInt();
       MachineID = reader.ReadShort();
-      LastLayerPassTime = new DateTime(reader.ReadLong());
+      LastLayerPassTime = DateTime.FromBinary(reader.ReadLong());
 
       CCV = reader.ReadShort();
-      CCV_Time = new DateTime(reader.ReadLong());
+      CCV_Time = DateTime.FromBinary(reader.ReadLong());
       CCV_MachineID = reader.ReadShort();
       CCV_Elev = reader.ReadFloat();
       TargetCCV = reader.ReadShort();
       CCV_CellPassIdx = reader.ReadInt();
 
       MDP = reader.ReadShort();
-      MDP_Time = new DateTime(reader.ReadLong());
+      MDP_Time = DateTime.FromBinary(reader.ReadLong());
       MDP_MachineID = reader.ReadShort();
       MDP_Elev = reader.ReadFloat();
       TargetMDP = reader.ReadShort();
 
       CCA = reader.ReadByte();
-      CCA_Time = new DateTime(reader.ReadLong());
+      CCA_Time = DateTime.FromBinary(reader.ReadLong());
       CCA_MachineID = reader.ReadShort();
       CCA_Elev = reader.ReadFloat();
       TargetCCA = reader.ReadShort();
@@ -344,7 +340,7 @@ namespace VSS.TRex.Profiling
       Frequency = (ushort)reader.ReadInt();
       Amplitude = (ushort)reader.ReadInt();
       MaterialTemperature = (ushort)reader.ReadInt();
-      MaterialTemperature_Time = new DateTime(reader.ReadLong());
+      MaterialTemperature_Time = DateTime.FromBinary(reader.ReadLong());
       MaterialTemperature_MachineID = reader.ReadShort();
       MaterialTemperature_Elev = reader.ReadFloat();
 
@@ -356,111 +352,6 @@ namespace VSS.TRex.Profiling
       MaximumPassHeight = reader.ReadFloat();
       FirstPassHeight = reader.ReadFloat();
       LastPassHeight = reader.ReadFloat();
-    }
-
-    protected bool Equals(ProfileLayer other)
-    {
-      return StartCellPassIdx == other.StartCellPassIdx && 
-             EndCellPassIdx == other.EndCellPassIdx && 
-             MachineID == other.MachineID && 
-             LastLayerPassTime.Equals(other.LastLayerPassTime) && 
-             CCV == other.CCV && 
-             CCV_Time.Equals(other.CCV_Time) && 
-             CCV_MachineID == other.CCV_MachineID && 
-             CCV_Elev.Equals(other.CCV_Elev) && 
-             TargetCCV == other.TargetCCV && 
-             CCV_CellPassIdx == other.CCV_CellPassIdx && 
-             MDP == other.MDP && 
-             MDP_Time.Equals(other.MDP_Time) && 
-             MDP_MachineID == other.MDP_MachineID && 
-             MDP_Elev.Equals(other.MDP_Elev) && 
-             TargetMDP == other.TargetMDP && 
-             CCA == other.CCA && 
-             CCA_Time.Equals(other.CCA_Time) && 
-             CCA_MachineID == other.CCA_MachineID && 
-             CCA_Elev.Equals(other.CCA_Elev) && 
-             TargetCCA == other.TargetCCA && 
-             RadioLatency == other.RadioLatency && 
-             TargetPassCount == other.TargetPassCount && 
-             Thickness.Equals(other.Thickness) && 
-             TargetThickness.Equals(other.TargetThickness) && 
-             Height.Equals(other.Height) && 
-             RMV == other.RMV && 
-             Frequency == other.Frequency && 
-             Amplitude == other.Amplitude && 
-             MaterialTemperature == other.MaterialTemperature && 
-             MaterialTemperature_Time.Equals(other.MaterialTemperature_Time) &&
-             MaterialTemperature_MachineID == other.MaterialTemperature_MachineID && 
-             MaterialTemperature_Elev.Equals(other.MaterialTemperature_Elev) && 
-             Status == other.Status && MaxThickness.Equals(other.MaxThickness) && 
-             FilteredPassCount == other.FilteredPassCount && 
-             FilteredHalfPassCount == other.FilteredHalfPassCount && 
-             MinimumPassHeight.Equals(other.MinimumPassHeight) && 
-             MaximumPassHeight.Equals(other.MaximumPassHeight) && 
-             FirstPassHeight.Equals(other.FirstPassHeight) && 
-             LastPassHeight.Equals(other.LastPassHeight);
-    }
-
-    public bool Equals(IProfileLayer other)
-    {
-      return Equals(other as ProfileLayer);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((ProfileLayer) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = (Owner != null ? Owner.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ StartCellPassIdx;
-        hashCode = (hashCode * 397) ^ EndCellPassIdx;
-        hashCode = (hashCode * 397) ^ MachineID.GetHashCode();
-        hashCode = (hashCode * 397) ^ LastLayerPassTime.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCV.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCV_Time.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCV_MachineID.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCV_Elev.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetCCV.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCV_CellPassIdx;
-        hashCode = (hashCode * 397) ^ MDP.GetHashCode();
-        hashCode = (hashCode * 397) ^ MDP_Time.GetHashCode();
-        hashCode = (hashCode * 397) ^ MDP_MachineID.GetHashCode();
-        hashCode = (hashCode * 397) ^ MDP_Elev.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetMDP.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCA.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCA_Time.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCA_MachineID.GetHashCode();
-        hashCode = (hashCode * 397) ^ CCA_Elev.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetCCA.GetHashCode();
-        hashCode = (hashCode * 397) ^ RadioLatency.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetPassCount.GetHashCode();
-        hashCode = (hashCode * 397) ^ Thickness.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetThickness.GetHashCode();
-        hashCode = (hashCode * 397) ^ Height.GetHashCode();
-        hashCode = (hashCode * 397) ^ RMV.GetHashCode();
-        hashCode = (hashCode * 397) ^ Frequency.GetHashCode();
-        hashCode = (hashCode * 397) ^ Amplitude.GetHashCode();
-        hashCode = (hashCode * 397) ^ MaterialTemperature.GetHashCode();
-        hashCode = (hashCode * 397) ^ MaterialTemperature_Time.GetHashCode();
-        hashCode = (hashCode * 397) ^ MaterialTemperature_MachineID.GetHashCode();
-        hashCode = (hashCode * 397) ^ MaterialTemperature_Elev.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) Status;
-        hashCode = (hashCode * 397) ^ MaxThickness.GetHashCode();
-        hashCode = (hashCode * 397) ^ FilteredPassCount;
-        hashCode = (hashCode * 397) ^ FilteredHalfPassCount;
-        hashCode = (hashCode * 397) ^ MinimumPassHeight.GetHashCode();
-        hashCode = (hashCode * 397) ^ MaximumPassHeight.GetHashCode();
-        hashCode = (hashCode * 397) ^ FirstPassHeight.GetHashCode();
-        hashCode = (hashCode * 397) ^ LastPassHeight.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

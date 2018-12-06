@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
     /// <summary>
     /// Get the project descriptor for the specified project uid.
     /// </summary>
-    public async Task<ProjectData> GetProject(Guid? projectUid)
+    public Task<ProjectData> GetProject(Guid? projectUid)
     {
       if (!projectUid.HasValue)
       {
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
       }
 
-      return await GetProject(projectUid.ToString());
+      return GetProject(projectUid.ToString());
     }
 
     /// <summary>

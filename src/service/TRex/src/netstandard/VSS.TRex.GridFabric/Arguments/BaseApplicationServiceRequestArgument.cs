@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Interfaces;
@@ -10,7 +9,7 @@ namespace VSS.TRex.GridFabric.Arguments
   ///  Forms the base request argument state that specific application service request contexts may leverage. It's roles include
   ///  containing the identifier of a TRex Application Service Node that originated the request
   /// </summary>
-  public class BaseApplicationServiceRequestArgument : BaseRequestArgument, IEquatable<BaseApplicationServiceRequestArgument>
+  public class BaseApplicationServiceRequestArgument : BaseRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -67,36 +66,6 @@ namespace VSS.TRex.GridFabric.Arguments
       {
         Filters = DI.DIContext.Obtain<IFilterSet>();
         Filters.FromBinary(reader);
-      }
-    }
-
-    public bool Equals(BaseApplicationServiceRequestArgument other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return string.Equals(TRexNodeID, other.TRexNodeID) && 
-             ProjectID.Equals(other.ProjectID) && 
-             Equals(Filters, other.Filters) && 
-             ReferenceDesignID.Equals(other.ReferenceDesignID);
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((BaseApplicationServiceRequestArgument) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = (TRexNodeID != null ? TRexNodeID.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ ProjectID.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Filters != null ? Filters.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ ReferenceDesignID.GetHashCode();
-        return hashCode;
       }
     }
   }

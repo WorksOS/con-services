@@ -195,7 +195,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             };
             segment2.AllocateFullPassStacks();
 
-            SegmentCellPassAdopter.AdoptCellPassesFrom(segment2.PassesData, segment1.PassesData, new DateTime((startSegmentTime.Ticks + endSegmentTime.Ticks) / 2));
+            SegmentCellPassAdopter.AdoptCellPassesFrom(segment2.PassesData, segment1.PassesData, startSegmentTime + new TimeSpan((endSegmentTime.Ticks - startSegmentTime.Ticks) / 2));
 
             // Check the times of the adopted cells are correct
             Assert.True(segment1.VerifyComputedAndRecordedSegmentTimeRangeBounds(), "Segment1 has inappropriate cell pass time range compared to segment time range");

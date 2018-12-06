@@ -296,7 +296,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Internal function to determine is there is an intesection on the Y axis
+    /// Internal function to determine is there is an intersection on the Y axis
     /// </summary>
     /// <param name="P1"></param>
     /// <param name="P2"></param>
@@ -577,15 +577,6 @@ namespace VSS.TRex.Geometry
     /// <param name="V"></param>
     /// <returns></returns>
     public static XYZ UnitVector(XYZ V) => V * (1 / VectorLength(V));
-
-    /// <summary>
-    /// Default override for the GetHashCode method. This returns the base GetHashCode() result.
-    /// </summary>
-    /// <returns></returns>
-    public override int GetHashCode()
-    {
-      return base.GetHashCode();
-    }
 
     /// <summary>
     /// Returns the triangle centroid

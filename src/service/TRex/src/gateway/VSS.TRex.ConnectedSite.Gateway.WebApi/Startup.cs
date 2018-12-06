@@ -42,6 +42,11 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
 
+      //We build and inject here because we need it below 
+      var serviceProvider = services.BuildServiceProvider();
+      DIContext.Inject(serviceProvider);
+
+
       var configurationStore = DIContext.Obtain<IConfigurationStore>();
 
       services.AddTransient<TPaaSAuthenticatedRequestHandler>();
@@ -71,7 +76,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       //Set up logging etc. for TRex
-      var serviceProvider = services.BuildServiceProvider();
+      serviceProvider = services.BuildServiceProvider();
       var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Logging.Logger.Inject(loggerFactory);
       DIContext.Inject(serviceProvider);

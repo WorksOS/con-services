@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       SimpleBinarizableInstanceTester.TestClass(new SegmentRetirementQueueKey
         {
           ProjectUID = Guid.NewGuid(),
-          InsertUTCAsLong = DateTime.Now.Ticks
+          InsertUTCAsLong = DateTime.UtcNow.Ticks
         },
         "SegmentRetirementQueueKey with project uid and time not same after round trip serialisation");
     }
