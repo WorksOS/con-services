@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -55,7 +58,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromServices] IBoundingBoxService boundingBoxService)
     {
       Log.LogInformation("GetBoundingBox: " + Request.QueryString);
-
+      //Check we have at least one overlay
+      if (overlays == null || overlays.Length == 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "At least one overlay type must be specified to calculate bounding box"));
+      }
       var project = await((RaptorPrincipal)User).GetProject(projectUid);
       var filter = await GetCompactionFilter(projectUid, filterUid);
       DesignDescriptor cutFillDesign = cutFillDesignUid.HasValue ? await GetAndValidateDesignDescriptor(projectUid, cutFillDesignUid.Value) : null;
@@ -72,6 +81,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var result = boundingBoxService.GetBoundingBox(project, filter, overlayTypes.ToArray(), sumVolParameters.Item1,
         sumVolParameters.Item2, designDescriptor);
       var bbox = $"{result.minLatDegrees},{result.minLngDegrees},{result.maxLatDegrees},{result.maxLngDegrees}";
+      Log.LogInformation($"GetBoundingBox: returning {bbox}");
       return bbox;
     }
 

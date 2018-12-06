@@ -31,6 +31,9 @@ namespace VSS.TRex.Tests.TestFixtures
       }
     }
 
-    public void Dispose() { } // Nothing needing doing 
+    public void Dispose()
+    {
+      DIBuilder.Continue().Eject();
+    } 
   }
 }

@@ -106,22 +106,22 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Determine if the 2D bounding extent inludes the coorindate given by the X and Y parameters
+    /// Determine if the 2D bounding extent includes the coordinate given by the X and Y parameters
     /// </summary>
     /// <param name="X"></param>
     /// <param name="Y"></param>
-    /// <returns>A boolean indicating where the boundign extent includes the given position</returns>
-    public bool Includes(int x, int y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
+    /// <returns>A boolean indicating where the bounding extent includes the given position</returns>
+    public bool Includes(int x, int y) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
 
-    public bool Includes(uint x, uint y) => (x >= MinX) && (x <= MaxX) && (y >= MinY) && (y <= MaxY);
+    public bool Includes(uint x, uint y) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
 
     /// <summary>
-    /// Determing if the extent defined is valid in that it does not define a negative area
+    /// Determine if the extent defined is valid in that it does not define a negative area
     /// </summary>
-    public bool IsValidExtent => (MaxX >= MinX) && (MaxY >= MinY);
+    public bool IsValidExtent => MaxX >= MinX && MaxY >= MinY;
 
     /// <summary>
-    /// Move the 2D bounding extent int he X and Y dimenions by the delta X & Y supplied in the parameters
+    /// Move the 2D bounding extent int he X and Y dimensions by the delta X & Y supplied in the parameters
     /// </summary>
     /// <param name="DX"></param>
     /// <param name="DY"></param>

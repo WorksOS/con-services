@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests.Caching
 
         Assert.True(context != null, "Failed to create new context");
         Assert.True(context.MarkedForRemoval, "Context not marked for removal on creation in cache");
-        Assert.True(context.MarkedForRemovalAt > DateTime.Now, "Marked for removal time earlier than now");
+        Assert.True(context.MarkedForRemovalAtUtc > DateTime.UtcNow, "Marked for removal time earlier than now");
     }
 
     [Theory]

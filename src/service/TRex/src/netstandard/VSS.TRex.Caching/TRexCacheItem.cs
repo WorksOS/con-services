@@ -27,7 +27,7 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// Determines if the cached item has hit it's expiry time
     /// </summary>
-    public bool Expired => ExpiryTime < DateTime.Now;
+    public bool Expired => ExpiryTime < DateTime.UtcNow;
 
     /// <summary>
     /// The context to which this cached item belongs
@@ -57,7 +57,7 @@ namespace VSS.TRex.Caching
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
-      ExpiryTime = DateTime.Now + context.CacheDurationTime;
+      ExpiryTime = DateTime.UtcNow + context.CacheDurationTime;
       Prev = prev;
       Next = next;
 
@@ -69,7 +69,7 @@ namespace VSS.TRex.Caching
       Item = item;
       Context = context;
       MRUEpochToken = mruEpochToken;
-      ExpiryTime = context == null ? DateTime.MinValue : DateTime.Now + context.CacheDurationTime;
+      ExpiryTime = context == null ? DateTime.MinValue : DateTime.UtcNow + context.CacheDurationTime;
       Prev = prev;
       Next = next;
 

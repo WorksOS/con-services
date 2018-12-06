@@ -1,5 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
@@ -13,7 +12,7 @@ namespace VSS.TRex.GridFabric.Responses
   /// code covering the request plus additional statistical data such as the number of subgrids processed by 
   /// that cluster node from the overall pool of subgrid requested
   /// </summary>
-  public class SubGridRequestsResponse : BaseRequestResponse, IEquatable<SubGridRequestsResponse>, IAggregateWith<SubGridRequestsResponse>
+  public class SubGridRequestsResponse : BaseRequestResponse, IAggregateWith<SubGridRequestsResponse>
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -90,20 +89,6 @@ namespace VSS.TRex.GridFabric.Responses
       NumSurveyedSurfaceSubGridsExamined = reader.ReadLong();
     }
 
-    public bool Equals(SubGridRequestsResponse other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return ResponseCode == other.ResponseCode && 
-             string.Equals(ClusterNode, other.ClusterNode) && 
-             NumSubgridsProcessed == other.NumSubgridsProcessed && 
-             NumSubgridsExamined == other.NumSubgridsExamined && 
-             NumProdDataSubGridsProcessed == other.NumProdDataSubGridsProcessed && 
-             NumProdDataSubGridsExamined == other.NumProdDataSubGridsExamined && 
-             NumSurveyedSurfaceSubGridsProcessed == other.NumSurveyedSurfaceSubGridsProcessed && 
-             NumSurveyedSurfaceSubGridsExamined == other.NumSurveyedSurfaceSubGridsExamined;
-    }
-
     public SubGridRequestsResponse AggregateWith(SubGridRequestsResponse other)
     {
       // No explicit 'accumulation' logic for response codes apart from prioritizing failure over success results
@@ -120,30 +105,6 @@ namespace VSS.TRex.GridFabric.Responses
       NumSurveyedSurfaceSubGridsExamined += other.NumSurveyedSurfaceSubGridsExamined;
 
       return this;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((SubGridRequestsResponse) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = (int) ResponseCode;
-        hashCode = (hashCode * 397) ^ (ClusterNode != null ? ClusterNode.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ NumSubgridsProcessed.GetHashCode();
-        hashCode = (hashCode * 397) ^ NumSubgridsExamined.GetHashCode();
-        hashCode = (hashCode * 397) ^ NumProdDataSubGridsProcessed.GetHashCode();
-        hashCode = (hashCode * 397) ^ NumProdDataSubGridsExamined.GetHashCode();
-        hashCode = (hashCode * 397) ^ NumSurveyedSurfaceSubGridsProcessed.GetHashCode();
-        hashCode = (hashCode * 397) ^ NumSurveyedSurfaceSubGridsExamined.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

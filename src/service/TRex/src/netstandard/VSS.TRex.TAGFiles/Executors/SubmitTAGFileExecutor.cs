@@ -87,7 +87,7 @@ namespace VSS.TRex.TAGFiles.Executors
             TAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
             TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
             {
-              InsertUTC = DateTime.Now,
+              InsertUTC = DateTime.UtcNow,
               ProjectID = validProjectId,
               AssetID = validAssetId,
               FileName = tagFileName,

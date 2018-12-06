@@ -9,7 +9,7 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
   /// <summary>
   /// Defines the parameters required for a production data profile request argument on the application service node
   /// </summary>
-  public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument, IEquatable<ProfileRequestArgument_ApplicationService>
+  public class ProfileRequestArgument_ApplicationService : BaseApplicationServiceRequestArgument
   {
     public GridDataType ProfileTypeRequired { get; set; }
 
@@ -97,42 +97,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       DesignDescriptor.FromBinary(reader);
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
-    }
-
-    public bool Equals(ProfileRequestArgument_ApplicationService other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-      return base.Equals(other) && 
-             DesignDescriptor.Equals(other.DesignDescriptor) && 
-             ProfileTypeRequired == other.ProfileTypeRequired && 
-             Equals(StartPoint, other.StartPoint) && 
-             Equals(EndPoint, other.EndPoint) && 
-             PositionsAreGrid == other.PositionsAreGrid && 
-             ReturnAllPassesAndLayers == other.ReturnAllPassesAndLayers;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((ProfileRequestArgument_ApplicationService) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignDescriptor.GetHashCode();
-        hashCode = (hashCode * 397) ^ (int) ProfileTypeRequired;
-        hashCode = (hashCode * 397) ^ (StartPoint != null ? StartPoint.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (EndPoint != null ? EndPoint.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ PositionsAreGrid.GetHashCode();
-        hashCode = (hashCode * 397) ^ ReturnAllPassesAndLayers.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

@@ -2,6 +2,7 @@
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using Xunit;
+using FluentAssertions;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
@@ -24,9 +25,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
       
       if (failureMsg != "")
-        Assert.True(instance.member.Equals(result.member), $"{typeof(T).FullName}: {failureMsg}");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
       else
-        Assert.True(instance.member.Equals(result.member), $"{typeof(T).FullName} not the same after round trip serialisation");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: not the same after round trip serialisation");
 
       return result;
     }
@@ -45,9 +46,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName}: {failureMsg}");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
       else
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: not the same after round trip serialisation");
 
       return result;
     }
@@ -66,9 +67,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       var result = binObj.Deserialize<T>();
 
       if (failureMsg != "")
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName}: {failureMsg}");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: {failureMsg}");
       else
-        Assert.True(instance.member.Equals(result.member), $"{typeof(U).FullName} not the same after round trip serialisation");
+        result.member.Should().BeEquivalentTo(instance.member, $"{typeof(T).FullName}: not the same after round trip serialisation");
 
       return result;
     }

@@ -8,13 +8,8 @@ namespace VSS.TRex.Geometry
   /// <summary>
   /// A simple polygon describing a fence and including tests for different geometry elements
   /// </summary>
-  public class Fence : IEquatable<Fence>
+  public class Fence
   {
-    private double minX;
-    private double maxX;
-    private double minY;
-    private double maxY;
-
     /// <summary>
     /// No-arg constructor. Created a fence with no vertices
     /// </summary>
@@ -83,34 +78,24 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Minimum X ordinate for all points in the fence
     /// </summary>
-    public double MinX
-    {
-      get { return minX; }
-    }
+    public double MinX { get; private set; }
 
     /// <summary>
     /// Maximum X ordinate for all points in the fence
     /// </summary>
-    public double MaxX
-    {
-      get { return maxX; }
-    }
+    public double MaxX { get; private set; }
 
     /// <summary>
     /// Minimum Y ordinate for all points in the fence
     /// </summary>
-    public double MinY
-    {
-      get { return minY; }
-    }
+    public double MinY { get; private set; }
+
 
     /// <summary>
     /// Maximum Y ordinate for all points in the fence
     /// </summary>
-    public double MaxY
-    {
-      get { return maxY; }
-    }
+    public double MaxY { get; private set; }
+
 
     /// <summary>
     /// Is the fence intrinsically a rectangle?
@@ -122,10 +107,10 @@ namespace VSS.TRex.Geometry
     /// </summary>
     protected void InitialiseMaxMins()
     {
-      minX = 1E10;
-      minY = 1E10;
-      maxX = -1E10;
-      maxY = -1E10;
+      MinX = 1E10;
+      MinY = 1E10;
+      MaxX = -1E10;
+      MaxY = -1E10;
     }
 
     /// <summary>
@@ -137,10 +122,10 @@ namespace VSS.TRex.Geometry
 
       foreach(var pt in Points)
       {
-        if (pt.X < minX) minX = pt.X;
-        if (pt.Y < minY) minY = pt.Y;
-        if (pt.X > maxX) maxX = pt.X;
-        if (pt.Y > maxY) maxY = pt.Y;
+        if (pt.X < MinX) MinX = pt.X;
+        if (pt.Y < MinY) MinY = pt.Y;
+        if (pt.X > MaxX) MaxX = pt.X;
+        if (pt.Y > MaxY) MaxY = pt.Y;
       };
     }
 
@@ -415,10 +400,10 @@ namespace VSS.TRex.Geometry
     /// <param name="AMaxY"></param>
     public void GetExtents(out double AMinX, out double AMinY, out double AMaxX, out double AMaxY)
     {
-      AMinX = minX;
-      AMinY = minY;
-      AMaxX = maxX;
-      AMaxY = maxY;
+      AMinX = MinX;
+      AMinY = MinY;
+      AMaxX = MaxX;
+      AMaxY = MaxY;
     }
 
     /// <summary>
@@ -510,32 +495,6 @@ namespace VSS.TRex.Geometry
     public void SetRectangleFence(double X1, double Y1, double X2, double Y2)
     {
       SetExtents(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Max(X1, X2), Math.Max(Y1, Y2));
-    }
-
-    /// <summary>
-    /// Delegates GetHashCode to the default object hash code
-    /// </summary>
-    /// <returns></returns>
-    public override int GetHashCode() => GetHashCode();
-
-    public override bool Equals(object obj)
-    {
-      return this == obj || Equals(obj as Fence);
-    }
-
-    public bool Equals(Fence other)
-    {
-      if (other == null || HasVertices ^ other.HasVertices)
-        return false;
-
-      if (Points.Count != other.Points.Count)
-        return false;
-
-      for (int i = 0; i < Points.Count; i++)
-        if (!Points[i].SameInPlan(other.Points[i]))
-          return false;
-
-      return true;
     }
   }
 }
