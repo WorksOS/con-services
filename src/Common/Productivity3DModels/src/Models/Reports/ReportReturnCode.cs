@@ -3,7 +3,7 @@
   /// <summary>
   /// report type enum. (equiv of TRaptorReportReturnCode)
   /// </summary>
-  public enum ReportReturncode
+  public enum ReportReturnCode
   {
     NoError,
     UnknownError,

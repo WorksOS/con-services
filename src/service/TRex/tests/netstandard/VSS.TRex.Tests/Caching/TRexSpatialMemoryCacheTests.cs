@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace VSS.TRex.Tests.Caching
 {
-  public class TRexSpatialMemoryCacheTests : IClassFixture<DILoggingAndStorgeProxyFixture>
+  public class TRexSpatialMemoryCacheTests : IClassFixture<DILoggingAndStorageProxyFixture>
   {
     private readonly ITestOutputHelper output;
 

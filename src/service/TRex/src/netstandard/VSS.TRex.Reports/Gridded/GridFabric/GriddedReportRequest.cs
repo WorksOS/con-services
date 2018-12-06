@@ -11,7 +11,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
   // Declare class like this to delegate the request to the cluster compute layer
   //    public class GridRequest : GenericPSNodeBroadcastRequest<GriddedReportRequestArgument, GridRequestComputeFunc, GridRequestResponse>
   {
-    public GriddedReportRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    public GriddedReportRequest() : base(TRexGrids.ImmutableGridName(), ServerRoles.REPORTING_ROLE)
     {
     }
   }

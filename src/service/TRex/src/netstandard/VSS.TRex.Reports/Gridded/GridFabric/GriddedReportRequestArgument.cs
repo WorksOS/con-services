@@ -48,9 +48,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public bool ReportCutFill { get; set; }
 
     /// <summary>
-    /// Grid report option. Whether it is defined automatically or by user specified parameters.
+    /// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
     /// </summary>
-    ///
+    /// 
     public double GridInterval { get; set; }
 
     /// <summary>

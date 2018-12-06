@@ -16,7 +16,7 @@ namespace VSS.TRex.Reports.Gridded
   /// </summary>
   public class GriddedReportResult : IEquatable<GriddedReportResult>
   {
-    public ReportReturncode ReturnCode; // == TRaptorReportReturnCode
+    public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
     public ReportType ReportType; // == TRaptorReportType
     public GriddedReportData GriddedData { get; set; }
 
@@ -28,7 +28,7 @@ namespace VSS.TRex.Reports.Gridded
 
     public void Clear()
     {
-      ReturnCode = ReportReturncode.NoError;
+      ReturnCode = ReportReturnCode.NoError;
       ReportType = ReportType.None;
       GriddedData = new GriddedReportData();
       GriddedData.Clear();
@@ -46,8 +46,8 @@ namespace VSS.TRex.Reports.Gridded
       {
         using (var bw = new BinaryWriter(ms, Encoding.UTF8, true))
         {
-          bw.Write((int) ReturnCode);
-          bw.Write((int) ReportType);
+          bw.Write((int)ReturnCode);
+          bw.Write((int)ReportType);
 
           GriddedData?.Write(bw);
         }
@@ -62,8 +62,8 @@ namespace VSS.TRex.Reports.Gridded
       {
         using (var reader = new BinaryReader(ms, Encoding.UTF8, true))
         {
-          ReturnCode = (ReportReturncode) reader.ReadInt32();
-          ReportType = (ReportType) reader.ReadInt32();
+          ReturnCode = (ReportReturnCode)reader.ReadInt32();
+          ReportType = (ReportType)reader.ReadInt32();
 
           GriddedData.Read(reader);
         }

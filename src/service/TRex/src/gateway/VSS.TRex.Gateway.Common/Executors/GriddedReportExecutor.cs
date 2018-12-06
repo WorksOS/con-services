@@ -9,7 +9,6 @@ using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Reports.Gridded;
 using VSS.TRex.Reports.Gridded.GridFabric;
-using VSS.TRex.Reports.Servers.Client;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -32,17 +31,17 @@ namespace VSS.TRex.Gateway.Common.Executors
       var request = item as CompactionReportGridRequest;
 
       if (request == null)
-      { 
+      {
         ThrowRequestTypeCastException<CompactionReportGridRequest>();
         return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
 
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
-      
-      var server = new GriddedReportRequestServer();
 
-      GriddedReportResult result = server.Execute(new GriddedReportRequestArgument()
+      GriddedReportRequest tRexRequest = new GriddedReportRequest();
+
+      GriddedReportRequestResponse response = tRexRequest.Execute(new GriddedReportRequestArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
@@ -62,7 +61,23 @@ namespace VSS.TRex.Gateway.Common.Executors
         Azimuth = request.Azimuth
       });
 
-      return new ReportGridDataResult(result.Write());
+      var result = new GriddedReportResult()
+      {
+        ReturnCode = response.ReturnCode,
+        ReportType = response.ReportType,
+        GriddedData = new GriddedReportData()
+        {
+          ElevationReport = request.ReportElevation,
+          CutFillReport = request.ReportCutFill,
+          CmvReport = request.ReportCMV,
+          MdpReport = request.ReportMDP,
+          PassCountReport = request.ReportPassCount,
+          TemperatureReport = request.ReportElevation,
+          NumberOfRows = response.GriddedReportDataRowList.Count
+        }
+      };
+      result.GriddedData.Rows.AddRange(response.GriddedReportDataRowList);
+      return new GriddedReportDataResult(result.Write());
     }
 
     /// <summary>

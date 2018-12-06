@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -40,8 +41,8 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
 
         if (!request.Execute())
           Log.LogError($"Request execution failed");
-
-        return null; // todoJeannie request.PatchSubGridsResponse;
+        
+        return request.GriddedReportRequestResponse;
       }
       finally
       {

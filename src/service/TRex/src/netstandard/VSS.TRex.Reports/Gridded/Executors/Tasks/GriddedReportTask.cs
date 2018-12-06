@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
@@ -16,12 +17,13 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
-    /// The collection of subgrids being collected for a patch response
+    /// The collection of subgrids, being collected for a gridded report response
     /// </summary>
     public List<IClientLeafSubGrid> ResultantSubgrids = new List<IClientLeafSubGrid>();
 
     public GriddedReportTask()
-    { }
+    {
+    }
 
     /// <summary>
     /// Constructs the grid task
@@ -54,12 +56,14 @@ namespace VSS.TRex.Reports.Gridded.Executors.Tasks
 
       foreach (var subGrid in subGridResponses)
       {
-        if (subGrid == null)
+        if (!(subGrid is ClientCellProfileLeafSubgrid))
           continue;
 
         ResultantSubgrids.Add(subGrid);
       }
+
       return true;
     }
   }
 }
+

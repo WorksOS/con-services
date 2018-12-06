@@ -58,20 +58,20 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       reportGridRequest.Validate();
 
-      var reportGridDataResult =  WithServiceExceptionTryExecute(() =>
+      var griddedReportDataResult =  WithServiceExceptionTryExecute(() =>
         RequestExecutorContainer
           .Build<GriddedReportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(reportGridRequest) as ReportGridDataResult);
+          .Process(reportGridRequest) as GriddedReportDataResult);
 
-      if (reportGridDataResult?.GriddedData == null)
+      if (griddedReportDataResult?.GriddedData == null)
       {
-        var code = reportGridDataResult == null ? HttpStatusCode.BadRequest : HttpStatusCode.NoContent;
-        var exCode = reportGridDataResult == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ValidationError;
+        var code = griddedReportDataResult == null ? HttpStatusCode.BadRequest : HttpStatusCode.NoContent;
+        var exCode = griddedReportDataResult == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ValidationError;
 
         throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get gridded report data for projectUid: {reportGridRequest.ProjectUid}"));
       }
 
-      return new FileStreamResult(new MemoryStream(reportGridDataResult?.GriddedData), "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(griddedReportDataResult?.GriddedData), "application/octet-stream");
     }
   }
 }

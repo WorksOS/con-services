@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Reports.Gridded.GridFabric
 {
@@ -15,16 +12,21 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
   /// </summary>
   public class GriddedReportRequestResponse : SubGridsPipelinedReponseBase, IEquatable<GriddedReportRequestResponse>
   {
-    /// <summary>
-    /// The total number of pages of subgrids required to contain the maximum number of subgrids'
-    /// that may be retuned for the query
-    /// </summary>
-    public int TotalNumberOfPagesToCoverFilteredData { get; set; }
-  
-    /// <summary>
-    /// The set of subgrids matching the filters and patch page requested
-    /// </summary>
-    public List<IClientLeafSubGrid> SubGrids { get; set; }
+    public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
+    public ReportType ReportType;       // == TRaptorReportType
+    public List<GriddedReportDataRow> GriddedReportDataRowList;
+    
+    public GriddedReportRequestResponse()
+    {
+      Clear();
+    }
+
+    public void Clear()
+    {
+      ReturnCode = ReportReturnCode.NoError;
+      ReportType = ReportType.None;
+      GriddedReportDataRowList = new List<GriddedReportDataRow>();
+    }
 
     /// <summary>
     /// Serialises content to the writer
@@ -33,19 +35,12 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
-
-      writer.WriteInt(TotalNumberOfPagesToCoverFilteredData);
-
-      writer.WriteBoolean(SubGrids != null);
-      if (SubGrids != null)
+      writer.WriteInt((int)ReturnCode);
+      writer.WriteInt((int)ReportType);
+      writer.WriteInt(GriddedReportDataRowList.Count);
+      for (int i = 0; i < GriddedReportDataRowList.Count; i++)
       {
-        writer.WriteInt(SubGrids.Count);
-
-        foreach (var subGrid in SubGrids)
-        {
-          writer.WriteInt((int) subGrid.GridDataType);
-          writer.WriteByteArray(subGrid.ToBytes());
-        }
+        GriddedReportDataRowList[i].ToBinary(writer);
       }
     }
 
@@ -56,28 +51,13 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);
-
-      TotalNumberOfPagesToCoverFilteredData = reader.ReadInt();
-
-      if (reader.ReadBoolean())
+      ReturnCode = (ReportReturnCode)reader.ReadInt();
+      ReportType = (ReportType)reader.ReadInt();
+      var griddedRowsCount = reader.ReadInt();
+      GriddedReportDataRowList = new List<GriddedReportDataRow>();
+      for (int i = 0; i < griddedRowsCount; i++)
       {
-        var numberOfSubGrids = reader.ReadInt();
-
-        if (numberOfSubGrids > 0)
-        {
-          SubGrids = new List<IClientLeafSubGrid>();
-
-          var clientLeafSubgridFactory = DIContext.Obtain<IClientLeafSubgridFactory>();
-
-          for (var i = 1; i <= numberOfSubGrids; i++)
-          {
-            var subgrid = clientLeafSubgridFactory.GetSubGrid((GridDataType) reader.ReadInt());
-
-            subgrid?.FromBytes(reader.ReadByteArray());
-
-            SubGrids.Add(subgrid);
-          }
-        }
+        GriddedReportDataRowList[i].FromBinary(reader);
       }
     }
 
@@ -86,11 +66,24 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
 
-      return base.Equals(other) &&
-             TotalNumberOfPagesToCoverFilteredData == other.TotalNumberOfPagesToCoverFilteredData &&
-             
-             (Equals(SubGrids, other.SubGrids) ||
-              (SubGrids != null && other.SubGrids != null && SubGrids.Count == other.SubGrids.Count && !SubGrids.Where((s, i) => !s.LeafContentEquals(other.SubGrids[i])).Any()));
+      var result = base.Equals(other) &&
+                   ReturnCode.Equals(other.ReturnCode) &&
+                   ReportType.Equals(other.ReportType);
+      if (!result)
+        return false;
+
+      if ((GriddedReportDataRowList == null && other.GriddedReportDataRowList != null) ||
+          (GriddedReportDataRowList != null && other.GriddedReportDataRowList == null) ||
+          (GriddedReportDataRowList?.Count != other.GriddedReportDataRowList?.Count))
+        return false;
+
+      for (int i = 0; i < GriddedReportDataRowList.Count; i++)
+      {
+        if (!GriddedReportDataRowList[i].Equals(other.GriddedReportDataRowList[i]))
+          return false;
+      }
+
+      return true;
     }
 
     public override bool Equals(object obj)
@@ -106,8 +99,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
       unchecked
       {
         int hashCode = base.GetHashCode();
-        hashCode = (hashCode * 397) ^ TotalNumberOfPagesToCoverFilteredData;
-        hashCode = (hashCode * 397) ^ (SubGrids != null ? SubGrids.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ ReturnCode.GetHashCode();
+        hashCode = (hashCode * 397) ^ ReportType.GetHashCode();
+        hashCode = (hashCode * 397) ^ GriddedReportDataRowList.GetHashCode();
         return hashCode;
       }
     }
