@@ -13,8 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="ResultHandling\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
   </ItemGroup>
 
 
