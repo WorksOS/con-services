@@ -22,4 +22,4 @@ COPY --from=builder /MockProjectWebApi .
 # Start the app
 ENTRYPOINT .\\src.exe
 
-# docker build -t mock -f .\src\service\MockProjectWebApi\build\DockerfileWinFramework.build --build-arg SERVICE_PATH=src/service/ .
+# docker build -t mock -f .\src\service\MockProjectWebApi\build\DockerfileWinFramework.build --build-arg SERVICE_PATH=src/service/MockProjectWebApi .
