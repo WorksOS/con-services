@@ -194,7 +194,7 @@ namespace VSS.TRex.SiteModels
     public bool DesignsLoaded => designs != null;
 
     // The siteProofingRuns is the set of proofing runs that have been collected in this site model
-    private ISiteProofingRunList siteProofingRuns { get; set; }
+    private ISiteProofingRunList siteProofingRuns;
 
     /// <summary>
     /// The SiteProofingRuns records all the proofing runs that have been seen in tag files for this sitemodel.
@@ -228,7 +228,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// SiteModelMachineDesigns records all the designs that have been seen in tag files for this sitemodel.
     /// </summary>
-    private ISiteModelMachineDesignList siteModelMachineDesigns { get; set; }
+    private ISiteModelMachineDesignList siteModelMachineDesigns;
 
     public ISiteModelMachineDesignList SiteModelMachineDesigns
     {
@@ -261,7 +261,7 @@ namespace VSS.TRex.SiteModels
     // about. Each machine contains a link to the machine hardware ID for the
     // appropriate machine
 
-    private IMachinesList machines { get; set; }
+    private IMachinesList machines;
 
     public IMachinesList Machines
     {
@@ -391,22 +391,20 @@ namespace VSS.TRex.SiteModels
       SiteModelExtent.Include(Source.SiteModelExtent);
 
       // Proofing runs
-      if (Source.SiteProofingRuns != null)
+      if (Source.SiteProofingRunsLoaded)
         for (var i = 0; i < Source.SiteProofingRuns.Count; i++)
         {
-          var profingRun = Source.SiteProofingRuns[i];
+          var proofingRun = Source.SiteProofingRuns[i];
 
-          if (SiteProofingRuns.Locate(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime) == null)
-            SiteProofingRuns.CreateNew(profingRun.Name, profingRun.MachineID, profingRun.StartTime, profingRun.EndTime, profingRun.Extents);
-          else
+          if (!SiteProofingRuns.CreateAndAddProofingRun(proofingRun.Name, proofingRun.MachineID, proofingRun.StartTime, proofingRun.EndTime, proofingRun.Extents))
           {
-            SiteProofingRuns[i].Extents.Include(profingRun.Extents);
+            SiteProofingRuns[i].Extents.Include(proofingRun.Extents);
 
-            if (DateTime.Compare(SiteProofingRuns[i].StartTime, profingRun.StartTime) > 0)
-              SiteProofingRuns[i].StartTime = profingRun.StartTime;
+            if (SiteProofingRuns[i].StartTime > proofingRun.StartTime)
+              SiteProofingRuns[i].StartTime = proofingRun.StartTime;
 
-            if (DateTime.Compare(SiteProofingRuns[i].EndTime, profingRun.EndTime) < 0)
-              SiteProofingRuns[i].EndTime = profingRun.EndTime;
+            if (SiteProofingRuns[i].EndTime < proofingRun.EndTime)
+              SiteProofingRuns[i].EndTime = proofingRun.EndTime;
           }
         }
 
@@ -431,7 +429,6 @@ namespace VSS.TRex.SiteModels
 
       SiteModelExtent.Write(writer);
 
-      //FProofingRuns.WriteToStream(Stream);
       //FSiteModelDesigns.WriteToStream(Stream);
 
       // Write the design names list
@@ -480,7 +477,6 @@ namespace VSS.TRex.SiteModels
 
       SiteModelExtent.Read(reader);
 
-      // FProofingRuns.ReadFromStream(Stream);
       // FSiteModelDesigns.ReadFromStream(Stream);
 
       // Read the design names list

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Common.Utilities.Interfaces;
 
@@ -29,7 +30,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersion); 
+      writer.Write(UtilitiesConsts.ReaderWriterVersionMachineDesign); 
 
       writer.Write(Id);
       writer.Write(Name);
@@ -44,8 +45,8 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersion)
-        throw new Exception($"Invalid version number ({version}) reading machine design names, expected version (1)");
+      if (version != UtilitiesConsts.ReaderWriterVersionMachineDesign)
+        throw new TRexSerializationVersionException(UtilitiesConsts.ReaderWriterVersionMachineDesign, version);
 
       Id = reader.ReadInt32();
       Name = reader.ReadString();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -21,14 +22,14 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public Guid DataModelID { get; set; }
 
-    public ISiteProofingRun Locate(string proofingRunName, long machineID, DateTime startTime, DateTime endTime) =>
+    private ISiteProofingRun Locate(string proofingRunName, short machineID, DateTime startTime, DateTime endTime) =>
       Find(x =>
         x.Name == proofingRunName &&
         x.MachineID == machineID &&
         DateTime.Compare(x.StartTime, startTime) == 0 &&
         DateTime.Compare(x.EndTime, endTime) == 0);
 
-    public ISiteProofingRun CreateNew(string name, long machineID, DateTime startTime, DateTime endTime, BoundingWorldExtent3D extents)
+    private ISiteProofingRun CreateNew(string name, short machineID, DateTime startTime, DateTime endTime, BoundingWorldExtent3D extents)
     {
       var existingOne = Locate(name, machineID, startTime, endTime);
 
@@ -39,6 +40,16 @@ namespace VSS.TRex.SiteModels
       Add(proofingRun);
 
       return proofingRun;
+    }
+
+    public bool CreateAndAddProofingRun(string name, short machineID, DateTime startTime, DateTime endTime, BoundingWorldExtent3D extents)
+    {
+      bool result = false;
+      
+      if (Locate(name, machineID, startTime, endTime) == null)
+        result = CreateNew(name, machineID, startTime, endTime, extents) != null;
+
+      return result;
     }
 
     /// <summary>
@@ -75,8 +86,8 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersion)
-        throw new Exception($"Invalid version number ({version}) reading proofing run list, expected version (1)");
+      if (version != UtilitiesConsts.ReaderWriterVersionProofingRunList)
+        throw new TRexSerializationVersionException(UtilitiesConsts.ReaderWriterVersionProofingRunList, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -91,7 +102,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersion);
+      writer.Write(UtilitiesConsts.ReaderWriterVersionProofingRunList);
 
       writer.Write((int)Count);
 

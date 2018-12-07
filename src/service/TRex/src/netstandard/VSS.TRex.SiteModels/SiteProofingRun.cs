@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Cells;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -13,7 +14,7 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteProofingRun : IEquatable<string>, ISiteProofingRun
   {
-    public long MachineID { get; set; }
+    public short MachineID { get; set; }
 
     public string Name { get; set; }
 
@@ -43,10 +44,10 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     /// <param name="name"></param>
     /// <param name="machineID"></param>
-    /// <param name="stratTime"></param>
+    /// <param name="startTime"></param>
     /// <param name="endTime"></param>
     /// <param name="extents"></param>
-    public SiteProofingRun(string name, long machineID, DateTime startTime, DateTime endTime, BoundingWorldExtent3D extents) : this()
+    public SiteProofingRun(string name, short machineID, DateTime startTime, DateTime endTime, BoundingWorldExtent3D extents) : this()
     {
       Name = name;
       MachineID = machineID;
@@ -67,11 +68,11 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersion)
-        throw new Exception($"Invalid version number ({version}) reading proofing run data, expected version (1)");
+      if (version != UtilitiesConsts.ReaderWriterVersionProofingRun)
+        throw new TRexSerializationVersionException(UtilitiesConsts.ReaderWriterVersionProofingRun, version);
 
       Name = reader.ReadString();
-      MachineID = reader.ReadInt64();
+      MachineID = reader.ReadInt16();
       StartTime = DateTime.FromBinary(reader.ReadInt64());
       EndTime = DateTime.FromBinary(reader.ReadInt64());
 
@@ -89,7 +90,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersion);
+      writer.Write(UtilitiesConsts.ReaderWriterVersionProofingRun);
 
       writer.Write(Name);
       writer.Write(MachineID);

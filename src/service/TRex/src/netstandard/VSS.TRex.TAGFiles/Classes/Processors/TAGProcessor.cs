@@ -101,32 +101,25 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     // we process it here.
     protected bool ProcessProofingPassInformation()
     {
-      bool Result = true;
-      string TempStr = EndProofingName != string.Empty ? EndProofingName :
-          Design == string.Empty ? "No Design" : Design;
+      string tempStr = EndProofingName != string.Empty ?
+        EndProofingName :
+         Design == string.Empty ? "No Design" : Design;
 
-      DateTime LocalTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
+      DateTime localTime = StartProofingDataTime + Time.GPS.GetLocalGMTOffset();
 
-      EndProofingName = $"{TempStr} ({LocalTime:yyyy/MM/dd} {LocalTime:HH:mm:ss})";
+      EndProofingName = $"{tempStr} ({localTime:yyyy/MM/dd} {localTime:HH:mm:ss})";
 
-      // Create a new proofing run entry to represent this run.
-      if (SiteModel.SiteProofingRuns.Locate(EndProofingName, Machine.InternalSiteModelMachineIndex, StartProofingDataTime, DataTime) == null)
-      {
-        // No match found - create a new one
-        Result = SiteModel.SiteProofingRuns.CreateNew(EndProofingName,
-                                                      Machine.InternalSiteModelMachineIndex,
-                                                      StartProofingDataTime,
-                                                      DataTime,
-                                                      ProofingRunExtent) != null;
-      }
-      else
-      {
-        // We found an exact match. No need to add this proofing run again
-      }
+      // Create and add a new proofing run entry to represent this run.
+      var result = SiteModel.SiteProofingRuns.CreateAndAddProofingRun(
+                     EndProofingName,
+                     Machine.InternalSiteModelMachineIndex,
+                     StartProofingDataTime,
+                     DataTime,
+                     ProofingRunExtent);
 
       ProofingRunExtent.SetInverted();
 
-      return Result;
+      return result;
     }
 
     /// <summary>
@@ -227,10 +220,10 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// Records a change in the 'ICMode' flags from the compaction system. These flags also drive two 
     /// other events: vibration events and automatics vibration events
     /// </summary>
-    /// <param name="Value"></param>
-    protected override void SetICMode(byte Value)
+    /// <param name="value"></param>
+    protected override void SetICMode(byte value)
     {
-      base.SetICMode(Value);
+      base.SetICMode(value);
 
       VibrationState TempVibrationState = VibrationState.Invalid;
       AutoVibrationState TempAutoVibrationState = AutoVibrationState.Unknown;
@@ -241,13 +234,9 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         {
           case CompactionSensorType.Volkel:
             {
-              if ((((Value & 0x01) >> 0) != 0) &&
-                  (((Value & 0x02) >> 1) != 0) &&
-                  (((Value & 0x04) >> 2) != 0) &&
-                  (((Value & 0x08) >> 3)) != 0) // Vibration is On...
-                TempVibrationState = VibrationState.On;
-              else // Vibration is Off...
-                TempVibrationState = VibrationState.Off;
+              TempVibrationState = (value & ICModeFlags.IC_VOLKEL_SENSOR_VIBRATION_ON_MASK) == ICModeFlags.IC_VOLKEL_SENSOR_VIBRATION_ON_MASK ? 
+                VibrationState.On : 
+                VibrationState.Off;
 
               TempAutoVibrationState = AutoVibrationState.Unknown;
 
@@ -256,20 +245,12 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
           case CompactionSensorType.MC024:
           case CompactionSensorType.CATFactoryFitSensor:
-            {
-
-              TempVibrationState = (VibrationState)((Value & 0x04) >> 2);
-              TempAutoVibrationState = (AutoVibrationState)(Value & 0x03);
-              break;
-            }
-
           case CompactionSensorType.NoSensor:
-
             {
               // Per TFS US 37212: Machines that do not report a compaction sensor type will
               // report vibration state information directly from the machine ECM in the FLAGS TAG.
-              TempVibrationState = (VibrationState)((Value & 0x04) >> 2);
-              TempAutoVibrationState = (AutoVibrationState)(Value & 0x03);
+              TempVibrationState = (VibrationState)((value & ICModeFlags.IC_TEMPERATURE_VIBRATION_STATE_MASK) >> ICModeFlags.IC_TEMPERATURE_VIBRATION_STATE_SHIFT);
+              TempAutoVibrationState = (AutoVibrationState)(value & ICModeFlags.IC_TEMPERATURE_AUTO_VIBRATION_STATE_MASK);
               break;
             }
           default:
@@ -279,7 +260,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
         MachineTargetValueChangesAggregator.VibrationStateEvents.PutValueAtDate(DataTime, TempVibrationState);
         MachineTargetValueChangesAggregator.AutoVibrationStateEvents.PutValueAtDate(DataTime, TempAutoVibrationState);
-        MachineTargetValueChangesAggregator.ICFlagsStateEvents.PutValueAtDate(DataTime, Value);
+        MachineTargetValueChangesAggregator.ICFlagsStateEvents.PutValueAtDate(DataTime, value);
       }
       else
       {

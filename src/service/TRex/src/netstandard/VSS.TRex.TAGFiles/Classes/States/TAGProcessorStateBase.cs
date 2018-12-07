@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private ushort _ICLayerIDValue = CellPassConsts.NullLayerID;
 
     private MachineGear _ICGear = CellPassConsts.NullMachineGear;
-    private byte _ICMode = ICModeFlags.ICUnknownInvalidMC024SensorFlag;
+    private byte _ICMode = ICModeFlags.IC_UNKNOWN_INVALID_MC0243_SENSOR_FLAG;
     private byte _ICSonic3D = CellPassConsts.Null3DSonic;
 
     private CompactionSensorType _ICSensorType = CompactionSensorType.NoSensor;

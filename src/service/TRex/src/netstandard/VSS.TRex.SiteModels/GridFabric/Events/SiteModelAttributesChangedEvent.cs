@@ -21,6 +21,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     public bool MachinesModified { get; set; }
     public bool MachineTargetValuesModified { get; set; }
     public bool MachineDesignsModified { get; set; }
+    public bool ProofingRunsModified { get; set; }
+
 
     /// <summary>
     /// A serialized bit mask subgrid tree representing the set of subgrids that have been changed in a
@@ -38,6 +40,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       writer.WriteBoolean(MachinesModified);
       writer.WriteBoolean(MachineTargetValuesModified);
       writer.WriteBoolean(MachineDesignsModified);
+      writer.WriteBoolean(ProofingRunsModified);
       writer.WriteByteArray(ExistenceMapChangeMask);
     }
 
@@ -51,6 +54,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       MachinesModified = reader.ReadBoolean();
       MachineTargetValuesModified = reader.ReadBoolean();
       MachineDesignsModified = reader.ReadBoolean();
+      ProofingRunsModified = reader.ReadBoolean();
       ExistenceMapChangeMask = reader.ReadByteArray();
     }
 
@@ -67,6 +71,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
              MachinesModified == other.MachinesModified && 
              MachineTargetValuesModified == other.MachineTargetValuesModified && 
              MachineDesignsModified == other.MachineDesignsModified &&
+             ProofingRunsModified == other.ProofingRunsModified &&
              (Equals(ExistenceMapChangeMask, other.ExistenceMapChangeMask) ||
               ExistenceMapChangeMask != null && other.ExistenceMapChangeMask != null &&
               ExistenceMapChangeMask.Length == other.ExistenceMapChangeMask.Length &&
@@ -93,6 +98,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         hashCode = (hashCode * 397) ^ MachinesModified.GetHashCode();
         hashCode = (hashCode * 397) ^ MachineTargetValuesModified.GetHashCode();
         hashCode = (hashCode * 397) ^ MachineDesignsModified.GetHashCode();
+        hashCode = (hashCode * 397) ^ ProofingRunsModified.GetHashCode();
         hashCode = (hashCode * 397) ^ (ExistenceMapChangeMask != null ? ExistenceMapChangeMask.GetHashCode() : 0);
         return hashCode;
       }
