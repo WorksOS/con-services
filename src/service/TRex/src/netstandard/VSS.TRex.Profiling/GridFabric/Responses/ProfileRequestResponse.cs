@@ -11,7 +11,7 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
   /// </summary>
   public class ProfileRequestResponse : SubGridsPipelinedReponseBase, IAggregateWith<ProfileRequestResponse>
   {
-    public List<IProfileCell> ProfileCells { get; set; } = new List<IProfileCell>();
+    public List<ProfileCell> ProfileCells { get; set; } = new List<ProfileCell>();
 
     /// <summary>
     /// Aggregates an other response with this response
@@ -52,7 +52,7 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
       base.FromBinary(reader);
 
       if (ProfileCells == null)
-        ProfileCells = new List<IProfileCell>();
+        ProfileCells = new List<ProfileCell>();
 
       if (reader.ReadBoolean())
       {

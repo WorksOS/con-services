@@ -202,8 +202,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       protected void SelectCurrentDesignExtent()
         {
-            //TODO: FICSiteModel.SiteModelDesigns.AcquireLock;
-            try
+            lock (SiteModel.SiteModelDesigns)
             {
                 int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(Design);
 
@@ -221,10 +220,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 }
                 else
                     DesignExtent = SiteModel.SiteModelDesigns[DesignIndex].Extents;
-            }
-            finally
-            {
-                //TODO - FICSiteModel.SiteModelDesigns.ReleaseLock;
             }
         }
 
@@ -743,8 +738,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
             // Update the design extent...
             if (Design != string.Empty)
             {
-                // TODO readd when designs are implemented
-                // UpdateCurrentDesignExtent;
+                 UpdateCurrentDesignExtent();
             }
         }
 

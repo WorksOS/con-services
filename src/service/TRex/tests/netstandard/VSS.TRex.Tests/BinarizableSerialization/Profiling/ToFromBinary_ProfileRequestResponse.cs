@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         },
         1, 2, 3.0, 4.0);
 
-      var cells = new List<IProfileCell>{ cell };
+      var cells = new List<ProfileCell>{ cell };
 
       var response = new ProfileRequestResponse
       {

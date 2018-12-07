@@ -10,13 +10,8 @@ using VSS.TRex.Profiling.Models;
 
 namespace VSS.TRex.Profiling
 {
-  /// <summary>
-  /// ProfileCell is a package of information relating to one cell in a profile drawn across IC data
-  /// </summary>
-  public class ProfileCell : IProfileCell
+  public class ProfileCellBase : IProfileCellBase
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ProfileCell>();
-
     /// <summary>
     /// The real-world distance from the 'start' of the profile line drawn by the user;
     /// this is used to ensure that the client GUI correctly aligns the profile
@@ -28,15 +23,7 @@ namespace VSS.TRex.Profiling
     /// The real-world length of that part of the profile line which crosses the underlying cell;
     /// used to determine the width of the profile column as displayed in the client GUI
     /// </summary>
-    public double InterceptLength;
-
-    /// <summary>
-    /// A collection of layers constituting a profile through a cell.
-    /// Depending on the context, the layers may be equivalent to the passes over a cell
-    /// or may represent the lifts over a cell, in which case the Passes collection
-    /// for an individual layer will contain the passes making up that lift.
-    /// </summary>
-    public IProfileLayers Layers { get; set; }
+    public double InterceptLength { get; set; }
 
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
@@ -48,6 +35,24 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public uint OTGCellY { get; set; }
 
+    public float DesignElev { get; set; }
+  }
+
+  /// <summary>
+  /// ProfileCell is a package of information relating to one cell in a profile drawn across IC data
+  /// </summary>
+  public class ProfileCell : ProfileCellBase, IProfileCell
+  {
+    private static ILogger Log = Logging.Logger.CreateLogger<ProfileCell>();
+
+    /// <summary>
+    /// A collection of layers constituting a profile through a cell.
+    /// Depending on the context, the layers may be equivalent to the passes over a cell
+    /// or may represent the lifts over a cell, in which case the Passes collection
+    /// for an individual layer will contain the passes making up that lift.
+    /// </summary>
+    public IProfileLayers Layers { get; set; }
+
     public float CellLowestElev;
     public float CellHighestElev;
     public float CellLastElev;
@@ -56,7 +61,6 @@ namespace VSS.TRex.Profiling
     public float CellHighestCompositeElev;
     public float CellLastCompositeElev;
     public float CellFirstCompositeElev;
-    public float DesignElev;
 
     public short CellCCV { get; set; }
     public short CellTargetCCV { get; set; }

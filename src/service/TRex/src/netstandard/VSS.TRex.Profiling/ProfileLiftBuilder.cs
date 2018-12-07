@@ -31,9 +31,9 @@ namespace VSS.TRex.Profiling
   /// Responsible for orchestrating analysis of identified cells along the path of a profile line
   /// and deriving the profile related analytics for each cell
   /// </summary>
-  public class ProfileLiftBuilder : IProfileLiftBuilder
+  public class ProfileLiftBuilder<T> : IProfileLiftBuilder<T> where T : class, IProfileCellBase
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ProfileLiftBuilder>();
+    private static ILogger Log = Logging.Logger.CreateLogger<ProfileLiftBuilder<T>>();
 
     /// <summary>
     /// Local reference to the client subgrid factory
@@ -508,7 +508,7 @@ namespace VSS.TRex.Profiling
     /// <param name="ProfileCells"></param>
     /// <param name="cellPassIterator"></param>
     /// <returns></returns>
-    public bool Build(List<IProfileCell> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
+    public bool Build(List<T> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
     {
       //{$IFDEF DEBUG}
       //SIGLogMessage.PublishNoODS(Self, Format('BuildLiftProfileFromInitialLayer: Processing %d cells', [FProfileCells.Count]), slmcDebug);
@@ -523,7 +523,7 @@ namespace VSS.TRex.Profiling
 
       for (int I = 0; I < ProfileCells.Count; I++)
       {
-        ProfileCell = (ProfileCell) ProfileCells[I];
+        ProfileCell = ProfileCells[I] as ProfileCell;
 
         // get subgrid setup iterator and set cell address
         // get subgrid origin for cell address
@@ -556,7 +556,7 @@ namespace VSS.TRex.Profiling
             CompositeHeightsGrid = null;
           }
 
-          if (!LiftFilterMask.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
+          if (!LiftFilterMask<T>.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
             ProfileCells, FilterMask, I, CellFilter))
             continue;
 
@@ -577,7 +577,7 @@ namespace VSS.TRex.Profiling
             }
           }
 
-          if (!LiftFilterMask.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
+          if (!LiftFilterMask<T>.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
             CellPassFilter_ElevationRangeDesign, out DesignProfilerRequestResult FilterDesignErrorCode))
           {
             if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)

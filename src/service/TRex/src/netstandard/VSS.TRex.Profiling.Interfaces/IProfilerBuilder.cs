@@ -7,7 +7,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
-  public interface IProfilerBuilder
+  public interface IProfilerBuilder<T>
   {
     /// <summary>
     /// Builder responsible for per-cell profile analysis
@@ -17,12 +17,12 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <summary>
     /// Builder responsible for constructing cell vector from profile line
     /// </summary>
-    ICellProfileBuilder CellProfileBuilder { get; set; }
+    ICellProfileBuilder<T> CellProfileBuilder { get; set; }
 
     /// <summary>
     /// Builder responsible from building overall profile information from cell vector
     /// </summary>
-    IProfileLiftBuilder ProfileLiftBuilder { get; set; }
+    IProfileLiftBuilder<T> ProfileLiftBuilder { get; set; }
 
     /// <summary>
     /// Configures a new profile builder that provides the three core builders used in profiling: construction of cell vector from profile line,

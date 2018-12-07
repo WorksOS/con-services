@@ -100,7 +100,7 @@ namespace VSS.TRex.Profiling.Executors
       ProfileRequestResponse Response = null;
       try
       {
-        List<IProfileCell> ProfileCells = new List<IProfileCell>(1000);
+        List<ProfileCell> ProfileCells = new List<ProfileCell>(1000);
 
         try
         {
@@ -142,7 +142,7 @@ namespace VSS.TRex.Profiling.Executors
 
           Log.LogInformation("Creating IProfileBuilder");
 
-          IProfilerBuilder Profiler = DIContext.Obtain<IProfilerBuilder>();
+          IProfilerBuilder<ProfileCell> Profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
           Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, 
             /* todo design: */null, /* todo elevation range design: */null,
