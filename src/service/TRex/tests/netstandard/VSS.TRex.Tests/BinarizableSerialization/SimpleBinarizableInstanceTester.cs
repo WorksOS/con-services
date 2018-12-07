@@ -2,7 +2,6 @@
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using Xunit;
-using FluentAssertions;
 
 namespace VSS.TRex.Tests.BinarizableSerialization
 {
