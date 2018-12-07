@@ -3,23 +3,22 @@ ARG SERVICE_PATH
 
 # Set the Working Directory
 WORKDIR /build
+
 # Copy the app
 COPY . /build
+
 RUN ls
 RUN dotnet publish ./$env:SERVICE_PATH/MockProjectWebApi.csproj  -o /MockProjectWebApi -f net471 -c Docker
 
-# Configure the listening port to 80
-ENV ASPNETCORE_URLS http://*:5001
-EXPOSE 5001
 
 FROM microsoft/dotnet-framework:4.7.1-runtime-windowsservercore-ltsc2016
 WORKDIR /app
 COPY --from=builder /MockProjectWebApi .
 
-# Create the mount point to hold volume from host for logs
-#VOLUME logs
+# Configure the listening port to 80
+ENV ASPNETCORE_URLS http://*:5001
+EXPOSE 5001
 
-# Start the app
 ENTRYPOINT .\\src.exe
 
 # docker build -t mock -f .\src\service\MockProjectWebApi\build\DockerfileWinFramework.build --build-arg SERVICE_PATH=src/service/MockProjectWebApi .
