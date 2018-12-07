@@ -55,7 +55,7 @@ node ('jenkinsslave-pod') {
 	def elbContainerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
     def elbTestContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"	
 
-	def ecrRepository = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
+    def ecrRepository = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
     def finalImage = "${ecrRepository}:${versionNumber}"
 	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	def servicePath = params.SERVICE_PATH
