@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using Xunit;

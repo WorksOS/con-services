@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
 using Xunit;
