@@ -1,13 +1,12 @@
-﻿using SVOICDecls;
-using SVOICFilterSettings;
-using System.Net;
+﻿using System.Net;
+using SVOICDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.Common.Executors
 {
@@ -15,13 +14,12 @@ namespace VSS.Productivity3D.Common.Executors
     {
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      var request = item as CellDatumRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<CellDatumRequest>();
+      var request = CastRequestObjectTo<CellDatumRequest>(item);
 
       if (GetCellDatumData(request, out var data))
+      {
         return ConvertCellDatumResult(data);
+      }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
         "No cell datum returned"));

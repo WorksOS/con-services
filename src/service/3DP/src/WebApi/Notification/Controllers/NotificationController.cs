@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IFileListProxy fileListProxy;
 
     /// <summary>
-    /// For getting filter by Uid. Used here so FilterService can clear an item from cache.
+    /// For getting filter by FileUid. Used here so FilterService can clear an item from cache.
     /// </summary>
     private readonly IFilterServiceProxy filterServiceProxy;
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VLPDDecls;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
@@ -19,7 +20,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// Linework (DXF) file controller.
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  [ProjectVerifier]
   public class LineworkController : BaseController<LineworkController>
   {
     /// <inheritdoc />
@@ -28,33 +28,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     { }
 
     /// <summary>
-    /// Get all boundaries from a linework (DXF) file.
+    /// Get all boundaries from provided linework (DXF) files.
     /// </summary>
-    [PostRequestVerifier]
     [Route("api/v2/linework/boundaries")]
-    [HttpGet]
-//    public async Task<IActionResult> GetBoundariesFromLinework([FromBody] LineworkFileRequest requestDto)
-    public async Task<IActionResult> GetBoundariesFromLinework(
-      Guid projectUid,
-      Guid designUid
-      )
+    [HttpPost]
+    public async Task<IActionResult> GetBoundariesFromLinework(DxfFileRequest requestDto)
     {
-    //  var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(requestDto, "Data");
-  //    Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: " + serializedRequest);
+      // TODO Request logging?
 
-      Task<long> projectId = GetLegacyProjectId(projectUid);
-      Task<DesignDescriptor> designDescriptorTask = GetAndValidateDesignDescriptor(projectUid, designUid);
+      // TODO Upload file to temp folder on Raptor ASNode host.
 
       var requestObj = LineworkRequest.Create(
-        projectId.Result,
-        designDescriptorTask.Result,
+        "aarons survey.dxf",
+        @"D:\VLPDProductionData\Temp\12121212\",
+        string.Empty,
         TVLPDDistanceUnits.vduImperialFeet,
-        null
-        );
+        null);
 
       var result = await RequestExecutorContainerFactory
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
-                         .ProcessAsync(requestObj).ConfigureAwait(false);
+                         .ProcessAsync(requestObj);
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, result)

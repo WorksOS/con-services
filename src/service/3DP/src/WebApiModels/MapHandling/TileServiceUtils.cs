@@ -162,7 +162,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         return string.Empty;
 
       if (designDescriptor.File != null)
-        return $"{designDescriptor.File.filespaceId}:{designDescriptor.File.path}/{designDescriptor.File.fileName}";
+        return $"{designDescriptor.File.FilespaceId}:{designDescriptor.File.Path}/{designDescriptor.File.FileName}";
 
       return designDescriptor.Id.ToString();
     }

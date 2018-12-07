@@ -38,8 +38,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.ProjectUid,
             request.BaseFilter,
             request.TopFilter,
-            request.BaseDesignDescriptor.Uid,
-            request.TopDesignDescriptor.Uid,
+            request.BaseDesignDescriptor.FileUid,
+            request.TopDesignDescriptor.FileUid,
             request.VolumeCalcType);
 
           return trexCompactionDataProxy.SendSummaryVolumesRequest(summaryVolumesRequest, customHeaders).Result;

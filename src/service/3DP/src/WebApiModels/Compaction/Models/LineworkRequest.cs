@@ -1,5 +1,5 @@
 ﻿using VLPDDecls;
-using VSS.Productivity3D.Common.Interfaces;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
@@ -7,9 +7,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
   /// <summary>
   /// Request DTO from 3DP to Raptor/TRex.
   /// </summary>
-  public class LineworkRequest : ProjectID, IValidatable
+  public class LineworkRequest : ProjectID
   {
-    public DesignDescriptor LineworkDescriptor { get; private set; }
+    public FileDescriptor FileDescriptor { get;private set; }
     public TVLPDDistanceUnits LineworkUnits { get; private set; }
     public string CoordSystemFileName { get; private set; }
     public int NumberOfBoundariesToProcess => string.IsNullOrEmpty(CoordSystemFileName) ? 1 : __Global.MAX_BOUNDARIES_TO_PROCESS;
@@ -19,29 +19,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     { }
 
     public static LineworkRequest Create(
-      long projectId,
-      DesignDescriptor lineworkDescriptor,
+      string filename,
+      string path,
+      string filespaceId,
       TVLPDDistanceUnits lineworkUnits,
       string coordSystemFilename)
     {
       var result = new LineworkRequest
       {
-        ProjectId = projectId,
-        LineworkDescriptor = lineworkDescriptor,
+        ProjectId = 1000544, // TODO Why is this required and why does it need to match... the folder name?
+        FileDescriptor = FileDescriptor.CreateFileDescriptor(filespaceId, path, filename),
         CoordSystemFileName = coordSystemFilename?.Trim(),
-        LineworkUnits = lineworkUnits,
+        LineworkUnits = lineworkUnits
       };
 
       result.Validate();
 
       return result;
-    }
-
-    public override void Validate()
-    {
-      base.Validate();
-
-   //   throw new System.NotImplementedException();
     }
   }
 }

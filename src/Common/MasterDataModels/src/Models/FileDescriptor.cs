@@ -19,16 +19,14 @@ namespace VSS.MasterData.Models.Models
     /// The id of the filespace in TCC where the file is located.
     /// </summary>
     [JsonProperty(PropertyName = "filespaceId", Required = Required.Always)]
-    [Required]
-    public string filespaceId { get; private set; }
+    public string FilespaceId { get; private set; }
 
     /// <summary>
     /// The full path of the file.
     /// </summary>
     [MaxLength(MAX_PATH)]
     [JsonProperty(PropertyName = "path", Required = Required.Always)]
-    [Required]
-    public string path { get; private set; }
+    public string Path { get; private set; }
 
     /// <summary>
     /// The name of the file.
@@ -36,8 +34,7 @@ namespace VSS.MasterData.Models.Models
     [ValidFilename(MAX_FILE_NAME)]
     [MaxLength(MAX_FILE_NAME)]
     [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
-    [Required]
-    public string fileName { get; private set; }
+    public string FileName { get; private set; }
 
     /// <summary>
     /// Private constructor
@@ -48,18 +45,13 @@ namespace VSS.MasterData.Models.Models
     /// <summary>
     /// Create instance of FileDescriptor
     /// </summary>
-    public static FileDescriptor CreateFileDescriptor
-    (
-      string filespaceId,
-      string path,
-      string fileName
-    )
+    public static FileDescriptor CreateFileDescriptor(string filespaceId, string path, string fileName)
     {
       return new FileDescriptor
       {
-        filespaceId = filespaceId,
-        path = path,
-        fileName = fileName
+        FilespaceId = filespaceId,
+        Path = path,
+        FileName = fileName
       };
     }
 
@@ -80,9 +72,9 @@ namespace VSS.MasterData.Models.Models
 
     public static FileDescriptor EmptyFileDescriptor { get; } = new FileDescriptor
     {
-      filespaceId = string.Empty,
-      path = string.Empty,
-      fileName = string.Empty
+      FilespaceId = string.Empty,
+      Path = string.Empty,
+      FileName = string.Empty
     };
 
     /// <summary>
@@ -90,14 +82,13 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (string.IsNullOrEmpty(filespaceId) || string.IsNullOrEmpty(path) ||
-          string.IsNullOrEmpty(fileName))
+      if (string.IsNullOrEmpty(FilespaceId) || string.IsNullOrEmpty(Path) ||
+          string.IsNullOrEmpty(FileName))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Filespace Id, filespace name, path and file name are all required"));
       }
-
     }
 
     /// <summary>
@@ -105,13 +96,13 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     public override string ToString()
     {
-      return $"{fileName}: {filespaceId}, {path}";
+      return $"{FileName}: {FilespaceId}, {Path}";
     }
 
     public void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
-      if (string.IsNullOrEmpty(filespaceId) || string.IsNullOrEmpty(path) ||
-          string.IsNullOrEmpty(fileName))
+      if (string.IsNullOrEmpty(FilespaceId) || string.IsNullOrEmpty(Path) ||
+          string.IsNullOrEmpty(FileName))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest,
           ContractExecutionStatesEnum.ValidationError,
@@ -128,8 +119,8 @@ namespace VSS.MasterData.Models.Models
     {
       if (ReferenceEquals(null, other)) return false;
       if (ReferenceEquals(this, other)) return true;
-      return string.Equals(filespaceId, other.filespaceId) && string.Equals(path, other.path) &&
-             string.Equals(fileName, other.fileName);
+      return string.Equals(FilespaceId, other.FilespaceId) && string.Equals(Path, other.Path) &&
+             string.Equals(FileName, other.FileName);
     }
 
     public override bool Equals(object obj)
@@ -144,9 +135,9 @@ namespace VSS.MasterData.Models.Models
     {
       unchecked
       {
-        var hashCode = filespaceId != null ? filespaceId.GetHashCode() : 0;
-        hashCode = (hashCode * 397) ^ (path != null ? path.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (fileName != null ? fileName.GetHashCode() : 0);
+        var hashCode = FilespaceId != null ? FilespaceId.GetHashCode() : 0;
+        hashCode = (hashCode * 397) ^ (Path != null ? Path.GetHashCode() : 0);
+        hashCode = (hashCode * 397) ^ (FileName != null ? FileName.GetHashCode() : 0);
         return hashCode;
       }
     }

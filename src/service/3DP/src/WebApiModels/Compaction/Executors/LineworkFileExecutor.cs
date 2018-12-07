@@ -4,10 +4,11 @@ using ASNode.DXF.RequestBoundaries.RPC;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -22,32 +23,39 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (UseTRexGateway("ENABLE_TREX_GATEWAY"))
       {
-        return CallTRexEndpoint(request);
+        var result = CallTRexEndpoint(request);
+
+        return result;
       }
 
       if (UseRaptorGateway("ENABLE_RAPTOR_GATEWAY"))
       {
         var result = CallRaptorEndpoint(request);
+
+        return result;
       }
 
       return ContractExecutionResult.ErrorResult();
     }
 
-    private ContractExecutionResult CallTRexEndpoint(LineworkRequest request)
+    private DxfLineworkFileResult CallTRexEndpoint(LineworkRequest request)
     {
-      throw new NotImplementedException();
+      throw new NotImplementedException("TRex Gateway not yet implemented for LineworkFileExecutor");
     }
 
-    private ContractExecutionResult CallRaptorEndpoint(LineworkRequest request)
+    private DxfLineworkFileResult CallRaptorEndpoint(LineworkRequest request)
     {
       var returnResult = TASNodeErrorStatus.asneUnknown;
 
       try
       {
+        var customDescriptor = new TVLPDDesignDescriptor();
+        customDescriptor.Init(0, string.Empty, string.Empty, request.FileDescriptor.Path, request.FileDescriptor.FileName, 0);
+
         var args = new TASNodeServiceRPCVerb_RequestBoundariesFromLinework_Args
         {
           DataModelID = request.ProjectId ?? -1,
-          LineworkDescriptor = RaptorConverters.DesignDescriptor(request.LineworkDescriptor),
+          LineworkDescriptor = customDescriptor,
           MaxVerticesPerBoundary = request.NumberOfVerticesPerBoundary,
           MaxBoundariesToProcess = request.NumberOfBoundariesToProcess,
           CoordSystemFileName = request.CoordSystemFileName,
@@ -57,11 +65,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         returnResult = raptorClient.GetBoundariesFromLinework(args, out var lineworksBoundary);
 
         log.LogInformation($"RequestBoundariesFromLinework: result: {JsonConvert.SerializeObject(returnResult)}");
+
+        return DxfLineworkFileResult.Create((int)returnResult, "", lineworksBoundary);
       }
       catch (Exception ex)
       {
         log.LogError($"RequestBoundariesFromLinework: exception {ex.Message}");
-        return new ContractExecutionResult((int)returnResult);
+        return DxfLineworkFileResult.Create((int)returnResult, "", null);
       }
       finally
       {

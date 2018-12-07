@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "File Uid is required"));
+            "File FileUid is required"));
       }
       if (string.IsNullOrEmpty(UserEmailAddress))
       {

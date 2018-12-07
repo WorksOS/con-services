@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
         {
           log.LogDebug("Updating Raptor design cache");
 
-          var result1 = raptorClient.UpdateCacheWithDesign(request.ProjectId.Value, request.File.fileName, 0, false);
+          var result1 = raptorClient.UpdateCacheWithDesign(request.ProjectId.Value, request.File.FileName, 0, false);
           if (result1 != TDesignProfilerRequestResult.dppiOK)
           {
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
 
             var suffix = FileUtils.GeneratedFileSuffix(fileType);
             //Get PRJ file contents from Raptor
-            log.LogDebug($"Getting projection file from Raptor for file {request.File.fileName}");
+            log.LogDebug($"Getting projection file from Raptor for file {request.File.FileName}");
             var dxfUnitsType = fileType == ImportedFileType.Linework
               ? (TVLPDDistanceUnits)request.DXFUnitsType
               : TVLPDDistanceUnits.vduMeters; //always metric for design surface and alignment as we generate the DXF file.
@@ -165,9 +165,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
               }
             }
             //Calculate the zoom range
-            string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
-            var fullGeneratedName = $"{request.File.path}/{generatedName}";
-            zoomResult = await tileGenerator.CalculateTileZoomRange(request.File.filespaceId, fullGeneratedName).ConfigureAwait(false); 
+            string generatedName = FileUtils.GeneratedFileName(request.File.FileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+            var fullGeneratedName = $"{request.File.Path}/{generatedName}";
+            zoomResult = await tileGenerator.CalculateTileZoomRange(request.File.FilespaceId, fullGeneratedName).ConfigureAwait(false); 
             //Generate DXF tiles
             await tileGenerator.CreateDxfTiles(request.ProjectId.Value, request.File, suffix, zoomResult, false).ConfigureAwait(false);
             break;
@@ -178,7 +178,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
               .Construct_GroundSurface_Args(
                 request.ProjectId.Value,
                 request.FileId,
-                FileUtils.SurveyedSurfaceUtc(request.File.fileName).Value,
+                FileUtils.SurveyedSurfaceUtc(request.File.FileName).Value,
                 RaptorConverters.DesignDescriptor(dd)
               );
 
@@ -218,7 +218,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
     /// <param name="extension">The file extension of the generated file</param>
     private async Task<bool> CreateTransformFile(long projectId, FileDescriptor fileDescr, string fileData, string suffix, string extension)
     {
-      log.LogDebug("Creating {0} transform file for {1}", extension, fileDescr.fileName);
+      log.LogDebug("Creating {0} transform file for {1}", extension, fileDescr.FileName);
 
       if (string.IsNullOrEmpty(fileData))
       {
@@ -280,7 +280,7 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
       }
       else
       {
-        log.LogWarning("Failed to generate DXF boundary for file {0} for project {1}. Raptor error {2}", fileDescr.fileName, projectId, designProfilerResult);
+        log.LogWarning("Failed to generate DXF boundary for file {0} for project {1}. Raptor error {2}", fileDescr.FileName, projectId, designProfilerResult);
 
         //We need gracefully fail here as the file may be imported to an empty datamodel
 
@@ -305,9 +305,9 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
     private async Task<bool> PutFile(long projectId, FileDescriptor fileDescr, string suffix, string extension, MemoryStream memoryStream, long length)
     {
       //TODO: do we want this async?
-      var generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, extension);
+      var generatedName = FileUtils.GeneratedFileName(fileDescr.FileName, suffix, extension);
       log.LogDebug("Saving file {0} in TCC", generatedName);
-      if (! await fileRepo.PutFile(fileDescr.filespaceId, fileDescr.path,
+      if (! await fileRepo.PutFile(fileDescr.FilespaceId, fileDescr.Path,
         generatedName, memoryStream, length))
       {
         log.LogWarning("Failed to save file {0} for project {1}", generatedName, projectId);

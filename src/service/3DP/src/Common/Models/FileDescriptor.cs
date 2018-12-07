@@ -1,15 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Filters.Validation;
-using VSS.Productivity3D.Common.Interfaces;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -31,7 +24,7 @@ namespace VSS.Productivity3D.Common.Models
     {
       string filespaceName = GetFileSpaceName(configStore, log);
 
-      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, descriptor.filespaceId, descriptor.path, descriptor.fileName,
+      return __Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, descriptor.FilespaceId, descriptor.Path, descriptor.FileName,
         offset);
     }
 

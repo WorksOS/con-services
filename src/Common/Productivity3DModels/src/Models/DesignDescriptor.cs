@@ -15,8 +15,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// The unique id of the design file
     /// </summary>
-    [JsonProperty(PropertyName = "uid", Required = Required.Default)]
-    public Guid? Uid { get; private set; }
+    [JsonProperty(PropertyName = "fileUid", Required = Required.Default)]
+    public Guid? FileUid { get; private set; }
 
     /// <summary>
     /// The id of the design file
@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(PropertyName = "offset", Required = Required.Default)]
     public double Offset { get; }
 
-    public bool ShouldSerializeuid() => Uid.HasValue;
+    public bool ShouldSerializeuid() => FileUid.HasValue;
 
     /// <summary>
     /// Default private constructor
@@ -48,16 +48,12 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="file"></param>
-    /// <param name="offset"></param>
-    /// <param name="uid"></param>
-    public DesignDescriptor(long id, FileDescriptor file, double offset, Guid? uid = null)
+    public DesignDescriptor(long id, FileDescriptor file, double offset, Guid? fileUid = null)
     {
       Id = id;
       File = file;
       Offset = offset;
-      Uid = uid;
+      FileUid = fileUid;
     }
 
     /// <summary>
@@ -65,7 +61,7 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-      if (Uid != null )
+      if (FileUid != null )
         return;
 
       if (Id <= 0 && File == null)

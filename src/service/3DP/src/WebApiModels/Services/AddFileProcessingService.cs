@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNetCore.CAP;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -55,10 +53,10 @@ namespace VSS.Productivity3D.WebApi.Models.Services
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(loggingFactory, raptorServiceClient, null,
         configServiceStore, fileRepo, tileServiceGenerator);
       var result = await executor.ProcessAsync(file) as AddFileResult;
-      log.LogInformation($"Processed file {file.File.fileName} with result {JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"Processed file {file.File.FileName} with result {JsonConvert.SerializeObject(result)}");
       var eventAttributes = new Dictionary<string, object>
       {
-        {"file", file.File.fileName},
+        {"file", file.File.FileName},
         {"status", result.Code.ToString() },
         {"result", result.Message }
       };
