@@ -108,6 +108,11 @@ namespace VSS.MasterData.Proxies
         retries = 0; 
       }
 
+      //Any 200 code is ok.
+      var okCodes = new List<HttpStatusCode>
+      { HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
+        HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent};
+
       var policyResult = await Policy
         .Handle<Exception>(exception =>
         {
@@ -121,7 +126,7 @@ namespace VSS.MasterData.Proxies
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
           log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
-          if (result.StatusCode != HttpStatusCode.OK)
+          if (!okCodes.Contains(result.StatusCode))
           {
             var contents = await result.Content.ReadAsStringAsync();
 
@@ -187,6 +192,11 @@ namespace VSS.MasterData.Proxies
         retries = 0;
       }
 
+      //Any 200 code is ok.
+      var okCodes = new List<HttpStatusCode>
+      { HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
+        HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent};
+
       var policyResult = await Policy
         .Handle<Exception>()
         .RetryAsync(retries)
@@ -197,7 +207,7 @@ namespace VSS.MasterData.Proxies
           log.LogDebug($"Request to {endpoint} completed");
 
           var contents = await result.Content.ReadAsStringAsync();
-          if (result.StatusCode != HttpStatusCode.OK)
+          if (!okCodes.Contains(result.StatusCode))
           {
             log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents}");
             throw new HttpRequestException($"{result.StatusCode} {contents}");
