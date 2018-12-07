@@ -1,4 +1,6 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk
+ARG APP_BUILD_IMAGE=registry-docker-registry.jenkins:5000/dotnet:2.0-sdk
+
+FROM ${APP_BUILD_IMAGE}
 COPY . /app
 WORKDIR /app
 
@@ -11,4 +13,3 @@ RUN ["/bin/bash", "rm_cr.sh"]
 VOLUME testresults
 
 ENTRYPOINT ["/bin/bash", "runtests.sh"]
-

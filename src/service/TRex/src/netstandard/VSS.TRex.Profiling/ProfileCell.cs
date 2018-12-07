@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -86,9 +85,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Passes contains the entire list of passes that all the layers in the layer collection refer to
     /// </summary>
-    private FilteredMultiplePassInfo passes = new FilteredMultiplePassInfo();
-
-    public FilteredMultiplePassInfo Passes => passes;
+    public FilteredMultiplePassInfo Passes { get; private set; } = new FilteredMultiplePassInfo();
 
     public bool[] FilteredPassFlags = new bool[0];
     public int FilteredPassCount;
@@ -130,15 +127,15 @@ namespace VSS.TRex.Profiling
 
     public void SetFilteredPasses(FilteredPassData[] filteredPasses)
     {
-      passes.FilteredPassData = filteredPasses;
-      passes.PassCount = filteredPasses.Length;
+      Passes.FilteredPassData = filteredPasses;
+      Passes.PassCount = filteredPasses.Length;
     }
 
     /// <summary>
     /// Changes the count of passes present in the filtered set of passes held in the profile cell
     /// </summary>
     /// <param name="filteredPassCount"></param>
-    public void SetFilteredPassCount(int filteredPassCount) => passes.PassCount = filteredPassCount;
+    public void SetFilteredPassCount(int filteredPassCount) => Passes.PassCount = filteredPassCount;
 
     /// <summary>
     /// Constructs a profiler layer from a given set of filtered passes and the location of the cell on the profile line
@@ -536,7 +533,7 @@ namespace VSS.TRex.Profiling
       writer.WriteInt(CellMaxSpeed);
       writer.WriteInt(CellMinSpeed);
 
-      passes.ToBinary(writer);
+      Passes.ToBinary(writer);
 
       writer.WriteBooleanArray(FilteredPassFlags);
       writer.WriteInt(FilteredPassCount);
@@ -608,7 +605,7 @@ namespace VSS.TRex.Profiling
       CellMaxSpeed = (ushort)reader.ReadInt();
       CellMinSpeed = (ushort)reader.ReadInt();
 
-      passes.FromBinary(reader);
+      (Passes ?? (Passes = new FilteredMultiplePassInfo())).FromBinary(reader);
 
       FilteredPassFlags = reader.ReadBooleanArray();
       FilteredPassCount = reader.ReadInt();
@@ -714,135 +711,5 @@ namespace VSS.TRex.Profiling
         Function ToString : String; Override;
       end;
      */
-
-    protected bool Equals(ProfileCell other)
-    {
-      //===========================================================
-      bool AreLayersEqual()
-      {
-        if (Layers == null || other.Layers == null)
-          return false;
-
-        if (Layers.Count() != other.Layers.Count())
-          return false;
-
-        for (var i = 0; i < Layers.Count(); i++)
-        {
-          if (!Equals(Layers[i], other.Layers[i]))
-            return false;
-        }
-
-        return true;
-      }
-      //===========================================================
-
-      return InterceptLength.Equals(other.InterceptLength) &&
-             CellLowestElev.Equals(other.CellLowestElev) &&
-             CellHighestElev.Equals(other.CellHighestElev) &&
-             CellLastElev.Equals(other.CellLastElev) &&
-             CellFirstElev.Equals(other.CellFirstElev) &&
-             CellLowestCompositeElev.Equals(other.CellLowestCompositeElev) &&
-             CellHighestCompositeElev.Equals(other.CellHighestCompositeElev) &&
-             CellLastCompositeElev.Equals(other.CellLastCompositeElev) &&
-             CellFirstCompositeElev.Equals(other.CellFirstCompositeElev) &&
-             DesignElev.Equals(other.DesignElev) &&
-             CellCCV == other.CellCCV &&
-             CellTargetCCV == other.CellTargetCCV &&
-             CellPreviousMeasuredCCV == other.CellPreviousMeasuredCCV &&
-             CellPreviousMeasuredTargetCCV == other.CellPreviousMeasuredTargetCCV &&
-             CellCCVElev.Equals(other.CellCCVElev) &&
-             CellMDP == other.CellMDP &&
-             CellTargetMDP == other.CellTargetMDP &&
-             CellMDPElev.Equals(other.CellMDPElev) &&
-             CellCCA == other.CellCCA &&
-             CellTargetCCA == other.CellTargetCCA &&
-             CellCCAElev.Equals(other.CellCCAElev) &&
-             CellTopLayerThickness.Equals(other.CellTopLayerThickness) &&
-             IncludesProductionData == other.IncludesProductionData &&
-             TopLayerPassCount == other.TopLayerPassCount &&
-             TopLayerPassCountTargetRangeMin == other.TopLayerPassCountTargetRangeMin &&
-             TopLayerPassCountTargetRangeMax == other.TopLayerPassCountTargetRangeMax &&
-             Passes.Equals(other.Passes) &&
-             (Equals(FilteredPassFlags, other.FilteredPassFlags) ||
-              FilteredPassFlags != null && other.FilteredPassFlags != null &&
-              FilteredPassFlags.Length == other.FilteredPassFlags.Length &&
-              FilteredPassFlags.SequenceEqual(other.FilteredPassFlags)) &&
-             FilteredPassCount == other.FilteredPassCount &&
-             FilteredHalfPassCount == other.FilteredHalfPassCount &&
-             AttributeExistenceFlags == other.AttributeExistenceFlags &&
-             CellMaterialTemperature == other.CellMaterialTemperature &&
-             CellMaterialTemperatureWarnMin == other.CellMaterialTemperatureWarnMin &&
-             CellMaterialTemperatureWarnMax == other.CellMaterialTemperatureWarnMax &&
-             CellMaterialTemperatureElev.Equals(other.CellMaterialTemperatureElev) &&
-             Station.Equals(other.Station) &&
-             (Equals(Layers, other.Layers) || AreLayersEqual()) &&
-             OTGCellX == other.OTGCellX &&
-             OTGCellY == other.OTGCellY &&
-             CellMaxSpeed == other.CellMaxSpeed &&
-             CellMinSpeed == other.CellMinSpeed;
-    }
-
-    public bool Equals(IProfileCell other)
-    {
-      return Equals(other as ProfileCell);
-    }
-
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((ProfileCell)obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = InterceptLength.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellLowestElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellHighestElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellLastElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellFirstElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellLowestCompositeElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellHighestCompositeElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellLastCompositeElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellFirstCompositeElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ DesignElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellCCV.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellTargetCCV.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellPreviousMeasuredCCV.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellPreviousMeasuredTargetCCV.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellCCVElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellMDP.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellTargetMDP.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellMDPElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellCCA.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellTargetCCA.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellCCAElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellTopLayerThickness.GetHashCode();
-        hashCode = (hashCode * 397) ^ IncludesProductionData.GetHashCode();
-        hashCode = (hashCode * 397) ^ TopLayerPassCount.GetHashCode();
-        hashCode = (hashCode * 397) ^ TopLayerPassCountTargetRangeMin.GetHashCode();
-        hashCode = (hashCode * 397) ^ TopLayerPassCountTargetRangeMax.GetHashCode();
-        hashCode = (hashCode * 397) ^ Passes.GetHashCode();
-        hashCode = (hashCode * 397) ^ (FilteredPassFlags != null ? FilteredPassFlags.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ FilteredPassCount;
-        hashCode = (hashCode * 397) ^ FilteredHalfPassCount;
-        hashCode = (hashCode * 397) ^ (int)AttributeExistenceFlags;
-        hashCode = (hashCode * 397) ^ CellMaterialTemperature.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellMaterialTemperatureWarnMin.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellMaterialTemperatureWarnMax.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellMaterialTemperatureElev.GetHashCode();
-        hashCode = (hashCode * 397) ^ Station.GetHashCode();
-        hashCode = (hashCode * 397) ^ (Layers != null ? Layers.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (int)OTGCellX;
-        hashCode = (hashCode * 397) ^ (int)OTGCellY;
-        hashCode = (hashCode * 397) ^ CellMaxSpeed.GetHashCode();
-        hashCode = (hashCode * 397) ^ CellMinSpeed.GetHashCode();
-        return hashCode;
-      }
-    }
   }
 }

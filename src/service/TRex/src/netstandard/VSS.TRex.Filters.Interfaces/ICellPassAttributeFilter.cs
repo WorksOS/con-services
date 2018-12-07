@@ -90,7 +90,7 @@ namespace VSS.TRex.Filters.Interfaces
 
     bool FilterMultiplePasses(CellPass[] passValues,
       int PassValueCount,
-      ref FilteredMultiplePassInfo filteredPassInfo);
+      FilteredMultiplePassInfo filteredPassInfo);
 
     bool ExcludeSurveyedSurfaces();
     string ActiveFiltersText();

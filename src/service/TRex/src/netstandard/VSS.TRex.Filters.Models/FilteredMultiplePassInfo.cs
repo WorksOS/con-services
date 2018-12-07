@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -15,7 +13,7 @@ namespace VSS.TRex.Filters.Models
   /// FilteredMultiplePassInfo records all the information that a filtering operation
   ///   selected from an IC grid cell containing all the recorded machine passes.
   /// </summary>
-  public struct FilteredMultiplePassInfo : IEquatable<FilteredMultiplePassInfo>
+  public class FilteredMultiplePassInfo
   {
     /// <summary>
     /// PassCount keeps track of the actual number of passes in the list
@@ -395,29 +393,6 @@ namespace VSS.TRex.Filters.Models
       else
       {
         FilteredPassData = new FilteredPassData[0];
-      }
-    }
-
-    public bool Equals(FilteredMultiplePassInfo other)
-    {
-      return PassCount == other.PassCount && 
-             (Equals(FilteredPassData, other.FilteredPassData) ||
-              FilteredPassData != null && other.FilteredPassData != null &&
-              FilteredPassData.Length == other.FilteredPassData.Length &&
-              FilteredPassData.SequenceEqual(other.FilteredPassData));
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is FilteredMultiplePassInfo && Equals((FilteredMultiplePassInfo) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (PassCount * 397) ^ (FilteredPassData != null ? FilteredPassData.GetHashCode() : 0);
       }
     }
   }

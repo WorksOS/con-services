@@ -19,6 +19,14 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
 
       writer.WriteByte(VERSION_NUMBER);
 
+      bool isNull = item.IsNull();     
+      writer.WriteBoolean(isNull);
+
+      if (isNull)
+        return;
+
+      writer.WriteBoolean(item.IsRectangle);
+
       writer.WriteInt(item.NumVertices);
       foreach (var point in item.Points)
       {
@@ -38,6 +46,12 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
 
       if (readVersionNumber != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+
+      bool isNull = reader.ReadBoolean();
+      if (isNull)
+        return;
+
+      item.IsRectangle = reader.ReadBoolean();
 
       item.Points = new List<FencePoint>(reader.ReadInt());
       for (int i = 0; i < item.Points.Capacity; i++)

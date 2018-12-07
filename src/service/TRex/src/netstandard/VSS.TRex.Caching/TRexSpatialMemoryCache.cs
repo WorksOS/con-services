@@ -175,7 +175,7 @@ namespace VSS.TRex.Caching
         // Mark the newly created context for removal. This may seem counter intuitive, but covers the case
         // where a context is created but has no elements added to it, or subsequently removed
         // Todo: Add initial future time increment for marked for removal at... [see: new TimeSpan(0, 10, 0)]
-        newContext.MarkForRemoval(DateTime.Now + new TimeSpan(0, 10, 0));
+        newContext.MarkForRemoval(DateTime.UtcNow + new TimeSpan(0, 10, 0));
 
         return newContext;
       }
@@ -338,13 +338,13 @@ namespace VSS.TRex.Caching
     public void RemoveContextsMarkedForRemoval(TimeSpan age)
     {
       int numRemoved = 0;
-      DateTime removalDate = DateTime.Now - age;
+      DateTime removalDateUtc = DateTime.UtcNow - age;
       DateTime startTime = DateTime.Now;
       
       lock (Contexts)
       {
         // Construct a list of candidates to work through so there are not issues with modifying a collection being enumerated
-        var candidates = Contexts.Values.Where(x => x.MarkedForRemoval && x.MarkedForRemovalAt < removalDate).ToList();
+        var candidates = Contexts.Values.Where(x => x.MarkedForRemoval && x.MarkedForRemovalAtUtc < removalDateUtc).ToList();
         foreach (var context in candidates)
         {
           if (context.TokenCount != 0)

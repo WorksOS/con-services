@@ -368,7 +368,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                   Debug.Assert(false, "No registered segment retirement queue in DI context");
                 }
 
-                DateTime insertUTC = DateTime.Now;
+                DateTime insertUTC = DateTime.UtcNow;
 
                 retirementQueue.Add(new SegmentRetirementQueueKey
                   {
@@ -412,7 +412,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             // Update the metadata for the site model
             Log.LogInformation($"Updating site model metadata for {SiteModelFromDM.ID}");
             DIContext.Obtain<ISiteModelMetadataManager>().Update
-            (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.Now, siteModelExtent: SiteModelFromDM.SiteModelExtent,
+            (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: SiteModelFromDM.SiteModelExtent,
               machineCount: SiteModelFromDM.Machines.Count);
 
           }

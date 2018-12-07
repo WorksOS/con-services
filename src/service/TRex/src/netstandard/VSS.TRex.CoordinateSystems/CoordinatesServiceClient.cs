@@ -182,7 +182,7 @@ namespace VSS.TRex.CoordinateSystems
 
       try
       {
-        using (var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture)))
+        using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
           content.Add(new StreamContent(new MemoryStream(fileContent)), "DC", Path.GetFileName(filePath));
 

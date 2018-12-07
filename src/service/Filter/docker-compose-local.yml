@@ -1,7 +1,10 @@
 version: '2'
 services:
   webapi:
-    build: ./artifacts/VSS.Productivity3D.Filter.WebApi
+    build:
+      context: ./artifacts/VSS.Productivity3D.Filter.WebApi
+      args:
+          - APP_BUILD_IMAGE=microsoft/dotnet:2.0-sdk
     env_file:
      - docker-compose-local.env
     volumes:
@@ -21,7 +24,7 @@ services:
     env_file:
      - docker-compose-local.env
     depends_on:
-     - db  
+     - db
   db:
     image: mysql/mysql-server:5.7.15 
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
@@ -47,11 +50,14 @@ services:
     depends_on:
      - zookeeper
   accepttest:
-    build: ./AcceptanceTests/deploy
+    build:
+      context: ./AcceptanceTests/deploy
+      args:
+        - APP_BUILD_IMAGE=microsoft/dotnet:2.0-sdk
     env_file:
      - docker-compose-local.env
     volumes:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
-      - webapi      
+      - webapi
       - kafka

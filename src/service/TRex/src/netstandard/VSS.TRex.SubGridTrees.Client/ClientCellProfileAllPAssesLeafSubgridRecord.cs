@@ -53,7 +53,5 @@ namespace VSS.TRex.SubGridTrees.Client
       if (ReferenceEquals(null, obj)) return false;
       return obj is ClientCellProfileAllPassesLeafSubgridRecord other && Equals(other);
     }
-
-    public override int GetHashCode() => base.GetHashCode();
   }
 }

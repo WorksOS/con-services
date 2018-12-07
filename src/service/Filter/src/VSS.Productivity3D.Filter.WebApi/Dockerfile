@@ -1,4 +1,6 @@
-FROM registry-docker-registry.jenkins:5000/dotnet:2.0-sdk
+ARG APP_BUILD_IMAGE=registry-docker-registry.jenkins:5000/dotnet:2.0-sdk
+
+FROM ${APP_BUILD_IMAGE}
 
 # Set the Working Directory
 WORKDIR /app

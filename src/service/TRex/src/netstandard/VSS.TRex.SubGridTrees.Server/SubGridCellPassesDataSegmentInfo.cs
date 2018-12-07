@@ -11,7 +11,7 @@ namespace VSS.TRex.SubGridTrees.Server
   {
         /// <summary>
         /// The version number of this segment when it is stored in the persistent layer, defined
-        /// as the number of ticks in DateTime.Now at the time it is written.
+        /// as the number of ticks in DateTime.UtcNow at the time it is written.
         /// </summary>
         public long Version { get; set; }
 
@@ -100,7 +100,7 @@ namespace VSS.TRex.SubGridTrees.Server
         /// </summary>
         public void Touch()
         {
-          Version = DateTime.Now.Ticks;
+          Version = DateTime.UtcNow.Ticks;
         }
     }
 }

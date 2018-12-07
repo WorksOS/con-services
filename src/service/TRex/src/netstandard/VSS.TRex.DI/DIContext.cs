@@ -13,13 +13,20 @@ namespace VSS.TRex.DI
     public static void Inject(DIBuilder implementation) => Inject(implementation.ServiceProvider);
 
     /// <summary>
-    /// Injects the service provider collection in the TRex DI context which both proactively injects components
-    /// into contexts such the logging namespace and provides additional access to the service provider.
+    /// Injects the service provider collection in the TRex DI context.
     /// </summary>
     /// <param name="serviceProvider"></param>
     public static void Inject(IServiceProvider serviceProvider)
     {
       ServiceProvider = serviceProvider;
+    }
+
+    /// <summary>
+    /// Ejects the service provider collection from the TRex DI context.
+    /// </summary>
+    public static void Eject()
+    {
+      ServiceProvider = null;
     }
 
     /// <summary>

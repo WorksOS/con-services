@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
@@ -9,8 +8,8 @@ namespace VSS.TRex.TAGFiles.Models
   /// <summary>
   /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.
   /// </summary>
-  public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary, IEquatable<TAGFileBufferQueueItem>
-  {
+  public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary
+  { 
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
@@ -56,7 +55,7 @@ namespace VSS.TRex.TAGFiles.Models
     {
       writer.WriteByte(VERSION_NUMBER);
 
-      writer.WriteLong(InsertUTC.Ticks);
+      writer.WriteLong(InsertUTC.ToBinary());
       writer.WriteString(FileName);
       writer.WriteByteArray(Content);
       writer.WriteGuid(ProjectID);
@@ -71,50 +70,12 @@ namespace VSS.TRex.TAGFiles.Models
       if (version != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, version);
 
-      InsertUTC = new DateTime(reader.ReadLong());
+      InsertUTC = DateTime.FromBinary(reader.ReadLong());
       FileName = reader.ReadString();
       Content = reader.ReadByteArray();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       AssetID = reader.ReadGuid() ?? Guid.Empty;
       IsJohnDoe = reader.ReadBoolean();
-    }
-
-    public bool Equals(TAGFileBufferQueueItem other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-
-      return InsertUTC.Equals(other.InsertUTC) &&
-             string.Equals(FileName, other.FileName) &&
-
-             (Equals(Content, other.Content) ||
-              (Content != null && other.Content != null && Content.Length == other.Content.Length && Content.SequenceEqual(other.Content))) &&
-
-             ProjectID.Equals(other.ProjectID) &&
-             AssetID.Equals(other.AssetID) &&
-             IsJohnDoe == other.IsJohnDoe;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      if (ReferenceEquals(this, obj)) return true;
-      if (obj.GetType() != this.GetType()) return false;
-      return Equals((TAGFileBufferQueueItem) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = InsertUTC.GetHashCode();
-        hashCode = (hashCode * 397) ^ (FileName != null ? FileName.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ (Content != null ? Content.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ ProjectID.GetHashCode();
-        hashCode = (hashCode * 397) ^ AssetID.GetHashCode();
-        hashCode = (hashCode * 397) ^ IsJohnDoe.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }
