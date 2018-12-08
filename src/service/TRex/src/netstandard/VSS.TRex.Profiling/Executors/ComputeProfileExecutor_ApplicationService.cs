@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Profiling.GridFabric.Arguments;
@@ -14,11 +13,11 @@ namespace VSS.TRex.Profiling.Executors
   /// <summary>
   /// Executes business logic that calculates the profile between two points in space
   /// </summary>
-  public class ComputeProfileExecutor_ApplicatonService<T> where T: class, IProfileCellBase, new()
+  public class ComputeProfileExecutor_ApplicationService<T> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicatonService<T>>();
+    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
 
-    public ComputeProfileExecutor_ApplicatonService()
+    public ComputeProfileExecutor_ApplicationService()
     { }
 
     /// <summary>
@@ -54,8 +53,6 @@ namespace VSS.TRex.Profiling.Executors
         }
 
         ProfileRequest_ClusterCompute<T> request = new ProfileRequest_ClusterCompute<T>();
-        //ProfileRequestComputeFunc_ClusterCompute func = new ProfileRequestComputeFunc_ClusterCompute();
-
         ProfileRequestResponse<T> ProfileResponse = request.Execute(arg2);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values

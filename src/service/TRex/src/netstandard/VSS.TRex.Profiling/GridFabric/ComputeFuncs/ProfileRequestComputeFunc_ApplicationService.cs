@@ -27,7 +27,7 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
 
       try
       {
-        ComputeProfileExecutor_ApplicatonService<T> Executor = new ComputeProfileExecutor_ApplicatonService<T>();
+        ComputeProfileExecutor_ApplicationService<T> Executor = new ComputeProfileExecutor_ApplicationService<T>();
         return Executor.Execute(arg);
       }
       finally
