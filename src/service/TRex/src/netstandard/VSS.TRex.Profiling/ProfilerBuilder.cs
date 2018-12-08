@@ -13,7 +13,7 @@ namespace VSS.TRex.Profiling
   /// for the primary activities of collation of profile cells for a profile line, processing of those cells as a whole with respect to
   /// filtering and other parameters, and per-cell processing for layer analysis and other statistics
   /// </summary>
-  public class ProfilerBuilder<T> : IProfilerBuilder<T>
+  public class ProfilerBuilder<T> : IProfilerBuilder<T> where T: class, IProfileCellBase, new()
   {
     private static readonly IProfilerBuilderFactory<T> factory = DI.DIContext.Obtain<IProfilerBuilderFactory<T>>();
 

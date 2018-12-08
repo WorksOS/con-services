@@ -7,7 +7,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
-  public interface IProfilerBuilder<T>
+  public interface IProfilerBuilder<T> where T: class, IProfileCellBase, new()
   {
     /// <summary>
     /// Builder responsible for per-cell profile analysis

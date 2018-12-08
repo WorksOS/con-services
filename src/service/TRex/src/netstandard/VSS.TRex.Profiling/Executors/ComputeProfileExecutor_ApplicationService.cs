@@ -6,6 +6,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Profiling.Executors
@@ -13,9 +14,9 @@ namespace VSS.TRex.Profiling.Executors
   /// <summary>
   /// Executes business logic that calculates the profile between two points in space
   /// </summary>
-  public class ComputeProfileExecutor_ApplicatonService
+  public class ComputeProfileExecutor_ApplicatonService<T> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicatonService>();
+    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicatonService<T>>();
 
     public ComputeProfileExecutor_ApplicatonService()
     { }
@@ -23,7 +24,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <summary>
     /// Executes the profiler
     /// </summary>
-    public ProfileRequestResponse Execute(ProfileRequestArgument_ApplicationService arg)
+    public ProfileRequestResponse<T> Execute(ProfileRequestArgument_ApplicationService arg)
     {
       Log.LogInformation("Start execution");
 
@@ -52,10 +53,10 @@ namespace VSS.TRex.Profiling.Executors
           arg2.NEECoords = ConvertCoordinates.WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
         }
 
-        ProfileRequest_ClusterCompute request = new ProfileRequest_ClusterCompute();
+        ProfileRequest_ClusterCompute<T> request = new ProfileRequest_ClusterCompute<T>();
         //ProfileRequestComputeFunc_ClusterCompute func = new ProfileRequestComputeFunc_ClusterCompute();
 
-        ProfileRequestResponse ProfileResponse = request.Execute(arg2);
+        ProfileRequestResponse<T> ProfileResponse = request.Execute(arg2);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values
         ProfileResponse?.ProfileCells?.OrderBy(x => x.Station);
@@ -69,16 +70,14 @@ namespace VSS.TRex.Profiling.Executors
           ProfileResponse.ProfileCells = _ProfileCells.Where((x, i) =>
           {
             // Remove all leading nulls
-            if (((ProfileCell) _ProfileCells[i]).CellLastElev == Consts.NullHeight && i == firstNonNullIndex)
+            if (_ProfileCells[i].IsNull() && i == firstNonNullIndex)
               {
                 firstNonNullIndex++;
                 return false;
               }
 
             // Collapse all interior nulls to single nulls, unless the null is at the end. Leave any single terminating null
-            return i == 0 ||
-                     ((ProfileCell)_ProfileCells[i]).CellLastElev != Consts.NullHeight ||
-                     ((ProfileCell)_ProfileCells[i]).CellLastElev == Consts.NullHeight && ((ProfileCell)_ProfileCells[i - 1]).CellLastElev != Consts.NullHeight;
+            return i == 0 || !_ProfileCells[i].IsNull() || (_ProfileCells[i].IsNull() && !_ProfileCells[i - 1].IsNull());
           }).ToList();
         }
 

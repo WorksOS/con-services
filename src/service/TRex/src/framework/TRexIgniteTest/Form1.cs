@@ -41,6 +41,7 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Queues;
+using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
@@ -205,8 +206,8 @@ namespace TRexIgniteTest
 	    };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-	    ProfileRequest_ApplicationService request = new ProfileRequest_ApplicationService();
-	    ProfileRequestResponse Response = request.Execute(arg);
+	    ProfileRequest_ApplicationService<ProfileCell> request = new ProfileRequest_ApplicationService<ProfileCell>();
+	    ProfileRequestResponse<ProfileCell> Response = request.Execute(arg);
 
 	    if (Response == null)
 	      MessageBox.Show(@"Profile response is null");

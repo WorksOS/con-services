@@ -7,7 +7,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
-  public interface IProfilerBuilderFactory<T>
+  public interface IProfilerBuilderFactory<T> where T : class, IProfileCellBase, new()
   {
     /// <summary>
     /// Creates a new builder responsible for processing layer and other information for single cells in a profile

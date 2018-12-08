@@ -34,13 +34,15 @@ namespace VSS.TRex.Tests.Events
     {
       var siteModel = new SiteModel(Guid.Empty, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), 0);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
+
+      DateTime referenceDate = DateTime.UtcNow;
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-60), 0);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-30), 1);
       Assert.True(2 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
 
-      events.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), new GPSAccuracyAndTolerance(GPSAccuracy.Coarse, 2));
-      events.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-58), new GPSAccuracyAndTolerance(GPSAccuracy.Medium, 2));
-      events.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-56), new GPSAccuracyAndTolerance(GPSAccuracy.Coarse, 1));
+      events.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(referenceDate.AddMinutes(-60), new GPSAccuracyAndTolerance(GPSAccuracy.Coarse, 2));
+      events.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(referenceDate.AddMinutes(-58), new GPSAccuracyAndTolerance(GPSAccuracy.Medium, 2));
+      events.GPSAccuracyAndToleranceStateEvents.PutValueAtDate(referenceDate.AddMinutes(-56), new GPSAccuracyAndTolerance(GPSAccuracy.Coarse, 1));
       Assert.True(3 == events.GPSAccuracyAndToleranceStateEvents.Count(), $"List contains {events.GPSAccuracyAndToleranceStateEvents.Count()} GPSAccuracy events, instead of 3");
 
       var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
@@ -53,8 +55,10 @@ namespace VSS.TRex.Tests.Events
     {
       var siteModel = new SiteModel(Guid.Empty, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), 0);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
+
+      DateTime referenceDate = DateTime.UtcNow;
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-60), 0);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-30), 1);
       Assert.True(2 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
       
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
@@ -82,11 +86,13 @@ namespace VSS.TRex.Tests.Events
     {
       var siteModel = new SiteModel(Guid.Empty, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), 0);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 1);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 2);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 3);
+
+      DateTime referenceDate = DateTime.UtcNow;
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-60), 0);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-30), 1);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 1);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 2);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 3);
       Assert.True(5 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 5");
 
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
@@ -113,11 +119,14 @@ namespace VSS.TRex.Tests.Events
     {
       var siteModel = new SiteModel(Guid.Empty, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-60), 0);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-30), 1);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 1);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 2);
-      events.MachineDesignNameIDStateEvents.PutValueAtDate(DateTime.UtcNow.AddMinutes(-29), 3);
+
+      DateTime referenceDate = DateTime.UtcNow;
+      
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-60), 0);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-30), 1);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 1);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 2);
+      events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 3);
       Assert.True(5 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 5");
 
       var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);

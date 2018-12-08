@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Types;
 using VSS.TRex.Profiling.Interfaces;
@@ -10,38 +11,10 @@ using VSS.TRex.Profiling.Models;
 
 namespace VSS.TRex.Profiling
 {
-  public class ProfileCellBase : IProfileCellBase
-  {
-    /// <summary>
-    /// The real-world distance from the 'start' of the profile line drawn by the user;
-    /// this is used to ensure that the client GUI correctly aligns the profile
-    /// information drawn in the Long Section view with the profile line on the Plan View.
-    /// </summary>
-    public double Station { get; set; }
-
-    /// <summary>
-    /// The real-world length of that part of the profile line which crosses the underlying cell;
-    /// used to determine the width of the profile column as displayed in the client GUI
-    /// </summary>
-    public double InterceptLength { get; set; }
-
-    /// <summary>
-    /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
-    /// </summary>
-    public uint OTGCellX { get; set; }
-
-    /// <summary>
-    /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
-    /// </summary>
-    public uint OTGCellY { get; set; }
-
-    public float DesignElev { get; set; }
-  }
-
   /// <summary>
   /// ProfileCell is a package of information relating to one cell in a profile drawn across IC data
   /// </summary>
-  public class ProfileCell : ProfileCellBase, IProfileCell
+  public class ProfileCell : ProfileCellBase, IProfileCell, IFromToBinary
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileCell>();
 
@@ -491,16 +464,12 @@ namespace VSS.TRex.Profiling
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
-      writer.WriteDouble(Station);
-      writer.WriteDouble(InterceptLength);
+      base.ToBinary(writer);
 
       int count = Layers?.Count() ?? 0;
       writer.WriteInt(count);
       for (int i = 0; i < count; i++)
         Layers[i].ToBinary(writer);
-
-      writer.WriteInt((int)OTGCellX);
-      writer.WriteInt((int)OTGCellY);
 
       writer.WriteFloat(CellLowestElev);
       writer.WriteFloat(CellHighestElev);
@@ -510,7 +479,6 @@ namespace VSS.TRex.Profiling
       writer.WriteFloat(CellHighestCompositeElev);
       writer.WriteFloat(CellLastCompositeElev);
       writer.WriteFloat(CellFirstCompositeElev);
-      writer.WriteFloat(DesignElev);
 
       writer.WriteShort(CellCCV);
       writer.WriteShort(CellTargetCCV);
@@ -557,8 +525,7 @@ namespace VSS.TRex.Profiling
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      Station = reader.ReadDouble();
-      InterceptLength = reader.ReadDouble();
+      base.FromBinary(reader);
 
       Layers = new ProfileLayers();      
       var numberOfLayers = reader.ReadInt();
@@ -571,9 +538,6 @@ namespace VSS.TRex.Profiling
         Layers.Add(layer, -1);
       }
 
-      OTGCellX = (uint)reader.ReadInt();
-      OTGCellY = (uint)reader.ReadInt();
-
       CellLowestElev = reader.ReadFloat();
       CellHighestElev = reader.ReadFloat();
       CellLastElev = reader.ReadFloat();
@@ -582,7 +546,6 @@ namespace VSS.TRex.Profiling
       CellHighestCompositeElev = reader.ReadFloat();
       CellLastCompositeElev = reader.ReadFloat();
       CellFirstCompositeElev = reader.ReadFloat();
-      DesignElev = reader.ReadFloat();
 
       CellCCV = reader.ReadShort();
       CellTargetCCV = reader.ReadShort();
@@ -666,6 +629,12 @@ namespace VSS.TRex.Profiling
 
       return Result;
     }
+
+    /// <summary>
+    /// Returns true if the value of the profile cell is null (ie: no profile information)
+    /// </summary>
+    /// <returns></returns>
+    public override bool IsNull() => CellLastElev == Consts.NullHeight;
 
     //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
     //procedure WriteToStream(const Stream : TStream; const WriteCellPassesAndLayers : Boolean; APassesPackager : TICFilteredMultiplePassInfoPackager);

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -22,9 +21,9 @@ namespace VSS.TRex.Profiling.Executors
   /// <summary>
   /// Executes business logic that calculates the profile between two points in space
   /// </summary>
-  public class ComputeProfileExecutor_ClusterCompute
+  public class ComputeProfileExecutor_ClusterCompute<T> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ClusterCompute>();
+    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ClusterCompute<T>>();
 
     private Guid ProjectID;
     private GridDataType ProfileTypeRequired;
@@ -90,17 +89,17 @@ namespace VSS.TRex.Profiling.Executors
     /// Executes the profiler logic in the cluster compute context where each cluster node processes its fraction of the work and returns the
     /// results to the application service context
     /// </summary>
-    public ProfileRequestResponse Execute()
+    public ProfileRequestResponse<T> Execute()
     {
       //      SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
 
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
 
-      ProfileRequestResponse Response = null;
+      ProfileRequestResponse<T> Response = null;
       try
       {
-        List<ProfileCell> ProfileCells = new List<ProfileCell>(1000);
+        List<T> ProfileCells = new List<T>(1000);
 
         try
         {
@@ -115,7 +114,7 @@ namespace VSS.TRex.Profiling.Executors
           if (SiteModel == null)
           {
             Log.LogWarning($"Failed to locate sitemodel {ProjectID}");
-            return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.NoSuchDataModel};
+            return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.NoSuchDataModel};
           }
 
           // Obtain the subgrid existence map for the project
@@ -124,7 +123,7 @@ namespace VSS.TRex.Profiling.Executors
           if (ProdDataExistenceMap == null)
           {
             Log.LogWarning($"Failed to locate production data existence map from sitemodel {ProjectID}");
-            return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
+            return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
           }
 
           ICellSpatialFilter CellFilter = Filters.Filters[0].SpatialFilter;
@@ -142,7 +141,7 @@ namespace VSS.TRex.Profiling.Executors
 
           Log.LogInformation("Creating IProfileBuilder");
 
-          IProfilerBuilder<ProfileCell> Profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
+          IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
 
           Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, 
             /* todo design: */null, /* todo elevation range design: */null,
@@ -160,12 +159,10 @@ namespace VSS.TRex.Profiling.Executors
 
               // Remove null cells in the profiles list. NUll cells are defined by cells with null CellLastHeight.
               // All duplicate null cells will be replaced by a by single null cell entry
-              var ThinnedProfileCells = ProfileCells.Where((x, i) =>
-                  i == 0 ||
-                  ((ProfileCell) ProfileCells[i]).CellLastElev != Consts.NullHeight ||
-                  ((ProfileCell) ProfileCells[i]).CellLastElev == Consts.NullHeight && ((ProfileCell) ProfileCells[i - 1]).CellLastElev != Consts.NullHeight).ToList();
+              List<T> ThinnedProfileCells = ProfileCells.Where((x, i) =>
+                  i == 0 || !ProfileCells[i].IsNull() || (ProfileCells[i].IsNull() && !ProfileCells[i - 1].IsNull())).ToList();
 
-              Response = new ProfileRequestResponse
+              Response = new ProfileRequestResponse<T>
               {
                 ProfileCells = ThinnedProfileCells,
                 ResultStatus = RequestErrorStatus.OK
@@ -187,7 +184,7 @@ namespace VSS.TRex.Profiling.Executors
         Log.LogError($"Execute: Exception {E}");
       }
 
-      return new ProfileRequestResponse();
+      return new ProfileRequestResponse<T>();
     }
   }
 }

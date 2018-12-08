@@ -1,9 +1,8 @@
-﻿namespace VSS.TRex.Profiling.Interfaces
+﻿using VSS.TRex.Common.Interfaces;
+
+namespace VSS.TRex.Profiling.Interfaces
 {
-  /// <summary>
-  /// Defines fields that are common to all profile cells
-  /// </summary>
-  public interface IProfileCellBase
+  public interface IProfileCellBase : IFromToBinary
   {
     /// <summary>
     /// OTGCellX, OTGCellY is the on the ground index of the this particular grid cell
@@ -25,5 +24,7 @@
     double InterceptLength { get; set; }
 
     float DesignElev { get; set; }
+
+    bool IsNull();
   }
 }
