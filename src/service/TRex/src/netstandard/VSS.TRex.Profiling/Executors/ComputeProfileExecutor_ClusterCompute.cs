@@ -30,9 +30,11 @@ namespace VSS.TRex.Profiling.Executors
     private XYZ[] NEECoords;
     private IFilterSet Filters;
 
+    private const int INITIAL_PROFILE_LIST_SIZE = 1000;
+
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
-    private DesignDescriptor DesignDescriptor;
+    // private DesignDescriptor DesignDescriptor;
     private bool ReturnAllPassesAndLayers;
 
     private ISubGridSegmentCellPassIterator CellPassIterator;
@@ -99,7 +101,7 @@ namespace VSS.TRex.Profiling.Executors
       ProfileRequestResponse<T> Response = null;
       try
       {
-        List<T> ProfileCells = new List<T>(1000);
+        List<T> ProfileCells = new List<T>(INITIAL_PROFILE_LIST_SIZE);
 
         try
         {

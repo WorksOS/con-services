@@ -29,7 +29,7 @@ namespace VSS.TRex.Profiling.Executors
 
       try
       {
-        ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute()
+        ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute
         {
           ProfileTypeRequired = arg.ProfileTypeRequired,
           ProjectID = arg.ProjectID,
