@@ -18,6 +18,11 @@ node ('jenkinsslave-pod') {
 				description: 'Service path where the source code is',
 				name: 'SERVICE_PATH'
 			),
+			string(
+				defaultValue: null,
+				description: 'optional values to tag the final image with',
+				name: 'IMAGE_TAG'
+			),
 			booleanParam(
 				defaultValue: false,
 				description: 'Build database',
@@ -50,12 +55,14 @@ node ('jenkinsslave-pod') {
 	def elbContainerDb = "registry.k8s.vspengg.com:80/${project_name}.db:${versionNumber}"
     def elbTestContainer = "registry.k8s.vspengg.com:80/${project_name}.tests:${versionNumber}"	
 
-    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+    def ecrRepository = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
+    def finalImage = "${ecrRepository}:${versionNumber}"
 	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	def servicePath = params.SERVICE_PATH
 	def buildDB = params.BUILD_DB
 	def runTests = params.RUN_ACCTEST
 	def runUnitTests = params.RUN_UNITTESTS
+	def additionalImageTag = params.IMAGE_TAG
 	
     def vars = []
     def acceptance_testing_yaml
@@ -208,6 +215,12 @@ node ('jenkinsslave-pod') {
 			sh "docker tag ${container} ${finalImage}"
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker push ${finalImage}"
+			
+			if (additionalImageTag){
+				sh "docker tag ${container} ${ecrRepository}:${additionalImageTag}"
+				sh "docker push ${ecrRepository}:${additionalImageTag}"
+			}
+
 			if (buildDB)
 			{	
 				sh "docker tag ${containerDb} ${dbFinalImage}"
