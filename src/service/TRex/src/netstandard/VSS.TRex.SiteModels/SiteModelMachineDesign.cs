@@ -9,7 +9,7 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteModelMachineDesign : ISiteModelMachineDesign
   {
-    private const int READER_WRITER_VERSION_MACHINE_DESIGN = 3;
+    private const int READER_WRITER_VERSION_MACHINE_DESIGN = 1;
 
     public int Id { get; set; }
     public string Name { get; set; }

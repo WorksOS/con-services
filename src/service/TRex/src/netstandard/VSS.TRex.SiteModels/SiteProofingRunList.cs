@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteProofingRunList : List<ISiteProofingRun>, ISiteProofingRunList
   {
-    private const int READER_WRITER_VERSION_PROOFING_RUN_LIST = 6;
+    private const int READER_WRITER_VERSION_PROOFING_RUN_LIST = 1;
     private const string PROOFING_RUN_LIST_STREAM_NAME = "ProofingRuns";
 
     /// <summary>

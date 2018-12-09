@@ -17,7 +17,7 @@ namespace VSS.TRex.Machines
   /// </summary>
   public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
   {
-    private const int READER_WRITER_VERSION_MACHINE_LIST = 2;
+    private const int READER_WRITER_VERSION_MACHINE_LIST = 1;
     private const string MACHINES_LIST_STREAM_NAME = "Machines";
 
     /// <summary>

@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList
   {
-    private const int READER_WRITER_VERSION_MACHINE_DESIGN_LIST = 4;
+    private const int READER_WRITER_VERSION_MACHINE_DESIGN_LIST = 1;
     private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
 
     /// <summary>

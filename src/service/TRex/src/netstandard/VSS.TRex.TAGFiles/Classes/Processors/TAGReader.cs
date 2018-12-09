@@ -10,7 +10,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
   /// </summary>
   public class TAGReader
   {
-    private const byte BiTS_COUNT = 4;
+    private const byte BITS_PER_NYBBLE = 4;
+    private const byte NYBBLE_COUNT = 4;
 
     // The stream provided in the constructor to read the TAG information from
     private Stream stream;
@@ -79,7 +80,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       switch (nybblePosition % 2)
       {
         case 0:
-          result = (byte)((nybble >> BiTS_COUNT) & 0xf);
+          result = (byte)((nybble >> BITS_PER_NYBBLE) & 0xf);
           break;
         case 1:
           result = (byte)(nybble & 0xf);
@@ -141,7 +142,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       for (int I = 0; I < (count / 2); I++)
       {
-        buffer[I] = (byte)((ReadNybble() << BiTS_COUNT) | ReadNybble());
+        buffer[I] = (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble());
       }
 
       return buffer;
@@ -179,7 +180,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       for (int i = 1; i < nNybbles; i++)
       {
-        result = (result << BiTS_COUNT) | ReadNybble();
+        result = (result << BITS_PER_NYBBLE) | ReadNybble();
       }
 
       return result;
@@ -189,7 +190,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// Read a single UniCode character from the stream
     /// </summary>
     /// <returns></returns>
-    private char ReadUnicodeChar() => BitConverter.ToChar(new byte[] { (byte)ReadUnSignedIntegerValue(BiTS_COUNT), 0 }, 0);
+    private char ReadUnicodeChar() => BitConverter.ToChar(new byte[] { (byte)ReadUnSignedIntegerValue(NYBBLE_COUNT), 0 }, 0);
 
   /// <summary>
   /// Read a Unicode string from the stream
@@ -221,7 +222,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
       for (int i = 1; i < nNybbles; i++)
       {
-        result = (result << BiTS_COUNT) | ReadNybble();
+        result = (result << BITS_PER_NYBBLE) | ReadNybble();
       }
 
       return result;

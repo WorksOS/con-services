@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteProofingRun : IEquatable<string>, ISiteProofingRun
   {
-    private const int READER_WRITER_VERSION_PROOFING_RUN = 5;
+    private const int READER_WRITER_VERSION_PROOFING_RUN = 1;
 
     public short MachineID { get; set; }
 
