@@ -2,7 +2,6 @@
 using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.ExtensionMethods;
@@ -16,6 +15,8 @@ namespace VSS.TRex.Machines
   /// </summary>
   public class Machine : IMachine
   {
+    private const int READER_WRITER_VERSION_MACHINE = 1;
+
     public MachinesList Owner;
 
     public Guid ID { get; set; }
@@ -134,7 +135,7 @@ namespace VSS.TRex.Machines
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersionMachine);
+      writer.Write(READER_WRITER_VERSION_MACHINE);
 
       writer.Write(ID.ToByteArray());
       writer.Write(InternalSiteModelMachineIndex);
@@ -159,8 +160,8 @@ namespace VSS.TRex.Machines
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersionMachine)
-        throw new TRexSerializationVersionException(UtilitiesConsts.ReaderWriterVersionMachine, version);
+      if (version != READER_WRITER_VERSION_MACHINE)
+        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE, version);
 
       ID = reader.ReadGuid();
       InternalSiteModelMachineIndex = reader.ReadInt16();

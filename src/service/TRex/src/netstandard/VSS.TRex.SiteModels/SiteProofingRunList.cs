@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -15,6 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteProofingRunList : List<ISiteProofingRun>, ISiteProofingRunList
   {
+    private const int READER_WRITER_VERSION_PROOFING_RUN_LIST = 6;
     private const string PROOFING_RUN_LIST_STREAM_NAME = "ProofingRuns";
 
     /// <summary>
@@ -86,8 +85,8 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersionProofingRunList)
-        throw new TRexSerializationVersionException(UtilitiesConsts.ReaderWriterVersionProofingRunList, version);
+      if (version != READER_WRITER_VERSION_PROOFING_RUN_LIST)
+        throw new TRexSerializationVersionException(READER_WRITER_VERSION_PROOFING_RUN_LIST, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -102,7 +101,7 @@ namespace VSS.TRex.SiteModels
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersionProofingRunList);
+      writer.Write(READER_WRITER_VERSION_PROOFING_RUN_LIST);
 
       writer.Write((int)Count);
 

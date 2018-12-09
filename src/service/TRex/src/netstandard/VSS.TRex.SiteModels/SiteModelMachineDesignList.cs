@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -14,6 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList
   {
+    private const int READER_WRITER_VERSION_MACHINE_DESIGN_LIST = 4;
     private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
 
     /// <summary>
@@ -58,7 +58,7 @@ namespace VSS.TRex.SiteModels
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersionMachineDesignList); 
+      writer.Write(READER_WRITER_VERSION_MACHINE_DESIGN_LIST); 
 
       writer.Write((int) Count);
       for (int i = 0; i < Count; i++)
@@ -74,8 +74,8 @@ namespace VSS.TRex.SiteModels
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersionMachineDesignList)
-        throw new TRexSerializationVersionException(UtilitiesConsts.ReaderWriterVersionMachineDesignList, version);
+      if (version != READER_WRITER_VERSION_MACHINE_DESIGN_LIST)
+        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_DESIGN_LIST, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
