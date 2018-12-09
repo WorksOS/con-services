@@ -87,7 +87,7 @@ namespace TagFileHarvester.TaskQueues
 
           NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileHarvester_Process", eventAttributes);
         }
-
+        log.InfoFormat($"File {tagFilename} for org {org.shortName} processed with code {code?.ToString()} message {result?.Message} processingCode {result?.Code.ToString()}");
         switch (code)
         {
           case HttpStatusCode.OK:
@@ -139,7 +139,7 @@ namespace TagFileHarvester.TaskQueues
                 log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
                   OrgsHandler.TCCSynchProjectBoundaryIssueFolder);
 
-                if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
+                if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProjectBoundaryIssueFolder))
                   return null;
                 break;
               }
@@ -152,8 +152,10 @@ namespace TagFileHarvester.TaskQueues
             log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
               OrgsHandler.TCCSynchOtherIssueFolder);
 
-            if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
-              return null;
+            //If any other error occured do NOT move this file anywhere so it can be picked up during the next epoch
+            //Potential risk here is with locked\corrupted files but this should be handled in 3dpm service
+            /*if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
+              return null;*/
 
             break;
           }
