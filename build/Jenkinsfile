@@ -19,7 +19,7 @@ node ('jenkinsslave-pod') {
 				name: 'SERVICE_PATH'
 			),
 			string(
-				defaultValue: null,
+				defaultValue: "None",
 				description: 'optional values to tag the final image with',
 				name: 'IMAGE_TAG'
 			),
@@ -216,7 +216,7 @@ node ('jenkinsslave-pod') {
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker push ${finalImage}"
 			
-			if (additionalImageTag){
+			if (additionalImageTag != "None"){
 				sh "docker tag ${container} ${ecrRepository}:${additionalImageTag}"
 				sh "docker push ${ecrRepository}:${additionalImageTag}"
 			}
