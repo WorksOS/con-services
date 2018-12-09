@@ -11,7 +11,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
   public class TAGReader
   {
     private const byte BITS_PER_NYBBLE = 4;
-    private const byte NYBBLE_COUNT = 4;
+    private const byte NYBBLES_PER_UNICODE_CHAR = 4;
 
     // The stream provided in the constructor to read the TAG information from
     private Stream stream;
@@ -190,7 +190,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// Read a single UniCode character from the stream
     /// </summary>
     /// <returns></returns>
-    private char ReadUnicodeChar() => BitConverter.ToChar(new byte[] { (byte)ReadUnSignedIntegerValue(NYBBLE_COUNT), 0 }, 0);
+    private char ReadUnicodeChar() => BitConverter.ToChar(new byte[] { (byte)ReadUnSignedIntegerValue(NYBBLES_PER_UNICODE_CHAR), 0 }, 0);
 
   /// <summary>
   /// Read a Unicode string from the stream
