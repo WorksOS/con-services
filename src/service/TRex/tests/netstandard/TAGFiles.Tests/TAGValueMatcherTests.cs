@@ -951,12 +951,12 @@ namespace TAGFiles.Tests
       InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state);
       var matcher = new TAGEndProofingTimeValueMatcher(sink, state);
 
-      var time = GPS.GPSOriginTimeToDateTime(10000, 10000000).Millisecond;
+      var time = (uint)DateTime.Now.Millisecond;
 
       Assert.True(matcher.ProcessUnsignedIntegerValue(new TAGDictionaryItem(TAGValueNames.kTagFileStartProofingTimeTag, TAGDataType.t32bitUInt, 0),
-          (uint)time),
+          time),
         "Matcher process function returned false");
-      Assert.Equal((uint)time, sink.StartProofingTime);
+      Assert.Equal(time, sink.StartProofingTime);
     }
 
     [Fact()]
