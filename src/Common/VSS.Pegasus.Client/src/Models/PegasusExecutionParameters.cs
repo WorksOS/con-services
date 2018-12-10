@@ -23,6 +23,12 @@ namespace VSS.Pegasus.Client.Models
     public bool MultiFile { get; set; }
     [JsonProperty(PropertyName = "public", Required = Required.Default)]
     public bool Public { get; set; }
+    [JsonProperty(PropertyName = "angular_unit", Required = Required.Default)]
+    public string AngularUnit { get; set; }
+    [JsonProperty(PropertyName = "plane_unit", Required = Required.Default)]
+    public string PlaneUnit { get; set; }
+    [JsonProperty(PropertyName = "vertical_unit", Required = Required.Default)]
+    public string VerticalUnit { get; set; }
 
 
   }

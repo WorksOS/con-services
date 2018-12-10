@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.Pegasus.Client.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Pegasus.Client
 {
@@ -20,7 +21,7 @@ namespace VSS.Pegasus.Client
     private const string PEGASUS_EXECUTION_TIMEOUT_KEY = "DATA_OCEAN_UPLOAD_TIMEOUT_MINS";
     private const string PEGASUS_EXECUTION_WAIT_KEY = "DATA_OCEAN_UPLOAD_WAIT_MILLSECS";
 
-    private readonly Guid DXF_PROCEDURE_ID = new Guid("899c119c-3fd9-4feb-ac65-42cec9f4de08");
+    private readonly Guid DXF_PROCEDURE_ID = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7");
     private const string TILE_TYPE = "xyz";
     private const string TILE_ORDER = "yx";
 
@@ -47,7 +48,7 @@ namespace VSS.Pegasus.Client
       pegasusBaseUrl = configuration.GetValueString(PEGASUS_URL_KEY);
       if (string.IsNullOrEmpty(pegasusBaseUrl))
       {
-        throw new Exception($"Missing environment variable {PEGASUS_URL_KEY}");
+        throw new ArgumentException($"Missing environment variable {PEGASUS_URL_KEY}");
       }
       Log.LogInformation($"{PEGASUS_URL_KEY}={pegasusBaseUrl}");
       executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_KEY, 1000);//Millisecs
@@ -60,22 +61,40 @@ namespace VSS.Pegasus.Client
     /// </summary>
     /// <param name="dcFileName">The path and file name of the coordinate system file</param>
     /// <param name="dxfFileName">The path and file name of the DXF file</param>
+    /// <param name="dxfUnitsType">The units of the DXF file</param>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public async Task<PegasusExecution> GenerateDxfTiles(string dcFileName, string dxfFileName, IDictionary<string, string> customHeaders)
+    public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders)
     {
+      Log.LogDebug($"GenerateDxfTiles: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
+
+      TileMetadata metadata = null;
       //Get the DataOcean file ids.
-      var dcFileId = await dataOceanClient.GetFileId();
-      var dxfFileId = await dataOceanClient.GetFileId();
-      //TODO: if fails to get files throw exception
+      var dcFileId = await dataOceanClient.GetFileId(dcFileName);
+      if (dcFileId == null)
+      {
+        Log.LogError($"Failed to find coordinate system file {dcFileName}. Has it been uploaded successfully?");
+        return null;
+      }
+      var dxfFileId = await dataOceanClient.GetFileId(dxfFileName);
+      if (dxfFileId == null)
+      {
+        Log.LogError($"Failed to find coordinate system file {dxfFileName}. Has it been uploaded successfully?");
+        return null;
+      }
 
       //Create the top level tiles folder
-      //TODO: generate the name as per 3dpm
-      string tileFolder = "";
-      var success = dataOceanClient.MakeFolder();
+      string tileFolder = new DataOceanFile(dxfFileName).GeneratedTilesFolder;
+      var success = dataOceanClient.MakeFolder(tileFolder);
+      if (!success)
+      {
+        Log.LogError($"GenerateDxfTiles: Failed to create tiles folder xxx");
+        return null;
+      }
       var parentId = await dataOceanClient.getFolderId();
 
       //1. Create an execution
+      var units = dxfUnitsType.ToString();
       var createExecutionMessage = new CreateExecutionMessage
       {
         Execution = new PegasusExecution
@@ -91,28 +110,45 @@ namespace VSS.Pegasus.Client
             TileOrder = TILE_ORDER,
             MultiFile = true,
             Public = false,
-            Name = tileFolder
+            Name = tileFolder,
+            AngularUnit = units,
+            PlaneUnit = units,
+            VerticalUnit = units
           }
         }
       };
       const string baseRoute = "/api/executions";
-      var execution = await CreateExecution<PegasusExecution>(createExecutionMessage, baseRoute, customHeaders);
+      var payload = JsonConvert.SerializeObject(createExecutionMessage);
+      PegasusExecution execution = null;
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
+      {
+        execution = gracefulClient.ExecuteRequest<PegasusExecution>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post, null, 3, false);
+      }
+
+      if (execution == null)
+      {
+        Log.LogError($"GenerateDxfTiles: Failed to create execution for {dxfFileName}");
+        return null;
+      }
 
       //2. Start the execution
+      Log.LogDebug($"Starting execution for {dxfFileName}");
       var executionRoute = $"{baseRoute}/{execution.Id}/start";
       var startExecutionRoute = $"{executionRoute}/start";
       await gracefulClient.ExecuteRequest($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
 
       //3. Monitor status of execution until done
+      Log.LogDebug($"Monitoring execution status for {dxfFileName}");
+
       DateTime endJob = DateTime.Now + TimeSpan.FromMinutes(executionTimeout);
       bool done = false;
       while (!done && DateTime.Now <= endJob)
       {
         if (executionWaitInterval > 0) await Task.Delay(executionWaitInterval);
         execution = await gracefulClient.ExecuteRequest<PegasusExecution>(executionRoute, null, customHeaders, HttpMethod.Get, null, 3, false);
-        var status = execution.ExecutionStatus.ToUpper();
-        success = status == "FINISHED";
-        done = success || status == "FAILED";//TODO: Find out what this can be
+        success = execution.ExecutionStatus == ExecutionStatus.FINISHED;
+        done = success || execution.ExecutionStatus == ExecutionStatus.FAILED;
+        Log.LogDebug($"Execution status {execution.ExecutionStatus} for {dxfFileName}");
       }
 
       if (!done)
@@ -124,28 +160,24 @@ namespace VSS.Pegasus.Client
         Log.LogDebug($"GenerateDxfTiles failed: {dxfFileName}");
       }
 
-      return success;
-    }
-
-    /// <summary>
-    /// Creates a Pegasus execution.
-    /// </summary>
-    /// <typeparam name="T">The type of data returned</typeparam>
-    /// <param name="message">The message payload</param>
-    /// <param name="route">The route for the request</param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    private async Task<T> CreateExecution<T>(CreateExecutionMessage message, string route, IDictionary<string, string> customHeaders)
-    {
-      var payload = JsonConvert.SerializeObject(message);
-      Log.LogDebug($"CreateExecution: route={route}, message={payload}");
-
-      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
+      if (success)
       {
-        var result = await gracefulClient.ExecuteRequest<T>($"{pegasusBaseUrl}{route}", ms, customHeaders, HttpMethod.Post, null, 3, false);
-        Log.LogDebug($"CreateExecution: result={JsonConvert.SerializeObject(result)}");
-        return result;
+        //4. Get the zoom range from the tile metdata file and publish notification
+        Log.LogDebug($"Getting tiles metadata for {dxfFileName}");
+        var metadataFileName = new DataOceanFile(dxfFileName).TilesMetadataFileName;
+        var stream = await dataOceanClient.GetFile(metadataFileName);
+
+        using (var sr = new StreamReader(stream))
+        using (var jtr = new JsonTextReader(sr))
+        {
+          var js = new JsonSerializer();
+          metadata = js.Deserialize<TileMetadata>(jtr);
+        }
       }
+
+      Log.LogInformation($"GenerateDxfTiles: returning {(metadata == null ? "null" : JsonConvert.SerializeObject(metadata))}");
+      return metadata;
     }
+
   }
 }

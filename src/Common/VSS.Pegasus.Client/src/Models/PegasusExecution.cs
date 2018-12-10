@@ -14,7 +14,7 @@ namespace VSS.Pegasus.Client.Models
     [JsonProperty(PropertyName = "status", Required = Required.Default)]
     public string Status { get; set; }
     [JsonProperty(PropertyName = "execution_status", Required = Required.Default)]
-    public string ExecutionStatus { get; set; }
+    public ExecutionStatus ExecutionStatus { get; set; }
     [JsonProperty(PropertyName = "latest_attempt", Required = Required.Default)]
     public PegasusExecutionAttempt LatestAttempt { get; set; }
 

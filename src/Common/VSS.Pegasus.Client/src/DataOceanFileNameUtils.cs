@@ -11,17 +11,63 @@ namespace VSS.Pegasus.Client
 
     public string FileName { get; private set; }
     public string FilePath { get; private set; }
-    public string TilesPath => TilePath(FilePath, FileName);
+    public string FullFileName { get; private set; }
+    public string TilesPath => TilePath();
+    public string TilesMetadataFileName => TileMetadataFileName();
+    public string GeneratedTilesFolder => TilesFolderWithSuffix();
 
     public DataOceanFile(string fileName, string path)
     {
       FileName = fileName;
       FilePath = path;
+      FullFileName = $"{path}{Path.DirectorySeparatorChar}{fileName}";
       if (Path.GetExtension(fileName).ToUpper() != DXF_FILE_EXTENSION)
       {
         throw new ArgumentException($"Only DXF files are supported. {fileName} is not a DXF file.");
       }
     }
+
+    public DataOceanFile(string fullFileName) : this(Path.GetFileName(fullFileName), Path.GetDirectoryName(fullFileName))
+    {
+    }
+
+    /// <summary>
+    /// The generated folder name for DXF tiles to be stored in
+    /// </summary>
+    /// <returns>The tile folder name</returns>
+    private string TilesFolderWithSuffix()
+    {
+      return $"{FilePath}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(FileName)}{GENERATED_TILE_FOLDER_SUFFIX}";
+    }
+
+    /// <summary>
+    /// The top level folder of all tile files
+    /// </summary>
+    /// <returns></returns>
+    private string BaseTilePath()
+    {
+      return $"{TilesFolderWithSuffix()}{Path.DirectorySeparatorChar}tiles";
+    }
+
+    /// <summary>
+    /// The full folder name of where the tiles are stored
+    /// </summary>
+    /// <returns>The full path of the tile folder</returns>
+    private string TilePath()
+    {
+      return $"{BaseTilePath()}{Path.DirectorySeparatorChar}xyz";
+    }
+
+
+    /// <summary>
+    /// The full name of the tiles metadata file
+    /// </summary>
+    /// <returns>The full name of the tile metadata file</returns>
+    public string TileMetadataFileName()
+    {
+      return $"{BaseTilePath()}{Path.DirectorySeparatorChar}tiles.json";
+    }
+
 
     /// <summary>
     /// Gets the name of the tile file.
@@ -32,45 +78,17 @@ namespace VSS.Pegasus.Client
     /// <returns></returns>
     public string GetTileFileName(int zoomLevel, int topLeftTileY, int topLeftTileX)
     {
-      return $"{ZoomPath(TilePath(FilePath, FileName), zoomLevel)}/{topLeftTileY}/{topLeftTileX}.png";
-    }
-
-    /// <summary>
-    /// The generated folder name for DXF tiles to be stored in
-    /// </summary>
-    /// <param name="dxfFileName">THe DXF file to which the tiles belong</param>
-    /// <returns>The tile folder name</returns>
-    private string TilesFolderWithSuffix(string dxfFileName)
-    {
-      return $"{dxfFileName}{GENERATED_TILE_FOLDER_SUFFIX}";
-    }
-
-    /// <summary>
-    /// The full folder name of where the tiles are stored
-    /// </summary>
-    /// <param name="path">The full path of where the DXF file is located</param>
-    /// <param name="generatedName">The DXF file name which is generated for an alignment or design file</param>
-    /// <returns>The full path of the tile folder</returns>
-    private string TilePath(string path, string generatedName)
-    {
-      return $"{path}/{TilesFolderWithSuffix(generatedName)}/tiles/xyz";
-    }
-
-
-    public string GetZoomPath(int zoomLevel)
-    {
-      return ZoomPath(TilesPath, zoomLevel);
+      return $"{ZoomPath(zoomLevel)}{Path.DirectorySeparatorChar}{topLeftTileY}{Path.DirectorySeparatorChar}{topLeftTileX}.png";
     }
 
     /// <summary>
     /// The path to the zoom folder name for the specified zoom level
     /// </summary>
-    /// <param name="tilePath">The path to the folder where the tiles are stored</param>
     /// <param name="zoomLevel">The zoom level</param>
     /// <returns>The zoom path</returns>
-    private string ZoomPath(string tilePath, int zoomLevel)
+    private string ZoomPath(int zoomLevel)
     {
-      return $"{tilePath}/{zoomLevel}";
+      return $"{TilePath()}{Path.DirectorySeparatorChar}{zoomLevel}";
     }
 
     /// <summary>
