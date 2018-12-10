@@ -7,7 +7,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {
@@ -16,7 +15,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
   /// </summary>
   public class CellPassesRequest : ProjectID, IValidatable
   {
-
     /// <summary>
     /// Location of the cell in the form of cartesian cell index address. 
     /// May be null.
@@ -94,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     {
       base.Validate();
 
-      if (this.cellAddress == null && this.probePositionGrid == null && this.probePositionLL == null)
+      if (cellAddress == null && probePositionGrid == null && probePositionLL == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "cellAddress, probePositionGrid, probePositionLL one must be set"));

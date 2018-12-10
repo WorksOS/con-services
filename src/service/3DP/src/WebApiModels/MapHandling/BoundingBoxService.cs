@@ -20,8 +20,6 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Executors;
 using VSS.Productivity3D.WebApiModels.Coord.Models;
 using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
-using Point = VSS.MasterData.Models.Models.Point;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -209,7 +207,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
           //Also use project boundary extents if fail to get production data extents or not doing production data tiles
           //e.g. project thumbnails or user has requested project boundary overlay
-          var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
+          var projectPoints = RaptorConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
           var projectMinLat = projectPoints.Min(p => p.Lat);
           var projectMinLng = projectPoints.Min(p => p.Lon);
           var projectMaxLat = projectPoints.Max(p => p.Lat);

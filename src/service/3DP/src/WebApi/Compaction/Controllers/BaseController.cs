@@ -360,7 +360,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             await ApplyDateRange(projectUid, filterData);
 
             var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
-              new WGSPoint3D(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+              new WGSPoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
             var layerMethod = filterData.LayerNumber.HasValue
               ? FilterLayerMethod.TagfileLayerNumber
