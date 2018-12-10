@@ -152,5 +152,17 @@ namespace VSS.TRex.Common
     /// moving to the MRU location in the cache as a result of being touched via a Get() operation
     /// </summary>
     public const double kGeneralSubgridResultCacheDeadBandFraction = 0.33;   // override with GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION
+
+    /// <summary>
+    /// The time period the spatial memory cache waits between performing maintenance checks on the content of the cache
+    /// </summary>
+    public const int kSpatialMemoryCacheInterEpochSleepTimeSeconds = 600;   // override with SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS
+
+    /// <summary>
+    /// The time period the spatial memory cache will wait between a cache context being marked as invalidated and it being
+    /// proactively removed from the cache. This is to allow concurrent operations with references to the invalidated cache
+    /// to either expire or to re-validate the cache.
+    /// </summary>
+    public const int kSpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds = 600; // override with SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS
   }
 }
