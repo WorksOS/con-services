@@ -54,11 +54,11 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Apache.Ignite, Version=2.6.0.30134, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Apache.Ignite.2.6.0\lib\net40\Apache.Ignite.exe</HintPath>
+    <Reference Include="Apache.Ignite, Version=2.7.0.33575, Culture=neutral, PublicKeyToken=6e15f083b9518446, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.7.0\lib\net40\Apache.Ignite.exe</HintPath>
     </Reference>
-    <Reference Include="Apache.Ignite.Core, Version=2.6.0.30134, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Apache.Ignite.2.6.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
+    <Reference Include="Apache.Ignite.Core, Version=2.7.0.33575, Culture=neutral, PublicKeyToken=a487a7ff0b2aaa4a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Apache.Ignite.2.7.0\lib\net40\Apache.Ignite.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.AspNetCore.Http.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
@@ -341,7 +341,9 @@
     <PostBuildEvent>
 if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
 xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.6.0\libs\*.*" "$(TargetDir)libs"
-xcopy /y "$(SolutionDir)build\ignite-corex.jar " "$(TargetDir)libs"</PostBuildEvent>
+xcopy /y "$(SolutionDir)build\ignite-corex.jar " "$(TargetDir)libs"
+if not exist "$(TargetDir)libs" md "$(TargetDir)libs"
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.2.7.0\libs\*.*" "$(TargetDir)libs"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
