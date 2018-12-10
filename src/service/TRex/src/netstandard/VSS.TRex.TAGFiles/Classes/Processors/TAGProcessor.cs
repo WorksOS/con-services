@@ -208,7 +208,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
         }
         else
           DesignExtent = SiteModel.SiteModelDesigns[DesignIndex].Extents;
-
+      }
     }
 
     /// <summary>
