@@ -3,8 +3,8 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
-  public interface IProfileLiftBuilder
+  public interface IProfileLiftBuilder<T>
   {
-    bool Build(List<IProfileCell> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator);
+    bool Build(List<T> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator);
   }
 }

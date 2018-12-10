@@ -13,5 +13,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     PreserveMachines = 0x20,
     PreserveMachineTargetValues = 0x40,
     PreserveMachineDesigns = 0x80,
+    PreserveProofingRuns = 0x100,
   }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -17,7 +17,8 @@ namespace VSS.TRex.Machines
   /// </summary>
   public class MachinesList : List<IMachine>, IMachinesList, IBinaryReaderWriter
   {
-    private const string kMachinesListStreamName = "Machines";
+    private const int READER_WRITER_VERSION_MACHINE_LIST = 1;
+    private const string MACHINES_LIST_STREAM_NAME = "Machines";
 
     /// <summary>
     /// Maps machine IDs (currently as 64 bit integers) to the instance containing all the event lists for all the machines
@@ -120,7 +121,7 @@ namespace VSS.TRex.Machines
     /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
-      writer.Write(UtilitiesConsts.ReaderWriterVersion);
+      writer.Write(READER_WRITER_VERSION_MACHINE_LIST);
 
       writer.Write((int) Count);
       for (int i = 0; i < Count; i++)
@@ -139,8 +140,8 @@ namespace VSS.TRex.Machines
     public void Read(BinaryReader reader)
     {
       int version = reader.ReadInt32();
-      if (version != UtilitiesConsts.ReaderWriterVersion)
-        throw new Exception($"Invalid version number ({version}) reading machines list, expected version (1)");
+      if (version != READER_WRITER_VERSION_MACHINE_LIST)
+        throw new TRexSerializationVersionException(READER_WRITER_VERSION_MACHINE_LIST, version);
 
       int count = reader.ReadInt32();
       Capacity = count;
@@ -160,7 +161,7 @@ namespace VSS.TRex.Machines
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.WriteStreamToPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, this.ToStream(), this);
+      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, this.ToStream(), this);
     }
 
     /// <summary>
@@ -169,7 +170,7 @@ namespace VSS.TRex.Machines
     /// </summary>
     public void LoadFromPersistentStore()
     {
-      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, kMachinesListStreamName, FileSystemStreamType.Machines, out MemoryStream MS);
+      DIContext.Obtain<ISiteModels>().StorageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, out MemoryStream MS);
       if (MS == null)
         return;
 

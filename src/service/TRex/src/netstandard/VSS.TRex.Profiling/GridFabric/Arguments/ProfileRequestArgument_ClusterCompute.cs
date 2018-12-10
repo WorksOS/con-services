@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;

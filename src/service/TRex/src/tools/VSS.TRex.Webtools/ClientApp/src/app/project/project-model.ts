@@ -86,6 +86,12 @@ export class MachineDesign {
   public name: string = "";
 }
 
+export class SiteProofingRun {
+  public name: string = "";
+  public startDate: Date = new Date();
+  public endDate: Date = new Date();
+}
+
 export class SurveyedSurface{
   id: string = "";
   designDescriptor: DesignDescriptor = new DesignDescriptor();

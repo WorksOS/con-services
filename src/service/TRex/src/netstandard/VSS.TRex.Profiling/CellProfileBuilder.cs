@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
@@ -20,9 +21,9 @@ namespace VSS.TRex.Profiling
   /// <summary>
   /// Contains the business logic to construct a vector of cells containing the information calculated for a profile along a vector of points
   /// </summary>
-  public class CellProfileBuilder : ICellProfileBuilder
+  public class CellProfileBuilder<T> : ICellProfileBuilder<T> where T : class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<CellProfileBuilder>();
+    private static ILogger Log = Logging.Logger.CreateLogger<CellProfileBuilder<T>>();
 
     public const int kMaxHzVtGridInterceptsToCalculate = 8000;
 
@@ -51,12 +52,14 @@ namespace VSS.TRex.Profiling
     private IClientHeightLeafSubGrid DesignElevations;
     private DesignProfilerRequestResult DesignResult;
 
-    private List<IProfileCell> ProfileCells;
+    private List<T> ProfileCells;
     private XYZ[] NEECoords;
     private ICellSpatialFilter CellFilter;
     private IDesign CutFillDesign;
 
     public double GridDistanceBetweenProfilePoints { get; set; }
+
+    private Func<IProfileCellBase> ProfileCellFactoryFunc = DIContext.Obtain<Func<T>>();
 
     /// <summary>
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
@@ -169,10 +172,11 @@ namespace VSS.TRex.Profiling
     /// <param name="InterceptLength"></param>
     private void AddCellPassesDataToList(uint OTGX, uint OTGY, double Station, double InterceptLength)
     {
-      ProfileCell ProfileCell = new ProfileCell()
+      IProfileCellBase ProfileCell = new T
       {
         OTGCellX = OTGX,
-        OTGCellY = OTGY,
+
+       OTGCellY = OTGY,
         Station = Station,
         InterceptLength = InterceptLength
       };
@@ -182,7 +186,7 @@ namespace VSS.TRex.Profiling
       else
         ProfileCell.DesignElev = Consts.NullHeight;
 
-      ProfileCells.Add(ProfileCell);
+      ProfileCells.Add((T)ProfileCell);
     }
 
     /// <summary>
@@ -191,7 +195,7 @@ namespace VSS.TRex.Profiling
     /// <param name="nEECoords"></param>
     /// <param name="profileCells"></param>
     /// <returns></returns>
-    public bool Build(XYZ[] nEECoords, List<IProfileCell> profileCells)
+    public bool Build(XYZ[] nEECoords, List<T> profileCells)
     {
       NEECoords = nEECoords;
       ProfileCells = profileCells;

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
+using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -11,7 +14,10 @@ using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.RequestStatistics;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Reports.Gridded.Executors
@@ -91,6 +97,11 @@ namespace VSS.TRex.Reports.Gridded.Executors
           }
         }
 
+        processor.Pipeline.AreaControlSet =
+          new AreaControlSet(_griddedReportRequestArgument.GridInterval, _griddedReportRequestArgument.GridInterval,
+            _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
+            _griddedReportRequestArgument.Azimuth, false);
+
         if (!processor.Build())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {_griddedReportRequestArgument.ProjectID}");
@@ -122,27 +133,49 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
     private List<GriddedReportDataRow> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
     {
+      IDesign CutFillDesign = null;
+      IClientHeightLeafSubGrid DesignHeights = null;
+
+      if (_griddedReportRequestArgument.ReferenceDesignID != Guid.Empty)
+      {
+        CutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignID);
+        if (CutFillDesign == null)
+          throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignID} not a recognised design in project {_griddedReportRequestArgument.ProjectID}");
+
+        if (!CutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
+          subGrid.CellSize, out DesignHeights, out var errorCode))
+          DesignHeights = null;
+      }
+
       var result = new List<GriddedReportDataRow>();
       // use of FIndexOriginOffset?
       subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
-      foreach (var cell in subGrid.Cells)
+
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
+        var cell = subGrid.Cells[x, y];
+
+        if (cell.PassCount == 0) // Nothing for us to do, as cell is not in our areaControlSet...
+          return;
+
         result.Add(new GriddedReportDataRow
         {
           Easting = cell.CellXOffset + subgridWorldOriginX,
           Northing = cell.CellYOffset + subgridWorldOriginY,
-          Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight, // todoJeannie what is the default in 3dp?
-          //CutFill = (griddedReportRequestArgument.ReportCutFill ? 
-          //  ( cell.DesignElevation != Consts.NullHeight ? cells.Height - cells.DesignElevation.Height : 0)
-          //  : Consts.NullHeight), // todoJeannie
+          Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight, // todoJeannie convert defaults later on to the default for 3dp
+          CutFill = (griddedReportRequestArgument.ReportCutFill && (DesignHeights != null) &&
+                     DesignHeights.Cells[x, y] != Consts.NullHeight)
+            ? cell.Height - DesignHeights.Cells[x, y]
+            : Consts.NullHeight,
 
           // CCV is equiv to CMV in this instance
-        Cmv = (short)(griddedReportRequestArgument.ReportCMV ? cell.LastPassValidCCV : 0),
-          Mdp = (short)(griddedReportRequestArgument.ReportMDP ? cell.LastPassValidMDP : 0),
-          PassCount = (short)(griddedReportRequestArgument.ReportPassCount ? cell.PassCount : 0),
-          Temperature = (short)(griddedReportRequestArgument.ReportTemperature ? cell.LastPassValidTemperature : 0)
+          Cmv = (short) (griddedReportRequestArgument.ReportCMV ? cell.LastPassValidCCV : CellPassConsts.NullCCV),
+          Mdp = (short) (griddedReportRequestArgument.ReportMDP ? cell.LastPassValidMDP : CellPassConsts.NullMDP),
+          PassCount = (short) (griddedReportRequestArgument.ReportPassCount ? cell.PassCount : CellPassConsts.NullPassCountValue),
+          Temperature = (short) (griddedReportRequestArgument.ReportTemperature ? cell.LastPassValidTemperature : CellPassConsts.NullMaterialTemperatureValue)
         });
-      }
+      });
+
       return result;
     }
   }
