@@ -31,7 +31,7 @@ $acceptanceTestsEnvironmentVariables = @(
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"})
-
+  
 # Common TCC and AWS variables, will be set for any chosen $environment type.
 $tccAndAwsEnvironmentVariables = @(
   @{key = "ALK_KEY"; value = "97CC5BD1CA28934796791B229AE9C3FA"},
@@ -62,7 +62,7 @@ $localhostEnvironmentVariables = @(
   @{key = "PREFERENCE_API_URL"; value = "http://localhost:5001/api/v1/mock/preferences"},
   @{key = "PROJECT_API_URL"; value = "http://localhost:5001/api/v4/mockproject"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "http://localhost:5001/api/v4/mock"},
-  @{key = "TREX_TAGFILE_API_URL"; value = "http://mockprojectwebapi:5001/api/v2/mocktrextagfile"},
+  @{key = "TREX_TAGFILE_API_URL"; value = "http://localhost:5001/api/v2/mocktrextagfile"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://localhost:5001/internal/v1/mock/export"},
   @{key = "TCCFILESPACENAME"; value = "vldatastore-dev"},
   @{key = "TCCORG"; value = "vldev"},

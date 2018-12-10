@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -17,7 +19,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
   /// <summary>
   /// Generates a patch of subgrids from a wider query
   /// </summary>
-  public class GriddedReportExecutor
+  public class GriddedReportComputeFuncExecutor
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
@@ -36,7 +38,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
     /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
-    public GriddedReportExecutor(GriddedReportRequestArgument arg) => _griddedReportRequestArgument = arg;
+    public GriddedReportComputeFuncExecutor(GriddedReportRequestArgument arg) => _griddedReportRequestArgument = arg;
 
     /// <summary>
     /// Executor that implements requesting and rendering grid information to create the grid rows
@@ -67,21 +69,27 @@ namespace VSS.TRex.Reports.Gridded.Executors
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
           );
 
-        // Set the surface TRexTask parameters for progressive processing
+        // Set the grid TRexTask parameters for progressive processing
         processor.Task.RequestDescriptor = requestDescriptor;
         processor.Task.TRexNodeID = _griddedReportRequestArgument.TRexNodeID;
         processor.Task.GridDataType = GridDataType.CellProfile;
-        // todoJeannie how does this differ to the one in Task: processor.GridDataType
-        
 
-        //todoJeannie what to do with: GridReportOption (endpoint, direction); GridInterval; Azimuth
-
-        // todoJeannie which extents? also any Unit conversion?
-        //processor.RequestAnalyser.WorldExtents or this?
-        processor.OverrideSpatialExtents = new BoundingWorldExtent3D(_griddedReportRequestArgument.StartEasting,
-          _griddedReportRequestArgument.StartNorthing,
-          _griddedReportRequestArgument.EndEasting,
-          _griddedReportRequestArgument.EndNorthing);
+        // report options 0=direction,1=endpoint,2=automatic
+        if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
+        {
+          // Compute the bearing between the two points as a survey (north azimuth, clockwise increasing)
+          _griddedReportRequestArgument.Azimuth = Math.Atan2(_griddedReportRequestArgument.EndNorthing - _griddedReportRequestArgument.StartNorthing, _griddedReportRequestArgument.EndEasting - _griddedReportRequestArgument.StartEasting);
+        }
+        else
+        {
+          if (_griddedReportRequestArgument.GridReportOption == GridReportOption.Automatic)
+          {
+            // automatic
+            _griddedReportRequestArgument.Azimuth = 0;
+            _griddedReportRequestArgument.StartNorthing = 0;
+            _griddedReportRequestArgument.StartEasting = 0;
+          }
+        }
 
         if (!processor.Build())
         {
@@ -115,15 +123,21 @@ namespace VSS.TRex.Reports.Gridded.Executors
     private List<GriddedReportDataRow> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
     {
       var result = new List<GriddedReportDataRow>();
+      // use of FIndexOriginOffset?
+      subGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
       foreach (var cell in subGrid.Cells)
       {
         result.Add(new GriddedReportDataRow
         {
-          Easting = cell.CellXOffset + subGrid.CacheOriginX, // todoJeannie what unit to convert to?
-          Northing = cell.CellYOffset + subGrid.CacheOriginY, // todoJeannie what unit to convert to?
-          Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : 0.0, // todoJeannie what is the default?
-          // todoJeannie CutFill = (griddedReportRequestArgument.ReportCutFill ? cell.? : 0)
-          Cmv = (short)(griddedReportRequestArgument.ReportCMV ? cell.LastPassValidCCV : 0),
+          Easting = cell.CellXOffset + subgridWorldOriginX,
+          Northing = cell.CellYOffset + subgridWorldOriginY,
+          Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight, // todoJeannie what is the default in 3dp?
+          //CutFill = (griddedReportRequestArgument.ReportCutFill ? 
+          //  ( cell.DesignElevation != Consts.NullHeight ? cells.Height - cells.DesignElevation.Height : 0)
+          //  : Consts.NullHeight), // todoJeannie
+
+          // CCV is equiv to CMV in this instance
+        Cmv = (short)(griddedReportRequestArgument.ReportCMV ? cell.LastPassValidCCV : 0),
           Mdp = (short)(griddedReportRequestArgument.ReportMDP ? cell.LastPassValidMDP : 0),
           PassCount = (short)(griddedReportRequestArgument.ReportPassCount ? cell.PassCount : 0),
           Temperature = (short)(griddedReportRequestArgument.ReportTemperature ? cell.LastPassValidTemperature : 0)

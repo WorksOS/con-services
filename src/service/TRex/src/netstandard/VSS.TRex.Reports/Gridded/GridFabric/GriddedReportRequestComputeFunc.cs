@@ -35,7 +35,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        var request = new GriddedReportExecutor(arg);
+        var request = new GriddedReportComputeFuncExecutor(arg);
 
         Log.LogInformation("Executing request.Execute()");
 

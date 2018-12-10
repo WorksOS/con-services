@@ -10,13 +10,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Responses
 {
   public class ToFromBinary_GriddedReportRequestResponse : BaseTests
   {
-    [Fact(Skip = "Stopped working with Tester changes")]
+    [Fact] 
     public void Test_GriddedReportRequestResponse_Simple()
     {
       SimpleBinarizableInstanceTester.TestClass<GriddedReportRequestResponse>("Empty GriddedReportResponse not same after round trip serialisation");
     }
 
-    [Fact(Skip = "Stopped working with Tester changes")]
+    [Fact] 
     public void Test_GriddedReportRequestResponse_WithContent()
     {
       var rows = new List<GriddedReportDataRow>

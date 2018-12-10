@@ -17,9 +17,9 @@ namespace VSS.TRex.Tests.Reports.Gridded
         Easting = 2.0,
         Elevation = 3.0,
         CutFill = 4.0,
-        //Cmv = 5,
+        Cmv = 5,
         Mdp = 6,
-        //PassCount = 7,
+        PassCount = 7,
         Temperature = 8
       };
       original.GriddedData.Rows.Add(griddedDataRow);
