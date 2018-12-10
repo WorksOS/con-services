@@ -30,18 +30,18 @@ Scenario Outline: CompactionCellDatum - Good Request
   | MachineSpeedFilter  | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 23          | 36.20696541 | -115.02021047 | MachineSpeedFilter  | 200      |
   | HeightFilter        | ff91dd40-1569-4765-a2bc-014321f76ace | c5590172-a1bb-440a-bc7d-6c35ecc75724 |                                      | 0           | 36.20696541 | -115.02021047 | HeightFilter        | 200      |
 
-Scenario Outline: CompactionCellDatum - Bad Request 
-  Given the service route "/api/v2/productiondata/cells/datum" and result repo "CompactionCellDatumResponse.json"
-  And with parameter "projectUid" with value "<ProjectUID>"
-  And with parameter "filterUid" with value "<FilterUID>"
-  And with parameter "cutfillDesignUid" with value "<CutFillDesignUID>"
-  And with parameter "displayMode" with value "<DisplayMode>"
-  And with parameter "lat" with value "<Latitude>"
-  And with parameter "lon" with value "<Longitude>"
-  When I send the GET request I expect response code <HttpCode>
-  Then the response should contain code <errorCode>
-  Examples: 
-  | RequestName   | ProjectUID                           | FilterUID                            | CutFillDesignUID                     | DisplayMode | Latitude    | Longitude     | HttpCode | errorCode |
-  | NoProjectUID  |                                      |                                      |                                      | 0           | 36.20696541 | -115.02021047 | 400      | -1        |  
-  | NoFoundFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 8AEEE291-58CD-4977-BE11-1630FC1A6BB4 |                                      | 0           | 36.20696541 | -115.02021047 | 400      | -1        |
-  | NoFoundDesign | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | 3d255208-8aa2-4172-9046-f97a36eff896 | 8           | 36.20696541 | -115.02021047 | 400      | -1        |
+#Scenario Outline: CompactionCellDatum - Bad Request 
+#  Given the service route "/api/v2/productiondata/cells/datum" and result repo "CompactionCellDatumResponse.json"
+#  And with parameter "projectUid" with value "<ProjectUID>"
+#  And with parameter "filterUid" with value "<FilterUID>"
+#  And with parameter "cutfillDesignUid" with value "<CutFillDesignUID>"
+#  And with parameter "displayMode" with value "<DisplayMode>"
+#  And with parameter "lat" with value "<Latitude>"
+#  And with parameter "lon" with value "<Longitude>"
+#  When I send the GET request I expect response code <HttpCode>
+#  Then the response should contain code <errorCode>
+#  Examples: 
+#  | RequestName   | ProjectUID                           | FilterUID                            | CutFillDesignUID                     | DisplayMode | Latitude    | Longitude     | HttpCode | errorCode |
+#  | NoProjectUID  |                                      |                                      |                                      | 0           | 36.20696541 | -115.02021047 | 400      | -1        |  
+#  | NoFoundFilter | ff91dd40-1569-4765-a2bc-014321f76ace | 8AEEE291-58CD-4977-BE11-1630FC1A6BB4 |                                      | 0           | 36.20696541 | -115.02021047 | 400      | -1        |
+#  | NoFoundDesign | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | 3d255208-8aa2-4172-9046-f97a36eff896 | 8           | 36.20696541 | -115.02021047 | 400      | -1        |
