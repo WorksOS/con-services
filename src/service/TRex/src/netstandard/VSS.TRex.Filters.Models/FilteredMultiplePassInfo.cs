@@ -390,10 +390,6 @@ namespace VSS.TRex.Filters.Models
         foreach (var pass in FilteredPassData)
           pass.FromBinary(reader);
       }
-      else
-      {
-        FilteredPassData = new FilteredPassData[0];
-      }
     }
   }
 }
