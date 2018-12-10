@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -66,6 +66,7 @@ export class ProjectComponent {
   public newDesignGuid: string = "";
   public designs: Design[] = [];
   public machineDesigns: MachineDesign[] = [];
+  public siteProofingRuns: SiteProofingRun[] = [];
 
   public machines: Machine[] = [];
   public machine: Machine = new Machine();
@@ -163,6 +164,7 @@ constructor(
     this.getDesigns();
     this.getMachines();
     this.getMachineDesigns();
+    this.getSiteProofingRuns();
 
     // Sleep for half a second to allow the project extents result to come back, then zoom all
     setTimeout(() => this.zoomAll(), 250);
@@ -479,6 +481,14 @@ constructor(
         machineDesigns.forEach(machineDesign => result.push(machineDesign));
         this.machineDesigns = result;
       });
+  }
+
+  public getSiteProofingRuns(): void {
+    var result: SiteProofingRun[] = [];
+    this.projectService.getSiteProofingRuns(this.projectUid).subscribe(siteProofingRuns => {
+      siteProofingRuns.forEach(proofingRun => result.push(proofingRun));
+      this.siteProofingRuns = result;
+    });
   }
 
   public getMachines(): void {
