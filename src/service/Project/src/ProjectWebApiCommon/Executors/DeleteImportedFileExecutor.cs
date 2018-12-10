@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -90,6 +91,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           importedFileInternalResult = await TccHelper.DeleteFileFromTCCRepository
             (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
             log, serviceExceptionHandler, fileRepo, projectRepo)
+            .ConfigureAwait(false);
+        }
+        if (importedFileInternalResult == null)
+        {
+          importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
+            $"{deleteImportedFile.FileDescriptor.path}{Path.DirectorySeparatorChar}{deleteImportedFile.FileDescriptor.fileName}", deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
+              log, serviceExceptionHandler, dataOceanClient, customHeaders)
             .ConfigureAwait(false);
         }
         if (importedFileInternalResult != null)

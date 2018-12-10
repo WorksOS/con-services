@@ -7,7 +7,6 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Extensions;
 using VSS.Productivity3D.Models.Models;
 using Point = VSS.MasterData.Models.Models.Point;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -39,7 +38,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     public static PointF[] LatLngToPixelOffset(IEnumerable<WGSPoint> latLngs, Point pixelTopLeft, long numTiles)
     {
       List<PointF> pixelPoints = new List<PointF>();
-      foreach (WGSPoint ll in latLngs)
+      foreach (var ll in latLngs)
       {
         Point pixelPt = LatLngToPixel(ll.Lat, ll.Lon, numTiles);
         pixelPoints.Add(new PointF((float) (pixelPt.x - pixelTopLeft.x), (float) (pixelPt.y - pixelTopLeft.y)));

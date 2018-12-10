@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
 {
@@ -35,7 +34,7 @@ namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
     {
       TestContainer container = new TestContainer();
       Assert.AreEqual(19, container.GenerateErrorlist().Count);
-      container.Process(new WGSPoint3D(1, 1));
+      container.Process(new WGSPoint(1, 1));
       Assert.AreEqual(16, container.GenerateErrorlist().Count);
     }
   }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -49,15 +50,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler"></param>
     /// <param name="requestFactory"></param>
+    /// <param name="dataOceanClient"></param>
     public FileImportV2Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient)
       : base(producer, store, logger, logger.CreateLogger<FileImportV2Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient)
     {
       this.logger = logger;
     }

@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -78,6 +79,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IFileRepository fileRepo;
 
+    protected readonly IDataOceanClient dataOceanClient;
+
    /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
@@ -121,10 +124,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="subscriptionRepo"></param>
     /// <param name="fileRepo"></param>
+    /// <param name="dataOceanClient"></param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IRaptorProxy raptorProxy, 
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null)
+      IRaptorProxy raptorProxy, IProjectRepository projectRepo, 
+      ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
+      IDataOceanClient dataOceanClient = null)
     {
       this.log = log;
       this.configStore = configStore;
@@ -143,6 +148,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;
       this.raptorProxy = raptorProxy;
+      this.dataOceanClient = dataOceanClient;
     }
 
     /// <summary>

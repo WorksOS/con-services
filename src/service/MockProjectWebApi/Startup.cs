@@ -25,22 +25,23 @@ namespace MockProjectWebApi
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container
-        public void ConfigureServices(IServiceCollection services)
+      public void ConfigureServices(IServiceCollection services)
+      {
+        services.AddLogging();
+
+        services.AddCors(options =>
         {
-            services.AddLogging();
+          options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
+            .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
+              "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
+            .WithMethods("OPTIONS", "TRACE", "GET", "POST", "DELETE", "PUT", "HEAD"));
+        });
 
-            services.AddCors(options =>
-            {
-              options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-                      .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
-                      .WithMethods("OPTIONS", "TRACE", "GET", "POST", "DELETE", "PUT", "HEAD"));
-            });
+        services.AddMvc();
+        services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+    }
 
-            services.AddMvc();
-            services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
