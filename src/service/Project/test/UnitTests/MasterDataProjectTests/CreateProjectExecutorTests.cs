@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling;
@@ -137,12 +138,15 @@ namespace VSS.MasterData.ProjectTests
       fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), 
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler,
-        _customerUid, userId, null, customHeaders,
-        producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
+        producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
+        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, dataOceanClient.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -207,6 +211,11 @@ namespace VSS.MasterData.ProjectTests
       fileRepo.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
       fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
+
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler,
@@ -278,6 +287,11 @@ namespace VSS.MasterData.ProjectTests
       fileRepo.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
       fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
+
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler,
@@ -356,6 +370,11 @@ namespace VSS.MasterData.ProjectTests
       fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler,
         _customerUid, userId, null, customHeaders,
@@ -432,12 +451,15 @@ namespace VSS.MasterData.ProjectTests
       fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler,
-        _customerUid, userId, null, customHeaders,
-        producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
+        producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
+        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, dataOceanClient.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

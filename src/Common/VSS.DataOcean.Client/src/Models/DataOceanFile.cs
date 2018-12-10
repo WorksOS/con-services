@@ -10,7 +10,7 @@ namespace VSS.DataOcean.Client.Models
     public Guid Id { get; set; }
     [JsonProperty(PropertyName = "name", Required = Required.Always)]
     public string Name { get; set; }
-    [JsonProperty(PropertyName = "status", Required = Required.Always)]
+    [JsonProperty(PropertyName = "status", Required = Required.Default)]
     public string Status { get; set; }
     [JsonProperty(PropertyName = "parent_id", Required = Required.Default)]
     public Guid? ParentId { get; set; }

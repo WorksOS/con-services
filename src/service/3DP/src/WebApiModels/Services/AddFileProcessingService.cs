@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Services
     private async Task<AddFileResult> ProcessItem(ProjectFileDescriptor file)
     {
       var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(loggingFactory, raptorServiceClient, null,
-        configServiceStore, fileRepo, tileServiceGenerator);
+        configServiceStore, fileRepo, tileServiceGenerator, null, null, null, null, null);
       var result = await executor.ProcessAsync(file) as AddFileResult;
       log.LogInformation($"Processed file {file.File.fileName} with result {JsonConvert.SerializeObject(result)}");
       var eventAttributes = new Dictionary<string, object>
