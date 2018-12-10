@@ -1,4 +1,8 @@
-﻿using DesignProfiler.ComputeDesignBoundary.RPC;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfiler.ComputeDesignFilterBoundary.RPC;
 using DesignProfilerDecls;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,16 +10,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SVOICStatistics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {

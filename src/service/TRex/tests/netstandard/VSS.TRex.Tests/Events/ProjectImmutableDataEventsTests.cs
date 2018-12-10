@@ -93,7 +93,7 @@ namespace VSS.TRex.Tests.Events
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 1);
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 2);
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 3);
-      Assert.True(3 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 5");
+      Assert.True(3 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 3");
 
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
       var targetEventList = Deserialize(mutableStream);
@@ -127,7 +127,7 @@ namespace VSS.TRex.Tests.Events
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 1);
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 2);
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 3);
-      Assert.True(3 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 5");
+      Assert.True(3 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 3");
 
       var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
       storageProxy.SetImmutableStorageProxy(new StorageProxy_Ignite_Transactional(StorageMutability.Immutable));

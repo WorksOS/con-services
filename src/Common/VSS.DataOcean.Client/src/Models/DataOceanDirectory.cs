@@ -5,8 +5,8 @@ namespace VSS.DataOcean.Client.Models
 {
   public class DataOceanDirectory
   {
-    [JsonProperty(PropertyName = "id", Required = Required.Always)]
-    public Guid Id { get; set; }
+    [JsonProperty(PropertyName = "id", Required = Required.Default)]
+    public Guid? Id { get; set; }
     [JsonProperty(PropertyName = "name", Required = Required.Always)]
     public string Name { get; set; }
     [JsonProperty(PropertyName = "parent_id", Required = Required.Default)]

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -41,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var project =
-        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+        (await projectRepo.GetProjectsForCustomer(customerUid)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
@@ -61,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       var overlaps =
         await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate, projectUid).ConfigureAwait(false);
+          projectStartDate, projectEndDate, projectUid);
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
@@ -127,8 +128,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         try
         {
           coordinateSystemSettingsResult = await raptorProxy
-            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders)
-            .ConfigureAwait(false);
+            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
         }
         catch (Exception e)
         {
@@ -160,7 +160,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IDictionary<string, string> customHeaders,
       IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,
-      IFileRepository fileRepo)
+      IFileRepository fileRepo, IDataOceanClient dataOceanClient)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -174,7 +174,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           //Pass coordinate system to Raptor
           var coordinateSystemSettingsResult = await raptorProxy
             .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
-              coordinateSystemFileName, headers).ConfigureAwait(false);
+              coordinateSystemFileName, headers);
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
             coordinateSystemSettingsResult?.Code ?? -1,
             coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
@@ -183,7 +183,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
@@ -200,16 +200,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             var fileDescriptor = await TccHelper.WriteFileToTCCRepository(
-                ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
-                false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo)
-              .ConfigureAwait(false);
+              ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
+              false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
+          }
+          //save copy to DataOcean
+          using (var ms = new MemoryStream(coordinateSystemFileContent))
+          {
+            await DataOceanHelper.WriteFileToDataOcean(
+              ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
+              false, null, log, serviceExceptionHandler, dataOceanClient, customHeaders);
           }
 
         }
         catch (Exception e)
         {
           if (isCreate)
-            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo).ConfigureAwait(false);
+            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
@@ -275,14 +281,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         DeletePermanently = true,
         ActionUTC = DateTime.UtcNow
       };
-      await projectRepo.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
+      await projectRepo.StoreEvent(deleteProjectEvent);
 
       await projectRepo.StoreEvent(new DissociateProjectCustomer
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ActionUTC = DateTime.UtcNow
-      }).ConfigureAwait(false);
+      });
     }
 
 
@@ -300,7 +306,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         if (subscriptionUidAssignedGuid != Guid.Empty)
         {
           await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssignedGuid,
-            projectUid, customHeaders).ConfigureAwait(false);
+            projectUid, customHeaders);
         }
       }
     }
