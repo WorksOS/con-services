@@ -24,6 +24,8 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity.Push.Models.Notifications;
+using VSS.Productivity3D.Push.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -215,13 +217,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Update Project
     /// </summary>
     /// <param name="projectRequest">UpdateProjectRequest model</param>
+    /// <param name="notificationHubClient"></param>
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("internal/v4/project")]
     [Route("api/v4/project")]
     [HttpPut]
-    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
+    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest, 
+      [FromServices] INotificationHubClient notificationHubClient)
     {
       if (projectRequest == null)
       {
@@ -248,7 +252,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in Raptor
       log.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
-
+      await notificationHubClient.Notify(new ProjectDescriptorChangedNotification(project.ProjectUID));
       await raptorProxy.InvalidateCache(projectRequest.ProjectUid.ToString(), customHeaders);
 
       log.LogInformation("UpdateProjectV4. Completed successfully");
