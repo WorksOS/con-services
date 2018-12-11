@@ -22,9 +22,9 @@ namespace VSS.TRex.Caching
     private const int MAX_NUM_ELEMENTS = 1000000000;
 
     private readonly int SpatialMemoryCacheInterEpochSleepTimeSeconds 
-      = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS", Consts.kSpatialMemoryCacheInterEpochSleepTimeSeconds);
+      = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS", Consts.SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS);
     private readonly int SpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds 
-      = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", Consts.kSpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds);
+      = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", Consts.SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS);
 
     /// <summary>
     /// The MRU list that threads through all the elements in the overall cache
