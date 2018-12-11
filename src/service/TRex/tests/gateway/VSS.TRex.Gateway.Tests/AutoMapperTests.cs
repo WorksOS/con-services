@@ -27,7 +27,7 @@ namespace VSS.TRex.Gateway.Tests
     [Fact]
     public void MapWGSPoint3DToFencePoint()
     {
-      var point = new WGSPoint3D(123.4, 567.8);
+      var point = new WGSPoint(123.4, 567.8);
       var fencePoint = AutoMapperUtility.Automapper.Map<FencePoint>(point);
       Assert.Equal(point.Lon, fencePoint.X);
       Assert.Equal(point.Lat, fencePoint.Y);
@@ -59,11 +59,11 @@ namespace VSS.TRex.Gateway.Tests
     [Fact]
     public void MapFilterResultWithPolygonToCombinedFilter()
     {
-      List<WGSPoint3D> polygonLonLat = new List<WGSPoint3D>
+      List<WGSPoint> polygonLonLat = new List<WGSPoint>
       {
-        new WGSPoint3D(1, 1),
-        new WGSPoint3D(2, 2),
-        new WGSPoint3D(3, 3)
+        new WGSPoint(1, 1),
+        new WGSPoint(2, 2),
+        new WGSPoint(3, 3)
       };
       var filter = new FilterResult(null, new Filter(), polygonLonLat, null, null, null, true, null);
       var combinedFilter = AutoMapperUtility.Automapper.Map<CombinedFilter>(filter);
