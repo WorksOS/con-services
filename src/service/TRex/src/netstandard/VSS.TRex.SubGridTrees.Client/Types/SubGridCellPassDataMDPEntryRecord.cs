@@ -1,20 +1,23 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Utilities;
 
-namespace VSS.TRex.SubGridTrees.Types
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
   /// <summary>
   /// Contains measured and target MDP values.
   /// </summary>
-  public struct SubGridCellPassDataMDPEntryRecord
+  public struct SubGridCellPassDataMDPEntryRecord : IEquatable<SubGridCellPassDataMDPEntryRecord>
   {
+    private const byte SHORT_TYPES_COUNT = 2;
+
     #region CellPassFlags
-    private const byte kMDPUndercompactedBitFlag = 1;
-    private const byte kMDPTooThickBitFlag = 2;
-    private const byte kMDPTopLayerTooThickFlag = 3;
-    private const byte kMDPOvercompactedBitFlag = 4;
-    private const byte kMDPTopLayerUndercompactedFlag = 5;
+    private const byte MDP_UNDERCOMPACTED_BIT_FLAG = 1;
+    private const byte MDP_TOO_THICK_BIT_FLAG = 2;
+    private const byte MDP_TOP_LAYER_TOO_THICK_BIT_FLAG = 3;
+    private const byte MDP_OVERCOMPACTED_BIT_FLAG = 4;
+    private const byte MDP_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG = 5;
 
     /// <summary>
     /// Storage for bit flags used for cell pass data statistics.
@@ -26,8 +29,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsUndercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kMDPUndercompactedBitFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kMDPUndercompactedBitFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, MDP_UNDERCOMPACTED_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, MDP_UNDERCOMPACTED_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -35,8 +38,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsTooThick
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kMDPTooThickBitFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kMDPTooThickBitFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, MDP_TOO_THICK_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, MDP_TOO_THICK_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -44,8 +47,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsTopLayerTooThick
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kMDPTopLayerTooThickFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kMDPTopLayerTooThickFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, MDP_TOP_LAYER_TOO_THICK_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, MDP_TOP_LAYER_TOO_THICK_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -53,8 +56,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsTopLayerUndercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kMDPTopLayerUndercompactedFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kMDPTopLayerUndercompactedFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, MDP_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, MDP_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -62,8 +65,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsOvercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kMDPOvercompactedBitFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kMDPOvercompactedBitFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, MDP_OVERCOMPACTED_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, MDP_OVERCOMPACTED_BIT_FLAG, value); }
     }
     #endregion
 
@@ -81,7 +84,7 @@ namespace VSS.TRex.SubGridTrees.Types
     /// Return an indicative size for memory consumption of this class to be used in cache tracking
     /// </summary>
     /// <returns></returns>
-    public static int IndicativeSizeInBytes() => 2 * sizeof(short);
+    public static int IndicativeSizeInBytes() => SHORT_TYPES_COUNT * sizeof(short) + sizeof(byte);
 
     /// <summary>
     /// Constructor with arguments.
@@ -142,13 +145,26 @@ namespace VSS.TRex.SubGridTrees.Types
 
     public bool Equals(SubGridCellPassDataMDPEntryRecord other)
     {
-      return IsOvercompacted == other.IsOvercompacted &&
-             IsTooThick == other.IsTooThick &&
-             IsTopLayerTooThick == other.IsTopLayerTooThick &&
-             IsTopLayerUndercompacted == other.IsTopLayerUndercompacted &&
-             IsUndercompacted == other.IsUndercompacted &&
-             MeasuredMDP == other.MeasuredMDP &&
+      return CellPassFlags == other.CellPassFlags && 
+             MeasuredMDP == other.MeasuredMDP && 
              TargetMDP == other.TargetMDP;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      return obj is SubGridCellPassDataMDPEntryRecord && Equals((SubGridCellPassDataMDPEntryRecord) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = CellPassFlags.GetHashCode();
+        hashCode = (hashCode * 397) ^ MeasuredMDP.GetHashCode();
+        hashCode = (hashCode * 397) ^ TargetMDP.GetHashCode();
+        return hashCode;
+      }
     }
   }
 }

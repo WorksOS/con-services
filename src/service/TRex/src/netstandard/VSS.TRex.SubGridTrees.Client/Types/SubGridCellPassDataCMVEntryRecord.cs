@@ -1,21 +1,24 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Utilities;
 
-namespace VSS.TRex.SubGridTrees.Types
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
   /// <summary>
   /// Contains measured and target CMV values as well as previous measured and target CMV values.
   /// </summary>
-  public struct SubGridCellPassDataCMVEntryRecord
+  public struct SubGridCellPassDataCMVEntryRecord : IEquatable<SubGridCellPassDataCMVEntryRecord>
   {
+    private const byte SHORT_TYPES_COUNT = 4;
+
     #region CellPassFlags
-    private const byte kCMVDecoupledBitFlag = 0;
-    private const byte kCMVUndercompactedBitFlag = 1;
-    private const byte kCMVTooThickBitFlag = 2;
-    private const byte kCMVTopLayerTooThickFlag = 3;
-    private const byte kCMVOvercompactedBitFlag = 4;
-    private const byte kCMVTopLayerUndercompactedFlag = 5;
+    private const byte CMV_DECOUPLED_BIT_FLAG = 0;
+    private const byte CMV_UNDERCOMPACTED_BIT_FLAG = 1;
+    private const byte CMV_TOO_THICK_BIT_FLAG = 2;
+    private const byte CMV_TOP_LAYER_TOO_THICK_BIT_FLAG = 3;
+    private const byte CMV_OVERCOMPACTED_BIT_FLAG = 4;
+    private const byte CMV_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG = 5;
 
     /// <summary>
     /// Storage for bit flags used for cell pass data statistics.
@@ -27,8 +30,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsDecoupled
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kCMVDecoupledBitFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kCMVDecoupledBitFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, CMV_DECOUPLED_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, CMV_DECOUPLED_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -36,8 +39,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsUndercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kCMVUndercompactedBitFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kCMVUndercompactedBitFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, CMV_UNDERCOMPACTED_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, CMV_UNDERCOMPACTED_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -45,8 +48,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsTooThick
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kCMVTooThickBitFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kCMVTooThickBitFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, CMV_TOO_THICK_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, CMV_TOO_THICK_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -54,8 +57,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsTopLayerTooThick
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kCMVTopLayerTooThickFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kCMVTopLayerTooThickFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, CMV_TOP_LAYER_TOO_THICK_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, CMV_TOP_LAYER_TOO_THICK_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -63,8 +66,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsTopLayerUndercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kCMVTopLayerUndercompactedFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kCMVTopLayerUndercompactedFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, CMV_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, CMV_TOP_LAYER_UNDERCOMPACTED_BIT_FLAG, value); }
     }
 
     /// <summary>
@@ -72,8 +75,8 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public bool IsOvercompacted
     {
-      get { return BitFlagHelper.IsBitOn(CellPassFlags, kCMVOvercompactedBitFlag); }
-      set { BitFlagHelper.SetBit(ref CellPassFlags, kCMVOvercompactedBitFlag, value); }
+      get { return BitFlagHelper.IsBitOn(CellPassFlags, CMV_OVERCOMPACTED_BIT_FLAG); }
+      set { BitFlagHelper.SetBit(ref CellPassFlags, CMV_OVERCOMPACTED_BIT_FLAG, value); }
     }
     #endregion
 
@@ -97,7 +100,7 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public short PreviousTargetCMV { get; set; }
 
-    public static int IndicativeSizeInBytes() => 4 * 2 + 1; // 4 shorts and a flags byte
+    public static int IndicativeSizeInBytes() => SHORT_TYPES_COUNT * sizeof(short) + sizeof(byte); // 4 shorts and a flags byte
 
     /// <summary>
     /// Constructor with arguments.
@@ -120,6 +123,7 @@ namespace VSS.TRex.SubGridTrees.Types
     /// </summary>
     public void Clear()
     {
+      CellPassFlags = 0;
       MeasuredCMV = CellPassConsts.NullCCV;
       TargetCMV = CellPassConsts.NullCCV;
       PreviousMeasuredCMV = CellPassConsts.NullCCV;
@@ -168,16 +172,30 @@ namespace VSS.TRex.SubGridTrees.Types
 
     public bool Equals(SubGridCellPassDataCMVEntryRecord other)
     {
-      return IsDecoupled == other.IsDecoupled &&
-             IsOvercompacted == other.IsOvercompacted &&
-             IsTooThick == other.IsTooThick &&
-             IsTopLayerTooThick == other.IsTopLayerTooThick &&
-             IsTopLayerUndercompacted == other.IsTopLayerUndercompacted &&
-             IsUndercompacted == other.IsUndercompacted &&
-             MeasuredCMV == other.MeasuredCMV &&
-             TargetCMV == other.TargetCMV &&
-             PreviousMeasuredCMV == other.PreviousMeasuredCMV &&
+      return CellPassFlags == other.CellPassFlags && 
+             MeasuredCMV == other.MeasuredCMV && 
+             TargetCMV == other.TargetCMV && 
+             PreviousMeasuredCMV == other.PreviousMeasuredCMV && 
              PreviousTargetCMV == other.PreviousTargetCMV;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      return obj is SubGridCellPassDataCMVEntryRecord && Equals((SubGridCellPassDataCMVEntryRecord) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        var hashCode = CellPassFlags.GetHashCode();
+        hashCode = (hashCode * 397) ^ MeasuredCMV.GetHashCode();
+        hashCode = (hashCode * 397) ^ TargetCMV.GetHashCode();
+        hashCode = (hashCode * 397) ^ PreviousMeasuredCMV.GetHashCode();
+        hashCode = (hashCode * 397) ^ PreviousTargetCMV.GetHashCode();
+        return hashCode;
+      }
     }
   }
 }

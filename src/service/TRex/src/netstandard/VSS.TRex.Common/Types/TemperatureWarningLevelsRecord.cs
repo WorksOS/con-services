@@ -6,10 +6,12 @@ namespace VSS.TRex.Types
 {
   public struct TemperatureWarningLevelsRecord
   {
-		/// <summary>
-		/// Minimum temperature warning levels value.
-		/// </summary>
-		public ushort Min { get; set; }
+    private const byte USHORT_TYPES_COUNT = 2;
+
+    /// <summary>
+    /// Minimum temperature warning levels value.
+    /// </summary>
+    public ushort Min { get; set; }
 		/// <summary>
 		/// Maximum temperature warning levels value.
 		/// </summary>
@@ -19,7 +21,7 @@ namespace VSS.TRex.Types
     /// Return an indicative size for memory consumption of this class to be used in cache tracking
     /// </summary>
     /// <returns></returns>
-    public static int IndicativeSizeInBytes() => 2 * sizeof(ushort);
+    public static int IndicativeSizeInBytes() => USHORT_TYPES_COUNT * sizeof(ushort);
 
     /// <summary>
     /// Constructor with arguments.

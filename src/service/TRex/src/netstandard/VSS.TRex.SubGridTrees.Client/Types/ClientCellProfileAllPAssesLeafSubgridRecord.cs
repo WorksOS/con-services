@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.TRex.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
   public struct ClientCellProfileAllPassesLeafSubgridRecord : IBinaryReaderWriter, IEquatable<ClientCellProfileAllPassesLeafSubgridRecord>
   {

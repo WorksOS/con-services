@@ -6,7 +6,7 @@ using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 using VSS.TRex.Utilities.Interfaces;
 
-namespace VSS.TRex.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
   public struct ClientCellProfileLeafSubgridRecord : IBinaryReaderWriter, IEquatable<ClientCellProfileLeafSubgridRecord>
   {

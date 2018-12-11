@@ -1,9 +1,8 @@
-﻿using Draw = System.Drawing;
-using VSS.TRex.Cells;
-using VSS.TRex.Common.CellPasses;
+﻿using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
+using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Displayers
 {

@@ -1,13 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.SubGridTrees.Types
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
 	/// <summary>
 	/// Contains measured temperature value as well as minimum and maximum temperature warning level values.
 	/// </summary>
-	public struct SubGridCellPassDataTemperatureEntryRecord
+	public struct SubGridCellPassDataTemperatureEntryRecord : IEquatable<SubGridCellPassDataTemperatureEntryRecord>
   {
     /// <summary>
     /// Measured temperature value.
@@ -25,7 +26,7 @@ namespace VSS.TRex.SubGridTrees.Types
     /// <returns></returns>
     public static int IndicativeSizeInBytes()
     {
-      return sizeof(ushort) + 4 * TemperatureWarningLevelsRecord.IndicativeSizeInBytes(); 
+      return sizeof(ushort) + TemperatureWarningLevelsRecord.IndicativeSizeInBytes(); 
     }
 
     /// <summary>
@@ -86,7 +87,22 @@ namespace VSS.TRex.SubGridTrees.Types
 
     public bool Equals(SubGridCellPassDataTemperatureEntryRecord other)
     {
-      return MeasuredTemperature == other.MeasuredTemperature && TemperatureLevels.Equals(other.TemperatureLevels);
+      return TemperatureLevels.Equals(other.TemperatureLevels) && 
+             MeasuredTemperature == other.MeasuredTemperature;
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (ReferenceEquals(null, obj)) return false;
+      return obj is SubGridCellPassDataTemperatureEntryRecord && Equals((SubGridCellPassDataTemperatureEntryRecord) obj);
+    }
+
+    public override int GetHashCode()
+    {
+      unchecked
+      {
+        return (TemperatureLevels.GetHashCode() * 397) ^ MeasuredTemperature.GetHashCode();
+      }
     }
   }
 }
