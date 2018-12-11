@@ -1,6 +1,6 @@
-class CompactionEvaulation:
+class CompactionEvaluation:
 
-    def __init__(self, machine_compaction_zone, low_volume_cell_threshold, elevation_uncertainty_threshold ):
+    def __init__(self, machine_compaction_zone, low_volume_cell_threshold, filter_elevation_uncertainty, double_handle_threshold, thick_lift_threshold ):
         self.cnt_unique_cell_compaction_area = 0
         self.bin_0 = self.bin_1 = self.bin_2 = self.bin_3 = self.bin_4 = self.bin_5 = self.bin_6 = 0
         self.neg_1 = self.neg_2 = self.neg_3 = self.neg_4 = self.neg_5 = self.neg_6 = 0
@@ -23,10 +23,14 @@ class CompactionEvaulation:
         self.remediation_under_compaction_events = 0.0
         self.machine_compaction_zone = machine_compaction_zone
         self.low_volume_cell_threshold = low_volume_cell_threshold
-        self.elevation_uncertainty_threshold = elevation_uncertainty_threshold
+        self.filter_elevation_uncertainty = filter_elevation_uncertainty
+        self.double_handle_threshold = double_handle_threshold
+        self.thick_lift_threshold = thick_lift_threshold
+        self.lift_passes = 0
+        self.compaction_passes = 0
 
     # TODO lift this into compcation evaulation
-    def evaulate_compaction(self, ne_dict, cell_summaries):
+    def evaluate_compaction(self, ne_dict: dict, cell_summaries: dict):
         #######################################
         # Start of determining Machines and operating time #
         #######################################
@@ -73,7 +77,7 @@ class CompactionEvaulation:
                     self.cnt_cut_cells += 1
                     self.cnt_cut_passes += passes_for_cell
 
-                if volume <= self.low_volume_cell_threshold and volume >= 0:
+                if  0 <= volume <= self.low_volume_cell_threshold:
                     self.cnt_low_volume_cells += 1
                     self.cnt_low_volume_passes += passes_for_cell
                 # this is in the wrong place?
@@ -114,8 +118,8 @@ class CompactionEvaulation:
                         # Compaction state is set to complete with movement down less than MCZ value
                         if layer <= 0.0:  # evaluate compaction layers
                             if layer >= -self.machine_compaction_zone:  # this is the on only condition that sets compaction state to 1
-                                if (compaction_state == 1):  # Fully compacted material was compacted more
-                                    if layer < -self.elevation_uncertainty_threshold:
+                                if compaction_state == 1:  # Fully compacted material was compacted more
+                                    if layer < -self.filter_elevation_uncertainty:
                                         cell_summaries[cell][
                                             'cnt_over_compaction'] += 1  # keep track of overcompaction effort
                                 compaction_state = 1  # set as compacted
@@ -124,7 +128,7 @@ class CompactionEvaulation:
 
                             else:  # moved down more than MCZ, this is normal compaction
                                 compaction_state = 0  # every time compaction is more than MCZ, full compaction is required
-                                active_material = active_material + layer  # Active material reduces because layer is negative
+                                active_material += layer  # Active material reduces because layer is negative
 
                                 # CHECK if movement down mitigated an under compaction event
                                 if active_material < 0.0:  # movement down is larger than the lift, material may have been removed
@@ -153,7 +157,7 @@ class CompactionEvaulation:
                                             self.remediation_under_compaction_events += remediation
                                             # remove remediated event from event magnitude distribution
                                             # figure out which machine removed the event???
-                                            active_cnt = active_cnt - 1
+                                            self.active_cnt -= 1
                                             if remediation <= self.machine_compaction_zone:
                                                 self.active_1 -= 1
                                                 self.active_volume_1 -= remediation
@@ -161,8 +165,8 @@ class CompactionEvaulation:
                                                 self.active_2 -= 1
                                                 self.active_volume_2 -= remediation
                                             elif self.machine_compaction_zone * 2 < remediation <= self.machine_compaction_zone * 3:
-                                                active_3 -= 1
-                                                active_volume_3 -= remediation
+                                                self.active_3 -= 1
+                                                self.active_volume_3 -= remediation
                                             elif self.machine_compaction_zone * 3 < remediation <= self.machine_compaction_zone * 4:
                                                 self.active_4 -= 1
                                                 self.active_volume_4 -= remediation
@@ -170,8 +174,8 @@ class CompactionEvaulation:
                                                 self.active_5 -= 1
                                                 self.active_volume_5 -= remediation
                                             else:
-                                                active_6 -= 1
-                                                active_volume_6 -= remediation
+                                                self.active_6 -= 1
+                                                self.active_volume_6 -= remediation
                                     active_material = 0.0
                                     # print("____________________________")
                                     # print("reset active material < 0")
@@ -184,7 +188,7 @@ class CompactionEvaulation:
                             if layer <= self.machine_compaction_zone:  # Material added within MCZ
                                 if compaction_state == 1:  # compaction was complete, no under compaction event
                                     active_material = 0
-                            elif self.machine_compaction_zone < layer < self.thick_lift:  # Material added more than MCZ but less than TL
+                            elif self.machine_compaction_zone < layer < self.thick_lift_threshold:  # Material added more than MCZ but less than TL
                                 if compaction_state == 1:  # compaction was complete, no under compaction event
                                     active_material = layer
                                     # print(active_material)
@@ -207,7 +211,7 @@ class CompactionEvaulation:
 
                                     #  END of UNDER COMPATION EVENT  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-                                    active_cnt += 1  # ???
+                                    self.active_cnt += 1  # ???
                                     if active_material <= self.machine_compaction_zone:
                                         self.active_1 += 1
                                         self.active_volume_1 += active_material
@@ -215,8 +219,8 @@ class CompactionEvaulation:
                                         self.active_2 += 1
                                         self.active_volume_2 += active_material
                                     elif self.machine_compaction_zone * 2 < active_material <= self.machine_compaction_zone * 3:
-                                        active_3 += 1
-                                        active_volume_3 += active_material
+                                        self.active_3 += 1
+                                        self.active_volume_3 += active_material
                                     elif self.machine_compaction_zone * 3 < active_material <= self.machine_compaction_zone * 4:
                                         self.active_4 += self.active_4 + 1
                                         self.active_volume_4 += active_material
@@ -224,8 +228,8 @@ class CompactionEvaulation:
                                         self.active_5 += 1
                                         self.active_volume_5 += active_material
                                     else:
-                                        active_6 = active_6 + 1
-                                        active_volume_6 = active_volume_6 + active_material
+                                        self.active_6 += 1
+                                        self.active_volume_6 += active_material
 
                                     active_material = layer  # + active_material ???  Only layer becasue active material has been recorded as under compacted event
 
@@ -250,7 +254,7 @@ class CompactionEvaulation:
                                     # print ("thick",event_elevation_bottom_active_material)
                                     #  END of UNDER COMPATION EVENT  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                                     # print("before",active_material)
-                                    active_cnt = active_cnt + 1
+                                    self.active_cnt += 1
                                     if active_material <= self.machine_compaction_zone:
                                         self.active_1 += 1
                                         self.active_volume_1 += active_material
@@ -258,8 +262,8 @@ class CompactionEvaulation:
                                         self.active_2 += 1
                                         self.active_volume_2 += active_material
                                     elif self.machine_compaction_zone * 2 < active_material <= self.machine_compaction_zone * 3:
-                                        active_3 = active_3 + 1
-                                        active_volume_3 = active_volume_3 + active_material
+                                        self.active_3 += 1
+                                        self.active_volume_3 += active_material
                                     elif self.machine_compaction_zone * 3 < active_material <= self.machine_compaction_zone * 4:
                                         self.active_4 += 1
                                         self.active_volume_4 += active_material
@@ -267,8 +271,8 @@ class CompactionEvaulation:
                                         self.active_5 += 1
                                         self.active_volume_5 += active_material
                                     else:
-                                        active_6 = active_6 + 1
-                                        active_volume_6 = active_volume_6 + active_material
+                                        self.active_6 += 1
+                                        self.active_volume_6 += active_material
 
                                     active_material = layer  # + active_material ???  Only layer becasue active material has been recorded as under compacted event
                                     # print(active_material)
@@ -280,51 +284,59 @@ class CompactionEvaulation:
                         # #Layer summary
                         ################
                         if layer <= 0.0:  # evaluate compaction layers
-                            negative_passes = negative_passes + 1
+                            self.negative_passes += 1
                             if layer > -(
                                     self.machine_compaction_zone) and layer < -self.filter_elevation_uncertainty:
-                                neg_1 = neg_1 + 1
+                                self.neg_1 += 1
                             elif layer < -(self.machine_compaction_zone) and layer >= -(
                                     self.machine_compaction_zone * 2):
-                                neg_2 = neg_2 + 1
+                                self.neg_2 += 1
                             elif layer < -(self.machine_compaction_zone * 2) and layer >= -(
                                     self.machine_compaction_zone * 3):
-                                neg_3 = neg_3 + 1
+                                self.neg_3 += 1
                             elif layer < -(self.machine_compaction_zone * 3) and layer >= -(
                                     self.machine_compaction_zone * 4):
-                                neg_4 = neg_4 + 1
+                                self.neg_4 += 1
                             elif layer < -(self.machine_compaction_zone * 4) and layer >= -(
                                     self.machine_compaction_zone * 5):
-                                neg_5 = neg_5 + 1
+                                self.neg_5 += 1
                             elif layer <= -(self.machine_compaction_zone * 5):
-                                neg_6 = neg_6 + 1
+                                self.neg_6 += 1
                             # one more else to catch the rest....
                             if (layer > -(self.filter_elevation_uncertainty)):
-                                cnt_compact_uncertainty = cnt_compact_uncertainty + 1
+                                self.cnt_compact_uncertainty += 1
                             if (layer < self.double_handle_threshold):
-                                double_handle_cubic = double_handle_cubic + layer
+                                self.double_handle_cubic += layer
 
                         if layer > 0.0:
-                            positive_passes = positive_passes + 1
+                            self.positive_passes += 1
                             if layer <= self.filter_elevation_uncertainty:
-                                cnt_lift_uncertainty = cnt_lift_uncertainty + 1
-                                bin_0 = bin_0 + 1
+                                self.cnt_lift_uncertainty += 1
+                                self.bin_0 +=  1
                             elif self.filter_elevation_uncertainty < layer <= self.machine_compaction_zone:
-                                bin_1 = bin_1 + 1
+                                self.bin_1 += 1
                             elif layer > (self.machine_compaction_zone) and layer <= (
                                     self.machine_compaction_zone * 2):
-                                bin_2 = bin_2 + 1
+                                self.bin_2 += 1
                             elif layer > (self.machine_compaction_zone * 2) and layer <= (
                                     self.machine_compaction_zone * 3):
-                                bin_3 = bin_3 + 1
+                                self.bin_3 += 1
                             elif layer > (self.machine_compaction_zone * 3) and layer <= (
                                     self.machine_compaction_zone * 4):
-                                bin_4 = bin_4 + 1
+                                self.bin_4 += 1
                             elif layer > (self.machine_compaction_zone * 4) and layer <= (
                                     self.machine_compaction_zone * 5):
-                                bin_5 = bin_5 + 1
+                                self.bin_5 += 1
                             elif layer >= (self.machine_compaction_zone * 5):
-                                bin_6 = bin_6 + 1
+                                self.bin_6 += 1
         ############################
         # End Evaluate compaction  #
         ############################
+        self.__update_stats_after_evaulation__()
+
+    def __update_stats_after_evaulation__(self):
+        self.lift_passes = self.positive_passes - self.cnt_lift_uncertainty
+        self.compaction_passes = self.negative_passes - self.cnt_compact_uncertainty
+
+
+

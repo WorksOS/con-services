@@ -4,7 +4,7 @@ import csv
 import sys
 import pandas as pd
 from typing import Dict, Tuple, List
-from src.landfill.compaction_evaulation import CompactionEvaulation
+from src.landfill.compaction_evaulation import CompactionEvaluation
 import xlsxwriter
 # from pandas import ExcelWriter
 # from openpyxl import Workbook
@@ -28,7 +28,7 @@ class LandfillAlgorithm():
         self.AreatoAcre = self.cell_to_area / 43560
         self.cellVoltoCubic = self.cell_to_area / 27
         self.double_handle_threshold = -2.0  # used to define rework based on vertical change down
-        self.thick_lift = 2.5  # used to measure how often too much material is placed
+        self.thick_lift_threshold = 2.5  # used to measure how often too much material is placed
         self.filter_low_volume_cell = 0.0  # used to refine area of operation by removing cells with little volume
         self.filter_elevation_uncertainty = 0.0  # used to keep passes with little elevation change out of compaction and lift statistics
         self.current_file = None
@@ -43,7 +43,7 @@ class LandfillAlgorithm():
             self.AreatoAcre = self.cell_to_area / 43560
             self.cellVoltoCubic = self.cell_to_area / 27
             self.double_handle_threshold = 3.0
-            self.thick_lift = 2.5
+            self.thick_lift_threshold = 2.5
             self.filter_low_volume_cell = 0.5
 
 
@@ -66,7 +66,7 @@ class LandfillAlgorithm():
 
     #TODO sort out cell header names depending on type
     '''Read a cav file like object and return a tuple with passcount and NE Dict '''
-    def build_ne_dict(self, filename) -> Tuple[int, Dict]:
+    def build_ne_dict(self, filename: str) -> Tuple[int, Dict]:
         #############################################################
         # read CSV file into dictionary grouped by unique NE values #
         #############################################################
@@ -105,7 +105,7 @@ class LandfillAlgorithm():
         return contributing_machines
 
     '''Determine machine operation time (this is quite likely to be inaccurate) '''
-    def analyse_machine_operation(self, machines_to_analyse, northEastDict) -> Tuple[int, Dict]:
+    def analyse_machine_operation(self, machines_to_analyse, northEastDict) -> Tuple[float, Dict]:
         #TODO Really check this logic - I not sure we have the right info here to determine this in a meaningful way, additionally the calc looks wrong
 
         total_duration = 0.0
@@ -167,7 +167,7 @@ class LandfillAlgorithm():
                     last_elevation = float(cell_pass['elevation'])
 
             top_surface.append([cell[1], cell[0], last_elevation])
-            bottom_surface.append(cell[1], cell[0], first_elevation)
+            bottom_surface.append([cell[1], cell[0], first_elevation])
 
     def output_csv(self, filename: str, data: List):
         with open(filename, "w") as out_file:
@@ -424,8 +424,8 @@ class LandfillAlgorithm():
                             cell_summaries,
                             machine_operation_dict):
 
-        compaction_evaulation = CompactionEvaulation(self.machine_compaction_zone)
-        compaction_evaulation.evaulate_compaction(ne_dict, cell_summaries)
+        compaction_evaulation = CompactionEvaluation(self.machine_compaction_zone)
+        compaction_evaulation.evaluate_compaction(ne_dict, cell_summaries)
 
 
 
@@ -617,7 +617,7 @@ class LandfillAlgorithm():
         ##################################################
         # Over compaction surface file
         #TODO move this elsewhere one day snakepit (probably) will not use this
-        if self.create_points == True:
+        if self.create_points:
             OverSurfaceOut = "./output/" + self.current_file + "_OverCompaction.pts"
             OverOut = open(OverSurfaceOut, 'w')
             O = csv.writer(OverOut, delimiter=',', dialect='excel', lineterminator='\n')
@@ -833,7 +833,7 @@ class LandfillAlgorithm():
 
         site_summary_to_excel = (
             ['file processed', self.filename],
-            ['Thicklift value', self.thick_lift],
+            ['Thicklift value', self.thick_lift_threshold],
             ['Low volume cell filter', self.filter_low_volume_cell],
             ['uncertainty filter', self.filter_elevation_uncertainty],
             ['Machine compaction zone', self.machine_compaction_zone],
@@ -1058,7 +1058,7 @@ class LandfillAlgorithm():
         # Site summary information
         row = 0
         col = 0
-        for item, value in (site_summary_to_excel):
+        for item, value in site_summary_to_excel:
             worksheetSummary.write(row, col, item)
             worksheetSummary.write(row, col + 1, value)
             row += 1
