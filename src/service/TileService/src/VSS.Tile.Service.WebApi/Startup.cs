@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 using VSS.TCCFileAccess;
 using VSS.Tile.Service.Common.Authentication;
@@ -56,6 +58,10 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
+
+      services.AddSingleton<CacheInvalidationService>();
+
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
       services.AddOpenTracing(builder =>
       {

@@ -87,7 +87,7 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"}, # Use Alpha service here
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"}, # Use Alpha service here
-  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-dev-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.dev.k8s.vspengg.com/internal/v1/export"},
@@ -105,7 +105,7 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"},
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"},
-  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-alpha-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.alpha.k8s.vspengg.com/internal/v1/export"},
@@ -123,7 +123,7 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "GEOFENCE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0"},
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0"},
-  @{key = "PROJECT_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api.trimble.com/t/trimble.com/vss-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = ""},
