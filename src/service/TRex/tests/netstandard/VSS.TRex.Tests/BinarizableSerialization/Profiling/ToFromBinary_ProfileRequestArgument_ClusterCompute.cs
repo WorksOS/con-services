@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.GridFabric.Arguments;

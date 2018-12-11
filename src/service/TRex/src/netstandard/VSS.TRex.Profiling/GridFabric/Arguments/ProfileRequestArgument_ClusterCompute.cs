@@ -19,7 +19,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public XYZ[] NEECoords { get; set; } = new XYZ[0];
     
     // todo LiftBuildSettings: TICLiftBuildSettings;
-    // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     public bool ReturnAllPassesAndLayers { get; set; }
 

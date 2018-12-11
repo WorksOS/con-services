@@ -201,8 +201,7 @@ namespace TRexIgniteTest
 	      ReferenceDesignID = Guid.Empty,
 	      StartPoint = new WGS84Point(lon: extents.MinX, lat: extents.MinY),
 	      EndPoint = new WGS84Point(lon: extents.MaxX, lat: extents.MaxY),
-	      ReturnAllPassesAndLayers = false,
-	      DesignDescriptor = DesignDescriptor.Null()
+	      ReturnAllPassesAndLayers = false
 	    };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
