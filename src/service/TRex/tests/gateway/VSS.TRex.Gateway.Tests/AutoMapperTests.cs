@@ -25,7 +25,7 @@ namespace VSS.TRex.Gateway.Tests
     }
 
     [Fact]
-    public void MapWGSPoint3DToFencePoint()
+    public void MapWGSPointToFencePoint()
     {
       var point = new WGSPoint(123.4, 567.8);
       var fencePoint = AutoMapperUtility.Automapper.Map<FencePoint>(point);
