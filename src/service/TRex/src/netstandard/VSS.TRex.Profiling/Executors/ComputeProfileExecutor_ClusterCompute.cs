@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
@@ -49,7 +48,7 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="profileTypeRequired"></param>
     /// <param name="nEECoords"></param>
     /// <param name="filters"></param>
-    /// <param name="designDescriptor"></param>
+    /// <param name="designUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
     public ComputeProfileExecutor_ClusterCompute(Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;

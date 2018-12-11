@@ -23,7 +23,7 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
       {
         ComputeProfileExecutor_ClusterCompute<T> Executor = new ComputeProfileExecutor_ClusterCompute<T>
         (arg.ProjectID, arg.ProfileTypeRequired, arg.NEECoords, arg.Filters,
-          arg.DesignDescriptor, arg.ReturnAllPassesAndLayers);
+          arg.ReferenceDesignID, arg.ReturnAllPassesAndLayers);
 
         Log.LogInformation("Executing profiler.Execute()");
 
