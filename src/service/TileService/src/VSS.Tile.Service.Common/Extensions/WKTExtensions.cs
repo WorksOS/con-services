@@ -36,7 +36,7 @@ namespace VSS.Tile.Service.Common.Extensions
         {
           lng -= 2 * Math.PI;
         }
-        latlngs.Add(WGSPoint.CreatePoint(lat, lng));
+        latlngs.Add(new WGSPoint(lat, lng));
       }
       return latlngs;
     }
