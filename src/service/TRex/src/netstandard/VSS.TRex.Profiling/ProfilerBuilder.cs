@@ -30,7 +30,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Builder responsible from building overall profile information from cell vector
     /// </summary>
-    public IProfileLiftBuilder<T> ProfileLiftBuilder { get; set; }
+    public ICellProfileAnalyzer<T> CellProfileAnalyzer { get; set; }
 
     public ProfilerBuilder()
     {
@@ -65,7 +65,7 @@ namespace VSS.TRex.Profiling
 
         CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
 
-        ProfileLiftBuilder = factory.NewProfileLiftBuilder(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
+        CellProfileAnalyzer = factory.NewProfileLiftBuilder(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
     }
   }
 }

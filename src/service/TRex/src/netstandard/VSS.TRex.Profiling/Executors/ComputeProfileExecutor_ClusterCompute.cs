@@ -157,7 +157,7 @@ namespace VSS.TRex.Profiling.Executors
             SetupForCellPassStackExamination(PassFilter);
 
             Log.LogInformation("Building lift profile");
-            if (Profiler.ProfileLiftBuilder.Build(ProfileCells, CellPassIterator))
+            if (Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
             {
               Log.LogInformation("Lift profile building succeeded");
 
