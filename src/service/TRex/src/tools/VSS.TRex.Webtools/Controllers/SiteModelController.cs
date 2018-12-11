@@ -36,6 +36,17 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
+    /// Returns proofing runs for a site model
+    /// </summary>
+    /// <param name="siteModelID">Grid to return status for</param>
+    /// <returns></returns>
+    [HttpGet("{siteModelID}/siteproofingruns")]
+    public JsonResult GetSiteProofingRuns(string siteModelID)
+    {
+      return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.SiteProofingRuns);
+    }
+
+    /// <summary>
     /// Returns project date range for a site model
     /// </summary>
     /// <param name="siteModelID">Grid to return status for</param>

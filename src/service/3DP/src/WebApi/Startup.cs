@@ -119,6 +119,12 @@ namespace VSS.Productivity3D.WebApi
       app.UseResponseCompression();
       app.UseMvc();
 
+      //TODO: Remove this when our custom response caching fixed
+      if (CustomCachingPolicyProvider.ResponseCachingDisabled)
+      {
+        log.LogWarning("Response caching disabled");
+      }
+
       CheckRaptorAvailabilityIfRequired(serviceProvider);
     }
 

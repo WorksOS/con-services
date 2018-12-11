@@ -38,9 +38,9 @@ namespace VSS.MasterData.Models.UnitTests
 
       this._polygonLL = new List<WGSPoint>()
       {
-        WGSPoint.CreatePoint(0.612770247622, -1.860592122242),
-        WGSPoint.CreatePoint(0.61341601944523627132, -1.860592122242),
-        WGSPoint.CreatePoint(0.612770247622, -1.86120298748019675)
+        new WGSPoint(0.612770247622, -1.860592122242),
+        new WGSPoint(0.61341601944523627132, -1.860592122242),
+        new WGSPoint(0.612770247622, -1.86120298748019675)
       };
 
       this._serviceExceptionHandler = this.ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
@@ -69,16 +69,16 @@ namespace VSS.MasterData.Models.UnitTests
     [TestMethod]
     public void CanCompareWGSPointEqual()
     {
-      var point1 = WGSPoint.CreatePoint(10, 10);
-      var point2 = WGSPoint.CreatePoint(10, 10);
+      var point1 = new WGSPoint(10, 10);
+      var point2 = new WGSPoint(10, 10);
       Assert.IsTrue(point1 == point2);
     }
 
     [TestMethod]
     public void CanCompareWGSPointNonequal()
     {
-      var point1 = WGSPoint.CreatePoint(10, 10);
-      var point2 = WGSPoint.CreatePoint(11, 10);
+      var point1 = new WGSPoint(10, 10);
+      var point2 = new WGSPoint(11, 10);
       Assert.IsTrue(point1 != point2);
     }
 
@@ -289,10 +289,10 @@ namespace VSS.MasterData.Models.UnitTests
       var boundaryName = "myBoundaryName";
       var newBoundaryPoints = new List<VSS.MasterData.Models.Models.WGSPoint>
       {
-        WGSPoint.CreatePoint(1, 170),
-        WGSPoint.CreatePoint(6, 160),
-        WGSPoint.CreatePoint(8, 150),
-        WGSPoint.CreatePoint(1, 170)
+        new WGSPoint(1, 170),
+        new WGSPoint(6, 160),
+        new WGSPoint(8, 150),
+        new WGSPoint(1, 170)
       };
 
       filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints);
@@ -328,10 +328,10 @@ namespace VSS.MasterData.Models.UnitTests
       var boundaryName = "new myBoundaryName";
       var newBoundaryPoints = new List<VSS.MasterData.Models.Models.WGSPoint>
       {
-        WGSPoint.CreatePoint(1, 170),
-        WGSPoint.CreatePoint(6, 160),
-        WGSPoint.CreatePoint(8, 150),
-        WGSPoint.CreatePoint(1, 170)
+        new WGSPoint(1, 170),
+        new WGSPoint(6, 160),
+        new WGSPoint(8, 150),
+        new WGSPoint(1, 170)
       };
 
       filter.AddBoundary(boundaryUid, boundaryName, newBoundaryPoints);

@@ -10,13 +10,10 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -36,7 +33,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// The TRex Gateway proxy for use by executor.
     /// </summary>
     protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
-
 
     /// <summary>
     /// Default constructor.

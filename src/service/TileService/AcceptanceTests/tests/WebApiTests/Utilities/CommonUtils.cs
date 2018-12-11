@@ -83,7 +83,7 @@ namespace WebApiTests.Utilities
       return true;
     }
 
-    public static bool TilesMatch(string resultName, string difference, byte[] expectedTileData, byte[] actualTileData)
+    public static bool TilesMatch(string resultName, string difference, byte[] expectedTileData, byte[] actualTileData, out int actualDiff)
     {
       double imageDifference = 0;
       if (!string.IsNullOrEmpty(difference))
@@ -100,6 +100,7 @@ namespace WebApiTests.Utilities
       Console.WriteLine("Actual Difference % = " + diff * 100);
       Console.WriteLine("Actual filename = " + actFileName);
       Console.WriteLine(actualTileData);
+      actualDiff = (int)Math.Round(diff * 100);
       return Math.Abs(diff) < imageDifference;
     }
   }

@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         using (Bitmap bitmap = new Bitmap(parameters.mapWidth, parameters.mapHeight))
         using (Graphics g = Graphics.FromImage(bitmap))
         {
-          var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT);
+          var projectPoints = RaptorConverters.GeometryToPoints(project.ProjectGeofenceWKT);
           PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(projectPoints, parameters.pixelTopLeft, parameters.numTiles);
 
           Pen pen = new Pen(Color.FromArgb(STROKE_TRANSPARENCY, Color.FromArgb(PROJECT_BOUNDARY_COLOR)),

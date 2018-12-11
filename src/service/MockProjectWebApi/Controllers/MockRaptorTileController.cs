@@ -205,11 +205,11 @@ namespace MockProjectWebApi.Controllers
             {
               new List<WGSPoint>
               {
-                WGSPoint.CreatePoint(0.631932549093478, -2.00748906773731),
-                WGSPoint.CreatePoint(0.631940158729017, -2.00748906773731),
-                WGSPoint.CreatePoint(0.631940158729017, -2.00745206675717),
-                WGSPoint.CreatePoint(0.631938717124322, -2.00745206675717),
-                WGSPoint.CreatePoint(0.631932549093478, -2.00748906773731)
+                new WGSPoint(0.631932549093478, -2.00748906773731),
+                new WGSPoint(0.631940158729017, -2.00748906773731),
+                new WGSPoint(0.631940158729017, -2.00745206675717),
+                new WGSPoint(0.631938717124322, -2.00745206675717),
+                new WGSPoint(0.631932549093478, -2.00748906773731)
               }
             }
           };
@@ -253,10 +253,10 @@ namespace MockProjectWebApi.Controllers
             {
               new List<WGSPoint>
               {
-                WGSPoint.CreatePoint(0.63192486410214576686, -2.0075397823134681907),
-                WGSPoint.CreatePoint(0.63192486410214576686, -2.0075399142735710356),
-                WGSPoint.CreatePoint(0.63192459673603029735, -2.0075399142735710356),
-                WGSPoint.CreatePoint(0.63192459673603029735, -2.0075397823134681907)
+                new WGSPoint(0.63192486410214576686, -2.0075397823134681907),
+                new WGSPoint(0.63192486410214576686, -2.0075399142735710356),
+                new WGSPoint(0.63192459673603029735, -2.0075399142735710356),
+                new WGSPoint(0.63192459673603029735, -2.0075397823134681907)
               }
             }
           };
@@ -271,10 +271,10 @@ namespace MockProjectWebApi.Controllers
             {
               new List<WGSPoint>
               {
-                WGSPoint.CreatePoint(0.631933421757, -2.00745117663),
-                WGSPoint.CreatePoint(0.631937191668, -2.007449675651),
-                WGSPoint.CreatePoint(0.631939949288, -2.007470794135),
-                WGSPoint.CreatePoint(0.631933125051, -2.00746859502)
+                new WGSPoint(0.631933421757, -2.00745117663),
+                new WGSPoint(0.631937191668, -2.007449675651),
+                new WGSPoint(0.631939949288, -2.007470794135),
+                new WGSPoint(0.631933125051, -2.00746859502)
               }
             }
           };
@@ -288,10 +288,10 @@ namespace MockProjectWebApi.Controllers
             {
               new List<WGSPoint>
               {
-                WGSPoint.CreatePoint(0.631933421757, -2.00745117663),
-                WGSPoint.CreatePoint(0.631937191668, -2.007449675651),
-                WGSPoint.CreatePoint(0.631939949288, -2.007470794135),
-                WGSPoint.CreatePoint(0.631933125051, -2.00746859502)
+                new WGSPoint(0.631933421757, -2.00745117663),
+                new WGSPoint(0.631937191668, -2.007449675651),
+                new WGSPoint(0.631939949288, -2.007470794135),
+                new WGSPoint(0.631933125051, -2.00746859502)
               }
             }
           };
@@ -305,13 +305,13 @@ namespace MockProjectWebApi.Controllers
               new List<WGSPoint>
               {
                 /*
-                WGSPoint.CreatePoint(0.631933977148023, -2.00748895357148),
-                WGSPoint.CreatePoint(0.631933977148023, -2.00745211260671),
-                WGSPoint.CreatePoint(0.631938717124322, -2.00748895357148),
-                WGSPoint.CreatePoint(0.631938717124322, -2.00745211260671)
+                new WGSPoint(0.631933977148023, -2.00748895357148),
+                new WGSPoint(0.631933977148023, -2.00745211260671),
+                new WGSPoint(0.631938717124322, -2.00748895357148),
+                new WGSPoint(0.631938717124322, -2.00745211260671)
                 */
-                WGSPoint.CreatePoint(0.631933977148023, -2.00748895357148),
-                WGSPoint.CreatePoint(0.631938717124322, -2.00745211260671)
+                new WGSPoint(0.631933977148023, -2.00748895357148),
+                new WGSPoint(0.631938717124322, -2.00745211260671)
               }
             }
           };
@@ -348,8 +348,8 @@ namespace MockProjectWebApi.Controllers
           {
             new List<WGSPoint>
             {
-              WGSPoint.CreatePoint(0.631933977148023, -2.00748895357148),
-              WGSPoint.CreatePoint(0.631938717124322, -2.00745211260671)
+              new WGSPoint(0.631933977148023, -2.00748895357148),
+              new WGSPoint(0.631938717124322, -2.00745211260671)
             }
           }
         };

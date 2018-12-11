@@ -7,7 +7,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
-  public interface IProfilerBuilderFactory
+  public interface IProfilerBuilderFactory<T> where T : class, IProfileCellBase, new()
   {
     /// <summary>
     /// Creates a new builder responsible for processing layer and other information for single cells in a profile
@@ -32,7 +32,7 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="cutFillDesign"></param>
     /// <param name="slicerToolUsed"></param>
     /// <returns></returns>
-    ICellProfileBuilder NewCellProfileBuilder(ISiteModel siteModel,
+    ICellProfileBuilder<T> NewCellProfileBuilder(ISiteModel siteModel,
       ICellSpatialFilter cellFilter,
       IDesign cutFillDesign,
       bool slicerToolUsed);
@@ -47,7 +47,7 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
-    IProfileLiftBuilder NewProfileLiftBuilder(ISiteModel siteModel,
+    IProfileLiftBuilder<T> NewProfileLiftBuilder(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,

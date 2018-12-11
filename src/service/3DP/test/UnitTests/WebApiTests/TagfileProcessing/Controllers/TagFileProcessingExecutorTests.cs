@@ -14,6 +14,7 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
@@ -549,14 +550,14 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     }
 
 
-    private WGS84Fence CreateAFence()
+    private static WGS84Fence CreateAFence()
     {
-      var points = new List<WGSPoint3D>
+      var points = new List<WGSPoint>
       {
-        new WGSPoint3D(0.631986074660308, -2.00757760231466),
-        new WGSPoint3D(0.631907507374149, -2.00758733949739),
-        new WGSPoint3D(0.631904485465203, -2.00744352879854),
-        new WGSPoint3D(0.631987283352491, -2.00743753668608)
+        new WGSPoint(0.631986074660308, -2.00757760231466),
+        new WGSPoint(0.631907507374149, -2.00758733949739),
+        new WGSPoint(0.631904485465203, -2.00744352879854),
+        new WGSPoint(0.631987283352491, -2.00743753668608)
       };
 
       return new WGS84Fence(points.ToArray());

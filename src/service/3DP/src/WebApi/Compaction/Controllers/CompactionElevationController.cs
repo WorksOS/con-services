@@ -210,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         };
 
         //In case we have rogue tag files distorting the extents, restrict to project boundary
-        var projectPoints = RaptorConverters.geometryToPoints(project.ProjectGeofenceWKT).ToList();
+        var projectPoints = RaptorConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
         var projMinLat = projectPoints.Min(p => p.Lat);
         var projMinLng = projectPoints.Min(p => p.Lon);
         var projMaxLat = projectPoints.Max(p => p.Lat);

@@ -77,6 +77,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IHostedService, AddFileProcessingService>();
       services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>)provider.GetService<IHostedService>());
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
+
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
 

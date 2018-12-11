@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -107,6 +108,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// 
     protected IHttpContextAccessor httpContextAccessor;
 
+    protected IDataOceanClient dataOceanClient;
+
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
     /// </summary>
@@ -205,7 +208,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null,
-      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null)
+      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient=null)
     {
       log = logger;
       this.configStore = configStore;
@@ -226,6 +229,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.fileRepo = fileRepo;
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
+      this.dataOceanClient = dataOceanClient;
     }
 
     /// <summary>

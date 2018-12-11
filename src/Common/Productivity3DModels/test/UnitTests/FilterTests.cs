@@ -20,11 +20,11 @@ namespace VSS.Productivity3D.Models.UnitTests
     {
       var validator = new DataAnnotationsValidator();
       //everything filter
-      List<WGSPoint3D> latLngs = new List<WGSPoint3D>
+      List<WGSPoint> latLngs = new List<WGSPoint>
       {
-        new WGSPoint3D(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint3D(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint3D(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
+        new WGSPoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
       };
       List<Point> gridPoints = new List<Point>
       {
@@ -152,7 +152,7 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidLatLngPointsTest()
     {
       //too few points
-      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, new List<WGSPoint3D>(),
+      var filter = FilterResult.CreateFilter(null,null, null, null, null, null, null, null, null, null, null, new List<WGSPoint>(),
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null);
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
@@ -173,11 +173,11 @@ namespace VSS.Productivity3D.Models.UnitTests
     public void ValidateFailInvalidBoundaryFilterTest()
     {
       //both LL and grid points specified
-      List<WGSPoint3D> latLngs = new List<WGSPoint3D>
+      List<WGSPoint> latLngs = new List<WGSPoint>
       {
-        new WGSPoint3D(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint3D(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
-        new WGSPoint3D(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
+        new WGSPoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
+        new WGSPoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
       };
       List<Point> gridPoints = new List<Point>
       {
