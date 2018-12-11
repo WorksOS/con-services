@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -27,11 +26,12 @@ namespace VSS.TRex.Profiling
   /// </summary>
   public abstract class CellProfileAnalyzerBase<T> : ICellProfileAnalyzer<T> where T : class, IProfileCellBase
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<CellProfileAnalyzerBase<T>>();
+    //private static ILogger Log = Logging.Logger.CreateLogger<CellProfileAnalyzerBase<T>>();
 
     /// <summary>
     /// Local reference to the client subgrid factory
     /// </summary>
+    // ReSharper disable once StaticMemberInGenericType
     private static IClientLeafSubgridFactory clientLeafSubGridFactory;
 
     protected IClientLeafSubgridFactory ClientLeafSubGridFactory
@@ -40,20 +40,9 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// The storage proxy to use when requesting subgrids for profiling operations
     /// </summary>
-    protected IStorageProxy storageProxy;
+    private IStorageProxy storageProxy;
 
     protected IStorageProxy StorageProxy => storageProxy ?? (storageProxy = DIContext.Obtain<ISiteModels>().StorageProxy);
-
-    /// <summary>
-    /// The number of passes identified in the top-most (most recent) layer
-    /// </summary>
-    protected int TopMostLayerPassCount;
-
-    /// <summary>
-    /// The number of half-passes (recorded by machine that report passes as such)
-    /// identified in the top-most (most recent) layer
-    /// </summary>
-    protected int TopMostLayerCompactionHalfPassCount;
 
     /// <summary>
     /// The subgrid of composite elevations calculate from the collection of surveyed surfaces
@@ -101,7 +90,6 @@ namespace VSS.TRex.Profiling
     /// <param name="passFilter"></param>
     /// <param name="cellFilter"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
-    /// <param name="cellLiftBuilder"></param>
     public CellProfileAnalyzerBase(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,

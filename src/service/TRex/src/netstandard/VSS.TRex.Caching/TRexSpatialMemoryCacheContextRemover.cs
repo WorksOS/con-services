@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
@@ -10,6 +12,8 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContextRemover
   {
+    private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCacheContextRemover>();
+
     private readonly ITRexSpatialMemoryCache _cache;
     private readonly Thread _removalThread;
     private readonly int _sleepTimeMS;
@@ -19,9 +23,16 @@ namespace VSS.TRex.Caching
     {
       while (_removalThread.ThreadState == ThreadState.Running)
       {
-        // Instruct the cache to perform the cleanup...
-        // Wait a time period minutes to remove items marked for removal
-        _cache.RemoveContextsMarkedForRemoval(_removalWaitTimeSeconds);
+        try
+        {
+          // Instruct the cache to perform the cleanup...
+          // Wait a time period minutes to remove items marked for removal
+          _cache.RemoveContextsMarkedForRemoval(_removalWaitTimeSeconds);
+        }
+        catch (Exception e)
+        {
+          log.LogError($"Exception thrown during RemoveContextsMarkedForRemoval(): {e}");
+        }
 
         Thread.Sleep(_sleepTimeMS);
       }

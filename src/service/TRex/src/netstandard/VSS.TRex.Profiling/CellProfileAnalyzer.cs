@@ -27,9 +27,20 @@ namespace VSS.TRex.Profiling
     private static ILogger Log = Logging.Logger.CreateLogger<CellProfileAnalyzer>();
 
     /// <summary>
+    /// The number of passes identified in the top-most (most recent) layer
+    /// </summary>
+    public int TopMostLayerPassCount;
+
+    /// <summary>
+    /// The number of half-passes (recorded by machine that report passes as such)
+    /// identified in the top-most (most recent) layer
+    /// </summary>
+    public int TopMostLayerCompactionHalfPassCount;
+
+    /// <summary>
     /// Cell lift builder reference to the engine that performs detailed analytics on individual cells in the profile.
     /// </summary>
-    private ICellLiftBuilder CellLiftBuilder;
+    private readonly ICellLiftBuilder CellLiftBuilder;
 
     private ProfileCell ProfileCell;
 
