@@ -97,9 +97,9 @@ namespace VSS.TRex.Server.PSNode
         // Create the cache to store the general subgrid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
           new TRexSpatialMemoryCache(
-            DIContext.Obtain<IConfigurationStore>().GetValueInt("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT", Consts.kGeneralSubgridResultCacheMaximumElementCount),
-            DIContext.Obtain<IConfigurationStore>().GetValueLong("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE", Consts.kGeneralSubgridResultCacheMaximumSize),
-            DIContext.Obtain<IConfigurationStore>().GetValueDouble("GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION", Consts.kGeneralSubgridResultCacheDeadBandFraction))
+            DIContext.Obtain<IConfigurationStore>().GetValueInt("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT", Consts.GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT),
+            DIContext.Obtain<IConfigurationStore>().GetValueLong("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE", Consts.GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE),
+            DIContext.Obtain<IConfigurationStore>().GetValueDouble("GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION", Consts.GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION))
         ))
 
         // Register the listener for site model attribute change notifications

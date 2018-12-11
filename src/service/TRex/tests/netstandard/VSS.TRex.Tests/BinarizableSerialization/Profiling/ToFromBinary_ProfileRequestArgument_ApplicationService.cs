@@ -1,6 +1,4 @@
 ﻿using System;
-using VSS.TRex.Common;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
@@ -38,14 +36,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         PositionsAreGrid = true,
         StartPoint = new WGS84Point(MIN_X, MIN_Y, MIN_Z),
         EndPoint = new WGS84Point(MAX_X, MAX_Y, MAX_Z),
-        ReturnAllPassesAndLayers = false,
-        DesignDescriptor = new DesignDescriptor()
-        {
-          DesignID = Guid.NewGuid(),
-          FileName = "",
-          Folder = "",
-          Offset = OFFSET
-        }
+        ReturnAllPassesAndLayers = false
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom ProfileRequestArgument_ApplicationService not same after round trip serialisation");

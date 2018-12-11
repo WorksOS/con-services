@@ -66,7 +66,6 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endY)
     {
       Guid siteModelUid = Guid.Parse(siteModelID);
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
 
       ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
       {
@@ -78,7 +77,6 @@ namespace VSS.TRex.Webtools.Controllers
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
         ReturnAllPassesAndLayers = false,
-        DesignDescriptor = DesignDescriptor.Null()
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
@@ -91,8 +89,8 @@ namespace VSS.TRex.Webtools.Controllers
       if (Response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      //var nonNulls = Response.ProfileCells.Where(x => ((ProfileCell) x).CellLastElev != Consts.NullHeight).ToArray();
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, ((ProfileCell)x).CellLastElev, x.Station, -1) ));
+      //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
+      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1) ));
     }
   }
 }

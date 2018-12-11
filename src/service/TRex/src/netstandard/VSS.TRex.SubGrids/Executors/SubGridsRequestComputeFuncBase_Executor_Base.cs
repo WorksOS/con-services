@@ -44,7 +44,7 @@ namespace VSS.TRex.SubGrids.Executors
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
-    private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.kEnableGeneralSubgridResultCaching);
+    private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
     /// <summary>
     /// Local reference to the client subgrid factory

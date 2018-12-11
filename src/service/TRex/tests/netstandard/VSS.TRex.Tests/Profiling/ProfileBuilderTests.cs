@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.Profiling
     public static Mock<IProfilerBuilderFactory<ProfileCell>> factory;
     public static Mock<ICellLiftBuilder> newCellLiftBuilder;
     public static Mock<ICellProfileBuilder<ProfileCell>> newCellProfileBuilder;
-    public static Mock<IProfileLiftBuilder<ProfileCell>> newProfileLiftBuilder;
+    public static Mock<ICellProfileAnalyzer<ProfileCell>> newProfileLiftBuilder;
 
     public ProfileBuilderTests_Fixture()
     {
@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.Profiling
         factory = new Mock<IProfilerBuilderFactory<ProfileCell>>();
         newCellLiftBuilder = new Mock<ICellLiftBuilder>();
         newCellProfileBuilder = new Mock<ICellProfileBuilder<ProfileCell>>();
-        newProfileLiftBuilder = new Mock<IProfileLiftBuilder<ProfileCell>>();
+        newProfileLiftBuilder = new Mock<ICellProfileAnalyzer<ProfileCell>>();
 
         factory.Setup(mk => mk.NewCellLiftBuilder(null, GridDataType.All, null, null, null))
           .Returns(newCellLiftBuilder.Object);
@@ -63,7 +63,7 @@ namespace VSS.TRex.Tests.Profiling
       Assert.True(builder.CellLiftBuilder == ProfileBuilderTests_Fixture.newCellLiftBuilder.Object, "Cell lift builder not expected one");
       Assert.True(builder.CellProfileBuilder == ProfileBuilderTests_Fixture.newCellProfileBuilder.Object,
         "Cell profile builder not expected one");
-      Assert.True(builder.ProfileLiftBuilder == ProfileBuilderTests_Fixture.newProfileLiftBuilder.Object,
+      Assert.True(builder.CellProfileAnalyzer == ProfileBuilderTests_Fixture.newProfileLiftBuilder.Object,
         "Profile lift builder not expected one");
     }
   }
