@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using Point = VSS.MasterData.Models.Models.Point;
 using VSS.MasterData.Models.Models;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
+using Point = VSS.MasterData.Models.Models.Point;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {
@@ -38,13 +37,12 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
 
       Assert.AreEqual(res1,res2);
       Assert.AreEqual(13,res1);
-
     }
 
     [TestMethod]
     public void CanConvertLatLngToPixelOffset()
     {
-      List<WGSPoint> latLngs = new List<WGSPoint>
+      var latLngs = new List<WGSPoint>
       {
         new WGSPoint(36.210.LatDegreesToRadians(), -115.025.LonDegreesToRadians()),
         new WGSPoint(36.205.LatDegreesToRadians(), -115.029.LonDegreesToRadians()),
@@ -181,7 +179,5 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
       };
       Assert.IsFalse(TileServiceUtils.Outside(bbox, points));
     }
-
-
   }
 }

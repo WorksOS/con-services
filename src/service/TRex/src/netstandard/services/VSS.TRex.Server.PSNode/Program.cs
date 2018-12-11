@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
@@ -81,8 +80,8 @@ namespace VSS.TRex.Server.PSNode
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
-        .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
+        .Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(new ProfilerBuilderFactory<ProfileCell>()))
+        .Add(x => x.AddTransient<IProfilerBuilder<ProfileCell>>(factory => new ProfilerBuilder<ProfileCell>()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
@@ -108,6 +107,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+        .Add(x => x.AddSingleton<Func<IProfileCell>>(() => new ProfileCell()))
         .Complete();
     }
 

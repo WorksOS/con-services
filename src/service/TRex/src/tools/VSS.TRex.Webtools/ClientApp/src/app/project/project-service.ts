@@ -6,7 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 import { strict } from 'assert';
 
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS } from '../project/project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, XYZS, SiteProofingRun } from '../project/project-model';
 import { DisplayMode } from '../project/project-displaymode-model';
 import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -132,6 +132,10 @@ export class ProjectService {
 
   public getMachineDesigns(projectUid: string): Observable<MachineDesign[]> {
     return this.executeRequest<MachineDesign[]>('getMachineDesigns', `sitemodels/${projectUid}/machinedesigns`);
+  }
+
+  public getSiteProofingRuns(projectUid: string): Observable<SiteProofingRun[]> {
+    return this.executeRequest<SiteProofingRun[]>('getSiteProofingRuns', `sitemodels/${projectUid}/siteproofingruns`);
   }
 
   public getMachines(projectUid: string): Observable<Machine[]> {

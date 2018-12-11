@@ -40,8 +40,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
         {
           foreach (var alignmentDescriptor in alignmentDescriptors)
           {
-            IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
-              projectId, alignmentDescriptor);
+            var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
 
             if (alignmentPoints != null && alignmentPoints.Any())
             {
@@ -53,9 +52,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           alignmentsImage = bitmap.BitmapToByteArray();
         }
       }
+
       return alignmentsImage;
     }
-
   }
 
   public interface IAlignmentTileService

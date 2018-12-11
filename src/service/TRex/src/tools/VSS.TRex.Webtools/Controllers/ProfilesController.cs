@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -83,9 +82,9 @@ namespace VSS.TRex.Webtools.Controllers
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      ProfileRequest_ApplicationService request = new ProfileRequest_ApplicationService();
-      ProfileRequestResponse Response = request.Execute(arg);
-
+      ProfileRequest_ApplicationService<ProfileCell> request = new ProfileRequest_ApplicationService<ProfileCell>();
+      ProfileRequestResponse<ProfileCell> Response = request.Execute(arg);
+      
       if (Response == null)
         return new JsonResult(@"Profile response is null");
       

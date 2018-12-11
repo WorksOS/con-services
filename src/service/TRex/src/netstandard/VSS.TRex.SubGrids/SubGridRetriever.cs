@@ -70,7 +70,7 @@ namespace VSS.TRex.SubGrids
 
     private IFilteredValuePopulationControl PopulationControl;
 
-    private IProfilerBuilder Profiler;
+    private IProfilerBuilder<ProfileCell> Profiler;
     private ProfileCell CellProfile;
 
     private ISubGridTreeBitMask PDExistenceMap;
@@ -891,7 +891,7 @@ namespace VSS.TRex.SubGrids
         // Some display types require lift processing to be able to select the
         // appropriate cell pass containing the filtered value required.
 
-        Profiler = DIContext.Obtain<IProfilerBuilder>();
+        Profiler = DIContext.Obtain<IProfilerBuilder<ProfileCell>>();
 
         Profiler.Configure(SiteModel, PDExistenceMap, _GridDataType, Filter.AttributeFilter, Filter.SpatialFilter,
             null, null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel));

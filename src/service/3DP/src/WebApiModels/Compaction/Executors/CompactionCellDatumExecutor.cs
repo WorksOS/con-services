@@ -2,12 +2,12 @@
 using SVOICDecls;
 using VLPDDecls;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -54,9 +54,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         _easting);
     }
 
-    private TCoordPointList GetGridCoordinates(long projectId, WGSPoint3D latLon)
+    private TCoordPointList GetGridCoordinates(long projectId, WGSPoint latLon)
     {
-      var latLongs = new TWGS84FenceContainer { FencePoints = new TWGS84Point[] { RaptorConverters.convertWGSPoint(latLon) } };
+      var latLongs = new TWGS84FenceContainer { FencePoints = new [] { RaptorConverters.ConvertWGSPoint(latLon) } };
 
       var code = raptorClient.GetGridCoordinates
       (

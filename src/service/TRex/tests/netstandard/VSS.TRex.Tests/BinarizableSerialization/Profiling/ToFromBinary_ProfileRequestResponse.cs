@@ -2,7 +2,6 @@
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Responses;
-using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Types;
 using Xunit;
 
@@ -13,7 +12,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
     [Fact]
     public void Test_ProfileRequestArgument_ProfileRequestResponse_Simple()
     {
-      SimpleBinarizableInstanceTester.TestClass<ProfileRequestResponse>("Empty ProfileRequestResponse not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClass<ProfileRequestResponse<ProfileCell>>("Empty ProfileRequestResponse not same after round trip serialisation");
     }
 
     [Fact]
@@ -26,9 +25,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
         },
         1, 2, 3.0, 4.0);
 
-      var cells = new List<IProfileCell>{ cell };
+      var cells = new List<ProfileCell>{ cell };
 
-      var response = new ProfileRequestResponse
+      var response = new ProfileRequestResponse<ProfileCell>
       {
         ResultStatus = RequestErrorStatus.OK,
         ProfileCells = cells

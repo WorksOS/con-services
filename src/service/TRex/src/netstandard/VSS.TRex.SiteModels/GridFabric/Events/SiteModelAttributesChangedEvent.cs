@@ -20,6 +20,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     public bool MachinesModified { get; set; }
     public bool MachineTargetValuesModified { get; set; }
     public bool MachineDesignsModified { get; set; }
+    public bool ProofingRunsModified { get; set; }
+
 
     /// <summary>
     /// A serialized bit mask subgrid tree representing the set of subgrids that have been changed in a
@@ -37,6 +39,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       writer.WriteBoolean(MachinesModified);
       writer.WriteBoolean(MachineTargetValuesModified);
       writer.WriteBoolean(MachineDesignsModified);
+      writer.WriteBoolean(ProofingRunsModified);
       writer.WriteByteArray(ExistenceMapChangeMask);
     }
 
@@ -50,6 +53,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       MachinesModified = reader.ReadBoolean();
       MachineTargetValuesModified = reader.ReadBoolean();
       MachineDesignsModified = reader.ReadBoolean();
+      ProofingRunsModified = reader.ReadBoolean();
       ExistenceMapChangeMask = reader.ReadByteArray();
     }
   }

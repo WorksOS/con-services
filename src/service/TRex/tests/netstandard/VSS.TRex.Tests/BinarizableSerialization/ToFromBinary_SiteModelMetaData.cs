@@ -2,7 +2,6 @@
 using FluentAssertions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
-using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization

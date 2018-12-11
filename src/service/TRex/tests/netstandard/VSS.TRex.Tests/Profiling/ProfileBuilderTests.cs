@@ -13,19 +13,19 @@ namespace VSS.TRex.Tests.Profiling
   {
     private static Object Lock = new object();
 
-    public static Mock<IProfilerBuilderFactory> factory;
+    public static Mock<IProfilerBuilderFactory<ProfileCell>> factory;
     public static Mock<ICellLiftBuilder> newCellLiftBuilder;
-    public static Mock<ICellProfileBuilder> newCellProfileBuilder;
-    public static Mock<IProfileLiftBuilder> newProfileLiftBuilder;
+    public static Mock<ICellProfileBuilder<ProfileCell>> newCellProfileBuilder;
+    public static Mock<IProfileLiftBuilder<ProfileCell>> newProfileLiftBuilder;
 
     public ProfileBuilderTests_Fixture()
     {
       lock (Lock)
       {
-        factory = new Mock<IProfilerBuilderFactory>();
+        factory = new Mock<IProfilerBuilderFactory<ProfileCell>>();
         newCellLiftBuilder = new Mock<ICellLiftBuilder>();
-        newCellProfileBuilder = new Mock<ICellProfileBuilder>();
-        newProfileLiftBuilder = new Mock<IProfileLiftBuilder>();
+        newCellProfileBuilder = new Mock<ICellProfileBuilder<ProfileCell>>();
+        newProfileLiftBuilder = new Mock<IProfileLiftBuilder<ProfileCell>>();
 
         factory.Setup(mk => mk.NewCellLiftBuilder(null, GridDataType.All, null, null, null))
           .Returns(newCellLiftBuilder.Object);
@@ -33,7 +33,7 @@ namespace VSS.TRex.Tests.Profiling
         factory.Setup(mk => mk.NewProfileLiftBuilder(null, null, null, null, null, It.IsAny<ICellLiftBuilder>()))
           .Returns(newProfileLiftBuilder.Object);
 
-        DIBuilder.New().Add(x => x.AddSingleton<IProfilerBuilderFactory>(factory.Object)).Complete();
+        DIBuilder.New().Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(factory.Object)).Complete();
       }
     }
 
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Profiling
     [Fact]
     public void Test_ProfilerBuilder_Creation_Null()
     {
-      IProfilerBuilder builder = new ProfilerBuilder();
+      var builder = new ProfilerBuilder<ProfileCell>();
       builder.Configure(null, null, GridDataType.All, null, null, null, null, null, null);
 
       Assert.True(builder != null, "Builder failed to construct");
@@ -57,7 +57,7 @@ namespace VSS.TRex.Tests.Profiling
     [Fact]
     public void Test_ProfilerBuilder_Creation_ProfileBuilders()
     {
-      IProfilerBuilder builder = new ProfilerBuilder();
+      var builder = new ProfilerBuilder<ProfileCell>();
       builder.Configure(null, null, GridDataType.All, null, null, null, null, null, null);
 
       Assert.True(builder.CellLiftBuilder == ProfileBuilderTests_Fixture.newCellLiftBuilder.Object, "Cell lift builder not expected one");

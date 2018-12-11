@@ -405,7 +405,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 existenceMapChangeMask: WorkingModelUpdateMap,
                 machinesChanged: true,
                 machineTargetValuesChanged: true,
-                machineDesignsModified: true);
+                machineDesignsModified: true,
+                proofingRunsModified: true);
             }
 
             // Update the metadata for the site model

@@ -5,11 +5,8 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Extensions;
-using VSS.Productivity3D.Models.Models;
-using CommonModels=VSS.Productivity3D.Common.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -38,7 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="filterPolygons">List of filter polygons</param>
     /// <param name="boundaryType">Type of filter boundary which determines the color</param>
     /// <returns>A bitmap</returns>
-    public byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<WGSPoint3D>> filterPolygons, FilterBoundaryType boundaryType)
+    public byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<WGSPoint>> filterPolygons, FilterBoundaryType boundaryType)
     {
       byte[] geofenceImage = null;
 
@@ -127,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
               continue;
             }
 
-            var sitePoints = RaptorConverters.geometryToPoints(site.GeometryWKT).ToList();
+            var sitePoints = RaptorConverters.GeometryToPoints(site.GeometryWKT).ToList();
 
             //Exclude site if outside bbox
             bool outside = TileServiceUtils.Outside(parameters.bbox, sitePoints);
@@ -151,7 +148,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return sitesImage;
     }
 
-    private void DrawGeofence(MapParameters parameters, Graphics g, string uid, IEnumerable<WGSPoint3D> points, int color, bool isTransparent)
+    private void DrawGeofence(MapParameters parameters, Graphics g, string uid, IEnumerable<WGSPoint> points, int color, bool isTransparent)
     {
       const int FILL_TRANSPARENCY = 0x40; //0.25 of FF
       const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF
@@ -167,12 +164,5 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       Pen pen = new Pen(Color.FromArgb(STROKE_TRANSPARENCY, Color.FromArgb(color)), SITE_OUTLINE_WIDTH);
       g.DrawPolygon(pen, pixelPoints);
     }
-  }
-
-  public interface IGeofenceTileService
-  {
-    byte[] GetSitesBitmap(MapParameters parameters, IEnumerable<GeofenceData> sites);
-    byte[] GetBoundariesBitmap(MapParameters parameters, IEnumerable<GeofenceData> customBoundaries);
-    byte[] GetFilterBoundaryBitmap(MapParameters parameters, List<List<WGSPoint3D>> filterPoints, FilterBoundaryType boundaryType);
   }
 }
