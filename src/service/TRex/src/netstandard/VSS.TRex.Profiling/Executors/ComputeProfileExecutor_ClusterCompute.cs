@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -34,7 +35,8 @@ namespace VSS.TRex.Profiling.Executors
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
-    // private DesignDescriptor DesignDescriptor;
+
+    private Guid DesignUid;
     private bool ReturnAllPassesAndLayers;
 
     private ISubGridSegmentCellPassIterator CellPassIterator;
@@ -52,12 +54,13 @@ namespace VSS.TRex.Profiling.Executors
     public ComputeProfileExecutor_ClusterCompute(Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      DesignDescriptor designDescriptor, bool returnAllPassesAndLayers)
+      Guid designUid, bool returnAllPassesAndLayers)
     {
       ProjectID = projectID;
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
       Filters = filters;
+      DesignUid = designUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
 
@@ -141,12 +144,21 @@ namespace VSS.TRex.Profiling.Executors
           //else
           //  return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
 
+          IDesign design = null;
+          if (DesignUid != Guid.Empty)
+          {
+            design = SiteModel.Designs.Locate(DesignUid);
+
+            if (design == null)
+              throw new ArgumentException($"Design {DesignUid} is unknown in project {SiteModel.ID}");
+          }
+
           Log.LogInformation("Creating IProfileBuilder");
 
           IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
 
-          Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, 
-            /* todo design: */null, /* todo elevation range design: */null,
+          Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, design,
+            /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
           Log.LogInformation("Building cell profile");
