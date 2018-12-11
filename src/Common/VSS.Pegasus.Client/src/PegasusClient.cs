@@ -23,7 +23,7 @@ namespace VSS.Pegasus.Client
 
     private readonly Guid DXF_PROCEDURE_ID = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7");
     private const string TILE_TYPE = "xyz";
-    private const string TILE_ORDER = "yx";
+    private const string TILE_ORDER = "YX";
 
     private readonly ILogger<PegasusClient> Log;
     private readonly ILoggerFactory logFactory;
