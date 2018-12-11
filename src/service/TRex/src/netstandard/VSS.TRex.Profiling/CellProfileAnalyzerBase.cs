@@ -82,6 +82,9 @@ namespace VSS.TRex.Profiling
     /// </summary>
     protected IDesign CellPassFilter_ElevationRangeDesign;
 
+    public CellProfileAnalyzerBase()
+    { }
+
     /// <summary>
     /// Constructs a profile lift builder that analyzes cells in a cell profile vector
     /// </summary>
@@ -102,6 +105,11 @@ namespace VSS.TRex.Profiling
       CellFilter = cellFilter;
       CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
 
+      Initialise();
+    }
+
+    public virtual void Initialise()
+    {
       if (SiteModel.SurveyedSurfaces?.Count > 0)
       {
         // Filter out any surveyed surfaces which don't match current filter (if any)

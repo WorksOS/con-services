@@ -47,7 +47,7 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
-    ICellProfileAnalyzer<T> NewProfileLiftBuilder(ISiteModel siteModel,
+    ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,

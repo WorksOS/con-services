@@ -35,6 +35,7 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using Consts = VSS.TRex.Common.Consts;
@@ -107,7 +108,17 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
-        .Add(x => x.AddSingleton<Func<IProfileCell>>(() => new ProfileCell()))
+
+        //.Add(x => x.AddSingleton<Func<IProfileCell>>(() => new ProfileCell()))
+
+        // Register the factory for the CellProfileAnalyzer for detailed cell pass/lift cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<ProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)))
+
+        // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => null /* new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)*/))
+
         .Complete();
     }
 
