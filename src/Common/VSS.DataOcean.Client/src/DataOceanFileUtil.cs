@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 
-namespace VSS.Pegasus.Client
-{
-  //TODO: Move this to DataOcean Client
-  public class DataOceanFile
+namespace VSS.DataOcean.Client
+{  public class DataOceanFileUtil
   {
     private const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
     public const string DXF_FILE_EXTENSION = ".DXF";
@@ -16,7 +14,7 @@ namespace VSS.Pegasus.Client
     public string TilesMetadataFileName => TileMetadataFileName();
     public string GeneratedTilesFolder => TilesFolderWithSuffix();
 
-    public DataOceanFile(string fileName, string path)
+    public DataOceanFileUtil(string fileName, string path)
     {
       FileName = fileName;
       FilePath = path;
@@ -27,7 +25,7 @@ namespace VSS.Pegasus.Client
       }
     }
 
-    public DataOceanFile(string fullFileName) : this(Path.GetFileName(fullFileName), Path.GetDirectoryName(fullFileName))
+    public DataOceanFileUtil(string fullFileName) : this(Path.GetFileName(fullFileName), Path.GetDirectoryName(fullFileName))
     {
     }
 
@@ -97,11 +95,33 @@ namespace VSS.Pegasus.Client
     /// <param name="fullTileName">The full path and name of the tile file.</param>
     /// <returns>The base file name to which the tiles belong</returns>
     /// <exception cref="System.ArgumentException"></exception>
-    public static string ExtractFileNameFromTileFullName(string fullTileName)
+    public static string ExtractBaseFileNameFromTileFullName(string fullTileName)
+    {
+      return ExtractNameFromTileFullName(fullTileName, 0);
+    }
+
+    /// <summary>
+    /// Extracts the multipart path and file name of the tile. This is the path from the generated folder name
+    /// down to the actual tile file name.
+    /// </summary>
+    /// <param name="fullTileName"></param>
+    /// <returns></returns>
+    public static string ExtractTileNameFromTileFullName(string fullTileName)
+    {
+      return ExtractNameFromTileFullName(fullTileName, 1);
+    }
+
+    /// <summary>
+    /// Extracts either the base path or multipart path for the tile
+    /// </summary>
+    /// <param name="fullTileName"></param>
+    /// <param name="indx"></param>
+    /// <returns></returns>
+    private static string ExtractNameFromTileFullName(string fullTileName, int indx)
     {
       if (!fullTileName.Contains(GENERATED_TILE_FOLDER_SUFFIX))
         throw new ArgumentException($"Invalid fullname - no expected suffix {fullTileName}");
-      var filename = fullTileName.Split(new string[] { GENERATED_TILE_FOLDER_SUFFIX }, StringSplitOptions.None)[0];
+      var filename = fullTileName.Split(new string[] { GENERATED_TILE_FOLDER_SUFFIX }, StringSplitOptions.None)[indx];
       return filename;
     }
 

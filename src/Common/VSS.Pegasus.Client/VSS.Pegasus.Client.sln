@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2B80EAA4-72D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FF17F40D-FF81-46BE-9538-1877C1972E20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Pegasus.Client", "src\VSS.Pegasus.Client.csproj", "{8C1976A8-467C-4959-85EF-4226A5DB752A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client", "src\VSS.Pegasus.Client.csproj", "{8C1976A8-467C-4959-85EF-4226A5DB752A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{C58CC625-1458-43E8-97D6-E7DA11EB02B7}"
 EndProject
@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\ITask\src\VSS.ITask.csproj", "{B58AA9DB-9611-44D0-9B84-85CC4891A81B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Pegasus.Client.UnitTests", "test\UnitTests\VSS.Pegasus.Client.UnitTests.csproj", "{7AF0A5C4-7DFD-4C12-8FDC-C9EB06974DB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.UnitTests", "test\UnitTests\VSS.Pegasus.Client.UnitTests.csproj", "{7AF0A5C4-7DFD-4C12-8FDC-C9EB06974DB5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.DataOcean.Client", "..\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj", "{8D1716D8-5D99-451C-AE7D-545B72174E31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{7AF0A5C4-7DFD-4C12-8FDC-C9EB06974DB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AF0A5C4-7DFD-4C12-8FDC-C9EB06974DB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AF0A5C4-7DFD-4C12-8FDC-C9EB06974DB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D1716D8-5D99-451C-AE7D-545B72174E31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D1716D8-5D99-451C-AE7D-545B72174E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D1716D8-5D99-451C-AE7D-545B72174E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D1716D8-5D99-451C-AE7D-545B72174E31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

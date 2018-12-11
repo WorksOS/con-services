@@ -111,11 +111,6 @@ namespace VSS.MasterData.Proxies
         retries = 0; 
       }
 
-      //Any 200 code is ok.
-      var okCodes = new List<HttpStatusCode>
-      { HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
-        HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent};
-
       var policyResult = await Policy
         .Handle<Exception>(exception =>
         {
@@ -194,11 +189,6 @@ namespace VSS.MasterData.Proxies
           $"Attempting a HTTP {method} with a Stream ({payload.GetType().Name}) that doesn't not support seeking, disabling retries");
         retries = 0;
       }
-
-      //Any 200 code is ok.
-      var okCodes = new List<HttpStatusCode>
-      { HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
-        HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent};
 
       var policyResult = await Policy
         .Handle<Exception>()

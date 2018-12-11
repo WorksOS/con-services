@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj" />
   </ItemGroup>
 
 

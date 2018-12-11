@@ -17,7 +17,7 @@ namespace MockProjectWebApi.Controllers
       baseUrl = configurationStore.GetValueString("MOCK_WEBAPI_BASE_URL");
       if (string.IsNullOrEmpty(baseUrl))
       {
-        throw new Exception("Missing environment variable MOCK_WEBAPI_BASE_URL");
+        throw new ArgumentException("Missing environment variable MOCK_WEBAPI_BASE_URL");
       }
     }
 
@@ -120,8 +120,7 @@ namespace MockProjectWebApi.Controllers
         parent_id = message.directory.parent_id
       };
       Console.WriteLine($"CreateDirectory returning: {JsonConvert.SerializeObject(result)}");
-      return result;
-
+      return new CreatedResult(Request.Path, result);
     }
 
     [Route("/api/files")]
@@ -142,8 +141,7 @@ namespace MockProjectWebApi.Controllers
         }
       };
       Console.WriteLine($"CreateFile returning: {JsonConvert.SerializeObject(result)}");
-      return result;
-
+      return new CreatedResult(Request.Path, result);
     }
 
     [Route("/dummy_upload_signed_url")]

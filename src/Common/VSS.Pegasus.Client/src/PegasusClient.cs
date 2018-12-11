@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -70,13 +72,13 @@ namespace VSS.Pegasus.Client
 
       TileMetadata metadata = null;
       //Get the DataOcean file ids.
-      var dcFileId = await dataOceanClient.GetFileId(dcFileName);
+      var dcFileId = await dataOceanClient.GetFileId(dcFileName, customHeaders);
       if (dcFileId == null)
       {
         Log.LogError($"Failed to find coordinate system file {dcFileName}. Has it been uploaded successfully?");
         return null;
       }
-      var dxfFileId = await dataOceanClient.GetFileId(dxfFileName);
+      var dxfFileId = await dataOceanClient.GetFileId(dxfFileName, customHeaders);
       if (dxfFileId == null)
       {
         Log.LogError($"Failed to find coordinate system file {dxfFileName}. Has it been uploaded successfully?");
@@ -84,14 +86,14 @@ namespace VSS.Pegasus.Client
       }
 
       //Create the top level tiles folder
-      string tileFolder = new DataOceanFile(dxfFileName).GeneratedTilesFolder;
-      var success = dataOceanClient.MakeFolder(tileFolder);
+      string tileFolder = new DataOceanFileUtil(dxfFileName).GeneratedTilesFolder;
+      var success = await dataOceanClient.MakeFolder(tileFolder, customHeaders);
       if (!success)
       {
         Log.LogError($"GenerateDxfTiles: Failed to create tiles folder xxx");
         return null;
       }
-      var parentId = await dataOceanClient.getFolderId();
+      var parentId = await dataOceanClient.GetFolderId(tileFolder, customHeaders);
 
       //1. Create an execution
       var units = dxfUnitsType.ToString();
@@ -102,8 +104,8 @@ namespace VSS.Pegasus.Client
           ProcedureId = DXF_PROCEDURE_ID,
           Parameters = new PegasusExecutionParameters
           {
-            DcFileId = dcFileId,
-            DxfFileId = dxfFileId,
+            DcFileId = dcFileId.Value,
+            DxfFileId = dxfFileId.Value,
             ParentId = parentId,
             MaxZoom = maxZoomLevel,
             TileType = TILE_TYPE,
@@ -122,7 +124,7 @@ namespace VSS.Pegasus.Client
       PegasusExecution execution = null;
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        execution = gracefulClient.ExecuteRequest<PegasusExecution>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post, null, 3, false);
+        execution = await gracefulClient.ExecuteRequest<PegasusExecution>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post, null, 3, false);
       }
 
       if (execution == null)
@@ -164,8 +166,8 @@ namespace VSS.Pegasus.Client
       {
         //4. Get the zoom range from the tile metdata file and publish notification
         Log.LogDebug($"Getting tiles metadata for {dxfFileName}");
-        var metadataFileName = new DataOceanFile(dxfFileName).TilesMetadataFileName;
-        var stream = await dataOceanClient.GetFile(metadataFileName);
+        var metadataFileName = new DataOceanFileUtil(dxfFileName).TilesMetadataFileName;
+        var stream = await dataOceanClient.GetFile(metadataFileName, customHeaders);
 
         using (var sr = new StreamReader(stream))
         using (var jtr = new JsonTextReader(sr))
