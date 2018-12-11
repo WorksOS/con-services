@@ -23,19 +23,19 @@ namespace VSS.TRex.Profiling.Executors
   /// </summary>
   public class ComputeProfileExecutor_ClusterCompute<T> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ClusterCompute<T>>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ClusterCompute<T>>();
 
-    private Guid ProjectID;
-    private GridDataType ProfileTypeRequired;
-    private XYZ[] NEECoords;
-    private IFilterSet Filters;
+    private readonly Guid ProjectID;
+    private readonly GridDataType ProfileTypeRequired;
+    private readonly XYZ[] NEECoords;
+    private readonly IFilterSet Filters;
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
-    private Guid DesignUid;
+    private readonly Guid DesignUid;
     private bool ReturnAllPassesAndLayers;
 
     private ISubGridSegmentCellPassIterator CellPassIterator;
@@ -95,15 +95,13 @@ namespace VSS.TRex.Profiling.Executors
     /// </summary>
     public ProfileRequestResponse<T> Execute()
     {
-      //      SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
-
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
 
       ProfileRequestResponse<T> Response = null;
       try
       {
-        List<T> ProfileCells = new List<T>(INITIAL_PROFILE_LIST_SIZE);
+        var ProfileCells = new List<T>(INITIAL_PROFILE_LIST_SIZE);
 
         try
         {
@@ -135,13 +133,6 @@ namespace VSS.TRex.Profiling.Executors
 
           FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, PassFilter);
-
-          // Raptor profile implementation did not use the overall existence map, so this commented out code
-          // has no effect in Raptor and has been excluded for this reason in TRex.
-          //if (DesignProfilerService.RequestCombinedDesignSubgridIndexMap(ProjectUID, SiteModel.Grid.CellSize, SiteModel.SurveyedSurfaces, OverallExistenceMap) = dppiOK)
-          //  OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
-          //else
-          //  return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
 
           IDesign design = null;
           if (DesignUid != Guid.Empty)

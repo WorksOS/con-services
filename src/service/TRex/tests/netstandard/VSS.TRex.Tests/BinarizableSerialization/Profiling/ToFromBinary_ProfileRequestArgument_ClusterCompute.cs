@@ -11,8 +11,6 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Profiling
 {
   public class ToFromBinary_ProfileRequestArgument_ClusterCompute : IClassFixture<DILoggingFixture>, IClassFixture<AnalyticsTestsDIFixture>
   {
-    private const double OFFSET = 0.0;
-
     [Fact]
     public void Test_ProfileRequestArgument_ClusterCompute_Simple()
     {
