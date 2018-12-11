@@ -10,7 +10,9 @@ namespace WebApiTests.StepDefinitions
 
     public void CompareExpectedAndActualTiles(string resultName, string difference, byte[] expectedTileData, byte[] actualTileData)
     {
-      Assert.True(CommonUtils.TilesMatch(resultName, difference, expectedTileData, actualTileData), $"Actual Difference:{difference}% Expected tile doesn't match actual tile for {resultName}");
+      int actualDiff;
+      Assert.True(CommonUtils.TilesMatch(resultName, difference, expectedTileData, actualTileData, out actualDiff), 
+        $"Actual Difference:{actualDiff}% Expected tile doesn't match actual tile for {resultName}");
     }
   }
 }

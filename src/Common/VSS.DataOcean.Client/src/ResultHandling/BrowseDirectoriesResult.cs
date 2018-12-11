@@ -7,7 +7,7 @@ namespace VSS.DataOcean.Client.ResultHandling
 {
   public class BrowseDirectoriesResult
   {
-    [JsonProperty(PropertyName = "Directories", Required = Required.Default)]
+    [JsonProperty(PropertyName = "directories", Required = Required.Default)]
     public List<DataOceanDirectory> Directories { get; set; }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -146,14 +148,13 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync((ProjectSettings)null);
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       var fileRepo = new Mock<IFileRepository>();
-
+      var dataOceanClient = new Mock<IDataOceanClient>();
 
       var executor = RequestExecutorContainerFactory
-        .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, null, null,
-          projectRepo.Object, null, fileRepo.Object);
+        .Build<CreateImportedFileExecutor>(
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
+          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
+          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.IsNotNull(result);
       Assert.AreEqual(0, result.Code, "Raptor Create should have been successfull");
@@ -214,14 +215,13 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
       var fileRepo = new Mock<IFileRepository>();
-
+      var dataOceanClient = new Mock<IDataOceanClient>();
 
       var executor = RequestExecutorContainerFactory
-        .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, null, null,
-          projectRepo.Object, null, fileRepo.Object);
+        .Build<UpdateImportedFileExecutor>(
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
+          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
+          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.AreEqual(0, result.Code, "Raptor Update should have been successfull");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Update should have returned single item");
@@ -281,13 +281,15 @@ namespace VSS.MasterData.ProjectTests
       fileRepo.Setup(fr => fr.FileExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
+      var dataOceanClient = new Mock<IDataOceanClient>();
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var executor = RequestExecutorContainerFactory
-        .Build<DeleteImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
-          raptorProxy.Object, null, null, filterServiceProxy.Object, null,
-          projectRepo.Object, null, fileRepo.Object);
+        .Build<DeleteImportedFileExecutor>(
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
+          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, filterServiceProxy.Object, 
+          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 

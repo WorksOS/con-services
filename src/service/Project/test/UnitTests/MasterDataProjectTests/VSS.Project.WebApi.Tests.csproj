@@ -41,6 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj" />
     <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
   </ItemGroup>
 

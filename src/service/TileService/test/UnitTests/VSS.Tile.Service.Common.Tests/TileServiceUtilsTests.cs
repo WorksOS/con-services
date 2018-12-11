@@ -47,9 +47,9 @@ namespace VSS.Tile.Service.Common.Tests
     {
       List<WGSPoint> latLngs = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(36.210.LatDegreesToRadians(), -115.025.LonDegreesToRadians()),
-        WGSPoint.CreatePoint(36.205.LatDegreesToRadians(), -115.029.LonDegreesToRadians()),
-        WGSPoint.CreatePoint(36.200.LatDegreesToRadians(), -115.018.LonDegreesToRadians())
+        new WGSPoint(36.210.LatDegreesToRadians(), -115.025.LonDegreesToRadians()),
+        new WGSPoint(36.205.LatDegreesToRadians(), -115.029.LonDegreesToRadians()),
+        new WGSPoint(36.200.LatDegreesToRadians(), -115.018.LonDegreesToRadians())
       };
       var topLeft = new Point(100, 250);
       var pixelPoints = TileServiceUtils.LatLngToPixelOffset(latLngs, topLeft, 32768);
@@ -110,11 +110,11 @@ namespace VSS.Tile.Service.Common.Tests
       };
       var points = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(35.0, -116.0),
-        WGSPoint.CreatePoint(35.5, -116.0),
-        WGSPoint.CreatePoint(35.5, -116.5),
-        WGSPoint.CreatePoint(35.0, -116.5),
-        WGSPoint.CreatePoint(35.0, -116.0),
+        new WGSPoint(35.0, -116.0),
+        new WGSPoint(35.5, -116.0),
+        new WGSPoint(35.5, -116.5),
+        new WGSPoint(35.0, -116.5),
+        new WGSPoint(35.0, -116.0),
       };
       Assert.True(TileServiceUtils.Outside(bbox, points));
     }
@@ -131,11 +131,11 @@ namespace VSS.Tile.Service.Common.Tests
       };
       var points = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(36.1, -115.5),
-        WGSPoint.CreatePoint(36.3, -115.5),
-        WGSPoint.CreatePoint(36.3, -115.7),
-        WGSPoint.CreatePoint(36.1, -115.7),
-        WGSPoint.CreatePoint(36.1, -115.5),
+        new WGSPoint(36.1, -115.5),
+        new WGSPoint(36.3, -115.5),
+        new WGSPoint(36.3, -115.7),
+        new WGSPoint(36.1, -115.7),
+        new WGSPoint(36.1, -115.5),
       };
       Assert.False(TileServiceUtils.Outside(bbox, points));
     }
@@ -152,11 +152,11 @@ namespace VSS.Tile.Service.Common.Tests
       };
       var points = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(35.9, -115.5),
-        WGSPoint.CreatePoint(36.3, -115.5),
-        WGSPoint.CreatePoint(36.3, -115.7),
-        WGSPoint.CreatePoint(35.9, -115.7),
-        WGSPoint.CreatePoint(35.9, -115.5),
+        new WGSPoint(35.9, -115.5),
+        new WGSPoint(36.3, -115.5),
+        new WGSPoint(36.3, -115.7),
+        new WGSPoint(35.9, -115.7),
+        new WGSPoint(35.9, -115.5),
       };
       Assert.False(TileServiceUtils.Outside(bbox, points));
     }
@@ -173,11 +173,11 @@ namespace VSS.Tile.Service.Common.Tests
       };
       var points = new List<WGSPoint>
       {
-        WGSPoint.CreatePoint(35.9, -116.0),
-        WGSPoint.CreatePoint(36.6, -116.0),
-        WGSPoint.CreatePoint(36.6, -114.9),
-        WGSPoint.CreatePoint(35.9, -114.9),
-        WGSPoint.CreatePoint(35.9, -116.0),
+        new WGSPoint(35.9, -116.0),
+        new WGSPoint(36.6, -116.0),
+        new WGSPoint(36.6, -114.9),
+        new WGSPoint(35.9, -114.9),
+        new WGSPoint(35.9, -116.0),
       };
       Assert.False(TileServiceUtils.Outside(bbox, points));
     }

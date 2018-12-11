@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Utilities;
@@ -40,12 +41,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo"></param>
     /// <param name="logger">The logger.</param>
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
+    /// <param name="dataOceanClient"></param>
     public ProjectV3Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IRaptorProxy raptorProxy, IFileRepository fileRepo, 
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-          logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>())
+          logger, serviceExceptionHandler, logger.CreateLogger<ProjectV3Controller>(), dataOceanClient)
     { }
 
     /// <summary>

@@ -162,7 +162,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         new JsonSerializerSettings { ContractResolver = new JsonContractPropertyResolver(properties) });
     }
 
-
     private async Task<long> GetLegacyProjectId(Guid? projectUid) => projectUid == null
       ? VelociraptorConstants.NO_PROJECT_ID
       : await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid.Value);
@@ -173,11 +172,10 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private async Task<WGS84Fence> GetProjectBoundary(Guid projectUid)
     {
       var projectData = await ((RaptorPrincipal)User).GetProject(projectUid);
-
+      
       return projectData.ProjectGeofenceWKT == null
         ? null
-        : new WGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
+        : new WGS84Fence(RaptorConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
-
   }
 }

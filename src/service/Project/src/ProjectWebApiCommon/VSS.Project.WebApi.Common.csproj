@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj" />
   </ItemGroup>
 
 </Project>

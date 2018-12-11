@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// For getting list of imported files for a project
     /// </summary>
     protected readonly IFileListProxy FileListProxy;
-    
+
     /// <summary>
     /// For getting compaction settings for a project
     /// </summary>
@@ -315,7 +315,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
     /// </summary>
-    protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid)
+    protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
     {
       // Filter models are immutable except for their Name.
       // This service doesn't consider the Name in any of it's operations so we don't mind if our
@@ -342,6 +342,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
+
+        if (filterMustExist && filterData == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Invalid Filter UID."));
+        }
+
         if (filterData != null)
         {
           Log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
@@ -360,7 +368,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             await ApplyDateRange(projectUid, filterData);
 
             var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
-              new WGSPoint3D(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
+              new WGSPoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
 
             var layerMethod = filterData.LayerNumber.HasValue
               ? FilterLayerMethod.TagfileLayerNumber
@@ -404,7 +412,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </remarks>
     private async Task ApplyDateRange(Guid projectUid, Filter filter)
     {
-      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(
@@ -417,7 +425,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
     {
-      var project = await ((RaptorPrincipal) User).GetProject(projectUid);
+      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       if (project == null)
       {
         throw new ServiceException(

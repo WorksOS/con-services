@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net;
 using ASNodeDecls;
-using SVOICFilterSettings;
 using VLPDDecls;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
@@ -36,8 +33,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     /// <returns>a PassCountDetailedResult if successful</returns>     
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      ContractExecutionResult result = null;
-
       try
       {
         var request = item as PassCounts;

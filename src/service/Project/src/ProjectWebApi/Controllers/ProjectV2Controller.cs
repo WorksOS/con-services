@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -56,15 +57,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="logger"></param>
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     /// <param name="httpContextAccessor"></param>
+    /// <param name="dataOceanClient"></param>
     public ProjectV2Controller(IKafka producer,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, ICustomerRepository customerRepo,
       IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor)
+      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>())
+        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>(), dataOceanClient)
     {
       this.logger = logger;
       this.customerRepo = customerRepo;
@@ -120,10 +122,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders,
-            producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy, null, null, null,
-            projectRepo, subscriptionRepo, fileRepo, null, httpContextAccessor)
+            customerUid, userId, null, customHeaders, producer, kafkaTopicName,
+            raptorProxy, subscriptionProxy, null, null, null, projectRepo, 
+            subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient)
           .ProcessAsync(createProjectEvent)
       );
 
