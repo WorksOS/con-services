@@ -5,7 +5,7 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public class PVMDisplayerBase : ProductionPVMDisplayerBase
     {
-        private DisplayMode DisplayMode = DisplayMode.Height;
+        protected DisplayMode DisplayMode = DisplayMode.Height;
 
         public IPlanViewPalette Palette { get; set; }
 

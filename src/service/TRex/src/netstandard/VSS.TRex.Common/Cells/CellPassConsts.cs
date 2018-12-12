@@ -150,5 +150,10 @@ namespace VSS.TRex.Common.CellPasses
     /// Null value for a Universal Transverse Mercator zone reference
     /// </summary>
     public const byte NullUTMZone = 0;
+
+    /// <summary>
+    /// The CCA value, which a lift is marked as thick at.
+    /// </summary>
+    public const byte THICK_LIFT_CCA_VALUE = 120;
   }
 }

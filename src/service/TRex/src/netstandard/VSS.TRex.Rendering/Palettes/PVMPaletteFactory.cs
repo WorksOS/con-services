@@ -30,8 +30,9 @@ namespace VSS.TRex.Rendering.Palettes
                 case DisplayMode.PassCountSummary:   return new PassCountPalette();
                 case DisplayMode.TemperatureSummary: return new TemperaturePalette();
                 case DisplayMode.CutFill:            return new CutFillPalette();
+                case DisplayMode.CCA:                return new CCAPalette();
 
-                default: // Just use the elevation palette as a default...
+        default: // Just use the elevation palette as a default...
                     BoundingWorldExtent3D extent2 = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
                     return new HeightPalette(extent2.MinZ, extent2.MaxZ);
             }

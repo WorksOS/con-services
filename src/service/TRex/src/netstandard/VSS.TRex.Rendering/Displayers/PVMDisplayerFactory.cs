@@ -17,7 +17,8 @@ namespace VSS.TRex.Rendering.Displayers
         case DisplayMode.PassCountSummary: return new PVMDisplayer_PassCountSummary();
         case DisplayMode.TemperatureSummary: return new PVMDisplayer_TemperatureSummary();
         case DisplayMode.CutFill: return new PVMDisplayer_CutFill();
-        case DisplayMode.CCA: return new PVMDisplayer_CCA();
+        case DisplayMode.CCA:
+        case DisplayMode.CCASummary: return new PVMDisplayer_CCA();
         default:
           Debug.Assert(false, $"Unknown display mode to create a displayer for: {Mode}");
           return null;

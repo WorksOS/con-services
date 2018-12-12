@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     static int GridDataTypeCount = GetGridDataTypeCount();
 
     private const int kGridDataTypeCount_Expected = 14;
-    private const int kGridDataTypeCount = 30;
+    private const int kGridDataTypeCount = 29;
 
     /// <summary>
     /// Which grid data types have implementations that should be tested?
