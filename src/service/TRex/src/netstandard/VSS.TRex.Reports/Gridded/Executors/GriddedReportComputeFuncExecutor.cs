@@ -97,6 +97,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
           }
         }
 
+        // Interval will be >= 0.1m and <= 100.0m
         processor.Pipeline.AreaControlSet =
           new AreaControlSet(_griddedReportRequestArgument.GridInterval, _griddedReportRequestArgument.GridInterval,
             _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,

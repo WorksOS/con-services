@@ -56,7 +56,7 @@ namespace VSS.TRex.SubGrids
     ISubGrid _subGrid;
     IServerLeafSubGrid _subGridAsLeaf;
 
-    private readonly FilteredValueAssignmentContext _assignmentContext;
+    private FilteredValueAssignmentContext _assignmentContext;
     private ISubGridSegmentIterator _segmentIterator;
     private SubGridSegmentCellPassIterator_NonStatic _cellPassIterator;
     private readonly IFilteredValuePopulationControl _populationControl;
@@ -767,14 +767,22 @@ namespace VSS.TRex.SubGrids
               _cellPassIterator.MaxNumberOfPassesToReturn = _maxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
             }
 
-            // TODO Add when cell left build settings supported
-            // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
+          // TODO Add when cell left build settings supported
+          // AssignmentContext.LiftBuildSettings = LiftBuildSettings;
 
-            // Determine if a sieve filter is required for the subgrid where the sieve matches
-            // the X and Y pixel world size (used for WMS tile computation)
-            _seiveFilterInUse = _areaControlSet.UseIntegerAlgorithm 
-              ? GridRotationUtilities.ComputeSeiveBitmask(_subGrid, _areaControlSet, _siteModel.Grid.CellSize, out _seiveBitmask) 
-              : GridRotationUtilities.ComputeSeiveBitmaskFloat(_subGrid, _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _seiveBitmask);
+          // Determine if a sieve filter is required for the subgrid where the sieve matches
+          // the X and Y pixel world size (used for WMS tile computation)
+          _subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+
+            if (_areaControlSet.UseIntegerAlgorithm)
+            {
+              _seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, out _seiveBitmask);
+            }
+            else
+            {
+              _assignmentContext.InitialiseProbePositions();
+              _seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _seiveBitmask);
+            }
 
             if (!_seiveFilterInUse)
             {

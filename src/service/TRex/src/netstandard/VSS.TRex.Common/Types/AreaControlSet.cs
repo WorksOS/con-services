@@ -14,20 +14,20 @@
         public double UserOriginY;
         public double Rotation;
 
-        public AreaControlSet(double APixelXWorldSize,
-                             double APixelYWorldSize,
-                             double AUserOriginX,
-                             double AUserOriginY,
-                             double ARotation,
-            bool AUseIntegerAlgorithm)
+        public AreaControlSet(double pixelXWorldSize,
+                              double pixelYWorldSize,
+                              double userOriginX,
+                              double userOriginY,
+                              double rotation,
+                              bool useIntegerAlgorithm)
         {
-            UseIntegerAlgorithm = AUseIntegerAlgorithm;
-            PixelXWorldSize = APixelXWorldSize;
-            PixelYWorldSize = APixelYWorldSize;
-            UserOriginX = AUserOriginX;
-            UserOriginY = AUserOriginY;
-            Rotation = ARotation;
-        }
+            PixelXWorldSize = pixelXWorldSize;
+            PixelYWorldSize = pixelYWorldSize;
+            UserOriginX = userOriginX;
+            UserOriginY = userOriginY;
+            Rotation = rotation;
+            UseIntegerAlgorithm = useIntegerAlgorithm;
+    }
 
         public static AreaControlSet Null()
         {
