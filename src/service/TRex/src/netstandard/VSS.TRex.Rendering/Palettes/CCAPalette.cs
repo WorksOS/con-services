@@ -63,6 +63,5 @@ namespace VSS.TRex.Rendering.Palettes
     public CCAPalette() : base(Transitions)
     {
     }
-
   }
 }

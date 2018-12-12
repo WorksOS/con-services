@@ -18,6 +18,10 @@ namespace VSS.TRex.Rendering.Displayers
     /// </summary>
     private ClientCCALeafSubGrid SubGrid;
 
+    public PVMDisplayer_CCA(DisplayMode displayMode) : base(displayMode)
+    {
+    }
+
     /// <summary>
     /// Renders CCA summary data as tiles. 
     /// </summary>
@@ -62,8 +66,8 @@ namespace VSS.TRex.Rendering.Displayers
       {
         var ccaValue = cellValue.MeasuredCCA / HALF_PASS_FACTOR;
 
-        if (ccaValue <= ccaPalette.PaletteTransitions.Length)
-          return ccaPalette.PaletteTransitions[ccaValue - 1].Color;
+        if (ccaValue <= ccaPalette.PaletteTransitions.Length - 1)
+          return ccaPalette.PaletteTransitions[ccaValue].Color;
 
         if (ccaValue >= CellPassConsts.THICK_LIFT_CCA_VALUE / HALF_PASS_FACTOR)
           return Draw.Color.Empty;
