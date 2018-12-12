@@ -332,7 +332,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception in TTMDesign.ConstructSubgridIndex: {e}");
+        Log.LogError("Exception in TTMDesign.ConstructSubgridIndex:", e);
         return false;
       }
     }
@@ -599,7 +599,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} occurred in TTMDesign.InterpolateHeights");
+        Log.LogError("Exception occurred in TTMDesign.InterpolateHeights", e);
         return false;
       }
     }
@@ -670,7 +670,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} in LoadFromFile");
+        Log.LogError("Exception in LoadFromFile", e);
         return DesignLoadResult.UnknownFailure;
       }
     }
@@ -696,7 +696,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} in LoadSubgridIndex");
+        Log.LogError("Exception in LoadSubgridIndex", e);
 
         return false;
       }
@@ -752,7 +752,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} in LoadSubgridIndex");
+        Log.LogError("Exception in LoadSubgridIndex", e);
 
         return false;
       }
@@ -845,7 +845,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} SaveSubgridIndex");
+        Log.LogError("Exception SaveSubgridIndex", e);
       }
 
       return false;
@@ -887,7 +887,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} SaveSubgridIndex");
+        Log.LogError("Exception SaveSubgridIndex", e);
       }
 
       return false;

@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.Filters
                           filter.Fence.IsNull() && filter.AlignmentFence.IsNull() && 
                           filter.PositionX == Consts.NullDouble && filter.PositionY == Consts.NullDouble &&
                           filter.PositionRadius == Consts.NullDouble && filter.HasAlignmentDesignMask() == false &&
-                          filter.HasSpatialOrPostionalFilters == false,// &&
+                          filter.HasSpatialOrPositionalFilters == false,// &&
 //                          filter.OverrideSpatialCellRestriction == new BoundingIntegerExtent2D(),
             "Cell spatial filter not created correctly");
         }
@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.Filters
             filter.StartStation = 100;
             filter.LeftOffset = -1;
             filter.RightOffset = 1;
-            filter.AlignmentMaskDesignUID = Guid.Empty;
+            filter.AlignmentDesignMaskDesignUID = Guid.Empty;
             filter.SurfaceDesignMaskDesignUid = Guid.Empty;
             filter.Fence.SetExtents(1, 1, 2, 2);
             filter.PositionRadius = 10;
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Filters
                           !filter.StartStation.HasValue &&
                           !filter.LeftOffset.HasValue &&
                           !filter.RightOffset.HasValue &&
-                          filter.AlignmentMaskDesignUID == Guid.Empty &&
+                          filter.AlignmentDesignMaskDesignUID == Guid.Empty &&
                           filter.SurfaceDesignMaskDesignUid == Guid.Empty &&
                           filter.PositionRadius == Consts.NullDouble &&
                           filter.PositionX == Consts.NullDouble &&
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.Filters
 
             filter.IsAlignmentMask = true;
             filter.AlignmentFence = new Fence(0, 0, 1, 1);
-            filter.AlignmentMaskDesignUID = Guid.NewGuid();
+            filter.AlignmentDesignMaskDesignUID = Guid.NewGuid();
             filter.StartStation = 100;
             filter.EndStation = 1000;
             filter.LeftOffset = -1;
@@ -82,7 +82,7 @@ namespace VSS.TRex.Tests.Filters
 
             Assert.True(filter.IsAlignmentMask && !filter.AlignmentFence.IsNull() &&
                 filter.StartStation == 100 && filter.EndStation == 1000 && filter.LeftOffset == -1 && filter.RightOffset == 1 &&
-                filter.AlignmentMaskDesignUID != Guid.Empty,
+                filter.AlignmentDesignMaskDesignUID != Guid.Empty,
                 "Alignment mask not initialised correctly");
         }
 
@@ -185,18 +185,18 @@ namespace VSS.TRex.Tests.Filters
         {
             CellSpatialFilter filter = new CellSpatialFilter();
 
-            Assert.False(filter.HasSpatialOrPostionalFilters, "Default fence does not have spatial or positional filter");
+            Assert.False(filter.HasSpatialOrPositionalFilters, "Default fence does not have spatial or positional filter");
             filter.IsSpatial = true;
 
-            Assert.True(filter.HasSpatialOrPostionalFilters, "Default fence does not have spatial or positional filter");
+            Assert.True(filter.HasSpatialOrPositionalFilters, "Default fence does not have spatial or positional filter");
             filter.ClearSpatial();
-            Assert.False(filter.HasSpatialOrPostionalFilters, "Default fence has spatial or positional filter");
+            Assert.False(filter.HasSpatialOrPositionalFilters, "Default fence has spatial or positional filter");
 
             filter.IsPositional = true;
 
-            Assert.True(filter.HasSpatialOrPostionalFilters, "Default fence does not have spatial or positional filter");
+            Assert.True(filter.HasSpatialOrPositionalFilters, "Default fence does not have spatial or positional filter");
             filter.ClearPositional();
-            Assert.False(filter.HasSpatialOrPostionalFilters, "Default fence has spatial or positional filter");
+            Assert.False(filter.HasSpatialOrPositionalFilters, "Default fence has spatial or positional filter");
         }
 
         [Fact()]

@@ -407,14 +407,14 @@ namespace VSS.TRex.Volumes
                 }
                 catch (Exception E)
                 {
-                    Log.LogError($"ExecutePipeline raised exception '{E}'");
+                    Log.LogError("ExecutePipeline raised exception", E);
                 }
 
                 return Result;
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E}");
+                Log.LogError("Exception", E);
             }
 
             return RequestErrorStatus.Unknown;

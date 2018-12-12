@@ -21,7 +21,7 @@ namespace VSS.TRex.Filters
                                                                     SubGridTreeBitmapSubGridBits PDMask,
                                                                     SubGridTreeBitmapSubGridBits FilterMask)
         {
-            if (Filter == null || !Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+            if (Filter == null || !Filter.SpatialFilter.HasSpatialOrPositionalFilters)
             {
                 PDMask.Fill();
                 FilterMask.Fill();
