@@ -11,7 +11,7 @@ using Draw = System.Drawing;
 namespace VSS.TRex.Rendering.Displayers
 {
   /// <summary>
-  /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
+  /// Plan View Map displayer renderer for CCA information presented as rendered tiles
   /// </summary>
   public class PVMDisplayer_CCA : PVMDisplayerBase
   {
