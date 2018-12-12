@@ -1,28 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
-using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling
@@ -31,22 +22,9 @@ namespace VSS.TRex.Profiling
   /// Responsible for orchestrating analysis of identified cells along the path of a profile line
   /// and deriving the profile related analytics for each cell
   /// </summary>
-  public class ProfileLiftBuilder<T> : IProfileLiftBuilder<T> where T : class, IProfileCellBase
+  public class CellProfileAnalyzer : CellProfileAnalyzerBase<ProfileCell>
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ProfileLiftBuilder<T>>();
-
-    /// <summary>
-    /// Local reference to the client subgrid factory
-    /// </summary>
-    private static IClientLeafSubgridFactory clientLeafSubGridFactory;
-    private IClientLeafSubgridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubgridFactory>());
-
-    /// <summary>
-    /// The storage proxy to use when requesting subgrids for profiling operations
-    /// </summary>
-    private IStorageProxy storageProxy;
-    private IStorageProxy StorageProxy => storageProxy ?? (storageProxy = DIContext.Obtain<ISiteModels>().StorageProxy);
+    private static ILogger Log = Logging.Logger.CreateLogger<CellProfileAnalyzer>();
 
     /// <summary>
     /// The number of passes identified in the top-most (most recent) layer
@@ -60,52 +38,14 @@ namespace VSS.TRex.Profiling
     public int TopMostLayerCompactionHalfPassCount;
 
     /// <summary>
-    /// The profile cell currently being analyzed
-    /// </summary>
-    private ProfileCell ProfileCell;
-
-    /// <summary>
-    /// The subgrid of composite elevations calculate from the collection of surveyed surfaces
-    /// relevant to the profiling query
-    /// </summary>
-    private ClientCompositeHeightsLeafSubgrid CompositeHeightsGrid;
-
-    private IClientLeafSubGrid CompositeHeightsGridIntf;
-
-    /// <summary>
-    /// The subgrid-by-subgrid filter mask used to control selection os surveyed surface
-    /// and other cell data for each subgrid
-    /// </summary>
-    private SubGridTreeBitmapSubGridBits FilterMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-    private ISiteModel SiteModel;
-    private ICellPassAttributeFilter PassFilter;
-
-    private ICellSpatialFilter CellFilter;
-    private ISubGridTreeBitMask PDExistenceMap;
-
-    /// <summary>
     /// Cell lift builder reference to the engine that performs detailed analytics on individual cells in the profile.
     /// </summary>
-    private ICellLiftBuilder CellLiftBuilder;
+    private readonly ICellLiftBuilder CellLiftBuilder;
 
-    /// <summary>
-    /// The set of surveyed surfaces that match the time constraints of the supplied filter.
-    /// </summary>
-    private ISurveyedSurfaces FilteredSurveyedSurfaces;
+    private ProfileCell ProfileCell;
 
-    /// <summary>
-    /// The argument to be used when requesting composite elevation subgrids to support profile analysis
-    /// </summary>
-    public SurfaceElevationPatchArgument SurfaceElevationPatchArg;
-
-    private SurfaceElevationPatchRequest SurfaceElevationPatchRequest;
-
-    /// <summary>
-    /// The design supplied as a result of an independent lookup outside the scope of this builder
-    /// to find the design identified by the cellPassFilter.ElevationRangeDesignID
-    /// </summary>
-    private IDesign CellPassFilter_ElevationRangeDesign;
+    private CellProfileAnalyzer()
+    {}
 
     /// <summary>
     /// Constructs a profile lift builder that analyzes cells in a cell profile vector
@@ -116,58 +56,15 @@ namespace VSS.TRex.Profiling
     /// <param name="cellFilter"></param>
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
-    public ProfileLiftBuilder(ISiteModel siteModel,
+    public CellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,
       IDesign cellPassFilter_ElevationRangeDesign,
-      ICellLiftBuilder cellLiftBuilder)
+      ICellLiftBuilder cellLiftBuilder) : base(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign)
     {
-      SiteModel = siteModel;
-      PDExistenceMap = pDExistenceMap;
-      PassFilter = passFilter;
-      CellFilter = cellFilter;
-      CellPassFilter_ElevationRangeDesign = cellPassFilter_ElevationRangeDesign;
       CellLiftBuilder = cellLiftBuilder;
-
-      if (SiteModel.SurveyedSurfaces?.Count > 0)
-      {
-        // Filter out any surveyed surfaces which don't match current filter (if any)
-        // - realistically, this is time filters we're thinking of here
-
-        FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-
-        SiteModel.SurveyedSurfaces?.FilterSurveyedSurfaceDetails(PassFilter.HasTimeFilter, PassFilter.StartTime,
-          PassFilter.EndTime, PassFilter.ExcludeSurveyedSurfaces(), FilteredSurveyedSurfaces,
-          PassFilter.SurveyedSurfaceExclusionList);
-
-        if (FilteredSurveyedSurfaces?.Count == 0)
-          FilteredSurveyedSurfaces = null;
-      }
-
-      // Instantiate a single instance of the argument object for the surface elevation patch requests to obtain composite
-      // elevation subgrids and populate it with the common elements for this set of subgrids being requested.
-      SurfaceElevationPatchArg = new SurfaceElevationPatchArgument
-      {
-        SiteModelID = SiteModel.ID,
-        CellSize = SiteModel.Grid.CellSize,
-        IncludedSurveyedSurfaces = FilteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0],
-        SurveyedSurfacePatchType = SurveyedSurfacePatchType.CompositeElevations,
-        ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
-      };
-
-      var _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
-      var _context = _cache?.LocateOrCreateContext(SiteModel.ID, SurfaceElevationPatchArg.CacheFingerprint());
-
-      SurfaceElevationPatchRequest = new SurfaceElevationPatchRequest(_cache, _context);
     }
-
-    /// <summary>
-    /// Returns the set of target values for given machine in the site model being processed.
-    /// </summary>
-    /// <param name="forMachineID"></param>
-    /// <returns></returns>
-    private IProductionEventLists GetTargetValues(short forMachineID) => SiteModel.MachinesTargetValues[forMachineID];
 
     /// <summary>
     /// Gets the material temperature warning limits for a machine at a given time
@@ -181,8 +78,8 @@ namespace VSS.TRex.Profiling
       out ushort minWarning,
       out ushort maxWarning)
     {
-      minWarning = GetTargetValues(machineID).TargetMinMaterialTemperature.GetValueAtDate(time, out int _);
-      maxWarning = GetTargetValues(machineID).TargetMinMaterialTemperature.GetValueAtDate(time, out int _);
+      minWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _);
+      maxWarning = SiteModel.MachinesTargetValues[machineID].TargetMinMaterialTemperature.GetValueAtDate(time, out int _);
     }
 
     /// <summary>
@@ -192,7 +89,7 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private short GetTargetCCV(short machineID, DateTime time) =>
-      GetTargetValues(machineID).TargetCCVStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetCCVStateEvents.GetValueAtDate(time, out int _);
 
     /// <summary>
     /// Gets the target MDP for a machine at a given time
@@ -201,7 +98,7 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private short GetTargetMDP(short machineID, DateTime time) =>
-      GetTargetValues(machineID).TargetMDPStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetMDPStateEvents.GetValueAtDate(time, out int _);
 
     /// <summary>
     /// Gets the target CCA for a machine at a given time
@@ -210,7 +107,7 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private short GetTargetCCA(short machineID, DateTime time) =>
-      GetTargetValues(machineID).TargetCCAStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetCCAStateEvents.GetValueAtDate(time, out int _);
 
     /// <summary>
     /// Gets the target pass count for a machine at a given time
@@ -219,10 +116,10 @@ namespace VSS.TRex.Profiling
     /// <param name="time"></param>
     /// <returns></returns>
     private ushort GetTargetPassCount(short machineID, DateTime time) =>
-      GetTargetValues(machineID).TargetPassCountStateEvents.GetValueAtDate(time, out int _);
+      SiteModel.MachinesTargetValues[machineID].TargetPassCountStateEvents.GetValueAtDate(time, out int _);
 
     /// <summary>
-    /// Determines a set of summary attributes for the cell being analysed
+    /// Determines a set of summary attributes for the cell being analyzed
     /// </summary>
     private void CalculateSummaryCellAttributeData()
     {
@@ -255,7 +152,7 @@ namespace VSS.TRex.Profiling
       ProfileCell.TopLayerPassCountTargetRangeMin = ProfileCell.TopLayerPassCount;
       ProfileCell.TopLayerPassCountTargetRangeMax = ProfileCell.TopLayerPassCount;
 
-// WorkOut Speed Min Max
+      // Work Out Speed Min Max
       // ReSharper disable once UseMethodAny.0
       if (ProfileCell.Layers.Count() > 0)
       {
@@ -296,17 +193,13 @@ namespace VSS.TRex.Profiling
             }
             else if (ProfileCell.Layers[I].TargetPassCount == 0)
             {
-              //with Passes.FilteredPassData[EndCellPassIdx].FilteredPass do
-              //  {
               ushort TempPassCountTarget =
                 GetTargetPassCount(
-                  ProfileCell.Passes.FilteredPassData[ProfileCell.Layers[I].EndCellPassIdx].FilteredPass
-                    .InternalSiteModelMachineIndex,
+                  ProfileCell.Passes.FilteredPassData[ProfileCell.Layers[I].EndCellPassIdx].FilteredPass.InternalSiteModelMachineIndex,
                   ProfileCell.Passes.FilteredPassData[ProfileCell.Layers[I].EndCellPassIdx].FilteredPass.Time);
               PassCountTargetRange.SetMinMax(TempPassCountTarget, TempPassCountTarget);
               ProfileCell.TopLayerPassCountTargetRangeMin = PassCountTargetRange.Min;
               ProfileCell.TopLayerPassCountTargetRangeMax = PassCountTargetRange.Max;
-              //   }
             }
             else
             {
@@ -508,7 +401,7 @@ namespace VSS.TRex.Profiling
     /// <param name="ProfileCells"></param>
     /// <param name="cellPassIterator"></param>
     /// <returns></returns>
-    public bool Build(List<T> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
+    public override bool Analyze(List<ProfileCell> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator)
     {
       //{$IFDEF DEBUG}
       //SIGLogMessage.PublishNoODS(Self, Format('BuildLiftProfileFromInitialLayer: Processing %d cells', [FProfileCells.Count]), slmcDebug);
@@ -523,7 +416,7 @@ namespace VSS.TRex.Profiling
 
       for (int I = 0; I < ProfileCells.Count; I++)
       {
-        ProfileCell = ProfileCells[I] as ProfileCell;
+        ProfileCell = ProfileCells[I];
 
         // get subgrid setup iterator and set cell address
         // get subgrid origin for cell address
@@ -541,8 +434,6 @@ namespace VSS.TRex.Profiling
             SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
               (StorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
 
-          // SubGrid = SiteModel.Grid.LocateSubGridContaining(ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels);
-
           _SubGridAsLeaf = SubGrid as ServerSubGridTreeLeaf;
           if (_SubGridAsLeaf == null)
             continue;
@@ -556,7 +447,7 @@ namespace VSS.TRex.Profiling
             CompositeHeightsGrid = null;
           }
 
-          if (!LiftFilterMask<T>.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
+          if (!LiftFilterMask<ProfileCell>.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
             ProfileCells, FilterMask, I, CellFilter))
             continue;
 
@@ -577,7 +468,7 @@ namespace VSS.TRex.Profiling
             }
           }
 
-          if (!LiftFilterMask<T>.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
+          if (!LiftFilterMask<ProfileCell>.InitialiseFilterContext(SiteModel, PassFilter, ProfileCell,
             CellPassFilter_ElevationRangeDesign, out DesignProfilerRequestResult FilterDesignErrorCode))
           {
             if (FilterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)

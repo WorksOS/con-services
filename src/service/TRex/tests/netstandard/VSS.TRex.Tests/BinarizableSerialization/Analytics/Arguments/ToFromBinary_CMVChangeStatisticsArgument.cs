@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignID = Guid.NewGuid(),
+        ReferenceDesignUID = Guid.NewGuid(),
         CMVChangeDetailsDatalValues = new[] { -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 }
       };
 

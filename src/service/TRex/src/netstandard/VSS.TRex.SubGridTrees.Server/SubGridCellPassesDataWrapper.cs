@@ -23,7 +23,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public ISubGridCellPassesDataSegments PassesData { get; set; } = new SubGridCellPassesDataSegments();
 
-    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.kVlpdSubGridSegmentPassCountLimitDefault);
+    private readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
 
     public SubGridCellPassesDataWrapper()
     {

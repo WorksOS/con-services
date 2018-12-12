@@ -516,7 +516,7 @@ namespace VSS.TRex.SubGrids
                   // if we have a temperature filter to be filtered by last pass
                   if (Filter.AttributeFilter.HasTemperatureRangeFilter && Filter.AttributeFilter.FilterTemperatureByLastPass)
                     {
-                      HaveFilteredPass = ( CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
+                      HaveFilteredPass = CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue &&
                              Range.InRange(CellProfile.Passes.FilteredPassData[CellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature, Filter.AttributeFilter.MaterialTemperatureMin, Filter.AttributeFilter.MaterialTemperatureMax);
                     }
                   else
@@ -929,7 +929,6 @@ namespace VSS.TRex.SubGrids
           // First get the subgrid we are interested in
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
-          // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
           _SubGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(StorageProxy, SiteModel.Grid, CellX, CellY, Level, false, false);
 
           //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
@@ -964,7 +963,6 @@ namespace VSS.TRex.SubGrids
           if (PruneSubGridRetrievalHere())
             return ServerRequestResult.NoError;
 
-          //todo: This map calculation seems odd if we are caching subgrids...
           // Determine the bitmask detailing which cells match the cell selection filter
           if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_SubGridAsLeaf, SiteModel, Filter,
             cellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction,
@@ -980,8 +978,7 @@ namespace VSS.TRex.SubGrids
             if (!UseLastPassGrid)
               SetupForCellPassStackExamination();
 
-            // Some display types require lift processing to be able to select the
-            // appropriate cell pass containing the filtered value required.
+            // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
             if (ClientGrid.WantsLiftProcessingResults())
             {            
               SegmentIterator.IterationDirection = IterationDirection.Forwards;

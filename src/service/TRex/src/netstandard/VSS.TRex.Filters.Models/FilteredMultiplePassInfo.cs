@@ -25,7 +25,7 @@ namespace VSS.TRex.Filters.Models
     /// </summary>
     public FilteredPassData[] FilteredPassData;
 
-    private int CellPassAggregationListSizeIncrement() => DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", Consts.kVlpdpsNodeCellPassAggregationListSizeIncrementDefault);
+    private int CellPassAggregationListSizeIncrement() => DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT", Consts.VLPDPSNode_CELLPASSAGG_LISTSIZEINCREMENTDEFAULT);
 
     /// <summary>
     /// Adds a pass to the set of passes beign constructed as a result of the filtering operation.
