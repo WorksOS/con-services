@@ -143,7 +143,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // get our settings
       var config = DIContext.Obtain<IConfigurationStore>();
       var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
-      var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE", Consts.kEnableTagFileServiceDefault);
+      var tfaServiceEnabled = config.GetValueBool("ENABLE_TFA_SERVICE", Consts.ENABLE_TFA_SERVICE);
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
       {
         return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());

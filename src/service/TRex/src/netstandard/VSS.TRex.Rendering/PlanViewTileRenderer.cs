@@ -57,7 +57,7 @@ namespace VSS.TRex.Rendering
     // function GetWorkingPalette: TICDisplayPaletteBase;
     // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
 
-    private readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Consts.kDebugDrawDiagonalCrossOnRenderedTilesDefault);
+    private readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Consts.DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES);
 
     /// <summary>
     /// Default no-arg constructor

@@ -20,14 +20,14 @@ namespace VSS.TRex.Profiling
     /// <param name="Mask"></param>
     /// <param name="cellFilter"></param>
     /// <param name="SubGridTree"></param>
-    public static void ConstructSubgridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
+    private static void ConstructSubgridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList Intercepts,
       int fromProfileCellIndex,
       SubGridTreeBitmapSubGridBits Mask,
       ICellSpatialFilter cellFilter,
       ISubGridTree SubGridTree)
     {
-      bool cellFilter_HasSpatialOrPostionalFilters = cellFilter.HasSpatialOrPostionalFilters;
+      bool cellFilter_HasSpatialOrPositionalFilters = cellFilter.HasSpatialOrPostionalFilters;
       int Intercepts_Count = Intercepts.Count;
 
       Mask.Clear();
@@ -46,7 +46,7 @@ namespace VSS.TRex.Profiling
         uint CellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
           uint CellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
 
-          if (cellFilter_HasSpatialOrPostionalFilters)
+          if (cellFilter_HasSpatialOrPositionalFilters)
           {
             SubGridTree.GetCellCenterPosition(OTGCellX, OTGCellY, out double CellCenterX, out double CellCenterY);
 
@@ -114,7 +114,7 @@ namespace VSS.TRex.Profiling
         */
       }
 
-      if (cellFilter.HasAlignmentDesignMask())
+      if (cellFilter.HasSurfaceDesignMask())
       {
         // Query the design profiler service for the corresponding filter mask given the
         // alignment design configured in the cell selection filter.

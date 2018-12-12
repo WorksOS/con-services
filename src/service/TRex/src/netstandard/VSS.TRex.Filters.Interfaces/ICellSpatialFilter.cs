@@ -49,6 +49,12 @@ namespace VSS.TRex.Filters.Interfaces
     bool HasAlignmentDesignMask();
 
     /// <summary>
+    /// Determines if the filter contains sufficient information to adequately describe an active design mask spatial filter
+    /// </summary>
+    /// <returns></returns>
+    bool HasSurfaceDesignMask();
+
+    /// <summary>
     /// Determines if a cell given by it's central location is included in the spatial filter
     /// </summary>
     /// <param name="CellCenterX"></param>

@@ -22,7 +22,7 @@ namespace VSS.TRex.Profiling.Interfaces
     /// <summary>
     /// Builder responsible from building overall profile information from cell vector
     /// </summary>
-    IProfileLiftBuilder<T> ProfileLiftBuilder { get; set; }
+    ICellProfileAnalyzer<T> CellProfileAnalyzer { get; set; }
 
     /// <summary>
     /// Configures a new profile builder that provides the three core builders used in profiling: construction of cell vector from profile line,

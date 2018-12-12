@@ -25,6 +25,9 @@ using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.WebAPI;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -120,6 +123,8 @@ namespace VSS.MasterData.Project.WebAPI
 
       services.AddOpenTracing();
       services.AddMemoryCache();
+
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       serviceProvider = services.BuildServiceProvider();

@@ -44,7 +44,7 @@ namespace VSS.TRex.SubGrids.Executors
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
-    private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.kEnableGeneralSubgridResultCaching);
+    private readonly bool _enableGeneralSubgridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
     /// <summary>
     /// Local reference to the client subgrid factory
@@ -252,8 +252,8 @@ namespace VSS.TRex.SubGrids.Executors
       }
 
       // Set up any required cut fill design
-      if (arg.ReferenceDesignID != Guid.Empty)
-        ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignID);
+      if (arg.ReferenceDesignUID != Guid.Empty)
+        ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignUID);
     }
 
     /// <summary>

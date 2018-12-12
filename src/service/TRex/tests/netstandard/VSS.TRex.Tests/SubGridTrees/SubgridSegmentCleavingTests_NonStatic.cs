@@ -213,7 +213,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             Assert.True(totalPassCount2 == segment2.PassesData.SegmentPassCount, $"Total passes for segment 2 {totalPassCount2} is not equal to segmentPassCount in that segment {segment2.PassesData.SegmentPassCount}");
         }
 
-    private void SetupDITfa(int vlpdSubGridSegmentPassCountLimit = Consts.kVlpdSubGridSegmentPassCountLimitDefault)
+    private void SetupDITfa(int vlpdSubGridSegmentPassCountLimit = Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT)
     {
       var moqConfiguration = new Mock<IConfigurationStore>();
       moqConfiguration.Setup(x => x.GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", It.IsAny<int>())).Returns(vlpdSubGridSegmentPassCountLimit);

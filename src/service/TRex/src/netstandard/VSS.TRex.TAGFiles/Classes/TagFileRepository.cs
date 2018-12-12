@@ -142,7 +142,7 @@ namespace VSS.TRex.TAGFiles.Classes
       // load xml data ArchiveTagfileMetaDataPath and put into tagDetail
       // if using location only for metadata then you would have to extract it from the path
 
-      var enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.kEnableTagFileArchivingMetaDataDefault);
+      var enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
       if (enableArchivingMetadata && File.Exists(ArchiveTagfileMetaDataPath))
       {
         FileStream ReadFileStream = new FileStream(ArchiveTagfileMetaDataPath, FileMode.Open, FileAccess.Read, FileShare.Read);

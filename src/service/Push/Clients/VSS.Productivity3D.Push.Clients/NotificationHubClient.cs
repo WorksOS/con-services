@@ -60,7 +60,12 @@ namespace VSS.Productivity3D.Push.Clients
     /// <inheritdoc />
     public Task Notify(Notification notification)
     {
-      return Connection.InvokeAsync(nameof(INotificationHub.Notify), notification);
+      if(Connected)
+        return Connection.InvokeAsync(nameof(INotificationHub.Notify), notification);
+
+      // We could queue this up if it becomes a problem
+      Logger.LogWarning("Attempt to send message while client disconnected. Notification not sent.");
+      return Task.CompletedTask;
     }
 
     /// <summary>

@@ -4,28 +4,8 @@ using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
-  public class CalculateDesignElevationPatchArgument : BaseApplicationServiceRequestArgument
+  public class CalculateDesignElevationPatchArgument : DesignSubGridRequestArgumentBase
   {
-    /// <summary>
-    /// The X origin location for the patch of elevations to be computed from
-    /// </summary>
-    public uint OriginX { get; set; }
-
-    /// <summary>
-    /// The Y origin location for the patch of elevations to be computed from
-    /// </summary>
-    public uint OriginY { get; set; }
-
-    /// <summary>
-    /// The cell stepping size to move between points in the patch being interpolated
-    /// </summary>
-    public double CellSize { get; set; }
-
-    /// <summary>
-    /// The ID of the design file the elevations are to be interpolated from
-    /// </summary>
-    public Guid DesignUid { get; set; }
-
     /// <summary>
     /// The offset to be applied to computed elevations
     /// </summary>
@@ -34,7 +14,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// A map of the cells within the subgrid patch to be computed
     /// </summary>
-    //        public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
+    ///        public SubGridTreeBitmapSubGridBits ProcessingMap { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -54,18 +34,13 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <param name="offset"></param>
     // /// <param name="processingMap"></param>
     public CalculateDesignElevationPatchArgument(Guid siteModelID,
-                                     uint originX,
-                                     uint originY,
-                                     double cellSize,
-                                     Guid designUid,
-                                     double offset
-                                        /*SubGridTreeBitmapSubGridBits processingMap*/) : this()
+      uint originX,
+      uint originY,
+      double cellSize,
+      Guid designUid,
+      double offset
+      /*SubGridTreeBitmapSubGridBits processingMap*/) : base(siteModelID, originX, originY, cellSize, designUid)
     {
-      ProjectID = siteModelID;
-      OriginX = originX;
-      OriginY = originY;
-      CellSize = cellSize;
-      DesignUid = designUid;
       Offset = offset;
       //            ProcessingMap = processingMap;
     }
@@ -76,7 +51,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> SiteModel:{ProjectID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{DesignUid}";
+      return base.ToString() + $", Offset{Offset}";
     }
 
     /// <summary>
@@ -87,11 +62,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.ToBinary(writer);
 
-      writer.WriteInt((int)OriginX);
-      writer.WriteInt((int)OriginY);
-      writer.WriteDouble(CellSize);
-
-      writer.WriteGuid(DesignUid);
+      writer.WriteDouble(Offset);
     }
 
     /// <summary>
@@ -102,11 +73,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     {
       base.FromBinary(reader);
 
-      OriginX = (uint)reader.ReadInt();
-      OriginY = (uint)reader.ReadInt();
-      CellSize = reader.ReadDouble();
-
-      DesignUid = reader.ReadGuid() ?? Guid.Empty;
+      Offset = reader.ReadDouble();
     }
   }
 }
