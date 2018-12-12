@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Rendering.Palettes;
@@ -20,6 +22,8 @@ namespace VSS.TRex.Rendering.Displayers
 
     public PVMDisplayer_CCA(DisplayMode displayMode) : base(displayMode)
     {
+      if (DisplayMode != DisplayMode.CCA && DisplayMode != DisplayMode.CCASummary)
+        throw new InvalidEnumArgumentException("Unsupported DisplayMode type.");
     }
 
     /// <summary>
