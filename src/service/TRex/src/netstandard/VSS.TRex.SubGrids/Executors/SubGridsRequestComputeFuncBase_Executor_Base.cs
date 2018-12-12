@@ -252,8 +252,8 @@ namespace VSS.TRex.SubGrids.Executors
       }
 
       // Set up any required cut fill design
-      if (arg.ReferenceDesignID != Guid.Empty)
-        ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignID);
+      if (arg.ReferenceDesignUID != Guid.Empty)
+        ReferenceDesign = siteModel.Designs.Locate(arg.ReferenceDesignUID);
     }
 
     /// <summary>

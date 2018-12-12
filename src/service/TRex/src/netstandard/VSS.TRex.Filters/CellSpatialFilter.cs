@@ -120,8 +120,7 @@ namespace VSS.TRex.Filters
         }
 
         /// <summary>
-        /// Determines if the filter contains sufficient information to adequately describe an active alignment
-        /// or design mask spatial filter
+        /// Determines if the filter contains sufficient information to adequately describe an active alignment mask spatial filter
         /// </summary>
         /// <returns></returns>
         public bool HasAlignmentDesignMask()
@@ -132,11 +131,10 @@ namespace VSS.TRex.Filters
         }
 
         /// <summary>
-        /// Determines if the filter contains sufficient information to adequately describe an active alignment
-        /// or design mask spatial filter
+        /// Determines if the filter contains sufficient information to adequately describe an active design mask spatial filter
         /// </summary>
         /// <returns></returns>
-        public bool HasSurfaceDesignMask => SurfaceDesignMaskDesignUid != Guid.Empty;
+        public bool HasSurfaceDesignMask() => SurfaceDesignMaskDesignUid != Guid.Empty;
 
         /// <summary>
         /// Determines if the type of the spatial filter is Spatial or Positional

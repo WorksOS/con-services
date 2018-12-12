@@ -36,15 +36,15 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
     /// <param name="positionsAreGrid"></param>
-    /// <param name="referenceDesignID"></param>
+    /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignID, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers)
     {
       ProfileTypeRequired = profileTypeRequired;
       StartPoint = startPoint;
       EndPoint = endPoint;
       PositionsAreGrid = positionsAreGrid;
-      ReferenceDesignID = referenceDesignID;
+      ReferenceDesignUID = referenceDesignUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
 

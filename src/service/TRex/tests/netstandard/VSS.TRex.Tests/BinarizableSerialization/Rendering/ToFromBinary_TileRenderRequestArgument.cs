@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
       {
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignID = Guid.Empty,
+        ReferenceDesignUID = Guid.Empty,
         Mode = DisplayMode.Height,
         CoordsAreGrid =  true,
         PixelsX = 100,

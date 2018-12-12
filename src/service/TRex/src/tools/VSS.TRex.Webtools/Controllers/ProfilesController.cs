@@ -73,7 +73,7 @@ namespace VSS.TRex.Webtools.Controllers
         ProfileTypeRequired = GridDataType.Height,
         PositionsAreGrid = true,
         Filters = new FilterSet(new[] { new CombinedFilter() }),
-        ReferenceDesignID = Guid.Empty,
+        ReferenceDesignUID = Guid.Empty,
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
         ReturnAllPassesAndLayers = false,
