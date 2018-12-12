@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -111,12 +110,13 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
         requestBodyString = string.Empty;
       }
 
-      HttpResponseMessage = SendHttpClientRequest(
-        Uri,
+      HttpResponseMessage = RestClient.SendHttpClientRequest(
+        Uri, 
+        null, 
+        HttpMethod.Post, 
         MediaTypes.JSON,
         MediaTypes.JSON,
-        (int)expectedHttpCode,
-        content: requestBodyString);
+        requestBodyString).Result;
       
       var receiveStream = HttpResponseMessage.Content.ReadAsStreamAsync().Result;
       var readStream = new StreamReader (receiveStream, Encoding.UTF8);
@@ -158,12 +158,6 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
       }
 
       return CurrentResponse;
-    }
-
-    private static HttpResponseMessage SendHttpClientRequest(string url, string acceptHeader, string contentType = MediaTypes.JSON, int expectedHttpCode = 200, string content = null)
-    {
-      var response = RestClient.SendHttpClientRequest(url, null, HttpMethod.Post, acceptHeader, contentType, content).Result;
-      return response;
     }
   }
 }

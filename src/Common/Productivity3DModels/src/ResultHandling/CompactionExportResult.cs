@@ -8,16 +8,9 @@ namespace VSS.Productivity3D.Models.ResultHandling
     [JsonProperty(PropertyName = "fullFileName")]
     public string FullFileName { get; private set; }
 
-    private CompactionExportResult()
+    public CompactionExportResult(string fullFileName)
     {
-    }
-
-    public static CompactionExportResult Create(string fullFileName)
-    {
-      return new CompactionExportResult
-      {
-        FullFileName = fullFileName
-      };
+      FullFileName = fullFileName;
     }
   }
 }
