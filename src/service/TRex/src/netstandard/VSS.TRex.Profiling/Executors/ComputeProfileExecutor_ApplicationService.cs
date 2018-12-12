@@ -34,7 +34,7 @@ namespace VSS.TRex.Profiling.Executors
           ProfileTypeRequired = arg.ProfileTypeRequired,
           ProjectID = arg.ProjectID,
           Filters = arg.Filters,
-          ReferenceDesignID = arg.ReferenceDesignID,
+          ReferenceDesignUID = arg.ReferenceDesignUID,
           ReturnAllPassesAndLayers = arg.ReturnAllPassesAndLayers,
           TRexNodeID = arg.TRexNodeID
         };

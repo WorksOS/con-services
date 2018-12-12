@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Designs.Interfaces;
+﻿using System;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
@@ -39,17 +41,15 @@ namespace VSS.TRex.Profiling.Factories
     /// <param name="cellPassFilter_ElevationRangeDesign"></param>
     /// <param name="cellLiftBuilder"></param>
     /// <returns></returns>
-    public ICellProfileAnalyzer<T> NewProfileLiftBuilder(ISiteModel siteModel,
+    public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       ICellPassAttributeFilter passFilter,
       ICellSpatialFilter cellFilter,
       IDesign cellPassFilter_ElevationRangeDesign,
       ICellLiftBuilder cellLiftBuilder)
     {
-      if (typeof(T) == typeof(ProfileCell))
-        return new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) as ICellProfileAnalyzer<T>;
-
-      return null;
+      return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<T>>>()
+        (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder);
     }
 
     /// <summary>

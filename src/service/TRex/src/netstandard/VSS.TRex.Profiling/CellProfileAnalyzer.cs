@@ -44,6 +44,9 @@ namespace VSS.TRex.Profiling
 
     private ProfileCell ProfileCell;
 
+    private CellProfileAnalyzer()
+    {}
+
     /// <summary>
     /// Constructs a profile lift builder that analyzes cells in a cell profile vector
     /// </summary>
