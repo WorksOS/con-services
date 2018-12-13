@@ -438,10 +438,14 @@ namespace TagFileHarvester.Implementation
 
                 var lastChanged = GetLastChangedTime(org.filespaceId, lPath);
 
-                if (OrgsHandler.FilenameDumpEnabled)
-                  Log.DebugFormat("Dumping Dir {0} : {1} : {2}", org.filespaceId, lPath, lastChanged);
+                if (lastChanged > DateTime.UtcNow.AddDays(-5))
+                {
 
-                folders.Add($"/{folderEntry.entryName}");
+                  if (OrgsHandler.FilenameDumpEnabled)
+                    Log.DebugFormat("Dumping Dir {0} : {1} : {2}", org.filespaceId, lPath, lastChanged);
+
+                  folders.Add($"/{folderEntry.entryName}");
+                }
               }
 
               if (!folders.Any()) Log.WarnFormat("No folders found for org {0}", org.shortName);
