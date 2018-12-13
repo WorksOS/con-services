@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
@@ -13,7 +14,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Profiling
 {
@@ -108,8 +109,8 @@ namespace VSS.TRex.Profiling
 
     private ISiteModel SiteModel;
     private ProfileCell Cell;
-    private GridDataType ProfileTypeRequired;
-    private IFilteredValuePopulationControl PopulationControl;
+    private readonly GridDataType ProfileTypeRequired;
+    private readonly IFilteredValuePopulationControl PopulationControl;
     private ICellPassAttributeFilter PassFilter;
     private ICellPassFastEventLookerUpper CellPassFastEventLookerUpper;
     private ISubGridSegmentCellPassIterator CellPassIterator;
@@ -969,7 +970,7 @@ namespace VSS.TRex.Profiling
           FilteredValuePopulationComplete = true;
         }
         else
-          ; //Assert(False, 'FCellPassFastEventLookerUpper not available');
+          Debug.Assert(false, "CellPassFastEventLookerUpper not available");
       }
       else
       {

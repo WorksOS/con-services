@@ -123,7 +123,7 @@ namespace VSS.TRex.Profiling
         // If the elevation range filter uses a design then the design elevations
         // for the subgrid need to be calculated and supplied to the filter
 
-        if (passFilter.ElevationRangeDesignID != Guid.Empty)
+        if (passFilter.ElevationRangeDesignUID != Guid.Empty)
         {
           design.GetDesignHeights(siteModel.ID, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY),
             siteModel.Grid.CellSize, out IClientHeightLeafSubGrid FilterDesignElevations, out FilterDesignErrorCode);

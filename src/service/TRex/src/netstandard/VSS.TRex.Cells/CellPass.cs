@@ -3,7 +3,7 @@ using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Cells
 {

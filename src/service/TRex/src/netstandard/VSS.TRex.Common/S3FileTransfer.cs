@@ -12,7 +12,7 @@ namespace VSS.TRex.Common
   /// <summary>
   /// Provides an interface to transferProxy for read or write.
   /// </summary>
-  public class S3FileTransfer 
+  public static class S3FileTransfer 
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 

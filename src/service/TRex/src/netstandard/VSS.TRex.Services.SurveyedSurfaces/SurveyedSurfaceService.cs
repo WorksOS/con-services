@@ -14,7 +14,7 @@ using VSS.TRex.Services.Surfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Services.SurveyedSurfaces
 {

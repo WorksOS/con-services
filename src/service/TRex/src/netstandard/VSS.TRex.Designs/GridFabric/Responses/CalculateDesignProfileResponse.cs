@@ -16,18 +16,21 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     {
       writer.WriteByte(VERSION_NUMBER);
 
-      var profileLength = Profile?.Count ?? 0;
-      writer.WriteInt(profileLength);
-      if (profileLength > 0)
+      if (Profile == null)
       {
-        foreach (var pt in Profile)
-        {
-          writer.WriteDouble(pt.X);
-          writer.WriteDouble(pt.Y);
-          writer.WriteDouble(pt.Z);
-          writer.WriteDouble(pt.Station);
-          writer.WriteInt(pt.TriIndex);
-        }
+        writer.WriteInt(0);
+        return;
+      }
+
+      writer.WriteInt(Profile.Count);
+
+      foreach (var pt in Profile)
+      {
+        writer.WriteDouble(pt.X);
+        writer.WriteDouble(pt.Y);
+        writer.WriteDouble(pt.Z);
+        writer.WriteDouble(pt.Station);
+        writer.WriteInt(pt.TriIndex);
       }
     }
 

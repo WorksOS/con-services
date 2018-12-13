@@ -64,7 +64,7 @@ namespace VSS.MasterData.Proxies
 
     private async Task<ContractExecutionResult> SendImportFileRequest(string urlKey, string payload, IDictionary<string, string> customHeaders, HttpMethod method)
     {
-      var response = await SendRequest<ContractExecutionResult>(urlKey, payload, customHeaders, null, method, String.Empty);
+      var response = await SendRequest<ContractExecutionResult>(urlKey, payload, customHeaders, null, method, string.Empty);
       log.LogDebug($"TRexImportFileProxy.{nameof(SendImportFileRequest)}: response: {(response == null ? null : JsonConvert.SerializeObject(response))}");
 
       return response;
