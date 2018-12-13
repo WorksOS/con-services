@@ -11,19 +11,13 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_CutFill : PVMDisplayerBase
   {
     /// <summary>
-    /// Cut/Fill data holder.
-    private ClientHeightLeafSubGrid SubGrid;
-
-    /// <summary>
     /// Renders Cut/Fill summary data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      SubGrid = (subGrid as ClientHeightLeafSubGrid);
-
-      return SubGrid != null && base.DoRenderSubGrid(SubGrid);
+      return base.DoRenderSubGrid<ClientHeightLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -38,7 +32,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      float value = SubGrid.Cells[east_col, north_row];
+      float value = ((ClientHeightLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       return value == CellPassConsts.NullHeight ? Draw.Color.Empty : Palette.ChooseColour(value);
     }

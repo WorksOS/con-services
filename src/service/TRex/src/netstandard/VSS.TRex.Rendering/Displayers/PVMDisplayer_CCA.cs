@@ -15,11 +15,6 @@ namespace VSS.TRex.Rendering.Displayers
   /// </summary>
   public class PVMDisplayer_CCA : PVMDisplayerBase
   {
-    /// <summary>
-    /// CCA data holder.
-    /// </summary>
-    private ClientCCALeafSubGrid SubGrid;
-
     public PVMDisplayer_CCA(DisplayMode displayMode) : base(displayMode)
     {
       if (DisplayMode != DisplayMode.CCA && DisplayMode != DisplayMode.CCASummary)
@@ -31,15 +26,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientCCALeafSubGrid grid)
-      {
-        SubGrid = grid;
-        return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientCCALeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -59,7 +48,7 @@ namespace VSS.TRex.Rendering.Displayers
       const byte COMPACTED_COLOR_IDX = 1;
       const byte OVERCOMPACTED_COLOR_IDX = 2;
 
-      var cellValue = SubGrid.Cells[east_col, north_row];
+      var cellValue = ((ClientCCALeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       if (cellValue.MeasuredCCA == CellPassConsts.NullCCA)
         return Draw.Color.Empty;

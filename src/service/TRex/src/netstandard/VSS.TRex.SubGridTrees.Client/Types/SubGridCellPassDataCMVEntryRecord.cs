@@ -8,7 +8,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
   /// <summary>
   /// Contains measured and target CMV values as well as previous measured and target CMV values.
   /// </summary>
-  public struct SubGridCellPassDataCMVEntryRecord : IEquatable<SubGridCellPassDataCMVEntryRecord>
+  public struct SubGridCellPassDataCMVEntryRecord
   {
     private const byte SHORT_TYPES_COUNT = 4;
 
@@ -168,34 +168,6 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       SubGridCellPassDataCMVEntryRecord result = new SubGridCellPassDataCMVEntryRecord();
       result.Clear();
       return result;
-    }
-
-    public bool Equals(SubGridCellPassDataCMVEntryRecord other)
-    {
-      return CellPassFlags == other.CellPassFlags && 
-             MeasuredCMV == other.MeasuredCMV && 
-             TargetCMV == other.TargetCMV && 
-             PreviousMeasuredCMV == other.PreviousMeasuredCMV && 
-             PreviousTargetCMV == other.PreviousTargetCMV;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is SubGridCellPassDataCMVEntryRecord && Equals((SubGridCellPassDataCMVEntryRecord) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = CellPassFlags.GetHashCode();
-        hashCode = (hashCode * 397) ^ MeasuredCMV.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetCMV.GetHashCode();
-        hashCode = (hashCode * 397) ^ PreviousMeasuredCMV.GetHashCode();
-        hashCode = (hashCode * 397) ^ PreviousTargetCMV.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

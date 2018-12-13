@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
   /// <summary>
   /// Contains measured and target CCA values as well as previous measured and target CCA values.
   /// </summary>
-  public struct SubGridCellPassDataCCAEntryRecord : IEquatable<SubGridCellPassDataCCAEntryRecord>
+  public struct SubGridCellPassDataCCAEntryRecord
   {
     private const byte BYTE_TYPES_COUNT = 4;
 
@@ -171,34 +171,6 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       result.Clear();
 
       return result;
-    }
-
-    public bool Equals(SubGridCellPassDataCCAEntryRecord other)
-    {
-      return CellPassFlags == other.CellPassFlags && 
-             MeasuredCCA == other.MeasuredCCA && 
-             TargetCCA == other.TargetCCA && 
-             PreviousMeasuredCCA == other.PreviousMeasuredCCA && 
-             PreviousTargetCCA == other.PreviousTargetCCA;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is SubGridCellPassDataCCAEntryRecord && Equals((SubGridCellPassDataCCAEntryRecord) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = CellPassFlags.GetHashCode();
-        hashCode = (hashCode * 397) ^ MeasuredCCA.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetCCA.GetHashCode();
-        hashCode = (hashCode * 397) ^ PreviousMeasuredCCA.GetHashCode();
-        hashCode = (hashCode * 397) ^ PreviousTargetCCA.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }

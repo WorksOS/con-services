@@ -8,7 +8,7 @@ using VSS.TRex.Utilities.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Client.Types
 {
-  public struct ClientCellProfileLeafSubgridRecord : IBinaryReaderWriter, IEquatable<ClientCellProfileLeafSubgridRecord>
+  public struct ClientCellProfileLeafSubgridRecord : IBinaryReaderWriter
   {
     public float CellXOffset{get; set;}
     public float CellYOffset{get; set;}
@@ -172,45 +172,5 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     }
 
     public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
-    public bool Equals(ClientCellProfileLeafSubgridRecord other)
-    {
-      return CellXOffset.Equals(other.CellXOffset) &&
-             CellYOffset.Equals(other.CellYOffset) &&
-             LastPassTime.Equals(other.LastPassTime) &&
-             PassCount == other.PassCount &&
-             LastPassValidRadioLatency == other.LastPassValidRadioLatency &&
-             EventDesignNameID == other.EventDesignNameID &&
-             InternalSiteModelMachineIndex == other.InternalSiteModelMachineIndex &&
-             MachineSpeed == other.MachineSpeed &&
-             LastPassValidGPSMode == other.LastPassValidGPSMode &&
-             GPSTolerance == other.GPSTolerance &&
-             GPSAccuracy == other.GPSAccuracy &&
-             TargetPassCount == other.TargetPassCount &&
-//             TotalWholePasses == other.TotalWholePasses &&
-//             TotalHalfPasses == other.TotalHalfPasses &&
-             LayersCount == other.LayersCount &&
-             LastPassValidCCV == other.LastPassValidCCV &&
-             TargetCCV == other.TargetCCV &&
-             LastPassValidMDP == other.LastPassValidMDP &&
-             TargetMDP == other.TargetMDP &&
-             LastPassValidRMV == other.LastPassValidRMV &&
-             LastPassValidFreq == other.LastPassValidFreq &&
-             LastPassValidAmp == other.LastPassValidAmp &&
-             TargetThickness.Equals(other.TargetThickness) &&
-             EventMachineGear == other.EventMachineGear &&
-             EventVibrationState == other.EventVibrationState &&
-             LastPassValidTemperature == other.LastPassValidTemperature &&
-             Height.Equals(other.Height) && HalfPass == other.HalfPass &&
-             CCVChange.Equals(other.CCVChange) &&
-             LastPassValidCCA == other.LastPassValidCCA &&
-             TargetCCA == other.TargetCCA;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is ClientCellProfileLeafSubgridRecord other && Equals(other);
-    }
   }
 }

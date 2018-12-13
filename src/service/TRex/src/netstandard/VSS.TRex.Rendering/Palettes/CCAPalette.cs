@@ -4,7 +4,6 @@ namespace VSS.TRex.Rendering.Palettes
 {
   public class CCAPalette : PaletteBase
   {
-    #region Transitions
     private static Transition[] Transitions =
     {
       new Transition(0, Draw.Color.Yellow),
@@ -58,7 +57,6 @@ namespace VSS.TRex.Rendering.Palettes
       new Transition(48, Draw.ColorTranslator.FromHtml("#80FF00")),
       new Transition(49, Draw.ColorTranslator.FromHtml("#80FF00"))
     };
-    #endregion
 
     public CCAPalette() : base(Transitions)
     {

@@ -1,5 +1,8 @@
 ﻿using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -27,5 +30,21 @@ namespace VSS.TRex.Rendering.Displayers
       DisplayMode = displayMode;
       Palette = palette;
     }
+
+    ///// <summary>
+    ///// Renders CCA summary data as tiles. 
+    ///// </summary>
+    ///// <param name="subGrid"></param>
+    ///// <returns></returns>
+    //protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
+    //{
+    //  if (subGrid is T grid)
+    //  {
+    //    SubGrid = (ISubGrid) grid;
+    //    return base.DoRenderSubGrid<T>(SubGrid);
+    //  }
+
+    //  return false;
+    //}
   }
 }

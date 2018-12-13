@@ -7,7 +7,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
   /// <summary>
   /// Contains measured and target Pass Count values as well as previous measured and target CMV values.
   /// </summary>
-  public struct SubGridCellPassDataPassCountEntryRecord : IEquatable<SubGridCellPassDataPassCountEntryRecord>
+  public struct SubGridCellPassDataPassCountEntryRecord
   {
     private const byte USHORT_TYPES_COUNT = 2;
 
@@ -81,27 +81,6 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       SubGridCellPassDataPassCountEntryRecord result = new SubGridCellPassDataPassCountEntryRecord();
       result.Clear();
       return result;
-    }
-
-
-    public bool Equals(SubGridCellPassDataPassCountEntryRecord other)
-    {
-      return MeasuredPassCount == other.MeasuredPassCount && 
-             TargetPassCount == other.TargetPassCount;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is SubGridCellPassDataPassCountEntryRecord && Equals((SubGridCellPassDataPassCountEntryRecord) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (MeasuredPassCount.GetHashCode() * 397) ^ TargetPassCount.GetHashCode();
-      }
     }
   }
 }

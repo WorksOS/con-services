@@ -8,7 +8,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
 	/// <summary>
 	/// Contains measured temperature value as well as minimum and maximum temperature warning level values.
 	/// </summary>
-	public struct SubGridCellPassDataTemperatureEntryRecord : IEquatable<SubGridCellPassDataTemperatureEntryRecord>
+	public struct SubGridCellPassDataTemperatureEntryRecord
   {
     /// <summary>
     /// Measured temperature value.
@@ -83,26 +83,6 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     {
       MeasuredTemperature = reader.ReadUInt16();
       TemperatureLevels.Read(reader);
-    }
-
-    public bool Equals(SubGridCellPassDataTemperatureEntryRecord other)
-    {
-      return TemperatureLevels.Equals(other.TemperatureLevels) && 
-             MeasuredTemperature == other.MeasuredTemperature;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is SubGridCellPassDataTemperatureEntryRecord && Equals((SubGridCellPassDataTemperatureEntryRecord) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        return (TemperatureLevels.GetHashCode() * 397) ^ MeasuredTemperature.GetHashCode();
-      }
     }
   }
 }

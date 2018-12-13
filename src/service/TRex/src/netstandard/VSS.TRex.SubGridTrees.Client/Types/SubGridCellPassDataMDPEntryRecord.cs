@@ -8,7 +8,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
   /// <summary>
   /// Contains measured and target MDP values.
   /// </summary>
-  public struct SubGridCellPassDataMDPEntryRecord : IEquatable<SubGridCellPassDataMDPEntryRecord>
+  public struct SubGridCellPassDataMDPEntryRecord
   {
     private const byte SHORT_TYPES_COUNT = 2;
 
@@ -141,30 +141,6 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       SubGridCellPassDataMDPEntryRecord result = new SubGridCellPassDataMDPEntryRecord();
       result.Clear();
       return result;
-    }
-
-    public bool Equals(SubGridCellPassDataMDPEntryRecord other)
-    {
-      return CellPassFlags == other.CellPassFlags && 
-             MeasuredMDP == other.MeasuredMDP && 
-             TargetMDP == other.TargetMDP;
-    }
-
-    public override bool Equals(object obj)
-    {
-      if (ReferenceEquals(null, obj)) return false;
-      return obj is SubGridCellPassDataMDPEntryRecord && Equals((SubGridCellPassDataMDPEntryRecord) obj);
-    }
-
-    public override int GetHashCode()
-    {
-      unchecked
-      {
-        var hashCode = CellPassFlags.GetHashCode();
-        hashCode = (hashCode * 397) ^ MeasuredMDP.GetHashCode();
-        hashCode = (hashCode * 397) ^ TargetMDP.GetHashCode();
-        return hashCode;
-      }
     }
   }
 }
