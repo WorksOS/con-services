@@ -2,7 +2,7 @@
 using Draw = System.Drawing;
 using VSS.TRex.Common;
 using VSS.TRex.Rendering.Palettes.Interfaces;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Rendering.Palettes
 {

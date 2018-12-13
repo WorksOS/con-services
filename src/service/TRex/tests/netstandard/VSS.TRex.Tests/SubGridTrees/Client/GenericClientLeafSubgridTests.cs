@@ -12,7 +12,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
   {
     static int GetGridDataTypeCount() => Enum.GetValues(typeof(GridDataType)).Length;
 
-    static int GridDataTypeCount = GetGridDataTypeCount();
+    static readonly int GridDataTypeCount = GetGridDataTypeCount();
 
     private const int kGridDataTypeCount_Expected = 13;
     private const int kGridDataTypeCount = 29;

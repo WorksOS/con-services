@@ -7,7 +7,7 @@ namespace VSS.TRex.Common
   /// <summary>
   /// A base class representing the generic result of requesting subgrids
   /// </summary>
-  public class SubGridsPipelinedReponseBase : BaseRequestResponse, ISubGridsPipelinedReponseBase
+  public class SubGridsPipelinedResponseBase : BaseRequestResponse, ISubGridsPipelinedReponseBase
   {
     /// <summary>
     /// The error status result from the pipeline execution

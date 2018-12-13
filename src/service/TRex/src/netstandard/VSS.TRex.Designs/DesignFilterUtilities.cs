@@ -8,7 +8,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 namespace VSS.TRex.Designs
 {
     /// <summary>
-    /// Utilitites relating to interactions between filters and design surfaces
+    /// Utilities relating to interactions between filters and design surfaces
     /// </summary>
     public static class DesignFilterUtilities
     {
@@ -30,10 +30,10 @@ namespace VSS.TRex.Designs
             if (overallExistenceMap == null)
               return false;
 
-            if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
+            if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
             {
                 ISubGridTreeBitMask DesignExistenceMap = DIContext.Obtain<IExistenceMaps>().GetSingleExistenceMap
-                    (siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignID);
+                    (siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesignUID);
 
                 if (DesignExistenceMap != null)
                 {

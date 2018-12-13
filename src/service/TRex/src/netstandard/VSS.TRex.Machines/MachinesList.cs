@@ -7,8 +7,8 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities.ExtensionMethods;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Machines
 {
@@ -24,7 +24,7 @@ namespace VSS.TRex.Machines
     /// Maps machine IDs (currently as 64 bit integers) to the instance containing all the event lists for all the machines
     /// that have contributed to the owner SiteModel
     /// </summary>
-    private Dictionary<Guid, IMachine> MachineIDMap = new Dictionary<Guid, IMachine>();
+    private readonly Dictionary<Guid, IMachine> MachineIDMap = new Dictionary<Guid, IMachine>();
 
     /// <summary>
     /// The identifier of the site model owning this list of machines
@@ -65,8 +65,7 @@ namespace VSS.TRex.Machines
 
       short internalMachineID = (short) Count;
 
-      Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine
-        /* TODO, kICUnknownConnectedMachineLevel*/);
+      Machine Result = new Machine(this, name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine);
 
       // Add it to the list
       Add(Result);
@@ -80,6 +79,9 @@ namespace VSS.TRex.Machines
     /// <param name="machine"></param>
     public new void Add(IMachine machine)
     {
+      if (machine == null)
+        throw new ArgumentException($"Machine reference cannot be null in {nameof(Add)}", nameof(machine));
+
       base.Add(machine);
 
       MachineIDMap.Add(machine.ID, machine);
@@ -123,18 +125,15 @@ namespace VSS.TRex.Machines
     {
       writer.Write(READER_WRITER_VERSION_MACHINE_LIST);
 
-      writer.Write((int) Count);
+      writer.Write(Count);
       for (int i = 0; i < Count; i++)
         this[i].Write(writer);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer)
-    {
-      throw new NotImplementedException();
-    }
+    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
 
     /// <summary>
-    /// Deserialises the list of machines using the given reader
+    /// Deserializes the list of machines using the given reader
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
@@ -165,7 +164,7 @@ namespace VSS.TRex.Machines
     }
 
     /// <summary>
-    /// Loads the content of the machines list from the tpersistent store. If there is no item in the persistent store containing
+    /// Loads the content of the machines list from the persistent store. If there is no item in the persistent store containing
     /// machines for this sitemodel them return an empty list.
     /// </summary>
     public void LoadFromPersistentStore()

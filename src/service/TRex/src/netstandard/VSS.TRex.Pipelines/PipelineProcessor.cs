@@ -23,9 +23,9 @@ namespace VSS.TRex.Pipelines
   /// </summary>
   public class PipelineProcessor : IPipelineProcessor
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
 
-    private IExistenceMaps existenceMaps = null;
+    private IExistenceMaps existenceMaps;
     private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
     public Guid RequestDescriptor;
@@ -52,7 +52,7 @@ namespace VSS.TRex.Pipelines
     public BoundingWorldExtent3D SpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
 
     /// <summary>
-    /// Any override world coordinate spatial entent imposed by the client context.
+    /// Any override world coordinate spatial extent imposed by the client context.
     /// For example, this might be the rectangular border of a tile being requested
     /// </summary>
     public BoundingWorldExtent3D OverrideSpatialExtents { get; set; } = BoundingWorldExtent3D.Full();
@@ -143,7 +143,7 @@ namespace VSS.TRex.Pipelines
     /// <param name="requestAnalyser"></param>
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
-    /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial seelction filtering and criteria</param>
+    /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
     /// <param name="siteModel"></param>
     public PipelineProcessor(Guid requestDescriptor,
                              Guid dataModelID,
@@ -263,19 +263,22 @@ namespace VSS.TRex.Pipelines
 
       foreach (var filter in Filters.Filters)
       {
-        if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, filter, OverallExistenceMap))
+        if (filter != null)
         {
-          Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
-          return false;
-        }
-
-        if (filter?.AttributeFilter.AnyFilterSelections == true)
-        {
-          Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
-          if (Response.ResultStatus != RequestErrorStatus.OK)
+          if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, filter, OverallExistenceMap))
           {
-            Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
+            Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
             return false;
+          }
+
+          if (filter.AttributeFilter.AnyFilterSelections)
+          {
+            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
+            if (Response.ResultStatus != RequestErrorStatus.OK)
+            {
+              Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
+              return false;
+            }
           }
         }
       }
@@ -310,7 +313,7 @@ namespace VSS.TRex.Pipelines
       // Impose the final restriction on the spatial extents from the client context
       SpatialExtents = SpatialExtents.Intersect(OverrideSpatialExtents);
 
-      // Introduce the Request analyser to the pipeline and spatial extents it requires
+      // Introduce the Request analyzer to the pipeline and spatial extents it requires
       RequestAnalyser.Pipeline = Pipeline;
       RequestAnalyser.WorldExtents = SpatialExtents;
 

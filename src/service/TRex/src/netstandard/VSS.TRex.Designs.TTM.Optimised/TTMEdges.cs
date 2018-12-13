@@ -16,7 +16,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     public int[] Items;
 
     /// <summary>
-    /// Reads in the collection of esged from the TIN model usign the provided reader
+    /// Reads in the collection of esged from the TIN model using the provided reader
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="header"></param>

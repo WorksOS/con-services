@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 
-namespace VSS.TRex.Utilities.ExtensionMethods
+namespace VSS.TRex.Common.Utilities.ExtensionMethods
 {
   /// <summary>
   /// Extension methods supporting serialisation and deserialisation to and from vanilla byte arrays.
