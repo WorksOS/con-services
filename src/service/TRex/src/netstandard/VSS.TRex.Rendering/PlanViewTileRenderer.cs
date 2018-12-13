@@ -195,7 +195,7 @@ namespace VSS.TRex.Rendering
       }
       catch (Exception E)
       {
-        Log.LogError($"ExecutePipeline raised exception {E}");
+        Log.LogError("ExecutePipeline raised Exception:", E);
       }
 
       return RequestErrorStatus.Unknown;

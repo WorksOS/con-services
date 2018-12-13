@@ -48,7 +48,7 @@ namespace VSS.TRex.Profiling
     {}
 
     /// <summary>
-    /// Constructs a profile lift builder that analyzes cells in a cell profile vector
+    /// Constructs a cell profile analyzer that analyzes cells in a cell profile vector
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="pDExistenceMap"></param>
@@ -448,7 +448,7 @@ namespace VSS.TRex.Profiling
           }
 
           if (!LiftFilterMask<ProfileCell>.ConstructSubgridCellFilterMask(SiteModel.Grid, CurrentSubgridOrigin,
-            ProfileCells, FilterMask, I, CellFilter))
+            ProfileCells, FilterMask, I, CellFilter, SurfaceDesignMaskDesign, AlignmentDesignMaskDesign))
             continue;
 
           if (FilteredSurveyedSurfaces != null)

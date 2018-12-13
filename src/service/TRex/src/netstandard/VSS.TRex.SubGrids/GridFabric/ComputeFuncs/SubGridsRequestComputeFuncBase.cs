@@ -57,7 +57,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception occurred:\n{E}");
+        Log.LogError("Exception occurred:", E);
 
         return new TSubGridRequestsResponse {ResponseCode = SubGridRequestsResponseResult.Unknown};
       }

@@ -165,7 +165,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
       catch (Exception E)
       {
-        throw new Exception($"Failed to read triangles\n{E}");
+        throw new Exception("Failed to read triangles", E);
       }
     }
 

@@ -51,7 +51,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
       }
       catch (Exception E)
       {
-        Log.LogInformation($"Exception: {E}");
+        Log.LogInformation("Exception:", E);
       }
 
       return null;

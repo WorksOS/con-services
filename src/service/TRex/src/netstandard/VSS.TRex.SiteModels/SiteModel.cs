@@ -531,7 +531,7 @@ namespace VSS.TRex.SiteModels
         }
         catch (Exception e)
         {
-          Log.LogError($"Failed to save machine list for site model {ID} to persistent store: {e}");
+          Log.LogError($"Failed to save machine list for site model {ID} to persistent store:", e);
           Result = false;
         }
 
@@ -541,7 +541,7 @@ namespace VSS.TRex.SiteModels
         }
         catch (Exception e)
         {
-          Log.LogError($"Failed to save proofing run list for site model {ID} to persistent store: {e}");
+          Log.LogError($"Failed to save proofing run list for site model {ID} to persistent store:", e);
           Result = false;
         }
 
@@ -551,7 +551,7 @@ namespace VSS.TRex.SiteModels
         }
         catch (Exception e)
         {
-          Log.LogError($"Failed to save machine design name list for site model {ID} to persistent store: {e}");
+          Log.LogError($"Failed to save machine design name list for site model {ID} to persistent store:", e);
           Result = false;
         }
       }
@@ -638,7 +638,7 @@ namespace VSS.TRex.SiteModels
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception occurred: {e}");
+        Log.LogError("Exception occurred:", e);
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
 

@@ -270,11 +270,11 @@ namespace VSS.TRex.SubGrids.Executors
 
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
-        bool designResult = ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
+        ReferenceDesign.GetDesignHeights(localArg.ProjectID, address, siteModel.Grid.CellSize,
           out IClientHeightLeafSubGrid DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 
         clientGrid = DesignElevations;
-        if (designResult || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+        if (ProfilerRequestResult == DesignProfilerRequestResult.OK || ProfilerRequestResult == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
           return ServerRequestResult.NoError;
 
         Log.LogError($"Design profiler subgrid elevation request for {address} failed with error {ProfilerRequestResult}");

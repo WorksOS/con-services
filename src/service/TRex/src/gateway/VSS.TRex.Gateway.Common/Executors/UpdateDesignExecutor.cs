@@ -127,7 +127,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
       catch (Exception e)
       {
-        log.LogError($"#Out# UpdateDesignExecutor. Update of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception: {e}");
+        log.LogError($"#Out# UpdateDesignExecutor. Update of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:", e);
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToUpdateDesign, e.Message);
       }
 

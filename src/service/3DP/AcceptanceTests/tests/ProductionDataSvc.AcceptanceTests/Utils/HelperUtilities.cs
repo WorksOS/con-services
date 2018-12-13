@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -7,29 +6,8 @@ using System.Text;
 
 namespace ProductionDataSvc.AcceptanceTests.Utils
 {
-  public class Common
+  public class HelperUtilities
   {
-    /// <summary>
-    /// Test whether two lists are equivalent.
-    /// </summary>
-    public static bool ListsAreEqual<T>(List<T> listA, List<T> listB)
-    {
-      if (listA == null && listB == null)
-        return true;
-      if (listA == null || listB == null)
-        return false;
-      if (listA.Count != listB.Count)
-        return false;
-
-      for (int i = 0; i < listA.Count; ++i)
-      {
-        if (!listB.Exists(item => item.Equals(listA[i])))
-          return false;
-      }
-
-      return true;
-    }
-
     /// <summary>
     /// Decompress a zip archive file - assuming there is only one file in the archive.
     /// </summary>
