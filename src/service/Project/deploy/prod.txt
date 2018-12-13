@@ -41,7 +41,7 @@ NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7
 NEW_RELIC_APP_NAME: k8s-project-service
 newrelic: "true"
 AWS_BUCKET_NAME: vss-exports-stg
-AWS_DESIGNIMPORT_BUCKET_NAME:vss-project3dp-prod
+AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
 AWS_ACCESS_KEY: AKIAIBGOEETXHMANDX7A
 AWS_SECRET_KEY: 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
 FILTER_CACHE_LIFE: 00:15:00
@@ -50,5 +50,5 @@ ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false"
 DATA_OCEAN_URL: https://api-usw2.trimblepaas.com/data_ocean-v1.0
 DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
 DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
-NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com
+NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com/notifications
 PUSH_NO_AUTHENTICATION_HEADER: "true"
