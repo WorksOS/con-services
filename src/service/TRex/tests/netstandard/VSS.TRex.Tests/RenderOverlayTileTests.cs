@@ -42,7 +42,7 @@ namespace VSS.TRex.Tests
                                                              null, // Filter2
                                                              long.MinValue,// DesignDescriptor.Null(),
                                                              Color.Black,
-                                                             String.Empty);
+                                                             string.Empty);
            Bitmap bmp = render.Execute();
            Assert.NotNull(bmp);*/
         }

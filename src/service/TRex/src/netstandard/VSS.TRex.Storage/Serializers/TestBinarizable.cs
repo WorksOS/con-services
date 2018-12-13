@@ -1,5 +1,4 @@
 ﻿using Apache.Ignite.Core.Binary;
-using System;
 
 namespace VSS.TRex.Storage.Serializers
 {
@@ -7,12 +6,10 @@ namespace VSS.TRex.Storage.Serializers
     {
         public void ReadBinary(IBinaryReader reader)
         {
-            throw new NotImplementedException();
         }
 
         public void WriteBinary(IBinaryWriter writer)
         {
-            throw new NotImplementedException();
         }
     }
 
@@ -20,12 +17,10 @@ namespace VSS.TRex.Storage.Serializers
     {
         public void ReadBinary(object obj, IBinaryReader reader)
         {
-            throw new NotImplementedException();
         }
 
         public void WriteBinary(object obj, IBinaryWriter writer)
         {
-            throw new NotImplementedException();
         }
     }
 }

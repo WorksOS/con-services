@@ -47,13 +47,13 @@ namespace VSS.TRex.Volumes.Executors
         /// The ID of the 'base' design. This is the design forming the 'from' surface in 
         /// the volumes calculation
         /// </summary>
-        Guid BaseDesignID;
+        private readonly Guid BaseDesignID;
 
         /// <summary>
         /// The ID of the 'to or top' design. This is the design forming the 'to or top' surface in 
         /// the volumes calculation
         /// </summary>
-        Guid TopDesignID;
+        private readonly Guid TopDesignID;
 
         /// <summary>
         /// AdditionalSpatialFilter is an additional boundary specified by the user to bound the result of the query

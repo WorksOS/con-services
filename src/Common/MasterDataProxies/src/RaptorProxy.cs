@@ -187,7 +187,7 @@ namespace VSS.MasterData.Proxies
     public async Task<BaseDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {request.projectUid}");
-      BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", HttpMethod.Post, String.Empty);
+      BaseDataResult response = await SendRequest<BaseDataResult>("RAPTOR_PROJECT_SETTINGS_API_URL", JsonConvert.SerializeObject(request), customHeaders, "/validatesettings", HttpMethod.Post, string.Empty);
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -414,7 +414,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private async Task<CoordinateSystemSettingsResult> CoordSystemPost(string payload, IDictionary<string, string> customHeaders, string route)
     {
-      CoordinateSystemSettingsResult response = await SendRequest<CoordinateSystemSettingsResult>("COORDSYSPOST_API_URL", payload, customHeaders, route, HttpMethod.Post, String.Empty);
+      CoordinateSystemSettingsResult response = await SendRequest<CoordinateSystemSettingsResult>("COORDSYSPOST_API_URL", payload, customHeaders, route, HttpMethod.Post, string.Empty);
       log.LogDebug("RaptorProxy.CoordSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -434,7 +434,7 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"RaptorProxy.UploadTagFile: filename: {filename}, orgId: {orgId}");
       var request = CompactionTagFileRequest.CreateCompactionTagFileRequest(filename, data, orgId);
       var response = await SendRequest<BaseDataResult>("TAGFILEPOST_API_URL", JsonConvert.SerializeObject(request),
-        customHeaders, "", HttpMethod.Post, String.Empty);
+        customHeaders, "", HttpMethod.Post, string.Empty);
       log.LogDebug("RaptorProxy.UploadTagFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
     }
@@ -452,7 +452,7 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.ExecuteGenericV1Request: route: {route}");
       var response = await SendRequest<T>("RAPTOR_V1_BASE_API_URL", JsonConvert.SerializeObject(payload),
-        customHeaders, route, HttpMethod.Post, String.Empty);
+        customHeaders, route, HttpMethod.Post, string.Empty);
       log.LogDebug("RaptorProxy.ExecuteGenericV1Request: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
     }

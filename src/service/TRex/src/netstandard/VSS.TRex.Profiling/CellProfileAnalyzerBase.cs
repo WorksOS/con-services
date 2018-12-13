@@ -78,7 +78,7 @@ namespace VSS.TRex.Profiling
 
     /// <summary>
     /// The design supplied as a result of an independent lookup outside the scope of this builder
-    /// to find the design identified by the cellPassFilter.ElevationRangeDesignID
+    /// to find the design identified by the cellPassFilter.ElevationRangeDesignUID
     /// </summary>
     protected IDesign CellPassFilter_ElevationRangeDesign;
 

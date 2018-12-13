@@ -3,8 +3,8 @@ using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Utilities.ExtensionMethods;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces
 {

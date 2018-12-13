@@ -9,7 +9,7 @@ using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 /*
   This unit provides a grid decimator capable of turning very large scale grids

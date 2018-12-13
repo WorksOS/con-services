@@ -10,7 +10,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// The response returned from the TIN surface export request executor that contains the response code and the
   /// surface generated from the operation
   /// </summary>
-  public class TINSurfaceRequestResponse : SubGridsPipelinedReponseBase
+  public class TINSurfaceRequestResponse : SubGridsPipelinedResponseBase
   {
     /// <summary>
     /// The TIN generated from the selected elevations matching the query

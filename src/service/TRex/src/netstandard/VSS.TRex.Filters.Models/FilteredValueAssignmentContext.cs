@@ -39,7 +39,7 @@ namespace VSS.TRex.Filters.Models
 
         public FilteredSinglePassInfo PreviousFilteredValue;
 
-        public Object /*IProfileCell*/ CellProfile { get; set; }
+        public object /*IProfileCell*/ CellProfile { get; set; }
 
         // TODO     LiftBuildSettings: TICLiftBuildSettings;
 

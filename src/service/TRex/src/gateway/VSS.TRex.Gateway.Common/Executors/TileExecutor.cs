@@ -43,12 +43,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<TileRequest>();
 
-      //TODO: TRex expects a Guid for the cut-fill design. Raptor has a DesignDescriptor with long (id) and file name etc.
-      //Raymond: how are designs implemented in TRex?
-      //We could create a derived class of DesignDescriptor containing the Guid and 3dpm can create a new TileRequest
-      //with all the same data but a derived DesignDescriptor with the Guid set, assuming serialization/deserialization
-      //gives us the derived class here
-
       BoundingWorldExtent3D extents = null;
       bool hasGridCoords = false;
       if (request.BoundBoxLatLon != null)

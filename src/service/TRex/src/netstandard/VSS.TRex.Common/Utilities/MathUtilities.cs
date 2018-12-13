@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.Utilities
+namespace VSS.TRex.Common.Utilities
 {
   /// <summary>
   /// A collection of things that aren't readily apparent in the .Net platform

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace VSS.TRex.Utilities
+namespace VSS.TRex.Common.Utilities
 {
     /// <summary>
     /// Provides handy rflection based haelpers for discovering types
