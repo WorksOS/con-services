@@ -48,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
       catch (Exception e)
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, String.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
+        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
       }
       
       return tfaResult;
@@ -86,7 +86,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Business rule for device type conversion
       int radioType = processor.RadioType == "torch" ? (int) DeviceType.SNM940 : (int) DeviceType.ManualDevice; // torch device set to type 6
 
-      if (processor.RadioSerial == String.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty)
+      if (processor.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty)
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
         var message = "Must have either a valid TCCOrgID or RadioSerialNo or ProjectUID";

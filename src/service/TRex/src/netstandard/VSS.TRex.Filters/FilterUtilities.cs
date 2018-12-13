@@ -102,8 +102,8 @@ namespace VSS.TRex.Filters
           // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
           Filter.SpatialFilter?.Fence.UpdateExtents();
 
-          // Is there an alignment file to look up
-          if (Filter.SpatialFilter.HasAlignmentDesignMask())
+          // Is there an alignment file to look up? If so, only do it if there not an already existing alignment fence boundary
+          if (Filter.SpatialFilter.HasAlignmentDesignMask() && !(Filter.SpatialFilter.AlignmentFence?.HasVertices ?? true))
           {
             throw new NotImplementedException();
             /* TODO - Not yet supported
@@ -126,9 +126,11 @@ namespace VSS.TRex.Filters
           }
 
           // Is there a surface design to look up
-          if (Filter.SpatialFilter.HasAlignmentDesignMask())
+          if (Filter.SpatialFilter.HasSurfaceDesignMask())
           {
-            // Todo: Not yet supported
+            // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in 
+            // the larger scale determination of the subgrids that need to be queried.
+
             /* If the filter needs to retain a reference to the existence map, then do this...
             Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 

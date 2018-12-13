@@ -68,7 +68,7 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public class SubGridTree : ISubGridTree, IEnumerator<ISubGrid>
     {
-        private static ILogger Log = Logging.Logger.CreateLogger("SubGridTree");
+        private static ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
 
         /****************************** Internal members **************************/
 
@@ -278,7 +278,7 @@ namespace VSS.TRex.SubGridTrees
             catch (Exception e)
             {
               // Something bad happened...
-              Log.LogDebug($"Exception in SubGridTree.CalculateRegionGridCoverage:", e);
+              Log.LogDebug("Exception in SubGridTree.CalculateRegionGridCoverage:", e);
               cellExtent = BoundingIntegerExtent2D.Inverted();
               return false;
             }

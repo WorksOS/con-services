@@ -14,15 +14,14 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
         public virtual ITileRenderResponse AggregateWith(ITileRenderResponse other)
         {
             // Composite the bitmap held in this response with the bitmap held in 'other'
-
-//            throw new NotImplementedException("Bitmap compositing not implemented");
+            // ....
 
             return null;
         }
 
         public virtual void SetBitmap(object bitmap)
         {
-            // No implementaion in base class
+            // No implementation in base class
         }
     }
 }

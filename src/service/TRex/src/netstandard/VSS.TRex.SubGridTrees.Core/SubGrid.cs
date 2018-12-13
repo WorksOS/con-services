@@ -169,7 +169,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// GetOTGLeafSubGridCellIndex determines the local in-subgrid X/Y location of a
         /// cell given its absolute cell index in an on-the-ground leaf subgrid where the level of the subgrid is implicitly known
-        /// to be the same as FOwner.Numlevels. Do not call this method for a subgrid that is not a leaf subgrid
+        /// to be the same as Owner.NumLevels. Do not call this method for a subgrid that is not a leaf subgrid
         /// WARNING: This call assumes the cell index does lie within this subgrid
         /// and (currently) no range checking is performed to ensure this}
         /// </summary>
@@ -379,11 +379,7 @@ namespace VSS.TRex.SubGridTrees
         /// <param name="functor"></param>
         /// <returns></returns>
         public void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
-     
-        public bool Equals(ISubGrid other)
-        {
-          throw new NotImplementedException();
-        }
+    
      
         /// <summary>
         /// Iterates over all the cells in the subgrid calling functor on each of them.
