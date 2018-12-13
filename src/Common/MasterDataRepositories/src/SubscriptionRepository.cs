@@ -491,6 +491,21 @@ namespace VSS.MasterData.Repositories
       return subscription;
     }
 
+    public async Task<IEnumerable<Subscription>> GetProjectBasedSubscriptionsByCustomer(string customerUid, DateTime validAtDate)
+    {
+      var subscription = await QueryWithAsyncPolicy<Subscription>
+      (@"SELECT 
+                SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
+              FROM Subscription
+              WHERE fk_CustomerUID = @CustomerUID
+                AND fk_ServiceTypeID IN (13, 15, 19, 20)
+                AND @validAtDate BETWEEN StartDate AND EndDate"
+        , new { CustomerUID = customerUid, validAtDate }
+      );
+
+      return subscription;
+    }
+
     public async Task<IEnumerable<Subscription>> GetFreeProjectSubscriptionsByCustomer(string customerUid,
       DateTime validAtDate)
     {
@@ -518,6 +533,7 @@ namespace VSS.MasterData.Repositories
               FROM AssetSubscription aSub
                 INNER JOIN Subscription s ON s.SubscriptionUID = aSub.fk_SubscriptionUID
               WHERE aSub.fk_AssetUID = @assetUid
+                AND fk_ServiceTypeID IN (13)
                 AND @validAtDate BETWEEN s.StartDate AND s.EndDate"
         , new {assetUid, validAtDate}
       );
