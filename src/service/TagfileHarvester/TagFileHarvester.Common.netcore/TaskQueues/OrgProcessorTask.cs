@@ -94,7 +94,7 @@ namespace TagFileHarvester.TaskQueues
 
           totalfiles = files.Count();
 
-          files.OrderBy(t => t.createdUTC).Take(OrgsHandler.NumberOfFilesInPackage).ForEach(filenames.Add);
+          files.OrderBy(t => t.createdUTC).ForEach(filenames.Add);
 
           //this could be a long time to get files, so check if we are requested to stop
           if (cancellationToken.IsCancellationRequested) return Result;
@@ -117,7 +117,7 @@ namespace TagFileHarvester.TaskQueues
           if (cancellationToken.IsCancellationRequested) return Result;
 
           //foreach filenames here - build chain of tasks and track execution
-          filenames.ForEach(f => fileTasks.Add(harvesterTasks
+          filenames.Where(f=>f.createdUTC > DateTime.UtcNow.AddDays(-3)).ForEach(f => fileTasks.Add(harvesterTasks
             .StartNewLimitedConcurrency(
               () =>
               {

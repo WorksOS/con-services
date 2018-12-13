@@ -30,6 +30,7 @@ namespace TagFileHarvester.TaskQueues
         return null;
       try
       {
+        tagFilename = tagFilename.Replace("//", "/");
         log.DebugFormat("Processing file {0} for org {1}", tagFilename, org.shortName);
         var file = unityContainer.Resolve<IFileRepository>().GetFile(org, tagFilename);
         if (file == null) return null;
@@ -87,16 +88,17 @@ namespace TagFileHarvester.TaskQueues
 
           NewRelic.Api.Agent.NewRelic.RecordCustomEvent("TagFileHarvester_Process", eventAttributes);
         }
-        log.InfoFormat($"File {tagFilename} for org {org.shortName} processed with code {code?.ToString()} message {result?.Message} processingCode {result?.Code.ToString()}");
+
         switch (code)
         {
           case HttpStatusCode.OK:
           {
-            log.DebugFormat("Archiving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+
+           /* log.DebugFormat("Archiving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
               OrgsHandler.TCCSynchProductionDataArchivedFolder);
 
-            if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProductionDataArchivedFolder))
-              return null;
+              if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProductionDataArchivedFolder))
+              return null;*/
 
             break;
           }
@@ -139,7 +141,7 @@ namespace TagFileHarvester.TaskQueues
                 log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
                   OrgsHandler.TCCSynchProjectBoundaryIssueFolder);
 
-                if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchProjectBoundaryIssueFolder))
+               if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
                   return null;
                 break;
               }
@@ -149,15 +151,15 @@ namespace TagFileHarvester.TaskQueues
           }
           default:
           {
-            log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
-              OrgsHandler.TCCSynchOtherIssueFolder);
-
-            //If any other error occured do NOT move this file anywhere so it can be picked up during the next epoch
-            //Potential risk here is with locked\corrupted files but this should be handled in 3dpm service
-            /*if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
-              return null;*/
-
+            log.ErrorFormat("TFA or 3Dpm is likely down for {0} org {1}", tagFilename, org.shortName);
             break;
+              /*   log.DebugFormat("Moving file {0} for org {1} to {2} folder", tagFilename, org.shortName,
+                   OrgsHandler.TCCSynchOtherIssueFolder);
+
+                 if (!MoveFileTo(tagFilename, org, fileRepository, OrgsHandler.TCCSynchOtherIssueFolder))
+                   return null;*/
+
+              break;
           }
         }
 
@@ -174,9 +176,7 @@ namespace TagFileHarvester.TaskQueues
     private bool MoveFileTo(string tagFilename, Organization org, IFileRepository fileRepository, string destFolder)
     {
       return fileRepository.MoveFile(org, tagFilename,
-        tagFilename.Remove(tagFilename.IndexOf(OrgsHandler.tccSynchMachineFolder, StringComparison.Ordinal),
-          OrgsHandler.tccSynchMachineFolder.Length + 1).Replace(OrgsHandler.TCCSynchProductionDataFolder,
-          destFolder));
+        tagFilename.Replace(OrgsHandler.tccSynchMachineFolder, destFolder));
     }
   }
 
