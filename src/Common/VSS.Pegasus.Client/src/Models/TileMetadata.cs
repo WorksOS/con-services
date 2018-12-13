@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 
 namespace VSS.Pegasus.Client.Models
 {
   public class TileMetadata
   {
-    public string tilejson { get; set; }
-    public string name { get; set; }
-    public string description { get; set; }
-    public string attribution { get; set; }
-    public List<string> tiles { get; set; }
-    public int minzoom { get; set; }
-    public int maxzoom { get; set; }
-    public List<double> bounds { get; set; }
-    public List<double> center { get; set; }
+    [JsonProperty(PropertyName = "extents", Required = Required.Default)]
+    public Extents extents { get; set; }
+    [JsonProperty(PropertyName = "start-zoom", Required = Required.Default)]
+    public int MinZoom { get; set; }
+    [JsonProperty(PropertyName = "end-zoom", Required = Required.Default)]
+    public int MaxZoom { get; set; }
+    [JsonProperty(PropertyName = "tile-count", Required = Required.Default)]
+    public int TileCount { get; set; }
+
   }
 }

@@ -2,9 +2,10 @@
 using System.IO;
 
 namespace VSS.DataOcean.Client
-{  public class DataOceanFileUtil
+{
+  public class DataOceanFileUtil
   {
-    private const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
+    public const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
     public const string DXF_FILE_EXTENSION = ".DXF";
 
     public string FileName { get; private set; }

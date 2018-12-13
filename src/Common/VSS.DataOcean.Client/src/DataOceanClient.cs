@@ -200,17 +200,44 @@ namespace VSS.DataOcean.Client
     /// <returns></returns>
     public async Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders)
     {
+      Log.LogDebug($"GetFile: {fullName}");
+
       //1. Get the download url
-      var result = await GetFileMetadata(fullName, customHeaders);
+      string tileFolderAndFileName = null;
+      string nameForMetadata = fullName;
+      if (fullName.Contains(DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX))
+      {
+        tileFolderAndFileName = DataOceanFileUtil.ExtractTileNameFromTileFullName(fullName);
+        nameForMetadata = fullName.Substring(0, fullName.Length - tileFolderAndFileName.Length);
+      }
+
+      var result = await GetFileMetadata(nameForMetadata, customHeaders);
+      if (result == null)
+      {
+        Log.LogWarning($"Failed to find file {fullName}");
+        return null;
+      }
       var downloadUrl = result.DataOceanDownload.Url;
+      //PNG tiles files and tiles.json metadata file are in a DataOcean multifile
       if (result.Multifile)
       {
-        //PNG tiles files and tiles.json metadata file are in a DataOcean multifile
-        string tileFolderAndFileName = DataOceanFileUtil.ExtractTileNameFromTileFullName(fullName);
+        if (string.IsNullOrEmpty(tileFolderAndFileName))
+        {
+          Log.LogError("Getting a multifile other than tiles is not implemented");
+          return null;
+        }
+        tileFolderAndFileName = tileFolderAndFileName.Substring(1);//Skip leading / as it's in the URL already
         downloadUrl = downloadUrl.Replace("{path}", tileFolderAndFileName);
       }
       //2. Download the file
-      using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders, null, null, 3, false)).ReadAsStreamAsync())
+      //TODO: Check what DataOcean returns when requested tile is not there
+      var response =
+        await gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders, null, null, 3,
+          false);
+      //Check if anything returned. File may not exist.
+      if (response == null)
+        return null;
+      using (var responseStream = await response.ReadAsStreamAsync())
       {
         responseStream.Position = 0;
         byte[] file = new byte[responseStream.Length];

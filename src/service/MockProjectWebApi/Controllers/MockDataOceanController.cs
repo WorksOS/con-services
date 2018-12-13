@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +66,10 @@ namespace MockProjectWebApi.Controllers
             upload = new
             {
               url = $"{baseUrl}/dummy_upload_signed_url"
+            },
+            download = new
+            {
+              url = $"{baseUrl}/dummy_download_signed_url"
             }
           }
         }
@@ -90,6 +95,10 @@ namespace MockProjectWebApi.Controllers
         upload = new
         {
           url = $"{baseUrl}/dummy_upload_signed_url"
+        },
+        download = new
+        {
+          url = $"{baseUrl}/dummy_download_signed_url"
         }
       };
       Console.WriteLine($"GetFile returning: {JsonConvert.SerializeObject(result)}");
@@ -138,6 +147,10 @@ namespace MockProjectWebApi.Controllers
         upload = new
         {
           url = $"{baseUrl}/dummy_upload_signed_url"
+        },
+        download = new
+        {
+          url = $"{baseUrl}/dummy_download_signed_url"
         }
       };
       Console.WriteLine($"CreateFile returning: {JsonConvert.SerializeObject(result)}");
@@ -148,7 +161,19 @@ namespace MockProjectWebApi.Controllers
     [HttpPut]
     public HttpResponseMessage UploadFile()
     {
+      Console.WriteLine($"UploadFile");
+
       return new HttpResponseMessage(HttpStatusCode.OK);
+    }
+
+    [Route("/dummy_download_signed_url")]
+    [HttpGet]
+    public Stream DownloadFile()
+    {
+      Console.WriteLine($"DownloadFile");
+
+      byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
+      return new MemoryStream(buffer);
     }
 
   }
