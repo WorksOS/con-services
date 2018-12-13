@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Types;
 
-namespace VSS.TRex.Utilities
+namespace VSS.TRex.Common.Utilities
 {
   /// <summary>
   /// Utilities relating to the machine types supported

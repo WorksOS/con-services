@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Events
 {

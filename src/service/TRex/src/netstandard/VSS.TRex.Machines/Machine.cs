@@ -4,7 +4,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Machines
 {

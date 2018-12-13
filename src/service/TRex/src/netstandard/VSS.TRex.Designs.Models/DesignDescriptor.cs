@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs.Models
 {

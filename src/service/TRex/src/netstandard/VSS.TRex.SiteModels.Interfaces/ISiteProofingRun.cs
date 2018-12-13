@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Geometry;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {

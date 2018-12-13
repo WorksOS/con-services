@@ -21,7 +21,7 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {

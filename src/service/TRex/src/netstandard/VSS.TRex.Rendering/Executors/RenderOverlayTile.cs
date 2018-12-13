@@ -17,7 +17,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Executors

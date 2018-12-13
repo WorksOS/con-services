@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.Utilities
+namespace VSS.TRex.Common.Utilities
 {
     /// <summary>
     /// Some handy geometry helper methods
@@ -23,10 +23,8 @@ namespace VSS.TRex.Utilities
                                             out double toX, out double toY,
                                             double CX, double CY)
         {
-            double CosOfRotation, SinOfRotation;
-
-            CosOfRotation = Math.Cos(rotation);
-            SinOfRotation = Math.Sin(rotation);
+            double CosOfRotation = Math.Cos(rotation);
+            double SinOfRotation = Math.Sin(rotation);
 
             toX = CX + (fromX - CX) * CosOfRotation - (fromY - CY) * SinOfRotation;
             toY = CY + (fromY - CY) * CosOfRotation + (fromX - CX) * SinOfRotation;

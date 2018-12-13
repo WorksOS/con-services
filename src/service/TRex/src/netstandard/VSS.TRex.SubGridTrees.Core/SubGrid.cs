@@ -2,7 +2,7 @@
 using System.IO;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SubGridTrees
 {

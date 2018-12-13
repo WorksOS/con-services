@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Designs
 {

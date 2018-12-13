@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.Utilities
+namespace VSS.TRex.Common.Utilities
 {
     /// <summary>
     /// Provides a set of useful functions for Range Truncation not supported in Math namespace
