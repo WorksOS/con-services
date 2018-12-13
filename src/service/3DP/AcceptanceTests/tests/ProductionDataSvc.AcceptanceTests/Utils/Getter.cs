@@ -105,7 +105,6 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     /// <summary>
     /// Returns an aggregated query string 
     /// </summary>
-    /// <returns></returns>
     public string BuildQueryString()
     {
       var queryString = new StringBuilder();

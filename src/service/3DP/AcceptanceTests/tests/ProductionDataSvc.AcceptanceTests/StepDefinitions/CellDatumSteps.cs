@@ -4,6 +4,6 @@ using Xunit.Gherkin.Quick;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("CellDatum.feature")]
-  public sealed class CellDatumSteps : FeaturePostRequestBase<CellDatumRequest, ResponseBase>
+  public class CellDatumSteps : FeaturePostRequestBase<CellDatumRequest, ResponseBase>
   { }
 }
