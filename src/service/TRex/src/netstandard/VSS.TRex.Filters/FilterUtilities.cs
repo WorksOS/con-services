@@ -28,7 +28,6 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public static RequestErrorStatus PrepareFilterForUse(ICombinedFilter Filter, Guid DataModelID)
     {
-      XYZ[] LLHCoords; //: TCSConversionCoordinates;
       // Fence DesignBoundary = null;
       RequestErrorStatus Result = RequestErrorStatus.OK;
 
@@ -47,9 +46,10 @@ namespace VSS.TRex.Filters
           {
             ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
+            XYZ[] LLHCoords;
             // If the filter has a spatial or positional context, then convert the LLH values in the
             // spatial context into the NEE values consistent with the data model.
-            if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+            if (Filter.SpatialFilter.IsSpatial)
             {
               LLHCoords = new XYZ[Filter.SpatialFilter.Fence.NumVertices];
 
@@ -78,9 +78,9 @@ namespace VSS.TRex.Filters
               Filter.SpatialFilter.Fence.UpdateExtents();
             }
 
-            if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+            if (Filter.SpatialFilter.IsPositional)
             {
-              // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
+              // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
               LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionY)) };
 
               (var errorCode, XYZ[] NEECoords) = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
@@ -94,8 +94,6 @@ namespace VSS.TRex.Filters
               
               Filter.SpatialFilter.PositionX = NEECoords[0].X;
               Filter.SpatialFilter.PositionY = NEECoords[0].Y;
-
-              throw new NotImplementedException();
             }
 
             Filter.SpatialFilter.CoordsAreGrid = true;
@@ -130,6 +128,7 @@ namespace VSS.TRex.Filters
           // Is there a surface design to look up
           if (Filter.SpatialFilter.HasAlignmentDesignMask())
           {
+            // Todo: Not yet supported
             /* If the filter needs to retain a reference to the existence map, then do this...
             Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
@@ -143,7 +142,7 @@ namespace VSS.TRex.Filters
       }
       catch (Exception e)
       {
-        Log.LogError($"PrepareFilterForUse: Exception raise: {e}");
+        Log.LogError("PrepareFilterForUse: Exception raise:", e);
         Result = RequestErrorStatus.Unknown;
       }
 

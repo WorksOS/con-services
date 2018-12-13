@@ -97,7 +97,7 @@ namespace VSS.TRex.Analytics.Foundation
         }
         catch (Exception E)
         {
-          Log.LogError($"ExecutePipeline raised exception: {E}");
+          Log.LogError("ExecutePipeline raised exception:", E);
         }
 
         return false;

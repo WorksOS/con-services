@@ -35,7 +35,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception: {E}");
+        Log.LogError("Exception:", E);
         return null;
       }
       finally
