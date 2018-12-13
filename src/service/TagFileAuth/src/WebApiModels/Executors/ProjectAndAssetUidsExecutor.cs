@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         var assetDevice =
           await dataRepository.LoadAssetDevice(request.RadioSerial, ((DeviceTypeEnum) request.DeviceType).ToString());
-         
+
         // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
         if (assetDevice == null && (DeviceTypeEnum) request.DeviceType == DeviceTypeEnum.SNM940)
         {
@@ -133,7 +133,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
-        return await HandleManualImport(request, project, projectCustomerSubs, assetUid, assetOwningCustomerUid, assetSubs);
+        return await HandleManualImport(request, project, projectCustomerSubs, assetUid, assetOwningCustomerUid,
+          assetSubs);
       }
 
       return await HandleAutoImport(request, assetUid, assetOwningCustomerUid, assetSubs);
@@ -152,9 +153,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //   i.e. Can only view and therefore manuallyImport a LandfillProject IF you have a current Landfill sub
 
       var intersectingProjects = (await dataRepository.GetIntersectingProjects(project.CustomerUID, request.Latitude,
-        request.Longitude, new int[] { (int)project.ProjectType }, null)).ToList();
-      log.LogDebug($"ProjectAndAssetUidsExecutor: Projects which intersect with manually imported project {JsonConvert.SerializeObject(intersectingProjects)}");
-      
+        request.Longitude, new int[] {(int) project.ProjectType}, null)).ToList();
+      log.LogDebug(
+        $"ProjectAndAssetUidsExecutor: Projects which intersect with manually imported project {JsonConvert.SerializeObject(intersectingProjects)}");
+
       if (!intersectingProjects.Any())
       {
         return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 41);
@@ -193,23 +195,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         //  got a valid subscription by here
         if (intersectingProjects.Select(p =>
-                string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase))
-              .Any())
+            string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase))
+          .Any())
         {
           return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid);
         }
+
         return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 50);
       }
-   
+
 
       if (project.ProjectType == ProjectType.LandFill)
       {
         if (intersectingProjects
-                .Any(p =>
-                 (string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase) == 0)
-                  && p.ServiceTypeID == (int)ServiceTypeEnum.Landfill
-                  && p.SubscriptionEndDate.HasValue 
-                  && request.TimeOfPosition <= p.SubscriptionEndDate))
+          .Any(p =>
+            (string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase) == 0)
+            && p.ServiceTypeID == (int) ServiceTypeEnum.Landfill
+            && p.SubscriptionEndDate.HasValue
+            && request.TimeOfPosition <= p.SubscriptionEndDate))
         {
           return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid);
         }
@@ -218,9 +221,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       // pm prevented from getting here, all types should be handled already
-      throw new ServiceException(HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(String.Empty, String.Empty, 46));
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        ProjectUidHelper.FormatResult(String.Empty, String.Empty, 46));
     }
-    
+
 
     private async Task<GetProjectAndAssetUidsResult> HandleAutoImport(GetProjectAndAssetUidsRequest request,
       string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)
@@ -241,7 +245,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, assetSubs, tccCustomerUid, request);
-      log.LogDebug($"ProjectAndAssetUidsExecutor: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
+      log.LogDebug(
+        $"ProjectAndAssetUidsExecutor: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
       {
@@ -274,21 +279,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         foreach (var sub in subs)
         {
           // Manual3d is least significant
-          if (sub.serviceTypeId == (int)ServiceTypeEnum.Manual3DProjectMonitoring)
+          if (sub.serviceTypeId == (int) ServiceTypeEnum.Manual3DProjectMonitoring)
           {
-            if (serviceType != (int)ServiceTypeEnum.ThreeDProjectMonitoring)
+            if (serviceType != (int) ServiceTypeEnum.ThreeDProjectMonitoring)
             {
               log.LogDebug(
                 $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found Manual3DProjectMonitoring for assetUid {assetUid}");
-              serviceType = (int)ServiceTypeEnum.Manual3DProjectMonitoring;
+              serviceType = (int) ServiceTypeEnum.Manual3DProjectMonitoring;
             }
           }
 
           // 3D PM is most significant
           // if 3D asset-based, the assets customer must be the same as the Projects customer 
-          if (sub.serviceTypeId == (int)ServiceTypeEnum.ThreeDProjectMonitoring)
+          if (sub.serviceTypeId == (int) ServiceTypeEnum.ThreeDProjectMonitoring)
           {
-            if (serviceType != (int)ServiceTypeEnum.ThreeDProjectMonitoring)
+            if (serviceType != (int) ServiceTypeEnum.ThreeDProjectMonitoring)
             {
               //Allow manual tag file import for customer who has the 3D subscription for the asset
               //and allow automatic tag file processing in all cases (can't tell customer for automatic)
@@ -296,7 +301,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
                 $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found e3DProjectMonitoring for assetUid {assetUid} sub.customerUid {sub.customerUid}");
               if (string.IsNullOrEmpty(projectCustomerUid) || sub.customerUid == projectCustomerUid)
               {
-                serviceType = (int)ServiceTypeEnum.ThreeDProjectMonitoring;
+                serviceType = (int) ServiceTypeEnum.ThreeDProjectMonitoring;
                 break;
               }
             }
@@ -328,10 +333,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(assetOwningCustomerUid) && assetSubs.Any())
       {
         potentialProjects.AddRange((await dataRepository.GetIntersectingProjects(assetOwningCustomerUid,
-          request.Latitude, request.Longitude, new [] {(int) ProjectType.Standard}, request.TimeOfPosition)).ToList());
+          request.Latitude, request.Longitude, new[] {(int) ProjectType.Standard}, request.TimeOfPosition)).ToList());
       }
 
-      if (!string.IsNullOrEmpty(tccCustomerUid) )
+      if (!string.IsNullOrEmpty(tccCustomerUid))
       {
         // ProjectMonitoring and Landfill projects
         //  MUST have a TCCOrgID
@@ -339,15 +344,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //  does not require an asset has been identied
         potentialProjects.AddRange(
           (await dataRepository.GetIntersectingProjects(tccCustomerUid, request.Latitude,
-            request.Longitude, new int[] { (int)(int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, request.TimeOfPosition))
-            .ToList()
-            .Where(pm => ( pm.ServiceTypeID == (int)ServiceTypeEnum.ProjectMonitoring
-                    || pm.ServiceTypeID == (int)ServiceTypeEnum.Landfill)));
+            request.Longitude, new int[] {(int) (int) ProjectType.ProjectMonitoring, (int) ProjectType.LandFill},
+            request.TimeOfPosition))
+          .ToList()
+          .Where(pm => (pm.ServiceTypeID == (int) ServiceTypeEnum.ProjectMonitoring
+                        || pm.ServiceTypeID == (int) ServiceTypeEnum.Landfill)));
       }
 
       return potentialProjects;
     }
-    
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new System.NotImplementedException();
