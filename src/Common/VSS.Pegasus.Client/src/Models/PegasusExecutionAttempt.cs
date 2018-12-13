@@ -8,7 +8,7 @@ namespace VSS.Pegasus.Client.Models
     [JsonProperty(PropertyName = "id", Required = Required.Default)]
     public Guid Id { get; set; }
     [JsonProperty(PropertyName = "status", Required = Required.Default)]
-    public string Status { get; set; }
+    public ExecutionStatus Status { get; set; }
     [JsonProperty(PropertyName = "bound_parameters", Required = Required.Default)]
     public PegasusBoundParameters BoundParameters { get; set; }
   }

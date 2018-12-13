@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
@@ -10,6 +11,10 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockDataOceanController : Controller
   {
+    private const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
+    //private string TILE_METADATA_ROUTE = $"{Path.DirectorySeparatorChar}/tiles{Path.DirectorySeparatorChar}/tiles.json";
+    private string TILE_METADATA_ROUTE = "/{path}";
+
     private readonly IConfigurationStore configStore;
     private readonly string baseUrl;
 
@@ -53,6 +58,11 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"BrowseFiles: {Request.QueryString}");
 
+      var suffix = string.Empty;
+      if (name.Contains(GENERATED_TILE_FOLDER_SUFFIX))
+      {
+        suffix = TILE_METADATA_ROUTE;
+      }
       var result = new
       {
         files = new[]
@@ -69,7 +79,7 @@ namespace MockProjectWebApi.Controllers
             },
             download = new
             {
-              url = $"{baseUrl}/dummy_download_signed_url"
+              url = $"{baseUrl}/dummy_download_signed_url{suffix}"
             }
           }
         }
@@ -174,6 +184,71 @@ namespace MockProjectWebApi.Controllers
 
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       return new MemoryStream(buffer);
+    }
+
+    [Route("/dummy_download_signed_url/tiles/tiles.json")]
+    [HttpGet]
+    public Stream DownloadTilesMetadataFile()
+    {
+      Console.WriteLine($"DownloadTilesMetadataFile");
+
+      var result = new TileMetadata
+      {
+        Extents = new Extents
+        {
+          North = 0.6581020324759275,
+          South = 0.6573494852112898,
+          East = -1.9427990915164108,
+          West = -1.9437871937920903,
+          CoordSystem = new  CoordSystem
+          {
+            Type = "EPSG",
+            Value = "EPSG:4326"
+          }
+        },
+        MaxZoom =  21,
+        TileCount = 79
+      };
+
+      byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result));
+      return new MemoryStream(byteArray);
+    }
+
+    //We need a copy of this model class from DataOcean as we can't use dynamic due to the hypenated property names
+    public class TileMetadata
+    {
+      [JsonProperty(PropertyName = "extents", Required = Required.Default)]
+      public Extents Extents { get; set; }
+      [JsonProperty(PropertyName = "start-zoom", Required = Required.Default)]
+      public int MinZoom { get; set; }
+      [JsonProperty(PropertyName = "end-zoom", Required = Required.Default)]
+      public int MaxZoom { get; set; }
+      [JsonProperty(PropertyName = "tile-count", Required = Required.Default)]
+      public int TileCount { get; set; }
+
+    }
+
+    public class Extents
+    {
+      [JsonProperty(PropertyName = "north", Required = Required.Default)]
+      public double North { get; set; }
+      [JsonProperty(PropertyName = "south", Required = Required.Default)]
+      public double South { get; set; }
+      [JsonProperty(PropertyName = "east", Required = Required.Default)]
+      public double East { get; set; }
+      [JsonProperty(PropertyName = "west", Required = Required.Default)]
+      public double West { get; set; }
+      [JsonProperty(PropertyName = "coord_system", Required = Required.Default)]
+      public CoordSystem CoordSystem { get; set; }
+    }
+
+    public class CoordSystem
+    {
+      [JsonProperty(PropertyName = "type", Required = Required.Default)]
+      public string Type { get; set; }
+      [JsonProperty(PropertyName = "value", Required = Required.Default)]
+      public string Value { get; set; }
+
     }
 
   }

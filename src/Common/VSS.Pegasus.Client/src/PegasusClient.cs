@@ -117,12 +117,12 @@ namespace VSS.Pegasus.Client
       };
       const string baseRoute = "/api/executions";
       var payload = JsonConvert.SerializeObject(createExecutionMessage);
-      PegasusExecution execution = null;
+      PegasusExecutionResult executionResult = null;
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        execution = await gracefulClient.ExecuteRequest<PegasusExecution>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post, null, 3, false);
+        executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post, null, 3, false);
       }
-      if (execution == null)
+      if (executionResult == null)
       {
         Log.LogError($"GenerateDxfTiles: Failed to create execution for {dxfFileName}");
         return null;
@@ -130,26 +130,26 @@ namespace VSS.Pegasus.Client
 
       //2. Start the execution
       Log.LogDebug($"Starting execution for {dxfFileName}");
-      var executionRoute = $"{baseRoute}/{execution.Id}";
+      var executionRoute = $"{baseRoute}/{executionResult.Execution.Id}";
       var startExecutionRoute = $"{executionRoute}/start";
-      var result = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
+      var result = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
       if (result == null)
       {
         Log.LogError($"GenerateDxfTiles: Failed to start execution for {dxfFileName}");
         return null;
       }
+
       //3. Monitor status of execution until done
       Log.LogDebug($"Monitoring execution status for {dxfFileName}");
-
       DateTime endJob = DateTime.Now + TimeSpan.FromMinutes(executionTimeout);
       bool done = false;
       while (!done && DateTime.Now <= endJob)
       {
         if (executionWaitInterval > 0) await Task.Delay(executionWaitInterval);
-        execution = await gracefulClient.ExecuteRequest<PegasusExecution>(executionRoute, null, customHeaders, HttpMethod.Get, null, 3, false);
-        success = execution.ExecutionStatus == ExecutionStatus.FINISHED;
-        done = success || execution.ExecutionStatus == ExecutionStatus.FAILED;
-        Log.LogDebug($"Execution status {execution.ExecutionStatus} for {dxfFileName}");
+        executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Get, null, 3, false);
+        success = executionResult.Execution.ExecutionStatus == ExecutionStatus.FINISHED;
+        done = success || executionResult.Execution.ExecutionStatus == ExecutionStatus.FAILED;
+        Log.LogDebug($"Execution status {executionResult.Execution.ExecutionStatus} for {dxfFileName}");
       }
 
       if (!done)

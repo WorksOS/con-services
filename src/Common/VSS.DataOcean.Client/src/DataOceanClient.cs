@@ -226,10 +226,20 @@ namespace VSS.DataOcean.Client
         downloadUrl = downloadUrl.Replace("{path}", tileFolderAndFileName);
       }
       //2. Download the file
-      //TODO: Check what DataOcean returns when requested tile is not there
-      var response =
-        await gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders, null, null, 3,
-          false);
+      HttpContent response = null;
+      try
+      {
+        response = await gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders, 
+          null, null, 3, false);
+      }
+      catch (HttpRequestException ex)
+      {
+        //If tile does not exist DataOcean returns 403
+        if (result.Multifile && string.Compare(ex.Message, "403 access denied", true) != 0)
+        {
+          throw;
+        }
+      }
       //Check if anything returned. File may not exist.
       if (response == null)
         return null;
