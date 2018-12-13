@@ -25,8 +25,6 @@ namespace VSS.DataOcean.Client
     private const string DATA_OCEAN_UPLOAD_WAIT_KEY = "DATA_OCEAN_UPLOAD_WAIT_MILLSECS";
 
     private readonly ILogger<DataOceanClient> Log;
-    private readonly ILoggerFactory logFactory;
-    private readonly IConfigurationStore configStore;
     private readonly IWebRequest gracefulClient;
     private readonly string dataOceanBaseUrl;
     private readonly int uploadWaitInterval;
@@ -36,9 +34,7 @@ namespace VSS.DataOcean.Client
     /// </summary>
     public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient)
     {
-      logFactory = logger;
       Log = logger.CreateLogger<DataOceanClient>();
-      configStore = configuration;
       this.gracefulClient = gracefulClient;
 
       dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);

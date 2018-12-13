@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.DataOcean.Client", "..\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj", "{8D1716D8-5D99-451C-AE7D-545B72174E31}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{544FB1D0-E902-4D18-BBE3-F4E0D051F24E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,7 +81,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8C1976A8-467C-4959-85EF-4226A5DB752A} = {2B80EAA4-72DC-41B3-9A52-1072144C4D18}
-		{7AF0A5C4-7DFD-4C12-8FDC-C9EB06974DB5} = {FF17F40D-FF81-46BE-9538-1877C1972E20}
+		{7AF0A5C4-7DFD-4C12-8FDC-C9EB06974DB5} = {544FB1D0-E902-4D18-BBE3-F4E0D051F24E}
+		{544FB1D0-E902-4D18-BBE3-F4E0D051F24E} = {FF17F40D-FF81-46BE-9538-1877C1972E20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6E822C79-8F16-433A-84EB-C91404C6F82C}

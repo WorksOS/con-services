@@ -28,8 +28,6 @@ namespace VSS.Pegasus.Client
     private const string TILE_ORDER = "YX";
 
     private readonly ILogger<PegasusClient> Log;
-    private readonly ILoggerFactory logFactory;
-    private readonly IConfigurationStore configStore;
     private readonly IWebRequest gracefulClient;
     private readonly IDataOceanClient dataOceanClient;
     private readonly string pegasusBaseUrl;
@@ -41,9 +39,7 @@ namespace VSS.Pegasus.Client
     /// </summary>
     public PegasusClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient, IDataOceanClient dataOceanClient)
     {
-      logFactory = logger;
       Log = logger.CreateLogger<PegasusClient>();
-      configStore = configuration;
       this.gracefulClient = gracefulClient;
       this.dataOceanClient = dataOceanClient;
 
@@ -68,7 +64,7 @@ namespace VSS.Pegasus.Client
     /// <returns></returns>
     public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders)
     {
-      Log.LogDebug($"GenerateDxfTiles: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
+      Log.LogInformation($"GenerateDxfTiles: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
 
       TileMetadata metadata = null;
       //Get the DataOcean file ids.
@@ -81,7 +77,7 @@ namespace VSS.Pegasus.Client
       var dxfFileId = await dataOceanClient.GetFileId(dxfFileName, customHeaders);
       if (dxfFileId == null)
       {
-        Log.LogError($"Failed to find coordinate system file {dxfFileName}. Has it been uploaded successfully?");
+        Log.LogError($"Failed to find DXF file {dxfFileName}. Has it been uploaded successfully?");
         return null;
       }
 
@@ -90,7 +86,7 @@ namespace VSS.Pegasus.Client
       var success = await dataOceanClient.MakeFolder(tileFolder, customHeaders);
       if (!success)
       {
-        Log.LogError($"GenerateDxfTiles: Failed to create tiles folder xxx");
+        Log.LogError($"GenerateDxfTiles: Failed to create tiles folder {tileFolder}");
         return null;
       }
       var parentId = await dataOceanClient.GetFolderId(tileFolder, customHeaders);
@@ -126,7 +122,6 @@ namespace VSS.Pegasus.Client
       {
         execution = await gracefulClient.ExecuteRequest<PegasusExecution>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post, null, 3, false);
       }
-
       if (execution == null)
       {
         Log.LogError($"GenerateDxfTiles: Failed to create execution for {dxfFileName}");
@@ -135,10 +130,14 @@ namespace VSS.Pegasus.Client
 
       //2. Start the execution
       Log.LogDebug($"Starting execution for {dxfFileName}");
-      var executionRoute = $"{baseRoute}/{execution.Id}/start";
+      var executionRoute = $"{baseRoute}/{execution.Id}";
       var startExecutionRoute = $"{executionRoute}/start";
-      await gracefulClient.ExecuteRequest($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
-
+      var result = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
+      if (result == null)
+      {
+        Log.LogError($"GenerateDxfTiles: Failed to start execution for {dxfFileName}");
+        return null;
+      }
       //3. Monitor status of execution until done
       Log.LogDebug($"Monitoring execution status for {dxfFileName}");
 
@@ -155,11 +154,11 @@ namespace VSS.Pegasus.Client
 
       if (!done)
       {
-        Log.LogDebug($"GenerateDxfTiles timed out: {dxfFileName}");
+        Log.LogInformation($"GenerateDxfTiles timed out: {dxfFileName}");
       }
       else if (!success)
       {
-        Log.LogDebug($"GenerateDxfTiles failed: {dxfFileName}");
+        Log.LogInformation($"GenerateDxfTiles failed: {dxfFileName}");
       }
 
       if (success)

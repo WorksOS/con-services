@@ -273,21 +273,21 @@ namespace VSS.DataOcean.Client.UnitTests
   
 
     [Fact]
-    public async Task CanPutFileSuccess()
+    public void CanPutFileSuccess()
     {
       var success = CanPutFile("AVAILABLE").Result;
       Assert.True(success);
     }
 
     [Fact]
-    public async Task CanPutFileUploadFailed()
+    public void CanPutFileUploadFailed()
     {
       var success = CanPutFile("UPLOAD_FAILED").Result;
       Assert.False(success);
     }
 
     [Fact]
-    public async Task CanPutFileTimeout()
+    public void CanPutFileTimeout()
     {
       var success = CanPutFile("UPLOADABLE").Result;
       Assert.False(success);
