@@ -16,79 +16,101 @@ namespace VSS.MasterData.Repositories
 
     // this is used by the unit tests only 
     private const int dbSyncRetryCount = 3;
-
     private const int dbSyncMsDelay = 500;
-    private static int dbSyncRetryCountSoFar;
 
     private const int dbAsyncRetryCount = 3;
     private const int dbAsyncMsDelay = 500;
-    private static int dbAsyncRetriesSoFar;
+
     private readonly string connectionString = string.Empty;
 
     private MySqlConnection Connection;
-    private readonly Policy dbAsyncPolicy;
-    private Policy dbSyncPolicy;
     private bool isInTransaction;
-    
+
 
     protected RepositoryBase(IConfigurationStore configurationStore, ILoggerFactory logger)
     {
       connectionString = configurationStore.GetConnectionString("VSPDB");
       log = logger.CreateLogger<RepositoryBase>();
-      dbAsyncPolicy = Policy.Handle<Exception>().WaitAndRetryAsync(
-        dbAsyncRetryCount,
-        attempt => TimeSpan.FromMilliseconds(dbAsyncMsDelay),
-        (exception, calculatedWaitDuration) =>
-        {
-          log.LogError(
-            "Repository: Failed attempt to query/update db. Exception: {0}. Retries: {1}. RetryCountSoFar: {2}",
-            exception.Message, dbAsyncRetryCount, dbAsyncRetriesSoFar + 1);
-          dbAsyncRetriesSoFar++;
-        });
-      dbSyncPolicy = Policy.Handle<Exception>().WaitAndRetry(
-        dbSyncRetryCount,
-        attempt => TimeSpan.FromMilliseconds(dbSyncMsDelay),
-        (exception, calculatedWaitDuration) =>
-        {
-          log.LogError(
-            "Repository: Failed attempt to query/update db. Exception: {0}. Retries: {1}. RetryCountSoFar: {2}",
-            exception.Message, dbSyncRetryCount, dbSyncRetryCountSoFar + 1);
-          dbSyncRetryCountSoFar++;
-        });
     }
+
 
     private T WithConnection<T>(Func<MySqlConnection, T> body)
     {
-      using (var connection = new MySqlConnection(connectionString))
-      {
-        dbAsyncPolicy.Execute(() =>
+      T result = default(T);
+      log.LogDebug($"Repository PollySync: going to execute sync policy");
+
+      var policyResult = Policy
+        .Handle<Exception>()
+        .WaitAndRetry(
+          dbSyncRetryCount,
+          attempt => TimeSpan.FromMilliseconds(dbSyncMsDelay),
+          (exception, calculatedWaitDuration) =>
+          {
+            log.LogError(
+              $"Repository: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {dbSyncRetryCount}.");
+          })
+        .ExecuteAndCapture(() =>
         {
-          connection.Open();
-          log.LogTrace("Repository: db open (with connection reuse) was successfull");
+          using (var connection = new MySqlConnection(connectionString))
+          {
+            connection.Open();
+            log.LogTrace("Repository: db open (with connection reuse) was successfull");
+            result = body(connection);
+            connection.Close();
+            return result;
+          }
         });
-        var res = body(connection);
-        connection.Close();
-        return res;
+
+      if (policyResult.FinalException != null)
+      {
+        log.LogCritical(
+          $"Repository {this.GetType().FullName} failed with exception {policyResult.FinalException.ToString()}");
+        throw policyResult.FinalException;
       }
+
+      return result;
     }
+
 
     private async Task<T> WithConnectionAsync<T>(Func<MySqlConnection, Task<T>> body)
     {
-      using (var connection = new MySqlConnection(connectionString))
-      {
-        await dbAsyncPolicy.ExecuteAsync(async () =>
+      T result = default(T);
+      log.LogDebug($"Repository PollyAsync: going to execute async policy");
+
+      var policyResult = await Policy
+        .Handle<Exception>()
+        .WaitAndRetryAsync(
+          dbAsyncRetryCount,
+          attempt => TimeSpan.FromMilliseconds(dbAsyncMsDelay),
+          (exception, calculatedWaitDuration) =>
+          {
+            log.LogError(
+              $"Repository: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {dbAsyncRetryCount}.");
+          })
+        .ExecuteAndCaptureAsync(async () =>
         {
-          await connection.OpenAsync();
-          log.LogTrace("Repository: db open (with connection reuse) was successfull");
+          using (var connection = new MySqlConnection(connectionString))
+          {
+            await connection.OpenAsync();
+            log.LogTrace("Repository: db open (with connection reuse) was successfull");
+            result = await body(connection);
+            connection.Close();
+            return result;
+          }
         });
-        var res = await body(connection);
-        connection.Close();
-        return res;
+
+      if (policyResult.FinalException != null)
+      {
+        log.LogCritical(
+          $"Repository {this.GetType().FullName} failed with exception {policyResult.FinalException.ToString()}");
+        throw policyResult.FinalException;
       }
+
+      return result;
     }
 
 
-    protected async Task<IEnumerable<T>> 
+    protected async Task<IEnumerable<T>>
       QueryWithAsyncPolicy<T>(string statement, object param = null)
     {
       if (!isInTransaction)

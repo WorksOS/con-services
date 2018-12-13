@@ -331,7 +331,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var s = await SubscriptionsRepository.GetSubscriptionsByCustomer(customerUid, validAtDate)
+          var s = await SubscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate)
             .ConfigureAwait(false);
           if (s != null)
           {
