@@ -109,7 +109,7 @@ namespace VSS.TRex.Common.CellPasses
     /// <summary>
     /// Null Caterpillar Compaction Algorithm target value
     /// </summary>
-    public const short NullCCATarget = short.MaxValue;
+    public const byte NullCCATarget = byte.MaxValue;
 
     /// <summary>
     /// Null machine type value

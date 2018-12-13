@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
   /// </summary>
   public struct SubGridCellPassDataCCAEntryRecord : IEquatable<SubGridCellPassDataCCAEntryRecord>
   {
-    private const byte SHORT_TYPES_COUNT = 4;
+    private const byte BYTE_TYPES_COUNT = 4;
 
     #region CellPassFlags
     private const byte CCA_DECOUPLED_BIT_FLAG = 0;
@@ -85,24 +85,24 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// <summary>
     /// Measured CMV value.
     /// </summary>
-    public short MeasuredCCA { get; set; }
+    public byte MeasuredCCA { get; set; }
 
     /// <summary>
     /// Target CMV value.
     /// </summary>
-    public short TargetCCA { get; set; }
+    public byte TargetCCA { get; set; }
 
     /// <summary>
     /// Previous measured CMV value.
     /// </summary>
-    public short PreviousMeasuredCCA { get; set; }
+    public byte PreviousMeasuredCCA { get; set; }
 
     /// <summary>
     /// Previous target CMV value.
     /// </summary>
-    public short PreviousTargetCCA { get; set; }
+    public byte PreviousTargetCCA { get; set; }
 
-    public static int IndicativeSizeInBytes() => SHORT_TYPES_COUNT * sizeof(short) + sizeof(byte); // 4 shorts and a flags byte
+    public static int IndicativeSizeInBytes() => BYTE_TYPES_COUNT * sizeof(byte) + sizeof(byte); // 4 shorts and a flags byte
 
     /// <summary>
     /// Constructor with arguments.
@@ -111,7 +111,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// <param name="targetCCA"></param>
     /// <param name="previousMeasuredCCA"></param>
     /// <param name="previousTargetCCA"></param>
-    public SubGridCellPassDataCCAEntryRecord(short measuredCCA, short targetCCA, short previousMeasuredCCA, short previousTargetCCA)
+    public SubGridCellPassDataCCAEntryRecord(byte measuredCCA, byte targetCCA, byte previousMeasuredCCA, byte previousTargetCCA)
     {
       CellPassFlags = 0;
       MeasuredCCA = measuredCCA;
@@ -150,10 +150,10 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
-      MeasuredCCA = reader.ReadInt16();
-      TargetCCA = reader.ReadInt16();
-      PreviousMeasuredCCA = reader.ReadInt16();
-      PreviousTargetCCA = reader.ReadInt16();
+      MeasuredCCA = reader.ReadByte();
+      TargetCCA = reader.ReadByte();
+      PreviousMeasuredCCA = reader.ReadByte();
+      PreviousTargetCCA = reader.ReadByte();
     }
 
     /// <summary>
