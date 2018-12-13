@@ -37,7 +37,7 @@ namespace VSS.MasterData.Repositories
     private T WithConnection<T>(Func<MySqlConnection, T> body)
     {
       T result = default(T);
-      log.LogDebug($"Repository PollySync: going to execute sync policy");
+      log.LogDebug("Repository PollySync: going to execute sync policy");
 
       var policyResult = Policy
         .Handle<Exception>()
@@ -47,14 +47,14 @@ namespace VSS.MasterData.Repositories
           (exception, calculatedWaitDuration) =>
           {
             log.LogError(
-              $"Repository: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {dbSyncRetryCount}.");
+              $"Repository PollySync: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {dbSyncRetryCount}.");
           })
         .ExecuteAndCapture(() =>
         {
           using (var connection = new MySqlConnection(connectionString))
           {
             connection.Open();
-            log.LogTrace("Repository: db open (with connection reuse) was successfull");
+            log.LogTrace("Repository PollySync: db open (with connection reuse) was successfull");
             result = body(connection);
             connection.Close();
             return result;
@@ -64,7 +64,7 @@ namespace VSS.MasterData.Repositories
       if (policyResult.FinalException != null)
       {
         log.LogCritical(
-          $"Repository {this.GetType().FullName} failed with exception {policyResult.FinalException.ToString()}");
+          $"Repository PollySync: {this.GetType().FullName} failed with exception {policyResult.FinalException.ToString()}");
         throw policyResult.FinalException;
       }
 
@@ -75,7 +75,7 @@ namespace VSS.MasterData.Repositories
     private async Task<T> WithConnectionAsync<T>(Func<MySqlConnection, Task<T>> body)
     {
       T result = default(T);
-      log.LogDebug($"Repository PollyAsync: going to execute async policy");
+      log.LogDebug("Repository PollyAsync: going to execute async policy");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -85,14 +85,14 @@ namespace VSS.MasterData.Repositories
           (exception, calculatedWaitDuration) =>
           {
             log.LogError(
-              $"Repository: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {dbAsyncRetryCount}.");
+              $"Repository PollyAsync: Failed attempt to query/update db. Exception: {exception.Message}. Retries: {dbAsyncRetryCount}.");
           })
         .ExecuteAndCaptureAsync(async () =>
         {
           using (var connection = new MySqlConnection(connectionString))
           {
             await connection.OpenAsync();
-            log.LogTrace("Repository: db open (with connection reuse) was successfull");
+            log.LogTrace("Repository PollyAsync: db open (with connection reuse) was successfull");
             result = await body(connection);
             connection.Close();
             return result;
@@ -102,7 +102,7 @@ namespace VSS.MasterData.Repositories
       if (policyResult.FinalException != null)
       {
         log.LogCritical(
-          $"Repository {this.GetType().FullName} failed with exception {policyResult.FinalException.ToString()}");
+          $"Repository PollyAsync: {this.GetType().FullName} failed with exception {policyResult.FinalException.ToString()}");
         throw policyResult.FinalException;
       }
 
