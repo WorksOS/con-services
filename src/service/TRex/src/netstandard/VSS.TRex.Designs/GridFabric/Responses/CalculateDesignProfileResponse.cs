@@ -18,6 +18,10 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
       var profileLength = Profile?.Count ?? 0;
       writer.WriteInt(profileLength);
+
+      if (Profile == null)
+        return;
+
       if (profileLength > 0)
       {
         foreach (var pt in Profile)

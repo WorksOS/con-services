@@ -15,10 +15,7 @@ namespace VSS.TRex.Designs
 
     //      function GetMemorySizeInKB: Integer; Virtual; Abstract;
 
-    public int LockCount
-    {
-      get { return FLockCount; }
-    }
+    public int LockCount => FLockCount; 
 
     public string FileName { get; set; } = "";
 
@@ -26,7 +23,7 @@ namespace VSS.TRex.Designs
 
     public long DataModelID { get; set; } = -1;
 
-    public DesignBase()
+    protected DesignBase()
     {
     }
 

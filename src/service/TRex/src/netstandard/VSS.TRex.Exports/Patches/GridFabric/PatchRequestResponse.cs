@@ -15,7 +15,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
   {
     /// <summary>
     /// The total number of pages of subgrids required to contain the maximum number of subgrids'
-    /// that may be retuned for the query
+    /// that may be returned for the query
     /// </summary>
     public int TotalNumberOfPagesToCoverFilteredData { get; set; }
   

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
-using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Common.Utilities.Interfaces;

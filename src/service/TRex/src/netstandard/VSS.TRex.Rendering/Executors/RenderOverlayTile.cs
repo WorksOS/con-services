@@ -518,7 +518,7 @@ namespace VSS.TRex.Rendering.Executors
           dataModelID: DataModelID,
           siteModel: SiteModel,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
-          response: new SubGridsPipelinedReponseBase(),
+          response: new SubGridsPipelinedResponseBase(),
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),

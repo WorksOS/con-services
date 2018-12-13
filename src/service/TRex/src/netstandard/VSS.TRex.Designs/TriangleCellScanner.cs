@@ -257,6 +257,5 @@ namespace VSS.TRex.Designs
         LastRow = OverrideSubGridY == SubgridEndY; // H2X < H1X;
       } while (!WasLastRow && !SingleRowOnly);
     }
-
   }
 }
