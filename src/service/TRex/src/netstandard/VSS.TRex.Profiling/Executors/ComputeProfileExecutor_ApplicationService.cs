@@ -15,7 +15,7 @@ namespace VSS.TRex.Profiling.Executors
   /// </summary>
   public class ComputeProfileExecutor_ApplicationService<T> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
 
     public ComputeProfileExecutor_ApplicationService()
     { }
@@ -55,12 +55,10 @@ namespace VSS.TRex.Profiling.Executors
         ProfileRequestResponse<T> ProfileResponse = request.Execute(arg2);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values
-        ProfileResponse?.ProfileCells?.OrderBy(x => x.Station);
-
-        // Remove null cells in the profiles list. NUll cells are defined by cells with null CellLastHeight.
+        // Remove null cells in the profiles list. Null cells are defined by cells with null CellLastHeight.
         // All duplicate null cells will be replaced by a by single null cell entry
         int firstNonNullIndex = 0;
-        var _ProfileCells = ProfileResponse?.ProfileCells;
+        var _ProfileCells = ProfileResponse?.ProfileCells?.OrderBy(x => x.Station).ToList();
         if (_ProfileCells != null)
         {
           ProfileResponse.ProfileCells = _ProfileCells.Where((x, i) =>

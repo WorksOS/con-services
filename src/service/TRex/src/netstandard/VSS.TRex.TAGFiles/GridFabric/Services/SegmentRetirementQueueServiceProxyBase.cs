@@ -60,7 +60,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E} thrown while attempting to cancel service");
+                Log.LogError("Exception thrown while attempting to cancel service", E);
                 throw;
             }
 
@@ -79,7 +79,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E} thrown while attempting to deploy service");
+                Log.LogError("Exception thrown while attempting to deploy service", E);
                 throw;
             }
 
@@ -90,7 +90,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E} thrown while attempting to get service proxy");
+                Log.LogError("Exception thrown while attempting to get service proxy", E);
                 throw;
             }
         }

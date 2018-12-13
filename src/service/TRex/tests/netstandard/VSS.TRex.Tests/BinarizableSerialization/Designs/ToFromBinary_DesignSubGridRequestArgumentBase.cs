@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.TRex.Designs.GridFabric.Arguments;
-using VSS.TRex.Geometry;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs

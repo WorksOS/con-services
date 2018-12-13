@@ -159,7 +159,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design to s3: {e}");
+        throw new TRexException($"Exception writing design to s3:", e);
       }
       return true;
     }
@@ -176,7 +176,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception reading design from s3: {e}");
+        throw new TRexException($"Exception reading design from s3:", e);
       }
 
       if (string.IsNullOrEmpty(fileStreamResult.ContentType))
@@ -194,7 +194,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design file locally: {e}");
+        throw new TRexException("Exception writing design file locally:", e);
       }
 
       return true;
@@ -224,7 +224,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        throw new TRexException($"Exception writing design to siteModel: {e}");
+        throw new TRexException($"Exception writing design to siteModel:", e);
       }
 
       return design;

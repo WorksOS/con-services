@@ -116,7 +116,7 @@ namespace VSS.TRex.TAGFiles.Executors
         catch (Exception e) // catch all exceptions here
         {
           response.Message = e.Message;
-          Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:{e}");
+          Log.LogError($"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:", e);
         }
       }
       finally

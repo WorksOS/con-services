@@ -114,7 +114,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The design used as an alignment mask spatial filter
     /// </summary>
-    public Guid AlignmentMaskDesignUID { get; set; } = Guid.Empty;
+    public Guid AlignmentDesignMaskDesignUID { get; set; } = Guid.Empty;
 
     /// <summary>
     /// Serialize out the state of the cell spatial filter using the Ignite IBinarizable serialisation
@@ -163,7 +163,7 @@ namespace VSS.TRex.Filters
       writer.WriteGuid(SurfaceDesignMaskDesignUid);
 
       writer.WriteBoolean(IsAlignmentMask);
-      writer.WriteGuid(AlignmentMaskDesignUID);
+      writer.WriteGuid(AlignmentDesignMaskDesignUID);
     }
 
     /// <summary>
@@ -209,7 +209,7 @@ namespace VSS.TRex.Filters
       IsDesignMask = reader.ReadBoolean();
       SurfaceDesignMaskDesignUid = reader.ReadGuid() ?? Guid.Empty;
       IsAlignmentMask = reader.ReadBoolean();
-      AlignmentMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
+      AlignmentDesignMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
     }
   }
 }

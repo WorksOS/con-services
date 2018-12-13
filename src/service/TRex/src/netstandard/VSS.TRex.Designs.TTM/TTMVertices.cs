@@ -36,7 +36,7 @@ namespace VSS.TRex.Designs.TTM
       }
       catch (Exception E)
       {
-        throw new Exception($"Failed to read vertex {vertnum + 1}\n{E}");
+        throw new Exception($"Failed to read vertex {vertnum + 1}", E);
       }
 
       NumberVertices();

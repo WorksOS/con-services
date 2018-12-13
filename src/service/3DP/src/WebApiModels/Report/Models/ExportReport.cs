@@ -108,29 +108,6 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>>
-    /// <param name="projectId"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="liftBuildSettings"></param>
-    /// <param name="filter"></param>
-    /// <param name="filterID"></param>
-    /// <param name="callid"></param>
-    /// <param name="cellSizeRq"></param>
-    /// <param name="callerID"></param>
-    /// <param name="coordtype"></param>
-    /// <param name="dateFromUTC"></param>
-    /// <param name="dateToUTC"></param>
-    /// <param name="tolerance"></param>
-    /// <param name="timeStampRequired"></param>
-    /// <param name="restrictSize"></param>
-    /// <param name="rawData"></param>
-    /// <param name="prjExtents"></param>
-    /// <param name="precheckOnly"></param>
-    /// <param name="outpuType"></param>
-    /// <param name="machineList"></param>
-    /// <param name="includeSrvSurface"></param>
-    /// <param name="fileName"></param>
-    /// <param name="exportType"></param>
-    /// <param name="userPrefs"></param>
     public ExportReport(long projectId, Guid? projectUid, LiftBuildSettings liftBuildSettings, FilterResult filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordType coordtype,
         DateTime dateFromUTC, DateTime dateToUTC, double tolerance, bool timeStampRequired, bool restrictSize, bool rawData, T3DBoundingWorldExtent prjExtents, bool precheckOnly, OutputTypes outpuType,
         TMachine[] machineList, bool includeSrvSurface, string fileName, ExportTypes exportType, TASNodeUserPreferences userPrefs)

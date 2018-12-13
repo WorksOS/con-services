@@ -69,7 +69,7 @@ namespace VSS.TRex.GridFabric.Affinity
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception: {e}");
+        Log.LogError("Exception:", e);
         return new List<List<IClusterNode>>();
       }
 

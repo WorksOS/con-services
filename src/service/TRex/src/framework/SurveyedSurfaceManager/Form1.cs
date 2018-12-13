@@ -63,7 +63,7 @@ namespace SurveyedSurfaceManager
                                              dateTimePicker.Value,
                                              extents);
 
-                // Store the existence map for the surveyd surface for later use
+                // Store the existence map for the surveyed surface for later use
                 ExistenceMaps.SetExistenceMap(ID, VSS.TRex.ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, TTM.SubgridOverlayIndex());
             }
             catch (Exception E)

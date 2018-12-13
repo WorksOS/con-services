@@ -161,15 +161,14 @@ namespace VSS.TRex.Volumes
             double CellArea = CellSize * CellSize;
 
             // Query the patch of elevations from the surface model for this subgrid
-            if (ActiveDesign?.GetDesignHeights(SiteModelID,
-                                               BaseScanSubGrid.OriginAsCellAddress(),
-                                               CellSize, out DesignHeights, out ProfilerRequestResult) == false)
+            ActiveDesign.GetDesignHeights(SiteModelID, BaseScanSubGrid.OriginAsCellAddress(),
+            CellSize, out DesignHeights, out ProfilerRequestResult);
+            
+            if (ProfilerRequestResult != DesignProfilerRequestResult.OK &&
+                ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
             {
-                if (ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-                {
-                    Log.LogError($"Design profiler subgrid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
-                    return;
-                }
+                Log.LogError($"Design profiler subgrid elevation request for {BaseScanSubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
+                return;
             }
 
             SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);

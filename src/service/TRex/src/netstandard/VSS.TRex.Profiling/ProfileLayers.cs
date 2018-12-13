@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 
 namespace VSS.TRex.Profiling
 {
@@ -11,7 +12,7 @@ namespace VSS.TRex.Profiling
   /// </summary>
     public class ProfileLayers : List<IProfileLayer>, IProfileLayers
     {
-      private static ILogger Log = Logging.Logger.CreateLogger<ProfileLayers>();
+      private static readonly ILogger Log = Logging.Logger.CreateLogger<ProfileLayers>();
 
     /// <summary>
     /// InternalCount contains the count of the layers held within the list that
@@ -39,7 +40,7 @@ namespace VSS.TRex.Profiling
       }
 
       /// <summary>
-      /// Adds a new profile layer to the set of layers, recylcing a previous layer if available
+      /// Adds a new profile layer to the set of layers, recycling a previous layer if available
       /// </summary>
       /// <param name="value"></param>
       /// <param name="layerRecycledIndex"></param>
@@ -97,7 +98,7 @@ namespace VSS.TRex.Profiling
 
       /// <summary>
       /// Returns the internal count of layers in the list. This returns the number of layers
-      /// that have defined state, rather than the total numebr of elements in the list due to
+      /// that have defined state, rather than the total number of elements in the list due to
       /// layer state recycling in the analysis engine
       /// </summary>
       /// <returns></returns>
@@ -128,8 +129,8 @@ namespace VSS.TRex.Profiling
       /// <param name="value"></param>
       public new void Insert(int index, IProfileLayer value)
       {
-        Log.LogCritical("Layers should be added in consistent order - insert inconstent with this work flow");
-        Debug.Assert(false, "Layers should be added in consistent order - insert inconstent with this work flow");
+        Log.LogCritical("Layers should be added in consistent order - insert inconsistent with this work flow");
+        Debug.Assert(false, "Layers should be added in consistent order - insert inconsistent with this work flow");
 
         //  base.Insert(Index, Value);
         //  InternalCount++;
@@ -137,7 +138,7 @@ namespace VSS.TRex.Profiling
 
       /// <summary>
       /// Determines if the cell pass in the stack of cell passes identified by passIndex is within a layer that
-      /// has been superceded.
+      /// has been superseded.
       /// </summary>
       /// <param name="passIndex"></param>
       /// <returns></returns>

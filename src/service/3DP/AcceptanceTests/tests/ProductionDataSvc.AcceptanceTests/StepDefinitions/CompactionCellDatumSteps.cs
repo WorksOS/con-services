@@ -3,6 +3,6 @@
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("CompactionCellDatum.feature")]
-  public sealed class CompactionCellDatumSteps : FeatureGetRequestBase
+  public class CompactionCellDatumSteps : FeatureGetRequestBase
   { }
 }

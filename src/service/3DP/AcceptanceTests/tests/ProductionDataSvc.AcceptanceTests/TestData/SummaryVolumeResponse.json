@@ -1,86 +1,86 @@
 {
   "FilterToFilter": {
-    "BoundingExtents": {
-      "maxX": -115.02355673145908,
-      "maxY": 36.20662768252087,
+    "boundingExtents": {
+      "maxX": -115.0235567314591,
+      "maxY": 36.206627682520853,
       "maxZ": 1e+308,
       "minX": -115.02356429221605,
-      "minY": 36.20661236357087,
+      "minY": 36.206612363570869,
       "minZ": 1e+308
     },
-    "Cut": 0.017109985351562502,
-    "Fill": 0.009130029296875002,
-    "CutArea": 0.11560000000000002,
-    "FillArea": 0.11560000000000002,
-    "TotalCoverageArea": 0.4624000000000001,
+    "cut": 0,
+    "fill": 0,
+    "cutArea": 0,
+    "fillArea": 0,
+    "totalCoverageArea": 1.1560000000000001,
     "Code": 0,
     "Message": "success"
   },
   "EarliestFilterToDesign": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.01979519006628,
       "maxY": 36.2069615921006,
       "maxZ": 1e+308,
       "minX": -115.01979897089079,
-      "minY": 36.20695240085334,
+      "minY": 36.206952400853332,
       "minZ": 1e+308
     },
-    "Cut": 9.194122949218752,
-    "Fill": 0,
-    "CutArea": 0.34680000000000005,
-    "FillArea": 0,
-    "TotalCoverageArea": 0.34680000000000005,
+    "cut": 0,
+    "fill": 0.15652285156250004,
+    "cutArea": 0,
+    "fillArea": 0.11560000000000002,
+    "totalCoverageArea": 0.34680000000000005,
     "Code": 0,
     "Message": "success"
   },
   "LatestFilterToDesign": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.01979519006628,
-      "maxY": 36.206961592100605,
+      "maxY": 36.2069615921006,
       "maxZ": 1e+308,
       "minX": -115.01979897089079,
-      "minY": 36.20695240085334,
+      "minY": 36.206952400853332,
       "minZ": 1e+308
     },
-    "Cut": 6.131414404296876,
-    "Fill": 0.15652285156250004,
-    "CutArea": 0.23120000000000004,
-    "FillArea": 0.11560000000000002,
-    "TotalCoverageArea": 0.34680000000000005,
+    "cut": 0.034671533203125007,
+    "fill": 0,
+    "cutArea": 0.34680000000000005,
+    "fillArea": 0,
+    "totalCoverageArea": 0.34680000000000005,
     "Code": 0,
     "Message": "success"
   },
   "DesignToEarliestFilter": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.01979519006628,
       "maxY": 36.2069615921006,
       "maxZ": 1e+308,
       "minX": -115.01979897089079,
-      "minY": 36.20695240085334,
+      "minY": 36.206952400853332,
       "minZ": 1e+308
     },
-    "Cut": 0,
-    "Fill": 9.194122949218752,
-    "CutArea": 0,
-    "FillArea": 0.34680000000000005,
-    "TotalCoverageArea": 0.34680000000000005,
+    "cut": 0.15652285156250004,
+    "fill": 0,
+    "cutArea": 0.11560000000000002,
+    "fillArea": 0,
+    "totalCoverageArea": 0.34680000000000005,
     "Code": 0,
     "Message": "success"
   },
   "DesignToLatestFilter": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.01979519006628,
       "maxY": 36.2069615921006,
       "maxZ": 1e+308,
       "minX": -115.01979897089079,
-      "minY": 36.20695240085334,
+      "minY": 36.206952400853332,
       "minZ": 1e+308
     },
-    "Cut": 0.15650874023437503,
-    "Fill": 6.131372070312501,
-    "CutArea": 0.11560000000000002,
-    "FillArea": 0.23120000000000004,
-    "TotalCoverageArea": 0.34680000000000005,
+    "cut": 0,
+    "fill": 0.034671533203125007,
+    "cutArea": 0,
+    "fillArea": 0.34680000000000005,
+    "totalCoverageArea": 0.34680000000000005,
     "Code": 0,
     "Message": "success"
   },
@@ -102,19 +102,19 @@
     "Message": "success"
   },
   "FilterToCompositeNoSurveyedSurface": {
-    "BoundingExtents": {
-      "maxX": -115.02035847513564,
-      "maxY": 36.20700143521764,
+    "boundingExtents": {
+      "maxX": -115.02035847513565,
+      "maxY": 36.207001435217627,
       "maxZ": 1e+308,
-      "minX": -115.02037737747803,
-      "minY": 36.20699837185611,
+      "minX": -115.02037737747804,
+      "minY": 36.206998371856095,
       "minZ": 1e+308
     },
-    "Cut": 0,
-    "Fill": 0,
-    "CutArea": 0,
-    "FillArea": 0,
-    "TotalCoverageArea": 0.5780000000000001,
+    "cut": 0,
+    "fill": 0.035024316406250006,
+    "cutArea": 0,
+    "fillArea": 0.57800000000000007,
+    "totalCoverageArea": 0.57800000000000007,
     "Code": 0,
     "Message": "success"
   },
@@ -153,19 +153,19 @@
     "Message": "success"
   },
   "CompositeToDesignNoSurveyedSurface": {
-    "BoundingExtents": {
-      "maxX": -115.02035847513564,
-      "maxY": 36.20700143521764,
+    "boundingExtents": {
+      "maxX": -115.02035847513565,
+      "maxY": 36.207001435217627,
       "maxZ": 1e+308,
-      "minX": -115.02037737747803,
-      "minY": 36.20699837185611,
+      "minX": -115.02037737747804,
+      "minY": 36.206998371856095,
       "minZ": 1e+308
     },
-    "Cut": 0,
-    "Fill": 0.7837643310546876,
-    "CutArea": 0,
-    "FillArea": 0.5780000000000001,
-    "TotalCoverageArea": 0.5780000000000001,
+    "cut": 0.035024316406250006,
+    "fill": 0,
+    "cutArea": 0.57800000000000007,
+    "fillArea": 0,
+    "totalCoverageArea": 0.57800000000000007,
     "Code": 0,
     "Message": "success"
   },
@@ -204,19 +204,19 @@
     "Message": "success"
   },
   "DesignToCompositeNoSurveyedSurface": {
-    "BoundingExtents": {
-      "maxX": -115.02035847513564,
-      "maxY": 36.20700143521764,
+    "boundingExtents": {
+      "maxX": -115.02035847513565,
+      "maxY": 36.207001435217627,
       "maxZ": 1e+308,
-      "minX": -115.02037737747803,
-      "minY": 36.20699837185611,
+      "minX": -115.02037737747804,
+      "minY": 36.206998371856095,
       "minZ": 1e+308
     },
-    "Cut": 0.7837643310546876,
-    "Fill": 0,
-    "CutArea": 0.5780000000000001,
-    "FillArea": 0,
-    "TotalCoverageArea": 0.5780000000000001,
+    "cut": 0,
+    "fill": 0.035024316406250006,
+    "cutArea": 0,
+    "fillArea": 0.57800000000000007,
+    "totalCoverageArea": 0.57800000000000007,
     "Code": 0,
     "Message": "success"
   },
@@ -306,53 +306,53 @@
     "Message": "success"
   },
   "FilterToDesignWithFillTolerances": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.02009762584626,
-      "maxY": 36.20695853612911,
+      "maxY": 36.206958536129086,
       "maxZ": 1e+308,
       "minX": -115.02011274774294,
-      "minY": 36.20695547271642,
+      "minY": 36.206955472716409,
       "minZ": 1e+308
     },
-    "Cut": 0,
-    "Fill": 0.6984754638671876,
-    "CutArea": 0,
-    "FillArea": 0.34680000000000005,
-    "TotalCoverageArea": 0.4624000000000001,
+    "cut": 0.041840087890625009,
+    "fill": 0,
+    "cutArea": 0.46240000000000009,
+    "fillArea": 0,
+    "totalCoverageArea": 0.46240000000000009,
     "Code": 0,
     "Message": "success"
   },
   "FilterToDesignWithCutTolerances": {
-    "BoundingExtents": {
+    "boundingExtents": {
       "maxX": -115.01977628809144,
-      "maxY": 36.206955464020574,
+      "maxY": 36.206955464020567,
       "maxZ": 1e+308,
       "minX": -115.01979141000004,
-      "minY": 36.206952400648504,
+      "minY": 36.206952400648483,
       "minZ": 1e+308
     },
-    "Cut": 9.239060473632813,
-    "Fill": 0,
-    "CutArea": 0.34680000000000005,
-    "FillArea": 0,
-    "TotalCoverageArea": 0.4624000000000001,
+    "cut": 0,
+    "fill": 0,
+    "cutArea": 0,
+    "fillArea": 0,
+    "totalCoverageArea": 0.46240000000000009,
     "Code": 0,
     "Message": "success"
   },
   "FilterToFilterWithBothTolerances": {
-    "BoundingExtents": {
-      "maxX": -115.0203206713996,
-      "maxY": 36.20697998788301,
+    "boundingExtents": {
+      "maxX": -115.02032067139962,
+      "maxY": 36.206979987883,
       "maxZ": 1e+308,
-      "minX": -115.02032823282102,
-      "minY": 36.20696466913841,
+      "minX": -115.02032823282103,
+      "minY": 36.2069646691384,
       "minZ": 1e+308
     },
-    "Cut": 0.05294570312500001,
-    "Fill": 0.1418400146484375,
-    "CutArea": 0.23120000000000004,
-    "FillArea": 0.23120000000000004,
-    "TotalCoverageArea": 1.1560000000000001,
+    "cut": 0,
+    "fill": 0,
+    "cutArea": 0,
+    "fillArea": 0,
+    "totalCoverageArea": 1.1560000000000001,
     "Code": 0,
     "Message": "success"
   }
