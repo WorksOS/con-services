@@ -76,8 +76,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  assetCustomer must have a PM sub
       var pmProjects = await dataRepository.GetProjectMonitoringProject(assetDevice.OwningCustomerUID,
         request.latitude, request.longitude, request.timeOfPosition,
-        (int)ProjectType.ProjectMonitoring,
-        (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum));
+        (int)ProjectType.ProjectMonitoring, (int)ServiceTypeEnum.ProjectMonitoring);
       enumerable = pmProjects.ToList();
       if (pmProjects != null && enumerable.Any())
       {
@@ -93,7 +92,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //   assetCustomer must have a Landfill sub
       var landfillProjects = await dataRepository.GetProjectMonitoringProject(assetDevice.OwningCustomerUID,
         request.latitude, request.longitude, request.timeOfPosition,
-        (int)ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum));
+        (int)ProjectType.LandFill, (int)ServiceTypeEnum.Landfill);
       enumerable = landfillProjects.ToList();
       if (landfillProjects != null && enumerable.Any())
       {

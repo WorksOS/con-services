@@ -336,8 +336,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
           if (s != null)
           {
             subs = s.ToList()
-              .Where(x => x.ServiceTypeID == ServiceTypeMappings.serviceTypes
-                            .Find(st => st.name == "Manual 3D Project Monitoring").NGEnum)
+              .Where(x => x.ServiceTypeID == (int)ServiceTypeEnum.Manual3DProjectMonitoring)
               .Select(x => new Subscriptions("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
           }
         }
@@ -366,8 +365,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
           if (s != null)
           {
             subs = s
-              .Where(x => x.ServiceTypeID ==
-                          (ServiceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum))
+              .Where(x => x.ServiceTypeID == (int)ServiceTypeEnum.ThreeDProjectMonitoring)
               .Select(x => new Subscriptions(assetUid, "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate))
               .Distinct()
               .ToList();

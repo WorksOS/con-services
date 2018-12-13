@@ -118,8 +118,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
-            (int) ProjectType.ProjectMonitoring,
-            (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum));
+            (int) ProjectType.ProjectMonitoring, (int)ServiceTypeEnum.ProjectMonitoring);
           var enumerable = p as IList<Project> ?? p.ToList();
           if (p != null && enumerable.Any())
           {
@@ -141,7 +140,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           var p = await dataRepository.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
             request.latitude, request.longitude, request.timeOfPosition,
-            (int) ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum));
+            (int) ProjectType.LandFill, (int)ServiceTypeEnum.Landfill);
           if (p != null && p.Any())
           {
             potentialProjects = potentialProjects?.Concat(p) ?? p;

@@ -207,7 +207,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (intersectingProjects
                 .Any(p =>
                  (string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase) == 0)
-                  && p.ServiceTypeID == (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum)
+                  && p.ServiceTypeID == (int)ServiceTypeEnum.Landfill
                   && p.SubscriptionEndDate.HasValue 
                   && request.TimeOfPosition <= p.SubscriptionEndDate))
         {
@@ -274,24 +274,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         foreach (var sub in subs)
         {
           // Manual3d is least significant
-          if (sub.serviceTypeId == serviceTypeMappings.serviceTypes
-                .Find(st => st.name == "Manual 3D Project Monitoring").NGEnum)
+          if (sub.serviceTypeId == (int)ServiceTypeEnum.Manual3DProjectMonitoring)
           {
-            if (serviceType != serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
+            if (serviceType != (int)ServiceTypeEnum.ThreeDProjectMonitoring)
             {
               log.LogDebug(
                 $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found Manual3DProjectMonitoring for assetUid {assetUid}");
-              serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring")
-                .NGEnum;
+              serviceType = (int)ServiceTypeEnum.Manual3DProjectMonitoring;
             }
           }
 
           // 3D PM is most significant
           // if 3D asset-based, the assets customer must be the same as the Projects customer 
-          if (sub.serviceTypeId ==
-              serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
+          if (sub.serviceTypeId == (int)ServiceTypeEnum.ThreeDProjectMonitoring)
           {
-            if (serviceType != serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum)
+            if (serviceType != (int)ServiceTypeEnum.ThreeDProjectMonitoring)
             {
               //Allow manual tag file import for customer who has the 3D subscription for the asset
               //and allow automatic tag file processing in all cases (can't tell customer for automatic)
@@ -299,7 +296,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
                 $"ProjectAndAssetUidsExecutor: GetMostSignificantServiceType() found e3DProjectMonitoring for assetUid {assetUid} sub.customerUid {sub.customerUid}");
               if (string.IsNullOrEmpty(projectCustomerUid) || sub.customerUid == projectCustomerUid)
               {
-                serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").NGEnum;
+                serviceType = (int)ServiceTypeEnum.ThreeDProjectMonitoring;
                 break;
               }
             }
@@ -344,8 +341,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           (await dataRepository.GetIntersectingProjects(tccCustomerUid, request.Latitude,
             request.Longitude, new int[] { (int)(int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, request.TimeOfPosition))
             .ToList()
-            .Where(pm => ( pm.ServiceTypeID == (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum)
-                    || pm.ServiceTypeID == (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum))));
+            .Where(pm => ( pm.ServiceTypeID == (int)ServiceTypeEnum.ProjectMonitoring
+                    || pm.ServiceTypeID == (int)ServiceTypeEnum.Landfill)));
       }
 
       return potentialProjects;
