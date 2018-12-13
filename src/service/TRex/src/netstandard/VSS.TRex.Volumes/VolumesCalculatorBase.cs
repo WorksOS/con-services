@@ -407,14 +407,14 @@ namespace VSS.TRex.Volumes
                 }
                 catch (Exception E)
                 {
-                    Log.LogError($"ExecutePipeline raised exception '{E}'");
+                    Log.LogError("ExecutePipeline raised exception", E);
                 }
 
                 return Result;
             }
             catch (Exception E)
             {
-                Log.LogError($"Exception {E}");
+                Log.LogError("Exception", E);
             }
 
             return RequestErrorStatus.Unknown;
@@ -430,11 +430,11 @@ namespace VSS.TRex.Volumes
           gridDataType: GridDataType.Height,
           response: new SimpleVolumesResponse(), // todo or any predefined response object
           filters: new FilterSet(BaseFilter, TopFilter),
-          cutFillDesignID: ReferenceDesignID,
+          cutFillDesignID: ReferenceDesignUID,
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SimpleVolumes),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignID != Guid.Empty,
+          requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignUID != Guid.Empty,
           requireSurveyedSurfaceInformation: true, // todo -> IncludeSurveyedSurfaces,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
         );

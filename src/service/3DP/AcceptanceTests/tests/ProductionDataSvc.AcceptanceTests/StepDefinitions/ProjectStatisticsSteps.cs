@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
-using ProductionDataSvc.AcceptanceTests.Helpers;
 using ProductionDataSvc.AcceptanceTests.Models;
-using Xunit;
 using Xunit.Gherkin.Quick;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -17,26 +14,27 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       PostRequestHandler.CurrentRequest = new StatisticsParameters { projectId = pId, excludedSurveyedSurfaceIds = new long[] { } };
     }
 
-    [And(@"require surveyed surface larger than production data")]
-    public async void RequireSurveyedSurfaceLargerThanProductionData()
+    [And(@"I decide to exclude surveyed surfaces ""(.*)""")]
+    public void GivenIDecideToExcludeSurveyedSurfaces(string surveyedSurfaceIds)
     {
-      var result = await BeforeAndAfter.CreateSurveyedSurfaceLargerThanProductionData();
+      var ids = Array.ConvertAll(surveyedSurfaceIds.Split(','), long.Parse);
 
-      Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+      PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = ids;
     }
 
-    [And(@"I decide to exclude all surveyed surfaces")]
-    public void GivenIDecideToExcludeAllSurveyedSurfaces()
+    [And(@"I decide to include surveyed surfaces ""(.*)""")]
+    public void GivenIDecideToIncludeSurveyedSurfaces(string surveyedSurfaceIds)
     {
-      // 111 is always the dummy ID specified when a surveyed surface is created (see BeforeAndAfter)
-      PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = new long[] { 111 };
+      var ids = Array.ConvertAll(surveyedSurfaceIds.Split(','), long.Parse);
+
+      PostRequestHandler.CurrentRequest.excludedSurveyedSurfaceIds = ids;
     }
 
     [Then(@"I should get the following project statistics:")]
     public void ThenIShouldGetTheFollowingProjectStatistics(Gherkin.Ast.DataTable dataTable)
     {
       var expectedResult = new ProjectStatistics();
-      
+
       foreach (var row in dataTable.Rows.Skip(1))
       {
         expectedResult.startTime = DateTime.Parse(row.Cells.ElementAt(0).Value);

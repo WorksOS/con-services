@@ -8,7 +8,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// Determines if the type of the spatial filter is Spatial or Positional
     /// </summary>
-    bool HasSpatialOrPostionalFilters { get; }
+    bool HasSpatialOrPositionalFilters { get; }
 
     /// <summary>
     /// Return a formatted string indicating the state of the filter flags
@@ -47,6 +47,12 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     /// <returns></returns>
     bool HasAlignmentDesignMask();
+
+    /// <summary>
+    /// Determines if the filter contains sufficient information to adequately describe an active design mask spatial filter
+    /// </summary>
+    /// <returns></returns>
+    bool HasSurfaceDesignMask();
 
     /// <summary>
     /// Determines if a cell given by it's central location is included in the spatial filter

@@ -34,17 +34,36 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Clears an item from the cache
     /// </summary>
-    /// <param name="customerUid">The customerUid of the item to remove from the cache</param>
+    /// <param name="uid">The uid of the item (either customerUid or projectUid) to remove from the cache</param>
     /// <param name="userId">The user ID</param>
-    public void ClearCacheItem(string customerUid, string userId=null)
+    public void ClearCacheItem(string uid, string userId=null)
     {
-      ClearCacheItem<ProjectDataResult>(customerUid, userId);
+      // We either need to clear a list based on the Customer UID 
+      // Or a single result based on the Project UID
+      // But Uid should be unique, plus the cache key adds the class name
+      ClearCacheItem<ProjectDataResult>(uid, userId);
+      ClearCacheItem<ProjectDataSingleResult>(uid, userId);
     }
  
     public async Task<ProjectData> GetProjectForCustomer(string customerUid, string projectUid,
       IDictionary<string, string> customHeaders = null)
     {
-      return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjectsV4, p => string.Equals(p.ProjectUid, projectUid, StringComparison.OrdinalIgnoreCase), customerUid, customHeaders);
+      var result = await GetMasterDataItem<ProjectDataSingleResult>(projectUid, 
+        null, 
+        "PROJECT_CACHE_LIFE",
+        "PROJECT_API_URL", 
+        customHeaders,
+        $"/{projectUid}");
+
+      if (result.Code == 0)
+      {
+        return result.ProjectDescriptor;
+      }
+      else
+      {
+        log.LogDebug("Failed to get project with Uid {0}: {1}, {2}", projectUid, result.Code, result.Message);
+        return null;
+      }
     }
 
     //To support 3dpm v1 end points which use legacy project id

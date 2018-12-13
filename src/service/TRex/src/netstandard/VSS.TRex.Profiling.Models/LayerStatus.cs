@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace VSS.TRex.Profiling
+namespace VSS.TRex.Profiling.Models
 {
   /// <summary>
-  /// The layer statii that may be assigned to a material layer analysed from production data in the site model
+  /// The layer status states that may be assigned to a material layer analyzed from production data in the site model
   /// </summary>
   [Flags]
   public enum LayerStatus

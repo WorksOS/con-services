@@ -254,8 +254,7 @@ namespace VSS.TRex.Profiling
           {
             CurrentPass = Cell.Passes.FilteredPassData[CurrentPassIndex];
             if (!FilteredValuePopulationComplete)
-              FiltersValuePopulation.PopulateFilteredValues( //SiteModel.MachinesTargetValues,
-                GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
+              FiltersValuePopulation.PopulateFilteredValues(GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
                 PopulationControl, ref CurrentPass);
             Result = true;
             break;
@@ -271,8 +270,7 @@ namespace VSS.TRex.Profiling
         {
           CurrentPass = Cell.Passes.FilteredPassData[CurrentPassIndex];
           if (!FilteredValuePopulationComplete)
-            FiltersValuePopulation.PopulateFilteredValues( //SiteModel.MachinesTargetValues,
-              GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
+            FiltersValuePopulation.PopulateFilteredValues(GetTargetValues(CurrentPass.FilteredPass.InternalSiteModelMachineIndex),
               PopulationControl, ref CurrentPass);
         }
       }

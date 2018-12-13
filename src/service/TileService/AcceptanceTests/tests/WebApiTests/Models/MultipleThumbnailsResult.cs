@@ -106,8 +106,9 @@ namespace WebApiTests.Models
       if (other == null)
         return false;
 
+      int actualDiff;
       return this.Uid == other.Uid &&
-             CommonUtils.TilesMatch("Multiple", "1", this.Data, other.Data);
+             CommonUtils.TilesMatch("Multiple", "1", this.Data, other.Data, out actualDiff);
     }
 
     public static bool operator ==(ThumbnailResult a, ThumbnailResult b)

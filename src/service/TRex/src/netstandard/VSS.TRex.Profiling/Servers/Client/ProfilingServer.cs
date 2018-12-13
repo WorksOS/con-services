@@ -18,14 +18,5 @@ namespace VSS.TRex.Profiling.Servers.Client
     public ProfilingServer(string[] roles) : base(roles)
     {
     }
-
-    /// <summary>
-    /// Creates a new instance of a profiling server. 
-    /// </summary>
-    /// <returns></returns>
-    public static ProfilingServer NewInstance(string[] roles)
-    {
-      return new ProfilingServer(roles);
-    }
   }
 }

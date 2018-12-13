@@ -5,6 +5,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.Designs.Interfaces
 {
@@ -67,10 +68,25 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
     /// <returns></returns>
-    bool GetDesignHeights(Guid siteModelID,
+    void GetDesignHeights(Guid siteModelID,
       ISubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,
+      out DesignProfilerRequestResult errorCode);
+
+    /// <summary>
+    /// Calculates a filter mask for a designated subgrid on this design
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="originCellAddress"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="filterMask"></param>
+    /// <param name="errorCode"></param>
+    /// <returns></returns>
+    void GetFilterMask(Guid siteModelID,
+      ISubGridCellAddress originCellAddress,
+      double cellSize,
+      out SubGridTreeBitmapSubGridBits filterMask,
       out DesignProfilerRequestResult errorCode);
 
     DesignDescriptor Get_DesignDescriptor();

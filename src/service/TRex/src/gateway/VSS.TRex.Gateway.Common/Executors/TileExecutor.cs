@@ -74,7 +74,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           request.Height, // PixelsY
           ConvertFilter(request.Filter1, siteModel),
           ConvertFilter(request.Filter2, siteModel),
-          Guid.Empty //TODO: request.DesignDescriptor
+          request.DesignDescriptor.Uid ?? Guid.Empty
         )) as TileRenderResponse_Core2;
 
       return new TileResult(response?.TileBitmapData);

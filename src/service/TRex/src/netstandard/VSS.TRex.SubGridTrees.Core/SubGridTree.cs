@@ -278,7 +278,7 @@ namespace VSS.TRex.SubGridTrees
             catch (Exception e)
             {
               // Something bad happened...
-              Log.LogDebug($"Exception in SubGridTree.CalculateRegionGridCoverage: {e}");
+              Log.LogDebug($"Exception in SubGridTree.CalculateRegionGridCoverage:", e);
               cellExtent = BoundingIntegerExtent2D.Inverted();
               return false;
             }

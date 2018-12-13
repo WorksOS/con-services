@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Net.Http;
 using ProductionDataSvc.AcceptanceTests.Models;
 using ProductionDataSvc.AcceptanceTests.Utils;
@@ -29,20 +30,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       if (!File.Exists(fullDesignFileCachePath))
       {
-        try
-        {
-          RestClient.SendHttpClientRequest(
-            RestClient.Productivity3DServiceBaseUrl,
-            sVuri,
-            HttpMethod.Post,
-            MediaTypes.JSON,
-            MediaTypes.JSON,
-            svRequestStr).ConfigureAwait(false);
-        }
-        catch
-        {
-          //Logger.Error(e, Logger.ContentType.Error);
-        }
+        var result = RestClient.SendHttpClientRequest(
+          RestClient.Productivity3DServiceBaseUrl,
+          sVuri,
+          HttpMethod.Post,
+          MediaTypes.JSON,
+          MediaTypes.JSON,
+          svRequestStr).Result;
+
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
       }
     }
 
@@ -85,20 +81,15 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"the following Summary Volumes request is sent to ""(.*)""")]
     public void WhenTheFollowingSummaryVolumesRequestIsSentTo(string sVuri, string svRequestStr)
     {
-      try
-      {
-        RestClient.SendHttpClientRequest(
-          RestClient.Productivity3DServiceBaseUrl,
-          sVuri,
-          HttpMethod.Post,
-          MediaTypes.JSON,
-          MediaTypes.JSON,
-          svRequestStr).ConfigureAwait(false);
-      }
-      catch
-      {
-        //Logger.Error(e, Logger.ContentType.Error);
-      }
+      var result = RestClient.SendHttpClientRequest(
+         RestClient.Productivity3DServiceBaseUrl,
+         sVuri,
+         HttpMethod.Post,
+         MediaTypes.JSON,
+         MediaTypes.JSON,
+         svRequestStr).Result;
+
+      Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
     [Then(@"the file should be automatically downloaded into the design cache")]

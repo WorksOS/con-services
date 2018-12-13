@@ -33,13 +33,13 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception reading design from s3: {e}");
+        Log.LogError("Exception reading design from s3:", e);
         return false;
       }
 
       if (string.IsNullOrEmpty(fileStreamResult.ContentType))
       {
-        Log.LogInformation($"Exception setting up download from S3.ContentType unknown, i.e. file doesn't exist.");
+        Log.LogInformation("Exception setting up download from S3.ContentType unknown, i.e. file doesn't exist.");
         return false;
       }
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception writing design file locally: {e}");
+        Log.LogError("Exception writing design file locally:", e);
         return false;
       }
 
@@ -62,7 +62,7 @@ namespace VSS.TRex.Common
 
     /// <summary>
     /// Writes a file to S3
-    ///  AWS' ransferUtility will create the 'directory' if not already there
+    ///  AWS Transfer Utility will create the 'directory' if not already there
     /// </summary>
     /// <param name="sourcePath"></param>
     /// <param name="siteModelUid"></param>
@@ -78,7 +78,7 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception writing design to s3: {e}");
+        Log.LogError("Exception writing design to s3:", e);
         return false;
       }
       return true;

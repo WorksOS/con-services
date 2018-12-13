@@ -43,9 +43,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     private readonly IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-    private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.kAdviseOtherServicesOfDataModelChangesDefault);
+    private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
 
-    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.kMaxMappedTagFilesToProcessPerAggregationEpochDefault);
+    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH", Consts.MAXMAPPEDTAGFILES_TOPROCESSPERAGGREGATIONEPOCH);
 
     private AggregatedDataIntegratorWorker()
     {
@@ -384,7 +384,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               }
               catch (Exception e)
               {
-                Log.LogCritical($"Unable to add segment invalidation list to segment retirement queue due to exception: {e}");
+                Log.LogCritical($"Unable to add segment invalidation list to segment retirement queue due to exception:", e);
                 Log.LogCritical("The following segments will NOT be retired as a result:");
                 foreach (var invalidatedItem in subGridIntegrator.InvalidatedSpatialStreams)
                   Log.LogCritical($"{invalidatedItem}");
@@ -429,7 +429,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception in ProcessTask: {E}");
+        Log.LogError("Exception in ProcessTask:", E);
         return false;
       }
 
