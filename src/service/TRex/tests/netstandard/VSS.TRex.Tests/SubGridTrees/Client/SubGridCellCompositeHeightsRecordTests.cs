@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client

@@ -31,6 +31,7 @@ namespace VSS.TRex.SubGridTrees.Client
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.TemperatureDetail, () => new ClientTemperatureLeafSubGrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CellProfile, () => new ClientCellProfileLeafSubgrid());
       clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CellPasses, () => new ClientCellProfileAllPassesLeafSubgrid());
+      clientSubGridFactory.RegisterClientLeafSubGridType(GridDataType.CCA, () => new ClientCCALeafSubGrid());
 
       return clientSubGridFactory;
     }

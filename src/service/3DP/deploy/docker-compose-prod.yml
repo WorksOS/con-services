@@ -15,7 +15,7 @@ services:
      - CUSTOMERSERVICE_CACHE_LIFE=00:15:00
      - DEFAULT_CONNECTION_LIMIT=64
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
-     - ENABLE_CONNECTED_SITE_GATEWAY=true
+     - ENABLE_CONNECTED_SITE_GATEWAY=false
      - ENABLE_RAPTOR_GATEWAY=true
      - ENABLE_TREX_GATEWAY=false
      - FILTER_API_URL=http://filter.prod.k8s.services.myvisionlink.com/api/v1

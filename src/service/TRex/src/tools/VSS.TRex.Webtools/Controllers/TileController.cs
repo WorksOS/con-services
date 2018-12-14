@@ -72,7 +72,9 @@ namespace VSS.TRex.Webtools.Controllers
         (DisplayMode.CutFill, "Cut/Fill"),
         (DisplayMode.MachineSpeed, "Speed"),
         (DisplayMode.TargetSpeedSummary, "Speed Summary"),
-        (DisplayMode.TemperatureSummary, "Temperature Summary")
+        (DisplayMode.TemperatureSummary, "Temperature Summary"),
+        (DisplayMode.CCA, "CCA"),
+        (DisplayMode.CCASummary, "CCA Summary")
       });
     }
   }
