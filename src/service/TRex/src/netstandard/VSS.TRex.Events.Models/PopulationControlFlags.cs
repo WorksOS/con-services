@@ -28,6 +28,7 @@ namespace VSS.TRex.Events.Models
     WantsTempWarningLevelMaxValues = 0x10000,
     WantsTargetMDPValues = 0x20000,
     WantsLayerIDValues = 0x40000,
-    WantsTargetCCAValues = 0x080000
+    WantsTargetCCAValues = 0x80000,
+    WantsEventGPSModeValues = 0x100000
   }
 }

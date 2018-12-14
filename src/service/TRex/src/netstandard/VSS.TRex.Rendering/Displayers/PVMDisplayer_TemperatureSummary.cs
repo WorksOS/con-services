@@ -11,24 +11,13 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_TemperatureSummary : PVMDisplayerBase
   {
     /// <summary>
-    /// Temperature data holder.
-    /// </summary>
-    private ClientTemperatureLeafSubGrid SubGrid;
-      
-    /// <summary>
     /// Renders Temperature summary data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientTemperatureLeafSubGrid grid)
-      {
-          SubGrid = grid;
-          return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientTemperatureLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -43,7 +32,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      ushort value = SubGrid.Cells[east_col, north_row].MeasuredTemperature;
+      ushort value = ((ClientTemperatureLeafSubGrid)SubGrid).Cells[east_col, north_row].MeasuredTemperature;
 
       return value == CellPassConsts.NullMaterialTemperatureValue ? Draw.Color.Empty : Palette.ChooseColour(value);
     }
