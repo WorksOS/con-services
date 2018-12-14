@@ -262,14 +262,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Create a scheduler job to update an exisiting project in the bacground
+    /// Create a scheduler job to update an existing project in the background
     /// </summary>
     /// <param name="projectRequest">The project request model to be used in the update</param>
     /// <param name="scheduler">The scheduler used to queue the job</param>
     /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
     [Route("api/v4/project/background")]
     [HttpPut]
-    public async Task<ScheduleJobResult> RequestUpdteProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
+    public async Task<ScheduleJobResult> RequestUpdateProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
     {
       if (projectRequest == null)
       {

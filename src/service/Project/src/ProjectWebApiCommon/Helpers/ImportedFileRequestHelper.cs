@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -39,8 +40,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         notificationResult = await raptorProxy
           .AddFile(projectUid, importedFileType, importedFileUid,
-            JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, headers)
-          .ConfigureAwait(false);
+            JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, headers);
+
+      
       }
       catch (Exception e)
       {
@@ -231,6 +233,35 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     #endregion TRex
-  }
+
+    #region tiles
+
+    public static async Task GenerateDxfTiles(AddFileResult notificationResult, Guid projectUid, string customerUid, string fileName,
+      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, ILogger log, 
+      IDictionary<string, string> headers, ITileProxy tileProxy)
+    {
+      if (importedFileType == ImportedFileType.Linework)
+      {
+        try
+        {        
+          var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}{Path.DirectorySeparatorChar}";
+          var dxfFileName = $"{dataOceanPath}{fileName}";
+          var dcFileName = $"{dataOceanPath}{coordSysFileName}";
+          //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
+          var tileMetadata = await tileProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers);
+          notificationResult.MinZoomLevel = tileMetadata?.MinZoom;
+          notificationResult.MaxZoomLevel = tileMetadata?.MaxZoom;
+        }
+        catch (Exception e)
+        {
+          log.LogError(
+            $"FileImport GenerateDxfTiles in TileService failed with exception. projectUid:{projectUid} fileName:{fileName}. Exception Thrown: {e.Message}. ");
+          throw;
+        }
+      }
+    }
+
+    #endregion
+    }
 
 }

@@ -41,16 +41,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         log.LogInformation(
           $"WriteFileToDataOcean: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
         // check for exists first to avoid an misleading exception in our logs.
-        //*** temporarily remove DataOcean until tested ***
-        /*
         folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
         if (folderAlreadyExists == false)
           await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);
 
         // this does an upsert
         ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, customHeaders);
-        */
-        ccPutFileResult = true;
       }
       catch (Exception e)
       {
@@ -81,9 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       bool ccDeleteFileResult = false;
       try
       {
-        //*** temporarily remove DataOcean until tested ***
-        //ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders);
-        ccDeleteFileResult = true;
+        ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders);
       }
       catch (Exception e)
       {

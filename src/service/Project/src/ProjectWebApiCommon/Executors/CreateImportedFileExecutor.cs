@@ -79,8 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         var project =
           await ProjectRequestHelper.GetProject(createimportedfile.ProjectUid.ToString(), customerUid, log,
-            serviceExceptionHandler,
-            projectRepo);
+            serviceExceptionHandler, projectRepo);
 
         var addFileResult = await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID,
           createimportedfile.ProjectUid,
@@ -90,10 +89,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createImportedFileEvent.MinZoomLevel = addFileResult.MinZoomLevel;
         createImportedFileEvent.MaxZoomLevel = addFileResult.MaxZoomLevel;
 
+        //Generate DXF tiles
+        if (createimportedfile.ImportedFileType == ImportedFileType.Linework)
+        {
+          await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, createimportedfile.ProjectUid, customerUid,
+            createimportedfile.FileName, createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, 
+            project.CoordinateSystemFileName, log, customHeaders, tileProxy);
+        }
+
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
           .ConfigureAwait(false);
 
-        //Need to update zoom levels in Db (Raptor - todo is this still needed?)  
+        //Need to update zoom levels in Db   
         _ = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existing,
             JsonConvert.SerializeObject(createimportedfile.FileDescriptor),
             createimportedfile.SurveyedUtc, createImportedFileEvent.MinZoomLevel, createImportedFileEvent.MaxZoomLevel,

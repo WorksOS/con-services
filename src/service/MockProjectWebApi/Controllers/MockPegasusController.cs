@@ -19,13 +19,17 @@ namespace MockProjectWebApi.Controllers
 
       var result = new
       {
-        id = Guid.NewGuid(),
-        status = "CREATED",
-        execution_status = "NOT_READY",
-        procedure_identifier = PROCEDURE_NAME,
-        procedure_id = message.execution.procedure_id,
-        parameters = message.execution.parameters
+        execution = new
+        {
+          id = Guid.NewGuid(),
+          status = "CREATED",
+          execution_status = "NOT_READY",
+          procedure_identifier = PROCEDURE_NAME,
+          procedure_id = message.execution.procedure_id,
+          parameters = message.execution.parameters
+        }
       };
+
       Console.WriteLine($"CreateExecution returning: {JsonConvert.SerializeObject(result)}");
       return new CreatedResult(Request.Path, result);
     }
@@ -37,6 +41,24 @@ namespace MockProjectWebApi.Controllers
       Console.WriteLine($"DeleteExecution: {id}");
 
       return new HttpResponseMessage(HttpStatusCode.NoContent);
+    }
+
+    [Route("/api/executions/{id}/start")]
+    [HttpPost]
+    public dynamic StartExecution([FromRoute]Guid id)
+    {
+      Console.WriteLine($"StartExecution: {id}");
+
+      var result = new
+      {
+        execution_attempt = new
+        {
+          id = Guid.NewGuid(),
+          status = "EXECUTING"
+        }
+      };
+      Console.WriteLine($"StartExecution returning: {JsonConvert.SerializeObject(result)}");
+      return result;
     }
 
     [Route("/api/executions/{id}/status")]

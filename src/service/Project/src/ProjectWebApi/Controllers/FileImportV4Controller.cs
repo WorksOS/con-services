@@ -109,7 +109,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="surveyedUtc"></param>
-    /// <param name="transferProxy"></param>
     /// <returns></returns>
     [Route("api/v4/importedfile")]
     [HttpPost]

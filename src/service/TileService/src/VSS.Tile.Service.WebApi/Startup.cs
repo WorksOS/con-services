@@ -17,6 +17,8 @@ using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Services;
+using VSS.DataOcean.Client;
+using VSS.Pegasus.Client;
 
 namespace VSS.Tile.Service.WebApi
 {
@@ -58,6 +60,9 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
+      services.AddTransient<IDataOceanClient, DataOceanClient>();
+      services.AddTransient<IPegasusClient, PegasusClient>();
+      services.AddSingleton<IWebRequest, GracefulWebRequest>();
 
       services.AddSingleton<CacheInvalidationService>();
 

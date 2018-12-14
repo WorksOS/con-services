@@ -69,6 +69,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           .ConfigureAwait(false);
         existing.MinZoomLevel = addFileResult.MinZoomLevel;
         existing.MaxZoomLevel = addFileResult.MaxZoomLevel;
+
+        //Generate DXF tiles
+        if (updateImportedFile.ImportedFileType == ImportedFileType.Linework)
+        {
+          var project =
+            await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log,
+              serviceExceptionHandler, projectRepo);
+
+          await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, updateImportedFile.ProjectUid, customerUid,
+            updateImportedFile.FileName, updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsType,
+            project.CoordinateSystemFileName, log, customHeaders, tileProxy);
+        }
       }
 
       // if all succeeds, update Db and  put update to kafka que
