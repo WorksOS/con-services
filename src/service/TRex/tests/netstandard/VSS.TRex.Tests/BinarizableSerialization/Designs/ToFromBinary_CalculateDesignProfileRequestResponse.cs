@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.BinarizableSerialization.Designs
 {
-  public class ToFromBinary_CalculateDesignProfileResponse : IClassFixture<DILoggingFixture>
+  public class ToFromBinary_CalculateDesignProfileResponse
   {
     [Fact]
     public void Test_CalculateDesignProfileResponse_Simple()
