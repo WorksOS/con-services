@@ -63,8 +63,6 @@ namespace VSS.TRex.Profiling
       ICellSpatialFilter cellFilter,
       IDesign SurfaceDesignMaskDesign)
     {
-      // double OriginX, OriginY;
-
       ConstructSubgridSpatialAndPositionalMask(tree, currentSubGridOrigin, profileCells, mask, fromProfileCellIndex, cellFilter);
 
       // If the filter contains an alignment design mask filter then compute this and AND it with the
