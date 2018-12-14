@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="DotNetCore.CAP" Version="2.3.0" />
     <PackageReference Include="DotNetCore.CAP.Kafka" Version="2.3.0" />
     <PackageReference Include="DotNetCore.CAP.MySql" Version="2.3.0" />

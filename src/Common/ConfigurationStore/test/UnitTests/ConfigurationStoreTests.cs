@@ -1,25 +1,15 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Log4Net.Extensions;
 
 namespace VSS.ConfigurationStore.UnitTests
 {
-  /// <summary>
-  /// 
-  /// </summary>
   [TestClass]
   public class ConfigurationStoreTests
   {
-
     public IServiceProvider ServiceProvider;
 
-
-    /// <summary>
-    /// Initializes the test.
-    /// </summary>
     [TestInitialize]
     public virtual void InitTest()
     {
@@ -29,12 +19,7 @@ namespace VSS.ConfigurationStore.UnitTests
       Log4NetProvider.RepoName = loggerRepoName;
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
@@ -43,7 +28,7 @@ namespace VSS.ConfigurationStore.UnitTests
     public void CanCreateConfigStore()
     {
       Assert.IsNotNull(ServiceProvider.GetRequiredService<IConfigurationStore>());
-      Assert.IsInstanceOfType(ServiceProvider.GetRequiredService<IConfigurationStore>(),typeof(GenericConfiguration));
+      Assert.IsInstanceOfType(ServiceProvider.GetRequiredService<IConfigurationStore>(), typeof(GenericConfiguration));
     }
 
 
@@ -59,7 +44,7 @@ namespace VSS.ConfigurationStore.UnitTests
     public void ThrowsWhenInvalidConnectionName()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.ThrowsException<InvalidOperationException>(()=>configuration.GetConnectionString("VSPDB2"));
+      Assert.ThrowsException<InvalidOperationException>(() => configuration.GetConnectionString("VSPDB2"));
     }
 
     [TestMethod]
@@ -81,7 +66,7 @@ namespace VSS.ConfigurationStore.UnitTests
     public void CanGetInt()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.AreEqual(1,configuration.GetValueInt("KAFKA_STACKSIZE"));
+      Assert.AreEqual(1, configuration.GetValueInt("KAFKA_STACKSIZE"));
     }
 
     [TestMethod]
@@ -96,7 +81,7 @@ namespace VSS.ConfigurationStore.UnitTests
     public void ReturnsNegativeWhenInvalidInteger()
     {
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      Assert.AreEqual(-1,configuration.GetValueInt("KAFKA_PORT"));
+      Assert.AreEqual(-2147483648, configuration.GetValueInt("KAFKA_PORT"));
     }
 
     [TestMethod]
@@ -117,10 +102,9 @@ namespace VSS.ConfigurationStore.UnitTests
     [TestMethod]
     public void CanGetDefaultBool()
     {
-      bool defaultValue = false;
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      var value = configuration.GetValueBool("UNKNOWN_KEY", defaultValue);
-      Assert.AreEqual(defaultValue, value);
+      var value = configuration.GetValueBool("UNKNOWN_KEY", false);
+      Assert.AreEqual(false, value);
     }
 
     [TestMethod]
@@ -135,7 +119,7 @@ namespace VSS.ConfigurationStore.UnitTests
     [TestMethod]
     public void CanGetDefaultTimeSpan()
     {
-      TimeSpan defaultValue = new TimeSpan(5,4,3,2);
+      var defaultValue = new TimeSpan(5, 4, 3, 2);
       var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var value = configuration.GetValueTimeSpan("UNKNOWN_KEY", defaultValue);
       Assert.AreEqual(defaultValue, value);

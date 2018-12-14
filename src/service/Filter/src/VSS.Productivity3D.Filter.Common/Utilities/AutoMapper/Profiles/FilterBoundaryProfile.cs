@@ -32,8 +32,8 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
         .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
         .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
         .ForMember(dest => dest.Description, opt => opt.Ignore())
-        .ForMember(dest => dest.FillColor, opt => opt.UseValue(16011550))//F4511E
-        .ForMember(dest => dest.IsTransparent, opt => opt.UseValue(true))
+        .ForMember(dest => dest.FillColor, opt => opt.MapFrom(x => 16011550))//F4511E
+        .ForMember(dest => dest.IsTransparent, opt => opt.MapFrom(x => true))
         .ForMember(dest => dest.EndDate, opt => opt.Ignore())
         .ForMember(dest => dest.AreaSqMeters, opt => opt.Ignore());
 

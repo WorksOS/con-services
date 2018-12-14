@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
@@ -24,12 +23,8 @@ namespace WebApiTests.Executors
       var serviceCollection = new ServiceCollection();
       Log4NetProvider.RepoName = loggerRepoName;
       Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
       serviceCollection
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddSingleton<IFileRepository, FileRepository>();
