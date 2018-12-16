@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.DataOcean.Client.Models;
-using VSS.DataOcean.Client.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -32,7 +31,7 @@ namespace VSS.Pegasus.Client.UnitTests
       serviceCollection = new ServiceCollection();
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      serviceCollection.AddSingleton<ConfigurationStore.IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IPegasusClient, PegasusClient>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
@@ -189,7 +188,7 @@ namespace VSS.Pegasus.Client.UnitTests
         ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = ExecutionStatus.EXECUTING }
       };
 
-      var config = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var config = serviceProvider.GetRequiredService<ConfigurationStore.IConfigurationStore>();
       var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
       var baseRoute = "/api/executions";
       var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";

@@ -238,7 +238,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     public static async Task GenerateDxfTiles(AddFileResult notificationResult, Guid projectUid, string customerUid, string fileName,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, ILogger log, 
-      IDictionary<string, string> headers, ITileProxy tileProxy)
+      IDictionary<string, string> headers, ITileServiceProxy tileProxy)
     {
       if (importedFileType == ImportedFileType.Linework)
       {
@@ -249,8 +249,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           var dcFileName = $"{dataOceanPath}{coordSysFileName}";
           //TODO: If this takes a very long time we need to implement a notification for the client when it is done.
           var tileMetadata = await tileProxy.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, headers);
-          notificationResult.MinZoomLevel = tileMetadata?.MinZoom;
-          notificationResult.MaxZoomLevel = tileMetadata?.MaxZoom;
+          if (tileMetadata != null)
+          {
+            notificationResult.MinZoomLevel = tileMetadata.MinZoom;
+            notificationResult.MaxZoomLevel = tileMetadata.MaxZoom;
+          }
         }
         catch (Exception e)
         {
