@@ -3,7 +3,7 @@ using VSS.TRex.Designs.TTM.Optimised.Profiling;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Tests.TestFixtures;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 

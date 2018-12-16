@@ -226,7 +226,7 @@ namespace VSS.TRex.Designs.TTM
 
     public bool HasDuplicateVertices()
     {
-      return (Vertices[0] == Vertices[1]) || (Vertices[1] == Vertices[2]) || (Vertices[2] == Vertices[0]);
+      return Vertices[0] == Vertices[1] || Vertices[1] == Vertices[2] || Vertices[2] == Vertices[0];
     }
 
     private void GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY)

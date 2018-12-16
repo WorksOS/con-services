@@ -1,8 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.SubGridTrees.Types
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
 	/// <summary>
 	/// Contains measured temperature value as well as minimum and maximum temperature warning level values.
@@ -25,7 +26,7 @@ namespace VSS.TRex.SubGridTrees.Types
     /// <returns></returns>
     public static int IndicativeSizeInBytes()
     {
-      return sizeof(ushort) + 4 * TemperatureWarningLevelsRecord.IndicativeSizeInBytes(); 
+      return sizeof(ushort) + TemperatureWarningLevelsRecord.IndicativeSizeInBytes(); 
     }
 
     /// <summary>
@@ -82,11 +83,6 @@ namespace VSS.TRex.SubGridTrees.Types
     {
       MeasuredTemperature = reader.ReadUInt16();
       TemperatureLevels.Read(reader);
-    }
-
-    public bool Equals(SubGridCellPassDataTemperatureEntryRecord other)
-    {
-      return MeasuredTemperature == other.MeasuredTemperature && TemperatureLevels.Equals(other.TemperatureLevels);
     }
   }
 }

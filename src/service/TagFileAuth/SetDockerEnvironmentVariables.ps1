@@ -12,7 +12,7 @@ $localhostEnvironmentVariables = @(
     @{key = "MYSQL_SERVER_NAME_ReadVSPDB"; value = "localhost"},
     @{key = "KAFKA_URI"; value = "localhost"},
     @{key = "KAFKA_PORT"; value = "9092"},
-	@{key = "KAFKA_ADVERTISED_HOST_NAME"; value = "10.3.18.4"},
+	@{key = "KAFKA_ADVERTISED_HOST_NAME"; value = "LOCALIPADDRESS"},
 	@{key = "KAFKA_ADVERTISED_PORT"; value = "9092"},
     @{key = "KAFKA_GROUP_NAME"; value = "TagFileAuth-Datafeed"},
     @{key = "KAFKA_TOPIC_NAME_NOTIFICATIONS"; value = "VSS.Interfaces.Events.MasterData.INotificationEvent"},

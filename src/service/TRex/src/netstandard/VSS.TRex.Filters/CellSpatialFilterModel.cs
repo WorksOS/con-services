@@ -18,6 +18,8 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The fence used to represent the spatial restriction derived from an alignment filter expressed as a 
     /// station and offset range with respect tot he alignment center line geometry expressed as a polygon
+    /// This is computed from the parametric (start/end station & left/right offset) description of the
+    /// area of the road design to act as the filter as a part of preparing a filter for use.
     /// </summary>
     public Fence AlignmentFence { get; set; } = new Fence(); // contains alignment boundary to help speed up filtering on alignment files
 
@@ -114,7 +116,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The design used as an alignment mask spatial filter
     /// </summary>
-    public Guid AlignmentMaskDesignUID { get; set; } = Guid.Empty;
+    public Guid AlignmentDesignMaskDesignUID { get; set; } = Guid.Empty;
 
     /// <summary>
     /// Serialize out the state of the cell spatial filter using the Ignite IBinarizable serialisation
@@ -163,7 +165,7 @@ namespace VSS.TRex.Filters
       writer.WriteGuid(SurfaceDesignMaskDesignUid);
 
       writer.WriteBoolean(IsAlignmentMask);
-      writer.WriteGuid(AlignmentMaskDesignUID);
+      writer.WriteGuid(AlignmentDesignMaskDesignUID);
     }
 
     /// <summary>
@@ -209,7 +211,7 @@ namespace VSS.TRex.Filters
       IsDesignMask = reader.ReadBoolean();
       SurfaceDesignMaskDesignUid = reader.ReadGuid() ?? Guid.Empty;
       IsAlignmentMask = reader.ReadBoolean();
-      AlignmentMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
+      AlignmentDesignMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
     }
   }
 }

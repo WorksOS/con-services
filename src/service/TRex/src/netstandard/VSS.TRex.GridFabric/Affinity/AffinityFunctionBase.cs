@@ -19,7 +19,7 @@ namespace VSS.TRex.GridFabric.Affinity
     protected static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     // Set NumPartitions to the default number of partitions
-    protected int NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.kNumPartitionsPerDataCacheDefault);
+    protected readonly int NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", (int) Consts.NUMPARTITIONS_PERDATACACHE);
 
     /// <summary>
     /// Return the number of partitions to use for affinity. 
@@ -40,7 +40,7 @@ namespace VSS.TRex.GridFabric.Affinity
       {
         Log.LogInformation("Assigning partitions");
 
-        /* Debug code to dumo the attributes assigned to nodes being looked at
+        /* Debug code to dump the attributes assigned to nodes being looked at
         foreach (var node in context.CurrentTopologySnapshot)
         {
             Log.LogInformation($"Topology Node {node.Id}:");
@@ -53,7 +53,7 @@ namespace VSS.TRex.GridFabric.Affinity
         // Assign all nodes to affinity partitions. Spare nodes will be mapped as backups. 
         if (Nodes.Count > 0)
         {
-          /* Debug code to dumo the attributes assigned to nodes being looked at
+          /* Debug code to dump the attributes assigned to nodes being looked at
           foreach (var a in Nodes.First().GetAttributes())
               Log.LogInformation($"Attribute: {a.ToString()}");
           */
@@ -69,7 +69,7 @@ namespace VSS.TRex.GridFabric.Affinity
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception: {e}");
+        Log.LogError("Exception:", e);
         return new List<List<IClusterNode>>();
       }
 
@@ -94,9 +94,9 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <param name="nodeId"></param>
     public void RemoveNode(Guid nodeId)
     {
-      Log.LogInformation($" Removing node {nodeId}");
+      Log.LogInformation($"Removing node {nodeId}");
+
       // Don't care at this point, I think...
-      // throw new NotImplementedException();
     }
   }
 }

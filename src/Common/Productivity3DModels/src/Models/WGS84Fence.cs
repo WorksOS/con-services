@@ -25,7 +25,6 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="wgsPoints">The WGS points.</param>
     public WGS84Fence(WGSPoint[] wgsPoints)
     {
       Points = wgsPoints;

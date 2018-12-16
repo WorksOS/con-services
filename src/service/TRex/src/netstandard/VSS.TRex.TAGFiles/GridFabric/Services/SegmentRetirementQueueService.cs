@@ -125,7 +125,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         }
         catch (Exception e)
         {
-          Log.LogError($"Exception reported while obtaining new group of retirees to process: {e}");
+          Log.LogError("Exception reported while obtaining new group of retirees to process:", e);
         }
 
         waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);

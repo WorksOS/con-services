@@ -13,15 +13,6 @@ namespace VSS.TRex.Designs.Servers.Client
         }
 
         /// <summary>
-        /// Creates a new instance of a design elevation server. 
-        /// </summary>
-        /// <returns></returns>
-        public static CalculateDesignElevationsServer NewInstance()
-        {
-            return new CalculateDesignElevationsServer();
-        }
-
-        /// <summary>
         /// Compute a design elevation patch
         /// </summary>
         /// <param name="argument"></param>

@@ -96,7 +96,7 @@ namespace VSS.TRex.Gateway.Common.Converters
         else if (src.PolygonLL != null)
         {
           fence = new Fence();
-          fence.Points = Automapper.Map<List<WGSPoint3D>, List<FencePoint>>(src.PolygonLL);
+          fence.Points = Automapper.Map<List<WGSPoint>, List<FencePoint>>(src.PolygonLL);
         }
 
         return new CellSpatialFilter
@@ -120,7 +120,7 @@ namespace VSS.TRex.Gateway.Common.Converters
           .ForMember(x => x.Z,
             opt => opt.UseValue(0));
 
-        CreateMap<WGSPoint3D, FencePoint>()
+        CreateMap<WGSPoint, FencePoint>()
           .ForMember(x => x.X,
             opt => opt.MapFrom(f => f.Lon))
           .ForMember(x => x.Y,

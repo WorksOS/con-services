@@ -116,7 +116,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The design to be used as the benchmark for a surface based elevation range filter
     /// </summary>
-    public Guid ElevationRangeDesignID { get; set; } = Guid.Empty;
+    public Guid ElevationRangeDesignUID { get; set; } = Guid.Empty;
 
     /// <summary>
     /// Elevation parameters have been initialized in preparation for elevation range filtering, either
@@ -240,7 +240,7 @@ namespace VSS.TRex.Filters
       writer.WriteDouble(ElevationRangeOffset);
       writer.WriteDouble(ElevationRangeThickness);
 
-      writer.WriteGuid(ElevationRangeDesignID);
+      writer.WriteGuid(ElevationRangeDesignUID);
 
       writer.WriteBoolean(ElevationRangeIsInitialised);
       writer.WriteBoolean(ElevationRangeIsLevelAndThicknessOnly);
@@ -330,7 +330,7 @@ namespace VSS.TRex.Filters
       ElevationRangeOffset = reader.ReadDouble();
       ElevationRangeThickness = reader.ReadDouble();
 
-      ElevationRangeDesignID = reader.ReadGuid() ?? Guid.Empty;
+      ElevationRangeDesignUID = reader.ReadGuid() ?? Guid.Empty;
 
       ElevationRangeIsInitialised = reader.ReadBoolean();
       ElevationRangeIsLevelAndThicknessOnly = reader.ReadBoolean();

@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// </summary>
     public bool RecordSubgridFileReadingToLog { get; set; } = false;
 
-    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.kSegmentCleavingOperationsToLogDefault);
+    private readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
     
     public ServerSubGridTree(Guid siteModelID) :
       base(SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize,
@@ -370,7 +370,7 @@ namespace VSS.TRex.SubGridTrees.Server
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception raised in SaveLeafSubGrid: {e}");
+        Log.LogError("Exception raised in SaveLeafSubGrid", e);
       }
 
       return false;

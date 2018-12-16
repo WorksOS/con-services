@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
 
 namespace VSS.TRex.SubGrids
 {

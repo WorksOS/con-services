@@ -7,6 +7,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
@@ -66,12 +67,12 @@ namespace VSS.TRex.Reports.Gridded.Executors
           gridDataType: GridDataType.CellProfile,
           response: GriddedReportRequestResponse,
           filters: _griddedReportRequestArgument.Filters,
-          cutFillDesignID: _griddedReportRequestArgument.ReferenceDesignID,
+          cutFillDesignID: _griddedReportRequestArgument.ReferenceDesignUID,
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
           requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
-          requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesignID != Guid.Empty,
+          requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
           );
 
@@ -134,18 +135,32 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
     private List<GriddedReportDataRow> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
     {
-      IDesign CutFillDesign = null;
       IClientHeightLeafSubGrid DesignHeights = null;
 
-      if (_griddedReportRequestArgument.ReferenceDesignID != Guid.Empty)
+      if (_griddedReportRequestArgument.ReferenceDesignUID != Guid.Empty)
       {
-        CutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignID);
+        IDesign CutFillDesign = DIContext.Obtain<ISiteModels>().GetSiteModel(_griddedReportRequestArgument.ProjectID).Designs.Locate(_griddedReportRequestArgument.ReferenceDesignUID);
         if (CutFillDesign == null)
-          throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignID} not a recognised design in project {_griddedReportRequestArgument.ProjectID}");
+          throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesignUID} not a recognised design in project {_griddedReportRequestArgument.ProjectID}");
 
-        if (!CutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
-          subGrid.CellSize, out DesignHeights, out var errorCode))
-          DesignHeights = null;
+        CutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, subGrid.OriginAsCellAddress(),
+          subGrid.CellSize, out DesignHeights, out var errorCode);
+
+        if (errorCode != DesignProfilerRequestResult.OK || DesignHeights == null)
+        {
+          string errorMessage;
+          if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+          {
+            errorMessage = "Gridded Report. Call to RequestDesignElevationPatch failed due to no elevations in requested patch.";
+            Log.LogInformation(errorMessage);
+          }
+          else
+          {
+            errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {DesignHeights}.";
+            Log.LogWarning(errorMessage);
+          }
+          throw new ArgumentException(errorMessage);
+        }
       }
 
       var result = new List<GriddedReportDataRow>();

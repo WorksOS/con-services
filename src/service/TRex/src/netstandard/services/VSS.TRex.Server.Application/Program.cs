@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -20,6 +21,8 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.Profiling;
+using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
@@ -29,6 +32,7 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 
@@ -90,6 +94,15 @@ namespace VSS.TRex.Server.Application
 
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+
+        // Register the factory for the CellProfileAnalyzer for detailed call pass/lift cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<ProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)))
+
+        // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => null /* new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)*/))
+
         .Complete();
     }
 
@@ -103,7 +116,7 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
         typeof(VSS.TRex.Exports.Patches.PatchResult),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
-        typeof(VSS.TRex.Common.SubGridsPipelinedReponseBase),
+        typeof(VSS.TRex.Common.SubGridsPipelinedResponseBase),
         typeof(VSS.TRex.Logging.Logger),
         typeof(VSS.TRex.DI.DIContext),
         typeof(VSS.TRex.Storage.StorageProxy),

@@ -14,7 +14,7 @@ services:
       - CUSTOMER_CACHE_LIFE=00:30:00
       - DEFAULT_CONNECTION_LIMIT=64
       - ELEVATION_EXTENTS_CACHE_LIFE=00:30:00
-      - ENABLE_CONNECTED_SITE_GATEWAY=true
+      - ENABLE_CONNECTED_SITE_GATEWAY=false
       - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
       - ENABLE_TREX_GATEWAY_TAGFILE=false
       - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
@@ -33,7 +33,7 @@ services:
       - MIN_IO_THREADS=1024
       - MIN_WORKER_THREADS=512
       - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
-      - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true
+      - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project
       - PROJECT_CACHE_LIFE=00:30:00
       - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
       - PROJECT_SETTINGS_CACHE_LIFE=00:15:00

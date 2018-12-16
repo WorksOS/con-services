@@ -9,12 +9,12 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
   /// The response returned from the Grid request executor that contains the response code and the set of
   /// subgrids extracted for the grid report in question
   /// </summary>
-  public class GriddedReportRequestResponse : SubGridsPipelinedReponseBase
+  public class GriddedReportRequestResponse : SubGridsPipelinedResponseBase
   {
     public ReportReturnCode ReturnCode; // == TRaptorReportReturnCode
     public ReportType ReportType;       // == TRaptorReportType
     public List<GriddedReportDataRow> GriddedReportDataRowList;
-    
+
     public GriddedReportRequestResponse()
     {
       Clear();

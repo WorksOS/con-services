@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.HttpClients.Clients;
@@ -19,7 +18,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Responses;
-using VSS.TRex.HttpClients.RequestHandlers;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -117,7 +115,7 @@ namespace VSS.TRex.Server.TileRendering
       {
         typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
-        typeof(VSS.TRex.Common.SubGridsPipelinedReponseBase),
+        typeof(VSS.TRex.Common.SubGridsPipelinedResponseBase),
         typeof(VSS.TRex.Logging.Logger),
         typeof(VSS.TRex.DI.DIContext),
         typeof(VSS.TRex.Storage.StorageProxy),

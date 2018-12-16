@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.Designs.Interfaces
 {

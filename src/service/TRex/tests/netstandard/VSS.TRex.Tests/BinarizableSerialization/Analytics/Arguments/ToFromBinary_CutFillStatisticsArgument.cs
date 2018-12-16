@@ -21,7 +21,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignID = Guid.NewGuid(),
+        ReferenceDesignUID = Guid.NewGuid(),
         DesignID = Guid.NewGuid(),
         Offsets = new[] { 0.5, 0.2, 0.1, 0, -0.1, -0.2, -0.5 }
       };

@@ -22,7 +22,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.SubGrids
 {
@@ -507,7 +507,7 @@ namespace VSS.TRex.SubGrids
                   // if we have a temperature filter to be filtered by last pass
                   if (_filter.AttributeFilter.HasTemperatureRangeFilter && _filter.AttributeFilter.FilterTemperatureByLastPass)
                     {
-                      _haveFilteredPass = ( _cellProfile.Passes.FilteredPassData[_cellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
+                      _haveFilteredPass = _cellProfile.Passes.FilteredPassData[_cellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue &&
                              Range.InRange(_cellProfile.Passes.FilteredPassData[_cellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax);
                     }
                   else
@@ -688,7 +688,7 @@ namespace VSS.TRex.SubGrids
           // Ensure pass type filter is set correctly
           if (_filter.AttributeFilter.HasPassTypeFilter)
             if ((_filter.AttributeFilter.PassTypeSet & (PassTypeSet.Front | PassTypeSet.Rear)) == PassTypeSet.Front)
-                _filter.AttributeFilter.PassTypeSet |= PassTypeSet.Rear; // these two types go together as half passes
+              _filter.AttributeFilter.PassTypeSet |= PassTypeSet.Rear; // these two types go together as half passes
 
           // ... unless we if we can use the last pass grid to satisfy the query
           if (_canUseGlobalLatestCells &&
@@ -708,7 +708,6 @@ namespace VSS.TRex.SubGrids
           // First get the subgrid we are interested in
           // SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
-          // _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
           _subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining(_storageProxy, _siteModel.Grid, CellX, CellY, _level, false, false);
 
           //  SIGLogMessage.PublishNoODS(Nil, Format('End LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
@@ -735,15 +734,14 @@ namespace VSS.TRex.SubGrids
             return Result;
           }
 
-          // SIGLogMessage.PublishNoODS(Nil, Format('Getting subgrid leaf at %dx%d', [CellX, CellY]), slmcDebug);
+        // SIGLogMessage.PublishNoODS(Nil, Format('Getting subgrid leaf at %dx%d', [CellX, CellY]), slmcDebug);
 
-          _subGridAsLeaf = (IServerLeafSubGrid) _subGrid;
-          _globalLatestCells = _subGridAsLeaf.Directory.GlobalLatestCells;
+        _subGridAsLeaf = (IServerLeafSubGrid)_subGrid;
+        _globalLatestCells = _subGridAsLeaf.Directory.GlobalLatestCells;
 
           if (PruneSubGridRetrievalHere())
             return ServerRequestResult.NoError;
 
-          //todo: This map calculation seems odd if we are caching subgrids...
           // Determine the bitmask detailing which cells match the cell selection filter
           if (!SubGridFilterMasks.ConstructSubgridCellFilterMask(_subGridAsLeaf, _siteModel, _filter,
             cellOverrideMask, _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction,
@@ -759,10 +757,9 @@ namespace VSS.TRex.SubGrids
             if (!_useLastPassGrid)
               SetupForCellPassStackExamination();
 
-            // Some display types require lift processing to be able to select the
-            // appropriate cell pass containing the filtered value required.
+            // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
             if (_clientGrid.WantsLiftProcessingResults())
-            {            
+            {
               _segmentIterator.IterationDirection = IterationDirection.Forwards;
               _cellPassIterator.MaxNumberOfPassesToReturn = _maxNumberOfPassesToReturn; //VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
             }
@@ -819,7 +816,7 @@ namespace VSS.TRex.SubGrids
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} occured in RetrieveSubGrid");
+        Log.LogError("Exception occured in RetrieveSubGrid", e);
         throw;
       }
 

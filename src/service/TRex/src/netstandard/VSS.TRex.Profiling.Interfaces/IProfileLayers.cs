@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using Apache.Ignite.Core.Binary;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
   public interface IProfileLayers : IList<IProfileLayer>
   {
     /// <summary>
-    /// Adds a new profile layer to the set of layers, recylcing a previous layer if available
+    /// Adds a new profile layer to the set of layers, recycling a previous layer if available
     /// </summary>
     /// <param name="value"></param>
     /// <param name="layerRecycledIndex"></param>
@@ -62,7 +61,7 @@ namespace VSS.TRex.Profiling.Interfaces
 
     /// <summary>
     /// Determines if the cell pass in the stack of cell passes identified by passIndex is within a layer that
-    /// has been superceded.
+    /// has been superseded.
     /// </summary>
     /// <param name="passIndex"></param>
     /// <returns></returns>

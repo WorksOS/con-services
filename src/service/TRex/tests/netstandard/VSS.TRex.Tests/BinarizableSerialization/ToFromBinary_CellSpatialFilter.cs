@@ -45,7 +45,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
           LeftOffset = 5,
           RightOffset = 7.5,
           AlignmentFence = new Fence(0, 0, 10, 10),
-          AlignmentMaskDesignUID = Guid.NewGuid()
+          AlignmentDesignMaskDesignUID = Guid.NewGuid()
         },
         "Cell spatial filter (IsAlignmentFence) not the same after round trip serialisation");
     }

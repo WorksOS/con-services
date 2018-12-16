@@ -140,9 +140,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       double computeVolNoChangeTolerance,
       DesignDescriptor designDescriptor,
       FilterResult filter1,
-      long filterId1,
       FilterResult filter2,
-      long filterId2,
       FilterLayerMethod filterLayerMethod,
       int patchNumber,
       int patchSize,
@@ -160,9 +158,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
       ComputeVolNoChangeTolerance = computeVolNoChangeTolerance;
       DesignDescriptor = designDescriptor;
       Filter1 = filter1;
-      FilterId1 = filterId1;
+      FilterId1 = filter1?.Id ?? 0;
       Filter2 = filter2;
-      FilterId2 = filterId2;
+      FilterId2 = filter2?.Id ?? 0;
       FilterLayerMethod = filterLayerMethod;
       PatchNumber = patchNumber;
       PatchSize = patchSize;

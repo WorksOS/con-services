@@ -1,14 +1,12 @@
 ﻿using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
-using VSS.TRex.Profiling.Interfaces;
-using VSS.TRex.SiteModels;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Profiling.Factories
 {
-    public class ProfileBuilderFactoryTests : IClassFixture<DILoggingFixture>
+    public class ProfileBuilderFactoryTests : IClassFixture<DIProfilingFixture>
     {
       [Fact]
       public void Test_ProfileBuilderFactory_Creation()
@@ -39,7 +37,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
       {
         var factory = new ProfilerBuilderFactory<ProfileCell>();
 
-        Assert.True(factory.NewProfileLiftBuilder(null, null, null, null, null, null) != null, "Failed to construct new profile lift builder");
+        Assert.True(factory.NewCellProfileAnalyzer(null, null, null, null, null, null) != null, "Failed to construct new profile lift builder");
       }
   }
 }

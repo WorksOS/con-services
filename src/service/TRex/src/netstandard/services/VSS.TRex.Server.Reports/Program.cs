@@ -96,7 +96,7 @@ namespace VSS.TRex.Server.Reports
         typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
         typeof(VSS.TRex.Reports.Gridded.GriddedReportResult),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
-        typeof(VSS.TRex.Common.SubGridsPipelinedReponseBase),
+        typeof(VSS.TRex.Common.SubGridsPipelinedResponseBase),
         typeof(VSS.TRex.Logging.Logger),
         typeof(VSS.TRex.DI.DIContext),
         typeof(VSS.TRex.Storage.StorageProxy),

@@ -23,11 +23,6 @@ namespace VSS.TRex.Rendering.Displayers
     private PassCountRangeRecord TargetPassCountRange = new PassCountRangeRecord(5, 10);
 
     /// <summary>
-    /// Pass Count data holder.
-    /// </summary>
-    private ClientPassCountLeafSubGrid SubGrid;
-
-    /// <summary>
     /// The colour, which Pass Count summary data displayed in on a plan view map, where pass count values are greater than target range.
     /// </summary>
     private Draw.Color AbovePassTargetRangeColour;
@@ -57,15 +52,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientPassCountLeafSubGrid grid)
-      {
-        SubGrid = grid;
-        return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientPassCountLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -80,7 +69,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      var cellValue = SubGrid.Cells[east_col, north_row];
+      var cellValue = ((ClientPassCountLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       if (cellValue.MeasuredPassCount == CellPassConsts.NullPassCountValue)
         return Draw.Color.Empty;

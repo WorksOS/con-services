@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         try
         {
-          return CompactionExportResult.Create(BuildFilePath(request.ProjectId ?? -1, request.CallerId, request.Filename, true));
+          return new CompactionExportResult(BuildFilePath(request.ProjectId ?? -1, request.CallerId, request.Filename, true));
         }
         catch (Exception ex)
         {

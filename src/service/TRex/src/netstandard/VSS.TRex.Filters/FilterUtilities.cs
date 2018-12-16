@@ -6,7 +6,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Filters
 {
@@ -28,7 +28,6 @@ namespace VSS.TRex.Filters
     /// <returns></returns>
     public static RequestErrorStatus PrepareFilterForUse(ICombinedFilter Filter, Guid DataModelID)
     {
-      XYZ[] LLHCoords; //: TCSConversionCoordinates;
       // Fence DesignBoundary = null;
       RequestErrorStatus Result = RequestErrorStatus.OK;
 
@@ -47,9 +46,10 @@ namespace VSS.TRex.Filters
           {
             ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
+            XYZ[] LLHCoords;
             // If the filter has a spatial or positional context, then convert the LLH values in the
             // spatial context into the NEE values consistent with the data model.
-            if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+            if (Filter.SpatialFilter.IsSpatial)
             {
               LLHCoords = new XYZ[Filter.SpatialFilter.Fence.NumVertices];
 
@@ -78,9 +78,9 @@ namespace VSS.TRex.Filters
               Filter.SpatialFilter.Fence.UpdateExtents();
             }
 
-            if (Filter.SpatialFilter.HasSpatialOrPostionalFilters)
+            if (Filter.SpatialFilter.IsPositional)
             {
-              // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
+              // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
               LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionY)) };
 
               (var errorCode, XYZ[] NEECoords) = ConvertCoordinates.LLHToNEE(SiteModel.CSIB(), LLHCoords);
@@ -94,8 +94,6 @@ namespace VSS.TRex.Filters
               
               Filter.SpatialFilter.PositionX = NEECoords[0].X;
               Filter.SpatialFilter.PositionY = NEECoords[0].Y;
-
-              throw new NotImplementedException();
             }
 
             Filter.SpatialFilter.CoordsAreGrid = true;
@@ -104,8 +102,8 @@ namespace VSS.TRex.Filters
           // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
           Filter.SpatialFilter?.Fence.UpdateExtents();
 
-          // Is there an alignment file to look up
-          if (Filter.SpatialFilter.HasAlignmentDesignMask())
+          // Is there an alignment file to look up? If so, only do it if there not an already existing alignment fence boundary
+          if (Filter.SpatialFilter.HasAlignmentDesignMask() && !(Filter.SpatialFilter.AlignmentFence?.HasVertices ?? true))
           {
             throw new NotImplementedException();
             /* TODO - Not yet supported
@@ -128,8 +126,11 @@ namespace VSS.TRex.Filters
           }
 
           // Is there a surface design to look up
-          if (Filter.SpatialFilter.HasAlignmentDesignMask())
+          if (Filter.SpatialFilter.HasSurfaceDesignMask())
           {
+            // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in 
+            // the larger scale determination of the subgrids that need to be queried.
+
             /* If the filter needs to retain a reference to the existence map, then do this...
             Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
@@ -143,7 +144,7 @@ namespace VSS.TRex.Filters
       }
       catch (Exception e)
       {
-        Log.LogError($"PrepareFilterForUse: Exception raise: {e}");
+        Log.LogError("PrepareFilterForUse: Exception raise:", e);
         Result = RequestErrorStatus.Unknown;
       }
 

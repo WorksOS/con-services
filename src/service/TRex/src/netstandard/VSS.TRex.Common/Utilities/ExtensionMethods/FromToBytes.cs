@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 
-namespace VSS.TRex.Utilities.ExtensionMethods
+namespace VSS.TRex.Common.Utilities.ExtensionMethods
 {
   /// <summary>
   /// Extension methods supporting serialisation and deserialisation to and from vanilla byte arrays.
@@ -95,7 +95,7 @@ namespace VSS.TRex.Utilities.ExtensionMethods
     /// A generic method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
     /// </summary>
     /// <param name="serialiser"></param>
-    /// <param name="buffer"></param>
+    /// <param name="helperBuffer"></param>
     /// <returns></returns>
     public static byte[] ToBytes(Action<BinaryWriter, byte[]> serialiser, byte[] helperBuffer)
     {

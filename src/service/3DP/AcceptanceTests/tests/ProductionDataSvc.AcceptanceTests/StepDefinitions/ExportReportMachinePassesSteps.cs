@@ -6,7 +6,7 @@ using Xunit.Gherkin.Quick;
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 {
   [FeatureFile("ExportReportMachinePasses.feature")]
-  public sealed class ExportReportMachinePassesSteps : FeatureGetRequestBase
+  public class ExportReportMachinePassesSteps : FeatureGetRequestBase
   {
     /// <summary>
     /// This method unzips the csv file. It then sorts it before comparing the actual with expected.
@@ -15,12 +15,11 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void ThenTheReportResultCsvShouldMatchTheFromTheRepository(string resultName)
     {
       var expectedResultAsBinary = GetResponseHandler.ResponseRepo[resultName]["exportData"].ToObject<byte[]>();
-      var expectedResult = Encoding.Default.GetString(Common.Decompress(expectedResultAsBinary));
-      
-      var actualResult = Encoding.Default.GetString(Common.Decompress(GetResponseHandler.ByteContent));
-      
-      var expSorted = Common.SortCsvFileIntoString(expectedResult);
-      var actSorted = Common.SortCsvFileIntoString(actualResult);
+      var expectedResult = Encoding.Default.GetString(HelperUtilities.Decompress(expectedResultAsBinary));
+      var actualResult = Encoding.Default.GetString(HelperUtilities.Decompress(GetResponseHandler.ByteContent));
+
+      var expSorted = HelperUtilities.SortCsvFileIntoString(expectedResult);
+      var actSorted = HelperUtilities.SortCsvFileIntoString(actualResult);
 
       Assert.True(expSorted == actSorted, "Expected CSV file does not match actual");
     }

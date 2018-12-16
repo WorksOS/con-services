@@ -9,7 +9,7 @@ using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 /*
   This unit provides a grid decimator capable of turning very large scale grids
@@ -811,7 +811,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception {E} in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}");
+        Log.LogError($"Exception in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}", E);
         ValidTriangle = false;
       }
 

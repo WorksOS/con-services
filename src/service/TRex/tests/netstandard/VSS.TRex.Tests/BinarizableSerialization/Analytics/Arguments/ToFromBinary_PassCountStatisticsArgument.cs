@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
         TRexNodeID = "1",
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
-        ReferenceDesignID = Guid.NewGuid(),
+        ReferenceDesignUID = Guid.NewGuid(),
         OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
         OverrideTargetPassCount = false,
         PassCountDetailValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }

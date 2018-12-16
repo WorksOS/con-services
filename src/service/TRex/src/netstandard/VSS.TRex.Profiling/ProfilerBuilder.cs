@@ -18,11 +18,6 @@ namespace VSS.TRex.Profiling
     private static readonly IProfilerBuilderFactory<T> factory = DI.DIContext.Obtain<IProfilerBuilderFactory<T>>();
 
     /// <summary>
-    /// Builder responsible for per-cell profile analysis
-    /// </summary>
-    public ICellLiftBuilder CellLiftBuilder { get; set; }
-
-    /// <summary>
     /// Builder responsible for constructing cell vector from profile line
     /// </summary>
     public ICellProfileBuilder<T> CellProfileBuilder { get; set; }
@@ -30,8 +25,12 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Builder responsible from building overall profile information from cell vector
     /// </summary>
-    public IProfileLiftBuilder<T> ProfileLiftBuilder { get; set; }
+    public ICellProfileAnalyzer<T> CellProfileAnalyzer { get; set; }
 
+    /// <summary>
+    /// Builder responsible for per-cell profile analysis
+    /// </summary>
+    public ICellLiftBuilder CellLiftBuilder { get; set; }
     public ProfilerBuilder()
     {
     }
@@ -65,7 +64,7 @@ namespace VSS.TRex.Profiling
 
         CellProfileBuilder = factory.NewCellProfileBuilder(siteModel, cellFilter, cutFillDesign, slicerToolUsed);
 
-        ProfileLiftBuilder = factory.NewProfileLiftBuilder(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
+        CellProfileAnalyzer = factory.NewCellProfileAnalyzer(siteModel, productionDataExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, CellLiftBuilder);
     }
   }
 }

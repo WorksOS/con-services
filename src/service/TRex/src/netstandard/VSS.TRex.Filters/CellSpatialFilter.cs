@@ -3,7 +3,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Filters
 {
@@ -83,7 +83,7 @@ namespace VSS.TRex.Filters
             LeftOffset = null;
             RightOffset = null;
 
-            AlignmentMaskDesignUID = Guid.Empty;
+            AlignmentDesignMaskDesignUID = Guid.Empty;
         }
 
         /// <summary>
@@ -120,28 +120,26 @@ namespace VSS.TRex.Filters
         }
 
         /// <summary>
-        /// Determines if the filter contains sufficient information to adequately describe an active alignment
-        /// or design mask spatial filter
+        /// Determines if the filter contains sufficient information to adequately describe an active alignment mask spatial filter
         /// </summary>
         /// <returns></returns>
         public bool HasAlignmentDesignMask()
         {
-            return AlignmentMaskDesignUID != Guid.Empty && 
+            return AlignmentDesignMaskDesignUID != Guid.Empty && 
                    StartStation.HasValue && EndStation.HasValue &&
                    LeftOffset.HasValue && RightOffset.HasValue;
         }
 
         /// <summary>
-        /// Determines if the filter contains sufficient information to adequately describe an active alignment
-        /// or design mask spatial filter
+        /// Determines if the filter contains sufficient information to adequately describe an active design mask spatial filter
         /// </summary>
         /// <returns></returns>
-        public bool HasSurfaceDesignMask => SurfaceDesignMaskDesignUid != Guid.Empty;
+        public bool HasSurfaceDesignMask() => SurfaceDesignMaskDesignUid != Guid.Empty;
 
         /// <summary>
         /// Determines if the type of the spatial filter is Spatial or Positional
         /// </summary>
-        public bool HasSpatialOrPostionalFilters => IsSpatial || IsPositional || IsDesignMask || IsAlignmentMask;
+        public bool HasSpatialOrPositionalFilters => IsSpatial || IsPositional || IsDesignMask || IsAlignmentMask;
 
         /// <summary>
         /// Determines if a cell given by it's central location is included in the spatial filter

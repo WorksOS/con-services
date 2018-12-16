@@ -7,19 +7,6 @@ using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.Common.Utilities
 {
-  [AttributeUsage(AttributeTargets.Assembly)]
-  public class ForceAssemblyReference : Attribute
-  {
-    public ForceAssemblyReference(Type forcedType)
-    {
-      //not sure if these two lines are required since 
-      //the type is passed to constructor as parameter, 
-      //thus effectively being used
-      Action<Type> noop = _ => { };
-      noop(forcedType);
-    }
-  }
-
   /// <summary>
   /// Iterates through all assemblies present in the same folder as the executing context and loads them if they are not
   /// already present in the loaded assemblies in the current application domain.
@@ -35,16 +22,19 @@ namespace VSS.TRex.Common.Utilities
     public static void LoadAllAssembliesForExecutingContext()
     {
       // Find already loaded assemblies
-      var asms = AppDomain.CurrentDomain.GetAssemblies();
+      var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
       var allAssemblies = new List<Assembly>();
       var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+      if (path == null)
+        return;
 
       Log.LogInformation("");
       Log.LogInformation("Assemblies currently loaded");
       Log.LogInformation( "==========================");
 
-      foreach (var asm in asms)
+      foreach (var asm in assemblies)
         Log.LogInformation($"{asm.FullName}");
 
       Log.LogInformation("");
@@ -56,7 +46,7 @@ namespace VSS.TRex.Common.Utilities
         try
         {
           // Only load the assembly if not already present
-          if (!asms.Any(x => x.Location.Equals(dll)))
+          if (!allAssemblies.Any(x => x.Location.Equals(dll)))
           {
             Log.LogInformation($"Loading TRex assembly {dll}");
 
@@ -65,7 +55,7 @@ namespace VSS.TRex.Common.Utilities
         }
         catch (Exception ex)
         {
-          Log.LogError($"Exception raised while loading assembly {dll}\n{ex}");
+          Log.LogError($"Exception raised while loading assembly {dll}", ex);
         }
       }
 

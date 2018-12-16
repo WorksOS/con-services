@@ -6,7 +6,7 @@ namespace VSS.TRex.Storage.Caches
 {
     public class TRexNonSpatialCacheStore : CacheStoreAdapter<string, MemoryStream>
     {
-        private TRexCacheStoreUtilities Utilities;
+        private readonly TRexCacheStoreUtilities Utilities;
 
         public TRexNonSpatialCacheStore(string mutabilitySuffix)
         {
@@ -26,13 +26,11 @@ namespace VSS.TRex.Storage.Caches
         public override void LoadCache(Action<string, MemoryStream> act, params object[] args)
         {
             // Ignore - not a supported activity
-            // throw new NotImplementedException();
         }
 
         public override void SessionEnd(bool commit)
         {
-            // Ignore, nothign to do
-            // throw new NotImplementedException();
+            // Ignore, nothing to do
         }
 
         public override void Write(string key, MemoryStream val)

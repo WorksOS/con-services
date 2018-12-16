@@ -51,7 +51,7 @@ namespace VSS.TRex.Webtools.Controllers
         mode: (DisplayMode) mode,
         filter1: new CombinedFilter(),
         filter2: new CombinedFilter(),
-        referenceDesignId: Guid.Empty
+        referenceDesignUid: Guid.Empty
       )) as TileRenderResponse_Core2;
 
       return new JsonResult(new TileResult(response?.TileBitmapData));
@@ -72,7 +72,9 @@ namespace VSS.TRex.Webtools.Controllers
         (DisplayMode.CutFill, "Cut/Fill"),
         (DisplayMode.MachineSpeed, "Speed"),
         (DisplayMode.TargetSpeedSummary, "Speed Summary"),
-        (DisplayMode.TemperatureSummary, "Temperature Summary")
+        (DisplayMode.TemperatureSummary, "Temperature Summary"),
+        (DisplayMode.CCA, "CCA"),
+        (DisplayMode.CCASummary, "CCA Summary")
       });
     }
   }
