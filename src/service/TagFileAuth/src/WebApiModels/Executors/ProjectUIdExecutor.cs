@@ -29,18 +29,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       string projectUid = string.Empty;
       IEnumerable<Project> potentialProjects = new List<Project>();
 
-      log.LogDebug($"ProjectUidExecutor: Going to process request {JsonConvert.SerializeObject(request)}" );
+      log.LogDebug($"ProjectUidExecutor: Going to process request {JsonConvert.SerializeObject(request)}");
 
       // get the owningCustomer of the device-Asset
       var assetDevice =
-        await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum)request.deviceType).ToString());
+        await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
 
       // If fails on SNM940 try as again SNM941 
-      if (assetDevice == null && (DeviceTypeEnum)request.deviceType == DeviceTypeEnum.SNM940)
+      if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)
       {
         log.LogDebug("ProjectUidExecutor: Failed for SNM940 trying again as Device Type SNM941");
         assetDevice = await dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
       }
+
       if (assetDevice == null)
       {
         log.LogDebug("ProjectUidExecutor: Unable to find device-asset association.");
@@ -64,7 +65,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (standardProjects != null && enumerable.Any())
         {
           potentialProjects = potentialProjects.Concat(enumerable);
-          log.LogDebug($"ProjectUidExecutor: Loaded standardProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
+          log.LogDebug(
+            $"ProjectUidExecutor: Loaded standardProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
         }
         else
         {
@@ -76,13 +78,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  assetCustomer must have a PM sub
       var pmProjects = await dataRepository.GetProjectMonitoringProject(assetDevice.OwningCustomerUID,
         request.latitude, request.longitude, request.timeOfPosition,
-        (int)ProjectType.ProjectMonitoring,
-        (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum));
+        (int) ProjectType.ProjectMonitoring, (int) ServiceTypeEnum.ProjectMonitoring);
       enumerable = pmProjects.ToList();
       if (pmProjects != null && enumerable.Any())
       {
         potentialProjects = potentialProjects.Concat(enumerable);
-        log.LogDebug($"ProjectUidExecutor: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
+        log.LogDebug(
+          $"ProjectUidExecutor: Loaded pmProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
       }
       else
       {
@@ -93,12 +95,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //   assetCustomer must have a Landfill sub
       var landfillProjects = await dataRepository.GetProjectMonitoringProject(assetDevice.OwningCustomerUID,
         request.latitude, request.longitude, request.timeOfPosition,
-        (int)ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum));
+        (int) ProjectType.LandFill, (int) ServiceTypeEnum.Landfill);
       enumerable = landfillProjects.ToList();
       if (landfillProjects != null && enumerable.Any())
       {
         potentialProjects = potentialProjects.Concat(enumerable);
-        log.LogDebug($"ProjectUidExecutor: Loaded landfillProjects which lat/long is within { JsonConvert.SerializeObject(enumerable)}");
+        log.LogDebug(
+          $"ProjectUidExecutor: Loaded landfillProjects which lat/long is within {JsonConvert.SerializeObject(enumerable)}");
       }
       else
       {
@@ -133,6 +136,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           ProjectUidHelper.FormatResult(projectUid, 35));
       }
     }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new System.NotImplementedException();
