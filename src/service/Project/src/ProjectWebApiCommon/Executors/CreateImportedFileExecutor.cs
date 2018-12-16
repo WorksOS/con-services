@@ -94,7 +94,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           await ImportedFileRequestHelper.GenerateDxfTiles(addFileResult, createimportedfile.ProjectUid, customerUid,
             createimportedfile.FileName, createimportedfile.ImportedFileType, createimportedfile.DxfUnitsType, 
-            project.CoordinateSystemFileName, log, customHeaders, tileProxy);
+            project.CoordinateSystemFileName, log, customHeaders, tileServiceProxy);
         }
 
         var existing = await projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())

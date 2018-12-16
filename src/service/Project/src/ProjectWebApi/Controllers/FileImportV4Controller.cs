@@ -59,15 +59,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="subscriptionRepo"></param>
     /// <param name="fileRepo"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="tileServiceProxy"></param>
     public FileImportV4Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, ITileServiceProxy tileServiceProxy)
       : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, tileServiceProxy)
     {
       this.logger = logger;
     }

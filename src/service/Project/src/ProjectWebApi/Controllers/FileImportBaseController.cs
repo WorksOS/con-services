@@ -66,14 +66,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="requestFactory"></param>
     /// <param name="log"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="tileServiceProxy"></param>
     public FileImportBaseController(IKafka producer,
       IConfigurationStore configStore, ILoggerFactory logger, ILogger log, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, ITileServiceProxy tileServiceProxy)
       : base(log, configStore, serviceExceptionHandler, producer,
-        raptorProxy, projectRepo, subscriptionRepo, fileRepo, dataOceanClient)
+        raptorProxy, projectRepo, subscriptionRepo, fileRepo, dataOceanClient, tileServiceProxy)
     {
       this.logger = logger;
       this.requestFactory = requestFactory;
