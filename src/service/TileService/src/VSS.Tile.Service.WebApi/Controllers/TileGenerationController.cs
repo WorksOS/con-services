@@ -41,7 +41,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <param name="dxfFileName">The path and name of the DXF file</param>
     /// <param name="dxfUnitsType">The units for the DXF file</param>
     /// <returns></returns>
-    [Route("/api/v1/generatedxftiles")]
+    [Route("/internal/v1/generatedxftiles")]
     [HttpGet]
     public Task<TileMetadata> GenerateDxfTiles([FromQuery] string dcFileName, [FromQuery] string dxfFileName, [FromQuery] DxfUnitsType dxfUnitsType)
     {
