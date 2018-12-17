@@ -1,3 +1,4 @@
+from typing import Tuple, Dict
 class CompactionEvaluation:
 
     def __init__(self, machine_compaction_zone, low_volume_cell_threshold, filter_elevation_uncertainty, double_handle_threshold, thick_lift_threshold ):
@@ -28,6 +29,64 @@ class CompactionEvaluation:
         self.thick_lift_threshold = thick_lift_threshold
         self.lift_passes = 0
         self.compaction_passes = 0
+
+    '''Get set of machines which have contriubted to the project '''
+    def get_contributing_machines(self, northEastDict):
+
+        contributing_machines = set()
+        # find contributing machines
+        for cell, pass_list in northEastDict.items():
+            for cell_pass in pass_list:
+                # find which machines worked in the time period
+                contributing_machines.add(cell_pass['machine'])
+
+        return contributing_machines
+
+    '''Determine machine operation time (this is quite likely to be inaccurate) '''
+
+    def analyse_machine_operation(self, machines_to_analyse, northEastDict) -> Tuple[float, Dict]:
+        # TODO Really check this logic - I not sure we have the right info here to determine this in a meaningful way, additionally the calc looks wrong
+
+        total_duration = 0.0
+        machine_duration = 0.0
+        machine_operation_dict = {}
+
+        for machine in machines_to_analyse:
+            start_time = None
+            stop_time = None
+            start_hour = None
+            # Find start and stop time for each machine
+            for k, dk in northEastDict.items():
+                for x in dk:  # x is the ? # for all keys
+                    if machine == x['machine']:
+                        DateTimeSTR = str(x['dateTime'])
+                        # sppos = DateTimeSTR.find(' ')
+                        current_time = DateTimeSTR[10 + 1:]
+                        # current_date = DateTimeSTR[:10]
+                        if start_time is None or start_time > current_time:
+                            start_time = current_time
+                            start_hour = start_time[:2]
+                            start_minute = start_time[3:5]
+
+                        if stop_time is None or stop_time < current_time:
+                            stop_time = current_time
+                            stop_hour = int(stop_time[:2])
+                            stop_minute = int(stop_time[3:5])
+                        #TODO Tidy this up
+                        if int(stop_minute) < int(start_minute):
+                            stop_hour -= 1
+                            stop_minute += 60
+                        duration_hour = int(stop_hour) - int(start_hour)
+                        duration_minute = (int(stop_minute) - int(start_minute)) / 60
+                        machine_duration = duration_hour + duration_minute
+            machine_operation_data = {
+                "duration": machine_duration,
+                "start": start_time,
+                "stop": stop_time,
+            }
+            machine_operation_dict.setdefault(machine, []).append(machine_operation_data)
+            total_duration = float(total_duration) + float(machine_duration)
+        return total_duration, machine_operation_dict
 
     # TODO lift this into compcation evaulation
     def evaluate_compaction(self, ne_dict: dict, cell_summaries: dict):
@@ -70,8 +129,8 @@ class CompactionEvaluation:
                 # for vol in passes:  # determine if cell compaction should be evaluated for specific cell based on volume of cell
                 current_elevation = None
                 event_elevation_bottom_active_material = {}
-                volume = cell_summaries['volume']
-                passes_for_cell = cell_summaries['passes_for_cell']
+                volume = cell_summaries[cell]['volume']
+                passes_for_cell = cell_summaries[cell]['passes_for_cell']
 
                 if volume < 0:
                     self.cnt_cut_cells += 1
@@ -333,6 +392,8 @@ class CompactionEvaluation:
         # End Evaluate compaction  #
         ############################
         self.__update_stats_after_evaulation__()
+        return cell_summaries
+
 
     def __update_stats_after_evaulation__(self):
         self.lift_passes = self.positive_passes - self.cnt_lift_uncertainty

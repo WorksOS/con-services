@@ -3,7 +3,9 @@ from datetime import datetime
 import csv
 import sys
 import pandas as pd
+from tempfile import SpooledTemporaryFile
 from typing import Dict, Tuple, List
+#from src.landfill import CompactionEvaluation
 from src.landfill.compaction_evaulation import CompactionEvaluation
 import xlsxwriter
 # from pandas import ExcelWriter
@@ -18,7 +20,7 @@ class LandfillAlgorithm():
 
 
 
-    def __init__(self, metric=True, create_points=False):
+    def __init__(self, metric=False, create_points=False):
         self.create_points = create_points
         self.is_metric = metric
 
@@ -32,6 +34,7 @@ class LandfillAlgorithm():
         self.filter_low_volume_cell = 0.0  # used to refine area of operation by removing cells with little volume
         self.filter_elevation_uncertainty = 0.0  # used to keep passes with little elevation change out of compaction and lift statistics
         self.current_file = None
+        self.filename = ""
 
 
     '''Set the units used depending on what is in the file)'''
@@ -47,12 +50,25 @@ class LandfillAlgorithm():
             self.filter_low_volume_cell = 0.5
 
 
+    '''Generate a report'''
 
-    def generate_report(self, input_file, output_location=None):
+    def generate_report(self, input_file: Dict):
 
-        filename = input_file
-        self.current_file = Path(filename).stem
-        cell_pass_count_total, north_east_dict = self.build_ne_dict(filename)
+        self.filename = [x for x in input_file.keys()][0]
+        #self.current_file = Path(filename).stem
+        cell_pass_count_total, north_east_dict = self.build_ne_dict(input_file[self.filename])
+
+        #machine_compaction_zone, low_volume_cell_threshold, filter_elevation_uncertainty, double_handle_threshold, thick_lift_threshold ):
+        compaction_evaulation = CompactionEvaluation(self.machine_compaction_zone,
+                                                     self.filter_low_volume_cell,
+                                                     self.filter_elevation_uncertainty,
+                                                     self.double_handle_threshold,
+                                                     self.thick_lift_threshold
+                                                     )
+        contributing_machines = compaction_evaulation.get_contributing_machines(north_east_dict)
+        total_duration, machine_operation_dict = compaction_evaulation.analyse_machine_operation(contributing_machines, north_east_dict)
+
+
 
         #do we want/need point cloud? Probably not but here it is just in case
 
@@ -61,93 +77,70 @@ class LandfillAlgorithm():
         #generate cell summary
         bin_pass_counts, cell_summaries = self.generate_cell_summary(north_east_dict)
 
+        #    def __create_excel_report__(self, contributing_machines,
+        #                         total_duration,
+        #                         cell_pass_count_total,
+        #                         ne_dict,
+        #                         bin_pass_counts, #replaced with compcation evaulation
+        #                         cell_summaries,
+        #                         machine_operation_dict):
+
+        # def __create_excel_report__(self, contributing_machines,
+        #                             total_duration,
+        #                             cell_pass_count_total,
+        #                             ne_dict,
+        #                             compaction_evaulation,
+        #                             cell_summaries,
+        #                             machine_operation_dict):
+        cell_summaries = compaction_evaulation.evaluate_compaction(north_east_dict, cell_summaries)
+
+        excel_report = self.__create_excel_report__(contributing_machines,
+                                                    total_duration,
+                                                    cell_pass_count_total,
+                                                    north_east_dict,
+                                                    compaction_evaulation,
+                                                    cell_summaries,
+                                                    machine_operation_dict
+                                                    )
+
+        return excel_report
+
+
+
 
 
 
     #TODO sort out cell header names depending on type
     '''Read a cav file like object and return a tuple with passcount and NE Dict '''
-    def build_ne_dict(self, filename: str) -> Tuple[int, Dict]:
+    def build_ne_dict(self, file) -> Tuple[int, Dict]:
         #############################################################
         # read CSV file into dictionary grouped by unique NE values #
         #############################################################
         northEastDict = {}
         cell_pass_count_total = 0
 
-        with codecs.open(filename, mode="r", encoding="utf-8-sig") as csvFile:
-
-            for csvRow in csv.DictReader(csvFile):
-                cell_pass_count_total = cell_pass_count_total + 1  # total number of cell passes in the file
-                northEastData = {
-                    "dateTime": datetime.strptime(csvRow["Time"], "%Y/%b/%d %H:%M:%S.%f"),
-                    "machine": csvRow["Machine"],
-                    "elevation": float(csvRow["Elevation_FT"]),
-                    "passNumber": int(csvRow["PassNumber"]),
-                    "delta_from_last_pass": 0.0,
-                    "EventMagnitude:": 0.0,
-                }
-                northEast = (float(csvRow["CellN_FT"]), float(csvRow["CellE_FT"]))
-                northEastDict.setdefault(northEast, []).append(northEastData)
-            # End of for csvRow in csvReader:
+        #with codecs.iterdecode(filename, 'utf-8') as csvFile:
+        csvFile = codecs.iterdecode(file, 'utf-8-sig')
+        for csvRow in csv.DictReader(csvFile):
+            cell_pass_count_total = cell_pass_count_total + 1  # total number of cell passes in the file
+            northEastData = {
+                "dateTime": datetime.strptime(csvRow["Time"], "%Y-%b-%d %H:%M:%S.%f"),
+                "machine": csvRow["Machine"],
+                "elevation": float(csvRow["Elevation_FT"]),
+                "passNumber": int(csvRow["PassNumber"]),
+                "delta_from_last_pass": 0.0,
+                "EventMagnitude": 0.0,
+            }
+            northEast = (float(csvRow["CellN_FT"]), float(csvRow["CellE_FT"]))
+            northEastDict.setdefault(northEast, []).append(northEastData)
+        # End of for csvRow in csvReader:
         # End of with open(filename) as csvFile:
         # created a dictionary grouped by NE grid
         return cell_pass_count_total, northEastDict
 
-    '''Get set of machines which have contriubted to the project '''
-    def get_contributing_machines(self, northEastDict):
 
-        contributing_machines = set()
-        # find contributing machines
-        for cell, pass_list in northEastDict.items():
-            for cell_pass in pass_list:
-                # find which machines worked in the time period
-                contributing_machines.add(cell_pass['machine'])
 
-        return contributing_machines
 
-    '''Determine machine operation time (this is quite likely to be inaccurate) '''
-    def analyse_machine_operation(self, machines_to_analyse, northEastDict) -> Tuple[float, Dict]:
-        #TODO Really check this logic - I not sure we have the right info here to determine this in a meaningful way, additionally the calc looks wrong
-
-        total_duration = 0.0
-        machine_duration = 0.0
-        machine_operation_dict = {}
-
-        for machine in machines_to_analyse:
-            start_time = None
-            stop_time = None
-            start_hour = None
-            # Find start and stop time for each machine
-            for k, dk in northEastDict.items():
-                for x in dk:  # x is the ? # for all keys
-                    if machine == x['machine']:
-                        DateTimeSTR = str(x['dateTime'])
-                        #sppos = DateTimeSTR.find(' ')
-                        current_time = DateTimeSTR[10 + 1:]
-                        #current_date = DateTimeSTR[:10]
-                        if start_time is None or start_time > current_time:
-                            start_time = current_time
-                            start_hour = start_time[:2]
-                            start_minute = start_time[3:5]
-
-                        if stop_time is None or stop_time < current_time:
-                            stop_time = current_time
-                            stop_hour = stop_time[:2]
-                            stop_minute = stop_time[3:5]
-
-                        if int(stop_minute) < int(start_minute):
-                            stop_hour = int(stop_hour) - 1
-                            stop_minute = int(stop_minute) + 60
-                        duration_hour = int(stop_hour) - int(start_hour)
-                        duration_minute = (int(stop_minute) - int(start_minute)) / 60
-                        machine_duration = duration_hour + duration_minute
-            machine_operation_data = {
-                "duration": machine_duration,
-                "start": start_time,
-                "stop": stop_time,
-            }
-            machine_operation_dict.setdefault(machine, []).append(machine_operation_data)
-            total_duration = float(total_duration) + float(machine_duration)
-        return total_duration, machine_operation_dict
 
     def generate_point_cloud_surfaces(self, northEastDict):
         top_surface = []
@@ -416,16 +409,16 @@ class LandfillAlgorithm():
         
         END NOT CURRENTLY USED '''
 
-    def create_excel_report(self, contributing_machines,
-                            total_duration,
-                            cell_pass_count_total,
-                            ne_dict,
-                            bin_pass_counts,
-                            cell_summaries,
-                            machine_operation_dict):
+    def __create_excel_report__(self, contributing_machines,
+                                total_duration,
+                                cell_pass_count_total,
+                                ne_dict,
+                                compaction_evaulation,
+                                cell_summaries,
+                                machine_operation_dict):
 
-        compaction_evaulation = CompactionEvaluation(self.machine_compaction_zone)
-        compaction_evaulation.evaluate_compaction(ne_dict, cell_summaries)
+        #compaction_evaulation = CompactionEvaluation(self.machine_compaction_zone)
+        #compaction_evaulation.evaluate_compaction(ne_dict, cell_summaries)
 
 
 
@@ -445,6 +438,8 @@ class LandfillAlgorithm():
         machine_area_eventDict_negative = {"remediation_area": {}, }
 
         machine_lift_Dict = {"lifts": {}, }
+
+        single_pass_cells = 0
 
         for current_machine in contributing_machines:
             #blah = list(contributing_machines)
@@ -553,6 +548,8 @@ class LandfillAlgorithm():
         # tally events remediation TBD
 
         for cell, passes in ne_dict.items():
+            if len(passes) == 1:
+                single_pass_cells += 1
             for cell_pass in passes:
                 current_time = (cell_pass['dateTime'])
 
@@ -602,15 +599,18 @@ class LandfillAlgorithm():
         # passcount occurances - put into a list to sort
 
         #TODO What are we up to here?
-        lst = list()
-        for cell, v in (sorted(bin_pass_counts.items())):
-            # print (k , "Passes " ,v, " occurances ")
-            lst.append((int(cell), v))
-        lst.sort()
-
-        for cell, v in lst[:1]:
-            single_pass_cells = v
+        # lst = list()
+        # for cell, v in (sorted(bin_pass_counts.items())):
+        #     # print (k , "Passes " ,v, " occurances ")
+        #     lst.append((int(cell), v))
+        # lst.sort()
+        #
+        # for cell, v in lst[:1]:
+        #     single_pass_cells = v
         # End passcount sorting
+        print("single pass cells{}".format(single_pass_cells))
+
+
 
         #################################################
         # Create Over,Under and thicklift surface files #
@@ -662,7 +662,7 @@ class LandfillAlgorithm():
         #     East = cell[1]
         #     North = cell[0]
 
-        for cell, summary in cell_summaries.items:
+        for cell, summary in cell_summaries.items():
             North, East = cell
 
             #if "passes_for_cell" in summary:  # determine if cell compaction is present to be evaluated
@@ -685,8 +685,8 @@ class LandfillAlgorithm():
             # total volume information
             total_volume = float(total_volume) + float(current_cell_volume)
             total_cut = float(total_cut) + float(current_cell_cut)
-            total_fill = float(total_fill) + float(current_cell_fill)
-            total_event_volume = float(total_event_volume) + float(current_event_volume)
+            total_fill += current_cell_fill
+            total_event_volume += current_event_volume
 
             # pull cell stats
             current_cnt_over = summary['cnt_over_compaction']
@@ -726,7 +726,7 @@ class LandfillAlgorithm():
         single_pass_area = single_pass_cells * self.AreatoAcre
         area_cut_cell = compaction_evaulation.cnt_cut_cells * self.AreatoAcre
         area_low_volume_cell = compaction_evaulation.cnt_low_volume_cells * self.AreatoAcre
-        active_compaction_area = (compaction_evaulation.cnt_unique_cell_compaction_area * self.AreatoAcre)
+        active_compaction_area = compaction_evaulation.cnt_unique_cell_compaction_area * self.AreatoAcre
 
 
         # Output file
@@ -934,7 +934,8 @@ class LandfillAlgorithm():
         ##########################################################
         # create Volume dictionary and write to .xlxs file
         ##########################################################
-        ExcelOutputFile = "./output/" + self.current_file + ".xlsx"
+        #ExcelOutputFile = "./output/" + self.current_file + ".xlsx"
+        excel_output_file = SpooledTemporaryFile(max_size=25000)
 
         tempVolumeDict = {}  # mitigated volume
         tempVolumeDict_accumulated = {}
@@ -1041,7 +1042,7 @@ class LandfillAlgorithm():
         df10 = pd.DataFrame(tempAreaDict)
 
         # create sheets
-        writer = pd.ExcelWriter(ExcelOutputFile, engine='xlsxwriter')
+        writer = pd.ExcelWriter(excel_output_file, engine='xlsxwriter')
         workbook = writer.book
         worksheetSummary = workbook.add_worksheet('Site summary')
         df1.to_excel(writer, 'Mitigated_Volume')
@@ -1212,3 +1213,4 @@ class LandfillAlgorithm():
         """
         ###############################################
         writer.save()
+        return excel_output_file

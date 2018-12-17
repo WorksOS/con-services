@@ -1,9 +1,12 @@
-from flask import Flask
+from flask import Flask, send_file
 from flask import request
 from flask_cors import CORS
 from datetime import datetime
-from src.httpClients import SchedulerClient, PassCountExport
+from src.httpClients import SchedulerClient, VetaExport
+from src.landfill import LandfillAlgorithm
 import requests
+import json
+import io
 app= Flask(__name__)
 CORS(app)
 
@@ -22,11 +25,15 @@ def export():
     job_id = res.json()["jobId"]
 
     export_status = client.poll_job_until_complete(job_id, auth_headers)
-    if export_status.status == requests.codes.ok and \
-        export_status.content.json()["stauts"] == "Succeeded":
-        pass_count_export = PassCountExport(export_status.content.json["downloadLink"])
+    if export_status.status_code == requests.codes.ok and \
+        json.loads(export_status.content)["status"] == "Succeeded":
+        pass_count_export = VetaExport(json.loads(export_status.content)["downloadLink"])
+        landfill_algorithm = LandfillAlgorithm()
+        landfill_report = landfill_algorithm.generate_report(pass_count_export.get_veta_export())
+        landfill_report.seek(0)
 
-    return export_status.content
+    return send_file(landfill_report, attachment_filename="Landfill Report", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 
 
 
