@@ -4,7 +4,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces.Interfaces
 {

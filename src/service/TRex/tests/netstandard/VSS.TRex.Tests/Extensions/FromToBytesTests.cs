@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using VSS.TRex.Utilities.Interfaces;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using Xunit;
 
 namespace VSS.TRex.Tests.Extensions

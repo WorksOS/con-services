@@ -137,8 +137,8 @@ namespace VSS.TRex.SubGrids
             FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
             FilteredSurveyedSurfacesAsArray = filteredSurveyedSurfacesAsArray;
         
-            if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
-              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignID);
+            if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
+              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignUID);
 
             if (Filter.SpatialFilter.IsDesignMask)
               SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
@@ -162,7 +162,7 @@ namespace VSS.TRex.SubGrids
                 // If the elevation range filter uses a design then the design elevations
                 // for the subgrid need to be calculated and supplied to the filter
 
-                if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
+                if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
                 {
                   // Query the design get the patch of elevations calculated
                   ElevationRangeDesign.GetDesignHeights(SiteModel.ID,

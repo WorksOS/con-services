@@ -6,7 +6,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;

@@ -14,7 +14,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -94,13 +94,6 @@ namespace VSS.TRex.SubGrids.Executors
     /// The Design to be used for querying elevation information from in the process of calculating cut-fill values
     /// </summary>
     private IDesign ReferenceDesign;
-
-    //       private IDesignManager designManager;
-
-    /// <summary>
-    /// DI injected context for designs service
-    /// </summary>
-//        private IDesignManager DesignManager => designManager ?? (designManager = DIContext.Obtain<IDesignManager>());
 
     private ITRexSpatialMemoryCache subGridCache;
 
@@ -421,7 +414,7 @@ namespace VSS.TRex.SubGrids.Executors
       ITRexSpatialMemoryCacheContext CacheContext)[] RequestorIntermediaries;
 
     /// <summary>
-    /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches precalculated
+    /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches pre-calculated
     /// ready to be used to create per-Task requestor delegates
     /// </summary>
     /// <returns></returns>

@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Utilities
+﻿namespace VSS.TRex.Common.Utilities
 {
     /// <summary>
     /// Useful helpers for manipulating bits

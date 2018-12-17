@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace VSS.TRex.Utilities.ExtensionMethods
+namespace VSS.TRex.Common.Utilities.ExtensionMethods
 {
     /// <summary>
     /// Handy extensions for the binary reader class

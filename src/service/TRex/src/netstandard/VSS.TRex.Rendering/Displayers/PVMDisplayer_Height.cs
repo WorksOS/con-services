@@ -11,24 +11,13 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_Height : PVMDisplayerBase
   {
     /// <summary>
-    /// Elevation data holder. 
-    /// </summary>
-    private ClientHeightLeafSubGrid SubGrid;
-
-    /// <summary>
     /// Renders Elevationy data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientHeightLeafSubGrid grid)
-      {
-          SubGrid = grid;
-          return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientHeightLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -43,7 +32,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      float Height = SubGrid.Cells[east_col, north_row];
+      float Height = ((ClientHeightLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       return Height == Consts.NullHeight ? Draw.Color.Empty : Palette.ChooseColour(Height);
     }

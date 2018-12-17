@@ -46,7 +46,7 @@ namespace TAGFiles.Tests
       Assert.True(0 == missing.Count);
       // Spot check a couple of names...
 //    Assert.IsTrue(valueNames.Contains("TIME") && valueNames.Contains("WEEK"), "TAG value names list does not contain expected names");
-//    Assert.IsTrue(String.Join(", ", valueNames) != String.Empty);
+//    Assert.IsTrue(String.Join(", ", valueNames) != string.Empty);
       //Assert.True(false,String.Join(", ", valueNames));
     }
   }

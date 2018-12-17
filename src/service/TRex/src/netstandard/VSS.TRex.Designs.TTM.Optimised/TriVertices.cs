@@ -23,7 +23,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     }
 
     /// <summary>
-    /// Reads the collection of vertices usign the provided reader
+    /// Reads the collection of vertices using the provided reader
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="header"></param>
@@ -66,7 +66,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
     /**** Experimental code requiring unsafe code. Removed for now...
     /// <summary>
-    /// Reads the collection of vertices usign the provided reader
+    /// Reads the collection of vertices using the provided reader
     /// </summary>
     /// <param name="header"></param>
     public unsafe void Read(byte[] bytes, int bufPos, TTMHeader header)

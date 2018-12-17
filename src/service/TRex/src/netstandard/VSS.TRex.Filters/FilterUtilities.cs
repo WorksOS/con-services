@@ -6,7 +6,10 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Filters
 {
@@ -102,33 +105,32 @@ namespace VSS.TRex.Filters
           // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
           Filter.SpatialFilter?.Fence.UpdateExtents();
 
-          // Is there an alignment file to look up
-          if (Filter.SpatialFilter.HasAlignmentDesignMask())
+          // Is there an alignment file to look up? If so, only do it if there not an already existing alignment fence boundary
+          if (Filter.SpatialFilter.HasAlignmentDesignMask() && !(Filter.SpatialFilter.AlignmentFence?.HasVertices ?? true))
           {
-            throw new NotImplementedException();
-            /* TODO - Not yet supported
-            RequestResult = DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService.RequestDesignFilterBoundary
-                (Construct_CalculateDesignFilterBoundary_Args(DataModelID,
-                                                              Filter.SpatialFilter.ReferenceDesign,
-                                                              Filter.SpatialFilter.StartStation, Filter.SpatialFilter.EndStation,
-                                                              Filter.SpatialFilter.LeftOffset, Filter.SpatialFilter.RightOffset, dfbrtList),
-                                                        DesignBoundary);
-            if (RequestResult == dppiOK)
+            var BoundaryResult = AlignmentDesignFilterBoundaryRequest.Execute
+              (Filter.SpatialFilter.AlignmentDesignMaskDesignUID,
+               Filter.SpatialFilter.StartStation ?? Common.Consts.NullDouble,
+               Filter.SpatialFilter.EndStation ?? Common.Consts.NullDouble,
+               Filter.SpatialFilter.LeftOffset ?? Common.Consts.NullDouble,
+               Filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble);
+
+            if (BoundaryResult.RequestResult != DesignProfilerRequestResult.OK)
             {
-                Filter.SpatialFilter.AlignmentFence.Assign(DesignBoundary);
+              Log.LogError($"{nameof(PrepareFilterForUse)}: Failed to get boundary for alignment design ID:{Filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
+
+              return RequestErrorStatus.NoResultReturned;
             }
-          }
-          else 
-          {
-              Log.LogError($"PrepareFilterForUse: Failed to get boundary for alignment design ID:{Filter.SpatialFilter.AlignmentMaskDesignUID}");
-          }
-          */
+
+            Filter.SpatialFilter.AlignmentFence = BoundaryResult.Boundary;
           }
 
           // Is there a surface design to look up
-          if (Filter.SpatialFilter.HasAlignmentDesignMask())
+          if (Filter.SpatialFilter.HasSurfaceDesignMask())
           {
-            // Todo: Not yet supported
+            // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in 
+            // the larger scale determination of the subgrids that need to be queried.
+
             /* If the filter needs to retain a reference to the existence map, then do this...
             Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 

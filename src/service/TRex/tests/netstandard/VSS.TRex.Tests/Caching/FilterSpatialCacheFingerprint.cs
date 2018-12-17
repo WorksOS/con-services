@@ -438,7 +438,7 @@ namespace VSS.TRex.Tests.Caching
       var filter = MakeFilterWith(x =>
       {
         x.AttributeFilter.HasElevationRangeFilter = true;
-        x.AttributeFilter.ElevationRangeDesignID = designGuid;
+        x.AttributeFilter.ElevationRangeDesignUID = designGuid;
         x.AttributeFilter.ElevationRangeOffset = 123.456;
         x.AttributeFilter.ElevationRangeThickness = 1.234;
       });

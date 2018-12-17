@@ -7,7 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SiteModels
 {

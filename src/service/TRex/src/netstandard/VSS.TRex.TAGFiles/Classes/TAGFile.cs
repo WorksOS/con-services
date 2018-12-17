@@ -129,7 +129,7 @@ namespace VSS.TRex.TAGFiles.Classes
         }
 
         /// <summary>
-        /// Reads the context of a TAG file usign the provided reader and sink
+        /// Reads the context of a TAG file using the provided reader and sink
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="sink"></param>

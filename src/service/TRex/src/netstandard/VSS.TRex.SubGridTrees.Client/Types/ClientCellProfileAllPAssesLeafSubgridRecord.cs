@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using VSS.TRex.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.Interfaces;
 
-namespace VSS.TRex.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
   public struct ClientCellProfileAllPassesLeafSubgridRecord : IBinaryReaderWriter, IEquatable<ClientCellProfileAllPassesLeafSubgridRecord>
   {

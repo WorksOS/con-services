@@ -219,31 +219,23 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                 {
                     LeftFence1.SetXY(ADataLeft.X, ADataLeft.Y);
                     LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
-
-//                    LeftInterpolationFence.UpdateExtents();
                     InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machine side none
-        }
+                }
                 else
                 {
                     LeftFence1.SetXY(ADataLeft.X, ADataLeft.Y);
                     LeftFence2.SetXY(ADataLeft.X + Ratio * DeltaX, ADataLeft.Y + Ratio * DeltaY);
-
-//                    LeftInterpolationFence.UpdateExtents();
                     InterpolationFences[MachineSideConst.Left].Add(LeftInterpolationFence); // machine side left
 
-          RightFence1.SetXY(ADataRight.X - Ratio * DeltaX, ADataRight.Y - Ratio * DeltaY);
+                    RightFence1.SetXY(ADataRight.X - Ratio * DeltaX, ADataRight.Y - Ratio * DeltaY);
                     RightFence2.SetXY(ADataRight.X, ADataRight.Y);
-
-//                    RightInterpolationFence.UpdateExtents();
                     InterpolationFences[MachineSideConst.Right].Add(RightInterpolationFence); // machine side right
-        }
+                }
             }
             else
             {
                 LeftFence1.SetXY(ADataLeft.X, ADataLeft.Y);
                 LeftFence2.SetXY(ADataRight.X, ADataRight.Y);
-
-//                LeftInterpolationFence.UpdateExtents();
                 InterpolationFences[MachineSideConst.None].Add(LeftInterpolationFence); // machine side none
             }
 
@@ -578,8 +570,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                         Math.Pow(InterpolationFences[J][I][1].X - InterpolationFences[J][I][2].X, 2) +
                         Math.Pow(InterpolationFences[J][I][1].Y - InterpolationFences[J][I][2].Y, 2) <= MaxEpochIntervalSquared)
                     {
-                      // InterpolationFences[I].UpdateExtents();
-
                       // Process the quadrilateral formed by the two epochs
                       if (!DoProcessEpochContext(InterpolationFences[J][I],(MachineSide)J))
                       {
