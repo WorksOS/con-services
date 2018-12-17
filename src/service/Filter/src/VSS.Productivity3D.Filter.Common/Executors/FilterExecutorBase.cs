@@ -94,15 +94,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
       catch (ServiceException se)
       {
-        log.LogError(
-          $"FilterExecutorBase: RaptorServices failed with service exception. FilterUid:{filterRequest.FilterUid}. Exception Thrown: {se.Message}. ");
+        log.LogError(se, $"FilterExecutorBase: RaptorServices failed with service exception. FilterUid:{filterRequest.FilterUid}.");
         //rethrow this to surface it
         throw;
       }
       catch (Exception e)
       {
-        log.LogError(
-          $"FilterExecutorBase: RaptorServices failed with exception. FilterUid:{filterRequest.FilterUid}. Exception Thrown: {e.Message}. ");
+        log.LogError(e, $"FilterExecutorBase: RaptorServices failed with exception. FilterUid:{filterRequest.FilterUid}.");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "raptorProxy.NotifyFilterChange", e.Message);
       }
 
