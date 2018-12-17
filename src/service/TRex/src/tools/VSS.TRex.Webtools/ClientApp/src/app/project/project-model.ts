@@ -64,6 +64,11 @@ export class ProjectExtents {
   public setCenterPosition(cx: number, cy: number) {
     this.panByDelta(cx - this.centerX(), cy - this.centerY());  
   }
+
+  public IncludeY(y: number) {
+    if (y < this.minY) this.minY = y;
+    if (y > this.maxY) this.maxY = y;
+  }
 }
 
 export class DesignDescriptor {

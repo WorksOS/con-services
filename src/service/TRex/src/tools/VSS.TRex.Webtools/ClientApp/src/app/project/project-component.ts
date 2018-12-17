@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -111,6 +111,16 @@ export class ProjectComponent {
   public maxMachineEventsToReturn: number = 100;
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
+
+  public profilePath_LastElev: string = "";
+  public profilePath_FirstElev: string = "";
+  public profilePath_LowestElev: string = "";
+  public profilePath_HighestElev: string = "";
+  public profilePath_LastCompositeElev: string = "";
+  public profilePath_FirstCompositeElev: string = "";
+  public profilePath_LowestCompositeElev: string = "";
+  public profilePath_HighestCompositeElev: string = "";
+
   public userProfilePath: string = "";
   public userProfilePoint1SVG_CX: Number = 0;
   public userProfilePoint1SVG_CY: Number = 0;
@@ -647,51 +657,93 @@ constructor(
     this.drawProfileLineForDesign(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
 
-  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
-  // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
-  // between all others
-  public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number) {
+  public ComputeSVGForProfileValueVector(points: any[], getValue: (point: any) => number): string {
     var profileCanvasHeight: number = 500.0;
     var profileCanvasWidth: number = 1000.0;
 
     var result: string = "";
     var first: boolean = true;
 
+    var stationRange: number = points[points.length - 1].station - points[0].station;
+    var stationRatio: number = profileCanvasWidth / stationRange;
+
+    var minZ: number = 100000.0;
+    var maxZ: number = -100000.0;
+    points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
+    points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
+
+    var zRange = maxZ - minZ;
+    var zRatio = profileCanvasHeight / zRange;
+
+    points.forEach(point => {
+      if (point.z < -100000) {
+        // It's a gap...
+        first = true;
+      }
+      else {
+        result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
+        first = false;
+      }
+    });
+
+    return result;
+  }
+
+  public ProcessProfileDataVectorToSVGPolyLine(points: any[], getValue: (point: any) => number, setResult: (theResult: string) => void) {
+      var minZ: number = 100000.0;
+      var maxZ: number = -100000.0;
+      points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
+      points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
+
+      this.SetProfileViewExtents(points, minZ, maxZ);
+      setResult(this.ComputeSVGForProfileValueVector(points, getValue));
+  }
+
+  public SetProfileViewExtents(points: any[], minZ: number, maxZ: number) {
+    if (this.profileExtents === null)
+      this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+    else {
+      this.profileExtents.IncludeY(minZ);
+      this.profileExtents.IncludeY(maxZ);
+    }
+  }
+
+  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
+  // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
+  // between all others
+  public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
+    getValue: (point: any) => number, setResult:(theResult:string) => void) {
     return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
-      .subscribe(points => {
-        var stationRange: number = points[points.length - 1].station - points[0].station;
-        var stationRatio: number = profileCanvasWidth / stationRange;
-
-        var minZ: number = 100000.0;
-        var maxZ: number = -100000.0;
-        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
-        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
-
-        var zRange = maxZ - minZ;
-        var zRatio = profileCanvasHeight / zRange;
-
-        points.forEach(point => {
-          if (point.z < -100000) {
-            // It's a gap...
-            first = true;
-          }
-          else {
-            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
-            first = false;
-          }
-        });
-
-        this.profilePath = result;
-        this.numPointInProfile = result.length;
-        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
-      });
+      .subscribe(points => this.ProcessProfileDataVectorToSVGPolyLine(points, getValue, setResult));
   }
 
   public drawProfileLineFromStartToEndPointsForProdData(): void {
-    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
+    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
+      pt => pt.z,
+      theResult => {
+        this.profilePath = theResult;
+        this.numPointInProfile = theResult.length;
+      });
   }
 
+  public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
+    return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
+      .subscribe(points => {
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this.profilePath_LastElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this.profilePath_FirstElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this.profilePath_LowestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestElev, theResult => this.profilePath_HighestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastCompositeElev, theResult => this.profilePath_LastCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstCompositeElev, theResult => this.profilePath_FirstCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestCompositeElev, theResult => this.profilePath_LowestCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestCompositeElev, theResult => this.profilePath_HighestCompositeElev = theResult);
+      });
+  }
 
+  public drawProfileLineFromStartToEndPointsForCompositeElevations(): void {
+    this.drawProfileLineForCompositeElevationData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
+  }
+  
   private updateMouseProfileLocationDetails(offsetX: number, offsetY: number): void {
     let localStation = offsetX;
     let localZ = this.pixelsY - offsetY;
