@@ -86,7 +86,7 @@ namespace VSS.WebApi.Common
         }
         catch (Exception e)
         {
-          log.LogWarning("Invalid JWT token with exception {0}", e.Message);
+          log.LogWarning(e, "Invalid JWT token with exception");
           await SetResult("Invalid authentication", context);
           return;
         }

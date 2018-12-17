@@ -31,7 +31,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred deploying service:", e);
+        Log.LogError(e, "Exception occurred deploying service:");
         return $"Exception occurred deploying service: {e}";
       }
 
@@ -56,7 +56,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred deploying service:", e);
+        Log.LogError(e, "Exception occurred deploying service:");
         return $"Exception occurred deploying service: {e}";
       }
 
@@ -81,7 +81,7 @@ namespace VSS.TRex.Webtools.Controllers
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred deploying service:", e);
+        Log.LogError(e, "Exception occurred deploying service:");
         return $"Exception occurred deploying service: {e}";
       }
 

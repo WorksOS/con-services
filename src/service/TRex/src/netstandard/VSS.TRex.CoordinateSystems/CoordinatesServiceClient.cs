@@ -56,7 +56,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get NEE for lat={coordinates.Latitude}, lon={coordinates.Longitude}, height={coordinates.Height}, Exception: {exception}");
+        log.LogError(exception, $"Failed to get NEE for lat={coordinates.Latitude}, lon={coordinates.Longitude}, height={coordinates.Height}");
       }
 
       return new NEE
@@ -89,7 +89,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get NEE for lat array, Exception: {exception}");
+        log.LogError(exception, "Failed to get NEE for lat array");
       }
 
       return (RequestErrorStatus.Exception, null);
@@ -117,7 +117,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get LLH for east={coordinates.East}, north={coordinates.North}, elevation={coordinates.Elevation}, Exception: {exception}");
+        log.LogError(exception, $"Failed to get LLH for east={coordinates.East}, north={coordinates.North}, elevation={coordinates.Elevation}");
       }
 
       return new LLH
@@ -150,7 +150,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to get coordinates, Exception: {exception}");
+        log.LogError(exception, "Failed to get coordinates");
       }
 
       return (RequestErrorStatus.Exception, null);
@@ -167,7 +167,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to import coordinate system from DC {filePath}, Exception {exception}");
+        log.LogError(exception, $"Failed to import coordinate system from DC {filePath}");
       }
 
       return null;
@@ -200,7 +200,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError($"Failed to import coordinate system from DC '{filePath}', Exception {exception}");
+        log.LogError(exception, $"Failed to import coordinate system from DC '{filePath}'");
       }
 
       return imported;
