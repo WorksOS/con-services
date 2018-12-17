@@ -54,7 +54,7 @@ service: {}
 configMaps:
   system.conf: |-
     <system>
-      log_level trace
+      log_level info
       root_dir /tmp/fluentd-buffers/
     </system>
   containers.input.conf: |-
@@ -158,7 +158,7 @@ configMaps:
     <source>
       @id fluentd-containers.log
       @type tail
-      @log_level trace
+      @log_level info
       path /var/log/containers/*.log
       exclude_path /var/log/containers/*fluentd*.log
       pos_file /var/log/fluentd-containers.log.pos
@@ -190,7 +190,7 @@ configMaps:
     <source>
       @id minion
       @type tail
-      @log_level trace
+      @log_level info
       format /^(?<time>[^ ]* [^ ,]*)[^\[]*\[[^\]]*\]\[(?<severity>[^ \]]*) *\] (?<message>.*)$/
       time_format %Y-%m-%d %H:%M:%S
       path /var/log/salt/minion
@@ -202,7 +202,7 @@ configMaps:
     <source>
       @id startupscript.log
       @type tail
-      @log_level trace
+      @log_level info
       format syslog
       path /var/log/startupscript.log
       pos_file /var/log/startupscript.log.pos
@@ -214,7 +214,7 @@ configMaps:
     <source>
       @id docker.log
       @type tail
-      @log_level trace
+      @log_level info
       format /^time="(?<time>[^)]*)" level=(?<severity>[^ ]*) msg="(?<message>[^"]*)"( err="(?<error>[^"]*)")?( statusCode=($<status_code>\d+))?/
       path /var/log/docker.log
       pos_file /var/log/docker.log.pos
@@ -225,7 +225,7 @@ configMaps:
     <source>
       @id etcd.log
       @type tail
-      @log_level trace
+      @log_level info
       # Not parsing this, because it doesn't have anything particularly useful to
       # parse out of it (like severities).
       format none
@@ -241,7 +241,7 @@ configMaps:
     <source>
       @id kubelet.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -256,7 +256,7 @@ configMaps:
     <source>
       @id kube-proxy.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -271,7 +271,7 @@ configMaps:
     <source>
       @id kube-apiserver.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -286,7 +286,7 @@ configMaps:
     <source>
       @id kube-controller-manager.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -301,7 +301,7 @@ configMaps:
     <source>
       @id kube-scheduler.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -316,7 +316,7 @@ configMaps:
     <source>
       @id rescheduler.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -331,7 +331,7 @@ configMaps:
     <source>
       @id glbc.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -346,7 +346,7 @@ configMaps:
     <source>
       @id cluster-autoscaler.log
       @type tail
-      @log_level trace
+      @log_level info
       format multiline
       multiline_flush_interval 5s
       format_firstline /^\w\d{4}/
@@ -360,7 +360,7 @@ configMaps:
     <source>
       @id journald-docker
       @type systemd
-      @log_level trace
+      @log_level info
       matches [{ "_SYSTEMD_UNIT": "docker.service" }]
       <storage>
         @type local
@@ -373,7 +373,7 @@ configMaps:
     <source>
       @id journald-kubelet
       @type systemd
-      @log_level trace
+      @log_level info
       matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       <storage>
         @type local
@@ -386,7 +386,7 @@ configMaps:
     <source>
       @id journald-node-problem-detector
       @type systemd
-      @log_level trace
+      @log_level info
       matches [{ "_SYSTEMD_UNIT": "node-problem-detector.service" }]
       <storage>
         @type local
@@ -440,7 +440,7 @@ configMaps:
     <match **>
       @id elasticsearch
       @type elasticsearch
-      @log_level trace
+      @log_level info
       include_tag_key true
       type_name fluentd
       host "#{ENV['OUTPUT_HOST']}"
