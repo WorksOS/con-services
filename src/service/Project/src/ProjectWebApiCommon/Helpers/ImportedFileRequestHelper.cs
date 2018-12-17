@@ -239,7 +239,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task GenerateDxfTiles(AddFileResult notificationResult, Guid projectUid, string customerUid, string fileName,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string coordSysFileName, ILogger log, 
       IDictionary<string, string> headers, ITileServiceProxy tileServiceProxy)
-    {
+    { 
       if (importedFileType == ImportedFileType.Linework)
       {
         try
