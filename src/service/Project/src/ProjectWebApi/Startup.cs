@@ -109,6 +109,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
+      services.AddSingleton<ITileServiceProxy, TileServiceProxy>();
 
       services.AddOpenTracing(builder =>
       {

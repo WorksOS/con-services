@@ -163,7 +163,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               customerUid, userId, userEmailAddress, customHeaders,
               producer, kafkaTopicName,
               raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo)
+              projectRepo, null, fileRepo, null, null, dataOceanClient, tileServiceProxy)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 

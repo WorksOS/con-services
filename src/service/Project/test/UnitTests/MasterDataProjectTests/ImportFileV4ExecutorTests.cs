@@ -149,12 +149,13 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
       var fileRepo = new Mock<IFileRepository>();
       var dataOceanClient = new Mock<IDataOceanClient>();
+      var tileServiceProxy = new Mock<ITileServiceProxy>();
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
-          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object);
+          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, tileServiceProxy.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.IsNotNull(result);
       Assert.AreEqual(0, result.Code, "Raptor Create should have been successfull");
@@ -216,12 +217,13 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
       var fileRepo = new Mock<IFileRepository>();
       var dataOceanClient = new Mock<IDataOceanClient>();
+      var tileServiceProxy = new Mock<ITileServiceProxy>();
 
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
-          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object);
+          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, tileServiceProxy.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.AreEqual(0, result.Code, "Raptor Update should have been successfull");
       Assert.IsNotNull(result.ImportedFileDescriptor, "Raptor Update should have returned single item");
