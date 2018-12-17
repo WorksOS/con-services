@@ -61,12 +61,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<IBoundaryProxy, BoundaryProxy>();
-      services.AddScoped<IMapTileGenerator, MapTileGenerator>();
-      services.AddScoped<IMapTileService, MapTileService>();
-      services.AddScoped<IProjectTileService, ProjectTileService>();
-      services.AddScoped<IGeofenceTileService, GeofenceTileService>();
-      services.AddScoped<IAlignmentTileService, AlignmentTileService>();
-      services.AddScoped<IDxfTileService, DxfTileService>();
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ISchedulerProxy, SchedulerProxy>();
