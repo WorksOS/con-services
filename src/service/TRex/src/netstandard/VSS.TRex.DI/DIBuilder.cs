@@ -13,7 +13,7 @@ namespace VSS.TRex.DI
   {
     public static DIBuilder Instance;
 
-    public IServiceProvider ServiceProvider { get; internal set; }
+    public IServiceProvider ServiceProvider { get; private set; }
     public IServiceCollection ServiceCollection = new ServiceCollection();
 
     /// <summary>

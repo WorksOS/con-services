@@ -6,7 +6,7 @@ using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
 {
-  public class CalculateDesignProfileResponse : BaseRequestResponse
+  public class CalculateDesignProfileResponse : BaseDesignRequestResponse
   {
     private const byte VERSION_NUMBER = 1;
 

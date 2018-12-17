@@ -95,13 +95,6 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     private IDesign ReferenceDesign;
 
-    //       private IDesignManager designManager;
-
-    /// <summary>
-    /// DI injected context for designs service
-    /// </summary>
-//        private IDesignManager DesignManager => designManager ?? (designManager = DIContext.Obtain<IDesignManager>());
-
     private ITRexSpatialMemoryCache subGridCache;
 
     /// <summary>
@@ -421,7 +414,7 @@ namespace VSS.TRex.SubGrids.Executors
       ITRexSpatialMemoryCacheContext CacheContext)[] RequestorIntermediaries;
 
     /// <summary>
-    /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches precalculated
+    /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches pre-calculated
     /// ready to be used to create per-Task requestor delegates
     /// </summary>
     /// <returns></returns>
