@@ -223,7 +223,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         }
         catch (Exception e)
         {
-          Console.WriteLine("Exception:", e);
+          Console.WriteLine("Exception: {e}");
         }
 
         // ProcessMachine10101TAGFiles(projectID);
