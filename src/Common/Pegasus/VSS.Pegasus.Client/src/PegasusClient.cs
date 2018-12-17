@@ -23,8 +23,8 @@ namespace VSS.Pegasus.Client
   public class PegasusClient : IPegasusClient
   {
     private const string PEGASUS_URL_KEY = "PEGASUS_URL";
-    private const string PEGASUS_EXECUTION_TIMEOUT_KEY = "DATA_OCEAN_UPLOAD_TIMEOUT_MINS";
-    private const string PEGASUS_EXECUTION_WAIT_KEY = "DATA_OCEAN_UPLOAD_WAIT_MILLSECS";
+    private const string PEGASUS_EXECUTION_TIMEOUT_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
+    private const string PEGASUS_EXECUTION_WAIT_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS";
 
     private readonly Guid DXF_PROCEDURE_ID = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7");
     private const string TILE_TYPE = "xyz";

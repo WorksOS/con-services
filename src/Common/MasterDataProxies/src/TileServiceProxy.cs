@@ -29,7 +29,7 @@ namespace VSS.MasterData.Proxies
 
       var queryParams = $"?{new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result}";
 
-      TileMetadata response = await SendRequest<TileMetadata>("TILE_API_URL",
+      TileMetadata response = await SendRequest<TileMetadata>("TILE_INTERNAL_BASE_URL",
         string.Empty, customHeaders, "/generatedxftiles", HttpMethod.Get, queryParams);
 
       return response;

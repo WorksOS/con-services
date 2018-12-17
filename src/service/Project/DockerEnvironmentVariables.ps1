@@ -57,6 +57,10 @@
 [Environment]::SetEnvironmentVariable("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", "1", "Machine")
 [Environment]::SetEnvironmentVariable("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", "1000", "Machine")
 [Environment]::SetEnvironmentVariable("MOCK_WEBAPI_BASE_URL", "http://mockprojectwebapi:5001", "Machine")
+[Environment]::SetEnvironmentVariable("PEGASUS_URL", "http://mockprojectwebapi:5001", "Machine")
+[Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_TIMEOUT_MINS", "1", "Machine")
+[Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_WAIT_MILLSECS", "1000", "Machine")
+[Environment]::SetEnvironmentVariable("TILE_INTERNAL_BASE_URL", "http://mockprojectwebapi:5001", "Machine")
 <# #>
 <#  Dev environment 
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
@@ -101,4 +105,8 @@
 [Environment]::SetEnvironmentVariable("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", "1", "Machine")
 [Environment]::SetEnvironmentVariable("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", "1000", "Machine")
 [Environment]::SetEnvironmentVariable("MOCK_WEBAPI_BASE_URL", "http://mockprojectwebapi:5001", "Machine")
+[Environment]::SetEnvironmentVariable("PEGASUS_URL", "http://mockprojectwebapi:5001", "Machine")
+[Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_TIMEOUT_MINS", "1", "Machine")
+[Environment]::SetEnvironmentVariable("PEGASUS_EXECUTION_WAIT_MILLSECS", "1000", "Machine")
+[Environment]::SetEnvironmentVariable("TILE_INTERNAL_BASE_URL", "http://mockprojectwebapi:5001", "Machine")
 #>
