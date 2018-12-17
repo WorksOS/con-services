@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
@@ -221,7 +221,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       {
         CreateMap<CompactionProjectSettings, LiftBuildSettings>()
           .ForMember(x => x.CCVRange,
-            opt => opt.ResolveUsing<CustomCCVRangePercentageResolver>())
+            opt => opt.MapFrom<CustomCCVRangePercentageResolver>())
           .ForMember(x => x.CCVSummarizeTopLayerOnly,
             opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
           .ForMember(x => x.CCvSummaryType,
@@ -233,11 +233,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           .ForMember(x => x.FirstPassThickness,
             opt => opt.Ignore())
           .ForMember(x => x.LiftDetectionType,
-            opt => opt.UseValue(LiftDetectionType.None))
+            opt => opt.MapFrom(x => LiftDetectionType.None))
           .ForMember(x => x.LiftThicknessType,
-            opt => opt.UseValue(LiftThicknessType.Compacted))
+            opt => opt.MapFrom(x => LiftThicknessType.Compacted))
           .ForMember(x => x.MDPRange,
-            opt => opt.ResolveUsing<CustomMDPRangePercentageResolver>())
+            opt => opt.MapFrom<CustomMDPRangePercentageResolver>())
           .ForMember(x => x.MDPSummarizeTopLayerOnly,
             opt => opt.Ignore())//Raptor only uses this when using lifts (all layers)
           .ForMember(x => x.OverridingLiftThickness,
@@ -247,15 +247,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           .ForMember(x => x.OverridingMachineMDP,
             opt => opt.MapFrom(ps => ps.NullableCustomTargetMdp))
           .ForMember(x => x.OverridingTargetPassCountRange,
-            opt => opt.ResolveUsing<CustomTargetPassCountRangeResolver>())
+            opt => opt.MapFrom<CustomTargetPassCountRangeResolver>())
           .ForMember(x => x.OverridingTemperatureWarningLevels,
-            opt => opt.ResolveUsing<CustomTemperatureWarningLevelsResolver>())
+            opt => opt.MapFrom<CustomTemperatureWarningLevelsResolver>())
           .ForMember(x => x.IncludeSupersededLifts,
             opt => opt.Ignore())//Raptor only uses this when using lifts (all layers). For 'no lift' is always true.
           .ForMember(x => x.LiftThicknessTarget,
             opt => opt.Ignore())
           .ForMember(x => x.MachineSpeedTarget,
-            opt => opt.ResolveUsing<CustomMachineSpeedTargetResolver>());
+            opt => opt.MapFrom<CustomMachineSpeedTargetResolver>());
       }
     }
   }
