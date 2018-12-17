@@ -47,13 +47,13 @@ namespace VSS.TRex.Filters.Interfaces
     /// Converts the set of event population flags into a bit-flagged integer
     /// </summary>
     /// <returns></returns>
-    Int32 GetFlags();
+    int GetFlags();
 
     /// <summary>
     /// Converts a bit-flagged integer into the set of event population flags
     /// </summary>
     /// <param name="flags"></param>
-    void SetFromFlags(UInt32 flags);
+    void SetFromFlags(uint flags);
 
     /// <summary>
     /// Prepares the set of event population control flags depending on the requested data type, filter, client grid

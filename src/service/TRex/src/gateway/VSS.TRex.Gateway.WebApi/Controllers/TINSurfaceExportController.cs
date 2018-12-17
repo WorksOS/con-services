@@ -28,7 +28,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class TINSurfaceExportController : BaseController
   {
-    private ITINSurfaceExportRequestor tINSurfaceExportRequestor;
+    private readonly ITINSurfaceExportRequestor tINSurfaceExportRequestor;
 
     /// <summary>
     /// Constructor for TIN surface export controller

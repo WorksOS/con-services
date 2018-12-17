@@ -306,7 +306,7 @@ namespace VSS.TRex.Profiling
           CurrentSubgridOrigin = ThisSubgridOrigin;
 
           if (!ProfileFilterMask.ConstructSubgridCellFilterMask(CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, SiteModel.Grid, 
-            SurfaceDesignMaskDesign, AlignmentDesignMaskDesign))
+            SurfaceDesignMaskDesign))
             continue;
 
           if (ReturnDesignElevation && CutFillDesign != null) // cut fill profile request then get elevation at same spot along design

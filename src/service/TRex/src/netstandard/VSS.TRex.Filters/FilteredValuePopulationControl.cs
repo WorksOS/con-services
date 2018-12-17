@@ -118,7 +118,7 @@ namespace VSS.TRex.Filters
     /// Converts the set of event population flags into a bit-flagged integer
     /// </summary>
     /// <returns></returns>
-    public Int32 GetFlags()
+    public int GetFlags()
     {
       return ((WantsTargetCCVValues ? 1 : 0) * 0x1) |
              ((WantsTargetPassCountValues ? 1 : 0) * 0x2) |
@@ -146,7 +146,7 @@ namespace VSS.TRex.Filters
     /// Converts a bit-flagged integer into the set of event population flags
     /// </summary>
     /// <param name="flags"></param>
-    public void SetFromFlags(UInt32 flags)
+    public void SetFromFlags(uint flags)
     {
       WantsTargetCCVValues = (flags & 0x1) != 0;
       WantsTargetPassCountValues = (flags & 0x2) != 0;
