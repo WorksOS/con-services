@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -64,21 +67,23 @@ namespace VSS.Pegasus.Client
     /// <returns></returns>
     public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders)
     {
-      Log.LogInformation($"GenerateDxfTiles: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
+      Log.LogInformation($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
 
       TileMetadata metadata = null;
       //Get the DataOcean file ids.
       var dcFileId = await dataOceanClient.GetFileId(dcFileName, customHeaders);
       if (dcFileId == null)
       {
-        Log.LogError($"Failed to find coordinate system file {dcFileName}. Has it been uploaded successfully?");
-        return null;
+        var message = $"Failed to find coordinate system file {dcFileName}. Has it been uploaded successfully?";
+        throw new ServiceException(HttpStatusCode.InternalServerError, 
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
       var dxfFileId = await dataOceanClient.GetFileId(dxfFileName, customHeaders);
       if (dxfFileId == null)
       {
-        Log.LogError($"Failed to find DXF file {dxfFileName}. Has it been uploaded successfully?");
-        return null;
+        var message = $"Failed to find DXF file {dxfFileName}. Has it been uploaded successfully?";
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
 
       //Create the top level tiles folder
@@ -86,8 +91,8 @@ namespace VSS.Pegasus.Client
       var success = await dataOceanClient.MakeFolder(tileFolder, customHeaders);
       if (!success)
       {
-        Log.LogError($"GenerateDxfTiles: Failed to create tiles folder {tileFolder}");
-        return null;
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create tiles folder {tileFolder}"));
       }
       var parentId = await dataOceanClient.GetFolderId(tileFolder, customHeaders);
 
@@ -124,8 +129,8 @@ namespace VSS.Pegasus.Client
       }
       if (executionResult == null)
       {
-        Log.LogError($"GenerateDxfTiles: Failed to create execution for {dxfFileName}");
-        return null;
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create execution for {dxfFileName}"));
       }
 
       //2. Start the execution
@@ -135,8 +140,8 @@ namespace VSS.Pegasus.Client
       var result = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
       if (result == null)
       {
-        Log.LogError($"GenerateDxfTiles: Failed to start execution for {dxfFileName}");
-        return null;
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to start execution for {dxfFileName}"));
       }
 
       //3. Monitor status of execution until done
@@ -154,16 +159,18 @@ namespace VSS.Pegasus.Client
 
       if (!done)
       {
-        Log.LogInformation($"GenerateDxfTiles timed out: {dxfFileName}");
+        Log.LogInformation($"{nameof(GenerateDxfTiles)} timed out: {dxfFileName}");
       }
       else if (!success)
       {
-        Log.LogInformation($"GenerateDxfTiles failed: {dxfFileName}");
+        Log.LogInformation($"{nameof(GenerateDxfTiles)} failed: {dxfFileName}");
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to generate DXF tiles for {dxfFileName}"));
       }
 
       if (success)
       {
-        //4. Get the zoom range from the tile metdata file and publish notification
+        //4. Get the zoom range from the tile metdata file 
         Log.LogDebug($"Getting tiles metadata for {dxfFileName}");
         var metadataFileName = new DataOceanFileUtil(dxfFileName).TilesMetadataFileName;
         var stream = await dataOceanClient.GetFile(metadataFileName, customHeaders);
@@ -176,7 +183,7 @@ namespace VSS.Pegasus.Client
         }
       }
 
-      Log.LogInformation($"GenerateDxfTiles: returning {(metadata == null ? "null" : JsonConvert.SerializeObject(metadata))}");
+      Log.LogInformation($"{nameof(GenerateDxfTiles)}: returning {(metadata == null ? "null" : JsonConvert.SerializeObject(metadata))}");
       return metadata;
     }
 

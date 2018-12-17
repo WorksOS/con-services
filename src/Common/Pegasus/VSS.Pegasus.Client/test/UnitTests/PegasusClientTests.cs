@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
 using VSS.DataOcean.Client.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -41,16 +44,10 @@ namespace VSS.Pegasus.Client.UnitTests
     }
 
     [Fact]
-    public void CanGenerateDxfTilesMissingDxfFile()
+    public async Task CanGenerateDxfTilesMissingDxfFile()
     {
-      const string topLevelFolderName = "unittest";
       var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
-      const string dcFileName = "dummy.dc";
       var expectedDcFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dcFileName, ParentId = expectedTopFolderResult.Id };
-      const string dxfFileName = "dummy.dxf";
-
-      var dxfFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dxfFileName}";
-      var dcFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}";
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync((Guid?)null);
@@ -63,22 +60,17 @@ namespace VSS.Pegasus.Client.UnitTests
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IPegasusClient>();
 
-      var result =
-        client.GenerateDxfTiles(dcFullName, dxfFullName, DxfUnitsType.Meters, null).Result;
-      Assert.Null(result);
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => client.GenerateDxfTiles(dcFullName, dxfFullName, DxfUnitsType.Meters, null));
+      Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
+      Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
+      Assert.Equal($"Failed to find DXF file {dxfFullName}. Has it been uploaded successfully?", ex.GetResult.Message);
     }
 
     [Fact]
-    public void CanGenerateDxfTilesMissingDcFile()
+    public async Task CanGenerateDxfTilesMissingDcFile()
     {
-      const string topLevelFolderName = "unittest";
       var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
-      const string dcFileName = "dummy.dc";
-      const string dxfFileName = "dummy.dxf";
       var expectedDxfFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dxfFileName, ParentId = expectedTopFolderResult.Id };
-
-      var dxfFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dxfFileName}";
-      var dcFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}";
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
@@ -91,9 +83,161 @@ namespace VSS.Pegasus.Client.UnitTests
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IPegasusClient>();
 
-      var result =
-        client.GenerateDxfTiles(dcFullName, dxfFullName, DxfUnitsType.Meters, null).Result;
-      Assert.Null(result);
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => client.GenerateDxfTiles(dcFullName, dxfFullName, DxfUnitsType.Meters, null));
+      Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
+      Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
+      Assert.Equal($"Failed to find coordinate system file {dcFullName}. Has it been uploaded successfully?", ex.GetResult.Message);
+    }
+
+    [Fact]
+    public async Task CanGenerateDxfTilesFailToCreateExecution()
+    {
+      //Set up DataOcean stuff
+
+      var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
+      var expectedDcFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dcFileName, ParentId = expectedTopFolderResult.Id };
+      var expectedDxfFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dxfFileName, ParentId = expectedTopFolderResult.Id };
+
+      var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
+      var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
+      var subFolderName = parts[parts.Length - 1];
+      var expectedSubFolderResult = new DataOceanDirectory
+      {
+        Id = Guid.NewGuid(),
+        Name = subFolderName,
+        ParentId = expectedTopFolderResult.Id,
+      };
+
+      var dataOceanMock = new Mock<IDataOceanClient>();
+      dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
+      dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
+      dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
+      dataOceanMock.Setup(d => d.GetFolderId(subFolderPath, null)).ReturnsAsync(expectedSubFolderResult.Id);
+
+      //Set up Pegasus stuff
+      var units = DxfUnitsType.UsSurveyFeet.ToString();
+      var expectedExecution = new PegasusExecution
+      {
+        Id = Guid.NewGuid(),
+        ProcedureId = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7"),
+        Parameters = new PegasusExecutionParameters
+        {
+          DcFileId = expectedDcFileResult.Id,
+          DxfFileId = expectedDxfFileResult.Id,
+          ParentId = expectedDxfFileResult.ParentId,
+          MaxZoom = 21,
+          TileType = "xyz",
+          TileOrder = "YX",
+          MultiFile = true,
+          Public = false,
+          Name = subFolderName,
+          AngularUnit = units,
+          PlaneUnit = units,
+          VerticalUnit = units
+        },
+        ExecutionStatus = ExecutionStatus.NOT_READY
+      };
+
+      var config = serviceProvider.GetRequiredService<ConfigurationStore.IConfigurationStore>();
+      var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
+      var baseRoute = "/api/executions";
+      var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
+
+      var gracefulMock = new Mock<IWebRequest>();
+      gracefulMock
+        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+          false)).ReturnsAsync((PegasusExecutionResult)null);
+  
+      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      var serviceProvider2 = serviceCollection.BuildServiceProvider();
+      var client = serviceProvider2.GetRequiredService<IPegasusClient>();
+      var ex =
+        await Assert.ThrowsAsync<ServiceException>(() => client.GenerateDxfTiles($"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}",
+          dxfFullName, DxfUnitsType.Meters, null));
+      Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
+      Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
+      Assert.Equal($"Failed to create execution for {dxfFullName}", ex.GetResult.Message);
+    }
+
+    [Fact]
+    public async Task CanGenerateDxfTilesFailedToStartExecution()
+    {
+      //Set up DataOcean stuff
+
+      var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
+      var expectedDcFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dcFileName, ParentId = expectedTopFolderResult.Id };
+      var expectedDxfFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dxfFileName, ParentId = expectedTopFolderResult.Id };
+
+      var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
+      var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
+      var subFolderName = parts[parts.Length - 1];
+      var expectedSubFolderResult = new DataOceanDirectory
+      {
+        Id = Guid.NewGuid(),
+        Name = subFolderName,
+        ParentId = expectedTopFolderResult.Id,
+      };
+
+      var dataOceanMock = new Mock<IDataOceanClient>();
+      dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
+      dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
+      dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
+      dataOceanMock.Setup(d => d.GetFolderId(subFolderPath, null)).ReturnsAsync(expectedSubFolderResult.Id);
+
+      //Set up Pegasus stuff
+      var units = DxfUnitsType.UsSurveyFeet.ToString();
+      var expectedExecution = new PegasusExecution
+      {
+        Id = Guid.NewGuid(),
+        ProcedureId = new Guid("b8431158-1917-4d18-9f2e-e26b255900b7"),
+        Parameters = new PegasusExecutionParameters
+        {
+          DcFileId = expectedDcFileResult.Id,
+          DxfFileId = expectedDxfFileResult.Id,
+          ParentId = expectedDxfFileResult.ParentId,
+          MaxZoom = 21,
+          TileType = "xyz",
+          TileOrder = "YX",
+          MultiFile = true,
+          Public = false,
+          Name = subFolderName,
+          AngularUnit = units,
+          PlaneUnit = units,
+          VerticalUnit = units
+        },
+        ExecutionStatus = ExecutionStatus.NOT_READY
+      };
+      var expectedExecutionResult = new PegasusExecutionResult { Execution = expectedExecution };
+      var expectedExecutionAttemptResult = new PegasusExecutionAttemptResult
+      {
+        ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = ExecutionStatus.EXECUTING }
+      };
+
+      var config = serviceProvider.GetRequiredService<ConfigurationStore.IConfigurationStore>();
+      var pegasusBaseUrl = config.GetValueString("PEGASUS_URL");
+      var baseRoute = "/api/executions";
+      var createExecutionUrl = $"{pegasusBaseUrl}{baseRoute}";
+      var startExecutionUrl = $"{pegasusBaseUrl}{baseRoute}/{expectedExecution.Id}/start";
+
+      var gracefulMock = new Mock<IWebRequest>();
+      gracefulMock
+        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+          false)).ReturnsAsync(expectedExecutionResult);
+      gracefulMock
+        .Setup(g => g.ExecuteRequest<PegasusExecutionAttemptResult>(startExecutionUrl, null, null, HttpMethod.Post, null, 3,
+          false)).ReturnsAsync((PegasusExecutionAttemptResult)null);
+
+      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
+      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      var serviceProvider2 = serviceCollection.BuildServiceProvider();
+      var client = serviceProvider2.GetRequiredService<IPegasusClient>();
+      var ex =
+        await Assert.ThrowsAsync<ServiceException>(() => client.GenerateDxfTiles($"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}",
+          dxfFullName, DxfUnitsType.Meters, null));
+      Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
+      Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
+      Assert.Equal($"Failed to start execution for {dxfFullName}", ex.GetResult.Message);
     }
 
     [Fact]
@@ -115,10 +259,12 @@ namespace VSS.Pegasus.Client.UnitTests
     }
 
     [Fact]
-    public void CanGenerateDxfTilesFailed()
+    public async Task CanGenerateDxfTilesFailed()
     {
-      var result = CanGenerateDxfTiles(ExecutionStatus.FAILED).Result;
-      Assert.Null(result);
+      var  ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateDxfTiles(ExecutionStatus.FAILED));
+      Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
+      Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
+      Assert.Equal($"Failed to generate DXF tiles for {dxfFullName}", ex.GetResult.Message);
     }
 
     [Fact]
@@ -134,15 +280,10 @@ namespace VSS.Pegasus.Client.UnitTests
     {
       //Set up DataOcean stuff
 
-      const string topLevelFolderName = "unittest";
       var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };     
-      const string dcFileName = "dummy.dc";
       var expectedDcFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dcFileName, ParentId = expectedTopFolderResult.Id };
-      const string dxfFileName = "dummy.dxf";
       var expectedDxfFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dxfFileName, ParentId = expectedTopFolderResult.Id };
 
-      var dxfFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dxfFileName}";
-      var dcFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}";
       var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
       var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
       var subFolderName = parts[parts.Length-1];
@@ -240,6 +381,13 @@ namespace VSS.Pegasus.Client.UnitTests
       MaxZoom = 21,
       TileCount = 79
     };
+
+    private const string topLevelFolderName = "unittest";
+    private const string dcFileName = "dummy.dc";
+    private const string dxfFileName = "dummy.dxf";
+    private string dxfFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dxfFileName}";
+    private string dcFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}";
+
     #endregion
   }
 }
