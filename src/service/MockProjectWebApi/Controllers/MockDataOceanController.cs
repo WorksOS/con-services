@@ -191,25 +191,7 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine($"{nameof(DownloadTilesMetadataFile)}");
 
-      var result = new TileMetadata
-      {
-        Extents = new Extents
-        {
-          North = 0.6581020324759275,
-          South = 0.6573494852112898,
-          East = -1.9427990915164108,
-          West = -1.9437871937920903,
-          CoordSystem = new CoordSystem
-          {
-            Type = "EPSG",
-            Value = "EPSG:4326"
-          }
-        },
-        MaxZoom = 21,
-        TileCount = 79
-      };
-
-      byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result));
+      byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(tileMetadata));
       return new MemoryStream(byteArray);
     }
 
@@ -247,8 +229,25 @@ namespace MockProjectWebApi.Controllers
       public string Type { get; set; }
       [JsonProperty(PropertyName = "value", Required = Required.Default)]
       public string Value { get; set; }
-
     }
+
+    public static TileMetadata tileMetadata = new TileMetadata
+    {
+      Extents = new Extents
+      {
+        North = 0.6581020324759275,
+        South = 0.6573494852112898,
+        East = -1.9427990915164108,
+        West = -1.9437871937920903,
+        CoordSystem = new CoordSystem
+        {
+          Type = "EPSG",
+          Value = "EPSG:4326"
+        }
+      },
+      MaxZoom = 21,
+      TileCount = 79
+    };
 
   }
 }
