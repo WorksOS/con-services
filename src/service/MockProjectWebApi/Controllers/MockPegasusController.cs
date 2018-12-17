@@ -15,7 +15,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public dynamic CreateExecution([FromBody]dynamic message)
     {
-      Console.WriteLine($"CreateExecution: {JsonConvert.SerializeObject(message)}");
+      Console.WriteLine($"{nameof(CreateExecution)}: {JsonConvert.SerializeObject(message)}");
 
       var result = new
       {
@@ -30,7 +30,7 @@ namespace MockProjectWebApi.Controllers
         }
       };
 
-      Console.WriteLine($"CreateExecution returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(CreateExecution)} returning: {JsonConvert.SerializeObject(result)}");
       return new CreatedResult(Request.Path, result);
     }
 
@@ -38,7 +38,7 @@ namespace MockProjectWebApi.Controllers
     [HttpDelete]
     public HttpResponseMessage DeleteExecution([FromRoute]Guid id)
     {
-      Console.WriteLine($"DeleteExecution: {id}");
+      Console.WriteLine($"{nameof(DeleteExecution)}: {id}");
 
       return new HttpResponseMessage(HttpStatusCode.NoContent);
     }
@@ -47,7 +47,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public dynamic StartExecution([FromRoute]Guid id)
     {
-      Console.WriteLine($"StartExecution: {id}");
+      Console.WriteLine($"{nameof(StartExecution)}: {id}");
 
       var result = new
       {
@@ -57,7 +57,7 @@ namespace MockProjectWebApi.Controllers
           status = "EXECUTING"
         }
       };
-      Console.WriteLine($"StartExecution returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(StartExecution)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -65,25 +65,25 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic GetExecutionStatus([FromRoute]Guid id)
     {
-      Console.WriteLine($"GetExecutionStatus: {id}");
+      Console.WriteLine($"{nameof(GetExecutionStatus)}: {id}");
 
       var result = new
       {
-        execution_attempt = new { 
+        execution_attempt = new
+        {
           id = Guid.NewGuid(),
-          status = "FINISHED",         
+          status = "FINISHED",
         }
       };
-      Console.WriteLine($"GetExecutionStatus returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(GetExecutionStatus)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
-
     }
 
     [Route("/api/executions/{id}")]
     [HttpGet]
     public dynamic GetExecution([FromRoute]Guid id)
     {
-      Console.WriteLine($"GetExecution: {id}");
+      Console.WriteLine($"{nameof(GetExecution)}: {id}");
 
       var result = new
       {
@@ -100,10 +100,8 @@ namespace MockProjectWebApi.Controllers
           }
         }
       };
-      Console.WriteLine($"GetExecution returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(GetExecution)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
-
     }
-
   }
 }

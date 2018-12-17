@@ -32,7 +32,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic BrowseDirectories([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
     {
-      Console.WriteLine($"BrowseDirectories: {Request.QueryString}");
+      Console.WriteLine($"{nameof(BrowseDirectories)}: {Request.QueryString}");
 
       var result = new
       {
@@ -45,10 +45,10 @@ namespace MockProjectWebApi.Controllers
             parent_id = parent_id
           }
         }
-      
+
 
       };
-      Console.WriteLine($"BrowseDirectories returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(BrowseDirectories)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -56,7 +56,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public dynamic BrowseFiles([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
     {
-      Console.WriteLine($"BrowseFiles: {Request.QueryString}");
+      Console.WriteLine($"{nameof(BrowseFiles)}: {Request.QueryString}");
 
       var suffix = string.Empty;
       if (name.Contains(GENERATED_TILE_FOLDER_SUFFIX))
@@ -85,16 +85,15 @@ namespace MockProjectWebApi.Controllers
         }
 
       };
-      Console.WriteLine($"BrowseFiles returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(BrowseFiles)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
-
     }
 
     [Route("/api/files/{id}")]
     [HttpGet]
     public dynamic GetFile([FromRoute]Guid id)
     {
-      Console.WriteLine($"GetFile: {id}");
+      Console.WriteLine($"{nameof(GetFile)}: {id}");
 
       var result = new
       {
@@ -111,16 +110,15 @@ namespace MockProjectWebApi.Controllers
           url = $"{baseUrl}/dummy_download_signed_url"
         }
       };
-      Console.WriteLine($"GetFile returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(GetFile)} returning: {JsonConvert.SerializeObject(result)}");
       return result;
-
     }
 
     [Route("/api/files/{id}")]
     [HttpDelete]
     public HttpResponseMessage DeleteFile([FromRoute]Guid id)
     {
-      Console.WriteLine($"DeleteFile: {id}");
+      Console.WriteLine($"{nameof(DeleteFile)}: {id}");
 
       return new HttpResponseMessage(HttpStatusCode.NoContent);
     }
@@ -130,7 +128,8 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public dynamic CreateDirectory([FromBody]dynamic message)
     {
-      Console.WriteLine($"CreateDirectory: {JsonConvert.SerializeObject(message)}");
+      Console.WriteLine($"{nameof(CreateDirectory)}: {JsonConvert.SerializeObject(message)}");
+
 
       var result = new
       {
@@ -138,7 +137,7 @@ namespace MockProjectWebApi.Controllers
         name = message.directory.name,
         parent_id = message.directory.parent_id
       };
-      Console.WriteLine($"CreateDirectory returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(CreateDirectory)} returning: {JsonConvert.SerializeObject(result)}");
       return new CreatedResult(Request.Path, result);
     }
 
@@ -146,7 +145,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public dynamic CreateFile([FromBody]dynamic message)
     {
-      Console.WriteLine($"CreateFile: {JsonConvert.SerializeObject(message)}");
+      Console.WriteLine($"{nameof(CreateFile)}: {JsonConvert.SerializeObject(message)}");
 
       var result = new
       {
@@ -163,7 +162,7 @@ namespace MockProjectWebApi.Controllers
           url = $"{baseUrl}/dummy_download_signed_url"
         }
       };
-      Console.WriteLine($"CreateFile returning: {JsonConvert.SerializeObject(result)}");
+      Console.WriteLine($"{nameof(CreateFile)} returning: {JsonConvert.SerializeObject(result)}");
       return new CreatedResult(Request.Path, result);
     }
 
@@ -171,7 +170,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPut]
     public HttpResponseMessage UploadFile()
     {
-      Console.WriteLine($"UploadFile");
+      Console.WriteLine($"{nameof(UploadFile)}");
 
       return new HttpResponseMessage(HttpStatusCode.OK);
     }
@@ -180,7 +179,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public Stream DownloadFile()
     {
-      Console.WriteLine($"DownloadFile");
+      Console.WriteLine($"{nameof(DownloadFile)}");
 
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       return new MemoryStream(buffer);
@@ -190,7 +189,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public Stream DownloadTilesMetadataFile()
     {
-      Console.WriteLine($"DownloadTilesMetadataFile");
+      Console.WriteLine($"{nameof(DownloadTilesMetadataFile)}");
 
       var result = new TileMetadata
       {
@@ -200,13 +199,13 @@ namespace MockProjectWebApi.Controllers
           South = 0.6573494852112898,
           East = -1.9427990915164108,
           West = -1.9437871937920903,
-          CoordSystem = new  CoordSystem
+          CoordSystem = new CoordSystem
           {
             Type = "EPSG",
             Value = "EPSG:4326"
           }
         },
-        MaxZoom =  21,
+        MaxZoom = 21,
         TileCount = 79
       };
 

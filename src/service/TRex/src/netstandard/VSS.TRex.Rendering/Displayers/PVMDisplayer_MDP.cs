@@ -22,24 +22,13 @@ namespace VSS.TRex.Rendering.Displayers
     private const short AbsoluteTargetMDP = 50;
 
     /// <summary>
-    /// MDP data holder.
-    /// </summary>
-    private ClientMDPLeafSubGrid SubGrid;
-
-    /// <summary>
     /// Renders MDP summary data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientMDPLeafSubGrid grid)
-      {
-        SubGrid = grid;
-        return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientMDPLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -54,7 +43,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      var cellValue = SubGrid.Cells[east_col, north_row];
+      var cellValue = ((ClientMDPLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       if (cellValue.MeasuredMDP == CellPassConsts.NullMDP)
         return Draw.Color.Empty;

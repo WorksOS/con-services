@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using VSS.TRex.Common;
 
-namespace VSS.TRex.SubGridTrees.Client
+namespace VSS.TRex.SubGridTrees.Client.Types
 {
   /// <summary>
   /// Stores the heights representing the first measure elevation, last measured elevation,
