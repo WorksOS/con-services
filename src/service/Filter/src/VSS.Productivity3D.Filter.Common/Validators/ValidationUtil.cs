@@ -16,26 +16,15 @@ namespace VSS.Productivity3D.Filter.Common.Validators
 {
   public class ValidationUtil
   {
-    /// <summary>
-    /// Gets the service's implementation of <see cref="IProjectListProxy"/>.
-    /// </summary>
     protected readonly IProjectListProxy ProjectListProxy;
-
-    /// <summary>
-    /// Gets or sets the service's log controller.
-    /// </summary>
     protected ILogger Log;
-
-    /// <summary>
-    /// Gets or sets the service's exception hander implementation of <see cref="IServiceExceptionHandler"/>.
-    /// </summary>
     protected readonly IServiceExceptionHandler ServiceExceptionHandler;
 
     public ValidationUtil(IProjectListProxy projectListProxy, ILogger log, IServiceExceptionHandler serviceExceptionHandler)
     {
-      this.Log = log;
-      this.ProjectListProxy = projectListProxy;
-      this.ServiceExceptionHandler = serviceExceptionHandler;
+      Log = log;
+      ProjectListProxy = projectListProxy;
+      ServiceExceptionHandler = serviceExceptionHandler;
     }
 
     /// <summary>
@@ -44,9 +33,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
     public static async Task<string> HydrateJsonWithBoundary(IGeofenceRepository geofenceRepository,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, FilterRequestFull filterRequestFull)
     {
-      const string functionName = "HydrateJsonWithBoundary";
-
-      MasterData.Models.Models.Filter filterTempForHydration = filterRequestFull.FilterModel(serviceExceptionHandler);
+      var filterTempForHydration = filterRequestFull.FilterModel(serviceExceptionHandler);
 
       //If no polygon boundary return original filter JSON
       if (string.IsNullOrEmpty(filterTempForHydration?.PolygonUid))
@@ -60,19 +47,19 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       }
       catch (Exception e)
       {
-        log.LogError(e, $"{functionName}: geofenceRepository.GetGeofence failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}");
+        log.LogError(e, $"{nameof(HydrateJsonWithBoundary)}: geofenceRepository.GetGeofence failed with exception. projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 41, e.Message);
       }
 
       if (filterBoundary == null)
       {
         log.LogError(
-          $"{functionName}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}. returned no boundary match");
+          $"{nameof(HydrateJsonWithBoundary)}: boundary not found, or not valid: projectUid:{filterRequestFull.ProjectUid} boundaryUid:{filterTempForHydration.PolygonUid}. returned no boundary match");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 40);
       }
 
       //Add polygon boundary to filter and convert back to JSON
-      List<WGSPoint> polygonPoints = GetPointsFromWkt(filterBoundary.GeometryWKT);
+      var polygonPoints = GetPointsFromWkt(filterBoundary.GeometryWKT);
       if (polygonPoints.Count == 0)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
@@ -86,21 +73,20 @@ namespace VSS.Productivity3D.Filter.Common.Validators
       }
       catch (Exception e)
       {
-        log.LogError(e, $"{functionName}: {functionName} failed with exception. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}");
+        log.LogError(e, $"{nameof(HydrateJsonWithBoundary)}: {nameof(HydrateJsonWithBoundary)} failed with exception. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}");
         // todo normally we incude e.Message. is e.GetBaseException.message specific to Json exception?
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 43, e.GetBaseException().Message);
       }
 
-
       if (string.IsNullOrEmpty(newFilterJson))
       {
         log.LogError(
-          $"{functionName}: {functionName} failed. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}.");
+          $"{nameof(HydrateJsonWithBoundary)}: {nameof(HydrateJsonWithBoundary)} failed. projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}.");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
       }
 
       log.LogInformation(
-        $"{functionName}: succeeded: projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}.");
+        $"{nameof(HydrateJsonWithBoundary)}: succeeded: projectUid:{filterRequestFull.ProjectUid}. boundaryUid:{filterTempForHydration.PolygonUid}.");
       return newFilterJson;
     }
 

@@ -21,8 +21,8 @@
       "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        //"MYSQL_SERVER_NAME_VSPDB": "localhost",
-        //"MYSQL_SERVER_NAME_ReadVSPDB": "localhost"
+        "MYSQL_SERVER_NAME_VSPDB": "localhost",
+        "MYSQL_SERVER_NAME_ReadVSPDB": "localhost"
       },
       "applicationUrl": "http://localhost:5000"
     }

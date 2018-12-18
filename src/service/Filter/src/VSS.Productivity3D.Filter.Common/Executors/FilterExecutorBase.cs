@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         filterEvent = AutoMapperUtility.Automapper.Map<T>(filterRequest);
         filterEvent.ActionUTC = DateTime.UtcNow;
 
-        var count = await ((IFilterRepository)Repository).StoreEvent(filterEvent).ConfigureAwait(false);
+        var count = await ((IFilterRepository)Repository).StoreEvent(filterEvent);
         if (count == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCodes[0]);
