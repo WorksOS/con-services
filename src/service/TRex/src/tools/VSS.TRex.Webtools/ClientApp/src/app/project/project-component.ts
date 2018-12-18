@@ -112,15 +112,33 @@ export class ProjectComponent {
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
 
-  public profilePath_LastElev: string = "";
-  public profilePath_FirstElev: string = "";
-  public profilePath_LowestElev: string = "";
-  public profilePath_HighestElev: string = "";
-  public profilePath_LastCompositeElev: string = "";
-  public profilePath_FirstCompositeElev: string = "";
-  public profilePath_LowestCompositeElev: string = "";
-  public profilePath_HighestCompositeElev: string = "";
+  public compositeElevationProfilePath_LastElev: string = "";
+  public compositeElevationProfilePath_FirstElev: string = "";
+  public compositeElevationProfilePath_LowestElev: string = "";
+  public compositeElevationProfilePath_HighestElev: string = "";
+  public compositeElevationProfilePath_LastCompositeElev: string = "";
+  public compositeElevationProfilePath_FirstCompositeElev: string = "";
+  public compositeElevationProfilePath_LowestCompositeElev: string = "";
+  public compositeElevationProfilePath_HighestCompositeElev: string = "";
 
+  public _compositeElevationProfilePath_LastElev: string = "";
+  public _compositeElevationProfilePath_FirstElev: string = "";
+  public _compositeElevationProfilePath_LowestElev: string = "";
+  public _compositeElevationProfilePath_HighestElev: string = "";
+  public _compositeElevationProfilePath_LastCompositeElev: string = "";
+  public _compositeElevationProfilePath_FirstCompositeElev: string = "";
+  public _compositeElevationProfilePath_LowestCompositeElev: string = "";
+  public _compositeElevationProfilePath_HighestCompositeElev: string = "";
+  
+  public showLastElevationProfile              : boolean = true;
+  public showFirstElevationProfile             : boolean = true;
+  public showLowestElevationProfile            : boolean = true;
+  public showHighestElevationProfile           : boolean = true;
+  public showLastCompositeElevationProfile     : boolean = true;
+  public showFirstCompositeElevationProfile    : boolean = true;
+  public showLowestCompositeElevationProfile   : boolean = true;
+  public showHighestCompositeElevationProfile  : boolean = true;
+  
   public userProfilePath: string = "";
   public userProfilePoint1SVG_CX: Number = 0;
   public userProfilePoint1SVG_CY: Number = 0;
@@ -669,19 +687,20 @@ constructor(
 
     var minZ: number = 100000.0;
     var maxZ: number = -100000.0;
-    points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
-    points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
+    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
+    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
 
     var zRange = maxZ - minZ;
     var zRatio = profileCanvasHeight / zRange;
 
     points.forEach(point => {
-      if (point.z < -100000) {
+      var value: number = getValue(point);
+      if (value < -100000) {
         // It's a gap...
         first = true;
       }
       else {
-        result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
+        result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (value - minZ) * zRatio)).toFixed(3) + " ";
         first = false;
       }
     });
@@ -692,8 +711,8 @@ constructor(
   public ProcessProfileDataVectorToSVGPolyLine(points: any[], getValue: (point: any) => number, setResult: (theResult: string) => void) {
       var minZ: number = 100000.0;
       var maxZ: number = -100000.0;
-      points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
-      points.forEach(pt => { var value = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
+      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
+      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
 
       this.SetProfileViewExtents(points, minZ, maxZ);
       setResult(this.ComputeSVGForProfileValueVector(points, getValue));
@@ -727,16 +746,34 @@ constructor(
   }
 
   public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
-    return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
+    return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
       .subscribe(points => {
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this.profilePath_LastElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this.profilePath_FirstElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this.profilePath_LowestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestElev, theResult => this.profilePath_HighestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastCompositeElev, theResult => this.profilePath_LastCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstCompositeElev, theResult => this.profilePath_FirstCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestCompositeElev, theResult => this.profilePath_LowestCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestCompositeElev, theResult => this.profilePath_HighestCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestElev, theResult => this._compositeElevationProfilePath_HighestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastCompositeElev, theResult => this._compositeElevationProfilePath_LastCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstCompositeElev, theResult => this._compositeElevationProfilePath_FirstCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestCompositeElev, theResult => this._compositeElevationProfilePath_LowestCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestCompositeElev, theResult => this._compositeElevationProfilePath_HighestCompositeElev = theResult);
+
+        this.compositeElevationProfilePath_LastElev = this._compositeElevationProfilePath_LastElev;
+        this.compositeElevationProfilePath_FirstElev = this._compositeElevationProfilePath_FirstElev;
+        this.compositeElevationProfilePath_LowestElev = this._compositeElevationProfilePath_LowestElev;
+        this.compositeElevationProfilePath_HighestElev = this._compositeElevationProfilePath_HighestElev;
+        this.compositeElevationProfilePath_LastCompositeElev = this._compositeElevationProfilePath_LastCompositeElev;
+        this.compositeElevationProfilePath_FirstCompositeElev = this._compositeElevationProfilePath_FirstCompositeElev;
+        this.compositeElevationProfilePath_LowestCompositeElev = this._compositeElevationProfilePath_LowestCompositeElev;
+        this.compositeElevationProfilePath_HighestCompositeElev = this._compositeElevationProfilePath_HighestCompositeElev;
+
+        this.showLastElevationProfile = true;
+        this.showFirstElevationProfile = true;
+        this.showLowestElevationProfile = true;
+        this.showHighestElevationProfile = true;
+        this.showLastCompositeElevationProfile = true;
+        this.showFirstCompositeElevationProfile = true;
+        this.showLowestCompositeElevationProfile = true;
+        this.showHighestCompositeElevationProfile = true;
       });
   }
 
@@ -761,6 +798,38 @@ constructor(
 
   public onMouseMoveProfile(event: any): void {
     this.updateMouseProfileLocationDetails(event.offsetX, event.offsetY);
+  }
+
+  public showLastElevationProfile_change() {
+    this.compositeElevationProfilePath_LastElev = this.showLastElevationProfile ? "" : this._compositeElevationProfilePath_LastElev;
+  }
+
+  public showFirstElevationProfile_change() {
+    this.compositeElevationProfilePath_FirstElev = this.showFirstElevationProfile ? "" : this._compositeElevationProfilePath_FirstElev;
+  }
+
+  public showLowestElevationProfile_change() {
+    this.compositeElevationProfilePath_LowestElev = this.showLowestElevationProfile ? "" : this._compositeElevationProfilePath_LowestElev;
+  }
+
+  public showHighestElevationProfile_change() {
+    this.compositeElevationProfilePath_HighestElev = this.showHighestElevationProfile ? "" : this._compositeElevationProfilePath_HighestElev;
+  }
+
+  public showLastCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_LastCompositeElev = this.showLastCompositeElevationProfile ? "" : this._compositeElevationProfilePath_LastCompositeElev;
+  }
+
+  public showFirstCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_FirstCompositeElev = this.showFirstCompositeElevationProfile ? "" : this._compositeElevationProfilePath_FirstCompositeElev;
+  }
+
+  public showLowestCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_LowestCompositeElev = this.showLowestCompositeElevationProfile ? "" : this._compositeElevationProfilePath_LowestCompositeElev;
+  }
+
+  public showHighestCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_HighestCompositeElev = this.showHighestCompositeElevationProfile ? "" : this._compositeElevationProfilePath_HighestCompositeElev;
   }
 }
 

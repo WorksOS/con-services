@@ -59,14 +59,14 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="endY"></param>
     /// <returns></returns>
     [HttpGet("compositeelevations/{siteModelID}")]
-    public JsonResult ComputeCompositeElevaionProfile(Guid siteModelUid,
+    public JsonResult ComputeCompositeElevaionProfile(string siteModelID,
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
       [FromQuery] double endY)
     {
-      //    Guid siteModelUid = Guid.Parse(siteModelID);
-
+      Guid siteModelUid = Guid.Parse(siteModelID);
+   
       ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
       {
         ProjectID = siteModelUid,
