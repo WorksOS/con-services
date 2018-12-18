@@ -157,6 +157,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteByte(VERSION_NUMBER);
+
+      writer.WriteLong(retirementAge.Ticks);
     }
 
     /// <summary>
@@ -169,6 +171,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       if (readVersionNumber != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+
+      retirementAge = new TimeSpan(reader.ReadLong());
     }
   }
 }
