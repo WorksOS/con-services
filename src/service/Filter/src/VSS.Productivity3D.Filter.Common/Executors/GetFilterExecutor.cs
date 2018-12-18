@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       //                     else get only those for the calling UserUid
       try
       {
-        filter = await ((IFilterRepository)Repository).GetFilter(filterRequest.FilterUid).ConfigureAwait(false);
+        filter = await ((IFilterRepository)Repository).GetFilter(filterRequest.FilterUid);
       }
       catch (Exception e)
       {

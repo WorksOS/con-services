@@ -10,6 +10,6 @@ namespace VSS.MasterData.Repositories
     Task<Device> GetDevice(string deviceUid);
     Task<AssetDeviceIds> GetAssociatedAsset(string radioSerial, string deviceType);
 
-    Task<int> StoreEvent(IDeviceEvent evt);
+    Task<int> StoreEvent(IDeviceEvent filterEvent);
   }
 }

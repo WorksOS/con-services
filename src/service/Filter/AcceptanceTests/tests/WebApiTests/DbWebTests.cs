@@ -24,7 +24,6 @@ namespace WebApiTests
       mysql = new MySqlHelper();
     }
 
-    #region Filters
     [TestMethod]
     [DataRow(FilterType.Persistent)]
     [DataRow(FilterType.Transient)]
@@ -336,9 +335,6 @@ namespace WebApiTests
       return JsonConvert.SerializeObject(filter);
     }
 
-    #endregion
-
-    #region Boundaries
     [TestMethod]
     public void InsertBoundaryInDatabaseAndGetItFromWebApi()
     {
@@ -368,8 +364,5 @@ namespace WebApiTests
       Assert.AreEqual(boundaryResponseGet.GeofenceData.GeometryWKT, boundaryWKT, "Boundary WKT doesn't match for GET request");
       Assert.AreEqual(boundaryResponseGet.GeofenceData.GeofenceName, boundaryName, "Boundary name doesn't match for GET request");
     }
-
-
-    #endregion
   }
 }

@@ -1,61 +1,67 @@
-version: '2'
+version: "2"
 services:
   webapi:
     build:
       context: ./artifacts/VSS.Productivity3D.Filter.WebApi
       args:
-          - APP_BUILD_IMAGE=microsoft/dotnet:2.0-sdk
+        - APP_BUILD_IMAGE=microsoft/dotnet:2.0-sdk
     env_file:
-     - docker-compose-local.env
+      - docker-compose-local.env
     volumes:
-      - ./artifacts/logs:/app/logs 
+      - ./artifacts/logs:/app/logs
     ports:
-     - "3001:80"
+      - "3001:80"
     depends_on:
       - schema
   mockprojectwebapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
-     - docker-compose-local.env
+      - docker-compose-local.env
     ports:
-     - "5001:5001"
+      - "5001:5001"
   schema:
-    build: ./database 
+    build: ./database
     env_file:
-     - docker-compose-local.env
+      - docker-compose-local.env
     depends_on:
-     - db
+      - db
   db:
-    image: mysql/mysql-server:5.7.15 
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
+    image: mysql/mysql-server:5.7.15
+    command:
+      [
+        mysqld,
+        --character-set-server=utf8mb4,
+        --collation-server=utf8mb4_unicode_ci,
+      ]
     env_file:
-     - docker-compose-local.env
+      - docker-compose-local.env
     ports:
       - "3306:3306"
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
     ports:
-     - "2181:2181"
+      - "2181:2181"
   kafka:
     image: wurstmeister/kafka:0.11.0.1
     env_file:
-     - docker-compose-local.env
+      - docker-compose-local.env
     environment:
-     - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-     - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.IFilterEvent:1:1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.IFilterEvent:1:1
+      - KAFKA_ADVERTISED_PORT=9092
     ports:
-     - "9092:9092"
+      - "9092:9092"
     volumes:
-     - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
-     - zookeeper
+      - zookeeper
   accepttest:
     build:
       context: ./AcceptanceTests/deploy
       args:
         - APP_BUILD_IMAGE=microsoft/dotnet:2.0-sdk
     env_file:
-     - docker-compose-local.env
+      - docker-compose-local.env
     volumes:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
