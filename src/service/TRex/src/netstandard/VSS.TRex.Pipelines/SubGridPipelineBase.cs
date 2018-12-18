@@ -45,8 +45,8 @@ namespace VSS.TRex.Pipelines
 
         public bool Terminated { get; set; }
 
-        public uint TimeToLiveSeconds = 0;
-        private DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
+        //public uint TimeToLiveSeconds = 0;
+        //private DateTime TimeToLiveExpiryTime = DateTime.MaxValue;
 
         /// <summary>
         /// The request descriptor ID for this request
@@ -99,7 +99,6 @@ namespace VSS.TRex.Pipelines
                 pipelineCompleted = value;
 
                 // The pipeline has been signaled as complete so set its completion signal
-                // Don't modify AllFinished as all results may not have been received/processed before completion
                 if (PipelineSignalEvent.CurrentCount == 0)
                     PipelineSignalEvent.Release();
             }
@@ -117,11 +116,6 @@ namespace VSS.TRex.Pipelines
         // public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; } = BoundingIntegerExtent2D.Inverted();
      
         /// <summary>
-        /// Have all subgrids in the request been returned and processed?
-        /// </summary>
-         private bool AllFinished;
-
-        /// <summary>
         /// The request analyzer to be used to identify the set of subgrids required for the request.
         /// If no analyzer is supplied then a default analyzer will be created as need by the pipeline
         /// </summary>
@@ -129,7 +123,6 @@ namespace VSS.TRex.Pipelines
 
         private void AllSubgridsProcessed()
         {
-            AllFinished = true;
             if (PipelineSignalEvent.CurrentCount == 0)
               PipelineSignalEvent.Release();
         }

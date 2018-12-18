@@ -88,7 +88,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
       catch (Exception e)
       {
-        log.LogError($"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception: {e}");
+        log.LogError($"#Out# DeleteDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:", e);
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
 

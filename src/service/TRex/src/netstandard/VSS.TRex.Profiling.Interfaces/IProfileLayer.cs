@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Filters.Models;
+using VSS.TRex.Profiling.Models;
 
 namespace VSS.TRex.Profiling.Interfaces
 {
@@ -64,7 +65,7 @@ namespace VSS.TRex.Profiling.Interfaces
     float MaterialTemperature_Elev { get; set; } // The height of the cell pass from which the Temperature came from
 
     /// <summary>
-    /// The calculated maximum thickness of any pass in this layer (when interested in "uncompacted" lift thickness)
+    /// The calculated maximum thickness of any pass in this layer (when interested in "un-compacted" lift thickness)
     /// </summary>
     float MaxThickness { get; set; }
     
@@ -102,20 +103,20 @@ namespace VSS.TRex.Profiling.Interfaces
 
     /// <summary>
     /// Records the addition of a cell pass identified by its index in the overall set passes for
-    /// the cell being analysed. The pass itself is not physically added, but the index range of
-    /// cells included in the layer is nodified to take the newly added cell pass into account
+    /// the cell being analyzed. The pass itself is not physically added, but the index range of
+    /// cells included in the layer is modified to take the newly added cell pass into account
     /// </summary>
     /// <param name="passIndex"></param>
     void AddPass(int passIndex);
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     void ToBinary(IBinaryRawWriter writer);
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Deserializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     void FromBinary(IBinaryRawReader reader);

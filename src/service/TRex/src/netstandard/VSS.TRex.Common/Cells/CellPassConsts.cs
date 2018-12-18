@@ -107,6 +107,11 @@ namespace VSS.TRex.Common.CellPasses
     public const byte NullCCA = byte.MaxValue;
 
     /// <summary>
+    /// Null Caterpillar Compaction Algorithm target value
+    /// </summary>
+    public const byte NullCCATarget = byte.MaxValue;
+
+    /// <summary>
     /// Null machine type value
     /// </summary>
     public const byte MachineTypeNull = 0;
@@ -145,5 +150,10 @@ namespace VSS.TRex.Common.CellPasses
     /// Null value for a Universal Transverse Mercator zone reference
     /// </summary>
     public const byte NullUTMZone = 0;
+
+    /// <summary>
+    /// The CCA value, which a lift is marked as thick at.
+    /// </summary>
+    public const byte THICK_LIFT_CCA_VALUE = 120;
   }
 }

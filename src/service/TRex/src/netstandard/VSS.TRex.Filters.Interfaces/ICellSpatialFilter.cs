@@ -8,7 +8,7 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// Determines if the type of the spatial filter is Spatial or Positional
     /// </summary>
-    bool HasSpatialOrPostionalFilters { get; }
+    bool HasSpatialOrPositionalFilters { get; }
 
     /// <summary>
     /// Return a formatted string indicating the state of the filter flags

@@ -4,7 +4,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Machines
 {
@@ -53,7 +53,7 @@ namespace VSS.TRex.Machines
     public CompactionSensorType CompactionSensorType { get; set; } = CompactionSensorType.NoSensor;
 
     /// <summary>
-    /// Determines if the type of this machine is one of the machine tyeps that supports compaction operations
+    /// Determines if the type of this machine is one of the machine types that supports compaction operations
     /// </summary>
     /// <returns></returns>
     public bool MachineIsCompactorType()
@@ -92,8 +92,7 @@ namespace VSS.TRex.Machines
                    int deviceType,
                    Guid machineID,
                    short internalSiteModelMachineIndex,
-                   bool isJohnDoeMachine
-                   /* TODO: AConnectedMachineLevel : MachineLevelEnum*/) : this(owner)
+                   bool isJohnDoeMachine) : this(owner)
     {
       Name = name;
       MachineHardwareID = machineHardwareID;
@@ -103,8 +102,6 @@ namespace VSS.TRex.Machines
       ID = machineID;
       InternalSiteModelMachineIndex = internalSiteModelMachineIndex;
       IsJohnDoeMachine = isJohnDoeMachine;
-
-      // TODO FConnectedMachineLevel:= AConnectedMachineLevel;
     }
 
     public void Assign(IMachine source)
@@ -117,7 +114,6 @@ namespace VSS.TRex.Machines
       // todo           OverrideRMVJumpThreshold = source.OverrideRMVJumpThreshold;
       DeviceType = source.DeviceType;
       CompactionDataReported = source.CompactionDataReported;
-      // todo           ConnectedMachineLevel = source.ConnectedMachineLevel;
       MachineType = source.MachineType;
       IsJohnDoeMachine = source.IsJohnDoeMachine;
       LastKnownX = source.LastKnownX;
@@ -125,8 +121,6 @@ namespace VSS.TRex.Machines
       LastKnownLayerId = source.LastKnownLayerId;
       LastKnownDesignName = source.LastKnownDesignName;
       LastKnownPositionTimeStamp = source.LastKnownPositionTimeStamp;
-
-      //            Dirty = True;
     }
 
     /// <summary>

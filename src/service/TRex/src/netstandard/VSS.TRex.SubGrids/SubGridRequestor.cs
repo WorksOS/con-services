@@ -137,8 +137,8 @@ namespace VSS.TRex.SubGrids
             FilteredSurveyedSurfaces = filteredSurveyedSurfaces;
             FilteredSurveyedSurfacesAsArray = filteredSurveyedSurfacesAsArray;
         
-            if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
-              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignID);
+            if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
+              ElevationRangeDesign = SiteModel.Designs.Locate(Filter.AttributeFilter.ElevationRangeDesignUID);
 
             if (Filter.SpatialFilter.IsDesignMask)
               SurfaceDesignMaskDesign = SiteModel.Designs.Locate(Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
@@ -162,15 +162,15 @@ namespace VSS.TRex.SubGrids
                 // If the elevation range filter uses a design then the design elevations
                 // for the subgrid need to be calculated and supplied to the filter
 
-                if (Filter.AttributeFilter.ElevationRangeDesignID != Guid.Empty)
+                if (Filter.AttributeFilter.ElevationRangeDesignUID != Guid.Empty)
                 {
                   // Query the design get the patch of elevations calculated
-                  if (!ElevationRangeDesign.GetDesignHeights(SiteModel.ID, 
-                        ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
-                        out DesignElevations, 
-                        out DesignProfilerRequestResult ProfilerRequestResult))
+                  ElevationRangeDesign.GetDesignHeights(SiteModel.ID,
+                    ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
+                    out DesignElevations, out DesignProfilerRequestResult ProfilerRequestResult);
 
-                  if (ProfilerRequestResult != DesignProfilerRequestResult.OK || DesignElevations == null)
+                  if ((ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+                      || DesignElevations == null)
                     return false;
 
                   Filter.AttributeFilter.InitialiseElevationRangeFilter(DesignElevations);
@@ -181,17 +181,17 @@ namespace VSS.TRex.SubGrids
             {
                 // SIGLogMessage.PublishNoODS(Nil, Format('#D# InitialiseFilterContext RequestDesignElevationPatch for Design %s',[CellFilter.DesignFilter.FileName]), ...);
                 // Query the DesignProfiler service to get the patch of elevations calculated
+
+              SurfaceDesignMaskDesign.GetDesignHeights(SiteModel.ID,
+                ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
+                out SurfaceDesignMaskElevations, out DesignProfilerRequestResult ProfilerRequestResult);
              
-                if (!SurfaceDesignMaskDesign.GetDesignHeights(SiteModel.ID,
-                  ClientGrid.OriginAsCellAddress(), ClientGrid.CellSize,
-                  out SurfaceDesignMaskElevations,
-                  out DesignProfilerRequestResult ProfilerRequestResult))
-             
-                if (ProfilerRequestResult != DesignProfilerRequestResult.OK || SurfaceDesignMaskElevations == null)
-                {
-                    Log.LogError($"#D# InitialiseFilterContext RequestDesignElevationPatch for Design {SurfaceDesignMaskDesign.Get_DesignDescriptor().FileName} failed");
-                    return false;
-                }
+              if ((ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+                      || SurfaceDesignMaskElevations == null)
+              {
+                  Log.LogError($"#D# InitialiseFilterContext RequestDesignElevationPatch for Design {SurfaceDesignMaskDesign.Get_DesignDescriptor().FileName} failed");
+                  return false;
+              }
             }
 
         return true;

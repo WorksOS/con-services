@@ -6,6 +6,7 @@ using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -26,26 +27,16 @@ namespace VSS.TRex.SubGridTrees.Client
     }
     
     /// <summary>
-         /// MDP subgrids require lift processing...
-         /// </summary>
-         /// <returns></returns>
+    /// MDP subgrids require lift processing...
+    /// </summary>
+    /// <returns></returns>
     public override bool WantsLiftProcessingResults() => true;
 
     private void Initialise()
     {
       EventPopulationFlags |=
         PopulationControlFlags.WantsTargetMDPValues |
-        PopulationControlFlags.WantsTargetThicknessValues |
-        PopulationControlFlags.WantsEventVibrationStateValues |
-        PopulationControlFlags.WantsEventDesignNameValues |
-        PopulationControlFlags.WantsEventGPSAccuracyValues |
-        PopulationControlFlags.WantsEventAutoVibrationStateValues |
-        PopulationControlFlags.WantsEventICFlagsValues |
-        PopulationControlFlags.WantsEventMachineGearValues |
-        PopulationControlFlags.WantsEventMachineCompactionRMVJumpThreshold |
-        PopulationControlFlags.WantsEventMachineAutomaticsValues |
-        PopulationControlFlags.WantsEventMinElevMappingValues |
-        PopulationControlFlags.WantsEventInAvoidZoneStateValues;
+        PopulationControlFlags.WantsEventMinElevMappingValues;
 
       _gridDataType = TRex.Types.GridDataType.MDP;
     }
@@ -84,11 +75,11 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
-    /// <param name="Context"></param>
-    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
+    /// <param name="context"></param>
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      Cells[cellX, cellY].MeasuredMDP = Context.FilteredValue.FilteredPassData.FilteredPass.MDP;
-      Cells[cellX, cellY].TargetMDP = Context.FilteredValue.FilteredPassData.TargetValues.TargetMDP;
+      Cells[cellX, cellY].MeasuredMDP = context.FilteredValue.FilteredPassData.FilteredPass.MDP;
+      Cells[cellX, cellY].TargetMDP = context.FilteredValue.FilteredPassData.TargetValues.TargetMDP;
       Cells[cellX, cellY].IsUndercompacted = false;
       Cells[cellX, cellY].IsTooThick = false;
       Cells[cellX, cellY].IsTopLayerTooThick = false;
@@ -98,7 +89,7 @@ namespace VSS.TRex.SubGridTrees.Client
       int lowLayerIndex = -1;
       int highLayerIndex = -1;
 
-      IProfileLayers layers = ((IProfileCell) Context.CellProfile).Layers;
+      IProfileLayers layers = ((IProfileCell) context.CellProfile).Layers;
 
       if (Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)
       {

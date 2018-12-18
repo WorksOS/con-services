@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling.Interfaces;
+using VSS.TRex.Profiling.Models;
 
 namespace VSS.TRex.Profiling
 {

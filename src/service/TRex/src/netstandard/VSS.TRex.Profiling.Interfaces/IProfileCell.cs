@@ -34,6 +34,15 @@ namespace VSS.TRex.Profiling.Interfaces
     /// </summary>
     IProfileLayers Layers { get; set; }
 
+    float CellLowestElev { get; set; }
+    float CellHighestElev { get; set; }
+    float CellLastElev { get; set; }
+    float CellFirstElev { get; set; }
+    float CellLowestCompositeElev { get; set; }
+    float CellHighestCompositeElev { get; set; }
+    float CellLastCompositeElev { get; set; }
+    float CellFirstCompositeElev { get; set; }
+
     FilteredMultiplePassInfo Passes { get; }
 
     /// <summary>

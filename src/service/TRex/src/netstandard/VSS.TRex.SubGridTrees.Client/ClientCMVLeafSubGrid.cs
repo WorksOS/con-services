@@ -6,6 +6,7 @@ using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Types;
@@ -41,18 +42,9 @@ namespace VSS.TRex.SubGridTrees.Client
     private void Initialise()
     {
       EventPopulationFlags |=
-        PopulationControlFlags.WantsTargetCCAValues |
-        PopulationControlFlags.WantsTargetThicknessValues |
-        PopulationControlFlags.WantsEventVibrationStateValues |
-        PopulationControlFlags.WantsEventDesignNameValues |
-        PopulationControlFlags.WantsEventGPSAccuracyValues |
-        PopulationControlFlags.WantsEventAutoVibrationStateValues |
-        PopulationControlFlags.WantsEventICFlagsValues |
-        PopulationControlFlags.WantsEventMachineGearValues |
+        PopulationControlFlags.WantsTargetCCVValues |
         PopulationControlFlags.WantsEventMachineCompactionRMVJumpThreshold |
-        PopulationControlFlags.WantsEventMachineAutomaticsValues |
-        PopulationControlFlags.WantsEventMinElevMappingValues |
-        PopulationControlFlags.WantsEventInAvoidZoneStateValues;
+        PopulationControlFlags.WantsEventMinElevMappingValues;
 
       if (WantsPreviousCCVValue)
       {
@@ -108,15 +100,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
-    /// <param name="Context"></param>
-    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
+    /// <param name="context"></param>
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      Cells[cellX, cellY].MeasuredCMV = Context.FilteredValue.FilteredPassData.FilteredPass.CCV;
-      Cells[cellX, cellY].TargetCMV = Context.FilteredValue.FilteredPassData.TargetValues.TargetCCV;
-      Cells[cellX, cellY].PreviousMeasuredCMV = Context.PreviousFilteredValue.FilteredPassData.FilteredPass.CCV;
-      Cells[cellX, cellY].PreviousMeasuredCMV = Context.PreviousFilteredValue.FilteredPassData.TargetValues.TargetCCV;
+      Cells[cellX, cellY].MeasuredCMV = context.FilteredValue.FilteredPassData.FilteredPass.CCV;
+      Cells[cellX, cellY].TargetCMV = context.FilteredValue.FilteredPassData.TargetValues.TargetCCV;
+      Cells[cellX, cellY].PreviousMeasuredCMV = context.PreviousFilteredValue.FilteredPassData.FilteredPass.CCV;
+      Cells[cellX, cellY].PreviousMeasuredCMV = context.PreviousFilteredValue.FilteredPassData.TargetValues.TargetCCV;
 
-      Cells[cellX, cellY].IsDecoupled = Context.PreviousFilteredValue.FilteredPassData.FilteredPass.RMV > Context.FilteredValue.FilteredPassData.EventValues.EventMachineRMVThreshold;
+      Cells[cellX, cellY].IsDecoupled = context.PreviousFilteredValue.FilteredPassData.FilteredPass.RMV > context.FilteredValue.FilteredPassData.EventValues.EventMachineRMVThreshold;
       Cells[cellX, cellY].IsUndercompacted = false;
       Cells[cellX, cellY].IsTooThick = false;
       Cells[cellX, cellY].IsTopLayerTooThick = false;
@@ -126,7 +118,7 @@ namespace VSS.TRex.SubGridTrees.Client
       int lowLayerIndex = -1;
       int highLayerIndex = -1;
 
-      IProfileLayers layers = ((IProfileCell) Context.CellProfile).Layers;
+      IProfileLayers layers = ((IProfileCell) context.CellProfile).Layers;
 
       if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
       {
@@ -157,7 +149,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         for (var i = lowLayerIndex; i <= highLayerIndex; i++)
         {
-          var layer = ((IProfileCell)Context.CellProfile).Layers[i];
+          var layer = ((IProfileCell)context.CellProfile).Layers[i];
 
           if (layer.FilteredPassCount == 0)
             continue;

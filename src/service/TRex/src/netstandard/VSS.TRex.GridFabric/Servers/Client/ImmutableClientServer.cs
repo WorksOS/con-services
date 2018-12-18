@@ -123,7 +123,7 @@ namespace VSS.TRex.Servers.Client
           }
           catch (Exception e)
           {
-            Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with exception {e}");
+            Log.LogInformation($"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with Exception:", e);
             throw;
           }
           finally

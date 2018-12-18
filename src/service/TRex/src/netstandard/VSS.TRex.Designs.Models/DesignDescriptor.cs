@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs.Models
 {
@@ -42,10 +42,7 @@ namespace VSS.TRex.Designs.Models
     /// Overloaded ToString detailing the state of the Design Descriptor
     /// </summary>
     /// <returns></returns>
-    public override string ToString()
-    {
-            return $"[{DesignID}:'{Folder}', '{FileName}', '{Offset}']";
-    }
+    public override string ToString() => $"[{DesignID}:'{Folder}', '{FileName}', '{Offset}']";
 
     public bool Equals(DesignDescriptor other)
     {
@@ -81,7 +78,7 @@ namespace VSS.TRex.Designs.Models
     }
 
     /// <summary>
-    /// Serialises content of the cell to the writer
+    /// Serializes content of the cell to the writer
     /// </summary>
     /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
@@ -93,7 +90,7 @@ namespace VSS.TRex.Designs.Models
     }
 
     /// <summary>
-    /// Serialises content of the cell from the writer
+    /// Deserializes content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)

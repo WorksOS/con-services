@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Exports.Surfaces.Requestors;
@@ -31,7 +28,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class TINSurfaceExportController : BaseController
   {
-    private ITINSurfaceExportRequestor tINSurfaceExportRequestor;
+    private readonly ITINSurfaceExportRequestor tINSurfaceExportRequestor;
 
     /// <summary>
     /// Constructor for TIN surface export controller
@@ -82,7 +79,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           new MemoryStream(tinResult?.TINData).CopyTo(stream);
       }
 
-      return CompactionExportResult.Create(fullFileName);
+      return new CompactionExportResult(fullFileName);
     }
 
     /// <summary>

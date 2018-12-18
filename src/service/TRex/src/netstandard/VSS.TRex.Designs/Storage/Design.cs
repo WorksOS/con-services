@@ -5,10 +5,11 @@ using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Utilities.Interfaces;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
@@ -29,6 +30,12 @@ namespace VSS.TRex.Designs.Storage
     /// is relatively slow to initialise when making many calls.
     /// </summary>
     private static readonly DesignProfileRequest profileRequest = new DesignProfileRequest();
+
+    /// <summary>
+    /// Singleton request used by all designs. This request encapsulates the Ignite reference which
+    /// is relatively slow to initialise when making many calls.
+    /// </summary>
+    private static readonly DesignFilterSubGridMaskRequest filterMaskRequest = new DesignFilterSubGridMaskRequest(); 
 
     /// <summary>
     /// Binary serialization logic
@@ -189,8 +196,7 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="cellSize"></param>
     /// <param name="designHeights"></param>
     /// <param name="errorCode"></param>
-    /// <returns></returns>
-    public bool GetDesignHeights(Guid siteModelID,
+    public void GetDesignHeights(Guid siteModelID,
       ISubGridCellAddress originCellAddress,
       double cellSize,
       out IClientHeightLeafSubGrid designHeights,
@@ -200,24 +206,44 @@ namespace VSS.TRex.Designs.Storage
       errorCode = DesignProfilerRequestResult.OK;
       designHeights = null;
 
-      try
+      designHeights = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
       {
-        designHeights = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
-        {
-          CellSize = cellSize,
-          ReferenceDesignUID = DesignDescriptor.DesignID,
-          OriginX = originCellAddress.X,
-          OriginY = originCellAddress.Y,
-          // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
-          ProjectID = siteModelID
-        });
-      }
-      catch
-      {
-        errorCode = DesignProfilerRequestResult.UnknownError;
-      }
+        CellSize = cellSize,
+        ReferenceDesignUID = DesignDescriptor.DesignID,
+        OriginX = originCellAddress.X,
+        OriginY = originCellAddress.Y,
+        // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),
+        ProjectID = siteModelID
+      });
+    }
 
-      return errorCode == DesignProfilerRequestResult.OK;
+    /// <summary>
+    /// Calculates a filter mask for a designated subgrid on this design
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="originCellAddress"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="filterMask"></param>
+    /// <param name="errorCode"></param>
+    public void GetFilterMask(Guid siteModelID,
+      ISubGridCellAddress originCellAddress,
+      double cellSize,
+      out SubGridTreeBitmapSubGridBits filterMask,
+      out DesignProfilerRequestResult errorCode)
+    {
+      // Query the DesignProfiler service to get the requested filter mask
+      errorCode = DesignProfilerRequestResult.OK;
+
+      var maskResponse = filterMaskRequest.Execute(new DesignSubGridFilterMaskArgument
+      {
+        CellSize = cellSize,
+        ReferenceDesignUID = DesignDescriptor.DesignID,
+        OriginX = originCellAddress.X,
+        OriginY = originCellAddress.Y,
+        ProjectID = siteModelID
+      });
+
+      filterMask = maskResponse?.Bits;
     }
   }
 }

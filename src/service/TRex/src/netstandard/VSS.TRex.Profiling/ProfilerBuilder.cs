@@ -1,6 +1,4 @@
-﻿using System;
-using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.DI;
+﻿using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
@@ -33,6 +31,7 @@ namespace VSS.TRex.Profiling
     /// Builder responsible for per-cell profile analysis
     /// </summary>
     public ICellLiftBuilder CellLiftBuilder { get; set; }
+
     public ProfilerBuilder()
     {
     }

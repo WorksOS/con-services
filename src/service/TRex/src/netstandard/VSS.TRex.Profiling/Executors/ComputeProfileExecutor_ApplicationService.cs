@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
+using VSS.TRex.Filters;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.Executors
 {
@@ -15,7 +17,7 @@ namespace VSS.TRex.Profiling.Executors
   /// </summary>
   public class ComputeProfileExecutor_ApplicationService<T> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
 
     public ComputeProfileExecutor_ApplicationService()
     { }
@@ -29,6 +31,15 @@ namespace VSS.TRex.Profiling.Executors
 
       try
       {
+        if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
+        {
+          // Prepare the filters for use in profiling operations. Failure to prepare any filter results in this request terminating
+          if (false == arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).Any(x => x != RequestErrorStatus.OK))
+          {
+            return new ProfileRequestResponse<T>{ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
+          }
+        }
+
         ProfileRequestArgument_ClusterCompute arg2 = new ProfileRequestArgument_ClusterCompute
         {
           ProfileTypeRequired = arg.ProfileTypeRequired,
@@ -55,12 +66,10 @@ namespace VSS.TRex.Profiling.Executors
         ProfileRequestResponse<T> ProfileResponse = request.Execute(arg2);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values
-        ProfileResponse?.ProfileCells?.OrderBy(x => x.Station);
-
-        // Remove null cells in the profiles list. NUll cells are defined by cells with null CellLastHeight.
+        // Remove null cells in the profiles list. Null cells are defined by cells with null CellLastHeight.
         // All duplicate null cells will be replaced by a by single null cell entry
         int firstNonNullIndex = 0;
-        var _ProfileCells = ProfileResponse?.ProfileCells;
+        var _ProfileCells = ProfileResponse?.ProfileCells?.OrderBy(x => x.Station).ToList();
         if (_ProfileCells != null)
         {
           ProfileResponse.ProfileCells = _ProfileCells.Where((x, i) =>

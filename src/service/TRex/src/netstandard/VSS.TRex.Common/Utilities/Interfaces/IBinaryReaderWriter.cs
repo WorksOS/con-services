@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace VSS.TRex.Utilities.Interfaces
+namespace VSS.TRex.Common.Utilities.Interfaces
 {
     /// <summary>
     /// Interface detailing 'from' and 'to' byte array serialisation semantics

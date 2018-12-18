@@ -12,7 +12,6 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="SiteModelID"></param>
     /// <param name="designDescriptor"></param>
     /// <param name="extents"></param>
-    /// <param name="DesignID"></param>
     IDesign Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents);
 
     IDesigns List(Guid SiteModelID);

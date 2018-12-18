@@ -4,16 +4,16 @@ using System.Diagnostics;
 namespace VSS.TRex.Analytics.Foundation.Aggregators
 {
   /// <summary>
-  /// Base class used by data analytics aggregators supporting funcitons such as pass count summary/details, cut/fill details, speed summary etc
+  /// Base class used by data analytics aggregators supporting functions such as pass count summary/details, cut/fill details, speed summary etc
   /// where the analytics are calculated at the cluster compute layer and reduced at the application service layer.
   /// </summary>
   public class DataStatisticsAggregator : AggregatorBase
   {
     /// <summary>
     /// Aggregator state is now single threaded in the context of processing subgrid
-    /// information into it as the processing threads access independent substate aggregators which
+    /// information into it as the processing threads access independent sub-state aggregators which
     /// are aggregated together to form the final aggregation result. However, in contexts that do support
-    /// threaded access to this sturcture the FRequiresSerialisation flag should be set
+    /// threaded access to this structure the FRequiresSerialisation flag should be set
     /// </summary>
     public bool RequiresSerialisation { get; set; }
 
@@ -29,7 +29,7 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
     public long[] Counts { get; set; }
 
     /// <summary>
-    /// The number of cells scanned while summarising information in the resulting analytics, report or export
+    /// The number of cells scanned while summarizing information in the resulting analytics, report or export
     /// </summary>
     public int SummaryCellsScanned { get; set; }
 
@@ -49,7 +49,7 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
     public int CellsScannedUnderTarget { get; set; }
 
     /// <summary>
-    /// Were the target values for all data extraqted for the analytics requested the same
+    /// Were the target values for all data extracted for the analytics requested the same
     /// </summary>
     public bool IsTargetValueConstant { get; set; } = true;
 
@@ -140,7 +140,8 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
 
     protected virtual int GetMaximumValue()
     {
-      throw new NotImplementedException();
+      // No implementation in base class
+      return 0;
     }
   }
 }

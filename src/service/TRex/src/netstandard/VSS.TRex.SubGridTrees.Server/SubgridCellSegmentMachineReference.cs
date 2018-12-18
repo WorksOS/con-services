@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -11,7 +11,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public struct SubgridCellSegmentMachineReference
     {
         /// <summary>
-        /// Internal numeric identifier for the machin in a segment
+        /// Internal numeric identifier for the machine in a segment
         /// </summary>
         public short _SiteModelMachineIndex;
 
@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGridTrees.Server
         public Guid _MachineID;
 
         /// <summary>
-        /// Read the mapping of Guid to numeric identifier usign the supplied reader
+        /// Read the mapping of Guid to numeric identifier using the supplied reader
         /// </summary>
         /// <param name="reader"></param>
         public void Read(BinaryReader reader)
@@ -31,7 +31,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Write the mapping of Guid to numeric identifier usign the supplied writer
+        /// Write the mapping of Guid to numeric identifier using the supplied writer
         /// </summary>
         /// <param name="writer"></param>
         public void Write(BinaryWriter writer)

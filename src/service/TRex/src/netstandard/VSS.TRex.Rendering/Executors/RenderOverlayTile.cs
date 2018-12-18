@@ -17,7 +17,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Executors
@@ -518,7 +518,7 @@ namespace VSS.TRex.Rendering.Executors
           dataModelID: DataModelID,
           siteModel: SiteModel,
           gridDataType: GridDataFromModeConverter.Convert(Mode),
-          response: new SubGridsPipelinedReponseBase(),
+          response: new SubGridsPipelinedResponseBase(),
           cutFillDesignID: CutFillDesignID,
           filters: Filters,
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
@@ -589,7 +589,7 @@ namespace VSS.TRex.Rendering.Executors
       }
       catch (Exception e)
       {
-        Log.LogError($"Exception {e} occurred");
+        Log.LogError("Exception occurred", e);
         ResultStatus = RequestErrorStatus.Exception;
       }
 

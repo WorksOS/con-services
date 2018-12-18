@@ -13,11 +13,6 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_MachineSpeedSummary : PVMDisplayerBase
   {
     /// <summary>
-    /// Machine Speed targets data holder.
-    /// </summary>
-    private ClientMachineTargetSpeedLeafSubGrid SubGrid;
-
-    /// <summary>
     /// Machine Speed target range.
     /// </summary>
     public MachineSpeedExtendedRecord machineSpeedTarget;
@@ -27,15 +22,9 @@ namespace VSS.TRex.Rendering.Displayers
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientMachineTargetSpeedLeafSubGrid grid)
-      {
-        SubGrid = grid;
-        return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientMachineTargetSpeedLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -50,7 +39,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      var value = SubGrid.Cells[east_col, north_row];
+      var value = ((ClientMachineTargetSpeedLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       return value.Max == CellPassConsts.NullMachineSpeed ? Draw.Color.Empty : ((SpeedSummaryPalette) Palette).ChooseColour(value, machineSpeedTarget);
     }

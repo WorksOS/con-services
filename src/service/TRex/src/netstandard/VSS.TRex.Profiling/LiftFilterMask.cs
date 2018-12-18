@@ -43,7 +43,7 @@ namespace VSS.TRex.Profiling
         byte CellX = (byte)(profileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask);
         byte CellY = (byte)(profileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
-        if (cellFilter.HasSpatialOrPostionalFilters)
+        if (cellFilter.HasSpatialOrPositionalFilters)
         {
           tree.GetCellCenterPosition(profileCell.OTGCellX, profileCell.OTGCellY,
             out double CellCenterX, out double CellCenterY);
@@ -60,72 +60,41 @@ namespace VSS.TRex.Profiling
       List<T> profileCells,
       SubGridTreeBitmapSubGridBits mask,
       int fromProfileCellIndex,
-      ICellSpatialFilter cellFilter)
+      ICellSpatialFilter cellFilter,
+      IDesign SurfaceDesignMaskDesign)
     {
-      // double OriginX, OriginY;
+      ConstructSubgridSpatialAndPositionalMask(tree, currentSubGridOrigin, profileCells, mask, fromProfileCellIndex, cellFilter);
 
-      // SubGridTreeBitmapSubGridBits DesignMask;
-      // SubGridTreeBitmapSubGridBits DesignFilterMask;
-      //      DesignProfilerRequestResult RequestResult;
-      // bool Result;
-
-      ConstructSubgridSpatialAndPositionalMask(tree, currentSubGridOrigin, profileCells, mask,
-        fromProfileCellIndex, cellFilter);
-
-      // If the filter contains a design mask filter then compute this and AND it with the
+      // If the filter contains an alignment design mask filter then compute this and AND it with the
       // mask calculated in the step above to derive the final required filter mask
 
       if (cellFilter.HasAlignmentDesignMask())
       {
-        /* TODO: Alignment design mask not yet supported 
-  // Query the design profiler service for the corresponding filter mask given the  alignment design configured in the cell selection filter.
-   CompositeHeightsGrid.CalculateWorldOrigin(OriginX, OriginY);
-  with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
-    {
-      RequestResult := RequestDesignMaskFilterPatch(Construct_ComputeDesignFilterPatch_Args(FSiteModel.ID,
-                                                                                            OriginX, OriginY,
-                                                                                            FSiteModel.Grid.CellSize,
-                                                                                            ReferenceDesign,
-                                                                                            Mask,
-                                                                                            StartStation, EndStation,
-                                                                                            LeftOffset, RightOffset),
-                                                                                            DesignMask);
-      if RequestResult = dppiOK then
-        Mask := Mask AND DesignMask
-      else
+        if (cellFilter.AlignmentFence.IsNull()) // Should have been done in ASNode but if not
+          throw new ArgumentException($"Spatial filter does not contained pre-prepared alignment fence for design {cellFilter.AlignmentDesignMaskDesignUID}");
+
+        // Go over set bits and determine if they are in Design fence boundary
+        mask.ForEachSetBit((X, Y) =>
         {
-          Result := False;
-          SIGLogMessage.PublishNoODS(Nil, Format('Call(B1) to RequestDesignMaskFilterPatch in TICServerProfiler returned error result %s for %s.',
-                                                 [DesignProfilerErrorStatusName(RequestResult), CellFilter.ReferenceDesign.ToString]), slmcError);
-        }
-    }
-    */
+          tree.GetCellCenterPosition((uint)(currentSubGridOrigin.X + X), (uint)(currentSubGridOrigin.Y + Y), out var CX, out var CY);
+          if (!cellFilter.AlignmentFence.IncludesPoint(CX, CY))
+          {
+            mask.ClearBit(X, Y); // remove interest as its not in design boundary
+          }
+        });
       }
 
-      if (cellFilter.HasSurfaceDesignMask())
+      if (SurfaceDesignMaskDesign != null)
       {
-        /* todo Design elevation requests not yet supported
-        // Query the design profiler service for the corresponding filter mask given the tin design configured in the cell selection filter.
-          with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
-            {
-              RequestResult := RequestDesignMaskFilterPatch(Construct_ComputeDesignFilterPatch_Args(FSiteModel.ID,
-                                                                                                    OriginX, OriginY,
-                                                                                                    FSiteModel.Grid.CellSize,
-                                                                                                    DesignFilter,
-                                                                                                    Mask,
-                                                                                                    StartStation, EndStation,
-                                                                                                    LeftOffset, RightOffset),
-                                                            DesignFilterMask);
-              if RequestResult = dppiOK then
-                Mask := Mask AND DesignFilterMask
-              else
-                {
-                  Result := False;
-                  SIGLogMessage.PublishNoODS(Nil, Format('Call (B2) to RequestDesignMaskFilterPatch in TICServerProfiler returned error result %s for %s.',
-                                                         [DesignProfilerErrorStatusName(RequestResult), CellFilter.DesignFilter.ToString]), slmcError);
-                }
-            }
-        */
+        SurfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize, out SubGridTreeBitmapSubGridBits filterMask, out DesignProfilerRequestResult requestResult);
+
+        if (requestResult == DesignProfilerRequestResult.OK)
+          mask.AndWith(filterMask);
+        else
+        {
+          Log.LogError($"Call (B2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {requestResult} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          return false;
+        }
       }
 
       return true;
@@ -140,11 +109,10 @@ namespace VSS.TRex.Profiling
         // If the elevation range filter uses a design then the design elevations
         // for the subgrid need to be calculated and supplied to the filter
 
-        if (passFilter.ElevationRangeDesignID != Guid.Empty)
+        if (passFilter.ElevationRangeDesignUID != Guid.Empty)
         {
           design.GetDesignHeights(siteModel.ID, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY),
-            siteModel.Grid.CellSize, out IClientHeightLeafSubGrid FilterDesignElevations,
-            out FilterDesignErrorCode);
+            siteModel.Grid.CellSize, out IClientHeightLeafSubGrid FilterDesignElevations, out FilterDesignErrorCode);
 
           if (FilterDesignErrorCode != DesignProfilerRequestResult.OK || FilterDesignElevations == null)
           {

@@ -78,9 +78,19 @@ namespace VSS.TRex.Profiling
 
     /// <summary>
     /// The design supplied as a result of an independent lookup outside the scope of this builder
-    /// to find the design identified by the cellPassFilter.ElevationRangeDesignID
+    /// to find the design identified by the cellPassFilter.ElevationRangeDesignUID
     /// </summary>
     protected IDesign CellPassFilter_ElevationRangeDesign;
+
+    /// <summary>
+    /// The design to be used as a TIN surface design based 'cookie cutter' selection mask for production data
+    /// </summary>
+    protected IDesign SurfaceDesignMaskDesign;
+
+    /// <summary>
+    /// The design to be used as an alignment design surface based 'cookie cutter' selection mask for production data
+    /// </summary>
+    protected IDesign AlignmentDesignMaskDesign;
 
     public CellProfileAnalyzerBase()
     { }
@@ -110,6 +120,20 @@ namespace VSS.TRex.Profiling
 
     public virtual void Initialise()
     {
+      if (CellFilter.SurfaceDesignMaskDesignUid != Guid.Empty)
+      {
+        SurfaceDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.SurfaceDesignMaskDesignUid);
+        if (SurfaceDesignMaskDesign == null)
+          throw new ArgumentException($"Design {CellFilter.SurfaceDesignMaskDesignUid} not found in project {SiteModel.ID}");
+      }
+
+      if (CellFilter.AlignmentDesignMaskDesignUID != Guid.Empty)
+      {
+        AlignmentDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.AlignmentDesignMaskDesignUID);
+        if (AlignmentDesignMaskDesign == null)
+          throw new ArgumentException($"Design {CellFilter.AlignmentDesignMaskDesignUID} not found in project {SiteModel.ID}");
+      }
+
       if (SiteModel.SurveyedSurfaces?.Count > 0)
       {
         // Filter out any surveyed surfaces which don't match current filter (if any)
