@@ -189,6 +189,7 @@ namespace VSS.TCCFileAccess
       headers.Add("X-File-Name", WebUtility.UrlEncode(filename));
       headers.Add("X-File-Size", sizeOfContents.ToString());
       headers.Add("X-FileType", "");
+      headers.Add("Content-Type", "application/octet-stream");
 
       PutFileResponse result = default(PutFileResponse);
       try
