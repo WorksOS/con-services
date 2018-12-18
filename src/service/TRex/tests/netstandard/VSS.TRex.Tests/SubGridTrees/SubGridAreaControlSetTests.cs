@@ -12,7 +12,7 @@ namespace VSS.TRex.Tests.SubGridTrees
 {
   public class SubGridAreaControlSetTests
   {
-    #region ComputeSeiveBitmaskInteger
+    #region ComputeSieveBitmaskInteger
 
     [Fact]
     public void AreaControlSet_Integer_PixelWorldSizeMustBeGreaterThan0()
@@ -27,9 +27,9 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
       var subGridMoniker = "theSubGridMoniker";
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
         areaControlSet, siteModelCellsize, out SubGridTreeBitmapSubGridBits _);
-      Assert.False(seiveFilterInUse, "sieve filter should not have been generated for zero pixelWorldSize");
+      Assert.False(sieveFilterInUse, "sieve filter should not have been generated for zero pixelWorldSize");
     }
 
     [Fact]
@@ -46,9 +46,9 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
       var subGridMoniker = "theSubGridMoniker";
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
         areaControlSet, siteModelCellsize, out SubGridTreeBitmapSubGridBits _);
-      Assert.False(seiveFilterInUse, "sieve filter should not have been generated where pixel size <2x siteModelCellSize");
+      Assert.False(sieveFilterInUse, "sieve filter should not have been generated where pixel size <2x siteModelCellSize");
     }
 
     [Fact]
@@ -56,7 +56,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       double siteModelCellsize = SubGridTreeConsts.DefaultCellSize;
 
-      // for ComputeSeiveInteger(): (differs to ComputeSeiveFloat())
+      // for ComputeSieveInteger(): (differs to ComputeSieveFloat())
       //    subGridWorldOriginX is treated as the center of a cell
       //    i.e. 0,0 is seen as to the left of the grid; cellsize/2 is seen at on cell 0,0
       double pixelWorldSizeOrIntervalXY = SubGridTreeConsts.DefaultCellSize * 2;
@@ -67,26 +67,25 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = 0;
       double subGridWorldOriginY = 0;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 1,1
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
 
-      var rowXActual = seiveBitmask.RowToString(0);
+      var rowXActual = sieveBitmask.RowToString(0);
       var rowXExpected = " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 0 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(2);
+      rowXActual = sieveBitmask.RowToString(2);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 2 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(1);
+      rowXActual = sieveBitmask.RowToString(1);
       rowXExpected = " 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 1 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(3);
+      rowXActual = sieveBitmask.RowToString(3);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 3 is invalid");
     }
 
@@ -103,26 +102,25 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 0,0
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
 
-      var rowXActual = seiveBitmask.RowToString(0);
+      var rowXActual = sieveBitmask.RowToString(0);
       var rowXExpected = " 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 0 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(2);
+      rowXActual = sieveBitmask.RowToString(2);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 2 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(1);
+      rowXActual = sieveBitmask.RowToString(1);
       rowXExpected = " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 1 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(3);
+      rowXActual = sieveBitmask.RowToString(3);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 3 is invalid");
     }
 
@@ -139,13 +137,12 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 0,0
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
     }
 
     [Fact]
@@ -161,17 +158,16 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 0,0
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
     }
-    #endregion ComputeSeiveBitmaskInteger
+    #endregion ComputeSieveBitmaskInteger
 
-    #region ComputeSeiveBitmaskFloat
+    #region ComputeSieveBitmaskFloat
     [Fact]
     public void AreaControlSet_Float_PixelWorldSizeMustBeGreaterThan0()
     {
@@ -186,9 +182,9 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginY = 0;
       var subGridMoniker = "theSubGridMoniker";
       var assignmentContext = new FilteredValueAssignmentContext();
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits _);
-      Assert.False(seiveFilterInUse, "sieve filter should not have been generated for zero pixelWorldSize");
+      Assert.False(sieveFilterInUse, "sieve filter should not have been generated for zero pixelWorldSize");
     }
 
     [Fact]
@@ -206,9 +202,9 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginY = 0;
       var subGridMoniker = "theSubGridMoniker";
       var assignmentContext = new FilteredValueAssignmentContext();
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
         areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits _);
-      Assert.False(seiveFilterInUse, "sieve filter should not have been generated where pixelWorldSize < siteModelCellSize");
+      Assert.False(sieveFilterInUse, "sieve filter should not have been generated where pixelWorldSize < siteModelCellSize");
     }
 
     [Fact]
@@ -216,7 +212,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       double siteModelCellsize = SubGridTreeConsts.DefaultCellSize;
       
-      // for ComputeSeiveFloat(): (differs to ComputeSeiveInteger())
+      // for ComputeSieveFloat(): (differs to ComputeSieveInteger())
       //    subGridWorldOriginX is becomes the center of a cell
       //    i.e. 0,0 is seen as center of cell 1,1; cellsize/2 is ALSO seen at on cell 0,0
       double pixelWorldSizeOrIntervalXY = SubGridTreeConsts.DefaultCellSize * 2;
@@ -224,33 +220,30 @@ namespace VSS.TRex.Tests.SubGridTrees
       var rotation = Consts.NullDouble;
       var areaControlSet = new AreaControlSet(pixelWorldSizeOrIntervalXY, pixelWorldSizeOrIntervalXY, userOriginXY, userOriginXY, rotation, false);
 
-      double subGridWorldOriginX = siteModelCellsize / 2; // todoJeannie 0;
-      double subGridWorldOriginY = siteModelCellsize / 2; // todoJeannie 0;
+      double subGridWorldOriginX = siteModelCellsize / 2; 
+      double subGridWorldOriginY = siteModelCellsize / 2;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
 
-      // todoJeannie do I need to InitialiseProbePositions()?
       var assignmentContext = new FilteredValueAssignmentContext();
-      assignmentContext.InitialiseProbePositions();
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, assignmentContext, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 1,1
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
 
-      var rowXActual = seiveBitmask.RowToString(0);
+      var rowXActual = sieveBitmask.RowToString(0);
       var rowXExpected = " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 0 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(2);
+      rowXActual = sieveBitmask.RowToString(2);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 2 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(1);
+      rowXActual = sieveBitmask.RowToString(1);
       rowXExpected = " 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 1 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(3);
+      rowXActual = sieveBitmask.RowToString(3);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 3 is invalid");
     }
 
@@ -267,28 +260,26 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
       var assignmentContext = new FilteredValueAssignmentContext();
-      assignmentContext.InitialiseProbePositions();
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, assignmentContext, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 0,0
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
 
-      var rowXActual = seiveBitmask.RowToString(0);
+      var rowXActual = sieveBitmask.RowToString(0);
       var rowXExpected = " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 0 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(2);
+      rowXActual = sieveBitmask.RowToString(2);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 2 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(1);
+      rowXActual = sieveBitmask.RowToString(1);
       rowXExpected = " 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 1 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(3);
+      rowXActual = sieveBitmask.RowToString(3);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 3 is invalid");
 
       Assert.True(Math.Abs(assignmentContext.ProbePositions[1, 1].XOffset - 0.51) < 0.001, "real world X offset for 1,1 is invalid");
@@ -308,28 +299,26 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
       var assignmentContext = new FilteredValueAssignmentContext();
-      assignmentContext.InitialiseProbePositions();
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, assignmentContext, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 0,0
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
 
-      var rowXActual = seiveBitmask.RowToString(0);
+      var rowXActual = sieveBitmask.RowToString(0);
       var rowXExpected = " 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 0 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(2);
+      rowXActual = sieveBitmask.RowToString(2);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 2 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(1);
+      rowXActual = sieveBitmask.RowToString(1);
       rowXExpected = " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
       Assert.True(rowXExpected == rowXActual, "bitSet for row 1 is invalid");
 
-      rowXActual = seiveBitmask.RowToString(3);
+      rowXActual = sieveBitmask.RowToString(3);
       Assert.True(rowXExpected == rowXActual, "bitSet for row 3 is invalid");
 
       CheckProbePositions(assignmentContext.ProbePositions, true, 0.23, 0.68, 0.23, 0.68);
@@ -349,15 +338,13 @@ namespace VSS.TRex.Tests.SubGridTrees
       double subGridWorldOriginX = siteModelCellsize / 2;
       double subGridWorldOriginY = siteModelCellsize / 2;
       var subGridMoniker = "theSubGridMoniker";
-      SubGridTreeBitmapSubGridBits seiveBitmask;
       var assignmentContext = new FilteredValueAssignmentContext();
-      assignmentContext.InitialiseProbePositions();
-      var seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
-        areaControlSet, siteModelCellsize, assignmentContext, out seiveBitmask);
+      var sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, subGridMoniker,
+        areaControlSet, siteModelCellsize, assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask);
 
-      Assert.True(seiveFilterInUse, "sieve filter should have been generated");
+      Assert.True(sieveFilterInUse, "sieve filter should have been generated");
       // 256/1024 set, first set at 0,0
-      Assert.True(seiveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {seiveBitmask.CountBits()}");
+      Assert.True(sieveBitmask.CountBits() == 256, $"Incorrect count of bits set. Expected 256 but got {sieveBitmask.CountBits()}");
 
       CheckProbePositions(assignmentContext.ProbePositions, false, 0.51, 0.68, 0.51, 0.68);
     }
@@ -393,7 +380,7 @@ namespace VSS.TRex.Tests.SubGridTrees
       }
     }
 
-    #endregion ComputeSeiveBitmaskFloat
+    #endregion ComputeSieveBitmaskFloat
 
   }
 }

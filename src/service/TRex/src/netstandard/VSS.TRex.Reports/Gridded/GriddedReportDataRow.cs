@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Binary;
-using VSS.Productivity3D.Models.Models.Reports;
 
 namespace VSS.TRex.Reports.Gridded
 {
@@ -22,6 +21,7 @@ namespace VSS.TRex.Reports.Gridded
     public GriddedReportDataRow()
     {
     }
+
     public GriddedReportDataRow(
       double northing, double easting, double elevation,
       double cutFill, short cmv, short mdp, short passCount, short temperature)
@@ -46,6 +46,18 @@ namespace VSS.TRex.Reports.Gridded
       writer.Write(Mdp);
       writer.Write(PassCount);
       writer.Write(Temperature);
+    }
+
+    public void Read(BinaryReader reader)
+    {
+      Northing = reader.ReadDouble();
+      Easting = reader.ReadDouble();
+      Elevation = reader.ReadDouble();
+      CutFill = reader.ReadDouble();
+      Cmv = reader.ReadInt16();
+      Mdp = reader.ReadInt16();
+      PassCount = reader.ReadInt16();
+      Temperature = reader.ReadInt16();
     }
 
     /// <summary>
@@ -80,18 +92,6 @@ namespace VSS.TRex.Reports.Gridded
       Temperature = reader.ReadShort();
     }
 
-    public void Read(BinaryReader reader)
-    {
-      Northing = reader.ReadDouble();
-      Easting = reader.ReadDouble();
-      Elevation = reader.ReadDouble();
-      CutFill = reader.ReadDouble();
-      Cmv = reader.ReadInt16();
-      Mdp = reader.ReadInt16();
-      PassCount = reader.ReadInt16();
-      Temperature = reader.ReadInt16();
-    }
-    
     public bool Equals(GriddedReportDataRow other)
     {
       if (ReferenceEquals(null, other)) return false;

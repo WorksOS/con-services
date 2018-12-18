@@ -25,15 +25,15 @@ namespace VSS.TRex.SubGrids
     /// <param name="subGridMoniker"></param>
     /// <param name="areaControlSet"></param>
     /// <param name="siteModelCellsize"></param>
-    /// <param name="seiveBitmask"></param>
+    /// <param name="sieveBitmask"></param>
     /// <param name="subGridWorldOriginX"></param>
     /// <param name="subGridWorldOriginY"></param>
     /// <returns></returns>
-    public static bool ComputeSeiveBitmaskInteger(double subGridWorldOriginX, double subGridWorldOriginY, string subGridMoniker, 
-      AreaControlSet areaControlSet, double siteModelCellsize, out SubGridTreeBitmapSubGridBits seiveBitmask)
+    public static bool ComputeSieveBitmaskInteger(double subGridWorldOriginX, double subGridWorldOriginY, string subGridMoniker, 
+      AreaControlSet areaControlSet, double siteModelCellsize, out SubGridTreeBitmapSubGridBits sieveBitmask)
     {
       const int kMaxStepSize = 10000;
-      seiveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+      sieveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       /* TODO - add configuration item for VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests
       if (!VLPDSvcLocations.VLPDPSNode_UseSkipStepComputationForWMSSubgridRequests)
@@ -70,7 +70,7 @@ namespace VSS.TRex.SubGrids
       if (stepX >= SubGridTreeConsts.SubGridTreeDimension && stepY >= SubGridTreeConsts.SubGridTreeDimension)
         Log.LogDebug($"Skip value of {stepX}/{stepY} chosen for {subGridMoniker}");
 
-      seiveBitmask.Clear();
+      sieveBitmask.Clear();
 
       // Calculate the world coordinate location of the origin (bottom left corner)
       // of this subgrid
@@ -98,7 +98,7 @@ namespace VSS.TRex.SubGrids
 
         while (eastCol < SubGridTreeConsts.SubGridTreeDimension)
         {
-          seiveBitmask.SetBit(eastCol, northRow);
+          sieveBitmask.SetBit(eastCol, northRow);
           eastCol += stepX;
         }
 
@@ -109,16 +109,17 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <param name="subGridWorldOriginY"></param>
+    /// <param name="subGridMoniker"></param>
     /// <param name="areaControlSet"></param>
     /// <param name="siteModelCellsize"></param>
     /// <param name="assignmentContext"></param>
-    /// <param name="seiveBitmask"></param>
+    /// <param name="sieveBitmask"></param>
     /// <param name="subGridWorldOriginX"></param>
     /// <returns></returns>
-    public static bool ComputeSeiveBitmaskFloat(double subGridWorldOriginX, double subGridWorldOriginY, string subGridMoniker, 
-      AreaControlSet areaControlSet, double siteModelCellsize, FilteredValueAssignmentContext assignmentContext, out SubGridTreeBitmapSubGridBits seiveBitmask)
+    public static bool ComputeSieveBitmaskFloat(double subGridWorldOriginX, double subGridWorldOriginY, string subGridMoniker, 
+      AreaControlSet areaControlSet, double siteModelCellsize, FilteredValueAssignmentContext assignmentContext, out SubGridTreeBitmapSubGridBits sieveBitmask)
     {
-      seiveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+      sieveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       if (areaControlSet.PixelXWorldSize == 0 || areaControlSet.PixelYWorldSize == 0)
         return false;
@@ -131,7 +132,7 @@ namespace VSS.TRex.SubGrids
       // (ie: bottom to top, left to right), taking into account grid offsets and
       // rotations specified in areaControlSet
 
-      seiveBitmask.Clear();
+      sieveBitmask.Clear();
 
       // Calculate the world coordinate location of the origin (bottom left corner)
       // and limits (top right corner) of this subgrid
@@ -148,7 +149,7 @@ namespace VSS.TRex.SubGrids
 
       // Perform the walk across all probed locations determining the cells we want to
       // obtain values for and the probe locations.
-      PerformScan(siteModelCellsize, assignmentContext, seiveBitmask,
+      PerformScan(siteModelCellsize, assignmentContext, sieveBitmask,
         numRowsToScan, numColsToScan,
         stepNorthX, stepNorthY, stepEastX, stepEastY,
         subGridWorldOriginX, subGridWorldOriginY,
@@ -227,7 +228,8 @@ namespace VSS.TRex.SubGrids
       }
     }
 
-    private static void PerformScan(double siteModelCellsize, FilteredValueAssignmentContext assignmentContext, SubGridTreeBitmapSubGridBits seiveBitmask,
+    private static void PerformScan(double siteModelCellsize, FilteredValueAssignmentContext assignmentContext, 
+      SubGridTreeBitmapSubGridBits sieveBitmask,
       int numRowsToScan, int numColsToScan,
       double stepNorthX, double stepNorthY, double stepEastX, double stepEastY,
       double subgridMinX, double subgridMinY,
@@ -250,7 +252,7 @@ namespace VSS.TRex.SubGrids
           if (Range.InRange(eastCol, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1) &&
               Range.InRange(northRow, 0, SubGridTreeConsts.SubGridTreeDimensionMinus1))
           {
-            seiveBitmask.SetBit(eastCol, northRow);
+            sieveBitmask.SetBit(eastCol, northRow);
             assignmentContext.ProbePositions[eastCol, northRow]
               .SetOffsets(currentEast - subgridMinX,
                 currentNorth - subgridMinY); // = new ProbePoint(CurrentEast - SubgridMinX, CurrentNorth - SubgridMinY);

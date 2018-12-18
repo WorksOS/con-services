@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Reports.Responses
         GriddedReportDataRowList = rowList
       };
 
-      SimpleBinarizableInstanceTester.TestClass<GriddedReportRequestResponse>("Empty GriddedReportResponse not same after round trip serialisation");
+      SimpleBinarizableInstanceTester.TestClass(response, "Empty GriddedReportResponse not same after round trip serialisation");
     }
   }
 }

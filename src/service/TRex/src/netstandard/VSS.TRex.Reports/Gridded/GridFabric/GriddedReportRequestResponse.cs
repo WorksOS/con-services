@@ -23,7 +23,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     public void Clear()
     {
       ReturnCode = ReportReturnCode.NoError;
-      ReportType = ReportType.None;
+      ReportType = ReportType.Gridded;
       GriddedReportDataRowList = new List<GriddedReportDataRow>();
     }
 
@@ -56,7 +56,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
       GriddedReportDataRowList = new List<GriddedReportDataRow>();
       for (int i = 0; i < griddedRowsCount; i++)
       {
-        GriddedReportDataRowList[i].FromBinary(reader);
+        var row = new GriddedReportDataRow();
+        row.FromBinary(reader);
+        GriddedReportDataRowList.Add(row);
       }
     }
   }

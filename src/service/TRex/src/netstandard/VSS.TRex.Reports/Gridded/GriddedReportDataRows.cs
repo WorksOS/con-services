@@ -13,16 +13,6 @@ namespace VSS.TRex.Reports.Gridded
     {
     }
 
-    //public new void Add(GriddedReportDataRow value)
-    //{
-    //  base.Add(value);
-    //}
-
-    //public void AddRange(GriddedReportDataRow[] values)
-    //{
-    //  base.AddRange(values);
-    //}
-
     public void Write(BinaryWriter writer)
     {
       foreach (var griddedDataRow in this)

@@ -8,7 +8,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
   {
 
     [Fact]
-    public void Test_CutFillResult_Population_Successful()
+    public void CutFillResult_Population_Successful()
     {
       var original = new GriddedReportResult(ReportType.Gridded);
       var griddedDataRow = new GriddedReportDataRow()

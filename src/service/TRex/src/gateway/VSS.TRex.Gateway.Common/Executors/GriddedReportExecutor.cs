@@ -45,7 +45,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        ReferenceDesignUID = request.DesignFile.Uid ?? Guid.Empty, // only present if ReportCutFill required
+        ReferenceDesignUID = request.DesignFile?.Uid ?? Guid.Empty, // only present if ReportCutFill required
         ReportElevation = request.ReportElevation,
         ReportCutFill = request.ReportCutFill,
         ReportCMV = request.ReportCMV,
@@ -64,7 +64,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var result = new GriddedReportResult()
       {
         ReturnCode = response.ReturnCode,
-        ReportType = response.ReportType,
+        ReportType = ReportType.Gridded,
         GriddedData = new GriddedReportData()
         {
           ElevationReport = request.ReportElevation,

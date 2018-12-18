@@ -46,7 +46,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
       }
       finally
       {
-        Log.LogInformation("Exiting PatchRequestComputeFunc.Invoke()");
+        Log.LogInformation("Exiting GridRequestComputeFunc.Invoke()");
       }
     }
   }

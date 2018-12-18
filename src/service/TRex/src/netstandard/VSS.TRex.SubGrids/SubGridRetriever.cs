@@ -49,9 +49,9 @@ namespace VSS.TRex.SubGrids
     private IClientLeafSubGrid _clientGrid;
     private ClientLeafSubGrid _clientGridAsLeaf;
     private GridDataType _gridDataType = GridDataType.All;
-    private bool _seiveFilterInUse;
+    private bool _sieveFilterInUse;
 
-    private SubGridTreeBitmapSubGridBits _seiveBitmask;
+    private SubGridTreeBitmapSubGridBits _sieveBitmask;
 
     ISubGrid _subGrid;
     IServerLeafSubGrid _subGridAsLeaf;
@@ -294,10 +294,10 @@ namespace VSS.TRex.SubGrids
         {
           // If there is an overriding sieve bitmask (from WMS rendering) then
           // check if this cell is contained in the sieve, otherwise ignore it.
-          if (_seiveFilterInUse && !_seiveBitmask.BitSet(StripeIndex, J))
+          if (_sieveFilterInUse && !_sieveBitmask.BitSet(StripeIndex, J))
             continue;
 
-          if (_seiveFilterInUse || !_prepareGridForCacheStorageIfNoSeiving)
+          if (_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSeiving)
             if (!_clientGridAsLeaf.ProdDataMap.BitSet(StripeIndex, J)) // This cell does not match the filter mask and should not be processed
               continue;
 
@@ -771,17 +771,16 @@ namespace VSS.TRex.SubGrids
           // the X and Y pixel world size (used for WMS tile computation)
           _subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
-            if (_areaControlSet.UseIntegerAlgorithm)
+          if (_areaControlSet.UseIntegerAlgorithm)
             {
-              _seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, out _seiveBitmask);
+              _sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, out _sieveBitmask);
             }
             else
             {
-              _assignmentContext.InitialiseProbePositions();
-              _seiveFilterInUse = GridRotationUtilities.ComputeSeiveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _seiveBitmask);
+              _sieveFilterInUse = GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.Grid.CellSize, _assignmentContext, out _sieveBitmask);
             }
 
-            if (!_seiveFilterInUse)
+            if (!_sieveFilterInUse)
             {
               // Reset pixel size parameters to indicate no skip stepping is being performed
               _areaControlSet.PixelXWorldSize = 0;
@@ -816,7 +815,7 @@ namespace VSS.TRex.SubGrids
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occured in RetrieveSubGrid", e);
+        Log.LogError(e, "Exception occured in RetrieveSubGrid");
         throw;
       }
 

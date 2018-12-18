@@ -103,7 +103,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       throw CreateServiceException<CompactionReportGridExecutor>();
     }
 
-    //todoJeannie the stream format is likely different for TRex...
     private CompactionReportResult ConvertGridResult(CompactionReportGridRequest request, Stream stream)
     {
       log.LogDebug($"{nameof(ConvertGridResult)}");
