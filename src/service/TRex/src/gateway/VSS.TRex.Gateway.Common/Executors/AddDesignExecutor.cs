@@ -113,7 +113,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
       catch (Exception e)
       {
-        log.LogError($"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:", e);
+        log.LogError(e, $"#Out# CreateDesignExecutor. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, Exception:");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (int)RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
       }
 
