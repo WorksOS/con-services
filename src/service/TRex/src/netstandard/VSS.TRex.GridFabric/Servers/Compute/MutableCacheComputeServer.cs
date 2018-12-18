@@ -272,7 +272,7 @@ namespace VSS.TRex.Servers.Compute
       }
       catch (Exception e)
       {
-        Log.LogInformation("Exception during creation of new Ignite node:", e);
+        Log.LogError(e, "Exception during creation of new Ignite node:");
         throw;
       }
       finally

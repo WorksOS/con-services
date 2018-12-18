@@ -32,7 +32,7 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError("Exception reading design from s3:", e);
+        Log.LogError(e, "Exception reading design from s3:");
         return false;
       }
 
@@ -52,7 +52,7 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError("Exception writing design file locally:", e);
+        Log.LogError(e, "Exception writing design file locally:");
         return false;
       }
 
@@ -77,7 +77,7 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError("Exception writing design to s3:", e);
+        Log.LogError(e, "Exception writing design to s3:");
         return false;
       }
       return true;

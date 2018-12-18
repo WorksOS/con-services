@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Push.Clients
         }
         catch (HttpRequestException e)
         {
-          Logger.LogError($"Failed to connect due to exception '{e.Message}' - Is the Server online?");
+          Logger.LogError(e, "Failed to connect due to exception - Is the Server online?");
           await Task.Delay(RECONNECT_DELAY_MS);
         }
       }
