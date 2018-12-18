@@ -63,19 +63,19 @@
   Design to profile: <input type="text" [(ngModel)]="designProfileUid">
   <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Design Profile</button>
   <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Prod Latest Data Profile</button>
-</p>
-<p>
   <button (click)="drawProfileLineFromStartToEndPointsForCompositeElevations()">Composite Elevations Profile</button>
 </p>
-<p>Production data based elevation profiles:
-  <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()"    [(ngModel)]="showLastElevationProfile">Last</label>
-  <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()"   [(ngModel)]="showFirstElevationProfile">First</label>
-  <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()"  [(ngModel)]="showLowestElevationProfile">Lowest</label>
+<p>
+Production elevation profiles:
+  <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()" [(ngModel)]="showLastElevationProfile">Last</label>
+  <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()" [(ngModel)]="showFirstElevationProfile">First</label>
+  <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()" [(ngModel)]="showLowestElevationProfile">Lowest</label>
   <label><input type="checkbox" (ngModelChange)="showHighestElevationProfile_change()" [(ngModel)]="showHighestElevationProfile">Highest</label>
-  Composite (production and surveyed surface) based elevation profiles:
-  <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()"    [(ngModel)]="showLastCompositeElevationProfile">Last</label>
-  <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()"   [(ngModel)]="showFirstCompositeElevationProfile">First</label>
-  <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()"  [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
+</p><p>
+Composite elevation profiles:
+  <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()" [(ngModel)]="showLastCompositeElevationProfile">Last</label>
+  <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()" [(ngModel)]="showFirstCompositeElevationProfile">First</label>
+  <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()" [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
   <label><input type="checkbox" (ngModelChange)="showHighestCompositeElevationProfile_change()" [(ngModel)]="showHighestCompositeElevationProfile">Highest</label>
 </p>
 
