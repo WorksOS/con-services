@@ -16,6 +16,6 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Subscription>> GetSubscriptions_UnitTest(string subscriptionUid);
     Task<IEnumerable<ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid);
 
-    Task<int> StoreEvent(ISubscriptionEvent evt);
+    Task<int> StoreEvent(ISubscriptionEvent filterEvent);
   }
 }
