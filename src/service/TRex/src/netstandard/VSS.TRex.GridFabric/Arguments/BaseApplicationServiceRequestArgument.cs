@@ -34,7 +34,7 @@ namespace VSS.TRex.GridFabric.Arguments
     /// <summary>
     /// The design to be used in cases of cut/fill or DesignHeights subgrid requests
     /// </summary>
-    public Guid ReferenceDesignID { get; set; } = Guid.Empty;
+    public Guid ReferenceDesignUID { get; set; } = Guid.Empty;
 
     // TODO  LiftBuildSettings  :TICLiftBuildSettings;
 
@@ -44,7 +44,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
       writer.WriteString(TRexNodeID);
       writer.WriteGuid(ProjectID);
-      writer.WriteGuid(ReferenceDesignID);
+      writer.WriteGuid(ReferenceDesignUID);
 
       writer.WriteBoolean(Filters != null);
 
@@ -60,7 +60,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
       TRexNodeID = reader.ReadString();
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      ReferenceDesignID = reader.ReadGuid() ?? Guid.Empty;
+      ReferenceDesignUID = reader.ReadGuid() ?? Guid.Empty;
 
       if (reader.ReadBoolean())
       {

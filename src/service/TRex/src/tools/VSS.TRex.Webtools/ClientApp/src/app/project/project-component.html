@@ -40,7 +40,7 @@
 
 <br />
 <div style="display: inline-block; position:relative" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" (click)="onMapMouseClick()">
-  <img style="position: absolute; border: 1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}"/>
+  <img style="position: absolute; border: 1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
   <svg style="position: relative"
        height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <svg:circle [attr.cx]="userProfilePoint1SVG_CX" [attr.cy]="userProfilePoint1SVG_CY" r="5" stroke="black" stroke-width="1" />
@@ -148,4 +148,10 @@
 <H3>Machine Designs</H3>
 <p *ngFor="let machinedesign of machineDesigns">
   machine design: {{machinedesign.id}}  {{machinedesign.name}}
+</p>
+
+<br />
+<H3>Proofing Runs</H3>
+<p *ngFor="let proofingRun of siteProofingRuns">
+  Proofing Run: {{proofingRun.name}}, Start Time: {{proofingRun.startTime}}, End Time: {{proofingRun.endTime}}
 </p>

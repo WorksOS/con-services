@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -45,15 +46,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="persistantTransferProxy"></param>
     /// <param name="filterServiceProxy"></param>
     /// <param name="tRexImportFileProxy"></param>
+    /// <param name="projectRepo"></param>
+    /// <param name="requestFactory"></param>
+    /// <param name="subscriptionRepo"></param>
+    /// <param name="fileRepo"></param>
+    /// <param name="dataOceanClient"></param>
     public FileImportV4Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient)
       : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient)
     {
       this.logger = logger;
     }
@@ -356,11 +362,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<DeleteImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
-            customerUid, userId, userEmailAddress, customHeaders,
-            producer, kafkaTopicName,
-            raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-            projectRepo, null, fileRepo)
+          .Build<DeleteImportedFileExecutor>(
+            logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
+            producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
+            projectRepo, null, fileRepo, null, null, dataOceanClient)
           .ProcessAsync(deleteImportedFile)
       );
 
@@ -417,6 +422,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             importedFileType == ImportedFileType.SurveyedSurface,
             surveyedUtc, FileSpaceId, log, serviceExceptionHandler, fileRepo)
           .ConfigureAwait(false);
+          //save copy to DataOcean
+          await DataOceanHelper.WriteFileToDataOcean(
+              fileStream, customerUid, projectUid.ToString(), 
+              filename,
+              importedFileType == ImportedFileType.SurveyedSurface,
+              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, customHeaders)
+            .ConfigureAwait(false);
       }
 
       var createImportedFile = CreateImportedFile.CreateACreateImportedFile(projectUid, filename, fileDescriptor,
@@ -424,11 +436,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
        var importedFileResult = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<CreateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
-              customerUid, userId, userEmailAddress, customHeaders,
-              producer, kafkaTopicName,
-              raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo)
+            .Build<CreateImportedFileExecutor>(
+              logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
+              producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
+              projectRepo, null, fileRepo, null, null, dataOceanClient)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
       
@@ -490,6 +501,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               importedFileType == ImportedFileType.SurveyedSurface,
               surveyedUtc, FileSpaceId, log, serviceExceptionHandler, fileRepo)
             .ConfigureAwait(false);
+
+          //save copy to DataOcean      
+          await DataOceanHelper.WriteFileToDataOcean(
+              fileStream, customerUid, projectUid, filePath,
+              importedFileType == ImportedFileType.SurveyedSurface, 
+              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, customHeaders)
+            .ConfigureAwait(false);        
         }
       }
 
@@ -500,11 +518,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<CreateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
-              customerUid, userId, userEmailAddress, customHeaders,
-              producer, kafkaTopicName,
-              raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo)
+            .Build<CreateImportedFileExecutor>(
+              logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
+              producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, null, tRexImportFileProxy,
+              projectRepo, null, fileRepo, null, null, dataOceanClient)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -524,11 +541,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<UpdateImportedFileExecutor>(logger, configStore, serviceExceptionHandler,
-              customerUid, userId, userEmailAddress, customHeaders,
-              producer, kafkaTopicName,
-              raptorProxy, null, null, null, tRexImportFileProxy,
-              projectRepo, null, fileRepo)
+            .Build<UpdateImportedFileExecutor>(
+              logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
+              producer, kafkaTopicName, raptorProxy, null, null, null, tRexImportFileProxy,
+              projectRepo, null, fileRepo, null, null, dataOceanClient)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
 

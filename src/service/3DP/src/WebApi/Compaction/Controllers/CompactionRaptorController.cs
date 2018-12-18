@@ -177,13 +177,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUid);
       AlignmentPointsResult result = new AlignmentPointsResult();
-      IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
-        projectId, alignmentDescriptor);
+      var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
 
       if (alignmentPoints != null && alignmentPoints.Any())
       {
         //TODO: Fix this when WGSPoint & WGSPoint3D aligned
-        result.AlignmentPoints = alignmentPoints.Select(x => WGSPoint.CreatePoint(x.Lat, x.Lon)).ToList();
+        result.AlignmentPoints = alignmentPoints.Select(x => new WGSPoint(x.Lat, x.Lon)).ToList();
       }
 
       return result;
@@ -204,12 +203,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await GetLegacyProjectId(projectUid);
 
       PointsListResult result = new PointsListResult();
-      List<List<WGSPoint3D>> list = new List<List<WGSPoint3D>>();
+      List<List<WGSPoint>> list = new List<List<WGSPoint>>();
       var alignmentDescriptors = await GetAlignmentDescriptors(projectUid);
       foreach (var alignmentDescriptor in alignmentDescriptors)
       {
-        IEnumerable<WGSPoint3D> alignmentPoints = boundingBoxService.GetAlignmentPoints(
-          projectId, alignmentDescriptor);
+        var alignmentPoints = boundingBoxService.GetAlignmentPoints(projectId, alignmentDescriptor);
 
         if (alignmentPoints != null && alignmentPoints.Any())
         {
@@ -258,12 +256,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return fileList.Where(f => f.ImportedFileType == fileType && f.IsActivated).ToList();
     }
-
-
+    
     /// <summary>
     /// Temporary method to convert between WGSPoint3D and WGSPoint
     /// </summary>
-    private List<List<WGSPoint>> ConvertPoints(List<List<WGSPoint3D>> polygons)
+    private static List<List<WGSPoint>> ConvertPoints(List<List<WGSPoint>> polygons)
     {
       List<List<WGSPoint>> result = null;
       if (polygons != null && polygons.Any())
@@ -271,16 +268,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         foreach (var polygon in polygons)
         {
           if (result == null)
+          {
             result = new List<List<WGSPoint>>();
+          }
+
           //TODO: Fix this when WGSPoint & WGSPoint3D aligned
-          result.Add(polygon.Select(x => WGSPoint.CreatePoint(x.Lat, x.Lon)).ToList());
+          result.Add(polygon.Select(x => new WGSPoint(x.Lat, x.Lon)).ToList());
         }
       }
 
       return result;
     }
-
-
-
   }
 }

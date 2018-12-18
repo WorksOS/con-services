@@ -4,47 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
-using ThreadState = System.Threading.ThreadState;
 
 namespace VSS.TRex.Caching
 {
-  /// <summary>
-  /// Implements a management thread that periodically checks the contexts in the cache for ones
-  /// that are marked for removal and removes them. This is done in a single mutually exclusive lock
-  /// within the main cache.
-  /// </summary>
-  public class TRexSpatialMemoryCacheContextRemover
-  {
-    private readonly ITRexSpatialMemoryCache _cache;
-    private readonly Thread _removalThread;
-    private readonly int _sleepTimeMS;
-    private readonly TimeSpan _removalWaitTime;
-
-    private void PerformRemovalOperation()
-    {
-      while (_removalThread.ThreadState == ThreadState.Running)
-      {
-        // Instruct the cache to perform the cleanup...
-        // Wait a time period minutes to remove items marked for removal
-        // Todo: Place the removal wait period in the configuration
-        _cache.RemoveContextsMarkedForRemoval(_removalWaitTime);
-
-        Thread.Sleep(_sleepTimeMS);
-      }
-    }
-
-    public TRexSpatialMemoryCacheContextRemover(ITRexSpatialMemoryCache cache, TimeSpan sleepTimeMS, TimeSpan removalWaitTime)
-    {
-      _cache = cache;
-      _removalWaitTime = removalWaitTime;
-      _sleepTimeMS = (int)Math.Truncate(removalWaitTime.TotalMilliseconds);
-      _removalThread = new Thread(PerformRemovalOperation);
-      _removalThread.Start();
-    }
-  }
-
   /// <summary>
   /// The top level class that implements spatial data caching in TRex where that spatial data is represented by SubGrids and SubGridTrees
   /// </summary>
@@ -53,6 +20,11 @@ namespace VSS.TRex.Caching
     private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
 
     private const int MAX_NUM_ELEMENTS = 1000000000;
+
+    private readonly int SpatialMemoryCacheInterEpochSleepTimeSeconds 
+      = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS", Consts.SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS);
+    private readonly int SpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds 
+      = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", Consts.SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS);
 
     /// <summary>
     /// The MRU list that threads through all the elements in the overall cache
@@ -83,7 +55,7 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// The internal modifiable count of contexts that have been removed
     /// </summary>
-    private long contextRemovalCount = 0;
+    private long contextRemovalCount;
 
     /// <summary>
     /// THe exposed readonly property for the number of removed contexts
@@ -135,8 +107,7 @@ namespace VSS.TRex.Caching
       Contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
       ProjectContexts = new Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>>();
 
-      // todo: Place configuration items for interval and age in environment configuration
-      ContextRemover = new TRexSpatialMemoryCacheContextRemover(this, new TimeSpan(0, 10, 0), new TimeSpan(0, 10, 0));
+      ContextRemover = new TRexSpatialMemoryCacheContextRemover(this, SpatialMemoryCacheInterEpochSleepTimeSeconds, SpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds);
     }
 
     /// <summary>
@@ -174,8 +145,7 @@ namespace VSS.TRex.Caching
 
         // Mark the newly created context for removal. This may seem counter intuitive, but covers the case
         // where a context is created but has no elements added to it, or subsequently removed
-        // Todo: Add initial future time increment for marked for removal at... [see: new TimeSpan(0, 10, 0)]
-        newContext.MarkForRemoval(DateTime.UtcNow + new TimeSpan(0, 10, 0));
+        newContext.MarkForRemoval(DateTime.UtcNow.AddSeconds(SpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds));
 
         return newContext;
       }
@@ -333,12 +303,12 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// Removes all contexts in the cache that are marked for removal more than 'age' ago
     /// </summary>
-    /// <param name="age"></param>
+    /// <param name="ageSeconds"></param>
     /// <returns></returns>
-    public void RemoveContextsMarkedForRemoval(TimeSpan age)
+    public void RemoveContextsMarkedForRemoval(int ageSeconds)
     {
       int numRemoved = 0;
-      DateTime removalDateUtc = DateTime.UtcNow - age;
+      DateTime removalDateUtc = DateTime.UtcNow.AddSeconds(-ageSeconds);
       DateTime startTime = DateTime.Now;
       
       lock (Contexts)

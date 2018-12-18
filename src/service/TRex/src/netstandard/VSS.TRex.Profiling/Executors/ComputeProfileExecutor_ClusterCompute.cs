@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
-using VSS.TRex.Designs.Models;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
@@ -22,18 +21,21 @@ namespace VSS.TRex.Profiling.Executors
   /// <summary>
   /// Executes business logic that calculates the profile between two points in space
   /// </summary>
-  public class ComputeProfileExecutor_ClusterCompute
+  public class ComputeProfileExecutor_ClusterCompute<T> where T: class, IProfileCellBase, new()
   {
-    private static ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ClusterCompute>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ClusterCompute<T>>();
 
-    private Guid ProjectID;
-    private GridDataType ProfileTypeRequired;
-    private XYZ[] NEECoords;
-    private IFilterSet Filters;
+    private readonly Guid ProjectID;
+    private readonly GridDataType ProfileTypeRequired;
+    private readonly XYZ[] NEECoords;
+    private readonly IFilterSet Filters;
+
+    private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
-    private DesignDescriptor DesignDescriptor;
+
+    private readonly Guid DesignUid;
     private bool ReturnAllPassesAndLayers;
 
     private ISubGridSegmentCellPassIterator CellPassIterator;
@@ -46,17 +48,18 @@ namespace VSS.TRex.Profiling.Executors
     /// <param name="profileTypeRequired"></param>
     /// <param name="nEECoords"></param>
     /// <param name="filters"></param>
-    /// <param name="designDescriptor"></param>
+    /// <param name="designUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
     public ComputeProfileExecutor_ClusterCompute(Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
       // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      DesignDescriptor designDescriptor, bool returnAllPassesAndLayers)
+      Guid designUid, bool returnAllPassesAndLayers)
     {
       ProjectID = projectID;
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
       Filters = filters;
+      DesignUid = designUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
 
@@ -90,17 +93,15 @@ namespace VSS.TRex.Profiling.Executors
     /// Executes the profiler logic in the cluster compute context where each cluster node processes its fraction of the work and returns the
     /// results to the application service context
     /// </summary>
-    public ProfileRequestResponse Execute()
+    public ProfileRequestResponse<T> Execute()
     {
-      //      SubGridTreeSubGridExistenceBitMask OverallExistenceMap;
-
       // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
       // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
 
-      ProfileRequestResponse Response = null;
+      ProfileRequestResponse<T> Response = null;
       try
       {
-        List<IProfileCell> ProfileCells = new List<IProfileCell>(1000);
+        var ProfileCells = new List<T>(INITIAL_PROFILE_LIST_SIZE);
 
         try
         {
@@ -115,7 +116,7 @@ namespace VSS.TRex.Profiling.Executors
           if (SiteModel == null)
           {
             Log.LogWarning($"Failed to locate sitemodel {ProjectID}");
-            return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.NoSuchDataModel};
+            return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.NoSuchDataModel};
           }
 
           // Obtain the subgrid existence map for the project
@@ -124,7 +125,7 @@ namespace VSS.TRex.Profiling.Executors
           if (ProdDataExistenceMap == null)
           {
             Log.LogWarning($"Failed to locate production data existence map from sitemodel {ProjectID}");
-            return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
+            return Response = new ProfileRequestResponse<T> {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
           }
 
           ICellSpatialFilter CellFilter = Filters.Filters[0].SpatialFilter;
@@ -133,19 +134,21 @@ namespace VSS.TRex.Profiling.Executors
           FilteredValuePopulationControl PopulationControl = new FilteredValuePopulationControl();
           PopulationControl.PreparePopulationControl(ProfileTypeRequired, PassFilter);
 
-          // Raptor profile implementation did not use the overall existence map, so this commented out code
-          // has no effect in Raptor and has been excluded for this reason in TRex.
-          //if (DesignProfilerService.RequestCombinedDesignSubgridIndexMap(ProjectUID, SiteModel.Grid.CellSize, SiteModel.SurveyedSurfaces, OverallExistenceMap) = dppiOK)
-          //  OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
-          //else
-          //  return Response = new ProfileRequestResponse {ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap};
+          IDesign design = null;
+          if (DesignUid != Guid.Empty)
+          {
+            design = SiteModel.Designs.Locate(DesignUid);
+
+            if (design == null)
+              throw new ArgumentException($"Design {DesignUid} is unknown in project {SiteModel.ID}");
+          }
 
           Log.LogInformation("Creating IProfileBuilder");
 
-          IProfilerBuilder Profiler = DIContext.Obtain<IProfilerBuilder>();
+          IProfilerBuilder<T> Profiler = DIContext.Obtain<IProfilerBuilder<T>>();
 
-          Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, 
-            /* todo design: */null, /* todo elevation range design: */null,
+          Profiler.Configure(SiteModel, ProdDataExistenceMap, ProfileTypeRequired, PassFilter, CellFilter, design,
+            /* todo elevation range design: */null,
             PopulationControl, new CellPassFastEventLookerUpper(SiteModel));
 
           Log.LogInformation("Building cell profile");
@@ -154,18 +157,16 @@ namespace VSS.TRex.Profiling.Executors
             SetupForCellPassStackExamination(PassFilter);
 
             Log.LogInformation("Building lift profile");
-            if (Profiler.ProfileLiftBuilder.Build(ProfileCells, CellPassIterator))
+            if (Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
             {
               Log.LogInformation("Lift profile building succeeded");
 
               // Remove null cells in the profiles list. NUll cells are defined by cells with null CellLastHeight.
               // All duplicate null cells will be replaced by a by single null cell entry
-              var ThinnedProfileCells = ProfileCells.Where((x, i) =>
-                  i == 0 ||
-                  ((ProfileCell) ProfileCells[i]).CellLastElev != Consts.NullHeight ||
-                  ((ProfileCell) ProfileCells[i]).CellLastElev == Consts.NullHeight && ((ProfileCell) ProfileCells[i - 1]).CellLastElev != Consts.NullHeight).ToList();
+              List<T> ThinnedProfileCells = ProfileCells.Where((x, i) =>
+                  i == 0 || !ProfileCells[i].IsNull() || (ProfileCells[i].IsNull() && !ProfileCells[i - 1].IsNull())).ToList();
 
-              Response = new ProfileRequestResponse
+              Response = new ProfileRequestResponse<T>
               {
                 ProfileCells = ThinnedProfileCells,
                 ResultStatus = RequestErrorStatus.OK
@@ -187,7 +188,7 @@ namespace VSS.TRex.Profiling.Executors
         Log.LogError($"Execute: Exception {E}");
       }
 
-      return new ProfileRequestResponse();
+      return new ProfileRequestResponse<T>();
     }
   }
 }

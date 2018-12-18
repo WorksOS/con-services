@@ -14,7 +14,6 @@ using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -41,8 +40,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// The cell is identified by either WGS84 lat/long coordinates.
     /// </summary>
     /// <returns>The requested thematic value expressed as a floating point number. Interpretation is dependant on the thematic domain.</returns>
-    [Route("api/v2/productiondata/cells/datum")]
-    [HttpGet]
+    [HttpGet("api/v2/productiondata/cells/datum")]
     public async Task<CompactionCellDatumResult> GetProductionDataCellsDatum(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? filterUid,
@@ -54,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogInformation("GetProductionDataCellsDatum: " + Request.QueryString);
 
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      var filter = GetCompactionFilter(projectUid, filterUid);
+      var filter = GetCompactionFilter(projectUid, filterUid, filterMustExist: true);
       var projectSettings = await GetProjectSettingsTargets(projectUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
       var cutFillDesign = GetAndValidateDesignDescriptor(projectUid, cutfillDesignUid);
@@ -88,18 +86,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="patchSize">Number of cell subgrids horizontally/vertically in a square patch (each subgrid has 32 cells)</param>
     /// <param name="includeTimeOffsets">If set, includes the time when the cell was recorded as a value expressed as Unix UTC time.</param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
-    [Route("api/v2/patches")]
-    [HttpGet]
+    [HttpGet("api/v2/patches")]
     public async Task<IActionResult> GetSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
     {
       Log.LogInformation($"GetSubGridPatches: {Request.QueryString}");
 
-      var projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
+      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
+      var filter = GetCompactionFilter(projectUid, filterUid);
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(await GetProjectSettingsTargets(projectUid));
 
       var patchRequest = new PatchRequest(
-        projectId,
+        projectId.Result,
         projectUid,
         new Guid(),
         mode,
@@ -108,7 +105,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         false,
         VolumesType.None,
         VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
-        null, filter, filter?.Id ?? 0, null, 0, FilterLayerMethod.AutoMapReset, patchId, patchSize, includeTimeOffsets);
+        null, filter.Result, null, FilterLayerMethod.AutoMapReset, patchId, patchSize, includeTimeOffsets);
 
       patchRequest.Validate();
 

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
@@ -22,9 +19,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public XYZ[] NEECoords { get; set; } = new XYZ[0];
     
     // todo LiftBuildSettings: TICLiftBuildSettings;
-    // ExternalRequestDescriptor: TASNodeRequestDescriptor;
-
-    public DesignDescriptor DesignDescriptor;
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
@@ -42,12 +36,10 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="nEECoords"></param>
     /// <param name="designDescriptor"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords,
-      DesignDescriptor designDescriptor, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords, bool returnAllPassesAndLayers)
     {
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
-      DesignDescriptor = designDescriptor;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
 
@@ -67,8 +59,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       writer.WriteInt(count);
       for (int i = 0; i < count; i++)
         NEECoords[i].ToBinary(writer);
-
-      DesignDescriptor.ToBinary(writer);
 
       writer.WriteBoolean(ReturnAllPassesAndLayers);
     }
@@ -91,8 +81,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       NEECoords = new XYZ[count];
       for (int i = 0; i < count; i++)
         NEECoords[i] = NEECoords[i].FromBinary(reader);
-
-      DesignDescriptor.FromBinary(reader);
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
     }

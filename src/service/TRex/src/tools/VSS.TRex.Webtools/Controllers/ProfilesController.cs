@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -67,7 +66,6 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double endY)
     {
       Guid siteModelUid = Guid.Parse(siteModelID);
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
 
       ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
       {
@@ -75,25 +73,24 @@ namespace VSS.TRex.Webtools.Controllers
         ProfileTypeRequired = GridDataType.Height,
         PositionsAreGrid = true,
         Filters = new FilterSet(new[] { new CombinedFilter() }),
-        ReferenceDesignID = Guid.Empty,
+        ReferenceDesignUID = Guid.Empty,
         StartPoint = new WGS84Point(lon: startX, lat: startY),
         EndPoint = new WGS84Point(lon: endX, lat: endY),
         ReturnAllPassesAndLayers = false,
-        DesignDescriptor = DesignDescriptor.Null()
       };
 
       // Compute a profile from the bottom left of the screen extents to the top right 
-      ProfileRequest_ApplicationService request = new ProfileRequest_ApplicationService();
-      ProfileRequestResponse Response = request.Execute(arg);
-
+      ProfileRequest_ApplicationService<ProfileCell> request = new ProfileRequest_ApplicationService<ProfileCell>();
+      ProfileRequestResponse<ProfileCell> Response = request.Execute(arg);
+      
       if (Response == null)
         return new JsonResult(@"Profile response is null");
       
       if (Response.ProfileCells == null)
         return new JsonResult(@"Profile response contains no profile cells");
 
-      //var nonNulls = Response.ProfileCells.Where(x => ((ProfileCell) x).CellLastElev != Consts.NullHeight).ToArray();
-      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, ((ProfileCell)x).CellLastElev, x.Station, -1) ));
+      //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
+      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1) ));
     }
   }
 }

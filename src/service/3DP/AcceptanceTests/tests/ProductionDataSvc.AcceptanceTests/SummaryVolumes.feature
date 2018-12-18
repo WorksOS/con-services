@@ -3,9 +3,7 @@
 
 Scenario Outline: SummaryVolumes - Good Request
   Given the service route "/api/v1/volumes/summary" request repo "SummaryVolumeRequest.json" and result repo "SummaryVolumeResponse.json"
-  And require surveyed surface
   When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
-  Then Delete surveyed surface file 111
   Then the response should match "<ResultName>" from the repository
   Examples: 
   | ParameterName                        | ResultName                           | HttpCode |
@@ -26,9 +24,7 @@ Scenario Outline: SummaryVolumes - Good Request
 
 Scenario Outline: SummaryVolumes - Good Request with Old SS
   Given the service route "/api/v1/volumes/summary" request repo "SummaryVolumeRequest.json" and result repo "SummaryVolumeResponse.json"
-  And require surveyed surface
   When I POST with parameter "<ParameterName>" I expect response code <HttpCode>
-  Then Delete surveyed surface file 111
   Then the response should match "<ResultName>" from the repository
   Examples: 
   | ParameterName                        | ResultName                            | HttpCode |

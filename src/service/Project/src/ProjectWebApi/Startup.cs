@@ -11,6 +11,7 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
+using VSS.DataOcean.Client;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Models.Handlers;
@@ -24,6 +25,9 @@ using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Push.Abstractions;
+using VSS.Productivity3D.Push.Clients;
+using VSS.Productivity3D.Push.WebAPI;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 
@@ -100,9 +104,11 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<ISchedulerProxy, SchedulerProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
+      services.AddTransient<IDataOceanClient, DataOceanClient>();
       services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
       services.AddTransient<IFilterServiceProxy, FilterServiceProxy>();
       services.AddTransient<ITRexImportFileProxy, TRexImportFileProxy>();
+      services.AddSingleton<IWebRequest, GracefulWebRequest>();
 
       services.AddOpenTracing(builder =>
       {
@@ -117,6 +123,8 @@ namespace VSS.MasterData.Project.WebAPI
 
       services.AddOpenTracing();
       services.AddMemoryCache();
+
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       serviceProvider = services.BuildServiceProvider();

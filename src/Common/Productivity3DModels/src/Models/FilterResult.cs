@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.Models.Models
     /// A polygon to be used as a spatial filter boundary. The vertices are WGS84 positions
     /// </summary>
     [JsonProperty(PropertyName = "polygonLL", Required = Required.Default)]
-    public List<WGSPoint3D> PolygonLL { get; private set; }
+    public List<WGSPoint> PolygonLL { get; private set; }
 
     /// <summary>
     /// A polygon to be used as a spatial filter boundary. The vertices are grid positions within the project grid coordinate system
@@ -358,7 +358,7 @@ namespace VSS.Productivity3D.Models.Models
       DateTime? startUtc,
       DateTime? endUtc,
       List<long> assetIDs,
-      List<WGSPoint3D> polygonLL,
+      List<WGSPoint> polygonLL,
       FilterLayerMethod? layerType,
       int? layerNumber,
       List<MachineDetails> contributingMachines)
@@ -391,7 +391,7 @@ namespace VSS.Productivity3D.Models.Models
       bool? vibeStateOn,
       bool? compactorDataOnly,
       ElevationType? elevationType,
-      List<WGSPoint3D> polygonLL,
+      List<WGSPoint> polygonLL,
       List<Point> polygonGrid,
       bool? forwardDirection,
       DesignDescriptor alignmentFile,
@@ -480,18 +480,11 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="filter"></param>
-    /// <param name="polygonLL"></param>
-    /// <param name="alignmentFile"></param>
-    /// <param name="layerType"></param>
-    /// <param name="surveyedSurfaceExclusionList"></param>
-    /// <param name="returnEarliest"></param>
-    /// <param name="designFile"></param>
     public FilterResult
     (
       Guid? uid,
       Filter filter,
-      List<WGSPoint3D> polygonLL,
+      List<WGSPoint> polygonLL,
       DesignDescriptor alignmentFile,
       FilterLayerMethod? layerType,
       List<long> surveyedSurfaceExclusionList,
@@ -531,12 +524,6 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public void Validate()
     {
-      //Validate individual properties first
-      if (PolygonLL != null)
-      {
-        foreach (var ll in PolygonLL)
-          ll.Validate();
-      }
       if (PolygonGrid != null)
       {
         foreach (var pt in PolygonGrid)

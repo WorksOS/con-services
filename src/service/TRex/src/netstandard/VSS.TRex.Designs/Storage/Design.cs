@@ -75,6 +75,7 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Computes a geometric profile across the design given a series of vertices describing the path to be profiled.
     /// </summary>
+    /// <param name="projectUID"></param>
     /// <param name="profilePath"></param>
     /// <param name="cellSize"></param>
     /// <param name="errorCode"></param>
@@ -174,7 +175,8 @@ namespace VSS.TRex.Designs.Storage
     /// <returns></returns>
     public bool Equals(IDesign other)
     {
-      return (ID == other.ID) &&
+      return (other != null) &&
+             (ID == other.ID) &&
              DesignDescriptor.Equals(other.Get_DesignDescriptor()) &&
              (Extents.Equals(other.Extents));
     }
@@ -200,10 +202,10 @@ namespace VSS.TRex.Designs.Storage
 
       try
       {
-        designHeights = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument()
+        designHeights = elevPatchRequest.Execute(new CalculateDesignElevationPatchArgument
         {
           CellSize = cellSize,
-          DesignUid = DesignDescriptor.DesignID,
+          ReferenceDesignUID = DesignDescriptor.DesignID,
           OriginX = originCellAddress.X,
           OriginY = originCellAddress.Y,
           // ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled),

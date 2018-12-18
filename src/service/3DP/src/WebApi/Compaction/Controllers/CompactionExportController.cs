@@ -152,9 +152,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
-    [Route("api/v2/export/veta")]
-    [HttpGet]
-    public async Task<FileResult> GetExportReportVeta(
+    [HttpGet("api/v2/export/veta")]
+    public FileResult GetExportReportVeta(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
@@ -163,20 +162,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation($"{nameof(GetExportReportVeta)}: {Request.QueryString}");
 
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var userPreferences = await GetUserPreferences();
+      var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var filterTask = GetCompactionFilter(projectUid, filterUid);
+      var userPreferences = GetUserPreferences();
+
+      var project = projectTask.Result;
+      var filter = filterTask.Result;
+
       var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
+          .ProjectSettings(projectSettings.Result)
           .Filter(filter))
         .SetRaptorClient(raptorClient)
-        .SetUserPreferences(userPreferences)
+        .SetUserPreferences(userPreferences.Result)
         .SetProjectDescriptor(project)
         .CreateExportRequest(
           startEndDate.Item1,
@@ -198,6 +201,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
       Log.LogInformation($"GetExportReportVeta completed: ExportData size={fileStream.Length}");
+
       return new FileStreamResult(fileStream, "application/zip");
     }
 
@@ -224,19 +228,23 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
-      var project = await ((RaptorPrincipal)User).GetProject(projectUid);
-      var projectSettings = await GetProjectSettingsTargets(projectUid);
-      var filter = await GetCompactionFilter(projectUid, filterUid);
-      var userPreferences = await GetUserPreferences();
+      var projectTask = ((RaptorPrincipal)User).GetProject(projectUid);
+      var projectSettings = GetProjectSettingsTargets(projectUid);
+      var filterTask = GetCompactionFilter(projectUid, filterUid);
+      var userPreferences = GetUserPreferences();
+
+      var project = projectTask.Result;
+      var filter = filterTask.Result;
+
       var startEndDate = GetDateRange(project.LegacyProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
           .ProjectId(project.LegacyProjectId)
           .Headers(CustomHeaders)
-          .ProjectSettings(projectSettings)
+          .ProjectSettings(projectSettings.Result)
           .Filter(filter))
-        .SetUserPreferences(userPreferences)
+        .SetUserPreferences(userPreferences.Result)
         .SetRaptorClient(raptorClient)
         .SetProjectDescriptor(project)
         .CreateExportRequest(

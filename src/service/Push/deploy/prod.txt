@@ -5,4 +5,5 @@ JAEGER_AGENT_HOST: jaeger-agent.jaeger
 JAEGER_AGENT_PORT: "6831"
 JAEGER_SAMPLER_TYPE: const
 JAEGER_SERVICE_NAME: Push Service
-NOTIFICATION_HUB_URL: http://push.prod.k8s.vspengg.com/notifications
+NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com
+PUSH_NO_AUTHENTICATION_HEADER: "true"

@@ -22,7 +22,6 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -77,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       this.geofenceProxy = geofenceProxy;
       this.logger = logger;
-      this.log = logger.CreateLogger<CCATileController>();
+      log = logger.CreateLogger<CCATileController>();
       this.raptorClient = raptorClient;
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
@@ -216,14 +215,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       List<WGSPoint> geometry = null;
       if (geofenceUid.HasValue)
       {
-        //Todo this ahould be async
         var geometryWKT = geofenceProxy.GetGeofenceBoundary(((RaptorPrincipal) User).CustomerUid, geofenceUid.ToString(), Request.Headers.GetCustomHeaders()).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
               "No Geofence geometry found."));
 
-        geometry = RaptorConverters.geometryToPoints(geometryWKT).ToList();
+        geometry = RaptorConverters.GeometryToPoints(geometryWKT).ToList();
       }
 
       var filter = FilterResult.CreateFilterForCCATileRequest

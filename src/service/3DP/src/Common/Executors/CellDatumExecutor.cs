@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Common.Executors
         (int)RaptorConverters.convertDisplayMode(request.displayMode),
         request.gridPoint?.x ?? 0,
         request.gridPoint?.y ?? 0,
-        request.llPoint != null ? RaptorConverters.convertWGSPoint(request.llPoint) : new TWGS84Point(),
+        request.llPoint != null ? RaptorConverters.ConvertWGSPoint(request.llPoint) : new TWGS84Point(),
         request.llPoint == null,
         raptorFilter,
         RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),

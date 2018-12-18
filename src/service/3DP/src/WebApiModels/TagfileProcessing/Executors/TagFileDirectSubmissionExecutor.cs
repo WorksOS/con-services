@@ -110,14 +110,14 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
       {
 
         var data = new MemoryStream(tfRequest.Data);
-        var returnResult = tagProcessor.ProjectDataServerTAGProcessorClient()
-                                       .SubmitTAGFileToTAGFileProcessor
-                                       (tfRequest.FileName,
-                                         data,
-                                         tfRequest.ProjectId ?? -1, 0, 0, tfRequest.MachineId ?? -1,
-                                         tfRequest.Boundary != null
-                                           ? RaptorConverters.convertWGS84Fence(tfRequest.Boundary)
-                                           : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
+        var returnResult = (TTAGProcServerProcessResult) tagProcessor.ProjectDataServerTAGProcessorClient()
+          .SubmitTAGFileToTAGFileProcessor
+          (tfRequest.FileName,
+            data,
+            tfRequest.ProjectId ?? -1, 0, 0, tfRequest.MachineId ?? -1,
+            tfRequest.Boundary != null
+              ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
+              : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
 
         log.LogInformation($"PostTagFile (Direct Raptor): result: {JsonConvert.SerializeObject(returnResult)}");
         return TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(returnResult));

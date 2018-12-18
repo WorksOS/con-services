@@ -12,7 +12,24 @@ if ($environment -ieq "--help" -or $environment -ieq "-h") {
 
 $commonVariables = @(
   @{key = "PROJECT_CACHE_LIFE"; value = "00:15:00"},
-  @{key = "SCHEDULED_JOB_TIMEOUT"; value = "300000"})
+  @{key = "SCHEDULED_JOB_TIMEOUT"; value = "300000"},
+  @{key = "MAX_FILE_SIZE"; value = "100000000"},
+  @{key = "TILE_CACHE_LIFE"; value = "00:15:00"},
+  @{key = "CUSTOMER_CACHE_LIFE"; value = "00:30:00"},
+  @{key = "ELEVATION_EXTENTS_CACHE_LIFE"; value = "00:30:00"},
+  @{key = "FILTER_CACHE_LIFE"; value = "00:15:00"},
+  @{key = "GEOFENCE_CACHE_LIFE"; value = "00:15:00"},
+  @{key = "IMPORTED_FILE_CACHE_LIFE"; value = "00:15:00"},
+  @{key = "PROJECT_CACHE_LIFE"; value = "00:30:00"},
+  @{key = "PROJECT_SETTINGS_CACHE_LIFE"; value = "00:15:00"},
+  @{key = "TILE_RENDER_JOB_TIMEOUT"; value = "00:00:10"},
+  @{key = "DEFAULT_CONNECTION_LIMIT"; value = "64"},
+  @{key = "LIBUV_THREAD_COUNT"; value = "32"},
+  @{key = "MAX_IO_THREADS"; value = "1024"},
+  @{key = "MAX_WORKER_THREADS"; value = "512"},
+  @{key = "MIN_IO_THREADS"; value = "1024"},
+  @{key = "MIN_WORKER_THREADS"; value = "512"},
+  @{key = "SCHEDULED_JOB_TIMEOUT"; value = "900000"})
 
 # Used for the Acceptance Tests client to connect to a local (LOCALHOST) instance of 3DP service.
 # Always set implicitly, regardless of the $environment type.
@@ -87,7 +104,7 @@ $devCollaboratorsEnvironmentVariables = @(
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"}, # Use Alpha service here
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"}, # Use Alpha service here
-  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-dev-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.dev.k8s.vspengg.com/internal/v1/export"},
@@ -105,7 +122,7 @@ $alphaCollaboratorsEnvironmentVariables = @(
   @{key = "GEOFENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0"},
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0"},
-  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api-stg.trimble.com/t/trimble.com/vss-alpha-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = "http://scheduler.alpha.k8s.vspengg.com/internal/v1/export"},
@@ -123,7 +140,7 @@ $prodCollaboratorsEnvironmentVariables = @(
   @{key = "GEOFENCE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0"},
   @{key = "IMPORTED_FILE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles"},
   @{key = "PREFERENCE_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0"},
-  @{key = "PROJECT_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project?includeLandfill=true"},
+  @{key = "PROJECT_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project"},
   @{key = "PROJECT_SETTINGS_API_URL"; value = "https://api.trimble.com/t/trimble.com/vss-projectservice/1.4"},
   @{key = "TREX_TAGFILE_API_URL"; value = "http://api.trimble.com/t/trimble.com/vss-trexgateway/2.0/tagfiles"},
   @{key = "SCHEDULER_INTERNAL_EXPORT_URL"; value = ""},

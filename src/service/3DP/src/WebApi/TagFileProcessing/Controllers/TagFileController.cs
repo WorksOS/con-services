@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -159,10 +160,10 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private async Task<WGS84Fence> GetProjectBoundary(Guid projectUid)
     {
       var projectData = await ((RaptorPrincipal)User).GetProject(projectUid);
-
+      
       return projectData.ProjectGeofenceWKT == null
         ? null
-        : new WGS84Fence(RaptorConverters.geometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
+        : new WGS84Fence(RaptorConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
   }
 }

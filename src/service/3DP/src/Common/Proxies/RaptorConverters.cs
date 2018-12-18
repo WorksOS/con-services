@@ -18,8 +18,6 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using __Global = ProductionServer_TLB.__Global;
-using Point = VSS.MasterData.Models.Models.Point;
-using WGSPoint = VSS.Productivity3D.Models.Models.WGSPoint3D;
 
 namespace VSS.Productivity3D.Common.Proxies
 {
@@ -29,14 +27,15 @@ namespace VSS.Productivity3D.Common.Proxies
   {
     public static readonly DateTime PDS_MIN_DATE = new DateTime(1899, 12, 30, 0, 0, 0);
 
-    public static IEnumerable<WGSPoint> geometryToPoints(string geometry)
+    public static IEnumerable<WGSPoint> GeometryToPoints(string geometry)
     {
       const double DEGREES_TO_RADIANS = Math.PI / 180;
 
-      List<WGSPoint> latlngs = new List<WGSPoint>();
+      var latlngs = new List<WGSPoint>();
       //Trim off the "POLYGON((" and "))"
       geometry = geometry.Substring(9, geometry.Length - 11);
       var points = geometry.Split(',');
+
       foreach (var point in points)
       {
         var parts = point.Trim().Split(' ');
@@ -44,6 +43,7 @@ namespace VSS.Productivity3D.Common.Proxies
         var lat = double.Parse(parts[1]);
         latlngs.Add(new WGSPoint(lat * DEGREES_TO_RADIANS, lng * DEGREES_TO_RADIANS));
       }
+
       return latlngs;
     }
 
@@ -424,7 +424,7 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
 
-    public static TWGS84Point convertWGSPoint(WGSPoint point)
+    public static TWGS84Point ConvertWGSPoint(WGSPoint point)
     {
       return new TWGS84Point
       {
@@ -434,18 +434,14 @@ namespace VSS.Productivity3D.Common.Proxies
     }
 
     /// <summary>
-    /// Container to fence
+    /// Convert <see cref="WGS84Fence"/> fence to <see cref="TWGS84FenceContainer"/> container.
     /// </summary>
-    /// <param name="fence"></param>
-    /// <returns></returns>
-    public static TWGS84FenceContainer convertWGS84Fence(WGS84Fence fence)
+    public static TWGS84FenceContainer ConvertWGS84Fence(WGS84Fence fence)
     {
-      TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer
+      return new TWGS84FenceContainer
       {
         FencePoints = fence.Points.ToList().ConvertAll(p => new TWGS84Point { Lat = p.Lat, Lon = p.Lon }).ToArray()
       };
-
-      return fenceContainer;
     }
 
     public static TICFilterSettings ConvertFilter(long? filterID, FilterResult filter, long? projectid, DateTime? overrideStartUTC = null,

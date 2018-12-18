@@ -19,9 +19,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     public bool PositionsAreGrid { get; set; }
 
     // todo LiftBuildSettings: TICLiftBuildSettings;
-    // ExternalRequestDescriptor: TASNodeRequestDescriptor;
-
-    public DesignDescriptor DesignDescriptor;
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
@@ -39,15 +36,15 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
     /// <param name="positionsAreGrid"></param>
-    /// <param name="designDescriptor"></param>
+    /// <param name="referenceDesignUid"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, DesignDescriptor designDescriptor, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ApplicationService(GridDataType profileTypeRequired, WGS84Point startPoint, WGS84Point endPoint, bool positionsAreGrid, Guid referenceDesignUid, bool returnAllPassesAndLayers)
     {
       ProfileTypeRequired = profileTypeRequired;
       StartPoint = startPoint;
       EndPoint = endPoint;
       PositionsAreGrid = positionsAreGrid;
-      DesignDescriptor = designDescriptor;
+      ReferenceDesignUID = referenceDesignUid;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
     }
 
@@ -68,8 +65,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
       EndPoint?.ToBinary(writer);
 
       writer.WriteBoolean(PositionsAreGrid);
-
-      DesignDescriptor.ToBinary(writer);
 
       writer.WriteBoolean(ReturnAllPassesAndLayers);
     }
@@ -93,8 +88,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
         EndPoint.FromBinary(reader);
 
       PositionsAreGrid = reader.ReadBoolean();
-
-      DesignDescriptor.FromBinary(reader);
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
     }

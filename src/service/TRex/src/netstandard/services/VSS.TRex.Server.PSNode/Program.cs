@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs;
@@ -36,6 +35,7 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using Consts = VSS.TRex.Common.Consts;
@@ -81,8 +81,8 @@ namespace VSS.TRex.Server.PSNode
         .Build()
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(() => DIContext.Obtain<IStorageProxyFactory>().ImmutableGridStorage())))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        .Add(x => x.AddSingleton<IProfilerBuilderFactory>(new ProfilerBuilderFactory()))
-        .Add(x => x.AddTransient<IProfilerBuilder>(factory => new ProfilerBuilder()))
+        .Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(new ProfilerBuilderFactory<ProfileCell>()))
+        .Add(x => x.AddTransient<IProfilerBuilder<ProfileCell>>(factory => new ProfilerBuilder<ProfileCell>()))
         .Add(x => x.AddSingleton<IExistenceMaps>(new ExistenceMaps.ExistenceMaps()))
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
@@ -98,9 +98,9 @@ namespace VSS.TRex.Server.PSNode
         // Create the cache to store the general subgrid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
           new TRexSpatialMemoryCache(
-            DIContext.Obtain<IConfigurationStore>().GetValueInt("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT", Consts.kGeneralSubgridResultCacheMaximumElementCount),
-            DIContext.Obtain<IConfigurationStore>().GetValueLong("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE", Consts.kGeneralSubgridResultCacheMaximumSize),
-            DIContext.Obtain<IConfigurationStore>().GetValueDouble("GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION", Consts.kGeneralSubgridResultCacheDeadBandFraction))
+            DIContext.Obtain<IConfigurationStore>().GetValueInt("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT", Consts.GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_ELEMENT_COUNT),
+            DIContext.Obtain<IConfigurationStore>().GetValueLong("GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE", Consts.GENERAL_SUBGRID_RESULT_CACHE_MAXIMUM_SIZE),
+            DIContext.Obtain<IConfigurationStore>().GetValueDouble("GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION", Consts.GENERAL_SUBGRID_RESULT_CACHE_DEAD_BAND_FRACTION))
         ))
 
         // Register the listener for site model attribute change notifications
@@ -108,6 +108,17 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+
+        //.Add(x => x.AddSingleton<Func<IProfileCell>>(() => new ProfileCell()))
+
+        // Register the factory for the CellProfileAnalyzer for detailed cell pass/lift cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<ProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)))
+
+        // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, ICellPassAttributeFilter, ICellSpatialFilter, IDesign, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder) => null /* new CellProfileAnalyzer(siteModel, pDExistenceMap, passFilter, cellFilter, cellPassFilter_ElevationRangeDesign, cellLiftBuilder)*/))
+
         .Complete();
     }
 

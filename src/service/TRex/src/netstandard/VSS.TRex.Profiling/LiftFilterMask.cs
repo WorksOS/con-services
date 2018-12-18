@@ -16,21 +16,23 @@ namespace VSS.TRex.Profiling
   /// Provides support for determining inclusion masks for subgrid cell selection and processing based on spatial, positional
   /// and design based spatial selection criteria from filters
   /// </summary>
-  public static class LiftFilterMask
+  public static class LiftFilterMask<T> where T : class, IProfileCellBase
   {
     private static ILogger Log = Logging.Logger.CreateLogger("LiftFilterMask");
 
-    public static void ConstructSubgridSpatialAndPositionalMask(ISubGridTree tree, 
-      SubGridCellAddress currentSubGridOrigin, List<IProfileCell> profileCells, SubGridTreeBitmapSubGridBits mask,
-      int fromProfileCellIndex, ICellSpatialFilter cellFilter)
+    private static void ConstructSubgridSpatialAndPositionalMask(ISubGridTree tree, 
+      SubGridCellAddress currentSubGridOrigin, 
+      List<T> profileCells, 
+      SubGridTreeBitmapSubGridBits mask,
+      int fromProfileCellIndex, 
+      ICellSpatialFilter cellFilter)
     {
       mask.Clear();
 
-      //with CellFilter, FSubGridTree do
-      // from current position to end
+      // From current position to end...
       for (int CellIdx = fromProfileCellIndex; CellIdx < profileCells.Count; CellIdx++)
       {
-        ProfileCell profileCell = (ProfileCell) profileCells[CellIdx];
+        T profileCell = profileCells[CellIdx];
         SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(
           profileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
           profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
@@ -54,8 +56,11 @@ namespace VSS.TRex.Profiling
     }
 
     public static bool ConstructSubgridCellFilterMask(ISubGridTree tree, 
-      SubGridCellAddress currentSubGridOrigin, List<IProfileCell> profileCells, SubGridTreeBitmapSubGridBits mask,
-      int fromProfileCellIndex, ICellSpatialFilter cellFilter)
+      SubGridCellAddress currentSubGridOrigin, 
+      List<T> profileCells,
+      SubGridTreeBitmapSubGridBits mask,
+      int fromProfileCellIndex,
+      ICellSpatialFilter cellFilter)
     {
       // double OriginX, OriginY;
 
@@ -73,11 +78,8 @@ namespace VSS.TRex.Profiling
       if (cellFilter.HasAlignmentDesignMask())
       {
         /* TODO: Alignment design mask not yet supported 
-
-  // Query the design profiler service for the corresponding filter mask given the
-  // alignment design configured in the cell selection filter.
-
-  CompositeHeightsGrid.CalculateWorldOrigin(OriginX, OriginY);
+  // Query the design profiler service for the corresponding filter mask given the  alignment design configured in the cell selection filter.
+   CompositeHeightsGrid.CalculateWorldOrigin(OriginX, OriginY);
   with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
     {
       RequestResult := RequestDesignMaskFilterPatch(Construct_ComputeDesignFilterPatch_Args(FSiteModel.ID,
@@ -88,7 +90,6 @@ namespace VSS.TRex.Profiling
                                                                                             StartStation, EndStation,
                                                                                             LeftOffset, RightOffset),
                                                                                             DesignMask);
-
       if RequestResult = dppiOK then
         Mask := Mask AND DesignMask
       else
@@ -101,13 +102,10 @@ namespace VSS.TRex.Profiling
     */
       }
 
-      if (cellFilter.HasAlignmentDesignMask())
+      if (cellFilter.HasSurfaceDesignMask())
       {
         /* todo Design elevation requests not yet supported
-    
-          // Query the design profiler service for the corresponding filter mask given the
-          // tin design configured in the cell selection filter.
-    
+        // Query the design profiler service for the corresponding filter mask given the tin design configured in the cell selection filter.
           with DesignProfilerLayerLoadBalancer.LoadBalancedDesignProfilerService do
             {
               RequestResult := RequestDesignMaskFilterPatch(Construct_ComputeDesignFilterPatch_Args(FSiteModel.ID,
@@ -118,7 +116,6 @@ namespace VSS.TRex.Profiling
                                                                                                     StartStation, EndStation,
                                                                                                     LeftOffset, RightOffset),
                                                             DesignFilterMask);
-    
               if RequestResult = dppiOK then
                 Mask := Mask AND DesignFilterMask
               else

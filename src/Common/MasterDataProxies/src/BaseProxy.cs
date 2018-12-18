@@ -315,7 +315,8 @@ namespace VSS.MasterData.Proxies
         log.LogDebug($"Item for key {cacheKey} is requested to be invalidated, getting from web api");
         result = await action.Invoke();
         if (result != null)
-          return cache.Set(cacheKey, result, opts);
+          return await cache.Set(cacheKey, Task.FromResult(result), opts); // Note: We have to store the result as a task, as if we use the 'GetOrCreate' method, it expects a task in the cache to be awaited.
+          
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
             "Unable to request data from a webapi"));

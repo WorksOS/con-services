@@ -25,22 +25,27 @@ namespace VSS.TRex.Designs.Executors
         {
         }
 
-        /// <summary>
-        /// Performs the donkey work of the elevation patch calculation
-        /// </summary>
-        /// <param name="Args"></param>
-        /// <param name="CalcResult"></param>
-        /// <returns></returns>
-        private IClientHeightLeafSubGrid Calc(CalculateDesignElevationPatchArgument Args,
-                                             out DesignProfilerRequestResult CalcResult)
+      /// <summary>
+      /// Performs the donkey work of the elevation patch calculation
+      /// </summary>
+      /// <param name="offset"></param>
+      /// <param name="CalcResult"></param>
+      /// <param name="projectUID"></param>
+      /// <param name="referenceDesignUID"></param>
+      /// <param name="cellSize"></param>
+      /// <param name="originX"></param>
+      /// <param name="originY"></param>
+      /// <returns></returns>
+      private IClientHeightLeafSubGrid Calc(Guid projectUID, Guid referenceDesignUID, double cellSize, uint originX, uint originY, double offset,
+          out DesignProfilerRequestResult CalcResult)
         {
             CalcResult = DesignProfilerRequestResult.UnknownError;
 
-            IDesignBase Design = Designs.Lock(Args.DesignUid, Args.ProjectID, Args.CellSize, out DesignLoadResult LockResult);
+            IDesignBase Design = Designs.Lock(referenceDesignUID, projectUID, cellSize, out DesignLoadResult LockResult);
 
             if (Design == null)
             {
-                Log.LogWarning($"Failed to read design file for design {Args.DesignUid}");
+                Log.LogWarning($"Failed to read design file for design {referenceDesignUID}");
                 CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
                 return null;
             }
@@ -49,42 +54,33 @@ namespace VSS.TRex.Designs.Executors
             {
                 // Check to see if this subgrid has any design surface underlying it
                 // from which to calculate an elevation patch. If not, don't bother...
-                if (!Design.HasElevationDataForSubGridPatch(Args.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-                                                            Args.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
+                if (!Design.HasElevationDataForSubGridPatch(originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                                                            originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
                 {
                     CalcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
                     return null;
                 }
 
-                IClientHeightLeafSubGrid Result = new ClientHeightLeafSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels, Args.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset);
+                IClientHeightLeafSubGrid Result = new ClientHeightLeafSubGrid(null, null, SubGridTreeConsts.SubGridTreeLevels, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset);
 
-                Result.SetAbsoluteOriginPosition((uint)(Args.OriginX & ~SubGridTreeConsts.SubGridLocalKeyMask),
-                                                 (uint)(Args.OriginY & ~SubGridTreeConsts.SubGridLocalKeyMask));
+                Result.SetAbsoluteOriginPosition((uint)(originX & ~SubGridTreeConsts.SubGridLocalKeyMask),
+                                                 (uint)(originY & ~SubGridTreeConsts.SubGridLocalKeyMask));
                 Result.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
 
-// Exclusive serialisation of the Design is not required in the Ignite POC
-//                Design.AcquireExclusiveInterlock();
-//                try
-//                {
-                    if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, Args.CellSize, Args.Offset))
-                    {
-                        CalcResult = DesignProfilerRequestResult.OK;
-                    }
-                    else
-                    {
-                        CalcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
-                    }
-//                }
-//                finally
-//                {
-//                    Design.ReleaseExclusiveInterlock();
-//                }
+                if (Design.InterpolateHeights(Result.Cells, WorldOriginX, WorldOriginY, cellSize, offset))
+                {
+                    CalcResult = DesignProfilerRequestResult.OK;
+                }
+                else
+                {
+                    CalcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
+                }
 
                 return Result;
             }
             finally
             {
-                Designs.UnLock(Args.DesignUid, Design);
+                Designs.UnLock(referenceDesignUID, Design);
             }
         }
 
@@ -92,7 +88,7 @@ namespace VSS.TRex.Designs.Executors
         /// Performs execution business logic for this executor
         /// </summary>
         /// <returns></returns>
-        public IClientHeightLeafSubGrid Execute(CalculateDesignElevationPatchArgument args)
+        public IClientHeightLeafSubGrid Execute(Guid projectUID, Guid referenceDesignUID, double cellSize, uint originX, uint originY, double offset)
         {
             try
             {
@@ -106,7 +102,7 @@ namespace VSS.TRex.Designs.Executors
                     */
 
                     // Calculate the patch of elevations and return it
-                    IClientHeightLeafSubGrid result = Calc(args, out DesignProfilerRequestResult CalcResult);
+                    IClientHeightLeafSubGrid result = Calc(projectUID, referenceDesignUID, cellSize, originX, originY, offset, out DesignProfilerRequestResult CalcResult);
 
                     if (result == null)
                     {
@@ -123,7 +119,7 @@ namespace VSS.TRex.Designs.Executors
             }
             catch (Exception E)
             {
-                Log.LogError($"Execute: Exception {E}");
+                Log.LogError("Execute: Exception: ", E);
                 return null;
             }
         }

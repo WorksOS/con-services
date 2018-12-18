@@ -1,4 +1,4 @@
-PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project?includeLandfill=true
+PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project
 GEOFENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0
 IMPORTED_FILE_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles
 PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
@@ -18,3 +18,5 @@ NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7
 NEW_RELIC_APP_NAME: k8s-tile-service
 newrelic: "true"
 TILE_CACHE_LIFE: 12:00:00
+NOTIFICATION_HUB_URL: http://push.prod.k8s.services.myvisionlink.com
+PUSH_NO_AUTHENTICATION_HEADER: "true"

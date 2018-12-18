@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
             {
               string longitude = vals[0].Substring(vals[0].StartsWith("(") ? 1 : 0); //remove prefix ( if present
               string latitude = vals[1].Substring(0, vals[1].Length - (vals[1].EndsWith(")") ? 1 : 0)); // remove suffix ) if present
-              var pt = WGSPoint.CreatePoint(Convert.ToDouble(latitude), Convert.ToDouble(longitude));
+              var pt = new WGSPoint(Convert.ToDouble(latitude), Convert.ToDouble(longitude));
               ret.Add(pt);
             }
           }
