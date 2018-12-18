@@ -13,20 +13,25 @@
 
 function SetEnvironmentVariableLocalhost {
     Write-Host "Setting environment variables for LOCALHOST server..."
-    [Environment]::SetEnvironmentVariable("MYSQL_ROOT_PASSWORD", "abc123", "Machine")
-    [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB", "localhost", "Machine")
-    [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
-    [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
-    [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_PORT", "9092", "Machine")
-    [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "LOCALIPADDRESS", "Machine")
-    [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Filter-Producer", "Machine")
-    [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Filter", "Machine")
-    [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")
-    [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:5000/", "Machine")
-    [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://localhost:5001/api/v2/notification", "Machine")
     [Environment]::SetEnvironmentVariable("CUSTOMERSERVICE_API_URL", "http://localhost:5001/api/v1/mock/getcustomersforme", "Machine")
-    [Environment]::SetEnvironmentVariable("PROJECT_API_URL","http://localhost:5001/api/v4/mockproject", "Machine")
+    [Environment]::SetEnvironmentVariable("FILTERSERVICE_KAFKA_TOPIC_NAME", "VSS.Interfaces.Events.MasterData.IFilterEvent", "Machine")
     [Environment]::SetEnvironmentVariable("IMPORTED_FILE_API_URL","http://localhost:5001/api/v4/mock/importedfiles", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_HOST_NAME", "LOCALIPADDRESS", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_ADVERTISED_PORT", "9092", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Filter-Producer", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_OFFSET", "latest", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_PRODUCER_SESSION_TIMEOUT", "1000", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Filter", "Machine")
+    [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
+    [Environment]::SetEnvironmentVariable("MYSQL_ROOT_PASSWORD", "abc123", "Machine")
+    [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
+    [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB", "localhost", "Machine")
+    [Environment]::SetEnvironmentVariable("PROJECT_API_URL","http://localhost:5001/api/v4/mockproject", "Machine")
+    [Environment]::SetEnvironmentVariable("RAPTOR_NOTIFICATION_API_URL", "http://localhost:5001/api/v2/notification", "Machine")
+    [Environment]::SetEnvironmentVariable("RAPTOR_PROJECT_SETTINGS_API_URL", "http://localhost:5001/api/v2", "Machine")
+    [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:5000/", "Machine")
+    [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")
 }
 
 function SetEnvironmentVariableDevServer {
