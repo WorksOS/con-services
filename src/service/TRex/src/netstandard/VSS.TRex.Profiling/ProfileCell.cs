@@ -26,14 +26,14 @@ namespace VSS.TRex.Profiling
     /// </summary>
     public IProfileLayers Layers { get; set; }
 
-    public float CellLowestElev;
-    public float CellHighestElev;
-    public float CellLastElev;
-    public float CellFirstElev;
-    public float CellLowestCompositeElev;
-    public float CellHighestCompositeElev;
-    public float CellLastCompositeElev;
-    public float CellFirstCompositeElev;
+    public float CellLowestElev { get; set; }
+    public float CellHighestElev { get; set; }
+    public float CellLastElev { get; set; }
+    public float CellFirstElev { get; set; }
+    public float CellLowestCompositeElev { get; set; }
+    public float CellHighestCompositeElev { get; set; }
+    public float CellLastCompositeElev { get; set; }
+    public float CellFirstCompositeElev { get; set; }
 
     public short CellCCV { get; set; }
     public short CellTargetCCV { get; set; }

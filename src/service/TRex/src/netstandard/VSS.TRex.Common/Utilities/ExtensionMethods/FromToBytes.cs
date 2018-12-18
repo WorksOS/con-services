@@ -6,7 +6,7 @@ using VSS.TRex.Common.Utilities.Interfaces;
 namespace VSS.TRex.Common.Utilities.ExtensionMethods
 {
   /// <summary>
-  /// Extension methods supporting serialisation and deserialisation to and from vanilla byte arrays.
+  /// Extension methods supporting serialisation and deserialization to and from vanilla byte arrays.
   /// </summary>
   public static class FromToBytes
   {
@@ -26,7 +26,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     */
 
     /// <summary>
-    /// An extension method providing a FromBytes() semantic to deserialise a byte array via the class defined Read() implementation
+    /// An extension method providing a FromBytes() semantic to deserialize a byte array via the class defined Read() implementation
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
@@ -34,7 +34,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     public static void FromBytes<T>(this T item, byte[] bytes) where T : class, IBinaryReaderWriter => FromBytes(bytes, item.Read);
 
     /// <summary>
-    /// An extension method providing a FromBytes() semantic to deserialise a byte array via the class defined Read() implementation
+    /// An extension method providing a FromBytes() semantic to deserialize a byte array via the class defined Read() implementation
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
@@ -62,6 +62,7 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
+    /// <param name="stream"></param>
     /// <returns></returns>
     public static void ToStream<T>(this T item, Stream stream) where T : class, IBinaryReaderWriter => ToStream(stream, item.Write);
 
@@ -77,15 +78,15 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <summary>
     /// A generic method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
     /// </summary>
-    /// <param name="serialiser"></param>
+    /// <param name="serializer"></param>
     /// <returns></returns>
-    public static byte[] ToBytes(Action<BinaryWriter> serialiser)
+    public static byte[] ToBytes(Action<BinaryWriter> serializer)
     {
       using (MemoryStream ms = new MemoryStream())
       {
         using (BinaryWriter writer = new BinaryWriter(ms))
         {
-          serialiser(writer);
+          serializer(writer);
           return ms.ToArray();
         }
       }
@@ -94,16 +95,16 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <summary>
     /// A generic method providing a ToBytes() semantic to serialise its state to a byte array via the class defined Write() implementation
     /// </summary>
-    /// <param name="serialiser"></param>
+    /// <param name="serializer"></param>
     /// <param name="helperBuffer"></param>
     /// <returns></returns>
-    public static byte[] ToBytes(Action<BinaryWriter, byte[]> serialiser, byte[] helperBuffer)
+    public static byte[] ToBytes(Action<BinaryWriter, byte[]> serializer, byte[] helperBuffer)
     {
       using (MemoryStream ms = new MemoryStream())
       {
         using (BinaryWriter writer = new BinaryWriter(ms))
         {
-          serialiser(writer, helperBuffer);
+          serializer(writer, helperBuffer);
           return ms.ToArray();
         }
       }
@@ -112,76 +113,77 @@ namespace VSS.TRex.Common.Utilities.ExtensionMethods
     /// <summary>
     /// A generic method providing a ToStream() semantic to serialise its state to a stream via the class defined Write() implementation
     /// </summary>
-    /// <param name="serialiser"></param>
+    /// <param name="serializer"></param>
     /// <returns></returns>
-    public static MemoryStream ToStream(Action<BinaryWriter> serialiser)
+    public static MemoryStream ToStream(Action<BinaryWriter> serializer)
     {
       MemoryStream ms = new MemoryStream();
 
       using (BinaryWriter writer = new BinaryWriter(ms, Encoding.UTF8, true))
       {
-        serialiser(writer);
+        serializer(writer);
       }
 
       return ms;
     }
 
     /// <summary>
-    /// A generic method providing a ToSTream() semantic to serialise its state to a stream via the class defined Write() implementation
+    /// A generic method providing a ToStream() semantic to serialise its state to a stream via the class defined Write() implementation
     /// </summary>
     /// <param name="stream"></param>
-    /// <param name="serialiser"></param>
+    /// <param name="serializer"></param>
     /// <returns></returns>
-    public static void ToStream(Stream stream, Action<BinaryWriter> serialiser)
+    public static void ToStream(Stream stream, Action<BinaryWriter> serializer)
     {
       using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true))
       {
-        serialiser(writer);
+        serializer(writer);
       }
     }
-    
+
     /// <summary>
-    /// A generic providing a FromBytes() semantic to deserialise a byte array via the class defined Read() implementation
+    /// A generic providing a FromBytes() semantic to deserialize a byte array via the class defined Read() implementation
     /// </summary>
     /// <param name="bytes"></param>
-    /// <param name="serialiser"></param>
-    public static void FromBytes(byte[] bytes, Action<BinaryReader, byte[]> serialiser, byte[]  helperBuffer)
+    /// <param name="deserializer"></param>
+    /// <param name="helperBuffer"></param>
+    public static void FromBytes(byte[] bytes, Action<BinaryReader, byte[]> deserializer, byte[]  helperBuffer)
     {
       using (MemoryStream ms = new MemoryStream(bytes))
       {
         using (BinaryReader reader = new BinaryReader(ms))
         {
-          serialiser(reader, helperBuffer);
+          deserializer(reader, helperBuffer);
         }
       }
     }
 
     /// <summary>
-    /// A generic providing a FromBytes() semantic to deserialise a byte array via the class defined Read() implementation
+    /// A generic providing a FromBytes() semantic to deserialize a byte array via the class defined Read() implementation
     /// </summary>
     /// <param name="bytes"></param>
-    /// <param name="serialiser"></param>
-    public static void FromBytes(byte[] bytes, Action<BinaryReader> serialiser)
+    /// <param name="deserializer"></param>
+    public static void FromBytes(byte[] bytes, Action<BinaryReader> deserializer)
     {
       using (MemoryStream ms = new MemoryStream(bytes))
       {
         using (BinaryReader reader = new BinaryReader(ms))
         {
-          serialiser(reader);
+          deserializer(reader);
         }
       }
     }
 
     /// <summary>
-    /// An extension method providing a FromStream() semantic to deserialise a stream via the class defined Read() implementation
+    /// An extension method providing a FromStream() semantic to deserialize a stream via the class defined Read() implementation
     /// </summary>
     /// <param name="stream"></param>
-    /// <param name="serialiser"></param>
-    public static void FromStream(Stream stream, Action<BinaryReader> serialiser)
+    /// <param name="deserializer"></param>
+    public static void FromStream(Stream stream, Action<BinaryReader> deserializer)
     {
       using (BinaryReader reader = new BinaryReader(stream))
       {
-        serialiser(reader);
+        deserializer(reader);
       }
     }
   }

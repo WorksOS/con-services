@@ -38,6 +38,6 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude,
       int[] projectTypes, DateTime? timeOfPosition = null);
     
-    Task<int> StoreEvent(IProjectEvent evt);
+    Task<int> StoreEvent(IProjectEvent filterEvent);
   }
 }
