@@ -15,10 +15,18 @@
     <DebugSymbols>True</DebugSymbols>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
+    <DocumentationFile>C:\Repos\VSS.Productivity3D.MonoRepo\src\service\TileService\src\VSS.Tile.Service.WebApi\VSS.Tile.Service.WebApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All"  />
+    <Compile Remove="logs\**" />
+    <Content Remove="logs\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <None Remove="logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
   </ItemGroup>

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using XnaFan.ImageComparison.Netcore;
-using Xunit;
 
 namespace WebApiTests.Utilities
 {

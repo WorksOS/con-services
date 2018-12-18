@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
@@ -15,13 +14,9 @@ namespace VSS.Tile.Service.WebApi
   {
     public static void Main(string[] args)
     {
-      BuildWebHost(args).Run();
-    }
-
-    public static IWebHost BuildWebHost(string[] args)
-    {
       var kestrelConfig = new ConfigurationBuilder()
-        .AddJsonFile("kestrelsettings.json", true, false).Build();
+        .AddJsonFile("kestrelsettings.json", true, false)
+        .Build();
 
       Log4NetAspExtensions.ConfigureLog4Net(Startup.LOGGER_REPO_NAME);
 
@@ -31,14 +26,13 @@ namespace VSS.Tile.Service.WebApi
           .UseLibuv(opts => { opts.ThreadCount = 32; })
           .UseContentRoot(Directory.GetCurrentDirectory())
           .UseConfiguration(kestrelConfig)
-          .ConfigureLogging(builder =>
+          .ConfigureLogging(builder => 
           {
             Log4NetProvider.RepoName = Startup.LOGGER_REPO_NAME;
             builder.Services.AddSingleton<ILoggerProvider, Log4NetProvider>();
             builder.SetMinimumLevel(LogLevel.Debug);
             builder.AddConfiguration(kestrelConfig);
           })
-
           .UsePrometheus()
           .UseStartup<Startup>()
           .Build();
@@ -49,9 +43,8 @@ namespace VSS.Tile.Service.WebApi
 
       //Check how many requests we can execute
       ServicePointManager.DefaultConnectionLimit = 128;
-
-
-      return host;
+      
+      host.Run();
     }
   }
 }

@@ -13,7 +13,7 @@ namespace VSS.MasterData.Repositories
 {
   public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>, ISubscriptionRepository
   {
-    private Dictionary<string, ServiceType> _serviceTypes;
+    public Dictionary<string, ServiceType> _serviceTypes;
 
     public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(
       connectionString, logger)
