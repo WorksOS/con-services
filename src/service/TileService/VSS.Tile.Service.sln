@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity.Push.Model
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Push.WebAPI", "..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj", "{BE0775F9-323D-4523-B45F-908467BA8577}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi", "..\MockProjectWebApi\MockProjectWebApi.csproj", "{E3FC0241-4D8C-42D3-B386-BF052DBD608B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,6 +114,10 @@ Global
 		{BE0775F9-323D-4523-B45F-908467BA8577}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE0775F9-323D-4523-B45F-908467BA8577}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE0775F9-323D-4523-B45F-908467BA8577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3FC0241-4D8C-42D3-B386-BF052DBD608B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3FC0241-4D8C-42D3-B386-BF052DBD608B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3FC0241-4D8C-42D3-B386-BF052DBD608B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3FC0241-4D8C-42D3-B386-BF052DBD608B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +141,7 @@ Global
 		{A7A3902A-99C7-4003-9788-00719CC1F1C3} = {1EC007C6-506B-427D-89F4-70CD5475F36A}
 		{1E5CAFEC-FED6-4DB2-9C84-4A499DCDEBA0} = {1EC007C6-506B-427D-89F4-70CD5475F36A}
 		{BE0775F9-323D-4523-B45F-908467BA8577} = {1EC007C6-506B-427D-89F4-70CD5475F36A}
+		{E3FC0241-4D8C-42D3-B386-BF052DBD608B} = {1EEFA0EC-0C75-4621-85A4-9B9829905675}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6751412A-15E0-42BD-8F9F-FFFA8AF71A71}
