@@ -16,6 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -58,15 +59,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     /// <param name="httpContextAccessor"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="authn"></param>
     public ProjectV2Controller(IKafka producer,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
       IFileRepository fileRepo, ICustomerRepository customerRepo,
       IConfigurationStore store, ISubscriptionProxy subscriptionProxy,
       IRaptorProxy raptorProxy,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient)
+      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient,
+      ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>(), dataOceanClient)
+        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV2Controller>(), dataOceanClient, authn)
     {
       this.logger = logger;
       this.customerRepo = customerRepo;
@@ -124,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<CreateProjectExecutor>(logger, configStore, serviceExceptionHandler,
             customerUid, userId, null, customHeaders, producer, kafkaTopicName,
             raptorProxy, subscriptionProxy, null, null, null, projectRepo, 
-            subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient)
+            subscriptionRepo, fileRepo, null, httpContextAccessor, dataOceanClient, null, authn)
           .ProcessAsync(createProjectEvent)
       );
 

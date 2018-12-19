@@ -30,6 +30,7 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -60,15 +61,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo"></param>
     /// <param name="dataOceanClient"></param>
     /// <param name="tileServiceProxy"></param>
+    /// <param name="authn"></param>
     public FileImportV4Controller(IKafka producer,
       IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy, 
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, ITileServiceProxy tileServiceProxy)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
+      ITileServiceProxy tileServiceProxy, ITPaaSApplicationAuthentication authn)
       : base(producer, store, logger, logger.CreateLogger<FileImportV4Controller>(), serviceExceptionHandler,
         raptorProxy, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, tileServiceProxy)
+        projectRepo, subscriptionRepo, fileRepo, requestFactory, dataOceanClient, tileServiceProxy, authn)
     {
       this.logger = logger;
     }
@@ -375,7 +378,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<DeleteImportedFileExecutor>(
             logger, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, customHeaders,
             producer, kafkaTopicName, raptorProxy, null, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy,
-            projectRepo, null, fileRepo, null, null, dataOceanClient)
+            projectRepo, null, fileRepo, null, null, dataOceanClient, null, authn)
           .ProcessAsync(deleteImportedFile)
       );
 
@@ -437,7 +440,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               fileStream, customerUid, projectUid.ToString(), 
               filename,
               importedFileType == ImportedFileType.SurveyedSurface,
-              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, customHeaders)
+              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
             .ConfigureAwait(false);
       }
 
@@ -516,7 +519,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           await DataOceanHelper.WriteFileToDataOcean(
               fileStream, customerUid, projectUid, filePath,
               importedFileType == ImportedFileType.SurveyedSurface, 
-              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, customHeaders)
+              surveyedUtc, log, serviceExceptionHandler, dataOceanClient, authn)
             .ConfigureAwait(false);        
         }
       }

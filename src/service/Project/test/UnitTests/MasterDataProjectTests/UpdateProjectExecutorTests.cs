@@ -22,6 +22,7 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -390,10 +391,14 @@ namespace VSS.MasterData.ProjectTests
         dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
           It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+        var authn = new Mock<ITPaaSApplicationAuthentication>();
+        authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
         var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
         (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
           _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-          projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, null, dataOceanClient.Object);
+          projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, null, 
+          dataOceanClient.Object, null, authn.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
@@ -579,10 +584,14 @@ namespace VSS.MasterData.ProjectTests
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
       var createExecutor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
         _producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, dataOceanClient.Object);
+        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
+        dataOceanClient.Object, null, authn.Object);
       await createExecutor.ProcessAsync(createProjectEvent);
 
       return AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(createProjectEvent);

@@ -8,17 +8,16 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
-using VSS.MasterData.Models.FIlters;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -160,7 +159,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IDictionary<string, string> customHeaders,
       IProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,
-      IFileRepository fileRepo, IDataOceanClient dataOceanClient)
+      IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -208,7 +207,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           {
             await DataOceanHelper.WriteFileToDataOcean(
               ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
-              false, null, log, serviceExceptionHandler, dataOceanClient, customHeaders);
+              false, null, log, serviceExceptionHandler, dataOceanClient, authn);
           }
 
         }

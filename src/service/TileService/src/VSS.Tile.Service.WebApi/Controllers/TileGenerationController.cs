@@ -8,6 +8,7 @@ using VSS.MasterData.Proxies;
 using VSS.Pegasus.Client;
 using VSS.Pegasus.Client.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
 {
@@ -20,11 +21,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Client for Pegasus API used to generate tiles.
     /// </summary>
     private readonly IPegasusClient pegasusClient;
-
     /// <summary>
-    /// Gets the custom headers for the request.
+    /// For getting application bearer token
     /// </summary>
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    private readonly ITPaaSApplicationAuthentication authn;
 
     /// <summary>
     /// Default constructor.
@@ -57,7 +57,12 @@ namespace VSS.Tile.Service.WebApi.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Missing DXF file name"));
       }
-      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, CustomHeaders);
+      var customHeaders = new Dictionary<string, string>
+      {
+        {"Content-Type", "application/json"},
+        {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"}
+      };
+      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfUnitsType, customHeaders);
     }
   }
 }

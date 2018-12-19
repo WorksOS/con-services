@@ -21,6 +21,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -67,14 +68,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="log"></param>
     /// <param name="dataOceanClient"></param>
     /// <param name="tileServiceProxy"></param>
+    /// <param name="authn"></param>
     public FileImportBaseController(IKafka producer,
       IConfigurationStore configStore, ILoggerFactory logger, ILogger log, IServiceExceptionHandler serviceExceptionHandler,
       IRaptorProxy raptorProxy, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, ITileServiceProxy tileServiceProxy)
-      : base(log, configStore, serviceExceptionHandler, producer,
-        raptorProxy, projectRepo, subscriptionRepo, fileRepo, dataOceanClient, tileServiceProxy)
+      IFileRepository fileRepo, IRequestFactory requestFactory, IDataOceanClient dataOceanClient, 
+      ITileServiceProxy tileServiceProxy, ITPaaSApplicationAuthentication authn)
+      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
+        subscriptionRepo, fileRepo, dataOceanClient, tileServiceProxy, authn)
     {
       this.logger = logger;
       this.requestFactory = requestFactory;

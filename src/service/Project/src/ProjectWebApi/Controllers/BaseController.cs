@@ -79,6 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     protected readonly IDataOceanClient dataOceanClient;
     protected readonly ITileServiceProxy tileServiceProxy;
+    protected readonly ITPaaSApplicationAuthentication authn;
 
     /// <summary>
     /// Gets the custom customHeaders for the request.
@@ -125,11 +126,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo"></param>
     /// <param name="dataOceanClient"></param>
     /// <param name="tileServiceProxy"></param>
+    /// <param name="authn"></param>
     protected BaseController(ILogger log, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
       IRaptorProxy raptorProxy, IProjectRepository projectRepo, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
-      IDataOceanClient dataOceanClient = null, ITileServiceProxy tileServiceProxy = null)
+      IDataOceanClient dataOceanClient = null, ITileServiceProxy tileServiceProxy = null,
+      ITPaaSApplicationAuthentication authn = null)
     {
       this.log = log;
       this.configStore = configStore;

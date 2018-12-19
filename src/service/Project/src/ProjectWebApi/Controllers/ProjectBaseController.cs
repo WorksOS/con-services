@@ -10,6 +10,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -48,12 +49,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     /// <param name="log"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="authn"></param>
     public ProjectBaseController(IKafka producer, 
       IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore configStore, 
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
-      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log, IDataOceanClient dataOceanClient)
-      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, subscriptionRepo, fileRepo, dataOceanClient)
+      ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, ILogger log, 
+      IDataOceanClient dataOceanClient,
+      ITPaaSApplicationAuthentication authn)
+      : base(log, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo, 
+        subscriptionRepo, fileRepo, dataOceanClient, null, authn)
     {
       this.subscriptionProxy = subscriptionProxy;
     }

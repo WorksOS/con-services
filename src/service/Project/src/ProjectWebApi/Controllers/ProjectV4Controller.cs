@@ -28,6 +28,7 @@ using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -60,15 +61,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     /// <param name="httpContextAccessor"></param>
     /// <param name="dataOceanClient"></param>
+    /// <param name="authn"></param>
     public ProjectV4Controller(IKafka producer, IProjectRepository projectRepo,
       ISubscriptionRepository subscriptionRepo, IFileRepository fileRepo,
       IConfigurationStore store,
       ISubscriptionProxy subscriptionProxy, IRaptorProxy raptorProxy,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient)
+      IHttpContextAccessor httpContextAccessor, IDataOceanClient dataOceanClient,
+      ITPaaSApplicationAuthentication authn)
       : base(producer, projectRepo, subscriptionRepo, fileRepo, store, subscriptionProxy, raptorProxy,
-        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient)
+        logger, serviceExceptionHandler, logger.CreateLogger<ProjectV4Controller>(), dataOceanClient, authn)
     {
       this._logger = logger;
       this.HttpContextAccessor = httpContextAccessor;
@@ -162,10 +165,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(_logger, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders,
-            producer, kafkaTopicName,
-            raptorProxy, subscriptionProxy, null, null, null,
-            projectRepo, subscriptionRepo, fileRepo, null, HttpContextAccessor, dataOceanClient)
+            customerUid, userId, null, customHeaders, producer, kafkaTopicName, raptorProxy, 
+            subscriptionProxy, null, null, null, projectRepo, subscriptionRepo, fileRepo, 
+            null, HttpContextAccessor, dataOceanClient, null, authn)
           .ProcessAsync(createProjectEvent)
       );
 

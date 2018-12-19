@@ -23,6 +23,7 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Models.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -287,11 +288,14 @@ namespace VSS.MasterData.ProjectTests
       dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress, 
           customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, filterServiceProxy.Object, 
-          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object);
+          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, null, authn.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 

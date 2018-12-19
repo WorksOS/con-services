@@ -63,6 +63,8 @@ namespace VSS.Tile.Service.WebApi
       services.AddTransient<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
+      services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
+      services.AddTransient<ITPaasProxy, TPaasProxy>();
 
       services.AddSingleton<CacheInvalidationService>();
 

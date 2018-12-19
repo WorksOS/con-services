@@ -15,6 +15,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -110,6 +111,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
     protected IDataOceanClient dataOceanClient;
     protected ITileServiceProxy tileServiceProxy;
+    protected ITPaaSApplicationAuthentication authn;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -211,7 +213,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, 
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, 
-      IDataOceanClient dataOceanClient= null, ITileServiceProxy tileServiceProxy = null)
+      IDataOceanClient dataOceanClient= null, ITileServiceProxy tileServiceProxy = null,
+      ITPaaSApplicationAuthentication authn = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -234,6 +237,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
       this.tileServiceProxy = tileServiceProxy;
+      this.authn = authn;
     }
 
     /// <summary>

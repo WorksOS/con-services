@@ -97,7 +97,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
             $"{deleteImportedFile.FileDescriptor.path}{Path.DirectorySeparatorChar}{deleteImportedFile.FileDescriptor.fileName}", deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
-              log, serviceExceptionHandler, dataOceanClient, customHeaders)
+              log, serviceExceptionHandler, dataOceanClient, authn)
             .ConfigureAwait(false);
         }
         if (importedFileInternalResult != null)

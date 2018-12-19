@@ -24,6 +24,7 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.ProjectTests
 {
@@ -143,10 +144,14 @@ namespace VSS.MasterData.ProjectTests
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), 
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, dataOceanClient.Object);
+        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
+        dataOceanClient.Object, null, authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -217,12 +222,15 @@ namespace VSS.MasterData.ProjectTests
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler,
-        _customerUid, userId, null, customHeaders,
-        producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, 
+        customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, 
+        subscriptionProxy.Object, null, null, null, projectRepo.Object, 
+        subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor,
+        dataOceanClient.Object, null, authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -293,12 +301,15 @@ namespace VSS.MasterData.ProjectTests
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler,
-        _customerUid, userId, null, customHeaders,
-        producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, 
+        customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object,
+        subscriptionProxy.Object, null, null, null, projectRepo.Object, 
+        subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
+        dataOceanClient.Object, null, authn.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
@@ -375,12 +386,15 @@ namespace VSS.MasterData.ProjectTests
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (logger, configStore, serviceExceptionHandler,
-        _customerUid, userId, null, customHeaders,
-        producer.Object, KafkaTopicName,
-        raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor);
+      (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, 
+        customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, 
+        subscriptionProxy.Object, null, null, null, projectRepo.Object, 
+        subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor,
+        dataOceanClient.Object, null, authn.Object);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () =>
         await executor.ProcessAsync(createProjectEvent));
 
@@ -456,10 +470,14 @@ namespace VSS.MasterData.ProjectTests
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
+      var authn = new Mock<ITPaaSApplicationAuthentication>();
+      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
         producer.Object, KafkaTopicName, raptorProxy.Object, subscriptionProxy.Object, null, null, null,
-        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, dataOceanClient.Object);
+        projectRepo.Object, subscriptionRepo.Object, fileRepo.Object, null, httpContextAccessor, 
+        dataOceanClient.Object, null, authn.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

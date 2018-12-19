@@ -7,11 +7,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
-using VSS.TCCFileAccess;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -25,8 +23,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       Stream fileContents, string customerUid, string projectUid,
       string pathAndFileName, bool isSurveyedSurface, DateTime? surveyedUtc,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
-      IDictionary<string, string> customHeaders)
+      ITPaaSApplicationAuthentication authn)
     {
+      var customHeaders = CustomHeaders(authn);
       var dataOceanPath = $"/{customerUid}{Path.DirectorySeparatorChar}{projectUid}";
       string dataOceanFileName = Path.GetFileName(pathAndFileName);
 
@@ -67,13 +66,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes the importedFile from DataOcean
     /// </summary>
     /// <returns></returns>
-    public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(string fullFileName, Guid projectUid, Guid importedFileUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
-      IDictionary<string, string> customHeaders)
+    public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(string fullFileName, 
+      Guid projectUid, Guid importedFileUid, ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
+      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
     {
       log.LogInformation($"DeleteFileFromDataOcean: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
 
-
+      var customHeaders = CustomHeaders(authn);
       bool ccDeleteFileResult = false;
       try
       {
@@ -94,5 +93,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     
       return null;
     }
+
+    private static IDictionary<string, string> CustomHeaders(ITPaaSApplicationAuthentication authn)
+    {
+      return new Dictionary<string, string>
+      {
+        {"Content-Type", "application/json"},
+        {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"}
+      };
+    }
+    
   }
 }
