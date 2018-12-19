@@ -7,7 +7,6 @@ from src.landfill import LandfillAlgorithm
 import requests
 import json
 import logging as log
-import io
 app= Flask(__name__)
 CORS(app)
 

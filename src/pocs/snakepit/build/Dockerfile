@@ -7,7 +7,3 @@ COPY ./src /app/src
 WORKDIR /app
 
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "--timeout", "3600", "src.webapi.server:app"]
-
-
-
-
