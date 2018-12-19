@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
@@ -38,6 +38,6 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude,
       int[] projectTypes, DateTime? timeOfPosition = null);
     
-    Task<int> StoreEvent(IProjectEvent filterEvent);
+    Task<int> StoreEvent(IProjectEvent evt);
   }
 }

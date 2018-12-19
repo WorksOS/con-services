@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
@@ -16,6 +16,6 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Subscription>> GetSubscriptions_UnitTest(string subscriptionUid);
     Task<IEnumerable<ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid);
 
-    Task<int> StoreEvent(ISubscriptionEvent filterEvent);
+    Task<int> StoreEvent(ISubscriptionEvent evt);
   }
 }

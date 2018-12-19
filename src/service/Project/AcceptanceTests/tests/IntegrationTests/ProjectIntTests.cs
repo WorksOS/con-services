@@ -356,7 +356,6 @@ namespace IntegrationTests
     }
 
     /// <summary>
-    /// TODO
     /// Currently this is allowed, although this may be revisited in the future
     /// </summary>
     [TestMethod] 
@@ -516,10 +515,11 @@ namespace IntegrationTests
     public void CreateStandardProjectThenUpdateProjectTypeToLandFillAndCheckDatabase()
     {
       var msg = new Msg();
+      var mysql = new MySqlHelper();
       msg.Title($"Project Integration test", "Create standard project then update project type to landfill and check project-only database");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
-      var projectUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -535,14 +535,16 @@ namespace IntegrationTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"};
       ts.PublishEventCollection(eventsArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
       ts.IsPublishToWebApi = true;
       var projectName = $"Standard To LandFill test";
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray, true);
 
       var projectEventArray2 = new[] {
        "| EventType            | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description       |",
@@ -550,22 +552,23 @@ namespace IntegrationTests
       var response = ts.PublishEventToWebApi(projectEventArray2);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray2, true);
 
       // Now check the project type has changed and the kafka message consumed properly.
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
-      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "1", Guid.Parse(projectUid));
+      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "1", projectUid);
     }
 
     [TestMethod]
     public void CreateStandardProjectThenUpdateProjectTypeToCivilAndCheckDatabase()
     {
       var msg = new Msg();
+      var mysql = new MySqlHelper();
       msg.Title($"Project Integration test", "Create standard project then update project type to civil project monitoring and check project-only database");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
-      var projectUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
@@ -581,14 +584,17 @@ namespace IntegrationTests
       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |"};
       ts.PublishEventCollection(eventsArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
+
       ts.IsPublishToWebApi = true;
       var projectName = $"Standard To LandFill test";
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray, true);
 
       var projectEventArray2 = new[] {
        "| EventType            | EventDate   | ProjectUID   | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description       |",
@@ -596,12 +602,12 @@ namespace IntegrationTests
       var response = ts.PublishEventToWebApi(projectEventArray2);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid.ToString(), projectEventArray2, true);
 
       // Now check the project type has changed and the kafka message consumed properly.
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
-      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "2", Guid.Parse(projectUid));
+      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "fk_ProjectTypeID", "2", projectUid);
     }
 
 
@@ -632,7 +638,8 @@ namespace IntegrationTests
       $"| AssociateProjectSubscriptionEvent | 0d+09:00:00 |            |            |                    | {subscriptionUid} | 2012-01-01    | {projectGuid} |                |"}; 
 
       ts.PublishEventCollection(eventArray);
-    //  ts.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectSubscription", "fk_SubscriptionUID", 1, subscriptionUid); // Test the database record is there
+      //  ts.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
 
       ts.CreateProjectViaWebApi(projectGuid,projectId, projectName, startDate,endDate, timeZone, projectType , DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
 

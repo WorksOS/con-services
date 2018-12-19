@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Services
       }
       catch (Exception e)
       {
-        log.LogError($"Failed to publish to CAP: {e.Message}");
+        log.LogError(e, $"Failed to publish to CAP");
         throw;
       }
       */

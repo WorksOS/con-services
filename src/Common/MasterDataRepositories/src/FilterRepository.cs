@@ -25,6 +25,12 @@ namespace VSS.MasterData.Repositories
       // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, UserID
       // filterJson is only updateable if transient 
 
+      if (evt == null)
+      {
+        Log.LogWarning("Unsupported Filter event type");
+        return Task.FromResult(0);
+      }
+
       Log.LogDebug($"Event type is {evt.GetType()}");
       switch (evt)
       {
@@ -72,7 +78,7 @@ namespace VSS.MasterData.Repositories
               FilterUid = @event.FilterUID.ToString(),
               LastActionedUtc = @event.ActionUTC
             };
-           
+
             return UpsertFilterDetail(filter, "DeleteFilterEvent");
           }
         default:
@@ -98,7 +104,7 @@ namespace VSS.MasterData.Repositories
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @FilterUid",
-        new {FilterUid = filter.FilterUid})).FirstOrDefault();
+        new { FilterUid = filter.FilterUid })).FirstOrDefault();
 
       if (eventType == "CreateFilterEvent")
         upsertedCount = await CreateFilter(filter, existing);
@@ -279,10 +285,10 @@ namespace VSS.MasterData.Repositories
                 AND f.fk_ProjectUID = @ProjectUid 
                 AND f.UserID = @UserId 
                 AND f.IsDeleted = 0
-                AND f.fk_FilterTypeID = {(int) FilterType.Persistent}";
+                AND f.fk_FilterTypeID = {(int)FilterType.Persistent}";
 
       return (QueryWithAsyncPolicy<Filter>(queryString,
-        new {CustomerUid = customerUid, ProjectUid = projectUid, UserId = userId}));
+        new { CustomerUid = customerUid, ProjectUid = projectUid, UserId = userId }));
     }
 
     /// <summary>
@@ -300,8 +306,8 @@ namespace VSS.MasterData.Repositories
               FROM Filter f
               WHERE f.fk_ProjectUID = @ProjectUid 
                 AND f.IsDeleted = 0
-                AND f.fk_FilterTypeID = {(int) FilterType.Persistent}",
-        new {ProjectUid = projectUid}));
+                AND f.fk_FilterTypeID = {(int)FilterType.Persistent}",
+        new { ProjectUid = projectUid }));
     }
 
     /// <summary>
@@ -319,7 +325,7 @@ namespace VSS.MasterData.Repositories
               FROM Filter f
               WHERE f.FilterUID = @FilterUid 
                 AND f.IsDeleted = 0",
-        new {FilterUid = filterUid})).FirstOrDefault();
+        new { FilterUid = filterUid })).FirstOrDefault();
     }
 
     public async Task<int> DeleteTransientFilters(string deleteOlderThanUtc)
@@ -328,7 +334,7 @@ namespace VSS.MasterData.Repositories
       var delete =
         "DELETE FROM Filter " +
         "  WHERE ID > 0 " +
-        $"    AND fk_FilterTypeID = {(int) FilterType.Transient}" +
+        $"    AND fk_FilterTypeID = {(int)FilterType.Transient}" +
         $"    AND LastActionedUTC < '{deleteOlderThanUtc}';";
 
       Log.LogDebug($"FilterRepository/DeleteTransientFilters SQL: {delete}");
@@ -351,7 +357,7 @@ namespace VSS.MasterData.Repositories
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @FilterUid",
-        new {FilterUid = filterUid})).FirstOrDefault();
+        new { FilterUid = filterUid })).FirstOrDefault();
     }
 
     #endregion getters

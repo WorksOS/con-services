@@ -11,6 +11,6 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Filter>> GetFiltersForProject(string projectUid);
     Task<Filter> GetFilter(string filterUid);
     Task<int> DeleteTransientFilters(string deleteOlderThanUtc);
-    Task<int> StoreEvent(IFilterEvent filterEvent);
+    Task<int> StoreEvent(IFilterEvent evt);
   }
 }
