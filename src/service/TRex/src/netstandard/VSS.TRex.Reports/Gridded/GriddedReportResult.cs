@@ -12,7 +12,6 @@ namespace VSS.TRex.Reports.Gridded
   /// Note that this structure needs to be look like TRaptorReportsPackager
   ///   to be deserialized by it. One day... TRaptorReportsPackeger will
   ///   go away and GriddedReportResult could be deserialised in 3dp using it instead.
-  ///   todoJeannie 3dp could use this now for raptor AND Trex?
   /// </summary>
   public class GriddedReportResult : IEquatable<GriddedReportResult>
   {

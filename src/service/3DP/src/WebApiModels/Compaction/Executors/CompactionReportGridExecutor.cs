@@ -38,6 +38,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         if (useTrexGateway)
         {
+          // change CompactionReportGridRequest when DesignDescription DataOcean requirements are known.
+          //   also projectid and filterId not required by TRex
           var responseData = trexCompactionDataProxy.SendGridReportRequest(request, customHeaders).Result;
           return responseData.Length > 0
             ? ConvertGridResult(request, responseData)
@@ -121,6 +123,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       reportPackager.GridReport.TemperatureReport = request.ReportTemperature;
 
       log.LogDebug($"{nameof(ConvertGridResult)}: Retrieving response data");
+      
       reportPackager.ReadFromStream(stream);
 
       var gridRows = new GridRow[reportPackager.GridReport.NumberOfRows];

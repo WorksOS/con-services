@@ -72,7 +72,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           CmvReport = request.ReportCMV,
           MdpReport = request.ReportMDP,
           PassCountReport = request.ReportPassCount,
-          TemperatureReport = request.ReportElevation,
+          TemperatureReport = request.ReportTemperature,
           NumberOfRows = response.GriddedReportDataRowList.Count
         }
       };

@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       throw CreateServiceException<CompactionReportStationOffsetExecutor>();
     }
 
-    //todoJeannie the stream format is likely different for TRex...
+
     private CompactionReportResult ConvertStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
     {
       log.LogDebug($"{nameof(ConvertStationOffsetResult)}");

@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.AWS.TransferProxy.Interfaces;
+using VSS.TRex.Common;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -12,6 +12,8 @@ using VSS.TRex.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Gateway.Common.Helpers;
+using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -47,162 +49,56 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Adds a new design to a sitemodel. 
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="fileName"></param>
-    /// <param name="minX"></param>
-    /// <param name="minY"></param>
-    /// <param name="maxX"></param>
-    /// <param name="maxY"></param>
-    /// <returns></returns>
-    [HttpPost("{siteModelID}")]
-    public JsonResult AddDesignToSiteModel(string siteModelID,
-      [FromQuery] string fileName,
-      [FromQuery] double minX,
-      [FromQuery] double minY,
-      [FromQuery] double maxX,
-      [FromQuery] double maxY)
-    {
-      return new JsonResult(DIContext.Obtain<IDesignManager>().Add
-        (Guid.Parse(siteModelID), 
-        new DesignDescriptor(Guid.NewGuid(), "", fileName, 0),  
-        new BoundingWorldExtent3D(minX, minY, maxX, maxY)));
-    }
-
-    /// <summary>
-    /// Adds a new design to a sitemodel.
-    ///   temporarily using s3
-    ///     path less bucket name and filename
-    ///     e.g. https://s3-us-west-2.amazonaws.com/vss-project3dp-stg/{projectID}/bowlfill+1290+6-5-18.ttm
-    ///          is where ProjectSvc/Scheduler currently puts this file
-    ///    Bucket:   vss-project3dp-stg 
-    ///    Path:     projectID
-    ///    Filename: "bowlfill 1290 6-5-18.ttm"   (is + for a space)
-    /// 
-    /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="designID"></param>
+    /// <param name="siteModelUid"></param>
     /// <param name="fileName"></param>
     /// <returns></returns>
-    [HttpPost("{siteModelID}/{fileName}")]
-    public async Task<JsonResult> AddDesignSurfaceFromAwsS3ToSiteModel(
-      [FromRoute] string siteModelID,
-      [FromRoute] string fileName, 
-      [FromQuery] string designID
-      )
+    [HttpPost("{siteModelUid}")]
+    public async Task<JsonResult> AddDesignToSiteModel(
+      string siteModelUid,
+      [FromQuery] string fileName)
     {
-      var siteModelUID = Guid.Parse(siteModelID);
-      var designUID = Guid.Parse(designID);
+      if (string.IsNullOrEmpty(siteModelUid))
+        throw new ArgumentException($"Invalid siteModelUid (you need to have selected one first): {siteModelUid}");
 
-      var s3Path = $"{siteModelID}";
-      string downloadLocalPath = Path.GetTempPath(); 
-      var downloadedok = await DownloadFileFromS3Async(s3Path, downloadLocalPath, fileName).ConfigureAwait(false);
-      var loadedDesign = AddTheDesignToSiteModel(siteModelUID, designUID, downloadLocalPath, fileName);
+      if (string.IsNullOrEmpty(fileName) || 
+          !Path.HasExtension(fileName) || 
+          (string.Compare(Path.GetExtension(fileName), ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
+        throw new ArgumentException($"Invalid [path]filename: {fileName}");
 
-      var spatialUploadedOk = UploadFileToS3(downloadLocalPath, fileName + ".$DesignSpatialIndex$", s3Path);
-      var subgridUploadedOk = UploadFileToS3(downloadLocalPath, fileName + ".$DesignSubgridIndex$", s3Path);
+      if (!System.IO.File.Exists(fileName))
+        throw new ArgumentException($"Unable to locate [path]fileName: {fileName}");
       
-      return new JsonResult(DIContext.Obtain<IDesignManager>().List(Guid.Parse(siteModelID)).Locate(Guid.Parse(designID))); 
+      var siteModelGuid = Guid.Parse(siteModelUid);
+      var designUid = Guid.NewGuid();
+
+      var fileNameOnly = Path.GetFileName(fileName);
+
+      // copy local file to S3
+      var designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileName), Guid.Parse(siteModelUid), fileNameOnly);
+      if (!designFileLoadedOk)
+        throw new ArgumentException($"Unable to copy design file to S3: {fileNameOnly}");
+
+      // download to appropriate local location and add to site model
+      string downloadLocalPath = DesignHelper.EstablishLocalDesignFilepath(siteModelUid);
+      var downloadedok = await S3FileTransfer.ReadFile(Guid.Parse(siteModelUid), fileNameOnly, downloadLocalPath).ConfigureAwait(false);
+      if (!downloadedok)
+        throw new ArgumentException($"Unable to restore same design file from S3: {fileNameOnly}");
+      AddTheDesignToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly);
+
+      // upload indices
+      var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + ".$DesignSpatialIndex$");
+      if (!spatialUploadedOk)
+        throw new ArgumentException($"Unable to copy spatial index file to S3: {fileNameOnly + ".$DesignSpatialIndex$"}");
+      var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + ".$DesignSubgridIndex$");
+      if (!subgridUploadedOk)
+        throw new ArgumentException($"Unable to copy subgrid index file to S3: {fileNameOnly + ".$DesignSubgridIndex$"}");
+
+      return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
     }
 
-    ///// <summary>
-    ///// Adds a new design to a sitemodel, round trip
-    /////     i.e. , from a local file upload to s3, then the process which downloads it etc
-    /////   temporarily using s3
-    /////     path less bucket name and filename
-    /////     e.g. https://s3-us-west-2.amazonaws.com/vss-exports-stg/3dpm/100015/bowlfill+1290+6-5-18.ttm.json
-    /////          is where ProjectSvc/Scheduler currently puts this file
-    /////    Bucket:   vss-project3dp-stg
-    /////    Path:     3dpm/100015  or project/importedFile   (eventually may be ProjectUID/DesignUID) 
-    /////    Filename: bowlfill+1290+6-5-18.ttm (is + for a space?)
-    ///// 
-    ///// </summary>
-    ///// <param name="siteModelID"></param>
-    ///// <param name="designID"></param>
-    ///// <param name="localPath"></param>
-    ///// <param name="fileName"></param>
-    ///// <param name="fileType"></param>
-    ///// <returns></returns>
-    //[HttpPost("{siteModelID}/{designID}")]
-    //public async Task<JsonResult> AddDesignSurfaceToSiteModel(
-    //  [FromRoute] string siteModelID,
-    //  [FromRoute] string designID,
-    //  [FromQuery] string localPath,
-    //  [FromQuery] string fileName,
-    //  [FromQuery] ImportedFileType fileType
-    //)
-    //{
-    //  var siteModelUID = Guid.Parse(siteModelID);
-    //  var designUID = Guid.Parse(designID);
-
-    //  var s3Path = $"{siteModelID}";
-    //  var uploadedOk = UploadFileToS3(localPath, fileName, s3Path);
-
-    //  string downloadLocalPath = @"C:\Temp\TRex Designs\downloads";
-    //  var downladedok = await DownloadFileFromS3Async(s3Path, downloadLocalPath, fileName).ConfigureAwait(false);
-    //  var loadedDesign = AddTheDesignToSiteModel(siteModelUID, designUID, downloadLocalPath, fileName);
-
-    //  return new JsonResult(DIContext.Obtain<IDesignManager>().List(Guid.Parse(siteModelID)).Locate(Guid.Parse(designID)));
-    //}
-
-
-    private bool UploadFileToS3(string localPath, string fileName, string s3Path)
+    
+    private void AddTheDesignToSiteModel(Guid siteModelUid, Guid designUid, string localPath, string localFileName)
     {
-      var transferProxy = DIContext.Obtain<ITransferProxy>();
-
-      var localFullPath = Path.Combine(localPath, fileName);
-      var s3FullPath = $"{s3Path}/{fileName}";
-      try
-      {
-        var fileStream = System.IO.File.Open(localFullPath, FileMode.Open, FileAccess.Read);
-        // TransferUtility will create the 'directory' if not already there
-        transferProxy.Upload(fileStream, s3FullPath);
-      }
-      catch (Exception e)
-      {
-        throw new TRexException($"Exception writing design to s3:", e);
-      }
-      return true;
-    }
-
-    private async Task<bool> DownloadFileFromS3Async(string s3path, string downloadLocalPath, string fileName)
-    {
-      var transferProxy = DIContext.Obtain<ITransferProxy>();
-
-      var s3FullPath = $"{s3path}/{fileName}";
-      FileStreamResult fileStreamResult;
-      try
-      {
-        fileStreamResult = await transferProxy.Download(s3FullPath).ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        throw new TRexException($"Exception reading design from s3:", e);
-      }
-
-      if (string.IsNullOrEmpty(fileStreamResult.ContentType))
-      {
-        throw new TRexException($"Exception setting up download from S3.ContentType unknown.");
-      }
-
-      try
-      {
-        var downloadFullPath = Path.Combine(downloadLocalPath, fileName);
-        using (var targetFileStream = System.IO.File.Create(downloadFullPath, (int) fileStreamResult.FileStream.Length))
-        {
-          fileStreamResult.FileStream.CopyTo(targetFileStream);
-        }
-      }
-      catch (Exception e)
-      {
-        throw new TRexException("Exception writing design file locally:", e);
-      }
-
-      return true;
-    }
-
-    private IDesign AddTheDesignToSiteModel(Guid siteModelUID, Guid designUID, string localPath, string localFileName)
-    {
-      IDesign design = null;
 
       // Invoke the service to add the design
       try
@@ -216,18 +112,16 @@ namespace VSS.TRex.Webtools.Controllers
         TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
         // Create the new design for the site model
-        design = DIContext.Obtain<IDesignManager>().Add(siteModelUID,
-           new DesignDescriptor(designUID, string.Empty, localFileName, 0),
+        var design = DIContext.Obtain<IDesignManager>().Add(siteModelUid,
+           new DesignDescriptor(designUid, string.Empty, localFileName, 0),
           extents);
 
-        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
       }
       catch (Exception e)
       {
         throw new TRexException($"Exception writing design to siteModel:", e);
       }
-
-      return design;
     }
   }
 }

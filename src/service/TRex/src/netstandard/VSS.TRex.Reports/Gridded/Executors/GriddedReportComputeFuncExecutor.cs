@@ -179,7 +179,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         {
           Easting = cell.CellXOffset + subgridWorldOriginX,
           Northing = cell.CellYOffset + subgridWorldOriginY,
-          Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight, // todoJeannie convert defaults later on to the default for 3dp
+          Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight,
           CutFill = (griddedReportRequestArgument.ReportCutFill && (DesignHeights != null) &&
                      DesignHeights.Cells[x, y] != Consts.NullHeight)
             ? cell.Height - DesignHeights.Cells[x, y]

@@ -89,8 +89,7 @@ $localhostEnvironmentVariables = @(
   @{key = "ENABLE_RAPTOR_GATEWAY_TAGFILE"; value = "true"},
   @{key = "ENABLE_TREX_GATEWAY_TAGFILE"; value = "false"},
   @{key = "ENABLE_TREX_GATEWAY_STATIONOFFSET"; value = "false"},
-  # todoJeannie temp
-  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "true"},
+  @{key = "ENABLE_TREX_GATEWAY_GRIDREPORT"; value = "false"},
   @{key = "MYSQL_SERVER_NAME_VSPDB"; value = "db"},
   @{key = "MYSQL_PORT"; value = "3306"},
   @{key = "MYSQL_USERNAME"; value = "root"},

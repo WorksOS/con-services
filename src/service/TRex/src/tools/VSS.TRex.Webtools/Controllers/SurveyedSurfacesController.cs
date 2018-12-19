@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Text;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using VSS.TRex.Designs.Models;
+using VSS.TRex.Common;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.Exceptions;
+using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Geometry;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -40,47 +47,84 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
-    /// Adds a new surveyed surfaces to a sitemodel. 
+    /// Adds a new design to a sitemodel. 
     /// </summary>
-    /// <param name="siteModelID">Grid to return status for</param>
+    /// <param name="siteModelUid"></param>
     /// <param name="fileName"></param>
     /// <param name="offset"></param>
     /// <param name="asAtDate"></param>
-    /// <param name="minX"></param>
-    /// <param name="minY"></param>
-    /// <param name="maxX"></param>
-    /// <param name="maxY"></param>
     /// <returns></returns>
-    [HttpPost("{siteModelID}")]
-    public JsonResult AddSurveyedSurfacesToSiteModel(string siteModelID,
+    [HttpPost("{siteModelUid}")]
+    public async Task<JsonResult> AddSurveyedSurfactDesignToSiteModel(
+      string siteModelUid,
       [FromQuery] string fileName,
-      [FromQuery] double offset,
-      [FromQuery] string asAtDate,
-      [FromQuery] double minX,
-      [FromQuery] double minY,
-      [FromQuery] double maxX,
-      [FromQuery] double maxY)
-
-      //[FromQuery] string newsurveyedsurface)
+      [FromQuery] string asAtDate)
     {
-      // Use a simple anonymouse type to pull the required fields from the supplied json
-      //      var ss = new
-      //      {
-      //        descriptor = default(VSS.TRex.Designs.Models.DesignDescriptor),
-      //        asAtDate = DateTime.MinValue,
-      //        extents = BoundingWorldExtent3D.Null()
-      //      };
+      if (string.IsNullOrEmpty(siteModelUid))
+        throw new ArgumentException($"Invalid siteModelUid (you need to have selected one first): {siteModelUid}");
 
-      //      var paramAString = Encoding.ASCII.GetString(Convert.FromBase64String(newsurveyedsurface));
-      //      JsonConvert.DeserializeAnonymousType(paramAString, ss);
+      if (string.IsNullOrEmpty(fileName) ||
+          !Path.HasExtension(fileName) ||
+          (string.Compare(Path.GetExtension(fileName), ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
+        throw new ArgumentException($"Invalid [path]filename: {fileName}");
 
-      //      return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Add(Guid.Parse(siteModelID), ss.descriptor, ss.asAtDate, ss.extents));
+      if (!System.IO.File.Exists(fileName))
+        throw new ArgumentException($"Unable to locate [path]fileName: {fileName}");
 
-      return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Add
-        (Guid.Parse(siteModelID), 
-        new DesignDescriptor(Guid.NewGuid(), "", fileName, offset),  
-        DateTime.Parse(asAtDate), 
-        new BoundingWorldExtent3D(minX, minY, maxX, maxY)));
+      var surveyedUtc = DateTime.UtcNow; // unable to parse the date from UI DateTime.Parse(asAtDate);
+      var siteModelGuid = Guid.Parse(siteModelUid);
+      var designUid = Guid.NewGuid();
+
+      var fileNameOnly = Path.GetFileName(fileName);
+
+      // copy local file to S3
+      var designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileName), Guid.Parse(siteModelUid), fileNameOnly);
+      if (!designFileLoadedOk)
+        throw new ArgumentException($"Unable to copy design file to S3: {fileNameOnly}");
+
+      // download to appropriate local location and add to site model
+      string downloadLocalPath = DesignHelper.EstablishLocalDesignFilepath(siteModelUid);
+      var downloadedok = await S3FileTransfer.ReadFile(Guid.Parse(siteModelUid), fileNameOnly, downloadLocalPath).ConfigureAwait(false);
+      if (!downloadedok)
+        throw new ArgumentException($"Unable to restore same design file from S3: {fileNameOnly}");
+      AddTheSSToSiteModel(siteModelGuid, designUid, downloadLocalPath, fileNameOnly, surveyedUtc);
+
+      // upload indices
+      var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + ".$DesignSpatialIndex$");
+      if (!spatialUploadedOk)
+        throw new ArgumentException($"Unable to copy spatial index file to S3: {fileNameOnly + ".$DesignSpatialIndex$"}");
+      var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), fileNameOnly + ".$DesignSubgridIndex$");
+      if (!subgridUploadedOk)
+        throw new ArgumentException($"Unable to copy subgrid index file to S3: {fileNameOnly + ".$DesignSubgridIndex$"}");
+
+      return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
+    }
+
+
+    private void AddTheSSToSiteModel(Guid siteModelUid, Guid designUid, string localPath, string localFileName, DateTime surveyedUtc)
+    {
+      // Invoke the service to add the design
+      try
+      {
+        // Load the file and extract its extents
+        TTMDesign TTM = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+        TTM.LoadFromFile(Path.Combine(new[] { localPath, localFileName }));
+
+        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+        TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
+        TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
+
+        // Create the new design for the site model (note that SS and design types are different)
+        var design = DIContext.Obtain<ISurveyedSurfaceManager>().Add(siteModelUid,
+          new Designs.Models.DesignDescriptor(designUid, string.Empty, localFileName, 0),
+          surveyedUtc, extents);
+
+        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, design.ID, TTM.SubgridOverlayIndex());
+      }
+      catch (Exception e)
+      {
+        throw new TRexException($"Exception writing design to siteModel:", e);
+      }
     }
   }
 }
