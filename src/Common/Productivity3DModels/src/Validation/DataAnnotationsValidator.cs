@@ -10,8 +10,7 @@ namespace VSS.Productivity3D.Models.Validation
       var context = new ValidationContext(@object, serviceProvider: null, items: null);
       results = new List<ValidationResult>();
 
-      return Validator.TryValidateObject(@object, context, results, validateAllProperties: true
-      );
+      return Validator.TryValidateObject(@object, context, results, validateAllProperties: true);
     }
   }
 }

@@ -56,6 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             {
               if (designProfilerResult == TDesignProfilerRequestResult.dppiOK && memoryStream != null && memoryStream.Length > 0)
               {
+                // TODO (Aaron) Re do this.
                 memoryStream.Position = 0;
                 var sr = new StreamReader(memoryStream);
                 string geoJSONStr = sr.ReadToEnd();

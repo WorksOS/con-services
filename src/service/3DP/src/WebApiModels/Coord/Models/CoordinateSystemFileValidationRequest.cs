@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.FIlters;
-using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.WebApiModels.Interfaces;
+using VSS.Productivity3D.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.Coord.Models
+namespace VSS.Productivity3D.WebApi.Models.Coord.Models
 {
   /// <summary>
   /// Coordinate system (CS) definition file domain object. Model represents a coordinate system definition.

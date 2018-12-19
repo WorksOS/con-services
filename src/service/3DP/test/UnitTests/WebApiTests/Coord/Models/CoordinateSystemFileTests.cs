@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Models.Validation;
-using VSS.Productivity3D.WebApiModels.Coord.Models;
+using VSS.Productivity3D.WebApi.Models.Coord.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Coord.Models
 {

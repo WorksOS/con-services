@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.FIlters;
-using VSS.Productivity3D.Common.Filters.Validation;
-using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Interfaces;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApiModels.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.Coord.Models
+namespace VSS.Productivity3D.WebApi.Models.Coord.Models
 {
   /// <summary>
   /// Coordinate system (CS) definition file domain object. Model represents a coordinate system definition.
@@ -18,7 +16,6 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
         /// <summary>
         /// The content of the CS definition file as an array of bytes.
         /// </summary>
-        /// 
         [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
         [Required]
         public byte[] csFileContent { get; private set; }
@@ -28,12 +25,11 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
         /// </summary>
         /// 
         [JsonProperty(PropertyName = "csFileName", Required = Required.Always)]
-        [Required]
         [ValidFilename(MAX_FILE_NAME_LENGTH)]
         [MaxLength(MAX_FILE_NAME_LENGTH)]
+        [Required]
         public string csFileName { get; private set; }
-
-
+    
         /// <summary>
         /// Private constructor.
         /// </summary>
@@ -50,7 +46,6 @@ namespace VSS.Productivity3D.WebApiModels.Coord.Models
         /// <param name="csFileContent">The content of the file.</param>
         /// <param name="csFileName">The file's name.</param>
         /// <returns>An instance of the CoordinateSystemFile class.</returns>
-        /// 
         public static CoordinateSystemFile CreateCoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
         {
           var tempCS = new CoordinateSystemFile

@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{9B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{48EF7D1F-59DD-4EEC-83DC-59A6BB05F29B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Productivity3D.Interfaces", "src\Interfaces\VSS.Productivity3D.Interfaces.csproj", "{AF124A47-4E3A-4A11-B57B-C03F35677FB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -236,6 +238,15 @@ Global
 		{85B2B17E-6F72-467D-8ECA-864DEBC95806}.Release|x64.Build.0 = Release|Any CPU
 		{85B2B17E-6F72-467D-8ECA-864DEBC95806}.Release|x86.ActiveCfg = Release|Any CPU
 		{85B2B17E-6F72-467D-8ECA-864DEBC95806}.Release|x86.Build.0 = Release|Any CPU
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Debug|Any CPU.Build.0 = Debug|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Debug|x64.ActiveCfg = Debug|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Debug|x64.Build.0 = Debug|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Debug|x86.ActiveCfg = Debug|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Release|Any CPU.ActiveCfg = Release|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Release|x64.ActiveCfg = Release|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Release|x64.Build.0 = Release|x64
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -259,6 +270,7 @@ Global
 		{8D14DBB9-62EA-4B02-9A38-053C647416B3} = {F214C460-58CD-4C60-8459-E4DD3451588B}
 		{85B2B17E-6F72-467D-8ECA-864DEBC95806} = {48EF7D1F-59DD-4EEC-83DC-59A6BB05F29B}
 		{48EF7D1F-59DD-4EEC-83DC-59A6BB05F29B} = {9B6CAEB5-4D41-4E43-8869-C49E5A59A938}
+		{AF124A47-4E3A-4A11-B57B-C03F35677FB5} = {E515E228-BB40-40EA-92A9-A3332492F16E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4439E9D5-149F-4105-A555-A4140926723D}

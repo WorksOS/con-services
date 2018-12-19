@@ -62,16 +62,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           LineworkUnits = request.LineworkUnits
         };
 
+        // TODO (Aaron) Handled non success response codes, e.g. 74 = asneNoBoundariesInLineworkFile
+
         returnResult = raptorClient.GetBoundariesFromLinework(args, out var lineworksBoundary);
 
         log.LogInformation($"RequestBoundariesFromLinework: result: {JsonConvert.SerializeObject(returnResult)}");
 
-        return DxfLineworkFileResult.Create((int)returnResult, "", lineworksBoundary);
+        return new DxfLineworkFileResult(returnResult, "", lineworksBoundary);
       }
       catch (Exception ex)
       {
         log.LogError($"RequestBoundariesFromLinework: exception {ex.Message}");
-        return DxfLineworkFileResult.Create((int)returnResult, "", null);
+        return new DxfLineworkFileResult(returnResult, "", null);
       }
       finally
       {

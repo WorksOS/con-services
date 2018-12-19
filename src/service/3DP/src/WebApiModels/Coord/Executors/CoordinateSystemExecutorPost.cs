@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using ASNodeDecls;
 using VLPDDecls;
-using VSS.Productivity3D.WebApiModels.Coord.Models;
-using VSS.Productivity3D.WebApiModels.Interfaces;
+using VSS.Productivity3D.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Coord.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Coord.Executors
 {

@@ -1,16 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VLPDDecls;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Compaction.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
@@ -34,20 +29,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpPost]
     public async Task<IActionResult> GetBoundariesFromLinework(DxfFileRequest requestDto)
     {
-      // TODO Request logging?
+      Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
 
-      // TODO Upload file to temp folder on Raptor ASNode host.
+      var executorRequestObj = LineworkRequest
+                               .Create(requestDto)
+                               .Validate();
 
-      var requestObj = LineworkRequest.Create(
-        "aarons survey.dxf",
-        @"D:\VLPDProductionData\Temp\12121212\",
-        string.Empty,
-        TVLPDDistanceUnits.vduImperialFeet,
-        null);
+      // TODO Upload file to IONode.
 
       var result = await RequestExecutorContainerFactory
                          .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore)
-                         .ProcessAsync(requestObj);
+                         .ProcessAsync(executorRequestObj);
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, result)
