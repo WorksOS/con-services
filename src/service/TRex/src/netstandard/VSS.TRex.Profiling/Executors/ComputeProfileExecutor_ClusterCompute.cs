@@ -185,7 +185,7 @@ namespace VSS.TRex.Profiling.Executors
       }
       catch (Exception E)
       {
-        Log.LogError("Execute: Exception:", E);
+        Log.LogError(E, "Execute: Exception:");
       }
 
       return new ProfileRequestResponse<T>();

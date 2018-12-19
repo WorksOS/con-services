@@ -82,8 +82,7 @@ namespace VSS.TRex.Events
 
             if (StartIndex == Events.Count - 1)
             {
-                Log.LogError(
-                    $"FindStartEventPairAtTime located only one event (index:{StartIndex}) at search time {eventDate:6f} {eventDate:o}");
+                Log.LogError($"FindStartEventPairAtTime located only one event (index:{StartIndex}) at search time {eventDate:6f} {eventDate:o}");
             }
             
             return false;

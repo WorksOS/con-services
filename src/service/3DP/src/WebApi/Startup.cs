@@ -163,7 +163,7 @@ namespace VSS.Productivity3D.WebApi
       }
       catch (Exception e)
       {
-        log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
+        log.LogError(e, "Exception loading config");
         log.LogCritical("Can't talk to Raptor for some reason - check configuration");
         Environment.Exit(138);
       }
