@@ -293,7 +293,7 @@ namespace VSS.TRex.Volumes.Executors
             }
             catch (Exception E)
             {
-                Log.LogError("Exception:", E);
+                Log.LogError(E, "Exception:");
             }
 
             return VolumesResult;

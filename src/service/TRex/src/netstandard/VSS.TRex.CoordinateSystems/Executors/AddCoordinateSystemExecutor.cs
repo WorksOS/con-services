@@ -47,7 +47,7 @@ namespace VSS.TRex.CoordinateSystems.Executors
       }
       catch (Exception e)
       {
-        Log.LogError("Exception occurred adding coordinate system to project", e);
+        Log.LogError(e, "Exception occurred adding coordinate system to project");
         Console.WriteLine(e);
         throw;
       }

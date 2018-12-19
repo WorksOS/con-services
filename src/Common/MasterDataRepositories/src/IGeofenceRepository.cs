@@ -8,7 +8,7 @@ namespace VSS.MasterData.Repositories
   public interface IGeofenceRepository
   {
     Task<Geofence> GetGeofence(string geofenceUid);
-    Task<int> StoreEvent(IGeofenceEvent filterEvent);
+    Task<int> StoreEvent(IGeofenceEvent evt);
     Task<IEnumerable<Geofence>> GetCustomerGeofences(string customerUid);
     Task<IEnumerable<Geofence>> GetGeofences(IEnumerable<string> geofenceUids);
   }

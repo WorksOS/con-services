@@ -143,7 +143,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get list of TCC organizations", ex);
+        Log.LogError(ex, "Failed to get list of TCC organizations");
       }
       return orgs;
     }
@@ -206,7 +206,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response");
       }
       return result;
     }
@@ -309,7 +309,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response.");
       }
       return null;
     }
@@ -444,7 +444,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get list of TCC folders: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get list of TCC folders");
       }
       return null;
     }
@@ -478,7 +478,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get list of TCC files: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get list of TCC files");
       }
       return null;
     }
@@ -513,7 +513,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get last time tag files added to folder: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get last time tag files added to folder");
       }
       return DateTime.MinValue;
     }
@@ -555,7 +555,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get TCC file attributes: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get TCC file attributes");
       }
       return false;
     }
@@ -595,7 +595,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to delete file: {0}", ex.Message);
+        Log.LogError(ex, "Failed to delete file");
       }
       return false;
     }
@@ -624,7 +624,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to make directory: {0}", ex.Message);
+        Log.LogError(ex, "Failed to make directory");
       }
       return false;
     }
@@ -660,7 +660,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to login to TCC: {0}", ex.Message);
+        Log.LogError(ex, "Failed to login to TCC");
         return null;
       }
     }
@@ -727,7 +727,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response.");
       }
       return result;
     }
@@ -775,7 +775,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception e)
       {
-        Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        Log.LogWarning(e, "Can not execute request TCC response");
       }
       return result;
     }
@@ -833,7 +833,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to create file job: {0}", ex.Message);
+        Log.LogError(ex, "Failed to create file job");
       }
       return null;
     }
@@ -860,7 +860,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to check file job status: {0}", ex.Message);
+        Log.LogError(ex, "Failed to check file job status");
       }
       return null;
     }
@@ -882,7 +882,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to get file job result: {0}", ex.Message);
+        Log.LogError(ex, "Failed to get file job result");
       }
       return null;
     }
@@ -918,7 +918,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to export to web format: {0}", ex.Message);
+        Log.LogError(ex, "Failed to export to web format");
       }
       return null;
     }
@@ -945,7 +945,7 @@ namespace VSS.TCCFileAccess
       }
       catch (Exception ex)
       {
-        Log.LogError("Failed to check export job status: {0}", ex.Message);
+        Log.LogError(ex, "Failed to check export job status");
       }
       return null;
     }

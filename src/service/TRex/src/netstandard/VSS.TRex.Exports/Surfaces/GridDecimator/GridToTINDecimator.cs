@@ -811,7 +811,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}", E);
+        Log.LogError(E, $"Exception in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}");
         ValidTriangle = false;
       }
 

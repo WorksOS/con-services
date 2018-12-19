@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun } from './project-model';
+import { ProjectExtents, DesignDescriptor, SurveyedSurface, Design, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
 import { ProjectService } from './project-service';
 import { DisplayMode } from './project-displaymode-model';
 import { VolumeResult } from '../project/project-volume-model';
@@ -111,6 +111,34 @@ export class ProjectComponent {
   public maxMachineEventsToReturn: number = 100;
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
+
+  public compositeElevationProfilePath_LastElev: string = "";
+  public compositeElevationProfilePath_FirstElev: string = "";
+  public compositeElevationProfilePath_LowestElev: string = "";
+  public compositeElevationProfilePath_HighestElev: string = "";
+  public compositeElevationProfilePath_LastCompositeElev: string = "";
+  public compositeElevationProfilePath_FirstCompositeElev: string = "";
+  public compositeElevationProfilePath_LowestCompositeElev: string = "";
+  public compositeElevationProfilePath_HighestCompositeElev: string = "";
+
+  public _compositeElevationProfilePath_LastElev: string = "";
+  public _compositeElevationProfilePath_FirstElev: string = "";
+  public _compositeElevationProfilePath_LowestElev: string = "";
+  public _compositeElevationProfilePath_HighestElev: string = "";
+  public _compositeElevationProfilePath_LastCompositeElev: string = "";
+  public _compositeElevationProfilePath_FirstCompositeElev: string = "";
+  public _compositeElevationProfilePath_LowestCompositeElev: string = "";
+  public _compositeElevationProfilePath_HighestCompositeElev: string = "";
+  
+  public showLastElevationProfile              : boolean = true;
+  public showFirstElevationProfile             : boolean = true;
+  public showLowestElevationProfile            : boolean = true;
+  public showHighestElevationProfile           : boolean = true;
+  public showLastCompositeElevationProfile     : boolean = true;
+  public showFirstCompositeElevationProfile    : boolean = true;
+  public showLowestCompositeElevationProfile   : boolean = true;
+  public showHighestCompositeElevationProfile  : boolean = true;
+  
   public userProfilePath: string = "";
   public userProfilePoint1SVG_CX: Number = 0;
   public userProfilePoint1SVG_CY: Number = 0;
@@ -690,56 +718,66 @@ constructor(
     this.drawProfileLineForDesign(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
 
-  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
-  // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
-  // between all others
-  public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number) {
+  public ComputeSVGForProfileValueVector(points: any[], getValue: (point: any) => number): string {
     var profileCanvasHeight: number = 500.0;
     var profileCanvasWidth: number = 1000.0;
 
     var result: string = "";
     var first: boolean = true;
 
-    return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
-      .subscribe(points => {
-        var stationRange: number = points[points.length - 1].station - points[0].station;
-        var stationRatio: number = profileCanvasWidth / stationRange;
+    var stationRange: number = points[points.length - 1].station - points[0].station;
+    var stationRatio: number = profileCanvasWidth / stationRange;
 
-        var minZ: number = 100000.0;
-        var maxZ: number = -100000.0;
-        points.forEach(pt => { if (pt.z > -100000 && pt.z < minZ) minZ = pt.z });
-        points.forEach(pt => { if (pt.z > -100000 && pt.z > maxZ) maxZ = pt.z });
+    var minZ: number = 100000.0;
+    var maxZ: number = -100000.0;
+    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
+    points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
 
-        var zRange = maxZ - minZ;
-        var zRatio = profileCanvasHeight / zRange;
+    var zRange = maxZ - minZ;
+    var zRatio = profileCanvasHeight / zRange;
 
-        points.forEach(point => {
-          if (point.z < -100000) {
-            // It's a gap...
-            first = true;
-          }
-          else {
-            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
-            first = false;
-          }
-        });
+    points.forEach(point => {
+      var value: number = getValue(point);
+      if (value < -100000) {
+        // It's a gap...
+        first = true;
+      }
+      else {
+        result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (value - minZ) * zRatio)).toFixed(3) + " ";
+        first = false;
+      }
+    });
 
-        this.profilePath = result;
-        this.numPointInProfile = result.length;
-        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
-      });
+    return result;
   }
 
+  public ProcessProfileDataVectorToSVGPolyLine(points: any[], getValue: (point: any) => number, setResult: (theResult: string) => void) {
+      var minZ: number = 100000.0;
+      var maxZ: number = -100000.0;
+      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value < minZ) minZ = value });
+      points.forEach(pt => { var value : number = getValue(pt); if (value > -100000 && value > maxZ) maxZ = value });
 
-  public drawProfileLineForSummaryVolumes(startX: number, startY: number, endX: number, endY: number) {
-    var profileCanvasHeight: number = 500.0;
+      this.SetProfileViewExtents(points, minZ, maxZ);
+      setResult(this.ComputeSVGForProfileValueVector(points, getValue));
+  }
+
+  public SetProfileViewExtents(points: any[], minZ: number, maxZ: number) {
+    if (this.profileExtents === null)
+      this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+    else {
+      this.profileExtents.IncludeY(minZ);
+      this.profileExtents.IncludeY(maxZ);
+    }
+  }
+
+  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
+  // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
+  // between all others
     var profileCanvasWidth: number = 1000.0;
 
     var result: string = "";
     var first: boolean = true;
 
-    return this.projectService.drawProfileLineForSummaryVolumes(this.projectUid, startX, startY, endX, endY)
-      .subscribe(points => {
         var stationRange: number = points[points.length - 1].station - points[0].station;
         var stationRatio: number = profileCanvasWidth / stationRange;
 
@@ -770,13 +808,47 @@ constructor(
 
 
   public drawProfileLineFromStartToEndPointsForProdData(): void {
-    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
+    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
+      pt => pt.z,
+      theResult => {
+        this.profilePath = theResult;
+        this.numPointInProfile = theResult.length;
+      });
   }
 
-  public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
-    this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestElev, theResult => this._compositeElevationProfilePath_HighestElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLastCompositeElev, theResult => this._compositeElevationProfilePath_LastCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellFirstCompositeElev, theResult => this._compositeElevationProfilePath_FirstCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellLowestCompositeElev, theResult => this._compositeElevationProfilePath_LowestCompositeElev = theResult);
+        this.ProcessProfileDataVectorToSVGPolyLine(points, pt => pt.cellHighestCompositeElev, theResult => this._compositeElevationProfilePath_HighestCompositeElev = theResult);
+
+        this.compositeElevationProfilePath_LastElev = this._compositeElevationProfilePath_LastElev;
+        this.compositeElevationProfilePath_FirstElev = this._compositeElevationProfilePath_FirstElev;
+        this.compositeElevationProfilePath_LowestElev = this._compositeElevationProfilePath_LowestElev;
+        this.compositeElevationProfilePath_HighestElev = this._compositeElevationProfilePath_HighestElev;
+        this.compositeElevationProfilePath_LastCompositeElev = this._compositeElevationProfilePath_LastCompositeElev;
+        this.compositeElevationProfilePath_FirstCompositeElev = this._compositeElevationProfilePath_FirstCompositeElev;
+        this.compositeElevationProfilePath_LowestCompositeElev = this._compositeElevationProfilePath_LowestCompositeElev;
+        this.compositeElevationProfilePath_HighestCompositeElev = this._compositeElevationProfilePath_HighestCompositeElev;
+
+        this.showLastElevationProfile = true;
+        this.showFirstElevationProfile = true;
+        this.showLowestElevationProfile = true;
+        this.showHighestElevationProfile = true;
+        this.showLastCompositeElevationProfile = true;
+        this.showFirstCompositeElevationProfile = true;
+        this.showLowestCompositeElevationProfile = true;
+        this.showHighestCompositeElevationProfile = true;
+      });
   }
 
+  public drawProfileLineFromStartToEndPointsForCompositeElevations(): void {
+    this.drawProfileLineForCompositeElevationData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
+  }
+  
   private updateMouseProfileLocationDetails(offsetX: number, offsetY: number): void {
     let localStation = offsetX;
     let localZ = this.pixelsY - offsetY;
@@ -794,6 +866,38 @@ constructor(
 
   public onMouseMoveProfile(event: any): void {
     this.updateMouseProfileLocationDetails(event.offsetX, event.offsetY);
+  }
+
+  public showLastElevationProfile_change() {
+    this.compositeElevationProfilePath_LastElev = this.showLastElevationProfile ? "" : this._compositeElevationProfilePath_LastElev;
+  }
+
+  public showFirstElevationProfile_change() {
+    this.compositeElevationProfilePath_FirstElev = this.showFirstElevationProfile ? "" : this._compositeElevationProfilePath_FirstElev;
+  }
+
+  public showLowestElevationProfile_change() {
+    this.compositeElevationProfilePath_LowestElev = this.showLowestElevationProfile ? "" : this._compositeElevationProfilePath_LowestElev;
+  }
+
+  public showHighestElevationProfile_change() {
+    this.compositeElevationProfilePath_HighestElev = this.showHighestElevationProfile ? "" : this._compositeElevationProfilePath_HighestElev;
+  }
+
+  public showLastCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_LastCompositeElev = this.showLastCompositeElevationProfile ? "" : this._compositeElevationProfilePath_LastCompositeElev;
+  }
+
+  public showFirstCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_FirstCompositeElev = this.showFirstCompositeElevationProfile ? "" : this._compositeElevationProfilePath_FirstCompositeElev;
+  }
+
+  public showLowestCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_LowestCompositeElev = this.showLowestCompositeElevationProfile ? "" : this._compositeElevationProfilePath_LowestCompositeElev;
+  }
+
+  public showHighestCompositeElevationProfile_change() {
+    this.compositeElevationProfilePath_HighestCompositeElev = this.showHighestCompositeElevationProfile ? "" : this._compositeElevationProfilePath_HighestCompositeElev;
   }
 }
 

@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -10,6 +10,6 @@ namespace VSS.MasterData.Repositories
     Task<Device> GetDevice(string deviceUid);
     Task<AssetDeviceIds> GetAssociatedAsset(string radioSerial, string deviceType);
 
-    Task<int> StoreEvent(IDeviceEvent filterEvent);
+    Task<int> StoreEvent(IDeviceEvent evt);
   }
 }
