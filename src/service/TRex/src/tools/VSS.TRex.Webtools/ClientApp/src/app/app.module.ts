@@ -15,6 +15,7 @@ import { UploadDataComponent } from './upload-data/upload-data.component';
 import { SandboxComponent } from './sandbox/sandbox-component';
 import { ProjectComponent } from './project/project-component';
 import { SurveyedSurfacesComponent } from './surveyed-surfaces/surveyed-surfaces-component';
+import { FetchDataComponent } from './fetch-data/fetch-data.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { SurveyedSurfacesComponent } from './surveyed-surfaces/surveyed-surfaces
     GridServiceDeployerComponent,
     SandboxComponent,
     ProjectComponent,
-    SurveyedSurfacesComponent
+    SurveyedSurfacesComponent,
+    FetchDataComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -39,7 +41,8 @@ import { SurveyedSurfacesComponent } from './surveyed-surfaces/surveyed-surfaces
       { path: 'grid-status', component: GridStatusComponent },
       { path: 'grid-service-deployer', component: GridServiceDeployerComponent },
       { path: 'project', component: ProjectComponent },
-      { path: 'sandbox', component: SandboxComponent }
+      { path: 'sandbox', component: SandboxComponent },
+      { path: 'fetch-data', component: FetchDataComponent },
     ])
   ],
   providers: [
