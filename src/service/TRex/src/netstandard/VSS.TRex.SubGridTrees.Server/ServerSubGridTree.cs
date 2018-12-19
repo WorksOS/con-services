@@ -370,7 +370,7 @@ namespace VSS.TRex.SubGridTrees.Server
       }
       catch (Exception e)
       {
-        Log.LogError("Exception raised in SaveLeafSubGrid", e);
+        Log.LogError(e, "Exception raised in SaveLeafSubGrid");
       }
 
       return false;

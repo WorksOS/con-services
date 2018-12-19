@@ -8,8 +8,8 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.Utilities;
-using VSS.TRex.Utilities.ExtensionMethods;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 /*
 Glossary
@@ -68,7 +68,7 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public class SubGridTree : ISubGridTree, IEnumerator<ISubGrid>
     {
-        private static ILogger Log = Logging.Logger.CreateLogger("SubGridTree");
+        private static ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
 
         /****************************** Internal members **************************/
 
@@ -278,7 +278,7 @@ namespace VSS.TRex.SubGridTrees
             catch (Exception e)
             {
               // Something bad happened...
-              Log.LogDebug($"Exception in SubGridTree.CalculateRegionGridCoverage:", e);
+              Log.LogDebug("Exception in SubGridTree.CalculateRegionGridCoverage:", e);
               cellExtent = BoundingIntegerExtent2D.Inverted();
               return false;
             }

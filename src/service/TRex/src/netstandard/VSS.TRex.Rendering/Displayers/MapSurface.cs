@@ -4,7 +4,7 @@ using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Rendering.Displayers
 {

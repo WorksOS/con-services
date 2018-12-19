@@ -18,6 +18,8 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// The fence used to represent the spatial restriction derived from an alignment filter expressed as a 
     /// station and offset range with respect tot he alignment center line geometry expressed as a polygon
+    /// This is computed from the parametric (start/end station & left/right offset) description of the
+    /// area of the road design to act as the filter as a part of preparing a filter for use.
     /// </summary>
     public Fence AlignmentFence { get; set; } = new Fence(); // contains alignment boundary to help speed up filtering on alignment files
 
@@ -181,13 +183,11 @@ namespace VSS.TRex.Filters
       if (reader.ReadBoolean())
       {
         (Fence ?? (Fence = new Fence())).FromBinary(reader);
-        Fence.UpdateExtents();
       }
 
       if (reader.ReadBoolean())
       {
         (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
-        AlignmentFence.UpdateExtents();
       }
 
       PositionX = reader.ReadDouble();

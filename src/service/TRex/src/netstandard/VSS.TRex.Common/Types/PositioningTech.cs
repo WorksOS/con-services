@@ -11,12 +11,12 @@
         GPS,
 
         /// <summary>
-        /// Positions are derived usign a Universal Total Station
+        /// Positions are derived using a Universal Total Station
         /// </summary>
         UTS,
 
         /// <summary>
-        /// Positioning tehnology used is unknown
+        /// Positioning technology used is unknown
         /// </summary>
         Unknown
     }

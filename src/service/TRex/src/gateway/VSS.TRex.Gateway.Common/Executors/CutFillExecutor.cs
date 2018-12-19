@@ -40,11 +40,12 @@ namespace VSS.TRex.Gateway.Common.Executors
         ThrowRequestTypeCastException<CutFillDetailsRequest>();
 
       var siteModel = GetSiteModel(request.ProjectUid);
-      
-      // TODO: Configure design and lift build settings
+
+      // TODO: Configure design settings
       //var designDescriptor = RaptorConverters.DesignDescriptor(request.designDescriptor);
-      //var liftBuildSettings =
-      //  RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
+
+      // TODO: Configure lift build settings
+      //var liftBuildSettings = RaptorConverters.ConvertLift(request.liftBuildSettings, TFilterLayerMethod.flmNone);
 
       var filter = ConvertFilter(request.Filter, siteModel);
 

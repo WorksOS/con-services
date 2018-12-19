@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Extensions;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Responses;
@@ -8,15 +6,14 @@ using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 {
-  public class TileRenderResponse_Core2 : TileRenderResponse, IEquatable<TileRenderResponse_Core2>
+  public class TileRenderResponse_Core2 : TileRenderResponse
   {
     public byte[] TileBitmapData { get; set; }
 
     public override ITileRenderResponse AggregateWith(ITileRenderResponse other)
     {
       // Composite the bitmap held in this response with the bitmap held in 'other'
-
-      // throw new NotImplementedException("Bitmap compositing not implemented");
+      // ...
 
       return null;
     }
@@ -48,19 +45,6 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 
       if (reader.ReadBoolean())
         TileBitmapData = reader.ReadByteArray();
-    }
-
-    public bool Equals(TileRenderResponse_Core2 other)
-    {
-      if (ReferenceEquals(null, other)) return false;
-      if (ReferenceEquals(this, other)) return true;
-
-      return base.Equals(other) &&
-             (Equals(TileBitmapData, other.TileBitmapData) ||
-              (TileBitmapData != null && 
-               other.TileBitmapData != null && 
-               TileBitmapData.Length == other.TileBitmapData.Length && 
-               TileBitmapData.SequenceEqual(other.TileBitmapData)));
     }
   }
 }

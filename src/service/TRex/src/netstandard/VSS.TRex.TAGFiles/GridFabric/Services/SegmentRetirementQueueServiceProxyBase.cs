@@ -20,24 +20,24 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// <summary>
         /// The cluster wide name of the deployed service
         /// </summary>
-        public const string ServiceName = "SegmentRetirementQueueService";
+        private const string ServiceName = "SegmentRetirementQueueService";
 
         /// <summary>
         /// Services interface for the cluster group projection
         /// </summary>
-        private IServices services;
+        private readonly IServices services;
 
-        /// <summary>
-        /// The proxy to the deployed service
-        /// </summary>
-        private ISegmentRetirementQueueService proxy;
+        // <summary>
+        // The proxy to the deployed service
+        // </summary>
+        //private ISegmentRetirementQueueService proxy;
 
         /// <summary>
         /// The node filter to be used to control deployment of the segment retirement service
         /// </summary>
-        private RoleBasedServerNodeFilter NodeFilter;
+        private readonly RoleBasedServerNodeFilter NodeFilter;
 
-        public SegmentRetirementQueueServiceProxyBase(StorageMutability mutability, RoleBasedServerNodeFilter nodeFilter)
+        protected SegmentRetirementQueueServiceProxyBase(StorageMutability mutability, RoleBasedServerNodeFilter nodeFilter)
         {
             NodeFilter = nodeFilter;
 
@@ -60,7 +60,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             }
             catch (Exception E)
             {
-                Log.LogError("Exception thrown while attempting to cancel service", E);
+                Log.LogError(E, "Exception thrown while attempting to cancel service");
                 throw;
             }
 
@@ -79,18 +79,18 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             }
             catch (Exception E)
             {
-                Log.LogError("Exception thrown while attempting to deploy service", E);
+                Log.LogError(E, "Exception thrown while attempting to deploy service");
                 throw;
             }
 
             try
             {
                 Log.LogInformation($"Obtaining service proxy for {ServiceName}");
-                proxy = services.GetServiceProxy<ISegmentRetirementQueueService>(ServiceName);
+                /* proxy = */ services.GetServiceProxy<ISegmentRetirementQueueService>(ServiceName);
             }
             catch (Exception E)
             {
-                Log.LogError("Exception thrown while attempting to get service proxy", E);
+                Log.LogError(E, "Exception thrown while attempting to get service proxy");
                 throw;
             }
         }

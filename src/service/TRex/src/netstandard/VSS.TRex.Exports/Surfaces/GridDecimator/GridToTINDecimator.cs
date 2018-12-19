@@ -9,7 +9,7 @@ using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Tests.Exports.Surfaces.GridDecimator;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 /*
   This unit provides a grid decimator capable of turning very large scale grids
@@ -518,12 +518,12 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     private double MaxError() => Heap.Top?.Import ?? 0;
 
     /// <summary>
-    /// GreedyIndsert pulls the triangle with the greatest error from the top of the
+    /// GreedyInsert pulls the triangle with the greatest error from the top of the
     /// heap and insert the grid position within that triangle that represents
     /// that error into the triangle.
     /// </summary>
     /// <returns></returns>
-    private bool greedyInsert()
+    private bool GreedyInsert()
     {
       GridToTINHeapNode HeapNode = Heap.Extract();
 
@@ -731,7 +731,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       while (MaxError() > Tolerance && Engine.TIN.Vertices.Count < PointLimit && !Aborted)
       {
-        if (!greedyInsert()) // Some error has occurred
+        if (!GreedyInsert()) // Some error has occurred
         {
           BuildMeshFaultCode = DecimationResult.Unknown;
           return false;
@@ -811,7 +811,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       }
       catch (Exception E)
       {
-        Log.LogError($"Exception in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}", E);
+        Log.LogError(E, $"Exception in FZplane.Init. Vertices are V1={ScanTri.Vertices[0]}, V2={ScanTri.Vertices[0]}, V3={ScanTri.Vertices[2]}");
         ValidTriangle = false;
       }
 

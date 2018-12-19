@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 using Xunit;
 
 namespace VSS.TRex.Tests.Utility

@@ -43,10 +43,7 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    public FencePoint this[int index]
-    {
-      get { return Points[index]; }
-    }
+    public FencePoint this[int index] => Points[index];     
 
     /// <summary>
     /// The list of the points taking part in the fence
@@ -105,7 +102,7 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Set the min/max x/y values to inverted (invalid) values
     /// </summary>
-    protected void InitialiseMaxMins()
+    private void InitialiseMaxMins()
     {
       MinX = 1E10;
       MinY = 1E10;
@@ -126,7 +123,7 @@ namespace VSS.TRex.Geometry
         if (pt.Y < MinY) MinY = pt.Y;
         if (pt.X > MaxX) MaxX = pt.X;
         if (pt.Y > MaxY) MaxY = pt.Y;
-      };
+      }
     }
 
     /// <summary>
@@ -378,7 +375,7 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
-    /// Clear the fence to an initialised state
+    /// Clear the fence to an initialized state
     /// </summary>
     public void Clear()
     {

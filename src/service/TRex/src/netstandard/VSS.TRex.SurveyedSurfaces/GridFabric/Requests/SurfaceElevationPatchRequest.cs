@@ -72,7 +72,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
             }
             catch (ClusterGroupEmptyException e)
             {
-                Log.LogWarning($"Grid error, retrying: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}:", e);
+                Log.LogError(e, $"Grid error, retrying: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}:");
                 AcquireIgniteTopologyProjections();
 
                 try
@@ -81,7 +81,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
                 }
                 catch (ClusterGroupEmptyException e2)
                 {
-                    Log.LogError($"Grid error, failing: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}:", e2);
+                    Log.LogError(e2, $"Grid error, failing: {typeof(SurfaceElevationPatchRequest)} threw {typeof(ClusterGroupEmptyException)}:");
                 }
             }
 

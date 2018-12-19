@@ -9,6 +9,7 @@ using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -38,7 +39,7 @@ namespace VSS.TRex.SubGridTrees.Client
         PopulationControlFlags.WantsTargetPassCountValues |
         PopulationControlFlags.WantsTargetCCVValues |
         PopulationControlFlags.WantsTargetMDPValues |
-        // PopulationControlFlags.WantsEventGPSModeValues        |   todo??
+        PopulationControlFlags.WantsEventGPSModeValues |
         PopulationControlFlags.WantsEventGPSAccuracyValues |
         PopulationControlFlags.WantsTargetThicknessValues |
         PopulationControlFlags.WantsEventVibrationStateValues |

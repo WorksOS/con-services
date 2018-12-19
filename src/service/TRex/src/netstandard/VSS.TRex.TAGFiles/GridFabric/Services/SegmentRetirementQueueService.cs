@@ -125,7 +125,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         }
         catch (Exception e)
         {
-          Log.LogError("Exception reported while obtaining new group of retirees to process:", e);
+          Log.LogError(e, "Exception reported while obtaining new group of retirees to process:");
         }
 
         waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
@@ -157,6 +157,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteByte(VERSION_NUMBER);
+
+      writer.WriteLong(retirementAge.Ticks);
     }
 
     /// <summary>
@@ -169,6 +171,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
 
       if (readVersionNumber != VERSION_NUMBER)
         throw new TRexSerializationVersionException(VERSION_NUMBER, readVersionNumber);
+
+      retirementAge = new TimeSpan(reader.ReadLong());
     }
   }
 }

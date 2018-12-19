@@ -39,10 +39,11 @@ namespace VSS.MasterData.Models.Models
     ///
     public static CoordinateSystemFileValidationRequest CreateCoordinateSystemFileValidationRequest(byte[] csFileContent, string csFileName)
     {
-      var tempCS = new CoordinateSystemFileValidationRequest();
-
-      tempCS.csFileName = csFileName;
-      tempCS.csFileContent = csFileContent;
+      var tempCS = new CoordinateSystemFileValidationRequest
+      {
+        csFileName = csFileName,
+        csFileContent = csFileContent
+      };
 
       return tempCS;
     }
@@ -53,7 +54,6 @@ namespace VSS.MasterData.Models.Models
     public void Validate()
     {
       // Validation rules might be placed in here...
-      // throw new NotImplementedException();
     }
   }
 }

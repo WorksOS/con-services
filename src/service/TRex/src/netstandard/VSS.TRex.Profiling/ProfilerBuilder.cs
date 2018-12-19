@@ -31,6 +31,7 @@ namespace VSS.TRex.Profiling
     /// Builder responsible for per-cell profile analysis
     /// </summary>
     public ICellLiftBuilder CellLiftBuilder { get; set; }
+
     public ProfilerBuilder()
     {
     }

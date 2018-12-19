@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,9 +11,9 @@ namespace VSS.TRex.Common
   /// <summary>
   /// Provides an interface to transferProxy for read or write.
   /// </summary>
-  public class S3FileTransfer 
+  public static class S3FileTransfer 
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger("S3FileTransfer");
 
     /// <summary>
     /// Reads a file from S3 and places it locally
@@ -33,7 +32,7 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError("Exception reading design from s3:", e);
+        Log.LogError(e, "Exception reading design from s3:");
         return false;
       }
 
@@ -46,14 +45,14 @@ namespace VSS.TRex.Common
       try
       {
         var targetFullPath = Path.Combine(targetPath, fileName);
-        using (var targetFileStream = System.IO.File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
+        using (var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
         {
           fileStreamResult.FileStream.CopyTo(targetFileStream);
         }
       }
       catch (Exception e)
       {
-        Log.LogError("Exception writing design file locally:", e);
+        Log.LogError(e, "Exception writing design file locally:");
         return false;
       }
 
@@ -73,12 +72,12 @@ namespace VSS.TRex.Common
       var s3FullPath = $"{siteModelUid.ToString()}/{fileName}";
       try
       {
-        var fileStream = System.IO.File.Open(localFullPath, FileMode.Open, FileAccess.Read);
+        var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
         DIContext.Obtain<ITransferProxy>().Upload(fileStream, s3FullPath);
       }
       catch (Exception e)
       {
-        Log.LogError("Exception writing design to s3:", e);
+        Log.LogError(e, "Exception writing design to s3:");
         return false;
       }
       return true;

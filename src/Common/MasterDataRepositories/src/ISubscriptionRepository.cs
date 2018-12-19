@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
@@ -10,6 +10,7 @@ namespace VSS.MasterData.Repositories
   {
     Task<Subscription> GetSubscription(string subscriptionUid);
     Task<IEnumerable<Subscription>> GetSubscriptionsByCustomer(string customerUid, DateTime validAtDate);
+    Task<IEnumerable<Subscription>> GetProjectBasedSubscriptionsByCustomer(string customerUid, DateTime validAtDate);
     Task<IEnumerable<Subscription>> GetFreeProjectSubscriptionsByCustomer(string customerUid, DateTime validAtDate);
     Task<IEnumerable<Subscription>> GetSubscriptionsByAsset(string assetUid, DateTime validAtDate);
     Task<IEnumerable<Subscription>> GetSubscriptions_UnitTest(string subscriptionUid);

@@ -140,10 +140,10 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <summary>
         /// Assign the result of filtering a cell (based on filtering and other criteria) into a cell in this client leaf subgrid
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <param name="Context"></param>
-        public virtual void AssignFilteredValue(byte CellX, byte CellY, FilteredValueAssignmentContext Context)
+        /// <param name="cellX"></param>
+        /// <param name="cellY"></param>
+        /// <param name="context"></param>
+        public virtual void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
         {
             Debug.Assert(false, "{0}.AssignFilteredValue may not be called directly. No need to assign value for entire cell pass", MethodBase.GetCurrentMethod().DeclaringType.Name);
         }

@@ -1,5 +1,5 @@
 ﻿using VSS.TRex.Geometry;
-using VSS.TRex.Utilities;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Designs
 {

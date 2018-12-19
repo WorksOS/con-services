@@ -11,24 +11,13 @@ namespace VSS.TRex.Rendering.Displayers
   public class PVMDisplayer_MachineSpeed : PVMDisplayerBase
   {
     /// <summary>
-    /// Machine Speed data holder.
-    /// </summary>
-    private ClientMachineSpeedLeafSubGrid SubGrid;
-
-    /// <summary>
     /// Renders Machine Speed data as tiles. 
     /// </summary>
     /// <param name="subGrid"></param>
     /// <returns></returns>
-    protected override bool DoRenderSubGrid(ISubGrid subGrid)
+    protected override bool DoRenderSubGrid<T>(ISubGrid subGrid)
     {
-      if (subGrid is ClientMachineSpeedLeafSubGrid grid)
-      {
-          SubGrid = grid;
-          return base.DoRenderSubGrid(SubGrid);
-      }
-
-      return false;
+      return base.DoRenderSubGrid<ClientMachineSpeedLeafSubGrid>(subGrid);
     }
 
     /// <summary>
@@ -43,7 +32,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected override Draw.Color DoGetDisplayColour()
     {
-      ushort value = SubGrid.Cells[east_col, north_row];
+      ushort value = ((ClientMachineSpeedLeafSubGrid)SubGrid).Cells[east_col, north_row];
 
       return value == CellPassConsts.NullMachineSpeed ? Draw.Color.Empty : Palette.ChooseColour(value);
     }
