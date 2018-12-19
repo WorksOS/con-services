@@ -47,7 +47,9 @@ namespace VSS.TRex.Profiling.Executors
           Filters = arg.Filters,
           ReferenceDesignUID = arg.ReferenceDesignUID,
           ReturnAllPassesAndLayers = arg.ReturnAllPassesAndLayers,
-          TRexNodeID = arg.TRexNodeID
+          TRexNodeID = arg.TRexNodeID,
+          VolumeType = arg.VolumeType
+          
         };
 
         // Perform coordinate conversion on the argument before broadcasting it:

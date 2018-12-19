@@ -14,7 +14,7 @@ namespace VSS.TRex.Profiling
   /// <summary>
   /// ProfileCell is a package of information relating to one cell in a profile drawn across IC data
   /// </summary>
-  public class ProfileCell : ProfileCellBase, IProfileCell, IFromToBinary
+  public class ProfileCell : ProfileCellBase, IProfileCell
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileCell>();
 

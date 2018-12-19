@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
@@ -22,6 +23,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
 
     public bool ReturnAllPassesAndLayers { get; set; }
 
+    public VolumeComputationType VolumeType = VolumeComputationType.None;
+
     /// <summary>
     /// Constructs a default profile request argument
     /// </summary>
@@ -36,11 +39,12 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <param name="nEECoords"></param>
     /// <param name="designDescriptor"></param>
     /// <param name="returnAllPassesAndLayers"></param>
-    public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords, bool returnAllPassesAndLayers)
+    public ProfileRequestArgument_ClusterCompute(GridDataType profileTypeRequired, XYZ[] nEECoords, bool returnAllPassesAndLayers, VolumeComputationType volumeType)
     {
       ProfileTypeRequired = profileTypeRequired;
       NEECoords = nEECoords;
       ReturnAllPassesAndLayers = returnAllPassesAndLayers;
+      VolumeType = volumeType;
     }
 
     /// <summary>
@@ -61,6 +65,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
         NEECoords[i].ToBinary(writer);
 
       writer.WriteBoolean(ReturnAllPassesAndLayers);
+
+      writer.WriteInt((int)VolumeType);
+
     }
 
     /// <summary>
@@ -83,6 +90,8 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
         NEECoords[i] = NEECoords[i].FromBinary(reader);
 
       ReturnAllPassesAndLayers = reader.ReadBoolean();
+      VolumeType = (VolumeComputationType)reader.ReadInt();
+
     }
   }
 }

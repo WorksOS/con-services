@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -92,5 +93,46 @@ namespace VSS.TRex.Webtools.Controllers
       //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
       return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1) ));
     }
+
+
+    [HttpGet("volumes/{siteModelID}")]
+    public JsonResult ComputeSummaryVolumesProfile(string siteModelID,
+      [FromQuery] double startX,
+      [FromQuery] double startY,
+      [FromQuery] double endX,
+      [FromQuery] double endY)
+    {
+      Guid siteModelUid = Guid.Parse(siteModelID);
+
+      ProfileRequestArgument_ApplicationService arg = new ProfileRequestArgument_ApplicationService
+      {
+        ProjectID = siteModelUid,
+        ProfileTypeRequired = GridDataType.Height,
+        PositionsAreGrid = true,
+        Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
+        ReferenceDesignUID = Guid.Empty,
+        StartPoint = new WGS84Point(lon: startX, lat: startY),
+        EndPoint = new WGS84Point(lon: endX, lat: endY),
+        ReturnAllPassesAndLayers = false,
+        VolumeType = VolumeComputationType.Between2Filters
+      };
+
+      // Compute a profile from the bottom left of the screen extents to the top right 
+      var request = new ProfileRequest_ApplicationService<SummaryVolumeProfileCell>();
+
+      var Response = request.Execute(arg);
+
+      if (Response == null)
+        return new JsonResult(@"Profile response is null");
+
+      if (Response.ProfileCells == null)
+        return new JsonResult(@"Profile response contains no profile cells");
+
+      //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
+//  ajr todo    return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.CellLastElev, x.Station, -1)));
+      return new JsonResult(Response.ProfileCells.Select(x => new XYZS(0, 0, x.DesignElev, x.Station, -1)));
+    }
+
+
   }
 }

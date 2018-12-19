@@ -174,4 +174,9 @@ export class ProjectService {
   public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
     return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
   }
+
+  public drawProfileLineForSummaryVolumes(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
+    return this.executeRequest<XYZS[]>('drawProfileLine', `profiles/volumes/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  }
+
 }

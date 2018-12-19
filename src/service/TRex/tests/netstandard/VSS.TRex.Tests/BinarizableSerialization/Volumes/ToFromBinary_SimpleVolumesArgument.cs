@@ -3,7 +3,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
-using VSS.TRex.Volumes;
+using VSS.TRex.Common;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using Xunit;
 
